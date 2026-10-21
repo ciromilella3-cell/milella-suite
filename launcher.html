@@ -473,7 +473,10 @@
                 <span id="userBadgeIcon">👷</span>
                 <span id="userBadgeText">Modalità: In attesa di PIN</span>
             </div>
-            <div style="display:flex; gap:10px;">
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <a href="https://milella-suite.onrender.com/launcher.html" target="_blank" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:1px solid rgba(56,189,248,0.5); color:#fff; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; box-shadow:0 3px 10px rgba(2,132,199,0.35); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                    <span style="font-size:15px;">☁️</span> SITO CLOUD ONLINE
+                </a>
                 <button id="btnSwitchRole" onclick="apriLoginModal()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(212,175,55,0.4); color:#fff; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.2s;">
                     🔑 CAMBIA UTENTE (PIN)
                 </button>
@@ -1009,6 +1012,9 @@
     </script>
 <!-- Barra Controlli Rapidi Flessibile in Alto a Destra -->
 <div id="floatingControlBar" class="desktop-only-card" style="position:fixed; top:16px; right:20px; z-index:9999; display:flex; align-items:center; gap:10px;">
+    <a href="https://milella-suite.onrender.com/launcher.html" target="_blank" title="Apri Portale Cloud Online H24" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:1px solid rgba(56,189,248,0.5); color:#fff; padding:8px 14px; border-radius:12px; font-weight:700; font-size:13px; cursor:pointer; backdrop-filter:blur(8px); display:flex; align-items:center; gap:6px; text-decoration:none; box-shadow:0 4px 12px rgba(2,132,199,0.35); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.04)'; this.style.boxShadow='0 6px 18px rgba(56,189,248,0.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(2,132,199,0.35)'">
+        <span style="font-size:16px;">☁️</span> <span>SITO CLOUD ONLINE</span>
+    </a>
     <button id="btnTopExit" onclick="document.getElementById('confirmModal').style.display='flex';" title="Chiudi / Spegni Sistema" style="background:rgba(220,38,38,0.85); border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 14px; border-radius:12px; font-weight:700; font-size:13px; cursor:pointer; backdrop-filter:blur(8px); display:flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(220,38,38,0.4); transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,1)'; this.style.transform='scale(1.04)'" onmouseout="this.style.background='rgba(220,38,38,0.85)'; this.style.transform='scale(1)'">
         <span>❌</span> <span>ESCI / SPEGNI</span>
     </button>
