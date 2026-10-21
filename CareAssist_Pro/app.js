@@ -6662,6 +6662,8 @@ function verificaRintoccoOrarioTerapiaAttuale() {
     const nomi = terapieOra.map(t => t.farmaco).join(', ');
     showToast(`🔔 Promemoria Orario (${oraCorrente}): Somministrare ${nomi} a ${p.nome}`, 'warning');
   }
+}
+
 // Gestione Note di Turno e Report WhatsApp Operatore
 function apriModalNuovaNotaTurno() {
   const p = getActivePaziente();
