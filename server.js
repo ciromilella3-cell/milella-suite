@@ -1020,39 +1020,72 @@ app.post('/api/shutdown', (req, res) => {
     }, 200);
 });
 
-// Avvia Backup Inventario
-app.post('/api/backup-inventario', (req, res) => {
-    const { exec } = require('child_process');
-    const targetFolder = path.join(__dirname, '..');
-    const batFile = path.join(targetFolder, 'BACKUP_INVENTARIO.bat');
-    
-    // Esegue il bat che lancia lo script powershell e attende la fine
-    exec(`"${batFile}"`, { cwd: targetFolder }, (error) => {
-        if (error) {
-            console.error("Errore avvio Backup Inventario:", error);
-            return res.status(500).json({ success: false });
-        }
-        res.json({ success: true });
-    });
+// ==============================================================================
+// CENTRO SICUREZZA, BACKUP E SINCRONIZZAZIONE CLOUD SUITE C. MILELLA
+// ==============================================================================
+app.get('/api/sicurezza/scarica-backup-zip', (req, res) => {
+    try {
+        const { execSync } = require('child_process');
+        const sourceDir = fs.existsSync(path.join(__dirname, '..', 'AGGIORNAMENTO_RENDER')) 
+            ? path.join(__dirname, '..', 'AGGIORNAMENTO_RENDER')
+            : __dirname;
+        const tempZip = path.join(__dirname, 'data', `SUITE_MILELLA_BACKUP_${new Date().toISOString().slice(0,10)}.zip`);
+        
+        execSync(`tar.exe -a -c -f "${tempZip}" -C "${sourceDir}" *`);
+        res.download(tempZip, `SUITE_MILELLA_BACKUP_${new Date().toISOString().slice(0,10)}.zip`, (err) => {
+            try { if (fs.existsSync(tempZip)) fs.unlinkSync(tempZip); } catch(e){}
+        });
+    } catch(err) {
+        console.error('Errore generazione zip backup:', err);
+        res.status(500).json({ error: 'Errore durante la creazione del pacchetto di sicurezza' });
+    }
 });
 
-// Apri cartella Backup
-app.post('/api/open-backup-folder', (req, res) => {
-    const { exec } = require('child_process');
-    const targetFolder = path.join(__dirname, '..', 'documenti', 'Backup_Completo_Sistema');
-    if (!fs.existsSync(targetFolder)) {
-        fs.mkdirSync(targetFolder, { recursive: true });
+app.post('/api/sicurezza/crea-backup-locale', (req, res) => {
+    try {
+        const { execSync } = require('child_process');
+        const backupFolder = path.join(__dirname, '..', '_BACKUP_SICUREZZA');
+        const desktopFolder = path.join(process.env.USERPROFILE || 'C:\\Users\\Utente', 'Desktop');
+        if (!fs.existsSync(backupFolder)) fs.mkdirSync(backupFolder, { recursive: true });
+
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        const timeStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+        const zipName = `BACKUP_SUITE_MILELLA_${timeStr}.zip`;
+        const destZip = path.join(backupFolder, zipName);
+        const sourceDir = fs.existsSync(path.join(__dirname, '..', 'AGGIORNAMENTO_RENDER')) 
+            ? path.join(__dirname, '..', 'AGGIORNAMENTO_RENDER')
+            : __dirname;
+
+        execSync(`tar.exe -a -c -f "${destZip}" -C "${sourceDir}" *`);
+        try { fs.copyFileSync(destZip, path.join(desktopFolder, zipName)); } catch(e){}
+
+        const sizeMB = (fs.statSync(destZip).size / (1024 * 1024)).toFixed(1);
+        res.json({ success: true, nome: zipName, sizeMB });
+    } catch(err) {
+        res.status(500).json({ success: false, error: err.message });
     }
-    
-    // Per forzare l'apertura IN PRIMO PIANO e A TUTTO SCHERMO da un processo in background
-    // Creiamo un VBScript temporaneo che ignora i blocchi di Windows.
-    const vbsPath = path.join(__dirname, 'data', 'open_folder.vbs');
-    const vbsCode = 'Set objShell = CreateObject("WScript.Shell")\n' +
-                    'objShell.Run "explorer.exe """ & "' + targetFolder + '""" & "", 3, False\n';
-    fs.writeFileSync(vbsPath, vbsCode);
-    
-    exec(`wscript.exe "${vbsPath}"`);
-    res.json({ success: true });
+});
+
+app.get('/api/sicurezza/lista-backup', (req, res) => {
+    try {
+        const backupFolder = path.join(__dirname, '..', '_BACKUP_SICUREZZA');
+        if (!fs.existsSync(backupFolder)) return res.json([]);
+        const list = fs.readdirSync(backupFolder)
+            .filter(f => f.endsWith('.zip'))
+            .map(f => {
+                const stat = fs.statSync(path.join(backupFolder, f));
+                return {
+                    nome: f,
+                    data: stat.mtime.toLocaleString('it-IT'),
+                    sizeMB: (stat.size / (1024 * 1024)).toFixed(1)
+                };
+            })
+            .sort((a,b) => b.nome.localeCompare(a.nome));
+        res.json(list);
+    } catch(err) {
+        res.json([]);
+    }
 });
 
 // API POST: Avvia Tunnel Cloudflare per Attrezzi/Ricettario
