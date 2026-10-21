@@ -691,18 +691,46 @@
                         <input type="text" id="newOpCodice" placeholder="es. 4455 o prera" style="width:100%; box-sizing:border-box; padding:11px 14px; border-radius:12px; background:rgba(15,23,42,0.8); border:1px solid rgba(212,175,55,0.35); color:#fff; font-size:14px; outline:none; transition:all 0.2s;" onfocus="this.style.borderColor='#d4af37'; this.style.boxShadow='0 0 10px rgba(212,175,55,0.3)';" onblur="this.style.borderColor='rgba(212,175,55,0.35)'; this.style.boxShadow='none';">
                     </div>
                     <div>
-                        <label style="display:block; font-size:11.5px; color:#cbd5e1; font-weight:700; margin-bottom:5px;">📱 App Assegnata da Visualizzare:</label>
-                        <select id="newOpApp" style="width:100%; box-sizing:border-box; background:#0b1329; color:#fef08a; border:1px solid rgba(212,175,55,0.45); border-radius:12px; padding:11px 14px; font-size:13.5px; font-weight:700; outline:none; cursor:pointer;">
-                            <option value="all">🌐 Tutte le App Comuni</option>
-                            <option value="app_careassist">🩺 CareAssist Pro (Sanitario / Assistenza)</option>
-                            <option value="app_veicoli">🚗 Flotta Veicoli & Spese</option>
-                            <option value="app_inventario">🛠️ Inventario Attrezzi</option>
-                            <option value="app_ricettario">👨‍🍳 Il Ricettario</option>
-                            <option value="app_mednutri">🥗 MedNutri Pro</option>
-                            <option value="app_salute">❤️ Progetto Salute</option>
-                            <option value="app_gioco">🎰 Progetto Gioco</option>
-                            <option value="app_logistica">📦 Logistica Consegne</option>
-                        </select>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <label style="font-size:12px; color:#cbd5e1; font-weight:700;">📱 Seleziona le App da Assegnare (Scelta Multipla):</label>
+                            <button type="button" onclick="toggleTutteAppNewOp()" id="btnTutteNewOp" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; cursor:pointer;">
+                                🌐 Seleziona Tutte
+                            </button>
+                        </div>
+                        <div id="gridNewOpApps" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:7px; background:rgba(15,23,42,0.6); padding:10px; border-radius:12px; border:1px solid rgba(212,175,55,0.25); max-height:200px; overflow-y:auto;">
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-new-app" value="app_veicoli" style="width:17px; height:17px; accent-color:#d4af37;">
+                                <span>🚗 Flotta Veicoli & Spese</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-new-app" value="app_inventario" style="width:17px; height:17px; accent-color:#d4af37;">
+                                <span>🛠️ Inventario Attrezzi</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-new-app" value="app_logistica" style="width:17px; height:17px; accent-color:#d4af37;">
+                                <span>📦 Logistica Consegne</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-new-app" value="app_ricettario" style="width:17px; height:17px; accent-color:#d4af37;">
+                                <span>👨‍🍳 Il Ricettario</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-new-app" value="app_mednutri" style="width:17px; height:17px; accent-color:#d4af37;">
+                                <span>🥗 MedNutri Pro</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-new-app" value="app_careassist" style="width:17px; height:17px; accent-color:#d4af37;">
+                                <span>🩺 CareAssist Pro</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-new-app" value="app_salute" style="width:17px; height:17px; accent-color:#d4af37;">
+                                <span>❤️ Progetto Salute</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-new-app" value="app_gioco" style="width:17px; height:17px; accent-color:#d4af37;">
+                                <span>🎰 Progetto Gioco</span>
+                            </label>
+                        </div>
                     </div>
                     <button onclick="salvaNuovoOperatore()" style="width:100%; margin-top:6px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:1px solid rgba(255,255,255,0.3); color:#fff; font-weight:800; padding:12px; border-radius:12px; cursor:pointer; font-size:13.5px; letter-spacing:0.8px; text-transform:uppercase; box-shadow:0 6px 18px rgba(16,185,129,0.4); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                         ➕ SALVA NUOVO OPERATORE
@@ -730,18 +758,46 @@
                         <input type="text" id="editOpCodice" style="width:100%; box-sizing:border-box; padding:10px 14px; border-radius:12px; background:rgba(15,23,42,0.85); border:1px solid rgba(56,189,248,0.5); color:#fff; font-size:14px; outline:none;">
                     </div>
                     <div>
-                        <label style="display:block; font-size:11.5px; color:#cbd5e1; font-weight:700; margin-bottom:5px;">📱 App Assegnata da Visualizzare:</label>
-                        <select id="editOpApp" style="width:100%; box-sizing:border-box; background:#0b1329; color:#7dd3fc; border:1px solid rgba(56,189,248,0.6); border-radius:12px; padding:10px 14px; font-size:13.5px; font-weight:700; outline:none; cursor:pointer;">
-                            <option value="all">🌐 Tutte le App Comuni</option>
-                            <option value="app_careassist">🩺 CareAssist Pro (Sanitario / Assistenza)</option>
-                            <option value="app_veicoli">🚗 Flotta Veicoli & Spese</option>
-                            <option value="app_inventario">🛠️ Inventario Attrezzi</option>
-                            <option value="app_ricettario">👨‍🍳 Il Ricettario</option>
-                            <option value="app_mednutri">🥗 MedNutri Pro</option>
-                            <option value="app_salute">❤️ Progetto Salute</option>
-                            <option value="app_gioco">🎰 Progetto Gioco</option>
-                            <option value="app_logistica">📦 Logistica Consegne</option>
-                        </select>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <label style="font-size:12px; color:#cbd5e1; font-weight:700;">📱 App Assegnate (Seleziona una o più):</label>
+                            <button type="button" onclick="toggleTutteAppEditOp()" id="btnTutteEditOp" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; cursor:pointer;">
+                                🌐 Seleziona Tutte
+                            </button>
+                        </div>
+                        <div id="gridEditOpApps" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:7px; background:rgba(15,23,42,0.6); padding:10px; border-radius:12px; border:1px solid rgba(56,189,248,0.35); max-height:200px; overflow-y:auto;">
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-edit-app" value="app_veicoli" style="width:17px; height:17px; accent-color:#38bdf8;">
+                                <span>🚗 Flotta Veicoli & Spese</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-edit-app" value="app_inventario" style="width:17px; height:17px; accent-color:#38bdf8;">
+                                <span>🛠️ Inventario Attrezzi</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-edit-app" value="app_logistica" style="width:17px; height:17px; accent-color:#38bdf8;">
+                                <span>📦 Logistica Consegne</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-edit-app" value="app_ricettario" style="width:17px; height:17px; accent-color:#38bdf8;">
+                                <span>👨‍🍳 Il Ricettario</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-edit-app" value="app_mednutri" style="width:17px; height:17px; accent-color:#38bdf8;">
+                                <span>🥗 MedNutri Pro</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-edit-app" value="app_careassist" style="width:17px; height:17px; accent-color:#38bdf8;">
+                                <span>🩺 CareAssist Pro</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-edit-app" value="app_salute" style="width:17px; height:17px; accent-color:#38bdf8;">
+                                <span>❤️ Progetto Salute</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
+                                <input type="checkbox" class="chk-edit-app" value="app_gioco" style="width:17px; height:17px; accent-color:#38bdf8;">
+                                <span>🎰 Progetto Gioco</span>
+                            </label>
+                        </div>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:4px;">
                         <button onclick="salvaModificaOperatore()" style="flex:1; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:1px solid rgba(255,255,255,0.3); color:#fff; font-weight:800; padding:11px; border-radius:12px; cursor:pointer; font-size:13.5px; letter-spacing:0.5px; box-shadow:0 4px 15px rgba(2,132,199,0.45); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
@@ -1700,6 +1756,32 @@ document.addEventListener('fullscreenchange', () => {
         }
     }
 
+    function toggleTutteAppNewOp() {
+        const chks = document.querySelectorAll('.chk-new-app');
+        const tutte = Array.from(chks).every(c => c.checked);
+        chks.forEach(c => c.checked = !tutte);
+        const btn = document.getElementById('btnTutteNewOp');
+        if (btn) btn.textContent = tutte ? '🌐 Seleziona Tutte' : '✕ Deseleziona Tutte';
+    }
+
+    function toggleTutteAppEditOp() {
+        const chks = document.querySelectorAll('.chk-edit-app');
+        const tutte = Array.from(chks).every(c => c.checked);
+        chks.forEach(c => c.checked = !tutte);
+        const btn = document.getElementById('btnTutteEditOp');
+        if (btn) btn.textContent = tutte ? '🌐 Seleziona Tutte' : '✕ Deseleziona Tutte';
+    }
+
+    function getSelectedAppsNewOp() {
+        const chks = document.querySelectorAll('.chk-new-app:checked');
+        return Array.from(chks).map(c => c.value);
+    }
+
+    function getSelectedAppsEditOp() {
+        const chks = document.querySelectorAll('.chk-edit-app:checked');
+        return Array.from(chks).map(c => c.value);
+    }
+
     let listaOperatoriCache = [];
 
     function renderOps(ops) {
@@ -1721,12 +1803,25 @@ document.addEventListener('fullscreenchange', () => {
         ops.forEach(op => {
             const card = document.createElement('div');
             card.style.cssText = 'background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.2); padding:12px 14px; border-radius:14px; display:flex; flex-direction:column; gap:8px;';
-            const appAssegnata = (op.appAbilitate && op.appAbilitate.length > 0) ? op.appAbilitate[0] : 'all';
-            const appLabel = appNomi[appAssegnata] || '🌐 Tutte le App Comuni';
+            
+            // Calcolo etichetta / lista app abilitate
+            let appBadgeHtml = '';
+            let appNomiArray = [];
+            if (!op.appAbilitate || op.appAbilitate.length === 0 || op.appAbilitate.includes('all')) {
+                appBadgeHtml = `<span style="color:#38bdf8; background:rgba(56,189,248,0.15); padding:2px 8px; border-radius:6px; font-weight:700;">🌐 Tutte le App Comuni</span>`;
+                appNomiArray = ['🌐 Tutte le App Comuni'];
+            } else {
+                appNomiArray = op.appAbilitate.map(id => appNomi[id] || id);
+                appBadgeHtml = op.appAbilitate.map(id => {
+                    const l = appNomi[id] || id;
+                    return `<span style="color:#38bdf8; background:rgba(56,189,248,0.15); padding:2px 8px; border-radius:6px; font-weight:700; display:inline-block; margin:2px 3px 2px 0;">${l}</span>`;
+                }).join('');
+            }
+            const appLabelText = appNomiArray.join(', ');
 
             // Messaggio per invio rapido via WhatsApp o Mail
             const portaleUrl = window.location.origin + '/launcher.html';
-            const msgTesto = `Ciao ${op.nome},\necco il tuo accesso alla Suite Aziendale C. Milella.\n\n🌐 Portale: ${portaleUrl}\n🔑 Tuo PIN Personale: ${op.codice}\n📱 Tua App Assegnata: ${appLabel}\n\nApri il link e inserisci il tuo codice personale.\n\n⚠️ NOTA: Codice strettamente personale. Per qualsiasi informazione contattare l'amministratore Ciro Milella.`;
+            const msgTesto = `Ciao ${op.nome},\necco il tuo accesso alla Suite Aziendale C. Milella.\n\n🌐 Portale: ${portaleUrl}\n🔑 Tuo PIN Personale: ${op.codice}\n📱 Tue App Assegnate: ${appLabelText}\n\nApri il link e inserisci il tuo codice personale.\n\n⚠️ NOTA: Codice strettamente personale. Per qualsiasi informazione contattare l'amministratore Ciro Milella.`;
             const waLink = `https://wa.me/?text=${encodeURIComponent(msgTesto)}`;
             const mailLink = `mailto:?subject=${encodeURIComponent('Credenziali Accesso Suite C. Milella')}&body=${encodeURIComponent(msgTesto)}`;
 
@@ -1736,17 +1831,21 @@ document.addEventListener('fullscreenchange', () => {
                         <div style="font-weight:700; color:${op.attivo ? '#fff' : '#64748b'}; font-size:15px; display:flex; align-items:center; gap:6px;">
                             ${op.ruolo === 'admin' ? '👑' : '👷'} ${op.nome} ${op.ruolo === 'admin' ? '<span style="background:rgba(212,175,55,0.25); color:#f59e0b; font-size:10.5px; padding:2px 6px; border-radius:6px; font-weight:800;">MASTER</span>' : ''}
                         </div>
-                        <div style="font-size:12px; color:#cbd5e1; margin-top:3px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-                            <span>PIN: <strong style="color:#f3e5ab; font-size:13px; font-family:monospace; background:rgba(0,0,0,0.3); padding:1px 6px; border-radius:4px;">${op.codice}</strong></span>
-                            <span>App: <strong style="color:#38bdf8; background:rgba(56,189,248,0.15); padding:1px 8px; border-radius:6px;">${appLabel}</strong></span>
-                            <span style="color:${op.attivo ? '#4ade80':'#ef4444'}; font-weight:600;">● ${op.attivo ? 'Attivo' : 'Disattivato'}</span>
+                        <div style="font-size:12px; color:#cbd5e1; margin-top:5px; display:flex; flex-direction:column; gap:4px;">
+                            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                                <span>PIN: <strong style="color:#f3e5ab; font-size:13px; font-family:monospace; background:rgba(0,0,0,0.3); padding:1px 6px; border-radius:4px;">${op.codice}</strong></span>
+                                <span style="color:${op.attivo ? '#4ade80':'#ef4444'}; font-weight:600;">● ${op.attivo ? 'Attivo' : 'Disattivato'}</span>
+                            </div>
+                            <div style="margin-top:2px;">
+                                <span style="color:#94a3b8; font-size:11px;">App assegnate:</span> ${appBadgeHtml}
+                            </div>
                         </div>
                     </div>
                 </div>
                 ${op.ruolo !== 'admin' ? `
-                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:4px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
+                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
                         <button onclick="avviaModificaOp('${op.id}')" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; padding:6px 12px; border-radius:8px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
-                            ✏️ Modifica / Assegna App
+                            ✏️ Modifica / Assegna Più App
                         </button>
                         <a href="${waLink}" target="_blank" title="Invia credenziali WhatsApp" style="text-decoration:none; background:rgba(37,211,102,0.2); border:1px solid #25d366; color:#86efac; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
                             💬 WhatsApp
@@ -1775,8 +1874,17 @@ document.addEventListener('fullscreenchange', () => {
         document.getElementById('editOpId').value = op.id;
         document.getElementById('editOpNome').value = op.nome;
         document.getElementById('editOpCodice').value = op.codice;
-        const appSel = (op.appAbilitate && op.appAbilitate.length > 0) ? op.appAbilitate[0] : 'all';
-        document.getElementById('editOpApp').value = appSel;
+        
+        // Imposta i checkbox per le app assegnate
+        const appAbilitate = op.appAbilitate || [];
+        const isAll = appAbilitate.length === 0 || appAbilitate.includes('all');
+        const chks = document.querySelectorAll('.chk-edit-app');
+        chks.forEach(c => {
+            c.checked = isAll ? true : appAbilitate.includes(c.value);
+        });
+        const btn = document.getElementById('btnTutteEditOp');
+        if (btn) btn.textContent = isAll ? '✕ Deseleziona Tutte' : '🌐 Seleziona Tutte';
+
         if (box) {
             box.style.display = 'block';
             box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1803,11 +1911,21 @@ document.addEventListener('fullscreenchange', () => {
         const id = document.getElementById('editOpId').value;
         const nome = document.getElementById('editOpNome').value.trim();
         const codice = document.getElementById('editOpCodice').value.trim();
-        const appId = document.getElementById('editOpApp').value;
+        const selectedApps = getSelectedAppsEditOp();
+
         if (!nome || !codice) {
             mostraToastOp('⚠️ Inserisci sia il nome che il PIN', true);
             return;
         }
+
+        if (selectedApps.length === 0) {
+            mostraToastOp('⚠️ Seleziona almeno un\'applicazione per il collega', true);
+            return;
+        }
+
+        // Se sono selezionate tutte le 8 app disponibili, salviamo 'all' oppure l'elenco completo
+        const tutteLeApp = document.querySelectorAll('.chk-edit-app').length;
+        const appSalvate = (selectedApps.length === tutteLeApp) ? ['all'] : selectedApps;
 
         try {
             const res = await fetch('/api/operatori/gestione', {
@@ -1816,14 +1934,14 @@ document.addEventListener('fullscreenchange', () => {
                 body: JSON.stringify({
                     pinAdmin: currentAdminPin || 'SOS999',
                     azione: 'update',
-                    operatore: { id, nome, codice, appId, appAbilitate: [appId] }
+                    operatore: { id, nome, codice, appAbilitate: appSalvate }
                 })
             });
             const data = await res.json();
             if (data.success) {
                 annullaModificaOp();
                 renderOps(data.operatori);
-                mostraToastOp(`✅ Operatore ${nome} aggiornato con successo!`, false);
+                mostraToastOp(`✅ Operatore ${nome} aggiornato con ${selectedApps.length} app!`, false);
             } else {
                 mostraToastOp('❌ Errore: ' + (data.message || 'Impossibile aggiornare'), true);
             }
@@ -1835,11 +1953,21 @@ document.addEventListener('fullscreenchange', () => {
     async function salvaNuovoOperatore() {
         const nome = document.getElementById('newOpNome').value.trim();
         const codice = document.getElementById('newOpCodice').value.trim();
-        const appId = document.getElementById('newOpApp').value;
+        const selectedApps = getSelectedAppsNewOp();
+
         if (!nome || !codice) {
             mostraToastOp('⚠️ Inserisci sia il nome che il codice PIN', true);
             return;
         }
+
+        if (selectedApps.length === 0) {
+            mostraToastOp('⚠️ Seleziona almeno un\'applicazione per il collega', true);
+            return;
+        }
+
+        const tutteLeApp = document.querySelectorAll('.chk-new-app').length;
+        const appSalvate = (selectedApps.length === tutteLeApp) ? ['all'] : selectedApps;
+
         try {
             const res = await fetch('/api/operatori/gestione', {
                 method: 'POST',
@@ -1847,15 +1975,16 @@ document.addEventListener('fullscreenchange', () => {
                 body: JSON.stringify({
                     pinAdmin: currentAdminPin || 'SOS999',
                     azione: 'add',
-                    operatore: { nome, codice, ruolo: 'operatore', appId, appAbilitate: [appId] }
+                    operatore: { nome, codice, ruolo: 'operatore', appAbilitate: appSalvate }
                 })
             });
             const data = await res.json();
             if (data.success) {
                 document.getElementById('newOpNome').value = '';
                 document.getElementById('newOpCodice').value = '';
+                document.querySelectorAll('.chk-new-app').forEach(c => c.checked = false);
                 renderOps(data.operatori);
-                mostraToastOp(`✅ Operatore ${nome} aggiunto! Puoi condividere il PIN via WhatsApp o Email.`, false);
+                mostraToastOp(`✅ Operatore ${nome} aggiunto con ${selectedApps.length} app! Condividi il PIN via WhatsApp o Email.`, false);
             }
         } catch(e) {
             mostraToastOp('❌ Errore durante il salvataggio operatore', true);
