@@ -1163,16 +1163,44 @@ document.addEventListener('fullscreenchange', () => {
                 return;
             }
             container.innerHTML = backups.map(b => `
-                <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="color:#fff; font-size:12px; font-weight:700;">📦 ${b.nome}</div>
-                        <div style="color:#94a3b8; font-size:10.5px;">Data: ${b.data} • Dimensione: ${b.sizeMB} MB</div>
+                <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <div style="flex:1; min-width:0;">
+                        <div style="color:#fff; font-size:12px; font-weight:700; word-break:break-all;">📦 ${b.nome}</div>
+                        <div style="color:#94a3b8; font-size:10.5px; margin-top:2px;">Data: ${b.data} • Dimensione: ${b.sizeMB} MB</div>
                     </div>
-                    <span style="font-size:11px; background:rgba(34,197,94,0.15); color:#4ade80; padding:2px 8px; border-radius:6px; font-weight:700;">PROTETTO</span>
+                    <div style="display:flex; gap:6px; align-items:center; flex-shrink:0;">
+                        <button onclick="ripristinaBackupSelezionato('${b.nome}')" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer; box-shadow:0 2px 8px rgba(16,185,129,0.3);">
+                            🔄 RIPRISTINA
+                        </button>
+                    </div>
                 </div>
             `).join('');
         } catch(e) {
             container.innerHTML = '<div style="color:#94a3b8; font-size:12px; text-align:center; padding:8px;">Archivio protetto pronto</div>';
+        }
+    }
+
+    async function ripristinaBackupSelezionato(nome) {
+        if (!confirm('ATTENZIONE:\nSei sicuro di voler RIPRISTINARE la Suite da questo backup?\n\nFile: ' + nome + '\n\nTutte le 6 applicazioni torneranno allo stato esatto di quel salvataggio.')) {
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/sicurezza/ripristina', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nomeBackup: nome })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('✅ RIPRISTINO COMPLETATO CON SUCCESSO!\n\nLa Suite e tutti i dati sono stati ripristinati. La pagina verrà ricaricata tra poco.');
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                alert('Errore durante il ripristino: ' + (data.message || data.error));
+            }
+        } catch(e) {
+            alert('Richiesta inviata. Ricarica la pagina tra 5 secondi.');
+            setTimeout(() => window.location.reload(), 3000);
         }
     }
 

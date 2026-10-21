@@ -1088,6 +1088,42 @@ app.get('/api/sicurezza/lista-backup', (req, res) => {
     }
 });
 
+// RIPRISTINO DIRETTO: Estrae il backup selezionato e ripristina la Suite
+app.post('/api/sicurezza/ripristina', (req, res) => {
+    try {
+        const { nomeBackup } = req.body || {};
+        const { execSync } = require('child_process');
+        const backupFolder = path.join(__dirname, '..', '_BACKUP_SICUREZZA');
+        const targetDir = fs.existsSync(path.join(__dirname, '..', 'AGGIORNAMENTO_RENDER')) 
+            ? path.join(__dirname, '..', 'AGGIORNAMENTO_RENDER')
+            : __dirname;
+
+        let zipPath = '';
+        if (nomeBackup) {
+            zipPath = path.join(backupFolder, nomeBackup);
+        } else {
+            // Prendi il backup più recente disponibile
+            const files = fs.readdirSync(backupFolder)
+                .filter(f => f.endsWith('.zip'))
+                .map(f => ({ name: f, time: fs.statSync(path.join(backupFolder, f)).mtime.getTime() }))
+                .sort((a, b) => b.time - a.time);
+            if (files.length === 0) return res.status(404).json({ success: false, message: 'Nessun backup trovato' });
+            zipPath = path.join(backupFolder, files[0].name);
+        }
+
+        if (!fs.existsSync(zipPath)) {
+            return res.status(404).json({ success: false, message: 'File di backup non trovato' });
+        }
+
+        // Estrazione ripristino
+        execSync(`tar.exe -x -f "${zipPath}" -C "${targetDir}"`);
+        res.json({ success: true, message: 'Ripristino completato con successo!', file: path.basename(zipPath) });
+    } catch(err) {
+        console.error('Errore ripristino:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 // API POST: Avvia Tunnel Cloudflare per Attrezzi/Ricettario
 app.post('/api/start-tunnel-attrezzi', (req, res) => {
     const { exec } = require('child_process');
