@@ -755,6 +755,13 @@
                             </label>
                         </div>
                     </div>
+                    <!-- Permesso Modifica Farmaci vs Sola Lettura / Somministrazione -->
+                    <div style="background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.3); border-radius:12px; padding:10px 12px; margin-top:4px;">
+                        <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#f3e5ab; font-weight:700; cursor:pointer;">
+                            <input type="checkbox" id="newOpCanEditTerapie" style="width:17px; height:17px; accent-color:#d4af37;">
+                            <span>✍️ Abilita a Modificare/Eliminare Farmaci (Default: Sola Lettura / Spunta)</span>
+                        </label>
+                    </div>
                     <button onclick="salvaNuovoOperatore()" style="width:100%; margin-top:6px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:1px solid rgba(255,255,255,0.3); color:#fff; font-weight:800; padding:12px; border-radius:12px; cursor:pointer; font-size:13.5px; letter-spacing:0.8px; text-transform:uppercase; box-shadow:0 6px 18px rgba(16,185,129,0.4); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                         ➕ SALVA NUOVO OPERATORE
                     </button>
@@ -844,6 +851,13 @@
                                 <span>👵 Rosa Annunziata Cavalcante</span>
                             </label>
                         </div>
+                    </div>
+                    <!-- Permesso Modifica Farmaci vs Sola Lettura / Somministrazione (Modifica) -->
+                    <div style="background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.4); border-radius:12px; padding:10px 12px; margin-top:2px;">
+                        <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#f3e5ab; font-weight:700; cursor:pointer;">
+                            <input type="checkbox" id="editOpCanEditTerapie" style="width:17px; height:17px; accent-color:#d4af37;">
+                            <span>✍️ Abilita a Modificare/Eliminare Farmaci (Default: Sola Lettura / Spunta)</span>
+                        </label>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:4px;">
                         <button onclick="salvaModificaOperatore()" style="flex:1; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:1px solid rgba(255,255,255,0.3); color:#fff; font-weight:800; padding:11px; border-radius:12px; cursor:pointer; font-size:13.5px; letter-spacing:0.5px; box-shadow:0 4px 15px rgba(2,132,199,0.45); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
@@ -1526,11 +1540,13 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_user_pin', pin);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
+                    localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'operatore');
                     localStorage.setItem('milella_last_authenticated_pin', pin);
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
+                    localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
                     applicaRuolo('operatore', data.nome, data.appAbilitate || []);
                 }
                 aggiornaVisibilitaBiometriaGate();
@@ -1609,11 +1625,13 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_user_pin', pin);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
+                    localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'operatore');
                     localStorage.setItem('milella_last_authenticated_pin', pin);
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
+                    localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
                     applicaRuolo('operatore', data.nome, data.appAbilitate || []);
                 }
                 document.getElementById('gateBloccoIngresso').style.display = 'none';
@@ -1978,6 +1996,14 @@ document.addEventListener('fullscreenchange', () => {
                                 <span style="color:#94a3b8; font-size:11px;">Pazienti abilitati:</span> ${pazBadgeHtml}
                             </div>
                             ` : ''}
+                            ${op.ruolo !== 'admin' ? `
+                            <div style="margin-top:2px;">
+                                <span style="color:#94a3b8; font-size:11px;">Permessi terapie:</span> 
+                                <span style="color:${op.canEditTerapie ? '#f59e0b' : '#38bdf8'}; background:${op.canEditTerapie ? 'rgba(245,158,11,0.15)' : 'rgba(56,189,248,0.15)'}; padding:2px 7px; border-radius:5px; font-size:11px; font-weight:700;">
+                                    ${op.canEditTerapie ? '✍️ Modifica Farmaci Abilitata' : '🔒 Sola Somministrazione / Lettura'}
+                                </span>
+                            </div>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
@@ -2013,6 +2039,8 @@ document.addEventListener('fullscreenchange', () => {
         document.getElementById('editOpId').value = op.id;
         document.getElementById('editOpNome').value = op.nome;
         document.getElementById('editOpCodice').value = op.codice;
+        const chkEditCan = document.getElementById('editOpCanEditTerapie');
+        if (chkEditCan) chkEditCan.checked = !!op.canEditTerapie;
         
         // Imposta i checkbox per le app assegnate
         const appAbilitate = op.appAbilitate || [];
@@ -2085,6 +2113,8 @@ document.addEventListener('fullscreenchange', () => {
             pazSalvati = (selPaz.length === totPaz || selPaz.length === 0) ? [] : selPaz;
         }
 
+        const canEditTerapie = document.getElementById('editOpCanEditTerapie') ? document.getElementById('editOpCanEditTerapie').checked : false;
+
         try {
             const res = await fetch('/api/operatori/gestione', {
                 method: 'POST',
@@ -2092,7 +2122,7 @@ document.addEventListener('fullscreenchange', () => {
                 body: JSON.stringify({
                     pinAdmin: currentAdminPin || 'SOS999',
                     azione: 'update',
-                    operatore: { id, nome, codice, appAbilitate: appSalvate, pazAbilitati: pazSalvati }
+                    operatore: { id, nome, codice, appAbilitate: appSalvate, pazAbilitati: pazSalvati, canEditTerapie }
                 })
             });
             const data = await res.json();
@@ -2134,6 +2164,8 @@ document.addEventListener('fullscreenchange', () => {
             pazSalvati = (selPaz.length === totPaz || selPaz.length === 0) ? [] : selPaz;
         }
 
+        const canEditTerapie = document.getElementById('newOpCanEditTerapie') ? document.getElementById('newOpCanEditTerapie').checked : false;
+
         try {
             const res = await fetch('/api/operatori/gestione', {
                 method: 'POST',
@@ -2141,13 +2173,14 @@ document.addEventListener('fullscreenchange', () => {
                 body: JSON.stringify({
                     pinAdmin: currentAdminPin || 'SOS999',
                     azione: 'add',
-                    operatore: { nome, codice, ruolo: 'operatore', appAbilitate: appSalvate, pazAbilitati: pazSalvati }
+                    operatore: { nome, codice, ruolo: 'operatore', appAbilitate: appSalvate, pazAbilitati: pazSalvati, canEditTerapie }
                 })
             });
             const data = await res.json();
             if (data.success) {
                 document.getElementById('newOpNome').value = '';
                 document.getElementById('newOpCodice').value = '';
+                if (document.getElementById('newOpCanEditTerapie')) document.getElementById('newOpCanEditTerapie').checked = false;
                 document.querySelectorAll('.chk-new-app').forEach(c => c.checked = false);
                 document.querySelectorAll('.chk-new-paz').forEach(c => c.checked = false);
                 const boxPaz = document.getElementById('boxPazientiNewOp');
@@ -2546,8 +2579,10 @@ document.addEventListener('fullscreenchange', () => {
             if (data.success) {
                 localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
                 localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
+                localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
                 localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                 localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
+                localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
             }
         }).catch(() => {});
     } else {

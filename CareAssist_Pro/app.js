@@ -2973,6 +2973,9 @@ function renderTerapie() {
   const preview = document.getElementById('terapie-preview-body');
   if (!container || !p) return;
 
+  const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
+  const canEdit = (role === 'admin') || (localStorage.getItem('milella_can_edit_terapie') === 'true');
+
   const html = (p.terapie || []).map(t => {
     // Calcolo giorni autonomia e data presunta termine scorta
     const giorniAutonomia = t.scorta > 0 ? t.scorta : 0;
@@ -3121,14 +3124,26 @@ function renderTerapie() {
               </div>
             `;
           })()}
+          })()}
         </td>
         <td style="text-align: center;">
-          <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="apriModificaFarmaco(${t.id})" title="Modifica dati e orario del farmaco">✏️ Modifica</button> <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="mostraAuditFarmaco(${t.id})" title="Tracciabilità e cronologia controlli">🕒 Traccia</button>
-          <button class="btn btn-outline" style="padding:5px 6px; font-size:11px;" onclick="eliminaTerapia(${t.id})" title="Elimina farmaco">🗑️</button>
+          ${canEdit ? `
+            <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="apriModificaFarmaco(${t.id})" title="Modifica dati e orario del farmaco">✏️ Modifica</button>
+            <button class="btn btn-outline" style="padding:5px 6px; font-size:11px;" onclick="eliminaTerapia(${t.id})" title="Elimina farmaco">🗑️</button>
+          ` : `
+            <span style="font-size:11px; color:#64748b; font-weight:600;" title="Sola somministrazione e spunta (Modifiche riservate all'Amministratore)">🔒 Sola Lettura</span>
+          `}
+          <button class="btn btn-outline" style="padding:5px 8px; font-size:11px; margin-left:3px;" onclick="mostraAuditFarmaco(${t.id})" title="Tracciabilità e cronologia controlli">🕒 Traccia</button>
         </td>
       </tr>
     `;
   }).join('');
+
+  // Gestione visibilità pulsante "+ Nuovo Farmaco" in cima alla tabella
+  const btnNuovoFarmaco = document.querySelector('button[onclick="openModal(\'modal-farmaco\')"]');
+  if (btnNuovoFarmaco) {
+    btnNuovoFarmaco.style.display = canEdit ? 'inline-block' : 'none';
+  }
 
   container.innerHTML = html || '<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:16px;">Nessun farmaco in terapia per questo paziente.</td></tr>';
 
@@ -4314,6 +4329,10 @@ function renderDiario() {
       icon = '📦';
       badge = 'badge-primary';
       desc = `<b>${r.desc}</b>`;
+    } else if (r.tipo === 'nota_turno') {
+      icon = '📝';
+      badge = 'badge-success';
+      desc = `<b style="color:#0369a1;">NOTA DI TURNO:</b> <i>"${r.testo || ''}"</i>`;
     }
 
     const d = new Date(r.timestamp);
@@ -6643,26 +6662,99 @@ function verificaRintoccoOrarioTerapiaAttuale() {
     const nomi = terapieOra.map(t => t.farmaco).join(', ');
     showToast(`🔔 Promemoria Orario (${oraCorrente}): Somministrare ${nomi} a ${p.nome}`, 'warning');
   }
+// Gestione Note di Turno e Report WhatsApp Operatore
+function apriModalNuovaNotaTurno() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const opNome = localStorage.getItem('milella_user_nome') || '';
+  const inPaz = document.getElementById('nota-turno-paziente-nome');
+  const inOp = document.getElementById('nota-turno-operatore');
+  const inTesto = document.getElementById('nota-turno-testo');
+  if (inPaz) inPaz.value = p.nome;
+  if (inOp) inOp.value = opNome;
+  if (inTesto) inTesto.value = '';
+  openModal('modal-nota-turno');
 }
 
-// Sincronizzazione dinamica dei permessi dell'operatore all'avvio di CareAssist Pro
-(function sincronizzaPermessiAssistitiCareAssist() {
-  const pin = localStorage.getItem('milella_user_pin');
-  const role = localStorage.getItem('milella_role');
-  if (role !== 'admin' && pin) {
-    fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ codice: pin })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success && data.pazAbilitati) {
-        localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati));
-        renderPazientiSelector();
-        renderAll();
-      }
-    })
-    .catch(() => {});
+function salvaNotaTurno() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const inOp = document.getElementById('nota-turno-operatore');
+  const inTesto = document.getElementById('nota-turno-testo');
+  const opNome = inOp ? inOp.value.trim() : '';
+  const testo = inTesto ? inTesto.value.trim() : '';
+
+  if (!testo) {
+    alert('Inserisci una nota prima di salvare.');
+    return;
   }
-})();
+
+  p.registrazioni = p.registrazioni || [];
+  p.registrazioni.unshift({
+    id: 'nota_' + Date.now(),
+    timestamp: new Date().toISOString(),
+    tipo: 'nota_turno',
+    operatore: opNome || 'Operatore',
+    testo: testo
+  });
+
+  saveDb();
+  closeModal('modal-nota-turno');
+  showToast('✅ Nota di turno registrata con successo nel Diario!');
+}
+
+function inviaReportTurnoWhatsApp() {
+  const p = getActivePaziente();
+  if (!p) return;
+
+  const oggi = new Date();
+  const dataOggiStr = oggi.toLocaleDateString('it-IT');
+  const opNome = localStorage.getItem('milella_user_nome') || 'Operatore';
+
+  // Terapie di oggi
+  const terapieOggi = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t));
+  const fatte = terapieOggi.filter(t => t.fattoOggi);
+  const saltate = terapieOggi.filter(t => t.saltatoOggi);
+  const daFare = terapieOggi.filter(t => !t.fattoOggi && !t.saltatoOggi);
+
+  // Ultime note o parametri
+  const ultimeNote = (p.registrazioni || [])
+    .filter(r => {
+      const d = new Date(r.timestamp);
+      return d.toDateString() === oggi.toDateString();
+    })
+    .slice(0, 5);
+
+  let msg = `📋 *REPORT TURNO ASSISTENZA - ${dataOggiStr}*\n`;
+  msg += `👤 Assistito: *${p.nome}*\n`;
+  msg += `👷 Operatore: *${opNome}*\n\n`;
+
+  msg += `💊 *TERAPIE FARMACOLOGICHE:*\n`;
+  msg += `✅ Somministrate: ${fatte.length} di ${terapieOggi.length}\n`;
+  if (saltate.length > 0) {
+    msg += `❌ Saltate/Rifiutate: ${saltate.map(s => s.farmaco + ' (' + (s.motivoSalto || '') + ')').join(', ')}\n`;
+  }
+  if (daFare.length > 0) {
+    msg += `⏳ Da somministrare: ${daFare.map(d => d.farmaco + ' (' + d.ora + ')').join(', ')}\n`;
+  }
+
+  if (ultimeNote.length > 0) {
+    msg += `\n📝 *ANNOTAZIONI & EVENTI DI OGGI:*\n`;
+    ultimeNote.forEach(n => {
+      const oraStr = new Date(n.timestamp).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      if (n.tipo === 'nota_turno') {
+        msg += `• [${oraStr}] Nota: ${n.testo}\n`;
+      } else if (n.tipo === 'parametri') {
+        msg += `• [${oraStr}] Parametri: PA ${n.pa_max}/${n.pa_min}, FC ${n.fc}, SpO2 ${n.spo2}%\n`;
+      } else if (n.tipo === 'alvo') {
+        msg += `• [${oraStr}] Alvo: ${n.consistenza} (${n.note || 'regolare'})\n`;
+      }
+    });
+  }
+
+  msg += `\n_Inviato da CareAssist Pro - Suite C. Milella_`;
+
+  const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl, '_blank');
+}
+

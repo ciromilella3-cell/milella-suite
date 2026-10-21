@@ -330,9 +330,19 @@
 
       <!-- CARD ATTIVITA' RECENTI (DIARIO OSS) -->
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">📝 Ultime Annotazioni Socio-Sanitarie</div>
-          <span style="font-size:12px; color:var(--text-muted);">Parametri, Alvo, Posture registrate</span>
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div class="card-title">📝 Ultime Annotazioni Socio-Sanitarie</div>
+            <span style="font-size:12px; color:var(--text-muted);">Parametri, Alvo, Posture e Note di Turno</span>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="apriModalNuovaNotaTurno()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px;">
+              📝 Lascia Nota Turno
+            </button>
+            <button class="btn btn-success" onclick="inviaReportTurnoWhatsApp()" style="background:#25d366; border-color:#16a34a; font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px;">
+              💬 Invia Report a Ciro
+            </button>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="custom-table">
@@ -2491,6 +2501,34 @@
         <button type="button" class="btn btn-danger" style="background:#dc2626; padding:10px 22px; font-size:13.5px; font-weight:800; border-radius:12px;" onclick="chiudiAllarmeTerapieGlobali()">
           🔕 Ho Preso In Carico / Chiudi Allarme
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE NOTA DI TURNO / CONSEGNA OPERATORE -->
+  <div class="modal-overlay" id="modal-nota-turno">
+    <div class="modal" style="max-width:500px; width:92%;">
+      <div class="modal-header">
+        <h3 class="modal-title">📝 Registra Nota di Turno / Consegna</h3>
+        <button class="btn-close" onclick="closeModal('modal-nota-turno')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:5px;">Assistito Corrente:</label>
+          <input type="text" id="nota-turno-paziente-nome" readonly style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; background:#f1f5f9; font-weight:700; font-size:13.5px; box-sizing:border-box;">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:5px;">Nome Operatore:</label>
+          <input type="text" id="nota-turno-operatore" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13.5px; box-sizing:border-box;" placeholder="Il tuo nome (es. M.C. Stoppelli)">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:5px;">Note sull'Assistito / Eventi del Turno:</label>
+          <textarea id="nota-turno-testo" rows="4" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13px; box-sizing:border-box; resize:vertical;" placeholder="Es: Condizioni generali stabili, ha cenato con appetito, pressione 125/80, riposo notturno regolare..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-nota-turno')">Annulla</button>
+        <button class="btn btn-primary" onclick="salvaNotaTurno()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-weight:800;">Salva nel Diario ✅</button>
       </div>
     </div>
   </div>

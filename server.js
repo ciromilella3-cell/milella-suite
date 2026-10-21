@@ -521,7 +521,8 @@ app.post('/api/auth/login', (req, res) => {
             ruolo: found.ruolo || 'operatore', 
             nome: found.nome,
             appAbilitate: found.appAbilitate || [],
-            pazAbilitati: found.pazAbilitati || []
+            pazAbilitati: found.pazAbilitati || [],
+            canEditTerapie: !!found.canEditTerapie
         });
     }
     return res.status(401).json({ success: false, message: 'Codice o PIN non riconosciuto.' });
@@ -547,6 +548,7 @@ app.post('/api/operatori/gestione', (req, res) => {
             codice: operatore.codice.trim(),
             appAbilitate: operatore.appAbilitate || (operatore.appId ? [operatore.appId] : []),
             pazAbilitati: operatore.pazAbilitati || [],
+            canEditTerapie: !!operatore.canEditTerapie,
             attivo: true
         };
         ops.push(newOp);
@@ -563,7 +565,8 @@ app.post('/api/operatori/gestione', (req, res) => {
                     nome: operatore.nome !== undefined ? operatore.nome.trim() : o.nome,
                     codice: operatore.codice !== undefined ? operatore.codice.trim() : o.codice,
                     appAbilitate: operatore.appAbilitate || (operatore.appId ? [operatore.appId] : o.appAbilitate),
-                    pazAbilitati: operatore.pazAbilitati !== undefined ? operatore.pazAbilitati : (o.pazAbilitati || [])
+                    pazAbilitati: operatore.pazAbilitati !== undefined ? operatore.pazAbilitati : (o.pazAbilitati || []),
+                    canEditTerapie: operatore.canEditTerapie !== undefined ? !!operatore.canEditTerapie : !!o.canEditTerapie
                 };
             }
             return o;
