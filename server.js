@@ -520,7 +520,8 @@ app.post('/api/auth/login', (req, res) => {
             success: true, 
             ruolo: found.ruolo || 'operatore', 
             nome: found.nome,
-            appAbilitate: found.appAbilitate || []
+            appAbilitate: found.appAbilitate || [],
+            pazAbilitati: found.pazAbilitati || []
         });
     }
     return res.status(401).json({ success: false, message: 'Codice o PIN non riconosciuto.' });
@@ -545,6 +546,7 @@ app.post('/api/operatori/gestione', (req, res) => {
             ruolo: operatore.ruolo || 'operatore',
             codice: operatore.codice.trim(),
             appAbilitate: operatore.appAbilitate || (operatore.appId ? [operatore.appId] : []),
+            pazAbilitati: operatore.pazAbilitati || [],
             attivo: true
         };
         ops.push(newOp);
@@ -560,7 +562,8 @@ app.post('/api/operatori/gestione', (req, res) => {
                     ...o,
                     nome: operatore.nome !== undefined ? operatore.nome.trim() : o.nome,
                     codice: operatore.codice !== undefined ? operatore.codice.trim() : o.codice,
-                    appAbilitate: operatore.appAbilitate || (operatore.appId ? [operatore.appId] : o.appAbilitate)
+                    appAbilitate: operatore.appAbilitate || (operatore.appId ? [operatore.appId] : o.appAbilitate),
+                    pazAbilitati: operatore.pazAbilitati !== undefined ? operatore.pazAbilitati : (o.pazAbilitati || [])
                 };
             }
             return o;

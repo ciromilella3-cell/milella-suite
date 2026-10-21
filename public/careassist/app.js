@@ -919,13 +919,34 @@ function sincronizzaDbDalServer(callback) {
   }
 }
 
-function getActivePaziente() {
-  let p = AppData.pazienti.find(item => item.id === AppData.activePazienteId);
-  if (!p && AppData.pazienti.length > 0) {
-    AppData.activePazienteId = AppData.pazienti[0].id;
-    p = AppData.pazienti[0];
+function getPazientiAccessibili() {
+  const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
+  if (role === 'admin') return AppData.pazienti;
+
+  let pazAbilitati = [];
+  try {
+    pazAbilitati = JSON.parse(localStorage.getItem('milella_paz_abilitati') || '[]');
+  } catch(e) {
+    pazAbilitati = [];
   }
-  return p;
+
+  // Se è specificato 'all' o la lista è vuota (operatore non ristretto), vede tutti i pazienti
+  if (!pazAbilitati || pazAbilitati.length === 0 || pazAbilitati.includes('all')) {
+    return AppData.pazienti;
+  }
+
+  const filtrati = AppData.pazienti.filter(p => pazAbilitati.includes(p.id));
+  return filtrati.length > 0 ? filtrati : AppData.pazienti;
+}
+
+function getActivePaziente() {
+  const listaVisibile = getPazientiAccessibili();
+  let p = listaVisibile.find(item => item.id === AppData.activePazienteId);
+  if (!p && listaVisibile.length > 0) {
+    AppData.activePazienteId = listaVisibile[0].id;
+    p = listaVisibile[0];
+  }
+  return p || AppData.pazienti[0];
 }
 
 // Selettore Pazienti
@@ -1091,11 +1112,35 @@ function renderPazientiSelector() {
   const select = document.getElementById('select-paziente-attivo');
   if (!select) return;
 
-  select.innerHTML = AppData.pazienti.map(p => `
+  const lista = getPazientiAccessibili();
+  const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
+  
+  // Se l'operatore non è admin, nascondi il tasto "Nuovo Assistito"
+  const btnNuovo = document.querySelector('.btn-new-patient');
+  if (btnNuovo) {
+    btnNuovo.style.display = (role === 'admin') ? 'inline-flex' : 'none';
+  }
+
+  // Se l'assistito attualmente selezionato non è più nella lista accessibile, cambia subito
+  if (!lista.some(p => p.id === AppData.activePazienteId) && lista.length > 0) {
+    AppData.activePazienteId = lista[0].id;
+  }
+
+  select.innerHTML = lista.map(p => `
     <option value="${p.id}" ${p.id === AppData.activePazienteId ? 'selected' : ''}>
       👤 ${(p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '')} (${calcolaAnniDaData(p.dataNascita)} anni)
     </option>
   `).join('');
+
+  if (lista.length === 1) {
+    select.style.pointerEvents = 'none';
+    select.style.opacity = '0.95';
+    select.title = 'Paziente assegnato dal Supervisore';
+  } else {
+    select.style.pointerEvents = 'auto';
+    select.style.opacity = '1';
+    select.title = 'Seleziona assistito';
+  }
 
   const activeP = getActivePaziente();
   const badgeInfo = document.getElementById('paziente-badge-info');

@@ -719,7 +719,7 @@
                                 <span>🥗 MedNutri Pro</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
-                                <input type="checkbox" class="chk-new-app" value="app_careassist" style="width:17px; height:17px; accent-color:#d4af37;">
+                                <input type="checkbox" class="chk-new-app" value="app_careassist" onchange="aggiornaVisibilitaPazientiNewOp()" style="width:17px; height:17px; accent-color:#d4af37;">
                                 <span>🩺 CareAssist Pro</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
@@ -729,6 +729,29 @@
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-new-app" value="app_gioco" style="width:17px; height:17px; accent-color:#d4af37;">
                                 <span>🎰 Progetto Gioco</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Box Selezione Pazienti CareAssist (Aggiunta Nuovo) -->
+                    <div id="boxPazientiNewOp" style="display:none; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.3); border-radius:12px; padding:10px 12px; margin-top:4px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <label style="font-size:11.5px; color:#7dd3fc; font-weight:800;">🩺 Pazienti CareAssist Assegnati:</label>
+                            <button type="button" onclick="toggleTuttiPazNewOp()" id="btnTuttiPazNewOp" style="background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.5); color:#fff; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px; cursor:pointer;">
+                                🌐 Tutti i Pazienti
+                            </button>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:5px;">
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-new-paz" value="paz_aldo" style="width:16px; height:16px; accent-color:#38bdf8;">
+                                <span>👴 Aldo Zamparino (91 anni)</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-new-paz" value="paz_angela" style="width:16px; height:16px; accent-color:#38bdf8;">
+                                <span>👵 Angela Mazzicone</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-new-paz" value="paz_rosa" style="width:16px; height:16px; accent-color:#38bdf8;">
+                                <span>👵 Rosa Annunziata Cavalcante</span>
                             </label>
                         </div>
                     </div>
@@ -786,7 +809,7 @@
                                 <span>🥗 MedNutri Pro</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
-                                <input type="checkbox" class="chk-edit-app" value="app_careassist" style="width:17px; height:17px; accent-color:#38bdf8;">
+                                <input type="checkbox" class="chk-edit-app" value="app_careassist" onchange="aggiornaVisibilitaPazientiEditOp()" style="width:17px; height:17px; accent-color:#38bdf8;">
                                 <span>🩺 CareAssist Pro</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
@@ -796,6 +819,29 @@
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-edit-app" value="app_gioco" style="width:17px; height:17px; accent-color:#38bdf8;">
                                 <span>🎰 Progetto Gioco</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Box Selezione Pazienti CareAssist (Modifica Esistente) -->
+                    <div id="boxPazientiEditOp" style="display:none; background:rgba(56,189,248,0.1); border:1.5px solid rgba(56,189,248,0.4); border-radius:12px; padding:10px 12px; margin-top:2px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <label style="font-size:11.5px; color:#7dd3fc; font-weight:800;">🩺 Pazienti CareAssist Assegnati:</label>
+                            <button type="button" onclick="toggleTuttiPazEditOp()" id="btnTuttiPazEditOp" style="background:rgba(56,189,248,0.25); border:1px solid rgba(56,189,248,0.5); color:#fff; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px; cursor:pointer;">
+                                🌐 Tutti i Pazienti
+                            </button>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:5px;">
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-edit-paz" value="paz_aldo" style="width:16px; height:16px; accent-color:#38bdf8;">
+                                <span>👴 Aldo Zamparino (91 anni)</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-edit-paz" value="paz_angela" style="width:16px; height:16px; accent-color:#38bdf8;">
+                                <span>👵 Angela Mazzicone</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-edit-paz" value="paz_rosa" style="width:16px; height:16px; accent-color:#38bdf8;">
+                                <span>👵 Rosa Annunziata Cavalcante</span>
                             </label>
                         </div>
                     </div>
@@ -1469,18 +1515,22 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_admin_pin', 'SOS999');
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                    localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'admin');
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
+                    localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_user_pin', pin);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
+                    localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'operatore');
                     localStorage.setItem('milella_last_authenticated_pin', pin);
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
+                    localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
                     applicaRuolo('operatore', data.nome, data.appAbilitate || []);
                 }
                 aggiornaVisibilitaBiometriaGate();
@@ -1496,9 +1546,11 @@ document.addEventListener('fullscreenchange', () => {
                 localStorage.setItem('milella_admin_pin', 'SOS999');
                 localStorage.setItem('milella_user_nome', 'Ciro Milella (Admin)');
                 localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
                 localStorage.setItem('milella_last_authenticated_user', 'Ciro Milella (Admin)');
                 localStorage.setItem('milella_last_authenticated_role', 'admin');
                 localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
+                localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                 applicaRuolo('admin', 'Ciro Milella (Admin)', ['all']);
                 aggiornaVisibilitaBiometriaGate();
                 chiudiLoginModal();
@@ -1546,18 +1598,22 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_admin_pin', 'SOS999');
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                    localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'admin');
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
+                    localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_user_pin', pin);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
+                    localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'operatore');
                     localStorage.setItem('milella_last_authenticated_pin', pin);
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
+                    localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
                     applicaRuolo('operatore', data.nome, data.appAbilitate || []);
                 }
                 document.getElementById('gateBloccoIngresso').style.display = 'none';
@@ -1572,9 +1628,11 @@ document.addEventListener('fullscreenchange', () => {
                 localStorage.setItem('milella_admin_pin', 'SOS999');
                 localStorage.setItem('milella_user_nome', 'Ciro Milella (Admin)');
                 localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
                 localStorage.setItem('milella_last_authenticated_user', 'Ciro Milella (Admin)');
                 localStorage.setItem('milella_last_authenticated_role', 'admin');
                 localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
+                localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                 applicaRuolo('admin', 'Ciro Milella (Admin)', ['all']);
                 document.getElementById('gateBloccoIngresso').style.display = 'none';
             } else {
@@ -1699,6 +1757,8 @@ document.addEventListener('fullscreenchange', () => {
             }
             localStorage.setItem('milella_user_nome', savedLastUser);
             localStorage.setItem('milella_app_abilitate', JSON.stringify(savedLastApps));
+            const savedLastPaz = JSON.parse(localStorage.getItem('milella_last_authenticated_paz') || '[]');
+            localStorage.setItem('milella_paz_abilitati', JSON.stringify(savedLastPaz));
 
             const gate = document.getElementById('gateBloccoIngresso');
             if (gate) gate.style.display = 'none';
@@ -1717,6 +1777,7 @@ document.addEventListener('fullscreenchange', () => {
     function esciAdmin() {
         localStorage.removeItem('milella_admin_pin');
         localStorage.removeItem('milella_app_abilitate');
+        localStorage.removeItem('milella_paz_abilitati');
         localStorage.removeItem('milella_user_nome');
         localStorage.removeItem('milella_user_pin');
         localStorage.removeItem('milella_role');
@@ -1790,7 +1851,53 @@ document.addEventListener('fullscreenchange', () => {
         return Array.from(chks).map(c => c.value);
     }
 
-    let listaOperatoriCache = [];
+    function toggleTuttiPazNewOp() {
+        const chks = document.querySelectorAll('.chk-new-paz');
+        const tutti = Array.from(chks).every(c => c.checked);
+        chks.forEach(c => c.checked = !tutti);
+        const btn = document.getElementById('btnTuttiPazNewOp');
+        if (btn) btn.textContent = tutti ? '🌐 Tutti i Pazienti' : '✕ Deseleziona Tutti';
+    }
+
+    function toggleTuttiPazEditOp() {
+        const chks = document.querySelectorAll('.chk-edit-paz');
+        const tutti = Array.from(chks).every(c => c.checked);
+        chks.forEach(c => c.checked = !tutti);
+        const btn = document.getElementById('btnTuttiPazEditOp');
+        if (btn) btn.textContent = tutti ? '🌐 Tutti i Pazienti' : '✕ Deseleziona Tutti';
+    }
+
+    function aggiornaVisibilitaPazientiNewOp() {
+        const chkCare = document.querySelector('.chk-new-app[value="app_careassist"]');
+        const box = document.getElementById('boxPazientiNewOp');
+        if (box) {
+            box.style.display = (chkCare && chkCare.checked) ? 'block' : 'none';
+        }
+    }
+
+    function aggiornaVisibilitaPazientiEditOp() {
+        const chkCare = document.querySelector('.chk-edit-app[value="app_careassist"]');
+        const box = document.getElementById('boxPazientiEditOp');
+        if (box) {
+            box.style.display = (chkCare && chkCare.checked) ? 'block' : 'none';
+        }
+    }
+
+    function getSelectedPazNewOp() {
+        const chks = document.querySelectorAll('.chk-new-paz:checked');
+        return Array.from(chks).map(c => c.value);
+    }
+
+    function getSelectedPazEditOp() {
+        const chks = document.querySelectorAll('.chk-edit-paz:checked');
+        return Array.from(chks).map(c => c.value);
+    }
+
+    const NOMI_PAZIENTI_MAP = {
+        'paz_aldo': 'Aldo Zamparino',
+        'paz_angela': 'Angela Mazzicone',
+        'paz_rosa': 'Rosa Annunziata Cavalcante'
+    };
 
     function renderOps(ops) {
         listaOperatoriCache = ops || [];
@@ -1827,9 +1934,28 @@ document.addEventListener('fullscreenchange', () => {
             }
             const appLabelText = appNomiArray.join(', ');
 
+            // Calcolo badge pazienti CareAssist se assegnata l'app
+            let pazBadgeHtml = '';
+            let pazMsgStr = '';
+            const haCareassist = !op.appAbilitate || op.appAbilitate.includes('all') || op.appAbilitate.includes('app_careassist');
+            if (haCareassist) {
+                if (!op.pazAbilitati || op.pazAbilitati.length === 0) {
+                    pazBadgeHtml = `<span style="color:#a7f3d0; background:rgba(16,185,129,0.15); padding:2px 7px; border-radius:5px; font-size:11px; font-weight:700;">🌐 Tutti gli Assistiti</span>`;
+                    pazMsgStr = 'Tutti gli assistiti';
+                } else {
+                    const pazNomiList = op.pazAbilitati.map(pid => NOMI_PAZIENTI_MAP[pid] || pid);
+                    pazBadgeHtml = pazNomiList.map(n => `<span style="color:#a7f3d0; background:rgba(16,185,129,0.15); padding:2px 7px; border-radius:5px; font-size:11px; font-weight:700; margin-right:3px;">👤 ${n}</span>`).join('');
+                    pazMsgStr = pazNomiList.join(', ');
+                }
+            }
+
             // Messaggio per invio rapido via WhatsApp o Mail
             const portaleUrl = window.location.origin + '/launcher.html';
-            const msgTesto = `Ciao ${op.nome},\necco il tuo accesso alla Suite Aziendale C. Milella.\n\n🌐 Portale: ${portaleUrl}\n🔑 Tuo PIN Personale: ${op.codice}\n📱 Tue App Assegnate: ${appLabelText}\n\nApri il link e inserisci il tuo codice personale.\n\n⚠️ NOTA: Codice strettamente personale. Per qualsiasi informazione contattare l'amministratore Ciro Milella.`;
+            let msgTesto = `Ciao ${op.nome},\necco il tuo accesso alla Suite Aziendale C. Milella.\n\n🌐 Portale: ${portaleUrl}\n🔑 Tuo PIN Personale: ${op.codice}\n📱 Tue App Assegnate: ${appLabelText}`;
+            if (haCareassist && pazMsgStr) {
+                msgTesto += `\n🩺 Pazienti Assegnati: ${pazMsgStr}`;
+            }
+            msgTesto += `\n\nApri il link e inserisci il tuo codice personale.\n\n⚠️ NOTA: Codice strettamente personale. Per qualsiasi informazione contattare l'amministratore Ciro Milella.`;
             const waLink = `https://wa.me/?text=${encodeURIComponent(msgTesto)}`;
             const mailLink = `mailto:?subject=${encodeURIComponent('Credenziali Accesso Suite C. Milella')}&body=${encodeURIComponent(msgTesto)}`;
 
@@ -1847,13 +1973,18 @@ document.addEventListener('fullscreenchange', () => {
                             <div style="margin-top:2px;">
                                 <span style="color:#94a3b8; font-size:11px;">App assegnate:</span> ${appBadgeHtml}
                             </div>
+                            ${pazBadgeHtml ? `
+                            <div style="margin-top:2px;">
+                                <span style="color:#94a3b8; font-size:11px;">Pazienti abilitati:</span> ${pazBadgeHtml}
+                            </div>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
                 ${op.ruolo !== 'admin' ? `
                     <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
                         <button onclick="avviaModificaOp('${op.id}')" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; padding:6px 12px; border-radius:8px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
-                            ✏️ Modifica / Assegna Più App
+                            ✏️ Modifica App & Pazienti
                         </button>
                         <a href="${waLink}" target="_blank" title="Invia credenziali WhatsApp" style="text-decoration:none; background:rgba(37,211,102,0.2); border:1px solid #25d366; color:#86efac; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
                             💬 WhatsApp
@@ -1893,6 +2024,18 @@ document.addEventListener('fullscreenchange', () => {
         const btn = document.getElementById('btnTutteEditOp');
         if (btn) btn.textContent = isAll ? '✕ Deseleziona Tutte' : '🌐 Seleziona Tutte';
 
+        // Imposta i checkbox per i pazienti assegnati
+        const pazAbilitati = op.pazAbilitati || [];
+        const isAllPaz = pazAbilitati.length === 0;
+        const chksPaz = document.querySelectorAll('.chk-edit-paz');
+        chksPaz.forEach(cp => {
+            cp.checked = isAllPaz ? true : pazAbilitati.includes(cp.value);
+        });
+        const btnPaz = document.getElementById('btnTuttiPazEditOp');
+        if (btnPaz) btnPaz.textContent = isAllPaz ? '✕ Deseleziona Tutti' : '🌐 Tutti i Pazienti';
+
+        aggiornaVisibilitaPazientiEditOp();
+
         if (box) {
             box.style.display = 'block';
             box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1931,9 +2074,16 @@ document.addEventListener('fullscreenchange', () => {
             return;
         }
 
-        // Se sono selezionate tutte le 8 app disponibili, salviamo 'all' oppure l'elenco completo
         const tutteLeApp = document.querySelectorAll('.chk-edit-app').length;
         const appSalvate = (selectedApps.length === tutteLeApp) ? ['all'] : selectedApps;
+
+        // Pazienti CareAssist selezionati
+        let pazSalvati = [];
+        if (appSalvate.includes('all') || appSalvate.includes('app_careassist')) {
+            const selPaz = getSelectedPazEditOp();
+            const totPaz = document.querySelectorAll('.chk-edit-paz').length;
+            pazSalvati = (selPaz.length === totPaz || selPaz.length === 0) ? [] : selPaz;
+        }
 
         try {
             const res = await fetch('/api/operatori/gestione', {
@@ -1942,14 +2092,14 @@ document.addEventListener('fullscreenchange', () => {
                 body: JSON.stringify({
                     pinAdmin: currentAdminPin || 'SOS999',
                     azione: 'update',
-                    operatore: { id, nome, codice, appAbilitate: appSalvate }
+                    operatore: { id, nome, codice, appAbilitate: appSalvate, pazAbilitati: pazSalvati }
                 })
             });
             const data = await res.json();
             if (data.success) {
                 annullaModificaOp();
                 renderOps(data.operatori);
-                mostraToastOp(`✅ Operatore ${nome} aggiornato con ${selectedApps.length} app!`, false);
+                mostraToastOp(`✅ Operatore ${nome} aggiornato con successo!`, false);
             } else {
                 mostraToastOp('❌ Errore: ' + (data.message || 'Impossibile aggiornare'), true);
             }
@@ -1976,6 +2126,14 @@ document.addEventListener('fullscreenchange', () => {
         const tutteLeApp = document.querySelectorAll('.chk-new-app').length;
         const appSalvate = (selectedApps.length === tutteLeApp) ? ['all'] : selectedApps;
 
+        // Pazienti CareAssist selezionati
+        let pazSalvati = [];
+        if (appSalvate.includes('all') || appSalvate.includes('app_careassist')) {
+            const selPaz = getSelectedPazNewOp();
+            const totPaz = document.querySelectorAll('.chk-new-paz').length;
+            pazSalvati = (selPaz.length === totPaz || selPaz.length === 0) ? [] : selPaz;
+        }
+
         try {
             const res = await fetch('/api/operatori/gestione', {
                 method: 'POST',
@@ -1983,7 +2141,7 @@ document.addEventListener('fullscreenchange', () => {
                 body: JSON.stringify({
                     pinAdmin: currentAdminPin || 'SOS999',
                     azione: 'add',
-                    operatore: { nome, codice, ruolo: 'operatore', appAbilitate: appSalvate }
+                    operatore: { nome, codice, ruolo: 'operatore', appAbilitate: appSalvate, pazAbilitati: pazSalvati }
                 })
             });
             const data = await res.json();
@@ -1991,6 +2149,9 @@ document.addEventListener('fullscreenchange', () => {
                 document.getElementById('newOpNome').value = '';
                 document.getElementById('newOpCodice').value = '';
                 document.querySelectorAll('.chk-new-app').forEach(c => c.checked = false);
+                document.querySelectorAll('.chk-new-paz').forEach(c => c.checked = false);
+                const boxPaz = document.getElementById('boxPazientiNewOp');
+                if (boxPaz) boxPaz.style.display = 'none';
                 renderOps(data.operatori);
                 mostraToastOp(`✅ Operatore ${nome} aggiunto con ${selectedApps.length} app! Condividi il PIN via WhatsApp o Email.`, false);
             }
