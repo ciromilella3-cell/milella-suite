@@ -1469,13 +1469,21 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_admin_pin', 'SOS999');
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                    localStorage.setItem('milella_last_authenticated_user', data.nome);
+                    localStorage.setItem('milella_last_authenticated_role', 'admin');
+                    localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_user_pin', pin);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
+                    localStorage.setItem('milella_last_authenticated_user', data.nome);
+                    localStorage.setItem('milella_last_authenticated_role', 'operatore');
+                    localStorage.setItem('milella_last_authenticated_pin', pin);
+                    localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                     applicaRuolo('operatore', data.nome, data.appAbilitate || []);
                 }
+                aggiornaVisibilitaBiometriaGate();
                 chiudiLoginModal();
             } else {
                 err.textContent = data.message || 'PIN errato';
@@ -1488,7 +1496,11 @@ document.addEventListener('fullscreenchange', () => {
                 localStorage.setItem('milella_admin_pin', 'SOS999');
                 localStorage.setItem('milella_user_nome', 'Ciro Milella (Admin)');
                 localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                localStorage.setItem('milella_last_authenticated_user', 'Ciro Milella (Admin)');
+                localStorage.setItem('milella_last_authenticated_role', 'admin');
+                localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
                 applicaRuolo('admin', 'Ciro Milella (Admin)', ['all']);
+                aggiornaVisibilitaBiometriaGate();
                 chiudiLoginModal();
             } else {
                 err.textContent = 'Errore di connessione o PIN non valido';
