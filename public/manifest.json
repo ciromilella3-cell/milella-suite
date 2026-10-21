@@ -1,0 +1,19 @@
+{
+  "name": "Suite C. Milella",
+  "short_name": "Milella Suite",
+  "description": "Piattaforma Aziendale e Personale C. Milella",
+  "start_url": "/launcher.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#040914",
+  "theme_color": "#040914",
+  "icons": [
+    {
+      "src": "/cm_logo_gold.ico",
+      "sizes": "256x256",
+      "type": "image/x-icon",
+      "purpose": "any maskable"
+    }
+  ]
+}
