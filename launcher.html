@@ -1526,6 +1526,11 @@ document.addEventListener('fullscreenchange', () => {
         localStorage.removeItem('milella_user_nome');
         localStorage.removeItem('milella_user_pin');
         localStorage.removeItem('milella_role');
+        localStorage.removeItem('milella_last_authenticated_user');
+        localStorage.removeItem('milella_last_authenticated_role');
+        localStorage.removeItem('milella_last_authenticated_pin');
+        localStorage.removeItem('milella_last_authenticated_apps');
+        localStorage.removeItem('milella_bio_cred_id');
         sessionStorage.clear();
         currentAdminPin = '';
         currentAppAbilitate = [];
