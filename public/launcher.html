@@ -1495,6 +1495,30 @@ document.addEventListener('fullscreenchange', () => {
                 throw new Error("Verifica biometrica non completata.");
             }
 
+            // Ricontrolla con il server se l'utente esiste ancora e quali app gli sono assegnate
+            if (savedLastRole !== 'admin') {
+                const savedPin = localStorage.getItem('milella_last_authenticated_pin') || '';
+                try {
+                    const chkRes = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ codice: savedPin })
+                    });
+                    const chkData = await chkRes.json();
+                    if (!chkData.success) {
+                        // L'operatore è stato rimosso o il PIN è cambiato sul server!
+                        localStorage.removeItem('milella_last_authenticated_user');
+                        localStorage.removeItem('milella_last_authenticated_role');
+                        localStorage.removeItem('milella_last_authenticated_pin');
+                        localStorage.removeItem('milella_last_authenticated_apps');
+                        localStorage.removeItem('milella_bio_cred_id');
+                        aggiornaVisibilitaBiometriaGate();
+                        alert('⚠️ Questo account non è più attivo o è stato rimosso dall\'amministratore. Inserisci il tuo nuovo PIN.');
+                        return;
+                    }
+                } catch(e) {}
+            }
+
             // Accesso consentito solo dopo verifica dell'impronta
             if (savedLastRole === 'admin') {
                 currentAdminPin = 'SOS999';
