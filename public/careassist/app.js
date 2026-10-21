@@ -3345,7 +3345,7 @@ function suonaChimeInsistenteElegante() {
   }
 }
 
-// Funzione globale che analizza TUTTI i pazienti per rilevare chi ha terapie in ritardo
+// Funzione globale che analizza i pazienti accessibili per rilevare chi ha terapie in ritardo
 function controllaTerapieGlobaliTuttiPazienti() {
   if (!AppData || !AppData.pazienti) return;
 
@@ -3353,8 +3353,9 @@ function controllaTerapieGlobaliTuttiPazienti() {
   if (adessoMs < allarmeTerapieSnoozeFinoA) return; // in pausa dopo chiusura
 
   const pazientiConRitardi = [];
+  const listaPazienti = typeof getPazientiAccessibili === 'function' ? getPazientiAccessibili() : AppData.pazienti;
 
-  AppData.pazienti.forEach(p => {
+  listaPazienti.forEach(p => {
     const terapieInRitardo = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo);
     if (terapieInRitardo.length > 0) {
       pazientiConRitardi.push({
