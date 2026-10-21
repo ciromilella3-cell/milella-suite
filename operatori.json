@@ -19,5 +19,15 @@
     "ruolo": "operatore",
     "codice": "2222",
     "attivo": true
+  },
+  {
+    "id": "op_chiara",
+    "nome": "Chiara",
+    "ruolo": "operatore",
+    "codice": "prera",
+    "appAbilitate": [
+      "app_careassist"
+    ],
+    "attivo": true
   }
 ]
