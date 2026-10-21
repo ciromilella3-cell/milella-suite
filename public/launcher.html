@@ -1125,29 +1125,58 @@ document.addEventListener('fullscreenchange', () => {
 </script>
 <script>
     // GESTIONE AUTOMATICA DINAMICA QR CODE
+    function renderQrFallbackImg(container, url) {
+        var enc = encodeURIComponent(url);
+        container.innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=190x190&data=' + enc + '" alt="QR Code" style="width:190px; height:190px; display:block; border-radius:10px;" onerror="this.onerror=null; this.src=\'https://chart.googleapis.com/chart?chs=190x190&cht=qr&chl=' + enc + '\';">';
+    }
+
     function generaQrCodeDinamico() {
         // Se siamo su Render o online, usa l'URL pubblico esatto, altrimenti la rete locale
         var targetUrl = window.location.origin + '/launcher.html';
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            targetUrl = 'http://192.168.1.5:3000/launcher.html';
+            targetUrl = 'https://milella-suite.onrender.com/launcher.html';
         }
         
         var urlElem = document.getElementById('qrTargetUrlText');
         if (urlElem) urlElem.textContent = targetUrl;
 
         var container = document.getElementById('qrcode-container');
-        if (container) {
-            container.innerHTML = '';
-            if (typeof QRCode !== 'undefined') {
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (typeof QRCode !== 'undefined') {
+            try {
                 _qrcodeInstance = new QRCode(container, {
                     text: targetUrl,
                     width: 190,
                     height: 190,
                     colorDark : "#070d18",
                     colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
+                    correctLevel : QRCode.CorrectLevel.M
                 });
+            } catch (e) {
+                console.warn('QRCode JS error, uso fallback immagine:', e);
+                renderQrFallbackImg(container, targetUrl);
             }
+        } else {
+            // Se la libreria locale non è caricata o bloccata, carica dinamicamente da cdnjs o usa fallback immagine immediato
+            renderQrFallbackImg(container, targetUrl);
+            var s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+            s.onload = function() {
+                if (typeof QRCode !== 'undefined' && container) {
+                    container.innerHTML = '';
+                    new QRCode(container, {
+                        text: targetUrl,
+                        width: 190,
+                        height: 190,
+                        colorDark : "#070d18",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.M
+                    });
+                }
+            };
+            document.head.appendChild(s);
         }
     }
 
