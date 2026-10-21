@@ -114,6 +114,11 @@ async function startServer() {
 app.use(cors());
 app.use(express.json());
 
+// Endpoint leggero di Healthcheck e Keep-Alive H24 (risposta immediata)
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'active', time: new Date().toISOString(), suite: 'C. Milella' });
+});
+
 // ==============================================================================
 // SISTEMA DI CONTROLLO LICENZA & SCADENZA - AUTORE: CIRO MILELLA
 // ==============================================================================
@@ -1549,6 +1554,23 @@ app.listen(PORT, '0.0.0.0', () => {
     // Esegui backup all'avvio (dopo 5 secondi) e poi ogni 12 ore
     setTimeout(runAutoBackup, 5000);
     setInterval(runAutoBackup, 12 * 60 * 60 * 1000);
+
+    // Sistema Anti-Sospensione H24 (Keep-Alive per Render Cloud)
+    // Invia un auto-ping leggero ogni 10 minuti per evitare che il server vada in standby
+    const KEEP_ALIVE_URL = process.env.RENDER_EXTERNAL_URL || 'https://milella-suite.onrender.com';
+    function keepAlivePing() {
+        try {
+            const https = require('https');
+            const pingUrl = KEEP_ALIVE_URL + '/api/health';
+            https.get(pingUrl, (res) => {
+                // Keep-alive riuscito
+            }).on('error', () => {
+                // Ignora errori di rete transitori
+            });
+        } catch(e) {}
+    }
+    // Avvia auto-ping ogni 9 minuti (540000 ms)
+    setInterval(keepAlivePing, 9 * 60 * 1000);
 }).on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
         console.log(`Port ${PORT} in use, Inventario already active.`);
