@@ -658,39 +658,89 @@
     </div>
 
     <!-- MODALE GESTIONE OPERATORI ABILITATI (ESCLUSIVA CIRO MILELLA) -->
-    <div id="modalGestioneOperatori" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10001; align-items:center; justify-content:center; padding:1rem;">
-        <div style="background:rgba(15,23,42,0.98); border:1px solid rgba(212,175,55,0.4); border-radius:24px; padding:2rem; max-width:550px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 15px 40px rgba(0,0,0,0.7);">
+    <div id="modalGestioneOperatori" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10001; align-items:center; justify-content:center; padding:0.8rem; box-sizing:border-box;">
+        <div style="background:rgba(15,23,42,0.98); border:1px solid rgba(212,175,55,0.4); border-radius:24px; padding:1.5rem 1.2rem; max-width:580px; width:100%; max-height:92vh; overflow-y:auto; box-shadow:0 15px 45px rgba(0,0,0,0.8); box-sizing:border-box;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; border-bottom:1px solid rgba(212,175,55,0.2); padding-bottom:0.8rem;">
-                <h2 style="font-size:1.3rem; color:#f3e5ab; display:flex; align-items:center; gap:8px;">👥 Registro Operatori Abilitati</h2>
-                <button onclick="chiudiGestioneOperatoriModal()" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">✕</button>
+                <h2 style="font-size:1.25rem; color:#f3e5ab; display:flex; align-items:center; gap:8px; margin:0;">👥 Registro Operatori Abilitati</h2>
+                <button onclick="chiudiGestioneOperatoriModal()" style="background:rgba(255,255,255,0.1); border:none; color:#cbd5e1; width:34px; height:34px; border-radius:50%; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
             </div>
 
-            <!-- Form Nuovo Operatore con Assegnazione App Specifica -->
-            <div style="background:rgba(0,0,0,0.3); padding:1rem; border-radius:16px; border:1px solid rgba(255,255,255,0.08); margin-bottom:1.5rem;">
-                <h3 style="font-size:0.95rem; color:#fff; margin-bottom:0.8rem; font-weight:600;">➕ Aggiungi Nuovo Collaboratore / Collega</h3>
-                <div style="display:flex; flex-direction:column; gap:8px;">
-                    <input type="text" id="newOpNome" placeholder="Nome Collega (es. Marco Rossi)" style="padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:14px; outline:none;">
-                    <div style="display:flex; gap:8px;">
-                        <input type="text" id="newOpCodice" placeholder="Codice / PIN Personale (es. 4455)" style="flex:1; padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:14px; outline:none;">
-                        <select id="newOpApp" style="background:#0f172a; color:#fff; border:1px solid rgba(212,175,55,0.3); border-radius:10px; padding:0 12px; font-size:13px; outline:none; max-width:200px;">
+            <!-- Form Aggiungi Nuovo Collaboratore -->
+            <div style="background:rgba(0,0,0,0.35); padding:1rem; border-radius:16px; border:1px solid rgba(212,175,55,0.25); margin-bottom:1.4rem;">
+                <h3 style="font-size:0.92rem; color:#f3e5ab; margin-top:0; margin-bottom:0.8rem; font-weight:700;">➕ Aggiungi Nuovo Collaboratore / Collega</h3>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div>
+                        <label style="display:block; font-size:11.5px; color:#94a3b8; font-weight:600; margin-bottom:4px;">Nome Operatore / Collaboratore:</label>
+                        <input type="text" id="newOpNome" placeholder="es. Marco Rossi o Chiara" style="width:100%; box-sizing:border-box; padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:14px; outline:none;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11.5px; color:#94a3b8; font-weight:600; margin-bottom:4px;">Codice PIN Personale:</label>
+                        <input type="text" id="newOpCodice" placeholder="es. 4455 o prera" style="width:100%; box-sizing:border-box; padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:14px; outline:none;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11.5px; color:#94a3b8; font-weight:600; margin-bottom:4px;">📱 App Assegnata da Mostrare all'Accesso:</label>
+                        <select id="newOpApp" style="width:100%; box-sizing:border-box; background:#0b1329; color:#fff; border:1px solid rgba(212,175,55,0.4); border-radius:10px; padding:10px 12px; font-size:13.5px; font-weight:600; outline:none; cursor:pointer;">
                             <option value="all">🌐 Tutte le App Comuni</option>
-                            <option value="app_veicoli">🚗 Flotta Veicoli</option>
+                            <option value="app_veicoli">🚗 Flotta Veicoli & Spese</option>
                             <option value="app_inventario">🛠️ Inventario Attrezzi</option>
                             <option value="app_ricettario">👨‍🍳 Il Ricettario</option>
+                            <option value="app_careassist">🩺 CareAssist Pro</option>
                             <option value="app_mednutri">🥗 MedNutri Pro</option>
                             <option value="app_salute">❤️ Progetto Salute</option>
-                            <option value="app_careassist">🩺 CareAssist Pro</option>
                             <option value="app_gioco">🎰 Progetto Gioco</option>
                             <option value="app_logistica">📦 Logistica Consegne</option>
                         </select>
-                        <button onclick="salvaNuovoOperatore()" style="background:linear-gradient(135deg, #10b981, #059669); border:none; color:#fff; font-weight:700; padding:10px 18px; border-radius:10px; cursor:pointer; font-size:13px;">AGGIUNGI</button>
+                    </div>
+                    <button onclick="salvaNuovoOperatore()" style="width:100%; margin-top:4px; background:linear-gradient(135deg, #10b981, #059669); border:none; color:#fff; font-weight:800; padding:11px; border-radius:10px; cursor:pointer; font-size:13.5px; letter-spacing:0.5px; box-shadow:0 4px 14px rgba(16,185,129,0.35);">
+                        SALVA NUOVO OPERATORE 🚀
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modale Modifica Operatore Esistente (a scomparsa inline) -->
+            <div id="boxModificaOpInline" style="display:none; background:rgba(2,132,199,0.12); padding:1rem; border-radius:16px; border:1px solid rgba(56,189,248,0.4); margin-bottom:1.4rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <h3 style="font-size:0.92rem; color:#38bdf8; margin:0; font-weight:700;">✏️ Modifica Operatore: <span id="lblEditOpNome" style="color:#fff;"></span></h3>
+                    <button onclick="annullaModificaOp()" style="background:none; border:none; color:#94a3b8; font-size:1rem; cursor:pointer;">✕ Annulla</button>
+                </div>
+                <input type="hidden" id="editOpId">
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div>
+                        <label style="display:block; font-size:11.5px; color:#94a3b8; font-weight:600; margin-bottom:4px;">Nome Operatore:</label>
+                        <input type="text" id="editOpNome" style="width:100%; box-sizing:border-box; padding:9px 12px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(56,189,248,0.4); color:#fff; font-size:13.5px; outline:none;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11.5px; color:#94a3b8; font-weight:600; margin-bottom:4px;">Codice PIN Personale:</label>
+                        <input type="text" id="editOpCodice" style="width:100%; box-sizing:border-box; padding:9px 12px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(56,189,248,0.4); color:#fff; font-size:13.5px; outline:none;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11.5px; color:#94a3b8; font-weight:600; margin-bottom:4px;">📱 App Assegnata:</label>
+                        <select id="editOpApp" style="width:100%; box-sizing:border-box; background:#0b1329; color:#fff; border:1px solid rgba(56,189,248,0.5); border-radius:10px; padding:9px 12px; font-size:13.5px; font-weight:600; outline:none; cursor:pointer;">
+                            <option value="all">🌐 Tutte le App Comuni</option>
+                            <option value="app_veicoli">🚗 Flotta Veicoli & Spese</option>
+                            <option value="app_inventario">🛠️ Inventario Attrezzi</option>
+                            <option value="app_ricettario">👨‍🍳 Il Ricettario</option>
+                            <option value="app_careassist">🩺 CareAssist Pro</option>
+                            <option value="app_mednutri">🥗 MedNutri Pro</option>
+                            <option value="app_salute">❤️ Progetto Salute</option>
+                            <option value="app_gioco">🎰 Progetto Gioco</option>
+                            <option value="app_logistica">📦 Logistica Consegne</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="salvaModificaOperatore()" style="flex:1; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; font-weight:800; padding:10px; border-radius:10px; cursor:pointer; font-size:13px; box-shadow:0 3px 10px rgba(2,132,199,0.35);">
+                            SALVA MODIFICHE ✅
+                        </button>
+                        <button onclick="annullaModificaOp()" style="background:rgba(255,255,255,0.1); border:none; color:#cbd5e1; font-weight:600; padding:10px 14px; border-radius:10px; cursor:pointer; font-size:13px;">
+                            Annulla
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- Lista Operatori Esistenti -->
             <h3 style="font-size:0.95rem; color:#94a3b8; margin-bottom:0.8rem; font-weight:600;">Operatori Attualmente Configurati:</h3>
-            <div id="opsListContainer" style="display:flex; flex-direction:column; gap:8px;">
+            <div id="opsListContainer" style="display:flex; flex-direction:column; gap:10px;">
                 <!-- Caricati dinamicamente via JS -->
             </div>
         </div>
@@ -1598,12 +1648,15 @@ document.addEventListener('fullscreenchange', () => {
         }
     }
 
+    let listaOperatoriCache = [];
+
     function renderOps(ops) {
+        listaOperatoriCache = ops || [];
         const container = document.getElementById('opsListContainer');
         container.innerHTML = '';
         const appNomi = {
-            'all': 'Tutte le App Comuni',
-            'app_veicoli': '🚗 Flotta Veicoli',
+            'all': '🌐 Tutte le App Comuni',
+            'app_veicoli': '🚗 Flotta Veicoli & Spese',
             'app_inventario': '🛠️ Inventario Attrezzi',
             'app_ricettario': '👨‍🍳 Il Ricettario',
             'app_mednutri': '🥗 MedNutri Pro',
@@ -1614,41 +1667,106 @@ document.addEventListener('fullscreenchange', () => {
         };
 
         ops.forEach(op => {
-            const row = document.createElement('div');
-            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:12px; gap:8px; flex-wrap:wrap;';
+            const card = document.createElement('div');
+            card.style.cssText = 'background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.2); padding:12px 14px; border-radius:14px; display:flex; flex-direction:column; gap:8px;';
             const appAssegnata = (op.appAbilitate && op.appAbilitate.length > 0) ? op.appAbilitate[0] : 'all';
-            const appLabel = appNomi[appAssegnata] || 'Tutte le App Comuni';
+            const appLabel = appNomi[appAssegnata] || '🌐 Tutte le App Comuni';
 
             // Messaggio per invio rapido via WhatsApp o Mail
             const portaleUrl = window.location.origin + '/launcher.html';
-            const msgTesto = `Ciao ${op.nome},\necco il tuo accesso alla Suite Aziendale C. Milella.\n\n🌐 Portale: ${portaleUrl}\n🔑 Tuo PIN Personale: ${op.codice}\n📱 Tua App Assegnata: ${appLabel}\n\nApri il link, clicca su "SBLOCCA ADMIN (PIN)" e inserisci il tuo codice personale.\n\n⚠️ NOTA: Questo codice è strettamente personale, conservarlo con cautela. Per qualsiasi comunicazione o necessità contattare l'amministratore del progetto (Ciro Milella).`;
+            const msgTesto = `Ciao ${op.nome},\necco il tuo accesso alla Suite Aziendale C. Milella.\n\n🌐 Portale: ${portaleUrl}\n🔑 Tuo PIN Personale: ${op.codice}\n📱 Tua App Assegnata: ${appLabel}\n\nApri il link e inserisci il tuo codice personale.\n\n⚠️ NOTA: Codice strettamente personale. Per qualsiasi informazione contattare l'amministratore Ciro Milella.`;
             const waLink = `https://wa.me/?text=${encodeURIComponent(msgTesto)}`;
             const mailLink = `mailto:?subject=${encodeURIComponent('Credenziali Accesso Suite C. Milella')}&body=${encodeURIComponent(msgTesto)}`;
 
-            row.innerHTML = `
-                <div style="flex:1; min-width:200px;">
-                    <div style="font-weight:700; color:${op.attivo ? '#fff' : '#64748b'}; font-size:14px; display:flex; align-items:center; gap:6px;">
-                        ${op.nome} ${op.ruolo === 'admin' ? '<span style="color:#f59e0b; font-size:11px;">👑 MASTER</span>' : ''}
-                    </div>
-                    <div style="font-size:12px; color:#94a3b8; font-family:monospace; margin-top:2px;">
-                        PIN: <strong style="color:#f3e5ab; font-size:13px;">${op.codice}</strong> &bull; App: <span style="color:#38bdf8;">${appLabel}</span> &bull; <span style="color:${op.attivo ? '#10b981':'#ef4444'}">${op.attivo ? 'Attivo' : 'Disattivato'}</span>
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-weight:700; color:${op.attivo ? '#fff' : '#64748b'}; font-size:15px; display:flex; align-items:center; gap:6px;">
+                            ${op.ruolo === 'admin' ? '👑' : '👷'} ${op.nome} ${op.ruolo === 'admin' ? '<span style="background:rgba(212,175,55,0.25); color:#f59e0b; font-size:10.5px; padding:2px 6px; border-radius:6px; font-weight:800;">MASTER</span>' : ''}
+                        </div>
+                        <div style="font-size:12px; color:#cbd5e1; margin-top:3px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                            <span>PIN: <strong style="color:#f3e5ab; font-size:13px; font-family:monospace; background:rgba(0,0,0,0.3); padding:1px 6px; border-radius:4px;">${op.codice}</strong></span>
+                            <span>App: <strong style="color:#38bdf8; background:rgba(56,189,248,0.15); padding:1px 8px; border-radius:6px;">${appLabel}</strong></span>
+                            <span style="color:${op.attivo ? '#4ade80':'#ef4444'}; font-weight:600;">● ${op.attivo ? 'Attivo' : 'Disattivato'}</span>
+                        </div>
                     </div>
                 </div>
                 ${op.ruolo !== 'admin' ? `
-                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                        <a href="${waLink}" target="_blank" title="Invia PIN e istruzioni su WhatsApp" style="text-decoration:none; background:rgba(37,211,102,0.2); border:1px solid #25d366; color:#86efac; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:4px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
+                        <button onclick="avviaModificaOp('${op.id}')" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; padding:6px 12px; border-radius:8px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
+                            ✏️ Modifica / Assegna App
+                        </button>
+                        <a href="${waLink}" target="_blank" title="Invia credenziali WhatsApp" style="text-decoration:none; background:rgba(37,211,102,0.2); border:1px solid #25d366; color:#86efac; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
                             💬 WhatsApp
                         </a>
-                        <a href="${mailLink}" target="_blank" title="Invia PIN e istruzioni via Email" style="text-decoration:none; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#7dd3fc; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                        <a href="${mailLink}" target="_blank" title="Invia credenziali Email" style="text-decoration:none; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#7dd3fc; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
                             ✉️ Email
                         </a>
-                        <button onclick="toggleOp('${op.id}')" style="background:rgba(255,255,255,0.1); border:none; color:#cbd5e1; padding:5px 9px; border-radius:8px; font-size:11.5px; cursor:pointer;">${op.attivo ? 'Disattiva' : 'Attiva'}</button>
-                        <button onclick="eliminaOp('${op.id}')" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:5px 9px; border-radius:8px; font-size:11.5px; cursor:pointer;">Elimina</button>
+                        <button onclick="toggleOp('${op.id}')" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; padding:5px 9px; border-radius:8px; font-size:11.5px; cursor:pointer;">
+                            ${op.attivo ? '⏸️ Disattiva' : '▶️ Attiva'}
+                        </button>
+                        <button onclick="eliminaOp('${op.id}')" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:5px 9px; border-radius:8px; font-size:11.5px; cursor:pointer;">
+                            🗑️ Elimina
+                        </button>
                     </div>
-                ` : '<span style="font-size:12px; color:#d4af37;">Protetto</span>'}
+                ` : '<span style="font-size:11.5px; color:#d4af37; margin-top:2px;">🔒 Account protetto non modificabile</span>'}
             `;
-            container.appendChild(row);
+            container.appendChild(card);
         });
+    }
+
+    function avviaModificaOp(id) {
+        const op = listaOperatoriCache.find(o => o.id === id);
+        if (!op) return;
+        const box = document.getElementById('boxModificaOpInline');
+        document.getElementById('lblEditOpNome').textContent = op.nome;
+        document.getElementById('editOpId').value = op.id;
+        document.getElementById('editOpNome').value = op.nome;
+        document.getElementById('editOpCodice').value = op.codice;
+        const appSel = (op.appAbilitate && op.appAbilitate.length > 0) ? op.appAbilitate[0] : 'all';
+        document.getElementById('editOpApp').value = appSel;
+        if (box) {
+            box.style.display = 'block';
+            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+
+    function annullaModificaOp() {
+        const box = document.getElementById('boxModificaOpInline');
+        if (box) box.style.display = 'none';
+    }
+
+    async function salvaModificaOperatore() {
+        const id = document.getElementById('editOpId').value;
+        const nome = document.getElementById('editOpNome').value.trim();
+        const codice = document.getElementById('editOpCodice').value.trim();
+        const appId = document.getElementById('editOpApp').value;
+        if (!nome || !codice) {
+            alert('Inserisci sia il nome che il PIN');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/operatori/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pinAdmin: currentAdminPin || 'SOS999',
+                    azione: 'update',
+                    operatore: { id, nome, codice, appId, appAbilitate: [appId] }
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                annullaModificaOp();
+                renderOps(data.operatori);
+                alert(`Operatore ${nome} aggiornato con successo! App assegnata: ${appId}`);
+            } else {
+                alert('Errore: ' + (data.message || 'Impossibile aggiornare'));
+            }
+        } catch(e) {
+            alert('Errore di connessione durante la modifica');
+        }
     }
 
     async function salvaNuovoOperatore() {

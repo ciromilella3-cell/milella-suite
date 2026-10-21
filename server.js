@@ -550,6 +550,23 @@ app.post('/api/operatori/gestione', (req, res) => {
         ops.push(newOp);
         fs.writeFileSync(operatoriPath, JSON.stringify(ops, null, 2), 'utf8');
         return res.json({ success: true, operatori: ops });
+    } else if (azione === 'update') {
+        if (!operatore || !operatore.id) {
+            return res.status(400).json({ success: false, message: 'ID operatore richiesto' });
+        }
+        ops = ops.map(o => {
+            if (o.id === operatore.id && o.id !== 'op_master') {
+                return {
+                    ...o,
+                    nome: operatore.nome !== undefined ? operatore.nome.trim() : o.nome,
+                    codice: operatore.codice !== undefined ? operatore.codice.trim() : o.codice,
+                    appAbilitate: operatore.appAbilitate || (operatore.appId ? [operatore.appId] : o.appAbilitate)
+                };
+            }
+            return o;
+        });
+        fs.writeFileSync(operatoriPath, JSON.stringify(ops, null, 2), 'utf8');
+        return res.json({ success: true, operatori: ops });
     } else if (azione === 'toggle') {
         ops = ops.map(o => o.id === operatore.id && o.id !== 'op_master' ? { ...o, attivo: !o.attivo } : o);
         fs.writeFileSync(operatoriPath, JSON.stringify(ops, null, 2), 'utf8');
