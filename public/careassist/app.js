@@ -3095,10 +3095,13 @@ function renderTerapie() {
             const check = verificaStatoOrarioFarmaco(t.ora);
             if (!check.consentito) {
               return `
-                <button class="btn btn-outline" style="min-width: 120px; background:#fffbeb; border-color:#fde68a; color:#b45309;" onclick="toggleFarmacoConScarico(${t.id})" title="Orario previsto alle ${t.ora}">
-                  🕒 Alle ${t.ora}
-                </button>
-                <div style="font-size:10px; color:#d97706; margin-top:3px; font-weight:700;">Non ancora raggiunto</div>
+                <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+                  <button class="btn btn-outline" style="min-width: 120px; background:#fffbeb; border-color:#f59e0b; color:#b45309; font-weight:700;" onclick="toggleFarmacoConScarico(${t.id})" title="Previsto alle ${t.ora}. Clicca per somministrare ora (spunta)">
+                    🕒 Alle ${t.ora} (Spunta)
+                  </button>
+                  <span style="font-size:10px; color:#d97706; font-weight:700;">Previsto alle ${t.ora}</span>
+                  <button type="button" class="btn btn-outline" style="padding:1px 6px; font-size:10px; border-color:#e2e8f0; color:#64748b;" onclick="apriModalSaltaFarmaco(${t.id})" title="Registra mancata assunzione o rifiuto">Salta dose</button>
+                </div>
               `;
             }
             if (check.inRitardo) {
@@ -3123,7 +3126,6 @@ function renderTerapie() {
                 <button type="button" class="btn btn-outline" style="padding:1px 6px; font-size:10px; border-color:#e2e8f0; color:#64748b;" onclick="apriModalSaltaFarmaco(${t.id})" title="Registra mancata assunzione o rifiuto">Salta dose</button>
               </div>
             `;
-          })()}
           })()}
         </td>
         <td style="text-align: center;">
@@ -3160,7 +3162,7 @@ function renderTerapie() {
       }
       return `
       <tr>
-        <td><b style="cursor:pointer; color:#0284c7;" onclick="apriModificaFarmaco(${t.id})" title="Clicca per modificare orario">${t.ora} ✏️</b></td>
+        <td>${canEdit ? `<b style="cursor:pointer; color:#0284c7;" onclick="apriModificaFarmaco(${t.id})" title="Clicca per modificare orario">${t.ora} ✏️</b>` : `<b style="color:#0f172a;">${t.ora}</b>`}</td>
         <td>
           <div class="audit-pill-clickable" onclick="mostraAuditFarmaco(${t.id})" title="Clicca per visualizzare la traccia oraria">
             <b style="color:var(--primary);">${t.farmaco}</b><br>
@@ -3506,23 +3508,24 @@ async function toggleFarmacoConScarico(id) {
   const oraFormattata = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
   const dataFormattata = now.toLocaleDateString('it-IT');
 
+  const nomeOperatore = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore OSS / Caregiver';
+
   if (!t.fattoOggi) {
-    // BLOCCO DI SICUREZZA: Controllo che l'orario della terapia sia effettivamente raggiunto
+    // Controllo se l'orario della terapia è nel futuro
     const checkOrario = verificaStatoOrarioFarmaco(t.ora);
     if (!checkOrario.consentito) {
       const oreManc = Math.floor(checkOrario.minutiMancanti / 60);
       const minManc = checkOrario.minutiMancanti % 60;
       const attesaStr = oreManc > 0 ? `${oreManc}h e ${minManc} min` : `${minManc} minuti`;
 
-      // Dialogo di Allerta Blocco Orario
+      // Dialogo di Allerta Anticipo: permette all'operatore di confermare la somministrazione
       const anticipoForzato = await customConfirm(
-        '⚠️ Orario Terapia Non Raggiunto!',
-        `ATTENZIONE: "${t.farmaco}" è programmato per le ore ${t.ora} (mancano ancora ${attesaStr}).\n\nLa somministrazione anticipata è vietata dal protocollo terapeutico salvo prescrizione del Medico. Vuoi davvero forzare la somministrazione anticipata?`,
-        '⛔'
+        '⏰ Somministrazione Anticipata',
+        `"${t.farmaco}" è programmato per le ore ${t.ora} (mancano circa ${attesaStr}).\n\nConfermi di aver somministrato la terapia adesso?`,
+        '💊'
       );
 
       if (!anticipoForzato) {
-        showToast(`Somministrazione di "${t.farmaco}" bloccata: orario previsto alle ${t.ora}.`, 'warning');
         return;
       }
     }
@@ -3563,14 +3566,14 @@ async function toggleFarmacoConScarico(id) {
       minutiRitardo: minutiRitardo,
       azione: 'somministrazione',
       dettaglio: dettaglioLog,
-      operatore: 'Operatore OSS / Caregiver'
+      operatore: nomeOperatore
     };
     p.registrazioni.push(logEntry);
 
     if (inRitardo) {
       showToast(`⚠️ Terapia registrata con ${minutiRitardo} min di ritardo! Tracciata nello storico.`, 'warning');
     } else {
-      showToast(`Somministrato "${t.farmaco}" alle ore ${oraFormattata}: 1 compressa scalata.`);
+      showToast(`✓ Somministrato "${t.farmaco}" alle ore ${oraFormattata} da ${nomeOperatore}`);
     }
 
   } else {
@@ -3596,7 +3599,7 @@ async function toggleFarmacoConScarico(id) {
         dosaggio: t.dosaggio,
         azione: 'annullamento',
         dettaglio: `Somministrazione annullata alle ore ${oraFormattata}. 1 compressa riaccreditata in scorta (${t.scorta} cpr).`,
-        operatore: 'Operatore OSS / Caregiver'
+        operatore: nomeOperatore
       });
 
       showToast(`Somministrazione annullata alle ${oraFormattata}: 1 compressa ripristinata.`);
