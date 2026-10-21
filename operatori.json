@@ -7,26 +7,15 @@
     "attivo": true
   },
   {
-    "id": "op_collega1",
-    "nome": "Operatore Magazzino",
+    "id": "op_stoppelli",
+    "nome": "M.C. Stoppelli",
     "ruolo": "operatore",
-    "codice": "1111",
-    "attivo": true
-  },
-  {
-    "id": "op_collega2",
-    "nome": "Operatore Cantiere",
-    "ruolo": "operatore",
-    "codice": "2222",
-    "attivo": true
-  },
-  {
-    "id": "op_chiara",
-    "nome": "Chiara",
-    "ruolo": "operatore",
-    "codice": "prera",
+    "codice": ".002",
     "appAbilitate": [
       "app_careassist"
+    ],
+    "pazAbilitati": [
+      "paz_rosa"
     ],
     "attivo": true
   }
