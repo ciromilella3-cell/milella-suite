@@ -6645,16 +6645,24 @@ function verificaRintoccoOrarioTerapiaAttuale() {
   }
 }
 
-// Chiusura rapida di qualsiasi modale toccando lo sfondo scuro (ottimo per Smartphone)
-if (!window._backdropCloseInit) {
-  window._backdropCloseInit = true;
-  document.addEventListener('click', (e) => {
-    if (e.target && e.target.classList && e.target.classList.contains('modal-overlay')) {
-      e.target.classList.remove('active');
-      if (e.target.id === 'modal-allarme-terapie') {
-        allarmeTerapieAttivo = false;
-        allarmeTerapieSnoozeFinoA = Date.now() + (5 * 60 * 1000);
+// Sincronizzazione dinamica dei permessi dell'operatore all'avvio di CareAssist Pro
+(function sincronizzaPermessiAssistitiCareAssist() {
+  const pin = localStorage.getItem('milella_user_pin');
+  const role = localStorage.getItem('milella_role');
+  if (role !== 'admin' && pin) {
+    fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ codice: pin })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success && data.pazAbilitati) {
+        localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati));
+        renderPazientiSelector();
+        renderAll();
       }
-    }
-  });
-}
+    })
+    .catch(() => {});
+  }
+})();

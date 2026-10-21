@@ -2536,6 +2536,20 @@ document.addEventListener('fullscreenchange', () => {
         if (gate) gate.style.display = 'none';
         currentAppAbilitate = savedApps;
         applicaRuolo('operatore', savedUserNome, savedApps);
+        
+        // Verifica in background con il server i permessi e i pazienti aggiornati
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ codice: savedUserPin })
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
+                localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
+                localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
+                localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
+            }
+        }).catch(() => {});
     } else {
         // NESSUNA SESSIONE: Mostra il Gate di Benvenuto & Blocco PIN
         const gate = document.getElementById('gateBloccoIngresso');
