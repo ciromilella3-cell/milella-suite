@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="assets/js/hta_polyfills.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <HTA:APPLICATION 
+        APPLICATIONNAME="TestSapi"
+        TRUSTED="yes"
+    />
+    <script>
+        window.onload = function() {
+            try {
+                var voice = new ActiveXObject("SAPI.SpVoice");
+                voice.Volume = 100;
+                voice.Speak("Test di sintesi vocale riuscito", 1);
+                alert("Success: SAPI.SpVoice instantiated and Speak called successfully!");
+            } catch(e) {
+                alert("Error: " + e.message + "\nCode: " + e.number);
+            }
+        };
+    </script>
+    <script src="assets/js/ux_premium.js"></script>
+    <script>
+        if(typeof UXPremium !== 'undefined') {
+            UXPremium.ShowSplash("AVVIO SISTEMA...");
+            window.addEventListener("load", function() {
+                setTimeout(function() { UXPremium.HideSplash(); }, 400);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1 style="display:none;">Testing SAPI SpVoice in HTA with IE=edge</h1>
+
+<script src="assets/js/hacker_mode.js"></script>
+
+<script src="./assets/js/global_context.js"></script>
+</body>
+</html>
+
+
+

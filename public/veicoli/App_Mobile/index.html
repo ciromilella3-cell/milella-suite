@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <script src="assets/js/hta_polyfills.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CONSEGNE Mobile</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome 4.7 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- Flatpickr (Apple-style Calendar) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/it.js"></script>
+    
+    <!-- HTML5 QRCode Scanner -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    
+    <meta name="theme-color" content="#1a1c2c">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="notification-area"></div>
+    <div id="offline-banner" class="hidden">
+        <i class="fa fa-plane"></i> SEI OFFLINE - I dati verranno salvati localmente
+    </div>
+    <div id="app">
+        <header>
+            <div class="logo-container">
+                <i class="fa fa-truck logo-icon"></i>
+                <div class="title-group">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <h1 style="line-height:1.1;"><span id="main-profile-name">AURELIO NICOLODI</span> <br> <span style="font-size:0.7rem; color:var(--accent-orange); opacity:0.8;">by C. Milella Platinum</span></h1>
+                        <span id="msg-badge" class="hidden" style="background:#ff3b30; color:white; font-size:0.6rem; padding:3px 8px; border-radius:10px; font-weight:800; animation: pulse 1s infinite;">AVVISO UFFICIO</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <span id="driver-name" class="driver-badge">Caricamento...</span>
+                        <span id="sync-status" class="sync-badge"></span>
+                        <span id="sync-queue-count" style="font-size:0.75rem; font-weight:bold;"></span>
+                    </div>
+                </div>
+            </div>
+            <button id="btnSync" class="icon-btn"><i class="fa fa-refresh"></i></button>
+        </header>
+
+        <main id="main-content">
+            <div class="action-bar">
+                <input type="text" id="txtSearch" placeholder="Cerca cliente, città o anno...">
+                <button id="btnScan" class="primary-btn scan" style="background:var(--accent-cyan);" onclick="app.openScanner()"><i class="fa fa-qrcode"></i></button>
+                <button id="btnAdd" class="primary-btn"><i class="fa fa-plus"></i></button>
+            </div>
+            
+            <div id="search-info" class="search-info" style="display:none;">
+                <span id="search-count">0 trovati</span>
+            </div>
+
+            <!-- Filtro Mese Universale -->
+            <div id="global-month-filter" class="filter-wrapper">
+                <div id="month-filters" class="horizontal-scroll">
+                    <!-- Generati da JS -->
+                </div>
+            </div>
+
+            <!-- Vista Home -->
+            <div id="view-home" class="view active">
+
+                <!-- Filtro Stato -->
+                <div class="filter-wrapper status-filters">
+                    <button class="filter-pill active" data-status="PENDING">DA ESEGUIRE</button>
+                    <button class="filter-pill" data-status="ALL">TUTTI</button>
+                    <button class="filter-pill" data-status="URGENTE">URGENTI</button>
+                    <button class="filter-pill" data-status="SOSPESO">SOSPESI</button>
+                    <button class="filter-pill" data-status="DA CHIAMARE">DA CHIAMARE</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card urgent">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Urgenti</span>
+                    </div>
+                    <div class="stat-card pending">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Sospesi</span>
+                    </div>
+                    <div class="stat-card done">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Completati</span>
+                    </div>
+                </div>
+
+                <div style="padding: 0 15px; margin-bottom: 10px;">
+                    <button class="action-btn main" onclick="app.ottimizzaPercorso()" style="width:100%; background:var(--accent-cyan); color:black; font-weight:800; border-radius:15px; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);"><i class="fa fa-map"></i> INIZIA GIRO (OTTIMIZZA PERCORSO)</button>
+                </div>
+                
+                <div id="consegne-list" class="list-container">
+                    <div class="empty-state">
+                        <i class="fa fa-search"></i>
+                        <p>Nessuna consegna caricata</p>
+                        <button class="outline-btn" onclick="app.loadData()">Carica Dati</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista Dashboard Platinum -->
+            <div id="view-dashboard" class="view">
+                <div class="section-title">
+                    <i class="fa fa-line-chart"></i>
+                    <h2>Analisi Platinum</h2>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="chart-container glass-card">
+                        <div class="chart-title">
+                            <span>Consegne Mensili</span>
+                            <i class="fa fa-truck"></i>
+                        </div>
+                        <div id="stats-deliveries">
+                            <!-- JS bars -->
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container glass-card">
+                        <div class="chart-title">
+                            <span>KM Percorsi</span>
+                            <i class="fa fa-road"></i>
+                        </div>
+                        <div id="stats-km">
+                            <!-- JS bars -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista Registro Mensile -->
+            <div id="view-history" class="view">
+                <div class="section-title">
+                    <i class="fa fa-calendar"></i>
+                    <h2>Registro Mensile</h2>
+                </div>
+                <div id="history-list" class="list-container">
+                    <div class="empty-state">
+                        <i class="fa fa-calendar-check-o"></i>
+                        <p>Nessuna consegna nel registro</p>
+                        <button class="outline-btn" onclick="app.loadHistory()">Carica Registro</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista Impostazioni -->
+            <div id="view-settings" class="view">
+                <div style="padding:0 20px;">
+                    <!-- Profilo Autista -->
+                    <div id="cfg-driver-section" class="glass-card" style="padding:20px; margin-bottom:20px; border: 1px solid var(--accent-cyan);">
+                        <h3 style="color:var(--accent-cyan); margin-bottom:15px; font-size:0.9rem; text-transform:uppercase;">Profilo Autista</h3>
+                        
+                        <div id="driver-logged-in" class="hidden">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <p style="font-size:0.7rem; color:var(--text-secondary);">Autista Attivo:</p>
+                                    <p id="active-driver-display" style="font-weight:800; font-size:1.2rem; color:white;"></p>
+                                </div>
+                                <button class="action-btn" onclick="app.logoutDriver()" style="background:#ff4d4d; color:white; font-weight:bold; font-size:0.8rem; padding:10px 15px; border-radius:8px; box-shadow:0 4px 10px rgba(255,77,77,0.3);">FINE TURNO</button>
+                            </div>
+                        </div>
+
+                        <div id="driver-logged-out">
+                            <label style="font-size:0.7rem; color:var(--text-secondary);">Inserisci il tuo nome per iniziare il turno</label>
+                            <div style="display:flex; gap:10px; margin-top:10px;">
+                                <input type="text" id="cfg-driver-name" placeholder="Nome e Cognome" style="flex:1; padding:12px; border-radius:10px; border:1px solid #444; background:#222; color:white; font-family:inherit;">
+                                <button class="action-btn" onclick="app.setDriverProfile()" style="background:var(--accent-cyan); color:black; width:60px;"><i class="fa fa-check"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Blocco Note Personali -->
+                    <div class="glass-card" style="padding:20px; margin-bottom:20px; border: 1px solid var(--accent-orange);">
+                        <h3 style="color:var(--accent-orange); margin-bottom:15px; font-size:0.9rem; text-transform:uppercase;"><i class="fa fa-sticky-note"></i> Blocco Note Personali</h3>
+                        <textarea id="cfg-notes" placeholder="Scrivi qui i tuoi appunti o promemoria per la giornata..." style="width:100%; height:120px; padding:15px; border-radius:10px; border:none; background:rgba(255,255,255,0.05); color:white; font-family:inherit; font-size:1rem; resize:none;"></textarea>
+                        <p style="font-size:0.6rem; color:var(--text-secondary); margin-top:5px; text-align:right;">Salvataggio automatico sul telefono 💾</p>
+                    </div>
+
+                    <!-- Manuale Istruzioni -->
+                    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+                        <a href="guida_utente.html" class="action-btn main" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; background:var(--accent-cyan); color:black; font-weight:800; border-radius:15px; padding:15px;">
+                            <i class="fa fa-book"></i> MANUALE UTENTE STANDARD
+                        </a>
+                        <a href="guida_non_vedenti.html" class="action-btn main" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; background:#ffab00; color:black; font-weight:800; border-radius:15px; padding:15px;">
+                            <i class="fa fa-universal-access"></i> GUIDA NON VEDENTI (BLINDSHELL 3)
+                        </a>
+                    </div>
+
+                    <div style="background:var(--card-bg); padding:20px; border-radius:20px; border:1px solid rgba(255,107,0,0.2);">
+                        <h3 style="color:var(--accent-orange); margin-bottom:15px; font-size:0.9rem; text-transform:uppercase;">Sicurezza & Tracking</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                            <div>
+                                <p style="font-weight:800; font-size:1.1rem;">📍 Tracking GPS</p>
+                                <p style="font-size:0.7rem; color:var(--text-secondary);">Invia posizione ogni 15 min</p>
+                            </div>
+                            <button id="btn-gps" class="action-btn" style="width:70px; height:50px; background:var(--accent-cyan); color:black;">ON</button>
+                        </div>
+                        
+                        <h3 style="color:var(--accent-orange); margin-bottom:15px; font-size:0.9rem; text-transform:uppercase;">Notifiche Guida</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                            <div>
+                                <p style="font-weight:800; font-size:1.1rem;">🔊 Suono Allerta</p>
+                                <p style="font-size:0.7rem; color:var(--text-secondary);">Beep a -30min e in ritardo</p>
+                            </div>
+                            <button id="btn-sound" class="action-btn" style="width:70px; height:50px; background:var(--accent-orange); color:black;">ON</button>
+                        </div>
+                    </div>
+
+                    <!-- Stato Sincronizzazione Locale (Offline Queue) -->
+                    <div style="background:var(--card-bg); padding:20px; border-radius:20px; border:1px solid var(--accent-cyan); margin-top:20px;">
+                        <h3 style="color:var(--accent-cyan); margin-bottom:15px; font-size:0.9rem; text-transform:uppercase;"><i class="fa fa-cloud-upload"></i> Coda Sincronizzazione</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                            <div>
+                                <p style="font-size:0.7rem; color:var(--text-secondary); margin:5px 0 0 0;">Le modifiche offline verranno salvate sul PC dell'ufficio appena possibile.</p>
+                            </div>
+                            <button id="btn-force-sync" class="action-btn" onclick="app.processOfflineQueue()" style="background:rgba(255,255,255,0.08); font-size:0.75rem; padding:10px 15px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); width:auto; flex-shrink:0;">FORZA SYNC</button>
+                        </div>
+                    </div>
+
+                    <div style="background:var(--card-bg); padding:20px; border-radius:20px; border:1px solid #ff3b30; margin-top:20px;">
+                        <h3 style="color:#ff3b30; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase;">Chiusura Sicura</h3>
+                        <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:15px;">Verifica la sincronizzazione e salva il lavoro prima di chiudere.</p>
+                        <button class="action-btn main" onclick="app.terminateTurn()" style="width:100%; background:#ff3b30; color:white; font-weight:800; font-size:1.1rem; border-radius:15px;">🛑 TERMINA TURNO</button>
+                    </div>
+
+                    <p style="text-align:center; margin-top:30px; font-size:0.6rem; color:var(--text-secondary); opacity:0.5;">SISTEMA LOGISTICA PLATINUM ● C. MILELLA v2.5</p>
+                </div>
+            </div>
+
+            <!-- Vista Spese -->
+            <div id="view-expenses" class="view">
+                <div class="section-title">
+                    <i class="fa fa-money"></i>
+                    <h2>Gestione Spese</h2>
+                </div>
+                <div style="padding:20px;">
+                    <div class="glass-card" style="padding:20px; margin-bottom:20px;">
+                        <label>Tipo Spesa</label>
+                        <select id="expense-type" style="width:100%; padding:15px; border-radius:10px; margin-bottom:15px;">
+                            <option value="CARBURANTE">⛽ CARBURANTE</option>
+                            <option value="AUTOSTRADA">🛣️ AUTOSTRADA</option>
+                            <option value="PASTO">🍽️ PASTO</option>
+                            <option value="MANUTENZIONE">🔧 MANUTENZIONE</option>
+                            <option value="ALTRO">❓ ALTRO</option>
+                        </select>
+                        <input type="number" id="expense-amount" placeholder="Importo (€)" style="width:100%; padding:15px; margin-bottom:15px; border-radius:10px;">
+                        <button class="action-btn main" onclick="app.takeExpensePhoto()" style="width:100%; margin-bottom:10px; background:#34c759;">📷 FOTO SCONTRINO</button>
+                        <button class="action-btn main" onclick="app.submitExpense()" style="width:100%;">INVIA IN UFFICIO</button>
+                    </div>
+                    <div id="expenses-log" class="list-container">
+                        <!-- Log ultime spese -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista Agenda / Promemoria (NUOVA) -->
+            <div id="view-agenda" class="view">
+                <div class="section-title">
+                    <i class="fa fa-calendar-o"></i>
+                    <h2>Bacheca Agenda</h2>
+                </div>
+                <div class="filter-wrapper" style="margin-bottom: 15px;">
+                    <div style="font-size:0.7rem; color:var(--text-secondary); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Vista Prossimi Eventi</div>
+                </div>
+                <div id="agenda-list" class="list-container">
+                    <div class="empty-state">
+                        <i class="fa fa-sticky-note-o"></i>
+                        <p>Nessun promemoria attivo</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Vista Manuale Ausili (NUOVA) -->
+            <div id="view-manuale" class="view">
+                <div class="section-title">
+                    <i class="fa fa-book"></i>
+                    <h2>Manuale Ausili</h2>
+                </div>
+                <div class="filter-wrapper" style="margin-bottom: 15px;">
+                    <div style="font-size:0.7rem; color:var(--text-secondary); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Istruzioni di Montaggio</div>
+                </div>
+                <div id="manuale-list" class="list-container" style="gap: 15px;">
+                    <!-- Verrà popolato dinamicamente via JS -->
+                    <div class="empty-state">
+                        <i class="fa fa-spinner fa-spin"></i>
+                        <p>Caricamento manuale in corso...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" data-page="home">
+                <i class="fa fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" data-page="dashboard">
+                <i class="fa fa-bar-chart"></i>
+                <span>Stats</span>
+            </a>
+            <a href="#" class="nav-item" data-page="map">
+                <i class="fa fa-map-marker"></i>
+                <span>Mappa</span>
+            </a>
+            <a href="#" class="nav-item" data-page="history">
+                <i class="fa fa-calendar-check-o"></i>
+                <span>Registro</span>
+            </a>
+            <a href="#" class="nav-item" data-page="agenda">
+                <i class="fa fa-calendar-o"></i>
+                <span>Agenda</span>
+            </a>
+            <a href="#" class="nav-item" data-page="expenses">
+                <i class="fa fa-money"></i>
+                <span>Spese</span>
+            </a>
+            <a href="#" class="nav-item" data-page="settings">
+                <i class="fa fa-cog"></i>
+                <span>Impostazioni</span>
+            </a>
+            <a href="#" class="nav-item" data-page="manuale">
+                <i class="fa fa-book" style="color: #d4af37;"></i>
+                <span style="color: #d4af37;">Manuale</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Modal Nuova Consegna -->
+    <div id="modal-add" class="modal-overlay hidden">
+        <div class="modal-content" style="background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--accent-orange);">
+            <h2 style="margin-bottom:20px; color:var(--accent-orange);">Nuova Consegna</h2>
+            <div style="display:flex; flex-direction:column; gap:15px;">
+                <input type="text" id="add-nome" placeholder="Nome Cliente" style="padding:15px; border-radius:10px; border:1px solid #444; background:#222; color:white;">
+                <input type="text" id="add-data" placeholder="Seleziona Data" readonly style="padding:15px; border-radius:10px; border:1px solid #444; background:#222; color:white;">
+                <input type="text" id="add-citta" placeholder="Città" style="padding:15px; border-radius:10px; border:1px solid #444; background:#222; color:white;">
+                <input type="text" id="add-ind" placeholder="Indirizzo" style="padding:15px; border-radius:10px; border:1px solid #444; background:#222; color:white;">
+                <input type="text" id="add-tel" placeholder="Telefono" style="padding:15px; border-radius:10px; border:1px solid #444; background:#222; color:white;">
+                <input type="text" id="add-merce" placeholder="Merce" style="padding:15px; border-radius:10px; border:1px solid #444; background:#222; color:white;">
+            </div>    
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="action-btn main" onclick="app.submitNewConsegna()">SALVA NEL DATABASE</button>
+                    <button class="action-btn" onclick="document.getElementById('modal-add').classList.add('hidden')" style="background:rgba(255,255,255,0.1)">ANNULLA</button>
+                </div>
+            </div>
+    </div>
+
+    <!-- Modal Scanner -->
+    <div id="modal-scanner" class="modal-overlay hidden">
+        <div class="modal-content" style="background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid var(--accent-cyan);">
+            <h2 style="margin-bottom:15px; color:var(--accent-cyan);"><i class="fa fa-qrcode"></i> Scannerizza</h2>
+            <div id="reader" style="width:100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px;"></div>
+            <button class="action-btn" onclick="app.closeScanner()" style="width:100%; background:rgba(255,255,255,0.1)">CHIUDI SCANNER</button>
+        </div>
+    </div>
+
+    <!-- Modal Dettagli / Modifica -->
+    <div id="modal-edit" class="modal-overlay hidden">
+        <div class="modal-content" style="background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--accent-orange); width: 95%;">
+            <div style="max-height: 70vh; overflow-y: auto; padding-right: 5px; margin-bottom: 20px;">
+                <div class="voice-group">
+                    <div style="flex:1">
+                        <label style="font-size:0.7rem; color:var(--accent-orange); font-weight:800;">COGNOME E NOME</label>
+                        <input type="text" id="edit-nome" style="width:100%; padding:15px; border-radius:10px; border:none; font-family:inherit; font-size:1.1rem; font-weight:700; background:rgba(255,255,255,0.1); color:white;">
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <button id="btnVoice" class="voice-btn" onclick="app.speakDetails()"><i class="fa fa-volume-up"></i></button>
+                        <button class="voice-btn" onclick="app.showHelp()" style="background:#00d2ff; color:black;"><i class="fa fa-question"></i></button>
+                    </div>
+                </div>
+
+                    <div class="input-group-modern">
+                        <label style="font-size:0.7rem; color:var(--accent-orange); font-weight:800;">DATA CONSEGNA</label>
+                        <div class="input-with-icon">
+                            <i class="fa fa-calendar"></i>
+                            <input type="text" id="edit-data" placeholder="Seleziona Data" readonly>
+                        </div>
+                    </div>
+                    <div class="input-group-modern">
+                        <label style="font-size:0.7rem; color:var(--accent-orange); font-weight:800;">ORA APPUNTAMENTO</label>
+                        <div class="input-with-icon">
+                            <i class="fa fa-clock-o"></i>
+                            <input type="text" id="edit-ora" placeholder="Seleziona Ora" readonly>
+                        </div>
+                    </div>
+
+                <label style="font-size:0.7rem; color:var(--accent-orange); font-weight:800;">STATO OPERATIVO</label>
+                <select id="edit-stato" style="width:100%; padding:15px; border-radius:10px; border:none; margin-bottom:20px; font-family:inherit; background:white; color:black; font-weight:700;">
+                    <option value="IN ATTESA">IN ATTESA</option>
+                    <option value="DA CHIAMARE">DA CHIAMARE</option>
+                    <option value="CONFERMATO">CONFERMATO</option>
+                    <option value="URGENTE">URGENTE</option>
+                    <option value="SOSPESO">SOSPESO</option>
+                    <option value="COMPLETATA">COMPLETATA</option>
+                    <option value="CONSEGNATO">CONSEGNATO</option>
+                </select>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
+                    <div>
+                        <label style="font-size:0.7rem; color:var(--accent-orange); font-weight:800;">KM ANDATA</label>
+                        <div class="stepper-modern">
+                            <button type="button" onclick="app.stepKM('edit-kma', -1)">-</button>
+                            <input type="number" id="edit-kma" value="0">
+                            <button type="button" onclick="app.stepKM('edit-kma', 1)">+</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem; color:var(--accent-orange); font-weight:800;">KM RITORNO</label>
+                        <div class="stepper-modern">
+                            <button type="button" onclick="app.stepKM('edit-kmr', -1)">-</button>
+                            <input type="number" id="edit-kmr" value="0">
+                            <button type="button" onclick="app.stepKM('edit-kmr', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <label style="font-size:0.7rem; color:var(--accent-orange); font-weight:800;">DESCRIZIONE MERCE</label>
+                <textarea id="edit-merce" style="width:100%; height:60px; padding:15px; border-radius:10px; border:none; margin-bottom:10px; font-family:inherit; background:rgba(255,255,255,0.1); color:white;"></textarea>
+
+                <label style="font-size:0.7rem; color:var(--accent-cyan); font-weight:800;">NOTE OPERATIVE (DA SEDE)</label>
+                <textarea id="edit-note" style="width:100%; height:60px; padding:15px; border-radius:10px; border:none; margin-bottom:15px; font-family:inherit; background:rgba(0,210,255,0.1); color:white;" readonly></textarea>
+                
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
+                    <button class="action-btn" onclick="app.takePhoto()" style="background:#34c759; color:white;"><i class="fa fa-camera"></i> FOTO</button>
+                    <button class="action-btn" onclick="app.saveSignature()" style="background:#00d2ff; color:black; font-weight:800;"><i class="fa fa-pencil"></i> SALVA FIRMA</button>
+                    <button class="action-btn" onclick="app.clearSignature()" style="background:rgba(255,255,255,0.1)"><i class="fa fa-eraser"></i> PULISCI</button>
+                    <button class="action-btn" onclick="app.openResoModal()" style="background:#ff3b30; color:white; font-weight:800;"><i class="fa fa-exchange"></i> EFFETTUA RESO</button>
+                    
+                    <button class="action-btn" onclick="document.getElementById('document-input').click()" style="background:#ff3b30; color:white; font-weight:800; width:100%;"><i class="fa fa-file-pdf-o"></i> CARICA DOCUMENTO PDF</button>
+                    <input type="file" id="document-input" accept=".pdf,image/*,.doc,.docx" style="display:none;" onchange="app.uploadDocument(this)">
+                    <div id="document-share-container" style="width:100%; display:none;"></div>
+                    
+                    <button class="action-btn" onclick="document.getElementById('modal-edit').classList.add('hidden'); app.switchPage('manuale');" style="background:#d4af37; color:black; font-weight:800; width:100%;"><i class="fa fa-book"></i> VAI AI MANUALI AUSILI</button>
+                </div>
+
+                <label style="font-size:0.7rem; color:var(--accent-cyan); font-weight:800;">FIRMA DEL CLIENTE</label>
+                <div style="background:white; border-radius:10px; margin-bottom:15px; height:120px; position:relative; overflow:hidden;">
+                    <canvas id="signature-pad" style="width:100%; height:100%; cursor:crosshair; touch-action:none;"></canvas>
+                </div>
+
+                <label style="font-size:0.7rem; color:var(--accent-cyan); font-weight:800;">AVVISO RAPIDO PER UFFICIO (OPZIONALE)</label>
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="edit-notifica-pc" placeholder="Es: Cliente irreperibile..." style="flex:1; padding:15px; border-radius:10px; border:1px solid var(--accent-cyan); background:rgba(0,210,255,0.05); color:white; font-family:inherit; font-size:1rem;">
+                    <button id="btnDictate" type="button" class="dictate-btn" onclick="app.startDictation()" style="width:50px; height:50px; border-radius:50%; border:none; background:var(--accent-cyan); color:black; font-size:1.3rem; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;"><i class="fa fa-microphone"></i></button>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <button class="action-btn main" onclick="app.submitEdit()" style="width:100%;">SALVA MODIFICHE</button>
+                <button class="action-btn" onclick="document.getElementById('modal-edit').classList.add('hidden')" style="width:100%; background:rgba(255,255,255,0.1)">CHIUDI</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Reso -->
+    <div id="modal-reso" class="modal-overlay hidden">
+        <div class="modal-content" style="background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid #ff3b30;">
+            <h2 style="margin-bottom:20px; color:#ff3b30;">Segnala Reso / Ritiro</h2>
+            <div style="display:flex; flex-direction:column; gap:15px;">
+                <input type="text" id="reso-cliente" placeholder="Nome Cliente" readonly style="padding:15px; border-radius:10px; border:none; background:rgba(255,255,255,0.1); color:white;">
+                <select id="reso-condizione" style="padding:15px; border-radius:10px; border:none; background:white; color:black; font-weight:700;">
+                    <option value="Da Igienizzare">Da Igienizzare</option>
+                    <option value="Rotto / Guasto">Rotto / Guasto</option>
+                    <option value="Buono Stato">Buono Stato</option>
+                </select>
+                <textarea id="reso-note" placeholder="Note aggiuntive sul ritiro..." style="height:80px; padding:15px; border-radius:10px; border:none; background:rgba(255,255,255,0.1); color:white; font-family:inherit;"></textarea>
+            </div>    
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="action-btn main" onclick="app.submitReso()" style="background:#ff3b30;">CONFERMA RITIRO</button>
+                <button class="action-btn" onclick="document.getElementById('modal-reso').classList.add('hidden')" style="background:rgba(255,255,255,0.1)">ANNULLA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Checklist Partenza -->
+    <input type="file" id="camera-input" accept="image/*" capture="camera" style="display:none;">
+    <div id="modal-checklist" class="modal-overlay hidden">
+        <div class="modal-content" style="background: #1a1c2c; padding: 25px; border-radius: 20px; border: 2px solid #ffab00; width:90%; max-width:400px;">
+            <div style="text-align:center; margin-bottom:20px;">
+                <i class="fa fa-check-square-o" style="font-size:3rem; color:#ffab00;"></i>
+                <h2 style="color:white; margin-top:10px;">Checklist Mattutina</h2>
+                <p style="color:#bdc3c7; font-size:0.8rem;">Controlli obbligatori sicurezza mezzo</p>
+            </div>
+            <div class="checklist-items" style="display:flex; flex-direction:column; gap:15px; margin-bottom:20px;">
+                <label style="display:flex; align-items:center; gap:12px; color:white; font-size:1.1rem; background:rgba(255,255,255,0.05); padding:12px; border-radius:10px;">
+                    <input type="checkbox" class="chk-item" style="width:22px; height:22px;"> Pressione Gomme OK
+                </label>
+                <label style="display:flex; align-items:center; gap:12px; color:white; font-size:1.1rem; background:rgba(255,255,255,0.05); padding:12px; border-radius:10px;">
+                    <input type="checkbox" class="chk-item" style="width:22px; height:22px;"> Merce Caricata & Sicura
+                </label>
+                <label style="display:flex; align-items:center; gap:12px; color:white; font-size:1.1rem; background:rgba(255,255,255,0.05); padding:12px; border-radius:10px;">
+                    <input type="checkbox" class="chk-item" style="width:22px; height:22px;"> Documenti in cabina
+                </label>
+            </div>
+            <button class="action-btn main" onclick="app.confirmChecklist()" style="width:100%; padding:18px; background:#ffab00; color:black; font-weight:800; font-size:1.1rem;">INIZIA TURNO</button>
+        </div>
+    </div>
+
+    <!-- Modal Firma Digitale Cliente -->
+    <div id="modal-signature" class="modal-overlay hidden">
+        <div class="modal-content" style="background: #1a1c2c; padding: 25px; border-radius: 20px; border: 2px solid #10b981; width:92%; max-width:440px;">
+            <div style="text-align:center; margin-bottom:15px;">
+                <i class="fa fa-pencil-square-o" style="font-size:2.5rem; color:#10b981;"></i>
+                <h2 style="color:white; margin-top:5px; font-size:1.3rem;">Firma del Cliente</h2>
+                <p style="color:#bdc3c7; font-size:0.8rem;">Firma sullo schermo per confermare la consegna</p>
+            </div>
+            
+            <div style="background:#ffffff; border-radius:12px; border:2px solid #10b981; margin-bottom:15px; touch-action:none; position:relative;">
+                <canvas id="signature-canvas" width="350" height="180" style="width:100%; height:180px; display:block; border-radius:10px; cursor:crosshair;"></canvas>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <button onclick="app.clearSignature()" class="action-btn" style="flex:1; padding:12px; background:#334155; color:white; border-radius:10px; font-weight:bold;"><i class="fa fa-eraser"></i> Pulisci</button>
+                <button onclick="app.confirmSignature()" class="action-btn" style="flex:2; padding:12px; background:#10b981; color:white; border-radius:10px; font-weight:bold; font-size:1rem;"><i class="fa fa-check"></i> Conferma & Firma</button>
+            </div>
+            <button onclick="app.closeSignatureModal()" style="width:100%; background:transparent; border:none; color:#94a3b8; font-size:0.85rem; padding:5px; cursor:pointer;">Annulla</button>
+        </div>
+    </div>
+
+    <div id="waFileModalMobile" class="modal-overlay hidden">
+        <div class="modal-content glass-card" style="padding:20px; width:90%; max-width:400px; text-align:center;">
+            <h3 style="color:var(--accent-orange); margin-bottom:15px;"><i class="fa fa-book"></i> Invia Manuale</h3>
+            <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:15px;">Scegli il manuale da inviare al cliente. Il cliente riceverà un link diretto (no download sul tuo telefono!).</p>
+            <select id="waFileSelectMobile" style="width:100%; padding:12px; border-radius:10px; background:#222; color:white; border:1px solid #444; margin-bottom:20px;">
+                <option value="">Caricamento manuali in corso...</option>
+            </select>
+            <input type="hidden" id="waFilePhoneMobile">
+            <div style="display:flex; gap:10px;">
+                <button class="action-btn" onclick="document.getElementById('waFileModalMobile').classList.add('hidden')" style="flex:1; background:#444;">ANNULLA</button>
+                <button class="action-btn" onclick="app.eseguiInvioManuale()" style="flex:1; background:var(--accent-cyan); color:black;"><i class="fa fa-whatsapp"></i> INVIA</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="main.js"></script>
+</body>
+</html>

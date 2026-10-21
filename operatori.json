@@ -1,0 +1,23 @@
+[
+  {
+    "id": "op_master",
+    "nome": "Ciro Milella (Admin)",
+    "ruolo": "admin",
+    "codice": "SOS999",
+    "attivo": true
+  },
+  {
+    "id": "op_collega1",
+    "nome": "Operatore Magazzino",
+    "ruolo": "operatore",
+    "codice": "1111",
+    "attivo": true
+  },
+  {
+    "id": "op_collega2",
+    "nome": "Operatore Cantiere",
+    "ruolo": "operatore",
+    "codice": "2222",
+    "attivo": true
+  }
+]

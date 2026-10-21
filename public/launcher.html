@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SISTEMA C. MILELLA</title>
+    <!-- PWA and Fullscreen Mobile Support -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#040914">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Milella Suite">
+    <link rel="apple-touch-icon" href="/cm_logo_gold.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #040914;
+            --gold-primary: #d4af37;
+            --gold-light: #f3e5ab;
+            --gold-dark: #aa7c11;
+            --gold-gradient: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #aa7c11 100%);
+            --panel-bg: rgba(17, 24, 39, 0.4);
+            --panel-border: rgba(212, 175, 55, 0.2);
+            --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        
+        body {
+            background-color: var(--bg-color);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            padding: 2.5rem 1.5rem 4rem 1.5rem;
+        }
+
+        /* Animated Background Elements */
+        .bg-glow {
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 8s infinite alternate;
+            z-index: 0;
+            pointer-events: none;
+        }
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1200px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* HEADER */
+        .header {
+            margin-bottom: 2rem;
+            animation: fadeDown 1s ease-out;
+        }
+        .header h2 {
+            font-size: 1.2rem;
+            color: var(--gold-light);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        .header h1 span {
+            font-weight: 800;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARDS GRID */
+        .cards-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        @media (max-height: 800px) {
+            body { padding: 1.2rem 1rem 3rem 1rem !important; }
+            .header { margin-bottom: 1rem !important; }
+            .header h1 { font-size: 2.6rem !important; }
+            .header h2 { font-size: 1rem !important; margin-bottom: 0.2rem !important; }
+            .card { padding: 1.3rem 1rem !important; }
+            .card-icon { font-size: 2.6rem !important; margin-bottom: 0.6rem !important; }
+            .card-title { font-size: 1.2rem !important; margin-bottom: 0.3rem !important; }
+            .card-desc { font-size: 0.85rem !important; line-height: 1.3 !important; }
+            .launcher-footer-actions { margin-top: 1.5rem !important; }
+        }
+
+        .card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.8s ease-out backwards;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .card:nth-child(1) { animation-delay: 0.2s; }
+        .card:nth-child(2) { animation-delay: 0.4s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hover Effect */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transition: 0.5s;
+        }
+        .card:hover::before {
+            left: 100%;
+        }
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--gold-primary);
+            box-shadow: var(--shadow-glow), 0 20px 40px rgba(0,0,0,0.4);
+            background: rgba(17, 24, 39, 0.7);
+        }
+
+        .card-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+            transition: transform 0.3s;
+        }
+        .card:hover .card-icon {
+            transform: scale(1.15);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 768px) {
+  html, body { width: 100% !important; max-width: 100vw !important; overflow-x: hidden !important; margin: 0 !important; padding: 0 !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
+  .container { width: 100% !important; max-width: 100% !important; padding: 16px 14px 40px !important; margin: 0 auto !important; display: flex !important; flex-direction: column !important; align-items: center !important; box-sizing: border-box !important; }
+  .header { width: 100% !important; text-align: center !important; margin-bottom: 20px !important; }
+  .header h2 { font-size: 11px !important; letter-spacing: 3px !important; text-align: center !important; }
+  .header h1 { font-size: 2.2rem !important; text-align: center !important; }
+  .cards-wrapper { width: 100% !important; max-width: 480px !important; margin: 0 auto !important; display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 14px !important; }
+  .card { width: 100% !important; margin: 0 !important; padding: 18px 16px !important; border-radius: 20px !important; box-sizing: border-box !important; text-align: center !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; }
+
+            /* visualizza sempre tutte le card */
+            .desktop-only-btn {
+                display: none !important;
+            }
+            .container {
+                padding: 1.5rem 1rem !important;
+            }
+            .header {
+                margin-bottom: 1.5rem !important;
+            }
+            .header h2 {
+                font-size: 0.95rem !important;
+                letter-spacing: 2px !important;
+            }
+            .header h1 {
+                font-size: 2.3rem !important;
+            }
+            .cards-wrapper {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+            .card {
+                padding: 1.3rem 1.1rem !important;
+                border-radius: 16px !important;
+            }
+            .card-icon {
+                font-size: 2.5rem !important;
+                margin-bottom: 0.8rem !important;
+            }
+            .card-title {
+                font-size: 1.25rem !important;
+                margin-bottom: 0.4rem !important;
+            }
+            .card-desc {
+                font-size: 0.88rem !important;
+                line-height: 1.4 !important;
+            }
+        }
+    
+    /* QR CODE PROMO MODAL & BUTTON */
+    .btn-qr-promo {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 12px 26px;
+      border-radius: 30px;
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(14, 165, 233, 0.45);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-qr-promo:hover {
+      transform: scale(1.05) translateY(-2px);
+      box-shadow: 0 14px 30px rgba(14, 165, 233, 0.65);
+    }
+
+    #qrPromoModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 9, 20, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .qr-promo-card {
+      background: linear-gradient(145deg, #0f1c30 0%, #070d18 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 28px;
+      padding: 32px 28px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 35px rgba(14, 165, 233, 0.25);
+      animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .qr-badge-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(14, 165, 233, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+
+    .qr-hook-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 23px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .qr-hook-title span {
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .qr-hook-desc {
+      font-size: 13.5px;
+      color: #94a3b8;
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+
+    .qr-box-wrapper {
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 20px;
+      display: inline-block;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      margin-bottom: 16px;
+      border: 3px solid #38bdf8;
+    }
+
+    .qr-url-badge {
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #7dd3fc;
+      background: rgba(15, 23, 42, 0.8);
+      padding: 8px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .qr-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #94a3b8;
+      font-size: 18px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .qr-close-btn:hover {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+
+</style>
+<style>
+@media (max-width: 768px) { #btnLogistica { display: none !important; } }
+@media (min-width: 769px) { #btnLogistica { display: flex !important; } }
+</style>
+<style>@media (max-width: 768px) { #floatingControlBar { display: none !important; } .container { padding: 1.2rem 1rem !important; } .cards-wrapper { grid-template-columns: 1fr !important; gap: 14px !important; } .card { border-radius: 20px !important; padding: 1.5rem 1.2rem !important; background: rgba(17, 24, 39, 0.65) !important; border: 1.5px solid rgba(212, 175, 55, 0.25) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; } .card:active { transform: scale(0.98) !important; border-color: #d4af37 !important; } .card-icon { font-size: 3rem !important; margin-bottom: 0.8rem !important; filter: drop-shadow(0 4px 12px rgba(212,175,55,0.4)) !important; } .card-title { font-size: 1.35rem !important; font-weight: 800 !important; letter-spacing: 0.5px !important; color: #ffffff !important; margin-bottom: 0.4rem !important; } .card-desc { font-size: 0.88rem !important; color: #94a3b8 !important; line-height: 1.45 !important; } }</style>    <script src="/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    
+    <!-- Generate some CSS particles -->
+    <script>
+        for(let i=0; i<15; i++) {
+            let p = document.createElement('div');
+            p.className = 'particle';
+            let size = Math.random() * 4 + 2;
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+            p.style.animationDelay = (Math.random() * 10) + 's';
+            document.body.appendChild(p);
+        }
+    </script>
+
+        <!-- SCHERMATA DI BENVENUTO & BLOCCO ACCESSO RISERVATO (PORTAL GATE) -->
+        <div id="gateBloccoIngresso" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:radial-gradient(circle at 50% 30%, #0d1b38 0%, #040817 80%, #02040a 100%); z-index:99999; display:flex; align-items:center; justify-content:center; padding:1.2rem; box-sizing:border-box;">
+            <div style="background:rgba(15,23,42,0.92); border:1.5px solid rgba(212,175,55,0.4); border-radius:28px; max-width:480px; width:100%; padding:2.2rem 1.8rem; text-align:center; box-shadow:0 25px 70px rgba(0,0,0,0.8), 0 0 40px rgba(212,175,55,0.15); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); animation:fadeInGate 0.4s ease-out; position:relative; overflow:hidden;">
+                <!-- Dettaglio Luce Oro Superiore -->
+                <div style="position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg, transparent, #d4af37, #f3e5ab, #d4af37, transparent);"></div>
+
+                <!-- Logo / Corona / Brand -->
+                <div style="width:76px; height:76px; margin:0 auto 1rem auto; border-radius:22px; background:linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05)); border:1.5px solid rgba(212,175,55,0.4); display:flex; align-items:center; justify-content:center; font-size:38px; box-shadow:0 8px 24px rgba(212,175,55,0.2);">
+                    👑
+                </div>
+                
+                <div style="font-size:11px; text-transform:uppercase; letter-spacing:3px; color:#d4af37; font-weight:700; margin-bottom:4px;">Suite Gestionale Aziendale</div>
+                <h1 style="font-size:1.85rem; font-weight:900; color:#ffffff; margin:0 0 6px 0; letter-spacing:1px;">C. <span style="background:linear-gradient(135deg,#f3e5ab,#d4af37); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">MILELLA</span></h1>
+                <p style="color:#94a3b8; font-size:13px; line-height:1.5; margin-bottom:1.5rem;">Accesso Riservato al Personale e ai Collaboratori Autorizzati. Digita il tuo <strong>Codice Personale</strong> per visualizzare i moduli a te assegnati.</p>
+
+                <!-- Box Informazioni Base Aziendali -->
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:10px 14px; margin-bottom:1.4rem; text-align:left; display:flex; flex-direction:column; gap:6px;">
+                    <div style="font-size:12px; color:#cbd5e1; display:flex; align-items:center; gap:8px;">
+                        <span>🏢</span> <span><strong>Servizi:</strong> Attrezzi, Flotta, Sanità, Nutrizione & Logistica</span>
+                    </div>
+                    <div style="font-size:12px; color:#cbd5e1; display:flex; align-items:center; gap:8px;">
+                        <span>🔒</span> <span><strong>Sicurezza:</strong> Crittografia protetta e sessione privata</span>
+                    </div>
+                    <div style="font-size:12px; color:#94a3b8; display:flex; align-items:center; gap:8px;">
+                        <span>🌐</span> <span><strong>Cloud:</strong> Sincronizzazione automatica Cloud H24</span>
+                    </div>
+                </div>
+
+                <!-- Input PIN con Occhietto -->
+                <div style="position:relative; width:100%; margin-bottom:1rem;">
+                    <input type="password" id="inputPinGate" placeholder="••••••••" style="width:100%; padding:15px 48px 15px 16px; border-radius:14px; background:rgba(0,0,0,0.55); border:1.5px solid rgba(212,175,55,0.4); color:#fff; font-size:22px; text-align:center; letter-spacing:6px; outline:none; box-sizing:border-box; transition:border 0.2s;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,0.4)'" onkeydown="if(event.key==='Enter') verificaPinGate()">
+                    <button type="button" onclick="toggleMostraPasswordGate()" id="btnToggleEyeGate" title="Mostra/Nascondi codice" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.85;">
+                        👁️
+                    </button>
+                </div>
+
+                <div id="gateErrorMsg" style="color:#ef4444; font-size:0.85rem; font-weight:700; margin-bottom:1rem; display:none;"></div>
+
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button onclick="verificaPinGate()" style="width:100%; background:linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); color:#0b0f19; font-weight:900; font-size:14.5px; padding:13px; border:none; border-radius:14px; cursor:pointer; letter-spacing:1px; box-shadow:0 6px 20px rgba(212,175,55,0.35); transition:transform 0.15s;" onactive="this.style.transform='scale(0.98)'">
+                        ACCEDI AL SISTEMA (PIN) 🔓
+                    </button>
+
+                    <!-- Tasto Impronta: disattivato/nascosto al primo accesso, si attiva SOLO dopo aver inserito il PIN la prima volta -->
+                    <button id="btnBiometriaGate" type="button" onclick="accediConImpronta()" style="display:none; width:100%; background:rgba(56,189,248,0.12); border:1.5px solid rgba(56,189,248,0.45); color:#7dd3fc; font-weight:800; font-size:13.5px; padding:12px; border-radius:14px; cursor:pointer; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 15px rgba(2,132,199,0.2); transition:all 0.2s;">
+                        <span style="font-size:20px;">👆</span> ACCEDI CON IMPRONTA / BIOMETRIA
+                    </button>
+                    <div id="hintPrimaVoltaPin" style="font-size:11.5px; color:#94a3b8; line-height:1.4; margin-top:2px;">
+                        ℹ️ <em>Al primo utilizzo inserisci il tuo PIN. L'accesso con impronta digitale si abiliterà automaticamente per i prossimi accessi.</em>
+                    </div>
+                </div>
+
+                <!-- Footer Assistenza -->
+                <div style="font-size:11.5px; color:#f3e5ab; margin-top:1.4rem; opacity:0.85;">
+                    📞 Non hai il PIN o serve assistenza?<br>
+                    <strong>Contattare Amministratore Ciro Milella</strong>
+                </div>
+            </div>
+        </div>
+        <style>
+            @keyframes fadeInGate { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
+        </style>
+
+        <!-- BARRA STATUS RUOLO / LOGIN MASTER PIN -->
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:1100px; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+            <div id="userBadge" style="display:flex; align-items:center; gap:8px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.3); padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; color:#f3e5ab;">
+                <span id="userBadgeIcon">👷</span>
+                <span id="userBadgeText">Modalità: In attesa di PIN</span>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button id="btnSwitchRole" onclick="apriLoginModal()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(212,175,55,0.4); color:#fff; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.2s;">
+                    🔑 CAMBIA UTENTE (PIN)
+                </button>
+                <button id="btnManageOps" onclick="apriGestioneOperatoriModal()" style="display:none; background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
+                    👥 OPERATORI
+                </button>
+                <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
+                    🛠️ GESTIONE PROGETTI (APP)
+                </button>
+                <button id="btnLogoutRole" onclick="esciAdmin()" style="display:none; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:700; cursor:pointer;">
+                    🔒 Esci / Blocca
+                </button>
+            </div>
+        </div>
+
+        <div class="header">
+            <h2>Gestione Aziendale</h2>
+            <h1>C. <span>MILELLA</span></h1>
+        </div>
+
+        <!-- 5. CRUSCOTTO RIEPILOGATIVO VELOCE (DASHBOARD KPI LIVE) -->
+        <div id="kpiDashboardBar" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px; width:100%; max-width:900px; margin: 0 auto 2rem auto;">
+            <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(212,175,55,0.25); border-radius:16px; padding:12px 10px; text-align:center;">
+                <div style="font-size:20px; margin-bottom:4px;">🛠️</div>
+                <div style="font-size:18px; font-weight:800; color:#fff;" id="kpiTotAttrezzi">--</div>
+                <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Tot. Attrezzi</div>
+            </div>
+            <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(239,68,68,0.25); border-radius:16px; padding:12px 10px; text-align:center;">
+                <div style="font-size:20px; margin-bottom:4px;">🚚</div>
+                <div style="font-size:18px; font-weight:800; color:#f87171;" id="kpiInUso">--</div>
+                <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">In Cantiere / Uso</div>
+            </div>
+            <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(34,197,94,0.25); border-radius:16px; padding:12px 10px; text-align:center;">
+                <div style="font-size:20px; margin-bottom:4px;">✅</div>
+                <div style="font-size:18px; font-weight:800; color:#4ade80;" id="kpiDisponibili">--</div>
+                <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Disponibili</div>
+            </div>
+            <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(56,189,248,0.25); border-radius:16px; padding:12px 10px; text-align:center;">
+                <div style="font-size:20px; margin-bottom:4px;">👥</div>
+                <div style="font-size:18px; font-weight:800; color:#38bdf8;" id="kpiOperatori">--</div>
+                <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Operatori Attivi</div>
+            </div>
+        </div>
+
+        <div class="cards-wrapper">
+    <!-- 1. APP LOGISTICA (Solo PC Console Desktop) -->
+    <a href="#" class="card desktop-only-card" id="btnLogistica" style="display:none;" class="card desktop-only-card-hidden">
+        <div class="card-icon">📦</div>
+        <div class="card-title">Logistica Consegne</div>
+        <div class="card-desc">Gestione completa delle spedizioni, tracciamento e organizzazione del magazzino principale.</div>
+    </a>
+
+    <!-- 2. APP FLOTTA & VEICOLI (Solo PC Console Desktop) -->
+    <a href="/veicoli_mobile/" class="card" id="btnVeicoli" class="card">
+        <div class="card-icon">🚗</div>
+        <div class="card-title">Flotta Veicoli & Spese</div>
+        <div class="card-desc">Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.</div>
+    </a>
+
+    <!-- 3. APP INVENTARIO -->
+    <a href="/" class="card">
+        <div class="card-icon">🛠️</div>
+        <div class="card-title">Inventario Attrezzi</div>
+        <div class="card-desc">Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.</div>
+    </a>
+
+    <!-- 4. APP RICETTARIO -->
+    <a href="/ricettario/" class="card">
+        <div class="card-icon">👨‍🍳</div>
+        <div class="card-title">Il Ricettario</div>
+        <div class="card-desc">L'archivio prezioso delle tue ricette personali con lista della spesa automatica.</div>
+    </a>
+
+    <!-- 5. APP MEDNUTRI PRO (Riservato Admin) -->
+    <a href="/mednutri/" class="card admin-only-card" style="display:none;">
+        <div class="card-icon">🥗</div>
+        <div class="card-title">MedNutri Pro</div>
+        <div class="card-desc">Software avanzato per piani nutrizionali personalizzati e gestione clinica.</div>
+    </a>
+
+    <!-- 6. APP PROGETTO SALUTE (Riservato Admin) -->
+    <a href="/salute/" class="card admin-only-card" style="display:none;">
+        <div class="card-icon">❤️</div>
+        <div class="card-title">Progetto Salute</div>
+        <div class="card-desc">Monitoraggio parametri vitali, fitness e benessere personale quotidiano.</div>
+    </a>
+
+    <!-- 7. APP GIOCO (Riservato Admin) -->
+    <a href="/progetto_gioco/" class="card admin-only-card" style="display:none;">
+        <div class="card-icon">🎰</div>
+        <div class="card-title">Progetto Gioco</div>
+        <div class="card-desc">Monitoraggio statistico SuperEnalotto e Gratta & Vinci con bilancio netto.</div>
+    </a>
+
+    <!-- 8. APP CAREASSIST PRO (Riservato Admin) -->
+    <a href="/careassist/" class="card admin-only-card" style="display:none;">
+        <div class="card-icon">🩺</div>
+        <div class="card-title">CareAssist Pro</div>
+        <div class="card-desc">Diario socio-sanitario, terapie farmacologiche e gestione assistenza domiciliare.</div>
+    </a>
+</div>
+
+<div class="launcher-footer-actions" style="margin-top: 2.5rem; animation: fadeUp 1s ease-out backwards; animation-delay: 0.6s; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+    <button onclick="window.open('/presentazione', '_blank')" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: #fff; border: 1px solid rgba(255,255,255,0.4); padding: 12px 28px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(2, 132, 199, 0.45); transition: all 0.3s; align-items: center; justify-content: center; gap: 8px;">
+        🛡️ PRESENTAZIONE & ARCHITETTURA AI
+    </button>
+    <button id="btnOpenQrModal" class="btn-qr-promo" onclick="apriQrModal()" style="display:flex; align-items:center; gap:8px;">
+        📱 MOSTRA QR CODE
+    </button>
+
+    <button onclick="condividiWhatsApp()" class="btn-footer-action" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #fff; border: 1px solid rgba(255,255,255,0.4); padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        💬 CONDIVIDI SU WHATSAPP
+    </button>
+
+    <button onclick="window.location.href='/esporta_progetti.html'" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #fef08a 0%, #d4af37 50%, #b45309 100%); color: #0b0f19; border: 1px solid rgba(255,255,255,0.4); padding: 12px 28px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(212, 175, 55, 0.45); transition: all 0.3s; align-items: center; justify-content: center; gap: 8px;">
+        ⚡ GENERATORE VERSIONI PERSONALIZZATE (AI)
+    </button>
+
+    <button id="btnBackupInventario" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 10px 25px; border-radius: 16px; font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); transition: all 0.3s; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2;">
+        <div style="background: rgba(255,255,255,0.2); padding: 2px 10px; border-radius: 10px; font-size: 11px; margin-bottom: 5px; color: #fff;">📦 APRI ZIP</div>
+        💾 FULL BACKUP<br><span style="font-size: 10px; color: #fef3c7; margin-top: 3px;">UI + DATI + .ZIP</span>
+    </button>
+    <button id="btnPonteMobile" class="btn-footer-action desktop-only-btn admin-only-btn" onclick="window.open('http://localhost:3002/', '_blank')" style="display:none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px 30px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); transition: all 0.3s; align-items: center; justify-content: center;">
+        🌐 PONTE MOBILE
+    </button>
+    <button id="btnShutdownSystem" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px 30px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); transition: all 0.3s; align-items: center; justify-content: center;">
+        🛑 SPEGNI SISTEMA
+    </button>
+</div>
+
+        </div>
+    </div>
+
+    
+    <!-- MODALE SMART QR CODE PROMO CELLULARE -->
+    <div id="qrPromoModal">
+        <div class="qr-promo-card">
+            <button class="qr-close-btn" onclick="chiudiQrModal()" title="Chiudi">✕</button>
+            <div class="qr-badge-top">⚡ Esperienza Mobile Unificata</div>
+            <h2 class="qr-hook-title">Porta la Suite <span>Sempre con Te</span></h2>
+            <p class="qr-hook-desc">
+                Inquadra il codice con la fotocamera del tuo smartphone: 
+                <strong>tutte le 8 App della Suite</strong> si apriranno all'istante, sincronizzate in tempo reale con questo PC senza bisogno di installare nulla.
+            </p>
+            <div class="qr-box-wrapper">
+                <div id="qrcode-container"></div>
+            </div>
+            <div>
+                <span class="qr-url-badge" id="qrTargetUrlText">http://192.168.1.5:3000/launcher.html</span>
+            </div>
+            <div style="font-size: 11.5px; color: #64748b; font-weight: 600;">
+                🔒 Connessione Wi-Fi Locale Protetta • Sincronizzazione Bidirezionale Attiva
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE SBLOCCO ADMIN (PIN MASTER SOS999) -->
+    <div id="modalAdminLogin" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10000; align-items:center; justify-content:center; padding:1rem;">
+        <div style="background:rgba(15,23,42,0.95); border:1px solid rgba(212,175,55,0.4); border-radius:24px; padding:2rem; max-width:400px; width:100%; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.6);">
+            <div style="font-size:2.8rem; margin-bottom:0.8rem;">👑</div>
+            <h2 style="font-size:1.4rem; color:#fff; margin-bottom:0.5rem; letter-spacing:1px;">Area Riservata Master</h2>
+            <p style="color:#94a3b8; font-size:0.88rem; margin-bottom:1.5rem;">Inserisci il PIN Master o il Codice Operatore per sbloccare le funzionalità riservate.</p>
+            
+            <div style="position:relative; width:100%; margin-bottom:1rem;">
+                <input type="password" id="inputPinLogin" placeholder="••••••••" style="width:100%; padding:14px 48px 14px 14px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:20px; text-align:center; letter-spacing:5px; outline:none; box-sizing:border-box;" onkeydown="if(event.key==='Enter') verificaPinLogin()">
+                <button type="button" onclick="toggleMostraPassword()" id="btnToggleEye" title="Mostra/Nascondi password" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.8; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                    👁️
+                </button>
+            </div>
+            <div style="font-size:12px; color:#f3e5ab; margin-bottom:1.2rem; font-weight:600; opacity:0.85;">
+                📞 Per assistenza o abilitazione: <u>Contattare Amministratore Ciro Milella</u>
+            </div>
+            <div id="loginErrorMsg" style="color:#ef4444; font-size:0.85rem; font-weight:600; margin-bottom:1rem; display:none;"></div>
+
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button onclick="chiudiLoginModal()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Annulla</button>
+                <button onclick="verificaPinLogin()" style="background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:10px 26px; border-radius:12px; font-weight:800; cursor:pointer; box-shadow:0 4px 15px rgba(212,175,55,0.4);">SBLOCCA 🔓</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE GESTIONE OPERATORI ABILITATI (ESCLUSIVA CIRO MILELLA) -->
+    <div id="modalGestioneOperatori" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10001; align-items:center; justify-content:center; padding:1rem;">
+        <div style="background:rgba(15,23,42,0.98); border:1px solid rgba(212,175,55,0.4); border-radius:24px; padding:2rem; max-width:550px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 15px 40px rgba(0,0,0,0.7);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; border-bottom:1px solid rgba(212,175,55,0.2); padding-bottom:0.8rem;">
+                <h2 style="font-size:1.3rem; color:#f3e5ab; display:flex; align-items:center; gap:8px;">👥 Registro Operatori Abilitati</h2>
+                <button onclick="chiudiGestioneOperatoriModal()" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">✕</button>
+            </div>
+
+            <!-- Form Nuovo Operatore con Assegnazione App Specifica -->
+            <div style="background:rgba(0,0,0,0.3); padding:1rem; border-radius:16px; border:1px solid rgba(255,255,255,0.08); margin-bottom:1.5rem;">
+                <h3 style="font-size:0.95rem; color:#fff; margin-bottom:0.8rem; font-weight:600;">➕ Aggiungi Nuovo Collaboratore / Collega</h3>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <input type="text" id="newOpNome" placeholder="Nome Collega (es. Marco Rossi)" style="padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:14px; outline:none;">
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="newOpCodice" placeholder="Codice / PIN Personale (es. 4455)" style="flex:1; padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:14px; outline:none;">
+                        <select id="newOpApp" style="background:#0f172a; color:#fff; border:1px solid rgba(212,175,55,0.3); border-radius:10px; padding:0 12px; font-size:13px; outline:none; max-width:200px;">
+                            <option value="all">🌐 Tutte le App Comuni</option>
+                            <option value="app_veicoli">🚗 Flotta Veicoli</option>
+                            <option value="app_inventario">🛠️ Inventario Attrezzi</option>
+                            <option value="app_ricettario">👨‍🍳 Il Ricettario</option>
+                            <option value="app_mednutri">🥗 MedNutri Pro</option>
+                            <option value="app_salute">❤️ Progetto Salute</option>
+                            <option value="app_careassist">🩺 CareAssist Pro</option>
+                            <option value="app_gioco">🎰 Progetto Gioco</option>
+                            <option value="app_logistica">📦 Logistica Consegne</option>
+                        </select>
+                        <button onclick="salvaNuovoOperatore()" style="background:linear-gradient(135deg, #10b981, #059669); border:none; color:#fff; font-weight:700; padding:10px 18px; border-radius:10px; cursor:pointer; font-size:13px;">AGGIUNGI</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista Operatori Esistenti -->
+            <h3 style="font-size:0.95rem; color:#94a3b8; margin-bottom:0.8rem; font-weight:600;">Operatori Attualmente Configurati:</h3>
+            <div id="opsListContainer" style="display:flex; flex-direction:column; gap:8px;">
+                <!-- Caricati dinamicamente via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE GESTIONE PROGETTI / APPLICAZIONI (MASCHERA MASTER CIRO MILELLA) -->
+    <div id="modalGestioneProgetti" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10002; align-items:center; justify-content:center; padding:1rem;">
+        <div style="background:rgba(15,23,42,0.98); border:1px solid rgba(56,189,248,0.4); border-radius:24px; padding:2rem; max-width:620px; width:100%; max-height:88vh; overflow-y:auto; box-shadow:0 15px 40px rgba(0,0,0,0.7);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; border-bottom:1px solid rgba(56,189,248,0.2); padding-bottom:0.8rem;">
+                <h2 style="font-size:1.3rem; color:#7dd3fc; display:flex; align-items:center; gap:8px;">🛠️ Maschera Gestione Progetti & Moduli</h2>
+                <button onclick="chiudiGestioneProgettiModal()" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">✕</button>
+            </div>
+
+            <!-- Form Aggiungi / Ripristina Progetto da Catalogo Suite -->
+            <div style="background:rgba(0,0,0,0.3); padding:1.2rem; border-radius:16px; border:1px solid rgba(56,189,248,0.25); margin-bottom:1.5rem;">
+                <h3 style="font-size:0.95rem; color:#7dd3fc; margin-bottom:0.6rem; font-weight:700;">➕ Aggiungi o Ripristina App dal Catalogo</h3>
+                
+                <!-- Catalogo Rapido App Predefinite -->
+                <div style="margin-bottom:12px; background:rgba(56,189,248,0.08); padding:10px 12px; border-radius:12px; border:1px dashed rgba(56,189,248,0.35);">
+                    <label style="display:block; font-size:12px; color:#38bdf8; font-weight:700; margin-bottom:6px;">⚡ SELEZIONA UN'APP DA AGGIUNGERE / RIPRISTINARE (Autocompila tutto):</label>
+                    <select id="presetAppSelector" onchange="selezionaPresetApp(this.value)" style="width:100%; padding:10px; border-radius:10px; background:#0b1329; border:1px solid rgba(56,189,248,0.5); color:#fff; font-size:13.5px; font-weight:600; outline:none; cursor:pointer;">
+                        <option value="">-- Scegli un'app dal catalogo aziendale --</option>
+                        <option value="veicoli">🚗 Flotta Veicoli & Spese (/veicoli_mobile/)</option>
+                        <option value="attrezzi">🛠️ Inventario Attrezzi (/) </option>
+                        <option value="ricettario">👨‍🍳 Il Ricettario (/ricettario/)</option>
+                        <option value="mednutri">🥗 MedNutri Pro (/mednutri/)</option>
+                        <option value="salute">❤️ Progetto Salute (/salute/)</option>
+                        <option value="careassist">🩺 CareAssist Pro (/careassist/)</option>
+                        <option value="gioco">🎰 Progetto Gioco (/progetto_gioco/)</option>
+                        <option value="logistica">📦 Logistica Consegne (/logistica/)</option>
+                        <option value="custom">✨ Altro / Link Personalizzato (vuoto)</option>
+                    </select>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 80px 1fr; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="newProjIcon" placeholder="Icona" value="📦" style="padding:10px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(56,189,248,0.3); color:#fff; font-size:18px; text-align:center; outline:none;">
+                    <input type="text" id="newProjTitle" placeholder="Titolo Progetto (es. Progetto Salute)" style="padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(56,189,248,0.3); color:#fff; font-size:14px; outline:none;">
+                </div>
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="newProjUrl" placeholder="Link / URL (es. /salute/ o https://...)" style="flex:1; padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(56,189,248,0.3); color:#fff; font-size:14px; outline:none;">
+                    <select id="newProjVis" style="background:#0f172a; color:#fff; border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:0 12px; font-size:13px; outline:none;">
+                        <option value="tutti">👥 Visibile a Tutti</option>
+                        <option value="admin">🔒 Solo Master Admin</option>
+                    </select>
+                </div>
+                <textarea id="newProjDesc" placeholder="Breve descrizione del progetto..." rows="2" style="width:100%; padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(56,189,248,0.3); color:#fff; font-size:13px; outline:none; margin-bottom:10px; box-sizing:border-box; resize:vertical;"></textarea>
+                <button onclick="salvaNuovoProgetto()" style="width:100%; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; font-weight:800; padding:11px; border-radius:10px; cursor:pointer; font-size:13.5px; letter-spacing:0.5px; box-shadow:0 4px 14px rgba(2,132,199,0.35);">SALVA E PUBBLICA PROGETTO 🚀</button>
+            </div>
+
+            <!-- Elenco Progetti Attuali con Tasti Modifica / Elimina -->
+            <h3 style="font-size:0.95rem; color:#94a3b8; margin-bottom:0.8rem; font-weight:600;">Progetti Attualmente nel Portale:</h3>
+            <div id="projectsListContainer" style="display:flex; flex-direction:column; gap:10px;">
+                <!-- Caricati dinamicamente via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Conferma Spegnimento -->
+    <div id="confirmModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(5,8,15,0.8); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:9998; flex-direction:column; align-items:center; justify-content:center;">
+        <div style="background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 24px; box-shadow: var(--shadow-glow); max-width: 450px; width: 90%; text-align: center; padding: 2.5rem; animation: fadeDown 0.3s ease-out; position: relative; overflow: hidden;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+            <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #fff;">Conferma Spegnimento</h2>
+            <p style="color: #94a3b8; font-size: 1rem; margin-bottom: 2rem; line-height: 1.5;">Sei sicuro di voler SPEGNERE l'intero sistema? Questo fermerà il server in background e chiuderà tutte le app collegate.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="btnCancelShutdown" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">Annulla</button>
+                <button id="btnConfirmShutdown" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); transition: all 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Sì, Spegni</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Spegnimento (Arresto in corso) -->
+    <style>
+        #shutdownModal { display:none; position:fixed; inset:0; background:rgba(3,6,12,0.55); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); z-index:9999; align-items:center; justify-content:center; padding:1rem; }
+        .sd-card { position:relative; overflow:hidden; width:100%; max-width:340px; text-align:center; padding:0 0 1.4rem; background:rgba(15,22,38,0.96); border:1px solid rgba(212,175,55,0.35); border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(212,175,55,0.12); animation:sdIn .45s cubic-bezier(.2,.9,.3,1.1); }
+        @keyframes sdIn { from { opacity:0; transform:translateY(16px) scale(.95); } to { opacity:1; transform:none; } }
+        .sd-bar { display:flex; align-items:center; justify-content:space-between; padding:.6rem .6rem .6rem 1rem; background:linear-gradient(90deg, rgba(212,175,55,0.16), rgba(212,175,55,0.03)); border-bottom:1px solid rgba(212,175,55,0.2); }
+        .sd-badge { font-size:.65rem; letter-spacing:3px; text-transform:uppercase; color:#f3e5ab; font-weight:600; }
+        .sd-x { width:28px; height:28px; border:none; border-radius:8px; background:rgba(255,255,255,0.06); color:#cbd5e1; font-size:15px; line-height:1; cursor:pointer; transition:all .2s; }
+        .sd-x:hover { background:#ef4444; color:#fff; transform:scale(1.08); }
+        .sd-body { padding:1.5rem 1.5rem 0; }
+        .sd-icon { position:relative; width:64px; height:64px; margin:0 auto 1rem; }
+        .sd-ring { position:absolute; inset:0; border-radius:50%; border:3px solid rgba(212,175,55,0.18); border-top-color:#d4af37; animation:sdSpin 1.1s linear infinite; }
+        .sd-check { position:absolute; inset:0; display:none; }
+        .sd-check circle { fill:rgba(74,222,128,0.10); stroke:#4ade80; stroke-width:3; stroke-dasharray:289; stroke-dashoffset:289; animation:sdDraw .7s ease forwards; }
+        .sd-check path { fill:none; stroke:#4ade80; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:60; stroke-dashoffset:60; animation:sdDraw .5s .55s ease forwards; }
+        #shutdownModal.done .sd-ring { display:none; }
+        #shutdownModal.done .sd-check { display:block; filter:drop-shadow(0 0 10px rgba(74,222,128,.45)); }
+        @keyframes sdSpin { to { transform:rotate(360deg); } }
+        @keyframes sdDraw { to { stroke-dashoffset:0; } }
+        .sd-title { font-size:1.05rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#f8fafc; margin-bottom:.5rem; }
+        #shutdownModal.done .sd-title { background:linear-gradient(135deg,#86efac,#4ade80,#16a34a); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .sd-text { color:#94a3b8; font-size:.85rem; line-height:1.5; }
+        .sd-actions { display:none; justify-content:center; gap:.6rem; margin-top:1.2rem; }
+        #shutdownModal.done .sd-actions { display:flex; animation:sdIn .5s .8s backwards; }
+        .sd-btn { padding:.55rem 1.4rem; border-radius:10px; font-size:.85rem; font-weight:700; cursor:pointer; transition:all .2s; border:1px solid rgba(255,255,255,0.15); }
+        .sd-btn.primary { background:linear-gradient(135deg,#f3e5ab,#d4af37 55%,#aa7c11); color:#0b0f19; border:none; box-shadow:0 6px 18px rgba(212,175,55,0.35); }
+        .sd-btn.ghost { background:rgba(255,255,255,0.06); color:#e2e8f0; }
+        .sd-btn:hover { transform:translateY(-2px); }
+        .sd-btn.ghost:hover { background:rgba(255,255,255,0.14); }
+    </style>
+    <div id="shutdownModal">
+        <div class="sd-card" role="dialog" aria-labelledby="sdTitle">
+            <div class="sd-bar">
+                <span class="sd-badge">C. Milella &bull; Sistema</span>
+                <button class="sd-x" id="sdCloseX" title="Chiudi" aria-label="Chiudi">&#10005;</button>
+            </div>
+            <div class="sd-body">
+                <div class="sd-icon">
+                    <div class="sd-ring"></div>
+                    <svg class="sd-check" viewBox="0 0 96 96"><circle cx="48" cy="48" r="46"/><path d="M28 50 L42 64 L69 34"/></svg>
+                </div>
+                <h2 class="sd-title" id="sdTitle">Arresto in corso</h2>
+                <p class="sd-text" id="sdText">Il sistema e il server locale si stanno spegnendo.<br>Attendere prego.</p>
+                <div class="sd-actions">
+                    <button class="sd-btn ghost" id="sdBack">Indietro</button>
+                    <button class="sd-btn primary" id="sdCloseBtn">Chiudi finestra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var m = document.getElementById('shutdownModal');
+            function hide() { m.style.display = 'none'; }
+            function closeWin() { window.close(); setTimeout(hide, 300); }
+            document.getElementById('sdCloseX').addEventListener('click', closeWin);
+            document.getElementById('sdCloseBtn').addEventListener('click', closeWin);
+            document.getElementById('sdBack').addEventListener('click', hide);
+            document.addEventListener('keydown', function (e) { 
+                if (e.key === 'Escape') {
+                    if (m.style.display === 'flex') { hide(); }
+                    else if (document.fullscreenElement) { if (document.exitFullscreen) document.exitFullscreen(); }
+                    else {
+                        const cm = document.getElementById('confirmModal');
+                        if (cm.style.display === 'flex') cm.style.display = 'none';
+                        else cm.style.display = 'flex';
+                    }
+                }
+            });
+        })();
+    </script>
+
+    <script>
+        // Logistica Launch
+        document.getElementById('btnLogistica').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const btn = e.currentTarget;
+            const originalHTML = btn.innerHTML;
+            btn.style.pointerEvents = 'none';
+            btn.innerHTML = `<div class="card-icon">⏳</div><div class="card-title">Avvio in corso...</div><div class="card-desc">Apertura della finestra Logistica a schermo intero...</div>`;
+            
+            try {
+                await fetch('/api/launch-logistica', { method: 'POST' });
+                btn.innerHTML = `<div class="card-icon">✅</div><div class="card-title">Avviato!</div><div class="card-desc">L'applicazione è aperta a schermo intero!</div>`;
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.style.pointerEvents = 'auto';
+                }, 4000);
+            } catch(e) {
+                alert("Errore di connessione al server");
+                btn.innerHTML = originalHTML;
+                btn.style.pointerEvents = 'auto';
+            }
+        });
+
+        // Veicoli Launch
+        const btnVeicoli = document.getElementById('btnVeicoli');
+        if (btnVeicoli) {
+            btnVeicoli.addEventListener('click', async (e) => {
+                const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+                if (isMobile) {
+                    // Su smartphone naviga direttamente alla pagina web di gestione veicoli
+                    return;
+                }
+                e.preventDefault();
+                try {
+                    await fetch('/api/launch-veicoli', { method: 'POST' });
+                } catch(err) {
+                    window.location.href = '/veicoli/auto.html';
+                }
+            });
+        }
+
+        // Modale custom logic
+        const confirmModal = document.getElementById('confirmModal');
+        const shutdownModal = document.getElementById('shutdownModal');
+
+        // Backup Inventario Launch
+        document.getElementById('btnBackupInventario').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const btn = e.currentTarget;
+            const originalHTML = btn.innerHTML;
+            btn.style.pointerEvents = 'none';
+            btn.innerHTML = `<div style="font-size: 20px; margin-bottom: 5px;">⏳</div>Avvio Backup...`;
+            
+            try {
+                await fetch('/api/backup-inventario', { method: 'POST' });
+                btn.innerHTML = `<div style="font-size: 20px; margin-bottom: 5px;">✅</div>FATTO`;
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.style.pointerEvents = 'auto';
+                }, 3000);
+            } catch(e) {
+                alert("Errore nell'avvio del backup");
+                btn.innerHTML = originalHTML;
+                btn.style.pointerEvents = 'auto';
+            }
+        });
+
+        document.getElementById('btnShutdownSystem').addEventListener('click', () => {
+            confirmModal.style.display = 'flex';
+        });
+
+        document.getElementById('btnCancelShutdown').addEventListener('click', () => {
+            confirmModal.style.display = 'none';
+        });
+
+        document.getElementById('btnConfirmShutdown').addEventListener('click', async () => {
+            confirmModal.style.display = 'none';
+            shutdownModal.classList.remove('done');
+            shutdownModal.style.display = 'flex';
+            
+            const shutdownTitle = document.getElementById('sdTitle');
+            const shutdownText = document.getElementById('sdText');
+
+            // Avvia prima il backup in modo silenzioso
+            shutdownTitle.textContent = 'Salvataggio dati';
+            shutdownText.innerHTML = 'Salvataggio automatico dei dati in corso...<br>Attendere.';
+            try {
+                await fetch('/api/backup-inventario', { method: 'POST' });
+            } catch(e) {}
+            
+            shutdownTitle.textContent = 'Arresto in corso';
+            shutdownText.innerHTML = 'Il sistema e il server locale si stanno spegnendo.<br>Attendere prego.';
+
+            try {
+                await fetch('/api/shutdown', { method: 'POST' });
+            } catch(e) {}
+            
+            setTimeout(() => {
+                shutdownTitle.textContent = 'Sistema spento';
+                shutdownText.innerHTML = 'Il server è stato chiuso ed i dati sono stati<br>salvati con successo.';
+                shutdownModal.classList.add('done');
+                setTimeout(() => {
+                    try { window.close(); } catch(e) {}
+                }, 800);
+            }, 600);
+        });
+
+        // NOTA: Lo spegnimento del server viene effettuato esclusivamente tramite l'apposito pulsante 'SPEGNI SISTEMA' con conferma.
+
+        // Auto-fullscreen rimosso per consentire flessibilita' e finestra standard
+    </script>
+<!-- Barra Controlli Rapidi Flessibile in Alto a Destra -->
+<div id="floatingControlBar" class="desktop-only-card" style="position:fixed; top:16px; right:20px; z-index:9999; display:flex; align-items:center; gap:10px;">
+    <button id="btnTopExit" onclick="document.getElementById('confirmModal').style.display='flex';" title="Chiudi / Spegni Sistema" style="background:rgba(220,38,38,0.85); border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 14px; border-radius:12px; font-weight:700; font-size:13px; cursor:pointer; backdrop-filter:blur(8px); display:flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(220,38,38,0.4); transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,1)'; this.style.transform='scale(1.04)'" onmouseout="this.style.background='rgba(220,38,38,0.85)'; this.style.transform='scale(1)'">
+        <span>❌</span> <span>ESCI / SPEGNI</span>
+    </button>
+    <button id="btnToggleFullscreen" onclick="toggleFullScreen()" title="Schermo Intero (F11)" style="background:rgba(17,24,39,0.8); border:1px solid rgba(212,175,55,0.4); color:#d4af37; padding:8px 14px; border-radius:12px; font-weight:600; font-size:13px; cursor:pointer; backdrop-filter:blur(8px); display:flex; align-items:center; gap:6px; transition:all 0.2s;" onmouseover="this.style.background='rgba(212,175,55,0.25)'" onmouseout="this.style.background='rgba(17,24,39,0.8)'">
+        <span id="fsIcon">⛶</span> <span id="fsText">Schermo Intero</span>
+    </button>
+</div>
+<script>
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(()=>{});
+        const icon = document.getElementById('fsIcon');
+        const txt = document.getElementById('fsText');
+        if (icon) icon.textContent = '🗗';
+        if (txt) txt.textContent = 'Riduci';
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        const icon = document.getElementById('fsIcon');
+        const txt = document.getElementById('fsText');
+        if (icon) icon.textContent = '⛶';
+        if (txt) txt.textContent = 'Schermo Intero';
+    }
+}
+document.addEventListener('fullscreenchange', () => {
+    const icon = document.getElementById('fsIcon');
+    const txt = document.getElementById('fsText');
+    if (document.fullscreenElement) {
+        if (icon) icon.textContent = '🗗';
+        if (txt) txt.textContent = 'Riduci';
+    } else {
+        if (icon) icon.textContent = '⛶';
+        if (txt) txt.textContent = 'Schermo Intero';
+    }
+});
+</script>
+<script>
+    // GESTIONE AUTOMATICA DINAMICA QR CODE
+    function generaQrCodeDinamico() {
+        // Se siamo su Render o online, usa l'URL pubblico esatto, altrimenti la rete locale
+        var targetUrl = window.location.origin + '/launcher.html';
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            targetUrl = 'http://192.168.1.5:3000/launcher.html';
+        }
+        
+        var urlElem = document.getElementById('qrTargetUrlText');
+        if (urlElem) urlElem.textContent = targetUrl;
+
+        var container = document.getElementById('qrcode-container');
+        if (container) {
+            container.innerHTML = '';
+            if (typeof QRCode !== 'undefined') {
+                _qrcodeInstance = new QRCode(container, {
+                    text: targetUrl,
+                    width: 190,
+                    height: 190,
+                    colorDark : "#070d18",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            }
+        }
+    }
+
+    function apriQrModal() {
+        var modal = document.getElementById('qrPromoModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            generaQrCodeDinamico();
+        }
+    }
+
+    function chiudiQrModal() {
+        var modal = document.getElementById('qrPromoModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function condividiWhatsApp() {
+        var url = window.location.origin + '/launcher.html';
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            url = 'https://milella-suite.onrender.com/launcher.html';
+        }
+        var msg = encodeURIComponent("📱 Accedi alla Suite Gestionale C. Milella:\n" + url);
+        window.open("https://api.whatsapp.com/send?text=" + msg, "_blank");
+    }
+
+    // Chiudi modale cliccando fuori
+    window.addEventListener('click', function(e) {
+        var modal = document.getElementById('qrPromoModal');
+        if (e.target === modal) chiudiQrModal();
+        var mLogin = document.getElementById('modalAdminLogin');
+        if (e.target === mLogin) chiudiLoginModal();
+        var mOps = document.getElementById('modalGestioneOperatori');
+        if (e.target === mOps) chiudiGestioneOperatoriModal();
+    });
+
+    // ==============================================================================
+    // GESTIONE RUOLO OPERATORE VS ADMIN (PIN MASTER SOS999)
+    // ==============================================================================
+    let currentRole = localStorage.getItem('milella_role') || 'operatore';
+    let currentAdminPin = sessionStorage.getItem('milella_admin_pin') || '';
+    let currentAppAbilitate = JSON.parse(sessionStorage.getItem('milella_app_abilitate') || '["all"]');
+
+    function applicaRuolo(role, nome, appAbilitate) {
+        currentRole = role;
+        localStorage.setItem('milella_role', role);
+        if (appAbilitate) {
+            currentAppAbilitate = appAbilitate;
+            sessionStorage.setItem('milella_app_abilitate', JSON.stringify(appAbilitate));
+        }
+
+        const badgeIcon = document.getElementById('userBadgeIcon');
+        const badgeText = document.getElementById('userBadgeText');
+        const btnSwitch = document.getElementById('btnSwitchRole');
+        const btnManage = document.getElementById('btnManageOps');
+        const btnProjects = document.getElementById('btnManageProjects');
+        const btnLogout = document.getElementById('btnLogoutRole');
+        const adminCards = document.querySelectorAll('.admin-only-card');
+        const adminBtns = document.querySelectorAll('.admin-only-btn');
+
+        if (role === 'admin') {
+            badgeIcon.textContent = '👑';
+            badgeText.textContent = 'Modalità: CIRO MILELLA (Master Admin)';
+            badgeText.parentElement.style.background = 'rgba(212,175,55,0.25)';
+            badgeText.parentElement.style.borderColor = '#d4af37';
+            btnSwitch.style.display = 'none';
+            btnManage.style.display = 'inline-flex';
+            if (btnProjects) btnProjects.style.display = 'inline-flex';
+            btnLogout.style.display = 'inline-flex';
+
+            adminCards.forEach(c => c.style.display = 'flex');
+            adminBtns.forEach(b => b.style.display = 'inline-flex');
+        } else {
+            badgeIcon.textContent = '👷';
+            badgeText.textContent = nome ? ('Operatore: ' + nome) : 'Modalità: Operatore Ordinario';
+            badgeText.parentElement.style.background = 'rgba(212,175,55,0.1)';
+            badgeText.parentElement.style.borderColor = 'rgba(212,175,55,0.25)';
+            btnSwitch.style.display = 'inline-flex';
+            btnManage.style.display = 'none';
+            if (btnProjects) btnProjects.style.display = 'none';
+            btnLogout.style.display = nome ? 'inline-flex' : 'none';
+
+            adminCards.forEach(c => c.style.display = 'none');
+            adminBtns.forEach(b => b.style.display = 'none');
+        }
+        renderCardProgetti();
+    }
+
+    function apriLoginModal() {
+        const m = document.getElementById('modalAdminLogin');
+        const input = document.getElementById('inputPinLogin');
+        const err = document.getElementById('loginErrorMsg');
+        input.value = '';
+        err.style.display = 'none';
+        m.style.display = 'flex';
+        input.focus();
+    }
+
+    function chiudiLoginModal() {
+        document.getElementById('modalAdminLogin').style.display = 'none';
+        const input = document.getElementById('inputPinLogin');
+        if (input) input.type = 'password';
+        const eye = document.getElementById('btnToggleEye');
+        if (eye) eye.textContent = '👁️';
+    }
+
+    function toggleMostraPassword() {
+        const input = document.getElementById('inputPinLogin');
+        const eye = document.getElementById('btnToggleEye');
+        if (!input) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (eye) eye.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            if (eye) eye.textContent = '👁️';
+        }
+    }
+
+    async function verificaPinLogin() {
+        const pin = document.getElementById('inputPinLogin').value.trim();
+        const err = document.getElementById('loginErrorMsg');
+        if (!pin) return;
+
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codice: pin })
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (data.ruolo === 'admin') {
+                    currentAdminPin = pin.toUpperCase();
+                    localStorage.setItem('milella_admin_pin', 'SOS999');
+                    localStorage.setItem('milella_user_nome', data.nome);
+                    localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                    applicaRuolo('admin', data.nome, ['all']);
+                } else {
+                    localStorage.setItem('milella_user_nome', data.nome);
+                    localStorage.setItem('milella_user_pin', pin);
+                    localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
+                    applicaRuolo('operatore', data.nome, data.appAbilitate || []);
+                }
+                chiudiLoginModal();
+            } else {
+                err.textContent = data.message || 'PIN errato';
+                err.style.display = 'block';
+            }
+        } catch(e) {
+            // Fallback locale offline per il PIN master (accetta SOS999, sos999, Sos999)
+            if (pin.toUpperCase() === 'SOS999') {
+                currentAdminPin = 'SOS999';
+                localStorage.setItem('milella_admin_pin', 'SOS999');
+                localStorage.setItem('milella_user_nome', 'Ciro Milella (Admin)');
+                localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                applicaRuolo('admin', 'Ciro Milella (Admin)', ['all']);
+                chiudiLoginModal();
+            } else {
+                err.textContent = 'Errore di connessione o PIN non valido';
+                err.style.display = 'block';
+            }
+        }
+    }
+
+    // ==============================================================================
+    // GESTIONE BLOCCO DI BENVENUTO / GATE DI ACCESSO RISERVATO
+    // ==============================================================================
+    function toggleMostraPasswordGate() {
+        const input = document.getElementById('inputPinGate');
+        const eye = document.getElementById('btnToggleEyeGate');
+        if (!input) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (eye) eye.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            if (eye) eye.textContent = '👁️';
+        }
+    }
+
+    async function verificaPinGate() {
+        const pin = document.getElementById('inputPinGate').value.trim();
+        const err = document.getElementById('gateErrorMsg');
+        if (!pin) {
+            if (err) { err.textContent = 'Inserisci il tuo codice PIN personale'; err.style.display = 'block'; }
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codice: pin })
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (data.ruolo === 'admin') {
+                    currentAdminPin = pin.toUpperCase();
+                    localStorage.setItem('milella_admin_pin', 'SOS999');
+                    localStorage.setItem('milella_user_nome', data.nome);
+                    localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                    localStorage.setItem('milella_last_authenticated_user', data.nome);
+                    localStorage.setItem('milella_last_authenticated_role', 'admin');
+                    localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
+                    applicaRuolo('admin', data.nome, ['all']);
+                } else {
+                    localStorage.setItem('milella_user_nome', data.nome);
+                    localStorage.setItem('milella_user_pin', pin);
+                    localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
+                    localStorage.setItem('milella_last_authenticated_user', data.nome);
+                    localStorage.setItem('milella_last_authenticated_role', 'operatore');
+                    localStorage.setItem('milella_last_authenticated_pin', pin);
+                    localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
+                    applicaRuolo('operatore', data.nome, data.appAbilitate || []);
+                }
+                document.getElementById('gateBloccoIngresso').style.display = 'none';
+            } else {
+                err.textContent = data.message || 'Codice PIN non valido';
+                err.style.display = 'block';
+            }
+        } catch(e) {
+            // Fallback locale offline per il PIN master (accetta SOS999, sos999, Sos999)
+            if (pin.toUpperCase() === 'SOS999') {
+                currentAdminPin = 'SOS999';
+                localStorage.setItem('milella_admin_pin', 'SOS999');
+                localStorage.setItem('milella_user_nome', 'Ciro Milella (Admin)');
+                localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                localStorage.setItem('milella_last_authenticated_user', 'Ciro Milella (Admin)');
+                localStorage.setItem('milella_last_authenticated_role', 'admin');
+                localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
+                applicaRuolo('admin', 'Ciro Milella (Admin)', ['all']);
+                document.getElementById('gateBloccoIngresso').style.display = 'none';
+            } else {
+                err.textContent = 'Errore di connessione o PIN non valido';
+                err.style.display = 'block';
+            }
+        }
+    }
+
+    // Sblocco Biometrico tramite Impronta Digitale / FaceID (WebAuthn / Biometrics)
+    async function accediConImpronta() {
+        const err = document.getElementById('gateErrorMsg');
+        if (err) err.style.display = 'none';
+
+        // 1. Verifica se l'utente ha già fatto almeno un primo accesso con PIN su questo dispositivo
+        const savedLastUser = localStorage.getItem('milella_last_authenticated_user');
+        const savedLastRole = localStorage.getItem('milella_last_authenticated_role');
+        const savedLastAppsRaw = localStorage.getItem('milella_last_authenticated_apps');
+
+        if (!savedLastUser || !savedLastRole) {
+            if (err) {
+                err.textContent = '⚠️ Prima configurazione: inserisci prima il tuo PIN per attivare la biometria.';
+                err.style.display = 'block';
+            }
+            alert('Prima configurazione necessaria:\nInserisci il tuo codice PIN la prima volta. Successivamente potrai accedere istantaneamente con l\'impronta digitale!');
+            return;
+        }
+
+        // 2. Controlla se il dispositivo/browser supporta la biometria
+        if (!window.PublicKeyCredential) {
+            alert('Il tuo browser o dispositivo non supporta il sensore di impronte digitali WebAuthn. Usa il PIN.');
+            return;
+        }
+
+        try {
+            const savedLastApps = JSON.parse(savedLastAppsRaw || '[]');
+            const challenge = new Uint8Array(32);
+            window.crypto.getRandomValues(challenge);
+
+            // Richiesta di scansione impronta/biometria reale al dispositivo
+            let authenticated = false;
+
+            // Se esiste già una credenziale biometrica salvata
+            const rawCredId = localStorage.getItem('milella_bio_cred_id');
+            if (rawCredId) {
+                const credIdBytes = Uint8Array.from(atob(rawCredId), c => c.charCodeAt(0));
+                const assertion = await navigator.credentials.get({
+                    publicKey: {
+                        challenge: challenge,
+                        allowCredentials: [{
+                            id: credIdBytes,
+                            type: 'public-key'
+                        }],
+                        timeout: 60000,
+                        userVerification: "required"
+                    }
+                });
+                if (assertion) authenticated = true;
+            } else {
+                // Registrazione biometrica iniziale per questo utente che ha già validato il PIN
+                const userId = new Uint8Array(16);
+                window.crypto.getRandomValues(userId);
+                const newCred = await navigator.credentials.create({
+                    publicKey: {
+                        challenge: challenge,
+                        rp: { name: "Suite C. Milella" },
+                        user: {
+                            id: userId,
+                            name: savedLastUser,
+                            displayName: savedLastUser
+                        },
+                        pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
+                        authenticatorSelection: {
+                            authenticatorAttachment: "platform",
+                            userVerification: "required"
+                        },
+                        timeout: 60000
+                    }
+                });
+                if (newCred && newCred.rawId) {
+                    const idBase64 = btoa(String.fromCharCode(...new Uint8Array(newCred.rawId)));
+                    localStorage.setItem('milella_bio_cred_id', idBase64);
+                    authenticated = true;
+                }
+            }
+
+            if (!authenticated) {
+                throw new Error("Verifica biometrica non completata.");
+            }
+
+            // Accesso consentito solo dopo verifica dell'impronta
+            if (savedLastRole === 'admin') {
+                currentAdminPin = 'SOS999';
+                localStorage.setItem('milella_admin_pin', 'SOS999');
+            } else {
+                const savedPin = localStorage.getItem('milella_last_authenticated_pin') || '';
+                localStorage.setItem('milella_user_pin', savedPin);
+            }
+            localStorage.setItem('milella_user_nome', savedLastUser);
+            localStorage.setItem('milella_app_abilitate', JSON.stringify(savedLastApps));
+
+            const gate = document.getElementById('gateBloccoIngresso');
+            if (gate) gate.style.display = 'none';
+
+            applicaRuolo(savedLastRole, savedLastUser, savedLastApps);
+            alert('👆 Impronta verificata! Benvenuto ' + savedLastUser);
+        } catch(e) {
+            console.warn('Errore biometria:', e);
+            if (err) {
+                err.textContent = 'Impronta non riconosciuta o annullata. Inserisci il PIN.';
+                err.style.display = 'block';
+            }
+        }
+    }
+
+    function esciAdmin() {
+        localStorage.removeItem('milella_admin_pin');
+        localStorage.removeItem('milella_app_abilitate');
+        localStorage.removeItem('milella_user_nome');
+        localStorage.removeItem('milella_user_pin');
+        localStorage.removeItem('milella_role');
+        sessionStorage.clear();
+        currentAdminPin = '';
+        currentAppAbilitate = [];
+        const gate = document.getElementById('gateBloccoIngresso');
+        if (gate) {
+            gate.style.display = 'flex';
+            const pinIn = document.getElementById('inputPinGate');
+            if (pinIn) { pinIn.value = ''; pinIn.type = 'password'; }
+            const err = document.getElementById('gateErrorMsg');
+            if (err) err.style.display = 'none';
+            aggiornaVisibilitaBiometriaGate();
+        }
+        applicaRuolo('bloccato', null, []);
+    }
+
+    // GESTIONE OPERATORI (PANNELLO ADMIN)
+    function apriGestioneOperatoriModal() {
+        document.getElementById('modalGestioneOperatori').style.display = 'flex';
+        caricaOperatori();
+    }
+
+    function chiudiGestioneOperatoriModal() {
+        document.getElementById('modalGestioneOperatori').style.display = 'none';
+    }
+
+    async function caricaOperatori() {
+        const container = document.getElementById('opsListContainer');
+        container.innerHTML = '<div style="color:#94a3b8; font-size:13px;">Caricamento...</div>';
+        try {
+            const res = await fetch('/api/operatori/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pinAdmin: currentAdminPin || 'SOS999', azione: 'list' })
+            });
+            const data = await res.json();
+            if (data.success && data.operatori) {
+                renderOps(data.operatori);
+            }
+        } catch(e) {
+            container.innerHTML = '<div style="color:#ef4444; font-size:13px;">Errore caricamento lista</div>';
+        }
+    }
+
+    function renderOps(ops) {
+        const container = document.getElementById('opsListContainer');
+        container.innerHTML = '';
+        const appNomi = {
+            'all': 'Tutte le App Comuni',
+            'app_veicoli': '🚗 Flotta Veicoli',
+            'app_inventario': '🛠️ Inventario Attrezzi',
+            'app_ricettario': '👨‍🍳 Il Ricettario',
+            'app_mednutri': '🥗 MedNutri Pro',
+            'app_salute': '❤️ Progetto Salute',
+            'app_careassist': '🩺 CareAssist Pro',
+            'app_gioco': '🎰 Progetto Gioco',
+            'app_logistica': '📦 Logistica Consegne'
+        };
+
+        ops.forEach(op => {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:12px; gap:8px; flex-wrap:wrap;';
+            const appAssegnata = (op.appAbilitate && op.appAbilitate.length > 0) ? op.appAbilitate[0] : 'all';
+            const appLabel = appNomi[appAssegnata] || 'Tutte le App Comuni';
+
+            // Messaggio per invio rapido via WhatsApp o Mail
+            const portaleUrl = window.location.origin + '/launcher.html';
+            const msgTesto = `Ciao ${op.nome},\necco il tuo accesso alla Suite Aziendale C. Milella.\n\n🌐 Portale: ${portaleUrl}\n🔑 Tuo PIN Personale: ${op.codice}\n📱 Tua App Assegnata: ${appLabel}\n\nApri il link, clicca su "SBLOCCA ADMIN (PIN)" e inserisci il tuo codice personale.\n\n⚠️ NOTA: Questo codice è strettamente personale, conservarlo con cautela. Per qualsiasi comunicazione o necessità contattare l'amministratore del progetto (Ciro Milella).`;
+            const waLink = `https://wa.me/?text=${encodeURIComponent(msgTesto)}`;
+            const mailLink = `mailto:?subject=${encodeURIComponent('Credenziali Accesso Suite C. Milella')}&body=${encodeURIComponent(msgTesto)}`;
+
+            row.innerHTML = `
+                <div style="flex:1; min-width:200px;">
+                    <div style="font-weight:700; color:${op.attivo ? '#fff' : '#64748b'}; font-size:14px; display:flex; align-items:center; gap:6px;">
+                        ${op.nome} ${op.ruolo === 'admin' ? '<span style="color:#f59e0b; font-size:11px;">👑 MASTER</span>' : ''}
+                    </div>
+                    <div style="font-size:12px; color:#94a3b8; font-family:monospace; margin-top:2px;">
+                        PIN: <strong style="color:#f3e5ab; font-size:13px;">${op.codice}</strong> &bull; App: <span style="color:#38bdf8;">${appLabel}</span> &bull; <span style="color:${op.attivo ? '#10b981':'#ef4444'}">${op.attivo ? 'Attivo' : 'Disattivato'}</span>
+                    </div>
+                </div>
+                ${op.ruolo !== 'admin' ? `
+                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                        <a href="${waLink}" target="_blank" title="Invia PIN e istruzioni su WhatsApp" style="text-decoration:none; background:rgba(37,211,102,0.2); border:1px solid #25d366; color:#86efac; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                            💬 WhatsApp
+                        </a>
+                        <a href="${mailLink}" target="_blank" title="Invia PIN e istruzioni via Email" style="text-decoration:none; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#7dd3fc; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                            ✉️ Email
+                        </a>
+                        <button onclick="toggleOp('${op.id}')" style="background:rgba(255,255,255,0.1); border:none; color:#cbd5e1; padding:5px 9px; border-radius:8px; font-size:11.5px; cursor:pointer;">${op.attivo ? 'Disattiva' : 'Attiva'}</button>
+                        <button onclick="eliminaOp('${op.id}')" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:5px 9px; border-radius:8px; font-size:11.5px; cursor:pointer;">Elimina</button>
+                    </div>
+                ` : '<span style="font-size:12px; color:#d4af37;">Protetto</span>'}
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    async function salvaNuovoOperatore() {
+        const nome = document.getElementById('newOpNome').value.trim();
+        const codice = document.getElementById('newOpCodice').value.trim();
+        const appId = document.getElementById('newOpApp').value;
+        if (!nome || !codice) {
+            alert('Inserisci sia il nome che il codice');
+            return;
+        }
+        try {
+            const res = await fetch('/api/operatori/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pinAdmin: currentAdminPin || 'SOS999',
+                    azione: 'add',
+                    operatore: { nome, codice, ruolo: 'operatore', appId, appAbilitate: [appId] }
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('newOpNome').value = '';
+                document.getElementById('newOpCodice').value = '';
+                renderOps(data.operatori);
+                alert(`Operatore ${nome} aggiunto! Ora puoi inviargli il PIN cliccando su 'WhatsApp' o 'Email'.`);
+            }
+        } catch(e) {
+            alert('Errore salvataggio operatore');
+        }
+    }
+
+    async function toggleOp(id) {
+        try {
+            const res = await fetch('/api/operatori/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pinAdmin: currentAdminPin || 'SOS999', azione: 'toggle', operatore: { id } })
+            });
+            const data = await res.json();
+            if (data.success) renderOps(data.operatori);
+        } catch(e) {}
+    }
+
+    async function eliminaOp(id) {
+        if (!confirm('Vuoi rimuovere questo operatore?')) return;
+        try {
+            const res = await fetch('/api/operatori/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pinAdmin: currentAdminPin || 'SOS999', azione: 'delete', operatore: { id } })
+            });
+            const data = await res.json();
+            if (data.success) renderOps(data.operatori);
+        } catch(e) {}
+    }
+
+    // ==============================================================================
+    // GESTIONE PROGETTI DINAMICI (AGGIUNGI / ELIMINA / ATTIVA / DISATTIVA)
+    // ==============================================================================
+    let listaProgettiAttuali = [];
+
+    async function caricaProgettiDinamici() {
+        try {
+            const res = await fetch('/api/progetti/lista');
+            listaProgettiAttuali = await res.json();
+            renderCardProgetti();
+        } catch(e) {
+            console.warn("Uso schede statiche fallback:", e);
+        }
+    }
+
+    function renderCardProgetti() {
+        const wrapper = document.querySelector('.cards-wrapper');
+        if (!wrapper || !listaProgettiAttuali.length) return;
+
+        wrapper.innerHTML = '';
+        listaProgettiAttuali.forEach(p => {
+            if (!p.attivo) return;
+            const isAdminProj = p.visibilita === 'admin';
+            const card = document.createElement('a');
+            card.href = p.url;
+            card.className = 'card ' + (isAdminProj ? 'admin-only-card' : '');
+
+            // Regola di visibilità:
+            // 1. Se Admin (Ciro Milella) -> vede sempre tutto
+            // 2. Se Operatore con app specifica abilitata -> vede SOLO la sua app
+            // 3. Se Operatore 'all' generico -> vede solo i progetti 'tutti'
+            let visibile = true;
+            if (currentRole === 'admin') {
+                visibile = true;
+            } else if (currentAppAbilitate && currentAppAbilitate.length > 0 && !currentAppAbilitate.includes('all')) {
+                // Ha una o più app dedicate assegnate col suo PIN
+                visibile = currentAppAbilitate.includes(p.id);
+            } else {
+                // Operatore ordinario non admin
+                visibile = !isAdminProj;
+            }
+
+            card.style.display = visibile ? 'flex' : 'none';
+            card.innerHTML = `
+                <div class="card-icon">${p.icona || '📁'}</div>
+                <div class="card-title">${p.titolo}</div>
+                <div class="card-desc">${p.descrizione || ''}</div>
+            `;
+            wrapper.appendChild(card);
+        });
+    }
+
+    function apriGestioneProgettiModal() {
+        document.getElementById('modalGestioneProgetti').style.display = 'flex';
+        caricaPannelloProgetti();
+    }
+
+    function chiudiGestioneProgettiModal() {
+        document.getElementById('modalGestioneProgetti').style.display = 'none';
+    }
+
+    async function caricaPannelloProgetti() {
+        const container = document.getElementById('projectsListContainer');
+        container.innerHTML = '<div style="color:#94a3b8; font-size:13px;">Caricamento progetti...</div>';
+        try {
+            const res = await fetch('/api/progetti/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pinAdmin: currentAdminPin || 'SOS999', azione: 'list' })
+            });
+            const data = await res.json();
+            if (data.success && data.progetti) {
+                listaProgettiAttuali = data.progetti;
+                renderListaPannelloProgetti(data.progetti);
+            }
+        } catch(e) {
+            container.innerHTML = '<div style="color:#ef4444; font-size:13px;">Errore caricamento lista</div>';
+        }
+    }
+
+    // Preset App della Suite Aziendale
+    const CATALOGO_APP_SUITE = {
+        'veicoli': {
+            icona: '🚗',
+            titolo: 'Flotta Veicoli & Spese',
+            url: '/veicoli_mobile/',
+            visibilita: 'tutti',
+            descrizione: 'Gestione rifornimenti, manutenzioni e flotta aziendale'
+        },
+        'attrezzi': {
+            icona: '🛠️',
+            titolo: 'Inventario Attrezzi',
+            url: '/',
+            visibilita: 'tutti',
+            descrizione: 'Catalogo attrezzature, prestiti, codice QR e assegnazione cantieri'
+        },
+        'ricettario': {
+            icona: '👨‍🍳',
+            titolo: 'Il Ricettario',
+            url: '/ricettario/',
+            visibilita: 'tutti',
+            descrizione: 'Ricette culinarie, dosi e preparazioni speciali'
+        },
+        'mednutri': {
+            icona: '🥗',
+            titolo: 'MedNutri Pro',
+            url: '/mednutri/',
+            visibilita: 'admin',
+            descrizione: 'Piani nutrizionali, tabelle caloriche e diete personalizzate'
+        },
+        'salute': {
+            icona: '❤️',
+            titolo: 'Progetto Salute',
+            url: '/salute/',
+            visibilita: 'admin',
+            descrizione: 'Monitoraggio parametri vitali, cartelle e statistiche di salute'
+        },
+        'careassist': {
+            icona: '🩺',
+            titolo: 'CareAssist Pro',
+            url: '/careassist/',
+            visibilita: 'admin',
+            descrizione: 'Assistenza pazienti, turni e diaria clinica'
+        },
+        'gioco': {
+            icona: '🎰',
+            titolo: 'Progetto Gioco',
+            url: '/progetto_gioco/',
+            visibilita: 'admin',
+            descrizione: 'Area relax, sfide e mini-giochi'
+        },
+        'logistica': {
+            icona: '📦',
+            titolo: 'Logistica Consegne',
+            url: '/logistica/',
+            visibilita: 'tutti',
+            descrizione: 'Tracciamento ordini, spedizioni e bolle di consegna'
+        }
+    };
+
+    function selezionaPresetApp(key) {
+        if (!key || !CATALOGO_APP_SUITE[key]) {
+            if (key === 'custom') {
+                document.getElementById('newProjIcon').value = '📁';
+                document.getElementById('newProjTitle').value = '';
+                document.getElementById('newProjUrl').value = '';
+                document.getElementById('newProjDesc').value = '';
+                document.getElementById('newProjVis').value = 'tutti';
+            }
+            return;
+        }
+        const app = CATALOGO_APP_SUITE[key];
+        document.getElementById('newProjIcon').value = app.icona;
+        document.getElementById('newProjTitle').value = app.titolo;
+        document.getElementById('newProjUrl').value = app.url;
+        document.getElementById('newProjVis').value = app.visibilita;
+        document.getElementById('newProjDesc').value = app.descrizione;
+    }
+
+    function renderListaPannelloProgetti(projs) {
+        const container = document.getElementById('projectsListContainer');
+        container.innerHTML = '';
+        projs.forEach(p => {
+            const isAdmin = p.visibilita === 'admin';
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:12px; gap:10px;';
+            row.innerHTML = `
+                <div style="display:flex; align-items:center; gap:12px; overflow:hidden; flex:1;">
+                    <span style="font-size:24px;">${p.icona || '📁'}</span>
+                    <div style="overflow:hidden; width:100%;">
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-weight:700; color:${p.attivo ? '#fff' : '#64748b'}; font-size:14px;">
+                            <span>${p.titolo}</span>
+                            <button onclick="toggleVisibilitaProgetto('${p.id}')" title="Clicca qui per cambiare visibilità: Solo Admin ↔ Tutti" style="border:none; cursor:pointer; font-size:11px; padding:3px 8px; border-radius:8px; background:${isAdmin ? 'rgba(212,175,55,0.25)' : 'rgba(56,189,248,0.25)'}; color:${isAdmin ? '#f3e5ab' : '#38bdf8'}; font-weight:700; transition:all 0.2s; border:1px solid ${isAdmin ? 'rgba(212,175,55,0.4)' : 'rgba(56,189,248,0.4)'};">
+                                ${isAdmin ? '🔒 Solo Admin (Clicca per Tutti)' : '👥 Tutti (Clicca per Solo Admin)'}
+                            </button>
+                        </div>
+                        <div style="font-size:12px; color:#94a3b8; font-family:monospace; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:280px; margin-top:2px;">URL: ${p.url}</div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:6px; flex-shrink:0;">
+                    <button onclick="toggleProgetto('${p.id}')" style="background:rgba(255,255,255,0.1); border:none; color:#cbd5e1; padding:6px 10px; border-radius:8px; font-size:11.5px; cursor:pointer;">${p.attivo ? 'Disattiva' : 'Attiva'}</button>
+                    <button onclick="eliminaProgetto('${p.id}')" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:6px 10px; border-radius:8px; font-size:11.5px; cursor:pointer;">Elimina</button>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    async function toggleVisibilitaProgetto(id) {
+        try {
+            const res = await fetch('/api/progetti/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pinAdmin: currentAdminPin || 'SOS999', azione: 'toggleVis', progetto: { id } })
+            });
+            const data = await res.json();
+            if (data.success) {
+                listaProgettiAttuali = data.progetti;
+                renderListaPannelloProgetti(data.progetti);
+                renderCardProgetti();
+            }
+        } catch(e) {
+            alert('Errore cambio visibilità');
+        }
+    }
+
+    async function salvaNuovoProgetto() {
+        const icona = document.getElementById('newProjIcon').value.trim() || '📦';
+        const titolo = document.getElementById('newProjTitle').value.trim();
+        const url = document.getElementById('newProjUrl').value.trim();
+        const visibilita = document.getElementById('newProjVis').value;
+        const descrizione = document.getElementById('newProjDesc').value.trim();
+
+        if (!titolo || !url) {
+            alert('Inserisci almeno il Titolo ed il Link/URL del progetto');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/progetti/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pinAdmin: currentAdminPin || 'SOS999',
+                    azione: 'add',
+                    progetto: { icona, titolo, url, visibilita, descrizione }
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('newProjTitle').value = '';
+                document.getElementById('newProjUrl').value = '';
+                document.getElementById('newProjDesc').value = '';
+                listaProgettiAttuali = data.progetti;
+                renderListaPannelloProgetti(data.progetti);
+                renderCardProgetti();
+                alert('Progetto aggiunto con successo!');
+            }
+        } catch(e) {
+            alert('Errore salvataggio progetto');
+        }
+    }
+
+    async function toggleProgetto(id) {
+        try {
+            const res = await fetch('/api/progetti/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pinAdmin: currentAdminPin || 'SOS999', azione: 'toggle', progetto: { id } })
+            });
+            const data = await res.json();
+            if (data.success) {
+                listaProgettiAttuali = data.progetti;
+                renderListaPannelloProgetti(data.progetti);
+                renderCardProgetti();
+            }
+        } catch(e) {}
+    }
+
+    async function eliminaProgetto(id) {
+        if (!confirm('Sei sicuro di voler ELIMINARE questo progetto dal portale?')) return;
+        try {
+            const res = await fetch('/api/progetti/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pinAdmin: currentAdminPin || 'SOS999', azione: 'delete', progetto: { id } })
+            });
+            const data = await res.json();
+            if (data.success) {
+                listaProgettiAttuali = data.progetti;
+                renderListaPannelloProgetti(data.progetti);
+                renderCardProgetti();
+            }
+        } catch(e) {}
+    }
+
+    async function caricaKpiStats() {
+        try {
+            const res = await fetch('/api/kpi/stats');
+            const data = await res.json();
+            if (data) {
+                const tot = document.getElementById('kpiTotAttrezzi');
+                const uso = document.getElementById('kpiInUso');
+                const disp = document.getElementById('kpiDisponibili');
+                const ops = document.getElementById('kpiOperatori');
+                if (tot) tot.textContent = data.totAttrezzi || 0;
+                if (uso) uso.textContent = data.inUso || 0;
+                if (disp) disp.textContent = data.disponibili || 0;
+                if (ops) ops.textContent = data.totOperatori || 0;
+            }
+        } catch(e) {}
+    }
+
+    // Inizializza ruolo all'avvio:
+    // Se c'è già una sessione attiva (es. Admin con SOS999 o Operatore con PIN), sblocca subito anche dopo riavvio browser
+    const savedAdminPin = localStorage.getItem('milella_admin_pin');
+    const savedUserNome = localStorage.getItem('milella_user_nome');
+    const savedUserPin = localStorage.getItem('milella_user_pin');
+    const savedApps = JSON.parse(localStorage.getItem('milella_app_abilitate') || '[]');
+
+    function aggiornaVisibilitaBiometriaGate() {
+        const btnBio = document.getElementById('btnBiometriaGate');
+        const hintBio = document.getElementById('hintPrimaVoltaPin');
+        const lastUser = localStorage.getItem('milella_last_authenticated_user');
+        const lastRole = localStorage.getItem('milella_last_authenticated_role');
+
+        if (lastUser && lastRole) {
+            // L'utente ha già inserito il PIN con successo in precedenza: attiva e mostra il tasto impronta!
+            if (btnBio) {
+                btnBio.style.display = 'inline-flex';
+                btnBio.innerHTML = '<span style="font-size:20px;">👆</span> ACCEDI CON IMPRONTA (' + lastUser + ')';
+            }
+            if (hintBio) hintBio.style.display = 'none';
+        } else {
+            // Primo accesso assoluto: nascondi il tasto impronta e mostra l'avviso di inserire prima il PIN
+            if (btnBio) btnBio.style.display = 'none';
+            if (hintBio) hintBio.style.display = 'block';
+        }
+    }
+
+    if (savedAdminPin && savedAdminPin.toUpperCase() === 'SOS999') {
+        const gate = document.getElementById('gateBloccoIngresso');
+        if (gate) gate.style.display = 'none';
+        currentAdminPin = 'SOS999';
+        applicaRuolo('admin', savedUserNome || 'Ciro Milella (Admin)', ['all']);
+    } else if (savedUserPin && savedUserNome) {
+        // Operatore già loggato stabilmente su questo dispositivo
+        const gate = document.getElementById('gateBloccoIngresso');
+        if (gate) gate.style.display = 'none';
+        currentAppAbilitate = savedApps;
+        applicaRuolo('operatore', savedUserNome, savedApps);
+    } else {
+        // NESSUNA SESSIONE: Mostra il Gate di Benvenuto & Blocco PIN
+        const gate = document.getElementById('gateBloccoIngresso');
+        if (gate) gate.style.display = 'flex';
+        aggiornaVisibilitaBiometriaGate();
+        applicaRuolo('bloccato', null, []);
+    }
+    caricaProgettiDinamici();
+    caricaKpiStats();
+</script>
+</body>
+</html>
