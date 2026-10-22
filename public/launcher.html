@@ -1150,7 +1150,7 @@
         const shutdownModal = document.getElementById('shutdownModal');
 
         // Backup Inventario Launch
-        document.getElementById('btnBackupInventario').addEventListener('click', async (e) => {
+        const _bInv = document.getElementById('btnBackupInventario'); if (_bInv) _bInv.addEventListener('click', async (e) => {
             e.preventDefault();
             const btn = e.currentTarget;
             const originalHTML = btn.innerHTML;
@@ -1171,15 +1171,15 @@
             }
         });
 
-        document.getElementById('btnShutdownSystem').addEventListener('click', () => {
+        const _bSd = document.getElementById('btnShutdownSystem'); if (_bSd) _bSd.addEventListener('click', () => {
             confirmModal.style.display = 'flex';
         });
 
-        document.getElementById('btnCancelShutdown').addEventListener('click', () => {
+        const _bCs = document.getElementById('btnCancelShutdown'); if (_bCs) _bCs.addEventListener('click', () => {
             confirmModal.style.display = 'none';
         });
 
-        document.getElementById('btnConfirmShutdown').addEventListener('click', async () => {
+        const _bCf = document.getElementById('btnConfirmShutdown'); if (_bCf) _bCf.addEventListener('click', async () => {
             confirmModal.style.display = 'none';
             shutdownModal.classList.remove('done');
             shutdownModal.style.display = 'flex';
@@ -1383,7 +1383,7 @@ document.addEventListener('fullscreenchange', () => {
                     alert('Errore esportazione dati: ' + (data.message || 'Accesso non autorizzato.'));
                 }
             })
-            .catch(err => alert('Errore di connessione durante l'esportazione: ' + err.message));
+            .catch(err => alert("Errore di connessione durante l'esportazione: " + err.message));
     }
 
     function scaricaCopiaZip() {
