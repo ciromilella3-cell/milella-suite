@@ -3031,7 +3031,7 @@ function renderTerapie() {
       : `<div style="font-size:10px; color:#64748b; margin-top:3px;">Prescrizione Attiva</div><div style="font-size:9.5px; color:#64748b;">${farmaciaNome}</div>`;
 
     return `
-      <tr>
+      <tr id="terapia-row-${t.id}" class="terapia-row-item" data-farmaco-id="${t.id}">
         <td>
   ${(() => {
     if (t.cadenzaTipo === 'alternata_mezza_intera') {
@@ -3415,10 +3415,13 @@ function controllaTerapieGlobaliTuttiPazienti() {
                 <div style="font-weight:800; color:#0f172a; font-size:15px;">🕒 <span style="color:#dc2626; font-weight:900;">Ore ${f.ora}</span>: <b>${f.farmaco}</b></div>
                 <div style="font-size:12px; color:#334155; font-weight:500; margin-top:2px;">${f.modo} &bull; Dosaggio: <b style="color:#0f172a;">${f.dosaggio}</b></div>
               </div>
-              <div style="display:flex; align-items:center; gap:8px;">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                 <span class="badge" style="background:#dc2626; color:#ffffff !important; font-weight:800; font-size:12px; padding:6px 14px; border-radius:20px; box-shadow:0 2px 6px rgba(220,38,38,0.3); letter-spacing:0.3px;">⏰ Scaduto da ${ritardoStr}</span>
-                <button type="button" class="btn" style="padding:6px 12px; font-size:12px; font-weight:800; border:1.5px solid #dc2626; color:#991b1b; background:#ffffff; border-radius:8px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.06);" onclick="azioneRapidaMancanzaDaAllarme('${p.id}', ${f.id})">
-                  ❌ Non data / Salta
+                <button type="button" class="btn btn-primary" style="padding:6px 14px; font-size:12px; font-weight:800; background:#2563eb; color:#ffffff; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(37,99,235,0.3);" onclick="vaiADirettoFarmacoDaAllarme('${p.id}', ${f.id})">
+                  <span>👉</span> Vai a questo farmaco ➔
+                </button>
+                <button type="button" class="btn" style="padding:6px 10px; font-size:11.5px; font-weight:800; border:1.5px solid #dc2626; color:#991b1b; background:#ffffff; border-radius:8px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.06);" onclick="azioneRapidaMancanzaDaAllarme('${p.id}', ${f.id})">
+                  ❌ Salta
                 </button>
               </div>
             </div>
@@ -3435,7 +3438,7 @@ function controllaTerapieGlobaliTuttiPazienti() {
                   <div style="font-size:11px; color:#ef4444; font-weight:700;">⚠️ ${item.farmaci.length} Terapia/e in ritardo!</div>
                 </div>
               </div>
-              <button class="btn btn-primary" style="padding:6px 14px; font-size:12px; font-weight:800;" onclick="vaiACartellaPazienteDaAllarme('${p.id}')">
+              <button class="btn btn-primary" style="padding:6px 14px; font-size:12px; font-weight:800;" onclick="vaiACartellaPazienteDaAllarme('${p.id}', ${item.farmaci[0] ? item.farmaci[0].id : null})">
                 Vai alla Cartella di ${p.nome.split(' ')[0]} ➔
               </button>
             </div>
@@ -3477,12 +3480,59 @@ function chiudiAllarmeTerapieGlobali() {
   showToast('Allarme acustico silenziato per 5 minuti. Ricordati di somministrare i farmaci!');
 }
 
-function vaiACartellaPazienteDaAllarme(pazId) {
+function vaiACartellaPazienteDaAllarme(pazId, farmacoId) {
   chiudiAllarmeTerapieGlobali();
   cambiaPaziente(pazId);
   // Passa automaticamente alla scheda terapie
-  const tabBtn = document.querySelector('[data-target="tab-farmaci"]');
+  var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
   if (tabBtn) tabBtn.click();
+
+  if (farmacoId) {
+    evidenziaEScrollaAFarmaco(farmacoId);
+  }
+}
+
+function vaiADirettoFarmacoDaAllarme(pazId, farmacoId) {
+  chiudiAllarmeTerapieGlobali();
+  cambiaPaziente(pazId);
+  var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
+  if (tabBtn) tabBtn.click();
+
+  if (farmacoId) {
+    evidenziaEScrollaAFarmaco(farmacoId);
+  }
+}
+
+// FUNZIONE PER SCROLL FLUIDO ED EFFETTO FARO/EVIDENZIATORE SUL FARMACO INTERESSATO
+function evidenziaEScrollaAFarmaco(farmacoId) {
+  setTimeout(function() {
+    var row = document.getElementById('terapia-row-' + farmacoId);
+    if (!row) {
+      // Prova a cercare per data attribute
+      row = document.querySelector('tr[data-farmaco-id="' + farmacoId + '"]');
+    }
+
+    if (row) {
+      // Scroll fluido immediato che centra l'elemento verticalmente nello schermo
+      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Rimuovi precedenti evidenziazioni
+      document.querySelectorAll('.terapia-row-highlight').forEach(function(el) {
+        el.classList.remove('terapia-row-highlight');
+      });
+
+      // Applica la classe evidenziatore faro
+      row.classList.add('terapia-row-highlight');
+
+      // Mostra toast di orientamento per l'utente
+      showToast('👉 Ecco il farmaco da somministrare!', 'info');
+
+      // Rimuovi dopo 4.5 secondi
+      setTimeout(function() {
+        if (row) row.classList.remove('terapia-row-highlight');
+      }, 4500);
+    }
+  }, 350); // piccolo timeout per consentire il rendering del cambio paziente
 }
 
 function azioneRapidaMancanzaDaAllarme(pazId, farmacoId) {
