@@ -82,7 +82,22 @@ window.onerror = function(msg, url, line) {
 
         var currentMarito = localStorage.getItem('profileName_marito');
         var currentMoglie = localStorage.getItem('profileName_moglie');
-        var needsInit = (!currentMarito || currentMarito === 'Marito' || currentMoglie === 'Elena Rossi' || !currentMoglie || localStorage.length < 5);
+        var wMarito = localStorage.getItem('weightLog_marito');
+        var needsInit = (!wMarito || wMarito === '[]' || wMarito === 'null' || !currentMarito || currentMarito === 'Marito');
+
+        // Se manca lo storico di Ciro, inizializzalo subito con le sue pesate storiche reali
+        if (!wMarito || wMarito === '[]' || wMarito === 'null') {
+            localStorage.setItem('weightLog_marito', JSON.stringify([
+                {"date":"2026-09-29","weight":81.3,"timestamp":1790660767214},
+                {"date":"2026-09-30","weight":79.6,"timestamp":1790743316276},
+                {"date":"2026-10-06","weight":79.3,"timestamp":1791261809079},
+                {"date":"2026-10-07","weight":79.0,"timestamp":1791358292999}
+            ]));
+            localStorage.setItem('profileName_marito', 'Ciro Milella');
+            if (!localStorage.getItem('profileStats_marito')) {
+                localStorage.setItem('profileStats_marito', JSON.stringify({"dob":"1967-12-16","start":"81.3","goal":"65","kcal":"1400","height":"160"}));
+            }
+        }
 
         // 1. Se siamo in Electron / Node, lettura sincrona istantanea da disco
         if (typeof require !== 'undefined') {
@@ -118,7 +133,7 @@ window.onerror = function(msg, url, line) {
             }
         } else if (needsInit) {
             // 2. Fallback browser standard via fetch
-            fetch('Backup_Salute/Ripristino_Ufficiale_Ciro_e_MariaCarmela.salute')
+            fetch('/salute/Backup_Salute/Ripristino_Ufficiale_Ciro_e_MariaCarmela.salute')
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
                     loadDataIntoStorage(data);
