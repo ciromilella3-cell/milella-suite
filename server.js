@@ -769,7 +769,16 @@ const careAssistDesktopLegacy = 'C:\\Users\\Utente\\Desktop\\CareAssist Pro\\Car
 const careAssistDir = fs.existsSync(careAssistPublicPath) ? careAssistPublicPath : (fs.existsSync(careAssistDesktopPath) ? careAssistDesktopPath : (fs.existsSync(careAssistLocalPath) ? careAssistLocalPath : careAssistDesktopLegacy));
 const careAssistDbFile = path.join(careAssistDir, 'careassist_database.json');
 
-app.use('/careassist', express.static(careAssistDir));
+// SICUREZZA: blocca il download diretto di dati e file interni dalla cartella statica.
+// L'app legge/scrive i dati SOLO tramite /api/get-db e /api/save-db.
+const CAREASSIST_BLOCKED = /(\.(json|exe|cs|bat|vbs|ps1|pdf|log|tmp|bak|zip)$)|(^\/(server_smartphone|generate_qr)\.js$)|(\.json\.tmp\.)/i;
+app.use('/careassist', (req, res, next) => {
+    const p = decodeURIComponent(req.path || '');
+    if (p.toLowerCase() === '/manifest.json') return next();
+    if (CAREASSIST_BLOCKED.test(p)) return res.status(403).send('Accesso negato');
+    next();
+});
+app.use('/careassist', express.static(careAssistDir, { dotfiles: 'deny' }));
 
 // API sincronizzazione dati CareAssist Pro
 
