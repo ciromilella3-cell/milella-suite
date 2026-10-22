@@ -8,9 +8,6 @@ const form = document.getElementById('addForm');
 const formTitle = document.getElementById('formTitle');
 const editItemIdInput = document.getElementById('editItemId');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
-const fileInput = document.getElementById('attrezzoFoto');
-const fileNameDisplay = document.getElementById('fileName');
-const fileWrapper = document.querySelector('.file-upload-wrapper');
 const searchInput = document.getElementById('ricerca');
 const grid = document.getElementById('listaAttrezzi');
 const shutdownBtn = document.getElementById('shutdownBtn');
@@ -82,45 +79,68 @@ function customConfirm(title, message) {
     });
 }
 
-// Visual feedback for file input
-fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) {
-        fileNameDisplay.textContent = e.target.files[0].name;
-        fileWrapper.classList.add('has-file');
-    } else {
-        fileNameDisplay.textContent = "Scegli un'immagine...";
-        fileWrapper.classList.remove('has-file');
-    }
-});
+// Gestione Fotocamera e Galleria Foto
+const fileInputCam = document.getElementById('attrezzoFotoCam');
+const fileInputGallery = document.getElementById('attrezzoFotoGallery');
+const btnTriggerCam = document.getElementById('btnTriggerCam');
+const btnTriggerGallery = document.getElementById('btnTriggerGallery');
+const photoPreviewContainer = document.getElementById('photoPreviewContainer');
+const photoPreviewImg = document.getElementById('photoPreviewImg');
+const fileNameDisplay = document.getElementById('fileName');
+const removePhotoBtn = document.getElementById('removePhotoBtn');
 
-// Drag & Drop functionality per l'immagine
-fileWrapper.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    fileWrapper.style.borderColor = 'var(--gold-primary)';
-    fileWrapper.style.background = 'rgba(212, 175, 55, 0.1)';
-});
+let currentSelectedFile = null;
 
-fileWrapper.addEventListener('dragleave', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    fileWrapper.style.borderColor = ''; // Ripristina dal CSS
-    fileWrapper.style.background = ''; // Ripristina dal CSS
-});
-
-fileWrapper.addEventListener('drop', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    fileWrapper.style.borderColor = '';
-    fileWrapper.style.background = '';
+function handleFileSelection(file) {
+    if (!file) return;
+    currentSelectedFile = file;
+    if (fileNameDisplay) fileNameDisplay.textContent = file.name;
     
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        // Assegna il file droppato all'input
-        fileInput.files = e.dataTransfer.files;
-        // Lancia l'evento change per aggiornare il nome visualizzato
-        fileInput.dispatchEvent(new Event('change'));
-    }
-});
+    // Mostra anteprima immediata
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        if (photoPreviewImg) photoPreviewImg.src = e.target.result;
+        if (photoPreviewContainer) photoPreviewContainer.style.display = 'block';
+        if (removePhotoBtn) removePhotoBtn.style.display = 'inline';
+    };
+    reader.readAsDataURL(file);
+}
+
+if (btnTriggerCam && fileInputCam) {
+    btnTriggerCam.addEventListener('click', (e) => {
+        e.preventDefault();
+        fileInputCam.click();
+    });
+    fileInputCam.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            handleFileSelection(e.target.files[0]);
+        }
+    });
+}
+
+if (btnTriggerGallery && fileInputGallery) {
+    btnTriggerGallery.addEventListener('click', (e) => {
+        e.preventDefault();
+        fileInputGallery.click();
+    });
+    fileInputGallery.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            handleFileSelection(e.target.files[0]);
+        }
+    });
+}
+
+if (removePhotoBtn) {
+    removePhotoBtn.addEventListener('click', () => {
+        currentSelectedFile = null;
+        if (fileInputCam) fileInputCam.value = '';
+        if (fileInputGallery) fileInputGallery.value = '';
+        if (photoPreviewContainer) photoPreviewContainer.style.display = 'none';
+        if (photoPreviewImg) photoPreviewImg.src = '';
+        if (fileNameDisplay) fileNameDisplay.textContent = '';
+        removePhotoBtn.style.display = 'none';
+    });
+}
 
 // Init
 async function init() {
@@ -309,7 +329,7 @@ form.addEventListener('submit', async (e) => {
     const stato = document.getElementById('attrezzoStato').value;
     const prestatoA = document.getElementById('attrezzoPrestatoA').value.trim();
     const note = document.getElementById('attrezzoNote').value.trim();
-    const file = fileInput.files[0];
+    const file = currentSelectedFile;
     
     const btn = document.getElementById('saveBtn');
     const originalText = btn.innerHTML;
@@ -389,8 +409,13 @@ function resetFormState() {
     formTitle.textContent = 'Nuovo Attrezzo';
     document.getElementById('saveBtn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> SALVA';
     cancelEditBtn.style.display = 'none';
-    fileNameDisplay.textContent = "Scegli un'immagine...";
-    fileWrapper.classList.remove('has-file');
+    currentSelectedFile = null;
+    if (fileInputCam) fileInputCam.value = '';
+    if (fileInputGallery) fileInputGallery.value = '';
+    if (photoPreviewContainer) photoPreviewContainer.style.display = 'none';
+    if (photoPreviewImg) photoPreviewImg.src = '';
+    if (fileNameDisplay) fileNameDisplay.textContent = '';
+    if (removePhotoBtn) removePhotoBtn.style.display = 'none';
     document.getElementById('prestitoGroup').style.display = 'none';
 }
 
@@ -413,6 +438,18 @@ function editItem(id) {
     document.getElementById('attrezzoStato').value = item.stato || 'Disponibile';
     document.getElementById('attrezzoPrestatoA').value = item.prestato_a || '';
     document.getElementById('attrezzoNote').value = item.note || '';
+
+    // Mostra foto esistente se presente
+    currentSelectedFile = null;
+    if (item.foto) {
+        if (photoPreviewImg) photoPreviewImg.src = '/' + item.foto;
+        if (fileNameDisplay) fileNameDisplay.textContent = 'Foto presente nel catalogo';
+        if (photoPreviewContainer) photoPreviewContainer.style.display = 'block';
+        if (removePhotoBtn) removePhotoBtn.style.display = 'none';
+    } else {
+        if (photoPreviewContainer) photoPreviewContainer.style.display = 'none';
+        if (fileNameDisplay) fileNameDisplay.textContent = '';
+    }
     
     const prestitoGroup = document.getElementById('prestitoGroup');
     if (item.stato === 'In Prestito') prestitoGroup.style.display = 'block';
