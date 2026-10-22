@@ -1244,6 +1244,7 @@ function renderPazientiSelector() {
     const parenteCell = activeP.moglieCellulare || '';
     const parenteNome = activeP.moglieNome || '';
     const parenteEmail = activeP.caregiverEmail || activeP.moglieEmail || '';
+    const parentePec = activeP.caregiverPec || activeP.mogliePec || '';
     const moglie = parenteNome ? `
       <div class="meta-item clinica-zoom-item" style="background:#eff6ff; border-color:#bfdbfe; color:#1e40af; cursor:pointer;" onmouseenter="mostraLenteClinica('Contatto di Riferimento / Caregiver', '${parenteNome} - Tel: ${parenteCell}${parenteEmail ? ' - Email: ' + parenteEmail : ''}', '👥')" onmouseleave="nascondiLenteClinica()">
         <span>👥</span>
@@ -1257,6 +1258,11 @@ function renderPazientiSelector() {
         ${parenteEmail ? `
           &bull; <span>✉️ <b style="font-size:11.5px;">${parenteEmail}</b></span>
           <a href="mailto:${parenteEmail}?subject=Comunicazione%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="action-icon-btn mail" title="Invia Email al Caregiver">✉️</a>
+        ` : ''}
+        ${parentePec ? `
+          &bull; <span style="background:#fef3c7; color:#92400e; padding:1px 5px; border-radius:5px; font-size:10px; font-weight:800; border:1px solid #fde68a;">PEC</span>
+          <span>🏛️ <b style="font-size:11.5px; color:#b45309;">${parentePec}</b></span>
+          <a href="mailto:${parentePec}?subject=Comunicazione%20Ufficiale%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="action-icon-btn mail" style="background:#fef3c7; border-color:#fde68a; color:#b45309;" title="Invia PEC al Caregiver">🔒</a>
         ` : ''}
       </div>` : '';
     
@@ -1835,6 +1841,10 @@ function salvaNuovoPaziente(e) {
   const cellulare = formattaNumeroTelefonico(document.getElementById('nuovo-paz-cellulare').value.trim());
   const parenteNome = document.getElementById('nuovo-paz-parente-nome').value.trim();
   const parenteCell = formattaNumeroTelefonico(document.getElementById('nuovo-paz-parente-cell').value.trim());
+  const elNParenEmail = document.getElementById('nuovo-paz-parente-email');
+  const parenteEmail = elNParenEmail ? elNParenEmail.value.trim() : '';
+  const elNParenPec = document.getElementById('nuovo-paz-parente-pec');
+  const parentePec = elNParenPec ? elNParenPec.value.trim() : '';
 
   const patologieTesto = document.getElementById('nuovo-paz-patologie-testo').value.trim();
   const isCpap = document.getElementById('nuovo-paz-cpap').checked;
@@ -1859,6 +1869,10 @@ function salvaNuovoPaziente(e) {
   newPaz.cellulare = cellulare;
   newPaz.moglieNome = parenteNome;
   newPaz.moglieCellulare = parenteCell;
+  newPaz.caregiverEmail = parenteEmail;
+  newPaz.moglieEmail = parenteEmail;
+  newPaz.caregiverPec = parentePec;
+  newPaz.mogliePec = parentePec;
 
   newPaz.medico = medicoNome || 'Dott. Curante';
   newPaz.medicoNome = medicoNome;
@@ -2215,6 +2229,7 @@ function apriModificaAnagrafica() {
     ? '338 739 76 71'
     : (p.moglieCellulare || '');
   const defaultCaregiverEmail = p.caregiverEmail || p.moglieEmail || '';
+  const defaultCaregiverPec = p.caregiverPec || p.mogliePec || '';
   const defaultTelFisso = (p.id === 'paz_rosa' && (!p.telefonoFisso || p.telefonoFisso.trim() === ''))
     ? '097 169 32 21'
     : (p.telefonoFisso || '');
@@ -2225,6 +2240,8 @@ function apriModificaAnagrafica() {
   document.getElementById('edit-paz-moglie-cell').value = formattaNumeroTelefonico(defaultCaregiverCell);
   const elCaregiverMail = document.getElementById('edit-paz-caregiver-email');
   if (elCaregiverMail) elCaregiverMail.value = defaultCaregiverEmail;
+  const elCaregiverPec = document.getElementById('edit-paz-caregiver-pec');
+  if (elCaregiverPec) elCaregiverPec.value = defaultCaregiverPec;
 
   document.getElementById('edit-paz-medico-nome').value = p.medicoNome || p.medico || 'Dott. Roberto Scarcia';
   // Sincronizzazione automatica orari e studio Dott. Scarcia sia per Aldo che per Angela
@@ -2319,6 +2336,11 @@ function salvaModificaAnagrafica(e) {
   if (elCaregiverMailVal) {
     p.caregiverEmail = elCaregiverMailVal.value.trim();
     p.moglieEmail = p.caregiverEmail;
+  }
+  const elCaregiverPecVal = document.getElementById('edit-paz-caregiver-pec');
+  if (elCaregiverPecVal) {
+    p.caregiverPec = elCaregiverPecVal.value.trim();
+    p.mogliePec = p.caregiverPec;
   }
   p.medicoNome = document.getElementById('edit-paz-medico-nome').value.trim();
   p.medico = p.medicoNome;

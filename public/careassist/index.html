@@ -664,6 +664,16 @@
               <input type="text" class="form-control" id="nuovo-paz-parente-cell" placeholder="Es. 347 123 45 67">
             </div>
           </div>
+          <div class="form-row" style="background:#f8fafc; padding:0 10px 10px 10px; border-radius:8px; border:1px solid #e2e8f0; border-top:none;">
+            <div class="form-group" style="margin-bottom:0; flex:1;">
+              <label class="form-label">✉️ Email Familiare/Caregiver</label>
+              <input type="email" class="form-control" id="nuovo-paz-parente-email" placeholder="Es. caregiver@email.it">
+            </div>
+            <div class="form-group" style="margin-bottom:0; flex:1;">
+              <label class="form-label">🏛️ PEC Familiare/Caregiver</label>
+              <input type="email" class="form-control" id="nuovo-paz-parente-pec" placeholder="Es. caregiver@pec.it">
+            </div>
+          </div>
 
           <!-- SEZIONE 3: QUADRO CLINICO E PATOLOGIE PERSONALI CON CHIP RAPIDI & AGGIUNTA PERSONALIZZATA -->
           <div style="font-weight:800; font-size:12.5px; color:#b45309; text-transform:uppercase; margin:14px 0 10px; display:flex; align-items:center; gap:6px;">
@@ -861,8 +871,12 @@
               </div>
               <div class="form-row">
                 <div class="form-group" style="flex:1; margin-bottom:0;">
-                  <label class="form-label" style="color:#0369a1; font-weight:700;">✉️ Email Caregiver (per invio referti e promemoria PDF)</label>
+                  <label class="form-label" style="color:#0369a1; font-weight:700;">✉️ Email Ordinaria Caregiver</label>
                   <input type="email" class="form-control" id="edit-paz-caregiver-email" placeholder="Es. caregiver@email.it" style="font-weight:600;">
+                </div>
+                <div class="form-group" style="flex:1; margin-bottom:0;">
+                  <label class="form-label" style="color:#0369a1; font-weight:700;">🏛️ PEC Caregiver (Comunicazioni legali / ASL)</label>
+                  <input type="email" class="form-control" id="edit-paz-caregiver-pec" placeholder="Es. caregiver@pec.it" style="font-weight:600;">
                 </div>
               </div>
             </div>
