@@ -2676,8 +2676,10 @@ async function forceUpdateSaluteApp() {
 
     // ── URL del server (locale o cloud) ──────────────────────────────
     function getApiBase() {
-        // On Render / remote, use relative path
         const loc = window.location;
+        if (loc.protocol === 'file:') {
+            return 'https://milella-suite.onrender.com';
+        }
         if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1' || /^192\.168\./.test(loc.hostname)) {
             return loc.origin;
         }
