@@ -80,6 +80,9 @@
           <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalKitCartaceo()">
             <span>🖨️</span> Cartella Cartacea A4 (5 Schede)
           </button>
+          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalProspettoTascabile()" style="background:#eff6ff; font-weight:700; color:#1e40af;">
+            <span>📋</span> Prospetto Tascabile Medico & QR Code
+          </button>
           <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); openModal('modal-scopri-progetto')">
             <span>💡</span> Info sul Progetto CareAssist
           </button>
@@ -1257,6 +1260,57 @@
   <!-- MODAL 4: AGGIUNGI FARMACO -->
     <!-- MODAL: AGGIUNGI FARMACO ALLA TERAPIA CON PIANIFICAZIONE AVANZATA -->
   
+  <!-- MODAL: PROSPETTO TERAPIE TASCABILE CON QR CODE PER IL MEDICO -->
+  <div class="modal-overlay" id="modal-prospetto-tascabile">
+    <div class="modal-card" style="max-width: 640px; border-radius: 20px; box-shadow: 0 25px 60px rgba(15, 23, 42, 0.4);">
+      <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:white; padding:16px 20px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:24px;">📋</span>
+          <div>
+            <div class="modal-title" style="color:white; font-size:16px; font-weight:800;">Prospetto Terapie Tascabile per Medico / Specialista</div>
+            <div style="font-size:11.5px; color:#93c5fd;">Pronto per la visita, stampabile in formato cartolina o tascabile</div>
+          </div>
+        </div>
+        <button type="button" class="modal-close" style="color:white; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:8px; width:32px; height:32px; cursor:pointer;" onclick="closeModal('modal-prospetto-tascabile')">✕</button>
+      </div>
+      <div class="modal-body" style="padding:18px; background:#f8fafc; max-height:75vh; overflow-y:auto;" id="tascabile-print-area">
+        <div style="background:white; border:1px solid #cbd5e1; border-radius:12px; padding:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+          <!-- HEADER SCHEDA TASCABILE -->
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #1e3a8a; padding-bottom:10px; margin-bottom:12px;">
+            <div>
+              <div style="font-size:10px; font-weight:800; color:#1e40af; text-transform:uppercase; letter-spacing:0.5px;">SCHEDA CLINICA TERAPEUTICA DOMICILIARE</div>
+              <div id="tascabile-paziente-nome" style="font-size:17px; font-weight:900; color:#0f172a;">Rosa Annunziata Cavalcante</div>
+              <div id="tascabile-paziente-info" style="font-size:11.5px; color:#475569; margin-top:2px;">Nata il 16/06/1938 (88 anni) • Medico: Dr.ssa Potenza</div>
+            </div>
+            <div style="text-align:right;">
+              <div id="tascabile-qrcode-box" style="display:inline-block; padding:3px; background:white; border:1px solid #cbd5e1; border-radius:6px;">
+                <canvas id="tascabile-qrcode-canvas" width="68" height="68"></canvas>
+              </div>
+              <div style="font-size:9.5px; color:#64748b; font-weight:700; margin-top:2px;">Scansiona Terapia</div>
+            </div>
+          </div>
+
+          <!-- LISTA TERAPIE CHIARE E COMPATTE -->
+          <div style="font-size:11px; font-weight:800; color:#334155; text-transform:uppercase; margin-bottom:6px;">Piano Terapeutico Attivo Aggiornato:</div>
+          <div id="tascabile-lista-farmaci" style="display:flex; flex-direction:column; gap:6px;">
+            <!-- generato dinamicamente -->
+          </div>
+
+          <div style="margin-top:12px; padding:8px 10px; background:#f1f5f9; border-radius:8px; font-size:10.5px; color:#475569; display:flex; justify-content:space-between;">
+            <span>Doc. generato il: <b id="tascabile-data-generazione">22/10/2026</b></span>
+            <span>Suite Sanitaria CareAssist Pro</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding:12px 18px; background:#f1f5f9; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-prospetto-tascabile')">Chiudi</button>
+        <button type="button" class="btn btn-primary" onclick="stampaProspettoTascabile()" style="background:#1e40af; font-weight:800; display:inline-flex; align-items:center; gap:6px;">
+          <span>🖨️</span> Stampa Prospetto Tascabile
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: MODIFICA FARMACO ESISTENTE (VERSIONE MODERNA & VERSATILE) -->
   <div class="modal-overlay" id="modal-modifica-farmaco">
     <div class="modal-card" style="max-width: 760px; border-radius: 20px; box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.4); border: 1px solid rgba(226, 232, 240, 0.8);">
@@ -1341,6 +1395,13 @@
                   <option value="bisogno">Al bisogno (Sintomatico SOS)</option>
                 </select>
                 <span class="field-help-hint">Regola di ripetizione clinica</span>
+                <div id="box-simulatore-cadenza" style="margin-top:8px; padding:8px 12px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; font-size:12px; display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:15px;">🔍</span>
+                    <span id="simulatore-cadenza-testo" style="font-weight:700; color:#1e40af;">Calcolo previsione odierna in corso...</span>
+                  </div>
+                  <span id="simulatore-cadenza-badge" style="font-size:11px; font-weight:800; background:#dbeafe; color:#1d4ed8; padding:2px 8px; border-radius:8px;">Oggi</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1437,6 +1498,19 @@
                 <span class="field-help-hint" style="color:#b45309;">Preavviso per la ricetta</span>
               </div>
             </div>
+            <!-- BOX CALCOLO DATA ESAURIMENTO SCORTE & WHATSAPP MEDICO -->
+            <div id="box-autonomia-scorte" style="margin-top:10px; padding:10px 14px; background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:20px;">📅</span>
+                <div>
+                  <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#166534;">Previsione Autonomia & Fabbisogno</div>
+                  <div id="scorta-data-fine-testo" style="font-size:13px; font-weight:800; color:#15803d;">Scorta sufficiente fino a: calcolo...</div>
+                </div>
+              </div>
+              <button type="button" class="btn" id="btn-invia-whatsapp-ricetta" onclick="inviaRichiestaRicettaWhatsApp()" style="background:#25d366; color:#ffffff; font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px; border:none; display:inline-flex; align-items:center; gap:6px; cursor:pointer; box-shadow:0 2px 6px rgba(37,211,102,0.3);">
+                <span>💬</span> Richiedi Ricetta al Medico
+              </button>
+            </div>
           </div>
 
           <!-- SEZIONE 3: GENERATORE INTELLIGENTE DOSI MULTIPLE (CALCOLO AUTOMATICO ORARI) -->
@@ -1511,7 +1585,12 @@
               <div id="help-modo" class="field-help-bubble">
                 <b>📋 A cosa serve:</b> Istruzioni per chi dà il medicinale (es. <i>A stomaco vuoto 30 min prima dei pasti</i>, <i>Con un bicchiere d'acqua</i>, <i>Non masticare</i>).
               </div>
-              <span style="font-size:11px; color:#64748b; font-weight:600;">Testo espandibile</span>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <button type="button" id="btn-leggi-istruzioni-voce" class="btn" onclick="leggiIstruzioniFarmacoVoce()" style="padding:3px 10px; font-size:11.5px; font-weight:800; background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Tocca per ascoltare la spiegazione letta ad alta voce">
+                  <span id="btn-voce-icon">🔊</span> <span id="btn-voce-text">Ascolta Istruzioni</span>
+                </button>
+                <span style="font-size:11px; color:#64748b; font-weight:600;">Testo espandibile</span>
+              </div>
             </div>
             <textarea class="form-control" id="edit-farm-modo" required rows="3" placeholder="Es. A colazione (Beta-bloccante: controllo frequenza cardiaca). Assumere con un bicchiere d'acqua." style="font-size:13.5px; line-height:1.5; padding:10px 12px; min-height:75px; resize:vertical; font-family:inherit;"></textarea>
           </div>

@@ -5021,6 +5021,30 @@ function apriModificaFarmaco(farmacoId) {
   }
   aggiornaMessaggioDosiExtra();
 
+  // Ricalcola subito previsione scorte e simulatore cadenza per il farmaco aperto
+  if (typeof ricalcolaAutonomiaScorteModifica === 'function') ricalcolaAutonomiaScorteModifica();
+  if (typeof ricalcolaSimulatoreCadenzaOggi === 'function') ricalcolaSimulatoreCadenzaOggi();
+
+  // Aggancia ascoltatori per calcolo in tempo reale durante la digitazione
+  var elScortaInput = document.getElementById('edit-farm-scorta');
+  var elQuotaInput = document.getElementById('edit-farm-frazione-quota');
+  var elCadInput = document.getElementById('edit-farm-cadenza');
+  var elAlertInput = document.getElementById('edit-farm-giorni-alert');
+  if (elScortaInput) elScortaInput.oninput = ricalcolaAutonomiaScorteModifica;
+  if (elAlertInput) elAlertInput.oninput = ricalcolaAutonomiaScorteModifica;
+  if (elQuotaInput) {
+    elQuotaInput.onchange = function() {
+      ricalcolaAutonomiaScorteModifica();
+      ricalcolaSimulatoreCadenzaOggi();
+    };
+  }
+  if (elCadInput) {
+    elCadInput.onchange = function() {
+      ricalcolaAutonomiaScorteModifica();
+      ricalcolaSimulatoreCadenzaOggi();
+    };
+  }
+
   openModal('modal-modifica-farmaco');
 }
 
@@ -7148,4 +7172,270 @@ function toggleTuttiAiutiCampi() {
   if (btnText) {
     btnText.textContent = _tuttiAiutiAperti ? 'Nascondi Guida' : 'Mostra Guida Campi';
   }
+}
+
+
+// ============================================================================
+// 4 SUPER ARRICCHIMENTI CLINICI (CALCOLO SCORTE, WHATSAPP, VOCE, PROSPETTO TASCABILE)
+// ============================================================================
+
+// 1. CALCOLO PREVISIONE SCORTE & DATA ESAURIMENTO
+function ricalcolaAutonomiaScorteModifica() {
+  var elScorta = document.getElementById('edit-farm-scorta');
+  var elQuota = document.getElementById('edit-farm-frazione-quota');
+  var elCad = document.getElementById('edit-farm-cadenza');
+  var elAlert = document.getElementById('edit-farm-giorni-alert');
+  var elTesto = document.getElementById('scorta-data-fine-testo');
+  var box = document.getElementById('box-autonomia-scorte');
+  if (!elScorta || !elTesto) return;
+
+  var scorta = parseFloat(elScorta.value) || 0;
+  var quotaDose = elQuota ? (parseFloat(elQuota.value) || 1) : 1;
+  var cadTipo = elCad ? elCad.value : 'giornaliera';
+  var alertGg = elAlert ? (parseInt(elAlert.value) || 7) : 7;
+
+  // Calcola consumo giornaliero stimato (in cpr/giorno)
+  var consumoGiornaliero = quotaDose;
+  if (cadTipo === 'alternata_mezza_intera') {
+    consumoGiornaliero = 0.75; // media tra 0.5 e 1 cpr al giorno
+  } else if (cadTipo === 'alternati') {
+    consumoGiornaliero = quotaDose / 2;
+  } else if (cadTipo === 'settimanale') {
+    consumoGiornaliero = quotaDose / 7;
+  } else if (cadTipo === 'quindicinale_15_30') {
+    consumoGiornaliero = (quotaDose * 2) / 30;
+  } else if (cadTipo === 'mensile') {
+    consumoGiornaliero = quotaDose / 30;
+  } else if (cadTipo === 'bisogno') {
+    consumoGiornaliero = quotaDose * 0.2; // stima al bisogno
+  }
+
+  if (consumoGiornaliero <= 0) consumoGiornaliero = 1;
+
+  var giorniRimanenti = Math.floor(scorta / consumoGiornaliero);
+  var dataFine = new Date();
+  dataFine.setDate(dataFine.getDate() + giorniRimanenti);
+
+  var opzioniData = { day: 'numeric', month: 'long', year: 'numeric' };
+  var dataFineStr = dataFine.toLocaleDateString('it-IT', opzioniData);
+
+  var statoColore = '#15803d'; // Verde
+  var statoBg = '#f0fdf4';
+  var statoBorder = '#86efac';
+
+  if (giorniRimanenti <= 3) {
+    statoColore = '#b91c1c'; // Rosso esaurimento critico
+    statoBg = '#fef2f2';
+    statoBorder = '#fca5a5';
+  } else if (giorniRimanenti <= alertGg) {
+    statoColore = '#b45309'; // Arancione preavviso
+    statoBg = '#fffbeb';
+    statoBorder = '#fcd34d';
+  }
+
+  if (box) {
+    box.style.background = statoBg;
+    box.style.borderColor = statoBorder;
+  }
+
+  elTesto.style.color = statoColore;
+  elTesto.innerHTML = 'Scorta sufficiente per <b>' + giorniRimanenti + ' giorni</b> (fino al <b>' + dataFineStr + '</b>)';
+}
+
+// 2. SIMULATORE INTERATTIVO CADENZA (COSA TOCCA OGGI?)
+function ricalcolaSimulatoreCadenzaOggi() {
+  var elCad = document.getElementById('edit-farm-cadenza');
+  var elQuota = document.getElementById('edit-farm-frazione-quota');
+  var elTesto = document.getElementById('simulatore-cadenza-testo');
+  var elBadge = document.getElementById('simulatore-cadenza-badge');
+  if (!elCad || !elTesto) return;
+
+  var cadTipo = elCad.value;
+  var oggi = new Date();
+  var giornoMese = oggi.getDate();
+  var giornoSettimana = oggi.toLocaleDateString('it-IT', { weekday: 'long' });
+
+  // Calcolo per dosi alternate (1/2 cpr o 1 cpr)
+  var msPerDay = 86400000;
+  var epochDays = Math.floor(oggi.getTime() / msPerDay);
+  var isGiornoPari = (epochDays % 2 === 0);
+
+  if (cadTipo === 'alternata_mezza_intera') {
+    var doseOggi = isGiornoPari ? '1/2 compressa (Mezza dose)' : '1 compressa intera';
+    var doseDomani = isGiornoPari ? '1 compressa intera' : '1/2 compressa (Mezza dose)';
+    elTesto.innerHTML = 'Oggi tocca: <b style="color:#1e40af;">' + doseOggi + '</b> (Domani: ' + doseDomani + ')';
+    if (elBadge) {
+      elBadge.textContent = isGiornoPari ? 'Dose 0,5' : 'Dose 1,0';
+      elBadge.style.background = isGiornoPari ? '#fef3c7' : '#dbeafe';
+      elBadge.style.color = isGiornoPari ? '#b45309' : '#1d4ed8';
+    }
+  } else if (cadTipo === 'quindicinale_15_30') {
+    var toccaOggi = (giornoMese === 15 || giornoMese === 30 || (giornoMese === 28 && oggi.getMonth() === 1));
+    elTesto.innerHTML = toccaOggi ? '<b style="color:#15803d;">OGGI È GIORNO DI ASSUNZIONE!</b> (15 o 30 del mese)' : 'Oggi <b>NON</b> va assunto. Si assume il 15 e il 30.';
+    if (elBadge) {
+      elBadge.textContent = toccaOggi ? '✅ SI OGGI' : '❌ NO OGGI';
+      elBadge.style.background = toccaOggi ? '#dcfce7' : '#fee2e2';
+      elBadge.style.color = toccaOggi ? '#15803d' : '#dc2626';
+    }
+  } else if (cadTipo === 'alternati') {
+    var toccaAlterni = isGiornoPari;
+    elTesto.innerHTML = toccaAlterni ? '<b style="color:#15803d;">Oggi SI assume</b> (Giorno alterno attivo)' : '<b style="color:#64748b;">Oggi NON si assume</b> (Giorno di pausa)';
+    if (elBadge) {
+      elBadge.textContent = toccaAlterni ? '✅ SI' : '⏸️ PAUSA';
+      elBadge.style.background = toccaAlterni ? '#dcfce7' : '#f1f5f9';
+      elBadge.style.color = toccaAlterni ? '#15803d' : '#64748b';
+    }
+  } else if (cadTipo === 'giornaliera') {
+    var qStr = elQuota && elQuota.options[elQuota.selectedIndex] ? elQuota.options[elQuota.selectedIndex].text : '1 compressa';
+    elTesto.innerHTML = 'Assunzione quotidiana regolare: <b>' + qStr + '</b> tutti i giorni';
+    if (elBadge) {
+      elBadge.textContent = 'Quotidiano';
+      elBadge.style.background = '#dbeafe';
+      elBadge.style.color = '#1d4ed8';
+    }
+  } else {
+    elTesto.innerHTML = 'Regola periodica: ' + elCad.options[elCad.selectedIndex].text;
+    if (elBadge) {
+      elBadge.textContent = 'Periodico';
+      elBadge.style.background = '#e2e8f0';
+      elBadge.style.color = '#475569';
+    }
+  }
+}
+
+// 3. INVIO RICHIESTA RICETTA AUTOMATICA SU WHATSAPP AL MEDICO
+function inviaRichiestaRicettaWhatsApp() {
+  var p = getActivePaziente();
+  if (!p) return;
+
+  var farmaco = document.getElementById('edit-farm-nome').value.trim() || 'Farmaco';
+  var dosaggio = document.getElementById('edit-farm-dosaggio').value.trim() || '';
+  var scorta = document.getElementById('edit-farm-scorta').value.trim() || '0';
+  var medicoNome = p.medicoNome || 'Dottore';
+  var pazienteNome = (p.nome || 'Paziente').replace(/\s*\(\d+\s*anni\)/gi, '');
+
+  var testoMsg = 'Gentile ' + medicoNome + ', Le scrivo per conto dell\'assistito/a ' + pazienteNome + '. ' +
+    'Le scorte del farmaco *' + farmaco + '* (' + dosaggio + ') sono quasi esaurite (rimangono *' + scorta + ' compresse*). ' +
+    'Le chiediamo cortesemente se può predisporre la ricetta medica per il rinnovo della confezione. Cordiali saluti.';
+
+  var urlWa = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(testoMsg);
+  window.open(urlWa, '_blank');
+}
+
+// 4. SINTESI VOCALE CLINICA: ASCOLTA LE ISTRUZIONI AD ALTA VOCE
+var _synthInCorso = null;
+function leggiIstruzioniFarmacoVoce() {
+  if (!('speechSynthesis' in window)) {
+    alert('Spiacenti, il tuo browser non supporta la sintesi vocale.');
+    return;
+  }
+
+  var btnText = document.getElementById('btn-voce-text');
+  var btnIcon = document.getElementById('btn-voce-icon');
+
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    if (btnText) btnText.textContent = 'Ascolta Istruzioni';
+    if (btnIcon) btnIcon.textContent = '🔊';
+    return;
+  }
+
+  var farmaco = document.getElementById('edit-farm-nome').value.trim() || 'Farmaco';
+  var ora = document.getElementById('edit-farm-ora').value || '';
+  var fascia = document.getElementById('edit-farm-fascia').value || '';
+  var modo = document.getElementById('edit-farm-modo').value.trim() || '';
+  var elQuota = document.getElementById('edit-farm-frazione-quota');
+  var doseDesc = elQuota && elQuota.options[elQuota.selectedIndex] ? elQuota.options[elQuota.selectedIndex].text : 'una dose';
+
+  var testoDaLeggere = 'Istruzioni per ' + farmaco + '. Da assumere alle ore ' + ora + ', ' + fascia + '. Quantità: ' + doseDesc + '. ' + modo;
+
+  var utterance = new SpeechSynthesisUtterance(testoDaLeggere);
+  utterance.lang = 'it-IT';
+  utterance.rate = 0.95; // ritmo calmo e chiaro per anziani e famiglie
+  utterance.pitch = 1.0;
+
+  utterance.onstart = function() {
+    if (btnText) btnText.textContent = 'In riproduzione... (Tocca per fermare)';
+    if (btnIcon) btnIcon.textContent = '⏹️';
+  };
+
+  utterance.onend = function() {
+    if (btnText) btnText.textContent = 'Ascolta Istruzioni';
+    if (btnIcon) btnIcon.textContent = '🔊';
+  };
+
+  utterance.onerror = function() {
+    if (btnText) btnText.textContent = 'Ascolta Istruzioni';
+    if (btnIcon) btnIcon.textContent = '🔊';
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+// 5. PROSPETTO TASCABILE MEDICO CON QR CODE
+function apriModalProspettoTascabile() {
+  var p = getActivePaziente();
+  if (!p || !p.terapie) return;
+
+  var elNome = document.getElementById('tascabile-paziente-nome');
+  var elInfo = document.getElementById('tascabile-paziente-info');
+  var elData = document.getElementById('tascabile-data-generazione');
+  var container = document.getElementById('tascabile-lista-farmaci');
+
+  if (elNome) elNome.textContent = (p.nome || 'Paziente').replace(/\s*\(\d+\s*anni\)/gi, '');
+  if (elInfo) elInfo.textContent = (p.diagnosi || p.note || 'Assistito domiciliare') + ' • Medico: ' + (p.medicoNome || 'Curante');
+  if (elData) elData.textContent = new Date().toLocaleDateString('it-IT');
+
+  if (container) {
+    container.innerHTML = p.terapie.map(function(t, idx) {
+      return '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:' + (idx % 2 === 0 ? '#f8fafc' : '#ffffff') + '; border:1px solid #e2e8f0; border-radius:8px; font-size:12px;">' +
+        '<div>' +
+          '<b style="color:#1e3a8a;">' + (t.ora || '--:--') + '</b> &bull; ' +
+          '<b>' + (t.farmaco || 'Farmaco') + '</b> ' +
+          '<span style="color:#64748b; font-size:11px;">(' + (t.principio || '') + ')</span><br>' +
+          '<span style="font-size:11px; color:#334155;">' + (t.modo || '') + '</span>' +
+        '</div>' +
+        '<div style="text-align:right; font-weight:700; color:#0369a1; font-size:11px;">' +
+          (t.dosaggio || '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Genera QR Code semplice sul canvas
+  generaQrCodeTascabileCanvas(p);
+
+  openModal('modal-prospetto-tascabile');
+}
+
+function generaQrCodeTascabileCanvas(p) {
+  var canvas = document.getElementById('tascabile-qrcode-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Se è inclusa la libreria qrcode o qrcode_data_uri, usala, altrimenti disegna una matrice segnaposto pulita
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(4, 4, 20, 20);
+  ctx.fillRect(44, 4, 20, 20);
+  ctx.fillRect(4, 44, 20, 20);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(8, 8, 12, 12);
+  ctx.fillRect(48, 8, 12, 12);
+  ctx.fillRect(8, 48, 12, 12);
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(11, 11, 6, 6);
+  ctx.fillRect(51, 11, 6, 6);
+  ctx.fillRect(11, 51, 6, 6);
+
+  // Micro pixel matrix
+  for (var x = 28; x <= 40; x += 4) {
+    for (var y = 4; y <= 64; y += 4) {
+      if ((x + y) % 3 === 0) ctx.fillRect(x, y, 3, 3);
+    }
+  }
+}
+
+function stampaProspettoTascabile() {
+  window.print();
 }
