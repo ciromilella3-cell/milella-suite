@@ -1254,122 +1254,198 @@
   <!-- MODAL 4: AGGIUNGI FARMACO -->
     <!-- MODAL: AGGIUNGI FARMACO ALLA TERAPIA CON PIANIFICAZIONE AVANZATA -->
   
-  <!-- MODAL: MODIFICA FARMACO ESISTENTE -->
+  <!-- MODAL: MODIFICA FARMACO ESISTENTE (VERSIONE MODERNA & VERSATILE) -->
   <div class="modal-overlay" id="modal-modifica-farmaco">
-    <div class="modal-card" style="max-width: 650px;">
-      <div class="modal-header" style="background:linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%); color:white; padding:14px 20px;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-size:26px;">💊</span>
+    <div class="modal-card" style="max-width: 760px; border-radius: 20px; box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.4); border: 1px solid rgba(226, 232, 240, 0.8);">
+      
+      <!-- MODAL HEADER CON GRADIENTE E BADGE PAZIENTE PULITO -->
+      <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #0369a1 100%); color:white; padding: 18px 24px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+          <div style="width:44px; height:44px; border-radius:12px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.25);">
+            💊
+          </div>
           <div>
-            <div class="modal-title" style="color:white; font-size:17px; font-weight:800; line-height:1.2;">
-              ✏️ Modifica: <span id="edit-farm-header-nome" style="color:#fef08a;">Pantoprazolo 40 mg</span>
+            <div class="modal-title" style="color:white; font-size:18px; font-weight:800; line-height:1.2; letter-spacing:-0.2px;">
+              Modifica Farmaco: <span id="edit-farm-header-nome" style="color:#fef08a; margin-left:4px;">Pantoprazolo 40 mg</span>
             </div>
-            <div style="font-size:12px; color:#bae6fd; font-weight:700; margin-top:2px;">
-              👤 Paziente Assistito: <b id="edit-farm-header-paziente" style="color:#ffffff; text-decoration:underline;">Aldo Zamparino</b>
+            <div style="margin-top:6px; display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.3); border-radius:9999px; padding:3px 12px; font-size:12px; font-weight:700; color:#ffffff; backdrop-filter:blur(4px);">
+              <span>👤 Assistito:</span>
+              <span id="edit-farm-header-paziente" style="font-weight:800; color:#fef08a;">Aldo Zamparino</span>
             </div>
           </div>
         </div>
-        <button type="button" class="modal-close" style="color:white; font-size:22px; width:34px; height:34px; border-radius:8px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); line-height:1; cursor:pointer;" onclick="closeModal('modal-modifica-farmaco')" title="Chiudi finestra">&times;</button>
+        <button type="button" class="modal-close" style="color:white; font-size:20px; width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onclick="closeModal('modal-modifica-farmaco')" title="Chiudi finestra" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">✕</button>
       </div>
+
       <form onsubmit="salvaModificaFarmaco(event)">
         <input type="hidden" id="edit-farm-id">
-        <div class="modal-body">
-          <div class="form-row">
-            <div class="form-group" style="flex:0.8;">
-              <label class="form-label">⏰ Orario Previsto</label>
-              <input type="time" class="form-control" id="edit-farm-ora" required style="font-weight:700; font-size:15px; color:#1e3a8a;">
+        <div class="modal-body" style="padding:22px 26px; background:#f8fafc;">
+          
+          <!-- SEZIONE 1: TEMPISTICA E FREQUENZA -->
+          <div style="background:white; border-radius:14px; padding:14px 16px; margin-bottom:16px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#64748b; letter-spacing:0.5px; margin-bottom:10px;">
+              ⏰ Programmazione Oraria & Frequenza
             </div>
-            <div class="form-group" style="flex:1.2;">
-              <label class="form-label">Fascia della Giornata</label>
-              <select class="form-control" id="edit-farm-fascia" required>
-                <option value="Mattina (Digiuno)">Mattina (A Digiuno)</option>
-                <option value="Mattina (Colazione)">Mattina (A Colazione)</option>
-                <option value="Mattina (Dose Periodica)">Mattina (Dose Periodica)</option>
-                <option value="Pranzo">Pranzo</option>
-                <option value="Pomeriggio">Pomeriggio</option>
-                <option value="Sera (Cena)">Sera (A Cena)</option>
-                <option value="Notte (Prima di dormire)">Notte (Prima di dormire)</option>
-                <option value="Al Bisogno">Al Bisogno (SOS)</option>
-              </select>
-            </div>
-            <div class="form-group" style="flex:1.3;">
-              <label class="form-label">📅 Frequenza / Cadenza</label>
-              <select class="form-control" id="edit-farm-cadenza" style="font-weight:700; color:#0f172a;" onchange="aggiornaVisualizzazioneCadenza()">
-                <option value="giornaliera">Tutti i giorni (Quotidiana)</option>
-                <option value="quindicinale_15_30">📅 Ogni 15 giorni (il 15 e il 30 del mese)</option>
-                <option value="alternati">A giorni alterni (Un giorno sì / no)</option>
-                <option value="settimanale">Una volta a settimana (7 giorni)</option>
-                <option value="mensile">Una volta al mese (il 1° del mese)</option>
-                <option value="bisogno">Al bisogno (Sintomatico SOS)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group" style="flex:1.5;">
-              <label class="form-label">Nome Commerciale Farmaco</label>
-              <input type="text" class="form-control" id="edit-farm-nome" required>
-            </div>
-            <div class="form-group" style="flex:1.2;">
-              <label class="form-label">Principio Attivo</label>
-              <input type="text" class="form-control" id="edit-farm-principio">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Dosaggio Unitario (es. 100 mg / 1 cpr)</label>
-              <input type="text" class="form-control" id="edit-farm-dosaggio" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Cpr per Scatola</label>
-              <input type="number" class="form-control" id="edit-farm-cpr-scatola">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Scorta Attuale (cpr)</label>
-              <input type="number" class="form-control" id="edit-farm-scorta">
-            </div>
-            <div class="form-group" style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:6px 10px;">
-              <label class="form-label" style="color:#b45309; font-weight:700;">🔔 Giorni Preavviso Alert</label>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <input type="number" class="form-control" id="edit-farm-giorni-alert" value="7" min="1" max="30" style="font-weight:700; color:#b45309;">
-                <span style="font-size:11px; color:#b45309; font-weight:700; white-space:nowrap;">gg (1-30)</span>
+            <div class="form-row" style="margin-bottom:0;">
+              <div class="form-group" style="flex:1; min-width:140px; margin-bottom:0;">
+                <label class="form-label" style="color:#1e3a8a;">⏰ Orario Previsto</label>
+                <input type="time" class="form-control" id="edit-farm-ora" required onchange="ricalcolaDosiMultipleModifica()" style="font-weight:800; font-size:15px; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd; height:42px;">
+              </div>
+              <div class="form-group" style="flex:1.4; min-width:170px; margin-bottom:0;">
+                <label class="form-label">Fascia della Giornata</label>
+                <select class="form-control" id="edit-farm-fascia" required style="font-weight:600; height:42px;">
+                  <option value="Mattina (Digiuno)">Mattina (A Digiuno)</option>
+                  <option value="Mattina (Colazione)">Mattina (A Colazione)</option>
+                  <option value="Mattina (Dose Periodica)">Mattina (Dose Periodica)</option>
+                  <option value="Pranzo">Pranzo</option>
+                  <option value="Pomeriggio">Pomeriggio</option>
+                  <option value="Sera (Cena)">Sera (A Cena)</option>
+                  <option value="Notte (Prima di dormire)">Notte (Prima di dormire)</option>
+                  <option value="Al Bisogno">Al Bisogno (SOS)</option>
+                </select>
+              </div>
+              <div class="form-group" style="flex:1.6; min-width:200px; margin-bottom:0;">
+                <label class="form-label">📅 Frequenza / Cadenza</label>
+                <select class="form-control" id="edit-farm-cadenza" style="font-weight:700; color:#0f172a; height:42px;">
+                  <option value="giornaliera">Tutti i giorni (Quotidiana)</option>
+                  <option value="quindicinale_15_30">📅 Ogni 15 giorni (il 15 e il 30 del mese)</option>
+                  <option value="alternati">A giorni alterni (Un giorno sì / no)</option>
+                  <option value="settimanale">Una volta a settimana (7 giorni)</option>
+                  <option value="mensile">Una volta al mese (il 1° del mese)</option>
+                  <option value="bisogno">Al bisogno (Sintomatico SOS)</option>
+                </select>
               </div>
             </div>
           </div>
 
-          <!-- SEZIONE MULTI-DOSE: AGGIUNGI ALTRE DOSI IN ORARI DIVERSI PER QUESTO FARMACO -->
-          <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:12px 14px; margin-bottom:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <label class="form-label" style="font-weight:800; color:#166534; margin:0; font-size:13px;">
-                ⏰ Dosi Multiple Giornaliere (Dosi in orari diversi dello stesso farmaco)
-              </label>
-              <button type="button" class="btn btn-outline" style="padding:3px 8px; font-size:11px; background:#dcfce7; color:#15803d; border-color:#86efac; font-weight:800;" onclick="aggiungiNuovaDoseModifica()">
-                + Aggiungi Altra Dose
+          <!-- SEZIONE 2: ANAGRAFICA FARMACO -->
+          <div style="background:white; border-radius:14px; padding:14px 16px; margin-bottom:16px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#64748b; letter-spacing:0.5px; margin-bottom:10px;">
+              💊 Dati Farmaco & Composizione
+            </div>
+            <div class="form-row" style="margin-bottom:12px;">
+              <div class="form-group" style="flex:1.6; margin-bottom:0;">
+                <label class="form-label">Nome Commerciale Farmaco</label>
+                <input type="text" class="form-control" id="edit-farm-nome" required placeholder="Es. Congescor 2,5 mg" style="font-weight:700; font-size:14px;">
+              </div>
+              <div class="form-group" style="flex:1.4; margin-bottom:0;">
+                <label class="form-label">Principio Attivo</label>
+                <input type="text" class="form-control" id="edit-farm-principio" placeholder="Es. Bisoprololo">
+              </div>
+            </div>
+
+            <!-- DOSAGGI, SCORTE E ALERT -->
+            <div class="form-row" style="margin-bottom:0; align-items:flex-end;">
+              <div class="form-group" style="flex:1.4; margin-bottom:0;">
+                <label class="form-label" title="Specificare la concentrazione o la dose per assunzione">
+                  Dosaggio Unitario <span style="font-size:10px; color:#64748b; text-transform:none;">(es. 2,5 mg / 1 cpr)</span>
+                </label>
+                <input type="text" class="form-control" id="edit-farm-dosaggio" required placeholder="Es. 2,5 mg (1 cpr)">
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label">Cpr / Scatola</label>
+                <input type="number" class="form-control" id="edit-farm-cpr-scatola" min="1" placeholder="28">
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label">Scorta (cpr)</label>
+                <input type="number" class="form-control" id="edit-farm-scorta" min="0" placeholder="28">
+              </div>
+              <div class="form-group" style="flex:1.2; margin-bottom:0; background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:8px 12px;">
+                <label class="form-label" style="color:#b45309; font-weight:800; margin-bottom:4px; font-size:10.5px; display:flex; align-items:center; gap:4px;">
+                  🔔 Alert Scorte
+                </label>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <input type="number" class="form-control" id="edit-farm-giorni-alert" value="7" min="1" max="30" style="font-weight:800; color:#b45309; background:#ffffff; border-color:#fcd34d; height:34px; padding:4px 8px; text-align:center;">
+                  <span style="font-size:11px; color:#92400e; font-weight:700; white-space:nowrap;" title="Notifica quando mancano meno di questi giorni">gg prima</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEZIONE 3: GENERATORE INTELLIGENTE DOSI MULTIPLE (CALCOLO AUTOMATICO ORARI) -->
+          <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:14px; padding:16px 18px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:18px;">⚡</span>
+                <span style="font-weight:800; color:#166534; font-size:13px; text-transform:uppercase; letter-spacing:0.3px;">
+                  Schema Posologico Intelligente
+                </span>
+                <span style="font-size:11px; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid #86efac;">
+                  Calcolo Automatico
+                </span>
+              </div>
+              <button type="button" class="btn" style="padding:5px 12px; font-size:11.5px; background:#16a34a; color:#ffffff; border:none; font-weight:800; border-radius:8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer; box-shadow:0 2px 4px rgba(22, 163, 74, 0.25);" onclick="aggiungiNuovaDoseModifica()">
+                <span>➕</span> Aggiungi Dose Manuale
               </button>
             </div>
+
+            <!-- CONTROLLI RAPIDI DI PRESCRIZIONE MEDICA -->
+            <div style="background:#ffffff; border:1px solid #bbf7d0; border-radius:10px; padding:10px 12px; margin-bottom:12px; display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
+              <div style="flex:1; min-width:180px;">
+                <label style="font-size:11px; font-weight:800; color:#166534; display:block; margin-bottom:4px;">
+                  📋 Dosi Giornaliere Prescritte:
+                </label>
+                <select id="edit-farm-num-dosi" class="form-control" style="font-size:12.5px; font-weight:700; height:36px; border-color:#86efac; color:#14532d;" onchange="applicaSchemaDosiModifica()">
+                  <option value="1">1 dose al giorno (Singola somministrazione)</option>
+                  <option value="2">2 dosi al giorno (es. Mattina e Sera / Ogni 12h)</option>
+                  <option value="3">3 dosi al giorno (es. Colazione, Pranzo e Cena / Ogni 8h)</option>
+                  <option value="4">4 dosi al giorno (Ogni 6 ore)</option>
+                </select>
+              </div>
+
+              <div id="box-intervallo-schema" style="flex:1.2; min-width:210px;">
+                <label style="font-size:11px; font-weight:800; color:#166534; display:block; margin-bottom:4px;">
+                  ⏱️ Criterio Calcolo Orari Successivi:
+                </label>
+                <select id="edit-farm-intervallo-tipo" class="form-control" style="font-size:12.5px; font-weight:700; height:36px; border-color:#86efac; color:#14532d;" onchange="applicaSchemaDosiModifica()">
+                  <option value="12h">Intervallo Clinico 12 Ore (es. 07:00 ➔ 19:00)</option>
+                  <option value="8h">Intervallo Clinico 8 Ore (es. 07:00 ➔ 15:00 ➔ 23:00)</option>
+                  <option value="6h">Intervallo Clinico 6 Ore (es. 06:00 ➔ 12:00 ➔ 18:00 ➔ 24:00)</option>
+                  <option value="pasti">Pasti Principali (Colazione / Pranzo / Cena)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- LISTA DELLE DOSI SUCCESSIVE GENERATE O AGGIUNTE -->
             <div id="edit-farm-dosi-extra-list">
               <!-- generato dinamicamente con le dosi collegate -->
             </div>
-            <small style="color:#15803d; font-size:11px; display:block; margin-top:6px;">
-              💡 <i>Puoi programmare fino a 4 somministrazioni in orari diversi (es. 09:00, 13:30, 20:30, 22:00): ciascuna dose avrà il suo allarme dedicato!</i>
-            </small>
+
+            <div style="color:#15803d; font-size:11.5px; display:flex; align-items:flex-start; gap:6px; margin-top:8px;">
+              <span style="font-size:14px;">💡</span>
+              <span><i>Modificando l'ora della 1ª dose (in alto), l'orario della 2ª, 3ª o 4ª dose si ricalcola in automatico secondo la prescrizione medica impostata. Puoi sempre ritoccare manualmente i singoli orari.</i></span>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Modalità di Assunzione & Istruzioni Cliniche</label>
-            <input type="text" class="form-control" id="edit-farm-modo" required>
+          <!-- SEZIONE 4: MODALITÀ DI ASSUNZIONE & ISTRUZIONI CLINICHE (TEXTAREA AD ALTA LEGGIBILITÀ) -->
+          <div style="background:white; border-radius:14px; padding:14px 16px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <label class="form-label" style="color:#0f172a; font-weight:800; margin-bottom:0;" for="edit-farm-modo">
+                📋 Modalità di Assunzione & Istruzioni Cliniche
+              </label>
+              <span style="font-size:11px; color:#64748b; font-weight:600;">Testo espandibile</span>
+            </div>
+            <textarea class="form-control" id="edit-farm-modo" required rows="3" placeholder="Es. A colazione (Beta-bloccante: controllo frequenza cardiaca). Assumere con un bicchiere d'acqua." style="font-size:13.5px; line-height:1.5; padding:10px 12px; min-height:75px; resize:vertical; font-family:inherit;"></textarea>
           </div>
+
         </div>
-        <div class="modal-footer">
-          <button type="button" class="modal-close" style="color:white; font-size:22px; width:34px; height:34px; border-radius:8px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); line-height:1; cursor:pointer;" onclick="closeModal('modal-modifica-farmaco')" title="Chiudi finestra">&times;</button>
-          <button type="submit" class="btn btn-primary" style="font-weight:800;">💾 Salva Modifiche Farmaco</button>
+
+        <!-- FOOTER PULITO E CHIARO -->
+        <div class="modal-footer" style="padding:14px 24px; background:#f1f5f9; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+          <button type="button" class="btn btn-outline" style="font-weight:700; color:#64748b; border-color:#cbd5e1; background:white; padding:9px 18px; border-radius:10px; cursor:pointer;" onclick="closeModal('modal-modifica-farmaco')">
+            Annulla
+          </button>
+          <div style="display:flex; gap:10px;">
+            <button type="submit" class="btn btn-primary" style="font-weight:800; padding:9px 22px; border-radius:10px; font-size:14px; box-shadow:0 4px 12px rgba(37,99,235,0.3); display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
+              <span>💾</span> Salva Modifiche Farmaco
+            </button>
+          </div>
         </div>
       </form>
     </div>
   </div>
 
-<div class="modal-overlay" id="modal-farmaco">
+  <div class="modal-overlay" id="modal-farmaco">
     <div class="modal-card" style="max-width: 680px;">
       <div class="modal-header">
         <div class="modal-title">💊 Aggiungi Farmaco & Posologia Avanzata</div>

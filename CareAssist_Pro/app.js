@@ -4698,6 +4698,110 @@ function rimuoviDoseExtraRow(idRow) {
   if (el) el.remove();
 }
 
+
+// ============================================================================
+// LOGICA AUTOMATICA CALCOLO DOSI MULTIPLE SECONDO PRESCRIZIONE MEDICA
+// ============================================================================
+function calcolaOrarioSuccessivo(oraInizio, oreDaAggiungere) {
+  if (!oraInizio || oraInizio.indexOf(':') < 0) oraInizio = '08:00';
+  var parti = oraInizio.split(':');
+  var ore = parseInt(parti[0]) || 0;
+  var min = parseInt(parti[1]) || 0;
+  var minTot = (ore * 60 + min + Math.round(oreDaAggiungere * 60)) % (24 * 60);
+  if (minTot < 0) minTot += 24 * 60;
+  var h = Math.floor(minTot / 60);
+  var m = minTot % 60;
+  return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+}
+
+function deduciFasciaDaOrario(oraStr) {
+  if (!oraStr) return 'Mattina (Colazione)';
+  var h = parseInt(oraStr.split(':')[0]) || 8;
+  if (h >= 5 && h < 8) return 'Mattina (Digiuno)';
+  if (h >= 8 && h < 11) return 'Mattina (Colazione)';
+  if (h >= 11 && h < 15) return 'Pranzo';
+  if (h >= 15 && h < 19) return 'Pomeriggio';
+  if (h >= 19 && h < 22) return 'Sera (Cena)';
+  return 'Notte (Prima di dormire)';
+}
+
+function applicaSchemaDosiModifica(forceRecalc) {
+  var selectDosi = document.getElementById('edit-farm-num-dosi');
+  var selectIntervallo = document.getElementById('edit-farm-intervallo-tipo');
+  var inpOra1 = document.getElementById('edit-farm-ora');
+  var dosaggio = (document.getElementById('edit-farm-dosaggio') ? document.getElementById('edit-farm-dosaggio').value : '') || '1 cpr';
+  var modoEl = document.getElementById('edit-farm-modo');
+
+  if (!selectDosi || !inpOra1) return;
+  var numDosi = parseInt(selectDosi.value) || 1;
+  var criterio = selectIntervallo ? selectIntervallo.value : '12h';
+  var ora1 = inpOra1.value || '08:00';
+
+  // Pulisci contenitore dosi extra (2ª, 3ª, 4ª dose)
+  var containerDosiExtra = document.getElementById('edit-farm-dosi-extra-list');
+  if (containerDosiExtra) containerDosiExtra.innerHTML = '';
+  _dosiExtraCounter = 0;
+
+  var orariCalcolati = [ora1];
+
+  if (numDosi === 2) {
+    var ora2 = '20:00';
+    if (criterio === '12h') {
+      ora2 = calcolaOrarioSuccessivo(ora1, 12);
+    } else if (criterio === '8h') {
+      ora2 = calcolaOrarioSuccessivo(ora1, 8);
+    } else if (criterio === 'pasti') {
+      var h1 = parseInt(ora1.split(':')[0]) || 8;
+      ora2 = (h1 < 12) ? '19:30' : '22:00';
+    } else {
+      ora2 = calcolaOrarioSuccessivo(ora1, 12);
+    }
+    orariCalcolati.push(ora2);
+    aggiungiNuovaDoseModifica(ora2, deduciFasciaDaOrario(ora2), dosaggio);
+  } else if (numDosi === 3) {
+    var ora2, ora3;
+    if (criterio === 'pasti') {
+      ora2 = '13:00';
+      ora3 = '20:00';
+    } else {
+      // default 8 ore
+      ora2 = calcolaOrarioSuccessivo(ora1, 8);
+      ora3 = calcolaOrarioSuccessivo(ora1, 16);
+    }
+    orariCalcolati.push(ora2, ora3);
+    aggiungiNuovaDoseModifica(ora2, deduciFasciaDaOrario(ora2), dosaggio);
+    aggiungiNuovaDoseModifica(ora3, deduciFasciaDaOrario(ora3), dosaggio);
+  } else if (numDosi === 4) {
+    var o2 = calcolaOrarioSuccessivo(ora1, 6);
+    var o3 = calcolaOrarioSuccessivo(ora1, 12);
+    var o4 = calcolaOrarioSuccessivo(ora1, 18);
+    orariCalcolati.push(o2, o3, o4);
+    aggiungiNuovaDoseModifica(o2, deduciFasciaDaOrario(o2), dosaggio);
+    aggiungiNuovaDoseModifica(o3, deduciFasciaDaOrario(o3), dosaggio);
+    aggiungiNuovaDoseModifica(o4, deduciFasciaDaOrario(o4), dosaggio);
+  }
+
+  // Aggiornamento o suggerimento istruzione clinica automatica se vuota o default
+  if (modoEl && (!modoEl.value || modoEl.value.indexOf('somministrazion') >= 0 || modoEl.value.indexOf('Dose') >= 0 || forceRecalc)) {
+    if (numDosi === 1) {
+      // singola dose
+    } else if (numDosi === 2) {
+      modoEl.value = 'Prescrizione: 2 somministrazioni al giorno a distanza di 12 ore (ore ' + orariCalcolati.join(' e ') + ').';
+    } else if (numDosi === 3) {
+      modoEl.value = 'Prescrizione: 3 somministrazioni al giorno (ore ' + orariCalcolati.join(', ') + '). Assumere con abbondante acqua.';
+    } else if (numDosi === 4) {
+      modoEl.value = 'Prescrizione frazionata: 4 dosi giornaliere ogni 6 ore (ore ' + orariCalcolati.join(', ') + ').';
+    }
+  }
+}
+
+function ricalcolaDosiMultipleModifica() {
+  var selectDosi = document.getElementById('edit-farm-num-dosi');
+  if (selectDosi && parseInt(selectDosi.value) > 1) {
+    applicaSchemaDosiModifica(false);
+  }
+}
+
 function apriModificaFarmaco(farmacoId) {
   var p = getActivePaziente();
   if (!p || !p.terapie) return;
@@ -4743,6 +4847,11 @@ function apriModificaFarmaco(farmacoId) {
     var n = (item.farmaco || '').split('(')[0].trim().toLowerCase();
     return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
   });
+
+  var totDosi = 1 + (altreDosi ? altreDosi.length : 0);
+  var elNumDosi = document.getElementById('edit-farm-num-dosi');
+  var elInterv = document.getElementById('edit-farm-intervallo-tipo');
+  if (elNumDosi) elNumDosi.value = Math.min(4, Math.max(1, totDosi));
 
   if (altreDosi && altreDosi.length > 0) {
     altreDosi.forEach(function(doseColl) {
