@@ -4699,6 +4699,9 @@ function aggiungiNuovaDoseModifica(oraPredefinita, fasciaPredefinita, quantitaPr
   var container = document.getElementById('edit-farm-dosi-extra-list');
   if (!container) return;
 
+  var currentRows = container.querySelectorAll('.form-row').length;
+  var numDoseEffettiva = currentRows + 2; // la 1ª dose è in alto nel form, queste sono 2ª, 3ª, 4ª
+
   var oraVal = oraPredefinita || '13:30';
   var fasciaVal = fasciaPredefinita || 'Pranzo';
   var qtaVal = quantitaPredefinita || '1 cpr';
@@ -4707,36 +4710,63 @@ function aggiungiNuovaDoseModifica(oraPredefinita, fasciaPredefinita, quantitaPr
   row.id = idDose;
   row.className = 'form-row';
   row.style.background = '#ffffff';
-  row.style.border = '1px solid #cbd5e1';
-  row.style.borderRadius = '8px';
-  row.style.padding = '8px';
-  row.style.marginBottom = '6px';
+  row.style.border = '1.5px solid #86efac';
+  row.style.borderRadius = '10px';
+  row.style.padding = '10px 12px';
+  row.style.marginBottom = '8px';
   row.style.alignItems = 'center';
+  row.style.boxShadow = '0 2px 5px rgba(0,0,0,0.03)';
 
   row.innerHTML = 
-    '<div class="form-group" style="flex:1; margin-bottom:0;">' +
-      '<label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">⏰ Orario</label>' +
-      '<input type="time" class="form-control edit-extra-ora" value="' + oraVal + '" style="font-size:12.5px; padding:4px 6px; font-weight:700;">' +
+    '<div style="flex:0.6; min-width:85px;">' +
+      '<span style="display:inline-block; font-size:11.5px; font-weight:800; color:#166534; background:#dcfce7; padding:4px 8px; border-radius:6px; border:1px solid #bbf7d0;">' +
+        '💊 ' + numDoseEffettiva + 'ª Dose' +
+      '</span>' +
     '</div>' +
-    '<div class="form-group" style="flex:1.2; margin-bottom:0;">' +
-      '<label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">Fascia</label>' +
-      '<select class="form-control edit-extra-fascia" style="font-size:12px; padding:4px 6px;">' +
-        '<option value="Mattina (Colazione)"' + (fasciaVal.indexOf('Colazione') >= 0 ? ' selected' : '') + '>Colazione</option>' +
+    '<div class="form-group" style="flex:1; margin-bottom:0;">' +
+      '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">⏰ Orario</label>' +
+      '<input type="time" class="form-control edit-extra-ora" value="' + oraVal + '" style="font-size:13px; padding:4px 6px; font-weight:800; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd;">' +
+    '</div>' +
+    '<div class="form-group" style="flex:1.3; margin-bottom:0;">' +
+      '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">Fascia Giorno</label>' +
+      '<select class="form-control edit-extra-fascia" style="font-size:12px; padding:4px 6px; font-weight:600;">' +
+        '<option value="Mattina (Colazione)"' + (fasciaVal.indexOf('Colazione') >= 0 ? ' selected' : '') + '>Mattina (Colazione)</option>' +
         '<option value="Pranzo"' + (fasciaVal.indexOf('Pranzo') >= 0 ? ' selected' : '') + '>Pranzo</option>' +
         '<option value="Pomeriggio"' + (fasciaVal.indexOf('Pomeriggio') >= 0 ? ' selected' : '') + '>Pomeriggio</option>' +
-        '<option value="Sera (Cena)"' + (fasciaVal.indexOf('Cena') >= 0 ? ' selected' : '') + '>Cena</option>' +
-        '<option value="Notte (Prima di dormire)"' + (fasciaVal.indexOf('Notte') >= 0 ? ' selected' : '') + '>Notte</option>' +
+        '<option value="Sera (Cena)"' + (fasciaVal.indexOf('Cena') >= 0 ? ' selected' : '') + '>Sera (Cena)</option>' +
+        '<option value="Notte (Prima di dormire)"' + (fasciaVal.indexOf('Notte') >= 0 ? ' selected' : '') + '>Notte (Prima di dormire)</option>' +
       '</select>' +
     '</div>' +
     '<div class="form-group" style="flex:1; margin-bottom:0;">' +
-      '<label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">Dose / Q.tà</label>' +
-      '<input type="text" class="form-control edit-extra-qta" value="' + qtaVal + '" style="font-size:12px; padding:4px 6px;">' +
+      '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">Dose / Q.tà</label>' +
+      '<input type="text" class="form-control edit-extra-qta" value="' + qtaVal + '" style="font-size:12px; padding:4px 6px; font-weight:700;">' +
     '</div>' +
-    '<div style="flex:0.3; text-align:center; margin-top:14px;">' +
-      '<button type="button" class="btn btn-outline" style="color:#dc2626; border-color:#fca5a5; padding:4px 7px; font-size:11px;" onclick="rimuoviDoseExtraRow(\'' + idDose + '\')" title="Rimuovi dose">✕</button>' +
+    '<div style="flex:0.25; text-align:center; margin-top:14px;">' +
+      '<button type="button" class="btn btn-outline" style="color:#dc2626; border-color:#fca5a5; padding:5px 8px; font-size:12px; border-radius:8px;" onclick="rimuoviDoseExtraRow(\'' + idDose + '\')" title="Rimuovi dose">✕</button>' +
     '</div>';
 
   container.appendChild(row);
+  aggiornaMessaggioDosiExtra();
+}
+
+function rimuoviDoseExtraRow(idRow) {
+  var el = document.getElementById(idRow);
+  if (el) el.remove();
+  aggiornaMessaggioDosiExtra();
+  var container = document.getElementById('edit-farm-dosi-extra-list');
+  var count = container ? container.querySelectorAll('.form-row').length : 0;
+  var elNumDosi = document.getElementById('edit-farm-num-dosi');
+  if (elNumDosi) elNumDosi.value = count + 1;
+}
+
+function aggiornaMessaggioDosiExtra() {
+  var container = document.getElementById('edit-farm-dosi-extra-list');
+  var emptyMsg = document.getElementById('edit-farm-dosi-empty-msg');
+  if (!container) return;
+  var count = container.querySelectorAll('.form-row').length;
+  if (emptyMsg) {
+    emptyMsg.style.display = (count === 0) ? 'block' : 'none';
+  }
 }
 
 function rimuoviDoseExtraRow(idRow) {
@@ -4917,6 +4947,7 @@ function applicaSchemaDosiModifica(forceRecalc) {
       modoEl.value = 'Prescrizione frazionata: 4 dosi giornaliere ogni 6 ore (ore ' + orariCalcolati.join(', ') + ').';
     }
   }
+  aggiornaMessaggioDosiExtra();
 }
 
 function ricalcolaDosiMultipleModifica() {
@@ -4988,6 +5019,7 @@ function apriModificaFarmaco(farmacoId) {
       aggiungiNuovaDoseModifica(doseColl.ora, doseColl.fascia, doseColl.dosaggio);
     });
   }
+  aggiornaMessaggioDosiExtra();
 
   openModal('modal-modifica-farmaco');
 }
@@ -7053,3 +7085,30 @@ function inviaReportTurnoWhatsApp() {
   window.open(waUrl, '_blank');
 }
 
+
+
+// ============================================================================
+// AGGIORNAMENTO FORZATO & PULIZIA CACHE PER VISUALIZZARE NUOVE SCHEDE
+// ============================================================================
+async function forzaAggiornamentoApp() {
+  try {
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (let reg of registrations) {
+        await reg.unregister();
+      }
+    }
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      for (let k of keys) {
+        await caches.delete(k);
+      }
+    }
+  } catch (err) {
+    console.warn('Errore pulizia cache:', err);
+  }
+  showToast('Aggiornamento forzato completato! Ricarica in corso...');
+  setTimeout(() => {
+    window.location.reload(true);
+  }, 400);
+}
