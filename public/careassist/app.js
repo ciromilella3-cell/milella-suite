@@ -6364,6 +6364,7 @@ function isTerapiaPrevistaOggi(t) {
 
 function renderAll() {
   verificaCambioDataAutomatico();
+  aggiornaCardBuongiornoMattino();
   renderPazientiSelector();
   checkAlvoAlarm();
   checkFarmaciScorteAlert();
@@ -7488,4 +7489,97 @@ function generaQrCodeTascabileCanvas(p) {
 
 function stampaProspettoTascabile() {
   window.print();
+}
+
+
+// ============================================================================
+// ☀️ REGALO DEL MATTINO: MORNING BRIEFING & ROUTINE COLAZIONE MULTI-PAZIENTE
+// ============================================================================
+function aggiornaCardBuongiornoMattino() {
+  var card = document.getElementById('card-buongiorno-mattino');
+  if (!card) return;
+
+  var adesso = new Date();
+  var ora = adesso.getHours();
+
+  // Saluto dinamico in base all'ora
+  var salutoElem = document.getElementById('buongiorno-saluto-testo');
+  var badgeElem = document.getElementById('buongiorno-orario-badge');
+  if (salutoElem) {
+    if (ora >= 5 && ora < 12) {
+      salutoElem.textContent = 'Buongiorno Ciro! ☀️ Buon inizio giornata!';
+      if (badgeElem) badgeElem.textContent = '☕ Colazione & Mattino';
+    } else if (ora >= 12 && ora < 15) {
+      salutoElem.textContent = 'Buon Pomeriggio Ciro! 🍲 Turno di Pranzo';
+      if (badgeElem) badgeElem.textContent = '🍲 Orario Pranzo';
+    } else if (ora >= 15 && ora < 19) {
+      salutoElem.textContent = 'Pomeriggio Assistenziale 🌤️';
+      if (badgeElem) badgeElem.textContent = '🌤️ Pomeriggio';
+    } else {
+      salutoElem.textContent = 'Buonasera Ciro! 🌙 Terapie Serali & Riposo';
+      if (badgeElem) badgeElem.textContent = '🌙 Orario Sera / Cena';
+    }
+  }
+
+  var container = document.getElementById('buongiorno-chips-container');
+  if (!container || !AppData || !AppData.pazienti) return;
+
+  var cardsPazientiHtml = AppData.pazienti.map(function(p) {
+    var terapieMattino = (p.terapie || []).filter(function(t) {
+      var f = (t.fascia || '').toLowerCase();
+      var o = t.ora || '';
+      return f.indexOf('mattina') >= 0 || f.indexOf('digiuno') >= 0 || f.indexOf('colazione') >= 0 || (o >= '06:00' && o <= '10:30');
+    });
+
+    var fatteMattino = terapieMattino.filter(function(t) { return t.fattoOggi; }).length;
+    var totMattino = terapieMattino.length;
+    var tutteFatte = totMattino > 0 && fatteMattino === totMattino;
+    var stAuto = tutteFatte ? '✅ Colazione Completata' : (totMattino > 0 ? ('☕ ' + fatteMattino + '/' + totMattino + ' Terapie Mattino') : 'Nessuna terapia mattutina');
+
+    var pNomePrimo = (p.nome || 'Paziente').split(' ')[0];
+    var isAttivo = (p.id === AppData.activePazienteId);
+
+    return '<div style="background: ' + (isAttivo ? '#ffffff' : 'rgba(255,255,255,0.7)') + '; border: 1.5px solid ' + (isAttivo ? '#d97706' : '#fde68a') + '; border-radius: 12px; padding: 10px 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: ' + (isAttivo ? '0 2px 6px rgba(217,119,6,0.15)' : 'none') + ';" onclick="cambiaPazienteDaBuongiorno(\'' + p.id + '\')">' +
+      '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+        '<b style="font-size: 13px; color: #0f172a;">👤 ' + pNomePrimo + '</b>' +
+        '<span style="font-size: 10.5px; font-weight: 800; color: ' + (tutteFatte ? '#15803d' : '#b45309') + ';">' + (tutteFatte ? '✓ OK' : 'Da dare') + '</span>' +
+      '</div>' +
+      '<div style="font-size: 11.5px; color: #475569; margin-top: 4px; font-weight: 600;">' +
+        stAuto +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  container.innerHTML = cardsPazientiHtml;
+}
+
+function cambiaPazienteDaBuongiorno(pazId) {
+  cambiaPaziente(pazId);
+  var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
+  if (tabBtn) tabBtn.click();
+  showToast('Aperto piano terapeutico di ' + (getActivePaziente() ? getActivePaziente().nome.split(' ')[0] : 'assistito'));
+}
+
+function avviaRoutineMattino() {
+  var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
+  if (tabBtn) tabBtn.click();
+  setTimeout(function() {
+    var primoFarmacoMattino = document.querySelector('#terapie-table-body tr');
+    if (primoFarmacoMattino) {
+      primoFarmacoMattino.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      primoFarmacoMattino.classList.add('terapia-row-highlight');
+      setTimeout(function() {
+        primoFarmacoMattino.classList.remove('terapia-row-highlight');
+      }, 4000);
+    }
+  }, 250);
+  showToast('☕ Routine del mattino avviata! Ecco i farmaci da verificare per colazione.');
+}
+
+function chiudiCardBuongiorno() {
+  var card = document.getElementById('card-buongiorno-mattino');
+  if (card) {
+    card.style.display = 'none';
+    showToast('Card ridotta. Buona giornata!');
+  }
 }
