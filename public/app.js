@@ -118,21 +118,76 @@ if (btnTriggerCam && fileInputCam) {
     });
 }
 
-if (btnTriggerGallery && fileInputGallery) {
+// Modale Galleria Catalogo Foto
+const catalogGalleryModal = document.getElementById('catalogGalleryModal');
+const catalogGalleryGrid = document.getElementById('catalogGalleryGrid');
+const btnCloseCatalogGallery = document.getElementById('btnCloseCatalogGallery');
+let selectedCatalogPhotoPath = null;
+
+async function openCatalogGallery() {
+    if (!catalogGalleryModal || !catalogGalleryGrid) return;
+    catalogGalleryGrid.innerHTML = '<div style="color:var(--text-muted); padding:20px; grid-column: 1/-1; text-align:center;">Caricamento foto in corso...</div>';
+    catalogGalleryModal.classList.add('show');
+    
+    try {
+        const res = await fetch(`${API_BASE}/available-photos`);
+        const photos = await res.json();
+        
+        if (!photos || photos.length === 0) {
+            catalogGalleryGrid.innerHTML = '<div style="color:var(--text-muted); padding:20px; grid-column: 1/-1; text-align:center;">Nessuna foto trovata nel catalogo.</div>';
+            return;
+        }
+
+        catalogGalleryGrid.innerHTML = '';
+        photos.forEach(p => {
+            const itemDiv = document.createElement('div');
+            itemDiv.style.cssText = 'position:relative; cursor:pointer; border:2px solid rgba(255,255,255,0.1); border-radius:8px; overflow:hidden; aspect-ratio:1; background:#000; transition:all 0.2s;';
+            itemDiv.innerHTML = `
+                <img src="/${p.path}" style="width:100%; height:100%; object-fit:cover;">
+                <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.7); font-size:10px; color:#f8fafc; padding:2px 4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                    ${p.filename}
+                </div>
+            `;
+            itemDiv.onmouseover = () => { itemDiv.style.borderColor = 'var(--gold-primary)'; itemDiv.style.transform = 'scale(1.05)'; };
+            itemDiv.onmouseout = () => { itemDiv.style.borderColor = 'rgba(255,255,255,0.1)'; itemDiv.style.transform = 'scale(1)'; };
+            
+            itemDiv.onclick = () => {
+                // Seleziona questa foto
+                selectedCatalogPhotoPath = p.path;
+                currentSelectedFile = null; // È già sul server
+                if (photoPreviewImg) photoPreviewImg.src = '/' + p.path;
+                if (fileNameDisplay) fileNameDisplay.textContent = 'Foto scelta: ' + p.filename;
+                if (photoPreviewContainer) photoPreviewContainer.style.display = 'block';
+                if (removePhotoBtn) removePhotoBtn.style.display = 'inline';
+                catalogGalleryModal.classList.remove('show');
+                showToast('Foto associata con successo!');
+            };
+            catalogGalleryGrid.appendChild(itemDiv);
+        });
+    } catch(err) {
+        catalogGalleryGrid.innerHTML = '<div style="color:#ef4444; padding:20px; grid-column: 1/-1; text-align:center;">Errore caricamento galleria.</div>';
+    }
+}
+
+if (btnCloseCatalogGallery && catalogGalleryModal) {
+    btnCloseCatalogGallery.addEventListener('click', () => catalogGalleryModal.classList.remove('show'));
+    catalogGalleryModal.addEventListener('click', (e) => {
+        if (e.target === catalogGalleryModal) catalogGalleryModal.classList.remove('show');
+    });
+}
+
+if (btnTriggerGallery) {
     btnTriggerGallery.addEventListener('click', (e) => {
         e.preventDefault();
-        fileInputGallery.click();
-    });
-    fileInputGallery.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files.length > 0) {
-            handleFileSelection(e.target.files[0]);
-        }
+        // Sul PC o Cloud apri la comoda galleria a schermo con tutte le foto salvate
+        openCatalogGallery();
     });
 }
 
 if (removePhotoBtn) {
     removePhotoBtn.addEventListener('click', () => {
         currentSelectedFile = null;
+        selectedCatalogPhotoPath = null;
         if (fileInputCam) fileInputCam.value = '';
         if (fileInputGallery) fileInputGallery.value = '';
         if (photoPreviewContainer) photoPreviewContainer.style.display = 'none';
@@ -336,7 +391,7 @@ form.addEventListener('submit', async (e) => {
     btn.innerHTML = 'Salvataggio...';
     btn.disabled = true;
 
-    let photoPath = null;
+    let photoPath = selectedCatalogPhotoPath || null;
 
     if (file) {
         if (!navigator.onLine) {
@@ -410,6 +465,7 @@ function resetFormState() {
     document.getElementById('saveBtn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> SALVA';
     cancelEditBtn.style.display = 'none';
     currentSelectedFile = null;
+    selectedCatalogPhotoPath = null;
     if (fileInputCam) fileInputCam.value = '';
     if (fileInputGallery) fileInputGallery.value = '';
     if (photoPreviewContainer) photoPreviewContainer.style.display = 'none';

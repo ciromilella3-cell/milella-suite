@@ -1112,6 +1112,44 @@ app.post('/api/locations', (req, res) => {
     }
 });
 
+// API GET: Elenco foto disponibili nel catalogo (uploads e Foto_Attrezzi)
+app.get('/api/available-photos', (req, res) => {
+    try {
+        const photos = [];
+        const seen = new Set();
+        
+        // 1. Dalle cartelle fisiche uploads
+        const uploadsDirs = [path.join(__dirname, 'public', 'uploads'), path.join(__dirname, 'uploads')];
+        uploadsDirs.forEach(dir => {
+            if (fs.existsSync(dir)) {
+                fs.readdirSync(dir).forEach(file => {
+                    if (/\.(jpg|jpeg|png|webp|avif)$/i.test(file) && !seen.has('uploads/' + file)) {
+                        seen.add('uploads/' + file);
+                        photos.push({ path: 'uploads/' + file, filename: file });
+                    }
+                });
+            }
+        });
+
+        // 2. Dalle cartelle fisiche Foto_Attrezzi
+        const attrezziDirs = [path.join(__dirname, 'public', 'Foto_Attrezzi'), path.join(__dirname, 'data', 'Foto_Attrezzi')];
+        attrezziDirs.forEach(dir => {
+            if (fs.existsSync(dir)) {
+                fs.readdirSync(dir).forEach(file => {
+                    if (/\.(jpg|jpeg|png|webp|avif)$/i.test(file) && !seen.has('Foto_Attrezzi/' + file)) {
+                        seen.add('Foto_Attrezzi/' + file);
+                        photos.push({ path: 'Foto_Attrezzi/' + file, filename: file });
+                    }
+                });
+            }
+        });
+
+        res.json(photos);
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // API POST: Upload foto
 app.post('/api/upload', upload.single('foto'), (req, res) => {
     if (!req.file) {
