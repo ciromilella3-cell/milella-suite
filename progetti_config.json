@@ -12,7 +12,7 @@
     "id": "app_inventario",
     "titolo": "Inventario Attrezzi",
     "icona": "🛠️",
-    "url": "/",
+    "url": "/inventario.html",
     "descrizione": "Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.",
     "visibilita": "tutti",
     "attivo": true

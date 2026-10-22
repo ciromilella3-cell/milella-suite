@@ -460,6 +460,16 @@ app.get(['/', '/index.html'], (req, res, next) => {
     next();
 });
 
+// Accesso Diretto ad Inventario Attrezzi
+app.get(['/inventario', '/inventario/', '/inventario.html'], (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    const p1 = path.join(__dirname, 'public', 'inventario.html');
+    const p2 = path.join(__dirname, 'index.html');
+    if (fs.existsSync(p1)) return res.sendFile(p1);
+    if (fs.existsSync(p2)) return res.sendFile(p2);
+    res.status(404).send('Inventario non trovato');
+});
+
 app.get('/launcher.html', (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     const p1 = path.join(__dirname, 'public', 'launcher.html');
