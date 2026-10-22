@@ -413,7 +413,7 @@
 
                 <!-- Logo / Corona / Brand -->
                 <div style="width:76px; height:76px; margin:0 auto 1rem auto; border-radius:22px; background:linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05)); border:1.5px solid rgba(212,175,55,0.4); display:flex; align-items:center; justify-content:center; font-size:38px; box-shadow:0 8px 24px rgba(212,175,55,0.2);">
-                    ðŸ‘‘
+                    👑
                 </div>
                 
                 <div style="font-size:11px; text-transform:uppercase; letter-spacing:3px; color:#d4af37; font-weight:700; margin-bottom:4px;">Suite Gestionale Aziendale</div>
@@ -423,21 +423,21 @@
                 <!-- Box Informazioni Base Aziendali -->
                 <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:10px 14px; margin-bottom:1.4rem; text-align:left; display:flex; flex-direction:column; gap:6px;">
                     <div style="font-size:12px; color:#cbd5e1; display:flex; align-items:center; gap:8px;">
-                        <span>ðŸ¢</span> <span><strong>Servizi:</strong> Attrezzi, Flotta, SanitÃ , Nutrizione & Logistica</span>
+                        <span>🏢</span> <span><strong>Servizi:</strong> Attrezzi, Flotta, Sanità, Nutrizione & Logistica</span>
                     </div>
                     <div style="font-size:12px; color:#cbd5e1; display:flex; align-items:center; gap:8px;">
-                        <span>ðŸ”’</span> <span><strong>Sicurezza:</strong> Crittografia protetta e sessione privata</span>
+                        <span>🔒</span> <span><strong>Sicurezza:</strong> Crittografia protetta e sessione privata</span>
                     </div>
                     <div style="font-size:12px; color:#94a3b8; display:flex; align-items:center; gap:8px;">
-                        <span>ðŸŒ</span> <span><strong>Cloud:</strong> Sincronizzazione automatica Cloud H24</span>
+                        <span>🌐</span> <span><strong>Cloud:</strong> Sincronizzazione automatica Cloud H24</span>
                     </div>
                 </div>
 
                 <!-- Input PIN con Occhietto -->
                 <div style="position:relative; width:100%; margin-bottom:1rem;">
-                    <input type="password" id="inputPinGate" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" style="width:100%; padding:15px 48px 15px 16px; border-radius:14px; background:rgba(0,0,0,0.55); border:1.5px solid rgba(212,175,55,0.4); color:#fff; font-size:22px; text-align:center; letter-spacing:6px; outline:none; box-sizing:border-box; transition:border 0.2s;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,0.4)'" onkeydown="if(event.key==='Enter') verificaPinGate()">
+                    <input type="password" id="inputPinGate" placeholder="••••••••" style="width:100%; padding:15px 48px 15px 16px; border-radius:14px; background:rgba(0,0,0,0.55); border:1.5px solid rgba(212,175,55,0.4); color:#fff; font-size:22px; text-align:center; letter-spacing:6px; outline:none; box-sizing:border-box; transition:border 0.2s;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,0.4)'" onkeydown="if(event.key==='Enter') verificaPinGate()">
                     <button type="button" onclick="toggleMostraPasswordGate()" id="btnToggleEyeGate" title="Mostra/Nascondi codice" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.85;">
-                        ðŸ‘ï¸
+                        👁️
                     </button>
                 </div>
 
@@ -445,21 +445,21 @@
 
                 <div style="display:flex; flex-direction:column; gap:10px;">
                     <button onclick="verificaPinGate()" style="width:100%; background:linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); color:#0b0f19; font-weight:900; font-size:14.5px; padding:13px; border:none; border-radius:14px; cursor:pointer; letter-spacing:1px; box-shadow:0 6px 20px rgba(212,175,55,0.35); transition:transform 0.15s;" onactive="this.style.transform='scale(0.98)'">
-                        ACCEDI AL SISTEMA (PIN) ðŸ”“
+                        ACCEDI AL SISTEMA (PIN) 🔓
                     </button>
 
                     <!-- Tasto Impronta: disattivato/nascosto al primo accesso, si attiva SOLO dopo aver inserito il PIN la prima volta -->
                     <button id="btnBiometriaGate" type="button" onclick="accediConImpronta()" style="display:none; width:100%; background:rgba(56,189,248,0.12); border:1.5px solid rgba(56,189,248,0.45); color:#7dd3fc; font-weight:800; font-size:13.5px; padding:12px; border-radius:14px; cursor:pointer; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 15px rgba(2,132,199,0.2); transition:all 0.2s;">
-                        <span style="font-size:20px;">ðŸ‘†</span> ACCEDI CON IMPRONTA / BIOMETRIA
+                        <span style="font-size:20px;">👆</span> ACCEDI CON IMPRONTA / BIOMETRIA
                     </button>
                     <div id="hintPrimaVoltaPin" style="font-size:11.5px; color:#94a3b8; line-height:1.4; margin-top:2px;">
-                        â„¹ï¸ <em>Al primo utilizzo inserisci il tuo PIN. L'accesso con impronta digitale si abiliterÃ  automaticamente per i prossimi accessi.</em>
+                        ℹ️ <em>Al primo utilizzo inserisci il tuo PIN. L'accesso con impronta digitale si abiliterà automaticamente per i prossimi accessi.</em>
                     </div>
                 </div>
 
                 <!-- Footer Assistenza -->
                 <div style="font-size:11.5px; color:#f3e5ab; margin-top:1.4rem; opacity:0.85;">
-                    ðŸ“ž Non hai il PIN o serve assistenza?<br>
+                    📞 Non hai il PIN o serve assistenza?<br>
                     <strong>Contattare Amministratore Ciro Milella</strong>
                 </div>
             </div>
@@ -471,24 +471,24 @@
         <!-- BARRA STATUS RUOLO / LOGIN MASTER PIN -->
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:1100px; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
             <div id="userBadge" style="display:flex; align-items:center; gap:8px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.3); padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; color:#f3e5ab;">
-                <span id="userBadgeIcon">ðŸ‘·</span>
-                <span id="userBadgeText">ModalitÃ : In attesa di PIN</span>
+                <span id="userBadgeIcon">👷</span>
+                <span id="userBadgeText">Modalità: In attesa di PIN</span>
             </div>
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
                 <a href="https://milella-suite.onrender.com/launcher.html" target="_blank" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:1px solid rgba(56,189,248,0.5); color:#fff; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; box-shadow:0 3px 10px rgba(2,132,199,0.35); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    <span style="font-size:15px;">â˜ï¸</span> SITO CLOUD ONLINE
+                    <span style="font-size:15px;">☁️</span> SITO CLOUD ONLINE
                 </a>
                 <button id="btnSwitchRole" onclick="apriLoginModal()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(212,175,55,0.4); color:#fff; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.2s;">
-                    ðŸ”‘ CAMBIA UTENTE (PIN)
+                    🔑 CAMBIA UTENTE (PIN)
                 </button>
                 <button id="btnManageOps" onclick="apriGestioneOperatoriModal()" style="display:none; background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
-                    ðŸ‘¥ OPERATORI
+                    👥 OPERATORI
                 </button>
                 <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
-                    ðŸ› ï¸ GESTIONE PROGETTI (APP)
+                    🛠️ GESTIONE PROGETTI (APP)
                 </button>
                 <button id="btnLogoutRole" onclick="esciAdmin()" style="display:none; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:700; cursor:pointer;">
-                    ðŸ”’ Esci / Blocca
+                    🔒 Esci / Blocca
                 </button>
             </div>
         </div>
@@ -501,22 +501,22 @@
         <!-- 5. CRUSCOTTO RIEPILOGATIVO VELOCE (DASHBOARD KPI LIVE) -->
         <div id="kpiDashboardBar" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px; width:100%; max-width:900px; margin: 0 auto 2rem auto;">
             <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(212,175,55,0.25); border-radius:16px; padding:12px 10px; text-align:center;">
-                <div style="font-size:20px; margin-bottom:4px;">ðŸ› ï¸</div>
+                <div style="font-size:20px; margin-bottom:4px;">🛠️</div>
                 <div style="font-size:18px; font-weight:800; color:#fff;" id="kpiTotAttrezzi">--</div>
                 <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Tot. Attrezzi</div>
             </div>
             <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(239,68,68,0.25); border-radius:16px; padding:12px 10px; text-align:center;">
-                <div style="font-size:20px; margin-bottom:4px;">ðŸšš</div>
+                <div style="font-size:20px; margin-bottom:4px;">🚚</div>
                 <div style="font-size:18px; font-weight:800; color:#f87171;" id="kpiInUso">--</div>
                 <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">In Cantiere / Uso</div>
             </div>
             <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(34,197,94,0.25); border-radius:16px; padding:12px 10px; text-align:center;">
-                <div style="font-size:20px; margin-bottom:4px;">âœ…</div>
+                <div style="font-size:20px; margin-bottom:4px;">✅</div>
                 <div style="font-size:18px; font-weight:800; color:#4ade80;" id="kpiDisponibili">--</div>
                 <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Disponibili</div>
             </div>
             <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(56,189,248,0.25); border-radius:16px; padding:12px 10px; text-align:center;">
-                <div style="font-size:20px; margin-bottom:4px;">ðŸ‘¥</div>
+                <div style="font-size:20px; margin-bottom:4px;">👥</div>
                 <div style="font-size:18px; font-weight:800; color:#38bdf8;" id="kpiOperatori">--</div>
                 <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Operatori Attivi</div>
             </div>
@@ -525,56 +525,56 @@
         <div class="cards-wrapper">
     <!-- 1. APP LOGISTICA (Solo PC Console Desktop) -->
     <a href="#" class="card desktop-only-card" id="btnLogistica" style="display:none;" class="card desktop-only-card-hidden">
-        <div class="card-icon">ðŸ“¦</div>
+        <div class="card-icon">📦</div>
         <div class="card-title">Logistica Consegne</div>
         <div class="card-desc">Gestione completa delle spedizioni, tracciamento e organizzazione del magazzino principale.</div>
     </a>
 
     <!-- 2. APP FLOTTA & VEICOLI (Solo PC Console Desktop) -->
     <a href="/veicoli_mobile/" class="card" id="btnVeicoli" class="card">
-        <div class="card-icon">ðŸš—</div>
+        <div class="card-icon">🚗</div>
         <div class="card-title">Flotta Veicoli & Spese</div>
         <div class="card-desc">Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.</div>
     </a>
 
     <!-- 3. APP INVENTARIO -->
     <a href="/inventario.html" class="card">
-        <div class="card-icon">ðŸ› ï¸</div>
+        <div class="card-icon">🛠️</div>
         <div class="card-title">Inventario Attrezzi</div>
         <div class="card-desc">Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.</div>
     </a>
 
     <!-- 4. APP RICETTARIO -->
     <a href="/ricettario/" class="card">
-        <div class="card-icon">ðŸ‘¨â€ðŸ³</div>
+        <div class="card-icon">👨‍🍳</div>
         <div class="card-title">Il Ricettario</div>
         <div class="card-desc">L'archivio prezioso delle tue ricette personali con lista della spesa automatica.</div>
     </a>
 
     <!-- 5. APP MEDNUTRI PRO (Riservato Admin) -->
     <a href="/mednutri/" class="card admin-only-card" style="display:none;">
-        <div class="card-icon">ðŸ¥—</div>
+        <div class="card-icon">🥗</div>
         <div class="card-title">MedNutri Pro</div>
         <div class="card-desc">Software avanzato per piani nutrizionali personalizzati e gestione clinica.</div>
     </a>
 
     <!-- 6. APP PROGETTO SALUTE (Riservato Admin) -->
     <a href="/salute/" class="card admin-only-card" style="display:none;">
-        <div class="card-icon">â¤ï¸</div>
+        <div class="card-icon">❤️</div>
         <div class="card-title">Progetto Salute</div>
         <div class="card-desc">Monitoraggio parametri vitali, fitness e benessere personale quotidiano.</div>
     </a>
 
     <!-- 7. APP GIOCO (Riservato Admin) -->
     <a href="/progetto_gioco/" class="card admin-only-card" style="display:none;">
-        <div class="card-icon">ðŸŽ°</div>
+        <div class="card-icon">🎰</div>
         <div class="card-title">Progetto Gioco</div>
         <div class="card-desc">Monitoraggio statistico SuperEnalotto e Gratta & Vinci con bilancio netto.</div>
     </a>
 
     <!-- 8. APP CAREASSIST PRO (Riservato Admin) -->
     <a href="/careassist/" class="card admin-only-card" style="display:none;">
-        <div class="card-icon">ðŸ©º</div>
+        <div class="card-icon">🩺</div>
         <div class="card-title">CareAssist Pro</div>
         <div class="card-desc">Diario socio-sanitario, terapie farmacologiche e gestione assistenza domiciliare.</div>
     </a>
@@ -582,28 +582,28 @@
 
 <div class="launcher-footer-actions" style="margin-top: 2.5rem; animation: fadeUp 1s ease-out backwards; animation-delay: 0.6s; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
     <button onclick="window.open('/presentazione', '_blank')" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: #fff; border: 1px solid rgba(255,255,255,0.4); padding: 12px 28px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(2, 132, 199, 0.45); transition: all 0.3s; align-items: center; justify-content: center; gap: 8px;">
-        ðŸ›¡ï¸ PRESENTAZIONE & ARCHITETTURA AI
+        🛡️ PRESENTAZIONE & ARCHITETTURA AI
     </button>
     <button id="btnOpenQrModal" class="btn-qr-promo" onclick="apriQrModal()" style="display:flex; align-items:center; gap:8px;">
-        ðŸ“± MOSTRA QR CODE
+        📱 MOSTRA QR CODE
     </button>
 
     <button onclick="condividiWhatsApp()" class="btn-footer-action" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #fff; border: 1px solid rgba(255,255,255,0.4); padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-        ðŸ’¬ CONDIVIDI SU WHATSAPP
+        💬 CONDIVIDI SU WHATSAPP
     </button>
 
     <button onclick="window.location.href='/esporta_progetti.html'" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #fef08a 0%, #d4af37 50%, #b45309 100%); color: #0b0f19; border: 1px solid rgba(255,255,255,0.4); padding: 12px 28px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(212, 175, 55, 0.45); transition: all 0.3s; align-items: center; justify-content: center; gap: 8px;">
-        âš¡ GENERATORE VERSIONI PERSONALIZZATE (AI)
+        ⚡ GENERATORE VERSIONI PERSONALIZZATE (AI)
     </button>
 
     <button id="btnCentroSicurezza" onclick="apriCentroSicurezzaModal()" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; border: 1.5px solid rgba(254,243,199,0.3); padding: 12px 26px; border-radius: 30px; font-size: 13.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
-        ðŸ›¡ï¸ CENTRO SICUREZZA & BACKUP
+        🛡️ CENTRO SICUREZZA & BACKUP
     </button>
     <button id="btnPonteMobile" class="btn-footer-action desktop-only-btn admin-only-btn" onclick="window.open('http://localhost:3002/', '_blank')" style="display:none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px 30px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); transition: all 0.3s; align-items: center; justify-content: center;">
-        ðŸŒ PONTE MOBILE
+        🌐 PONTE MOBILE
     </button>
     <button id="btnShutdownSystem" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px 30px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); transition: all 0.3s; align-items: center; justify-content: center;">
-        ðŸ›‘ SPEGNI SISTEMA
+        🛑 SPEGNI SISTEMA
     </button>
 </div>
 
@@ -614,8 +614,8 @@
     <!-- MODALE SMART QR CODE PROMO CELLULARE -->
     <div id="qrPromoModal">
         <div class="qr-promo-card">
-            <button class="qr-close-btn" onclick="chiudiQrModal()" title="Chiudi">âœ•</button>
-            <div class="qr-badge-top">âš¡ Esperienza Mobile Unificata</div>
+            <button class="qr-close-btn" onclick="chiudiQrModal()" title="Chiudi">✕</button>
+            <div class="qr-badge-top">⚡ Esperienza Mobile Unificata</div>
             <h2 class="qr-hook-title">Porta la Suite <span>Sempre con Te</span></h2>
             <p class="qr-hook-desc">
                 Inquadra il codice con la fotocamera del tuo smartphone: 
@@ -628,7 +628,7 @@
                 <span class="qr-url-badge" id="qrTargetUrlText">http://192.168.1.5:3000/launcher.html</span>
             </div>
             <div style="font-size: 11.5px; color: #64748b; font-weight: 600;">
-                ðŸ”’ Connessione Wi-Fi Locale Protetta â€¢ Sincronizzazione Bidirezionale Attiva
+                🔒 Connessione Wi-Fi Locale Protetta • Sincronizzazione Bidirezionale Attiva
             </div>
         </div>
     </div>
@@ -636,24 +636,24 @@
     <!-- MODALE SBLOCCO ADMIN (PIN MASTER) -->
     <div id="modalAdminLogin" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10000; align-items:center; justify-content:center; padding:1rem;">
         <div style="background:rgba(15,23,42,0.95); border:1px solid rgba(212,175,55,0.4); border-radius:24px; padding:2rem; max-width:400px; width:100%; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.6);">
-            <div style="font-size:2.8rem; margin-bottom:0.8rem;">ðŸ‘‘</div>
+            <div style="font-size:2.8rem; margin-bottom:0.8rem;">👑</div>
             <h2 style="font-size:1.4rem; color:#fff; margin-bottom:0.5rem; letter-spacing:1px;">Area Riservata Master</h2>
-            <p style="color:#94a3b8; font-size:0.88rem; margin-bottom:1.5rem;">Inserisci il PIN Master o il Codice Operatore per sbloccare le funzionalitÃ  riservate.</p>
+            <p style="color:#94a3b8; font-size:0.88rem; margin-bottom:1.5rem;">Inserisci il PIN Master o il Codice Operatore per sbloccare le funzionalità riservate.</p>
             
             <div style="position:relative; width:100%; margin-bottom:1rem;">
-                <input type="password" id="inputPinLogin" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" style="width:100%; padding:14px 48px 14px 14px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:20px; text-align:center; letter-spacing:5px; outline:none; box-sizing:border-box;" onkeydown="if(event.key==='Enter') verificaPinLogin()">
+                <input type="password" id="inputPinLogin" placeholder="••••••••" style="width:100%; padding:14px 48px 14px 14px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:20px; text-align:center; letter-spacing:5px; outline:none; box-sizing:border-box;" onkeydown="if(event.key==='Enter') verificaPinLogin()">
                 <button type="button" onclick="toggleMostraPassword()" id="btnToggleEye" title="Mostra/Nascondi password" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.8; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
-                    ðŸ‘ï¸
+                    👁️
                 </button>
             </div>
             <div style="font-size:12px; color:#f3e5ab; margin-bottom:1.2rem; font-weight:600; opacity:0.85;">
-                ðŸ“ž Per assistenza o abilitazione: <u>Contattare Amministratore Ciro Milella</u>
+                📞 Per assistenza o abilitazione: <u>Contattare Amministratore Ciro Milella</u>
             </div>
             <div id="loginErrorMsg" style="color:#ef4444; font-size:0.85rem; font-weight:600; margin-bottom:1rem; display:none;"></div>
 
             <div style="display:flex; gap:10px; justify-content:center;">
                 <button onclick="chiudiLoginModal()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Annulla</button>
-                <button onclick="verificaPinLogin()" style="background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:10px 26px; border-radius:12px; font-weight:800; cursor:pointer; box-shadow:0 4px 15px rgba(212,175,55,0.4);">SBLOCCA ðŸ”“</button>
+                <button onclick="verificaPinLogin()" style="background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:10px 26px; border-radius:12px; font-weight:800; cursor:pointer; box-shadow:0 4px 15px rgba(212,175,55,0.4);">SBLOCCA 🔓</button>
             </div>
         </div>
     </div>
@@ -665,7 +665,7 @@
             <!-- Intestazione modale -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; border-bottom:1px solid rgba(212,175,55,0.25); padding-bottom:1rem;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <span style="font-size:24px; filter:drop-shadow(0 2px 8px rgba(212,175,55,0.5));">ðŸ‘¥</span>
+                    <span style="font-size:24px; filter:drop-shadow(0 2px 8px rgba(212,175,55,0.5));">👥</span>
                     <div>
                         <h2 style="font-size:1.3rem; margin:0; font-weight:800; background:linear-gradient(135deg, #fef08a 0%, #d4af37 50%, #f59e0b 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:0.8px;">
                             Registro Operatori & Accessi
@@ -673,13 +673,13 @@
                         <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">Assegna PIN dedicati e isola le app autorizzate per collaboratore</div>
                     </div>
                 </div>
-                <button onclick="chiudiGestioneOperatoriModal()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#cbd5e1; width:36px; height:36px; border-radius:50%; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.25)'; this.style.borderColor='#ef4444';" onmouseout="this.style.background='rgba(255,255,255,0.06)'; this.style.borderColor='rgba(255,255,255,0.12)';">âœ•</button>
+                <button onclick="chiudiGestioneOperatoriModal()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#cbd5e1; width:36px; height:36px; border-radius:50%; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.25)'; this.style.borderColor='#ef4444';" onmouseout="this.style.background='rgba(255,255,255,0.06)'; this.style.borderColor='rgba(255,255,255,0.12)';">✕</button>
             </div>
 
             <!-- Form Aggiungi Nuovo Collaboratore -->
             <div style="background:rgba(0,0,0,0.4); padding:1.2rem; border-radius:18px; border:1px solid rgba(212,175,55,0.3); margin-bottom:1.5rem; box-shadow:0 8px 25px rgba(0,0,0,0.35);">
                 <div style="display:flex; align-items:center; gap:8px; margin-bottom:0.9rem;">
-                    <span style="font-size:16px;">âœ¨</span>
+                    <span style="font-size:16px;">✨</span>
                     <h3 style="font-size:0.96rem; color:#fef08a; margin:0; font-weight:700; letter-spacing:0.5px;">Aggiungi Nuovo Collaboratore</h3>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:10px;">
@@ -693,66 +693,66 @@
                     </div>
                     <div>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <label style="font-size:12px; color:#cbd5e1; font-weight:700;">ðŸ“± Seleziona le App da Assegnare (Scelta Multipla):</label>
+                            <label style="font-size:12px; color:#cbd5e1; font-weight:700;">📱 Seleziona le App da Assegnare (Scelta Multipla):</label>
                             <button type="button" onclick="toggleTutteAppNewOp()" id="btnTutteNewOp" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; cursor:pointer;">
-                                ðŸŒ Seleziona Tutte
+                                🌐 Seleziona Tutte
                             </button>
                         </div>
                         <div id="gridNewOpApps" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:7px; background:rgba(15,23,42,0.6); padding:10px; border-radius:12px; border:1px solid rgba(212,175,55,0.25); max-height:200px; overflow-y:auto;">
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-new-app" value="app_veicoli" style="width:17px; height:17px; accent-color:#d4af37;">
-                                <span>ðŸš— Flotta Veicoli & Spese</span>
+                                <span>🚗 Flotta Veicoli & Spese</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-new-app" value="app_inventario" style="width:17px; height:17px; accent-color:#d4af37;">
-                                <span>ðŸ› ï¸ Inventario Attrezzi</span>
+                                <span>🛠️ Inventario Attrezzi</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-new-app" value="app_logistica" style="width:17px; height:17px; accent-color:#d4af37;">
-                                <span>ðŸ“¦ Logistica Consegne</span>
+                                <span>📦 Logistica Consegne</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-new-app" value="app_ricettario" style="width:17px; height:17px; accent-color:#d4af37;">
-                                <span>ðŸ‘¨â€ðŸ³ Il Ricettario</span>
+                                <span>👨‍🍳 Il Ricettario</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-new-app" value="app_mednutri" style="width:17px; height:17px; accent-color:#d4af37;">
-                                <span>ðŸ¥— MedNutri Pro</span>
+                                <span>🥗 MedNutri Pro</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-new-app" value="app_careassist" onchange="aggiornaVisibilitaPazientiNewOp()" style="width:17px; height:17px; accent-color:#d4af37;">
-                                <span>ðŸ©º CareAssist Pro</span>
+                                <span>🩺 CareAssist Pro</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-new-app" value="app_salute" style="width:17px; height:17px; accent-color:#d4af37;">
-                                <span>â¤ï¸ Progetto Salute</span>
+                                <span>❤️ Progetto Salute</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-new-app" value="app_gioco" style="width:17px; height:17px; accent-color:#d4af37;">
-                                <span>ðŸŽ° Progetto Gioco</span>
+                                <span>🎰 Progetto Gioco</span>
                             </label>
                         </div>
                     </div>
                     <!-- Box Selezione Pazienti CareAssist (Aggiunta Nuovo) -->
                     <div id="boxPazientiNewOp" style="display:none; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.3); border-radius:12px; padding:10px 12px; margin-top:4px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                            <label style="font-size:11.5px; color:#7dd3fc; font-weight:800;">ðŸ©º Pazienti CareAssist Assegnati:</label>
+                            <label style="font-size:11.5px; color:#7dd3fc; font-weight:800;">🩺 Pazienti CareAssist Assegnati:</label>
                             <button type="button" onclick="toggleTuttiPazNewOp()" id="btnTuttiPazNewOp" style="background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.5); color:#fff; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px; cursor:pointer;">
-                                ðŸŒ Tutti i Pazienti
+                                🌐 Tutti i Pazienti
                             </button>
                         </div>
                         <div style="display:flex; flex-direction:column; gap:5px;">
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-new-paz" value="paz_aldo" style="width:16px; height:16px; accent-color:#38bdf8;">
-                                <span>ðŸ‘´ Aldo Zamparino (91 anni)</span>
+                                <span>👴 Aldo Zamparino (91 anni)</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-new-paz" value="paz_angela" style="width:16px; height:16px; accent-color:#38bdf8;">
-                                <span>ðŸ‘µ Angela Mazzicone</span>
+                                <span>👵 Angela Mazzicone</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-new-paz" value="paz_rosa" style="width:16px; height:16px; accent-color:#38bdf8;">
-                                <span>ðŸ‘µ Rosa Annunziata Cavalcante</span>
+                                <span>👵 Rosa Annunziata Cavalcante</span>
                             </label>
                         </div>
                     </div>
@@ -760,11 +760,11 @@
                     <div style="background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.3); border-radius:12px; padding:10px 12px; margin-top:4px;">
                         <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#f3e5ab; font-weight:700; cursor:pointer;">
                             <input type="checkbox" id="newOpCanEditTerapie" style="width:17px; height:17px; accent-color:#d4af37;">
-                            <span>âœï¸ Abilita a Modificare/Eliminare Farmaci (Default: Sola Lettura / Spunta)</span>
+                            <span>✍️ Abilita a Modificare/Eliminare Farmaci (Default: Sola Lettura / Spunta)</span>
                         </label>
                     </div>
                     <button onclick="salvaNuovoOperatore()" style="width:100%; margin-top:6px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:1px solid rgba(255,255,255,0.3); color:#fff; font-weight:800; padding:12px; border-radius:12px; cursor:pointer; font-size:13.5px; letter-spacing:0.8px; text-transform:uppercase; box-shadow:0 6px 18px rgba(16,185,129,0.4); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                        âž• SALVA NUOVO OPERATORE
+                        ➕ SALVA NUOVO OPERATORE
                     </button>
                 </div>
             </div>
@@ -773,10 +773,10 @@
             <div id="boxModificaOpInline" style="display:none; background:linear-gradient(145deg, rgba(2,132,199,0.2) 0%, rgba(15,23,42,0.85) 100%); padding:1.2rem; border-radius:18px; border:1.5px solid #38bdf8; margin-bottom:1.5rem; box-shadow:0 10px 30px rgba(2,132,199,0.35); animation:fadeInGate 0.3s ease-out;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(56,189,248,0.25); padding-bottom:8px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:18px;">âœï¸</span>
+                        <span style="font-size:18px;">✏️</span>
                         <h3 style="font-size:1rem; color:#7dd3fc; margin:0; font-weight:800;">Modifica: <span id="lblEditOpNome" style="color:#fff;"></span></h3>
                     </div>
-                    <button onclick="annullaModificaOp()" style="background:rgba(255,255,255,0.08); border:none; color:#94a3b8; font-size:12px; font-weight:700; padding:5px 10px; border-radius:8px; cursor:pointer;">âœ• Annulla</button>
+                    <button onclick="annullaModificaOp()" style="background:rgba(255,255,255,0.08); border:none; color:#94a3b8; font-size:12px; font-weight:700; padding:5px 10px; border-radius:8px; cursor:pointer;">✕ Annulla</button>
                 </div>
                 <input type="hidden" id="editOpId">
                 <div style="display:flex; flex-direction:column; gap:10px;">
@@ -790,66 +790,66 @@
                     </div>
                     <div>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <label style="font-size:12px; color:#cbd5e1; font-weight:700;">ðŸ“± App Assegnate (Seleziona una o piÃ¹):</label>
+                            <label style="font-size:12px; color:#cbd5e1; font-weight:700;">📱 App Assegnate (Seleziona una o più):</label>
                             <button type="button" onclick="toggleTutteAppEditOp()" id="btnTutteEditOp" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; cursor:pointer;">
-                                ðŸŒ Seleziona Tutte
+                                🌐 Seleziona Tutte
                             </button>
                         </div>
                         <div id="gridEditOpApps" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:7px; background:rgba(15,23,42,0.6); padding:10px; border-radius:12px; border:1px solid rgba(56,189,248,0.35); max-height:200px; overflow-y:auto;">
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-edit-app" value="app_veicoli" style="width:17px; height:17px; accent-color:#38bdf8;">
-                                <span>ðŸš— Flotta Veicoli & Spese</span>
+                                <span>🚗 Flotta Veicoli & Spese</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-edit-app" value="app_inventario" style="width:17px; height:17px; accent-color:#38bdf8;">
-                                <span>ðŸ› ï¸ Inventario Attrezzi</span>
+                                <span>🛠️ Inventario Attrezzi</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-edit-app" value="app_logistica" style="width:17px; height:17px; accent-color:#38bdf8;">
-                                <span>ðŸ“¦ Logistica Consegne</span>
+                                <span>📦 Logistica Consegne</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-edit-app" value="app_ricettario" style="width:17px; height:17px; accent-color:#38bdf8;">
-                                <span>ðŸ‘¨â€ðŸ³ Il Ricettario</span>
+                                <span>👨‍🍳 Il Ricettario</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-edit-app" value="app_mednutri" style="width:17px; height:17px; accent-color:#38bdf8;">
-                                <span>ðŸ¥— MedNutri Pro</span>
+                                <span>🥗 MedNutri Pro</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-edit-app" value="app_careassist" onchange="aggiornaVisibilitaPazientiEditOp()" style="width:17px; height:17px; accent-color:#38bdf8;">
-                                <span>ðŸ©º CareAssist Pro</span>
+                                <span>🩺 CareAssist Pro</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-edit-app" value="app_salute" style="width:17px; height:17px; accent-color:#38bdf8;">
-                                <span>â¤ï¸ Progetto Salute</span>
+                                <span>❤️ Progetto Salute</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
                                 <input type="checkbox" class="chk-edit-app" value="app_gioco" style="width:17px; height:17px; accent-color:#38bdf8;">
-                                <span>ðŸŽ° Progetto Gioco</span>
+                                <span>🎰 Progetto Gioco</span>
                             </label>
                         </div>
                     </div>
                     <!-- Box Selezione Pazienti CareAssist (Modifica Esistente) -->
                     <div id="boxPazientiEditOp" style="display:none; background:rgba(56,189,248,0.1); border:1.5px solid rgba(56,189,248,0.4); border-radius:12px; padding:10px 12px; margin-top:2px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                            <label style="font-size:11.5px; color:#7dd3fc; font-weight:800;">ðŸ©º Pazienti CareAssist Assegnati:</label>
+                            <label style="font-size:11.5px; color:#7dd3fc; font-weight:800;">🩺 Pazienti CareAssist Assegnati:</label>
                             <button type="button" onclick="toggleTuttiPazEditOp()" id="btnTuttiPazEditOp" style="background:rgba(56,189,248,0.25); border:1px solid rgba(56,189,248,0.5); color:#fff; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px; cursor:pointer;">
-                                ðŸŒ Tutti i Pazienti
+                                🌐 Tutti i Pazienti
                             </button>
                         </div>
                         <div style="display:flex; flex-direction:column; gap:5px;">
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-edit-paz" value="paz_aldo" style="width:16px; height:16px; accent-color:#38bdf8;">
-                                <span>ðŸ‘´ Aldo Zamparino (91 anni)</span>
+                                <span>👴 Aldo Zamparino (91 anni)</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-edit-paz" value="paz_angela" style="width:16px; height:16px; accent-color:#38bdf8;">
-                                <span>ðŸ‘µ Angela Mazzicone</span>
+                                <span>👵 Angela Mazzicone</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-edit-paz" value="paz_rosa" style="width:16px; height:16px; accent-color:#38bdf8;">
-                                <span>ðŸ‘µ Rosa Annunziata Cavalcante</span>
+                                <span>👵 Rosa Annunziata Cavalcante</span>
                             </label>
                         </div>
                     </div>
@@ -857,12 +857,12 @@
                     <div style="background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.4); border-radius:12px; padding:10px 12px; margin-top:2px;">
                         <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#f3e5ab; font-weight:700; cursor:pointer;">
                             <input type="checkbox" id="editOpCanEditTerapie" style="width:17px; height:17px; accent-color:#d4af37;">
-                            <span>âœï¸ Abilita a Modificare/Eliminare Farmaci (Default: Sola Lettura / Spunta)</span>
+                            <span>✍️ Abilita a Modificare/Eliminare Farmaci (Default: Sola Lettura / Spunta)</span>
                         </label>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:4px;">
                         <button onclick="salvaModificaOperatore()" style="flex:1; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:1px solid rgba(255,255,255,0.3); color:#fff; font-weight:800; padding:11px; border-radius:12px; cursor:pointer; font-size:13.5px; letter-spacing:0.5px; box-shadow:0 4px 15px rgba(2,132,199,0.45); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                            SALVA MODIFICHE âœ…
+                            SALVA MODIFICHE ✅
                         </button>
                         <button onclick="annullaModificaOp()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#cbd5e1; font-weight:700; padding:11px 16px; border-radius:12px; cursor:pointer; font-size:13px;">
                             Annulla
@@ -890,44 +890,44 @@
     <div id="modalGestioneProgetti" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10002; align-items:center; justify-content:center; padding:1rem;">
         <div style="background:rgba(15,23,42,0.98); border:1px solid rgba(56,189,248,0.4); border-radius:24px; padding:2rem; max-width:620px; width:100%; max-height:88vh; overflow-y:auto; box-shadow:0 15px 40px rgba(0,0,0,0.7);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; border-bottom:1px solid rgba(56,189,248,0.2); padding-bottom:0.8rem;">
-                <h2 style="font-size:1.3rem; color:#7dd3fc; display:flex; align-items:center; gap:8px;">ðŸ› ï¸ Maschera Gestione Progetti & Moduli</h2>
-                <button onclick="chiudiGestioneProgettiModal()" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">âœ•</button>
+                <h2 style="font-size:1.3rem; color:#7dd3fc; display:flex; align-items:center; gap:8px;">🛠️ Maschera Gestione Progetti & Moduli</h2>
+                <button onclick="chiudiGestioneProgettiModal()" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">✕</button>
             </div>
 
             <!-- Form Aggiungi / Ripristina Progetto da Catalogo Suite -->
             <div style="background:rgba(0,0,0,0.3); padding:1.2rem; border-radius:16px; border:1px solid rgba(56,189,248,0.25); margin-bottom:1.5rem;">
-                <h3 style="font-size:0.95rem; color:#7dd3fc; margin-bottom:0.6rem; font-weight:700;">âž• Aggiungi o Ripristina App dal Catalogo</h3>
+                <h3 style="font-size:0.95rem; color:#7dd3fc; margin-bottom:0.6rem; font-weight:700;">➕ Aggiungi o Ripristina App dal Catalogo</h3>
                 
                 <!-- Catalogo Rapido App Predefinite -->
                 <div style="margin-bottom:12px; background:rgba(56,189,248,0.08); padding:10px 12px; border-radius:12px; border:1px dashed rgba(56,189,248,0.35);">
-                    <label style="display:block; font-size:12px; color:#38bdf8; font-weight:700; margin-bottom:6px;">âš¡ SELEZIONA UN'APP DA AGGIUNGERE / RIPRISTINARE (Autocompila tutto):</label>
+                    <label style="display:block; font-size:12px; color:#38bdf8; font-weight:700; margin-bottom:6px;">⚡ SELEZIONA UN'APP DA AGGIUNGERE / RIPRISTINARE (Autocompila tutto):</label>
                     <select id="presetAppSelector" onchange="selezionaPresetApp(this.value)" style="width:100%; padding:10px; border-radius:10px; background:#0b1329; border:1px solid rgba(56,189,248,0.5); color:#fff; font-size:13.5px; font-weight:600; outline:none; cursor:pointer;">
                         <option value="">-- Scegli un'app dal catalogo aziendale --</option>
-                        <option value="veicoli">ðŸš— Flotta Veicoli & Spese (/veicoli_mobile/)</option>
-                        <option value="attrezzi">ðŸ› ï¸ Inventario Attrezzi (/) </option>
-                        <option value="ricettario">ðŸ‘¨â€ðŸ³ Il Ricettario (/ricettario/)</option>
-                        <option value="mednutri">ðŸ¥— MedNutri Pro (/mednutri/)</option>
-                        <option value="salute">â¤ï¸ Progetto Salute (/salute/)</option>
-                        <option value="careassist">ðŸ©º CareAssist Pro (/careassist/)</option>
-                        <option value="gioco">ðŸŽ° Progetto Gioco (/progetto_gioco/)</option>
-                        <option value="logistica">ðŸ“¦ Logistica Consegne (/logistica/)</option>
-                        <option value="custom">âœ¨ Altro / Link Personalizzato (vuoto)</option>
+                        <option value="veicoli">🚗 Flotta Veicoli & Spese (/veicoli_mobile/)</option>
+                        <option value="attrezzi">🛠️ Inventario Attrezzi (/) </option>
+                        <option value="ricettario">👨‍🍳 Il Ricettario (/ricettario/)</option>
+                        <option value="mednutri">🥗 MedNutri Pro (/mednutri/)</option>
+                        <option value="salute">❤️ Progetto Salute (/salute/)</option>
+                        <option value="careassist">🩺 CareAssist Pro (/careassist/)</option>
+                        <option value="gioco">🎰 Progetto Gioco (/progetto_gioco/)</option>
+                        <option value="logistica">📦 Logistica Consegne (/logistica/)</option>
+                        <option value="custom">✨ Altro / Link Personalizzato (vuoto)</option>
                     </select>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 80px 1fr; gap:10px; margin-bottom:10px;">
-                    <input type="text" id="newProjIcon" placeholder="Icona" value="ðŸ“¦" style="padding:10px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(56,189,248,0.3); color:#fff; font-size:18px; text-align:center; outline:none;">
+                    <input type="text" id="newProjIcon" placeholder="Icona" value="📦" style="padding:10px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(56,189,248,0.3); color:#fff; font-size:18px; text-align:center; outline:none;">
                     <input type="text" id="newProjTitle" placeholder="Titolo Progetto (es. Progetto Salute)" style="padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(56,189,248,0.3); color:#fff; font-size:14px; outline:none;">
                 </div>
                 <div style="display:flex; gap:10px; margin-bottom:10px;">
                     <input type="text" id="newProjUrl" placeholder="Link / URL (es. /salute/ o https://...)" style="flex:1; padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(56,189,248,0.3); color:#fff; font-size:14px; outline:none;">
                     <select id="newProjVis" style="background:#0f172a; color:#fff; border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:0 12px; font-size:13px; outline:none;">
-                        <option value="tutti">ðŸ‘¥ Visibile a Tutti</option>
-                        <option value="admin">ðŸ”’ Solo Master Admin</option>
+                        <option value="tutti">👥 Visibile a Tutti</option>
+                        <option value="admin">🔒 Solo Master Admin</option>
                     </select>
                 </div>
                 <textarea id="newProjDesc" placeholder="Breve descrizione del progetto..." rows="2" style="width:100%; padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(56,189,248,0.3); color:#fff; font-size:13px; outline:none; margin-bottom:10px; box-sizing:border-box; resize:vertical;"></textarea>
-                <button onclick="salvaNuovoProgetto()" style="width:100%; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; font-weight:800; padding:11px; border-radius:10px; cursor:pointer; font-size:13.5px; letter-spacing:0.5px; box-shadow:0 4px 14px rgba(2,132,199,0.35);">SALVA E PUBBLICA PROGETTO ðŸš€</button>
+                <button onclick="salvaNuovoProgetto()" style="width:100%; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; font-weight:800; padding:11px; border-radius:10px; cursor:pointer; font-size:13.5px; letter-spacing:0.5px; box-shadow:0 4px 14px rgba(2,132,199,0.35);">SALVA E PUBBLICA PROGETTO 🚀</button>
             </div>
 
             <!-- Elenco Progetti Attuali con Tasti Modifica / Elimina -->
@@ -942,10 +942,10 @@
     <div id="modalCentroSicurezza" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(3,7,18,0.88); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:10002; align-items:center; justify-content:center; padding:1.2rem; box-sizing:border-box;">
         <div style="background:rgba(15,23,42,0.96); border:1.5px solid rgba(245,158,11,0.45); border-radius:24px; max-width:620px; width:100%; max-height:92vh; overflow-y:auto; padding:2rem 1.8rem; box-shadow:0 25px 70px rgba(0,0,0,0.8), 0 0 40px rgba(245,158,11,0.15); animation:fadeInGate 0.3s ease-out; position:relative;">
             
-            <button onclick="chiudiCentroSicurezzaModal()" style="position:absolute; top:18px; right:18px; background:rgba(255,255,255,0.06); border:none; color:#cbd5e1; width:34px; height:34px; border-radius:10px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;">âœ•</button>
+            <button onclick="chiudiCentroSicurezzaModal()" style="position:absolute; top:18px; right:18px; background:rgba(255,255,255,0.06); border:none; color:#cbd5e1; width:34px; height:34px; border-radius:10px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;">✕</button>
             
             <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.2rem;">
-                <span style="font-size:2.4rem;">ðŸ›¡ï¸</span>
+                <span style="font-size:2.4rem;">🛡️</span>
                 <div>
                     <h2 style="font-size:1.35rem; color:#fff; font-weight:800; margin:0; letter-spacing:0.5px;">Centro Sicurezza & Backup</h2>
                     <p style="color:#f59e0b; font-size:0.85rem; margin:2px 0 0 0; font-weight:600;">Suite Gestionale Aziendale C. Milella</p>
@@ -954,9 +954,9 @@
 
             <!-- GUIDA ESAUSTIVA E CHIARA -->
             <div style="background:rgba(245,158,11,0.08); border-left:4px solid #f59e0b; padding:12px 14px; border-radius:10px; margin-bottom:1.5rem; font-size:13px; color:#cbd5e1; line-height:1.5;">
-                <strong style="color:#fef3c7;">ðŸ“– Come funziona la protezione dei tuoi dati:</strong><br>
-                â€¢ <strong>Online (Cloud Render)</strong>: Tutti i moduli (Attrezzi, Flotta, Ricettario, MedNutri, Salute, CareAssist, Gioco) sono sempre attivi e protetti su server crittografato H24 accessibile da smartphone.<br>
-                â€¢ <strong>In Locale (Chiavetta USB / PC)</strong>: Puoi generare un archivio <code>.ZIP</code> completo da conservare offline o duplicare sul tuo Desktop come copia di emergenza.
+                <strong style="color:#fef3c7;">📖 Come funziona la protezione dei tuoi dati:</strong><br>
+                • <strong>Online (Cloud Render)</strong>: Tutti i moduli (Attrezzi, Flotta, Ricettario, MedNutri, Salute, CareAssist, Gioco) sono sempre attivi e protetti su server crittografato H24 accessibile da smartphone.<br>
+                • <strong>In Locale (Chiavetta USB / PC)</strong>: Puoi generare un archivio <code>.ZIP</code> completo da conservare offline o duplicare sul tuo Desktop come copia di emergenza.
             </div>
 
             <!-- BLOCCO AZIONI IMMEDIATE -->
@@ -966,13 +966,13 @@
                 <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.35); border-radius:14px; padding:16px; margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                         <div>
-                            <h4 style="color:#7dd3fc; font-size:14px; margin:0 0 4px 0; font-weight:800;">ðŸ”„ Sincronizzazione Dati (Cellulare & PC)</h4>
+                            <h4 style="color:#7dd3fc; font-size:14px; margin:0 0 4px 0; font-weight:800;">🔄 Sincronizzazione Dati (Cellulare & PC)</h4>
                             <p style="color:#94a3b8; font-size:12px; margin:0; line-height:1.4;">Scarica all'istante tutti i dati (Inventario, Terapie CareAssist, Ricettario, Salute, Operatori) in un unico pacchetto JSON protetto o sincronizzali.</p>
                         </div>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:10px;">
                         <button onclick="esportaBundleDatiCompleto()" style="flex:1; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; border:none; padding:10px 14px; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; letter-spacing:0.5px; box-shadow:0 4px 12px rgba(2,132,199,0.35);">
-                            ðŸ“¥ SCARICA DATI CLOUD (JSON)
+                            📥 SCARICA DATI CLOUD (JSON)
                         </button>
                     </div>
                 </div>
@@ -980,24 +980,24 @@
                 <!-- Azione 1: Scarica Copia ZIP -->
                 <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px; display:flex; flex-direction:column; justify-content:space-between; text-align:center;">
                     <div>
-                        <div style="font-size:2rem; margin-bottom:6px;">ðŸ“¦</div>
+                        <div style="font-size:2rem; margin-bottom:6px;">📦</div>
                         <h4 style="color:#fff; font-size:14px; margin-bottom:4px;">Copia Completa (.ZIP)</h4>
                         <p style="color:#94a3b8; font-size:11.5px; line-height:1.3; margin-bottom:12px;">Scarica subito l'intero archivio compresso della Suite (tutte le 6 app e i database).</p>
                     </div>
                     <button onclick="scaricaCopiaZip()" style="width:100%; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#fff; border:none; padding:11px 14px; border-radius:10px; font-weight:800; font-size:12.5px; cursor:pointer; letter-spacing:0.5px; box-shadow:0 4px 15px rgba(245,158,11,0.35);">
-                        â¬‡ï¸ SCARICA ZIP ORA
+                        ⬇️ SCARICA ZIP ORA
                     </button>
                 </div>
 
                 <!-- Azione 2: Crea Backup sul PC -->
                 <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px; display:flex; flex-direction:column; justify-content:space-between; text-align:center;">
                     <div>
-                        <div style="font-size:2rem; margin-bottom:6px;">ðŸ’»</div>
+                        <div style="font-size:2rem; margin-bottom:6px;">💻</div>
                         <h4 style="color:#fff; font-size:14px; margin-bottom:4px;">Salva su PC / Desktop</h4>
                         <p style="color:#94a3b8; font-size:11.5px; line-height:1.3; margin-bottom:12px;">Archivia una copia con data e ora sia nella cartella D:\ che sul Desktop del computer.</p>
                     </div>
                     <button id="btnSalvaSuPc" onclick="creaBackupLocaleAutomatico()" style="width:100%; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; border:none; padding:11px 14px; border-radius:10px; font-weight:800; font-size:12.5px; cursor:pointer; letter-spacing:0.5px; box-shadow:0 4px 15px rgba(2,132,199,0.35);">
-                        ðŸ’¾ SALVA COPIA SU PC
+                        💾 SALVA COPIA SU PC
                     </button>
                 </div>
             </div>
@@ -1005,8 +1005,8 @@
             <!-- STORICO DEI SALVATAGGI DISPONIBILI -->
             <div style="background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.06); border-radius:16px; padding:16px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h4 style="color:#f3e5ab; font-size:13.5px; margin:0; font-weight:700;">ðŸ“‚ Copie di Sicurezza Archiviate</h4>
-                    <button onclick="caricaListaBackupSicurezza()" style="background:none; border:none; color:#38bdf8; font-size:12px; cursor:pointer; font-weight:600;">ðŸ”„ Aggiorna Lista</button>
+                    <h4 style="color:#f3e5ab; font-size:13.5px; margin:0; font-weight:700;">📂 Copie di Sicurezza Archiviate</h4>
+                    <button onclick="caricaListaBackupSicurezza()" style="background:none; border:none; color:#38bdf8; font-size:12px; cursor:pointer; font-weight:600;">🔄 Aggiorna Lista</button>
                 </div>
                 <div id="listaBackupContainer" style="display:flex; flex-direction:column; gap:8px; max-height:160px; overflow-y:auto; padding-right:4px;">
                     <div style="color:#94a3b8; font-size:12px; text-align:center; padding:10px;">Caricamento archivio...</div>
@@ -1014,7 +1014,7 @@
             </div>
 
             <div style="margin-top:1.2rem; text-align:center; font-size:11.5px; color:#64748b;">
-                ðŸ”’ Sistema Crittografato C. Milella â€¢ Protezione Ridondata Locale e Cloud
+                🔒 Sistema Crittografato C. Milella • Protezione Ridondata Locale e Cloud
             </div>
         </div>
     </div>
@@ -1022,12 +1022,12 @@
     <!-- Modale Conferma Spegnimento -->
     <div id="confirmModal" onclick="if(event.target===this) this.style.display='none';" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(5,8,15,0.8); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:9998; flex-direction:column; align-items:center; justify-content:center;">
         <div style="background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 24px; box-shadow: var(--shadow-glow); max-width: 450px; width: 90%; text-align: center; padding: 2.5rem; animation: fadeDown 0.3s ease-out; position: relative; overflow: hidden;" onclick="event.stopPropagation();">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">âš ï¸</div>
+            <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
             <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #fff;">Conferma Spegnimento</h2>
-            <p style="color: #94a3b8; font-size: 1rem; margin-bottom: 2rem; line-height: 1.5;">Sei sicuro di voler SPEGNERE l'intero sistema? Questo fermerÃ  il server in background e chiuderÃ  tutte le app collegate.</p>
+            <p style="color: #94a3b8; font-size: 1rem; margin-bottom: 2rem; line-height: 1.5;">Sei sicuro di voler SPEGNERE l'intero sistema? Questo fermerà il server in background e chiuderà tutte le app collegate.</p>
             <div style="display: flex; gap: 1rem; justify-content: center;">
                 <button id="btnCancelShutdown" onclick="document.getElementById('confirmModal').style.display='none';" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">Annulla</button>
-                <button id="btnConfirmShutdown" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); transition: all 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">SÃ¬, Spegni</button>
+                <button id="btnConfirmShutdown" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); transition: all 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Sì, Spegni</button>
             </div>
         </div>
     </div>
@@ -1111,11 +1111,11 @@
             const btn = e.currentTarget;
             const originalHTML = btn.innerHTML;
             btn.style.pointerEvents = 'none';
-            btn.innerHTML = `<div class="card-icon">â³</div><div class="card-title">Avvio in corso...</div><div class="card-desc">Apertura della finestra Logistica a schermo intero...</div>`;
+            btn.innerHTML = `<div class="card-icon">⏳</div><div class="card-title">Avvio in corso...</div><div class="card-desc">Apertura della finestra Logistica a schermo intero...</div>`;
             
             try {
                 await fetch('/api/launch-logistica', { method: 'POST' });
-                btn.innerHTML = `<div class="card-icon">âœ…</div><div class="card-title">Avviato!</div><div class="card-desc">L'applicazione Ã¨ aperta a schermo intero!</div>`;
+                btn.innerHTML = `<div class="card-icon">✅</div><div class="card-title">Avviato!</div><div class="card-desc">L'applicazione è aperta a schermo intero!</div>`;
                 setTimeout(() => {
                     btn.innerHTML = originalHTML;
                     btn.style.pointerEvents = 'auto';
@@ -1155,11 +1155,11 @@
             const btn = e.currentTarget;
             const originalHTML = btn.innerHTML;
             btn.style.pointerEvents = 'none';
-            btn.innerHTML = `<div style="font-size: 20px; margin-bottom: 5px;">â³</div>Avvio Backup...`;
+            btn.innerHTML = `<div style="font-size: 20px; margin-bottom: 5px;">⏳</div>Avvio Backup...`;
             
             try {
                 await fetch('/api/backup-inventario', { method: 'POST' });
-                btn.innerHTML = `<div style="font-size: 20px; margin-bottom: 5px;">âœ…</div>FATTO`;
+                btn.innerHTML = `<div style="font-size: 20px; margin-bottom: 5px;">✅</div>FATTO`;
                 setTimeout(() => {
                     btn.innerHTML = originalHTML;
                     btn.style.pointerEvents = 'auto';
@@ -1203,7 +1203,7 @@
             
             setTimeout(() => {
                 shutdownTitle.textContent = 'Sistema spento';
-                shutdownText.innerHTML = 'Il server Ã¨ stato chiuso ed i dati sono stati<br>salvati con successo.';
+                shutdownText.innerHTML = 'Il server è stato chiuso ed i dati sono stati<br>salvati con successo.';
                 shutdownModal.classList.add('done');
                 setTimeout(() => {
                     try { window.close(); } catch(e) {}
@@ -1218,13 +1218,13 @@
 <!-- Barra Controlli Rapidi Flessibile in Alto a Destra -->
 <div id="floatingControlBar" class="desktop-only-card" style="position:fixed; top:16px; right:20px; z-index:9999; display:flex; align-items:center; gap:10px;">
     <a href="https://milella-suite.onrender.com/launcher.html" target="_blank" title="Apri Portale Cloud Online H24" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:1px solid rgba(56,189,248,0.5); color:#fff; padding:8px 14px; border-radius:12px; font-weight:700; font-size:13px; cursor:pointer; backdrop-filter:blur(8px); display:flex; align-items:center; gap:6px; text-decoration:none; box-shadow:0 4px 12px rgba(2,132,199,0.35); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.04)'; this.style.boxShadow='0 6px 18px rgba(56,189,248,0.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(2,132,199,0.35)'">
-        <span style="font-size:16px;">â˜ï¸</span> <span>SITO CLOUD ONLINE</span>
+        <span style="font-size:16px;">☁️</span> <span>SITO CLOUD ONLINE</span>
     </a>
     <button id="btnTopExit" onclick="document.getElementById('confirmModal').style.display='flex';" title="Chiudi / Spegni Sistema" style="background:rgba(220,38,38,0.85); border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 14px; border-radius:12px; font-weight:700; font-size:13px; cursor:pointer; backdrop-filter:blur(8px); display:flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(220,38,38,0.4); transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,1)'; this.style.transform='scale(1.04)'" onmouseout="this.style.background='rgba(220,38,38,0.85)'; this.style.transform='scale(1)'">
-        <span>âŒ</span> <span>ESCI / SPEGNI</span>
+        <span>❌</span> <span>ESCI / SPEGNI</span>
     </button>
     <button id="btnToggleFullscreen" onclick="toggleFullScreen()" title="Schermo Intero (F11)" style="background:rgba(17,24,39,0.8); border:1px solid rgba(212,175,55,0.4); color:#d4af37; padding:8px 14px; border-radius:12px; font-weight:600; font-size:13px; cursor:pointer; backdrop-filter:blur(8px); display:flex; align-items:center; gap:6px; transition:all 0.2s;" onmouseover="this.style.background='rgba(212,175,55,0.25)'" onmouseout="this.style.background='rgba(17,24,39,0.8)'">
-        <span id="fsIcon">â›¶</span> <span id="fsText">Schermo Intero</span>
+        <span id="fsIcon">⛶</span> <span id="fsText">Schermo Intero</span>
     </button>
 </div>
 <script>
@@ -1233,13 +1233,13 @@ function toggleFullScreen() {
         document.documentElement.requestFullscreen().catch(()=>{});
         const icon = document.getElementById('fsIcon');
         const txt = document.getElementById('fsText');
-        if (icon) icon.textContent = 'ðŸ——';
+        if (icon) icon.textContent = '🗗';
         if (txt) txt.textContent = 'Riduci';
     } else {
         if (document.exitFullscreen) document.exitFullscreen();
         const icon = document.getElementById('fsIcon');
         const txt = document.getElementById('fsText');
-        if (icon) icon.textContent = 'â›¶';
+        if (icon) icon.textContent = '⛶';
         if (txt) txt.textContent = 'Schermo Intero';
     }
 }
@@ -1247,10 +1247,10 @@ document.addEventListener('fullscreenchange', () => {
     const icon = document.getElementById('fsIcon');
     const txt = document.getElementById('fsText');
     if (document.fullscreenElement) {
-        if (icon) icon.textContent = 'ðŸ——';
+        if (icon) icon.textContent = '🗗';
         if (txt) txt.textContent = 'Riduci';
     } else {
-        if (icon) icon.textContent = 'â›¶';
+        if (icon) icon.textContent = '⛶';
         if (txt) txt.textContent = 'Schermo Intero';
     }
 });
@@ -1291,7 +1291,7 @@ document.addEventListener('fullscreenchange', () => {
                 renderQrFallbackImg(container, targetUrl);
             }
         } else {
-            // Se la libreria locale non Ã¨ caricata o bloccata, carica dinamicamente da cdnjs o usa fallback immagine immediato
+            // Se la libreria locale non è caricata o bloccata, carica dinamicamente da cdnjs o usa fallback immagine immediato
             renderQrFallbackImg(container, targetUrl);
             var s = document.createElement('script');
             s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
@@ -1330,7 +1330,7 @@ document.addEventListener('fullscreenchange', () => {
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             url = 'https://milella-suite.onrender.com/launcher.html';
         }
-        var msg = encodeURIComponent("ðŸ“± Accedi alla Suite Gestionale C. Milella:\n" + url);
+        var msg = encodeURIComponent("📱 Accedi alla Suite Gestionale C. Milella:\n" + url);
         window.open("https://api.whatsapp.com/send?text=" + msg, "_blank");
     }
 
@@ -1378,7 +1378,7 @@ document.addEventListener('fullscreenchange', () => {
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
-                    alert('âœ… Pacchetto dati esportato con successo! Contiene tutti i record attuali di Inventario, CareAssist, Ricettario e Salute.');
+                    alert('✅ Pacchetto dati esportato con successo! Contiene tutti i record attuali di Inventario, CareAssist, Ricettario e Salute.');
                 } else {
                     alert('Errore esportazione dati: ' + (data.message || 'Accesso non autorizzato.'));
                 }
@@ -1393,14 +1393,14 @@ document.addEventListener('fullscreenchange', () => {
     async function creaBackupLocaleAutomatico() {
         const btn = document.getElementById('btnSalvaSuPc');
         const origText = btn.innerHTML;
-        btn.innerHTML = 'â³ Compressione...';
+        btn.innerHTML = '⏳ Compressione...';
         btn.disabled = true;
 
         try {
             const res = await fetch('/api/sicurezza/crea-backup-locale', { method: 'POST' });
             const data = await res.json();
             if (data.success) {
-                alert('âœ… Backup salvato con successo sia in D:\\ che sul tuo Desktop!\nNome file: ' + data.nome + ' (' + data.sizeMB + ' MB)');
+                alert('✅ Backup salvato con successo sia in D:\\ che sul tuo Desktop!\nNome file: ' + data.nome + ' (' + data.sizeMB + ' MB)');
                 caricaListaBackupSicurezza();
             } else {
                 alert('Errore nel salvataggio: ' + (data.error || 'Server error'));
@@ -1429,12 +1429,12 @@ document.addEventListener('fullscreenchange', () => {
             container.innerHTML = backups.map(b => `
                 <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
                     <div style="flex:1; min-width:0;">
-                        <div style="color:#fff; font-size:12px; font-weight:700; word-break:break-all;">ðŸ“¦ ${b.nome}</div>
-                        <div style="color:#94a3b8; font-size:10.5px; margin-top:2px;">Data: ${b.data} â€¢ Dimensione: ${b.sizeMB} MB</div>
+                        <div style="color:#fff; font-size:12px; font-weight:700; word-break:break-all;">📦 ${b.nome}</div>
+                        <div style="color:#94a3b8; font-size:10.5px; margin-top:2px;">Data: ${b.data} • Dimensione: ${b.sizeMB} MB</div>
                     </div>
                     <div style="display:flex; gap:6px; align-items:center; flex-shrink:0;">
                         <button onclick="ripristinaBackupSelezionato('${b.nome}')" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer; box-shadow:0 2px 8px rgba(16,185,129,0.3);">
-                            ðŸ”„ RIPRISTINA
+                            🔄 RIPRISTINA
                         </button>
                     </div>
                 </div>
@@ -1457,7 +1457,7 @@ document.addEventListener('fullscreenchange', () => {
             });
             const data = await res.json();
             if (data.success) {
-                alert('âœ… RIPRISTINO COMPLETATO CON SUCCESSO!\n\nLa Suite e tutti i dati sono stati ripristinati. La pagina verrÃ  ricaricata tra poco.');
+                alert('✅ RIPRISTINO COMPLETATO CON SUCCESSO!\n\nLa Suite e tutti i dati sono stati ripristinati. La pagina verrà ricaricata tra poco.');
                 setTimeout(() => window.location.reload(), 1500);
             } else {
                 alert('Errore durante il ripristino: ' + (data.message || data.error));
@@ -1493,8 +1493,8 @@ document.addEventListener('fullscreenchange', () => {
         const adminBtns = document.querySelectorAll('.admin-only-btn');
 
         if (role === 'admin') {
-            badgeIcon.textContent = 'ðŸ‘‘';
-            badgeText.textContent = 'ModalitÃ : CIRO MILELLA (Master Admin)';
+            badgeIcon.textContent = '👑';
+            badgeText.textContent = 'Modalità: CIRO MILELLA (Master Admin)';
             badgeText.parentElement.style.background = 'rgba(212,175,55,0.25)';
             badgeText.parentElement.style.borderColor = '#d4af37';
             btnSwitch.style.display = 'none';
@@ -1505,8 +1505,8 @@ document.addEventListener('fullscreenchange', () => {
             adminCards.forEach(c => c.style.display = 'flex');
             adminBtns.forEach(b => b.style.display = 'inline-flex');
         } else {
-            badgeIcon.textContent = 'ðŸ‘·';
-            badgeText.textContent = nome ? ('Operatore: ' + nome) : 'ModalitÃ : Operatore Ordinario';
+            badgeIcon.textContent = '👷';
+            badgeText.textContent = nome ? ('Operatore: ' + nome) : 'Modalità: Operatore Ordinario';
             badgeText.parentElement.style.background = 'rgba(212,175,55,0.1)';
             badgeText.parentElement.style.borderColor = 'rgba(212,175,55,0.25)';
             btnSwitch.style.display = 'inline-flex';
@@ -1535,7 +1535,7 @@ document.addEventListener('fullscreenchange', () => {
         const input = document.getElementById('inputPinLogin');
         if (input) input.type = 'password';
         const eye = document.getElementById('btnToggleEye');
-        if (eye) eye.textContent = 'ðŸ‘ï¸';
+        if (eye) eye.textContent = '👁️';
     }
 
     function toggleMostraPassword() {
@@ -1544,10 +1544,10 @@ document.addEventListener('fullscreenchange', () => {
         if (!input) return;
         if (input.type === 'password') {
             input.type = 'text';
-            if (eye) eye.textContent = 'ðŸ™ˆ';
+            if (eye) eye.textContent = '🙈';
         } else {
             input.type = 'password';
-            if (eye) eye.textContent = 'ðŸ‘ï¸';
+            if (eye) eye.textContent = '👁️';
         }
     }
 
@@ -1610,10 +1610,10 @@ document.addEventListener('fullscreenchange', () => {
         if (!input) return;
         if (input.type === 'password') {
             input.type = 'text';
-            if (eye) eye.textContent = 'ðŸ™ˆ';
+            if (eye) eye.textContent = '🙈';
         } else {
             input.type = 'password';
-            if (eye) eye.textContent = 'ðŸ‘ï¸';
+            if (eye) eye.textContent = '👁️';
         }
     }
 
@@ -1674,14 +1674,14 @@ document.addEventListener('fullscreenchange', () => {
         const err = document.getElementById('gateErrorMsg');
         if (err) err.style.display = 'none';
 
-        // 1. Verifica se l'utente ha giÃ  fatto almeno un primo accesso con PIN su questo dispositivo
+        // 1. Verifica se l'utente ha già fatto almeno un primo accesso con PIN su questo dispositivo
         const savedLastUser = localStorage.getItem('milella_last_authenticated_user');
         const savedLastRole = localStorage.getItem('milella_last_authenticated_role');
         const savedLastAppsRaw = localStorage.getItem('milella_last_authenticated_apps');
 
         if (!savedLastUser || !savedLastRole) {
             if (err) {
-                err.textContent = 'âš ï¸ Prima configurazione: inserisci prima il tuo PIN per attivare la biometria.';
+                err.textContent = '⚠️ Prima configurazione: inserisci prima il tuo PIN per attivare la biometria.';
                 err.style.display = 'block';
             }
             alert('Prima configurazione necessaria:\nInserisci il tuo codice PIN la prima volta. Successivamente potrai accedere istantaneamente con l\'impronta digitale!');
@@ -1702,7 +1702,7 @@ document.addEventListener('fullscreenchange', () => {
             // Richiesta di scansione impronta/biometria reale al dispositivo
             let authenticated = false;
 
-            // Se esiste giÃ  una credenziale biometrica salvata
+            // Se esiste già una credenziale biometrica salvata
             const rawCredId = localStorage.getItem('milella_bio_cred_id');
             if (rawCredId) {
                 const credIdBytes = Uint8Array.from(atob(rawCredId), c => c.charCodeAt(0));
@@ -1719,7 +1719,7 @@ document.addEventListener('fullscreenchange', () => {
                 });
                 if (assertion) authenticated = true;
             } else {
-                // Registrazione biometrica iniziale per questo utente che ha giÃ  validato il PIN
+                // Registrazione biometrica iniziale per questo utente che ha già validato il PIN
                 const userId = new Uint8Array(16);
                 window.crypto.getRandomValues(userId);
                 const newCred = await navigator.credentials.create({
@@ -1761,14 +1761,14 @@ document.addEventListener('fullscreenchange', () => {
                     });
                     const chkData = await chkRes.json();
                     if (!chkData.success) {
-                        // L'operatore Ã¨ stato rimosso o il PIN Ã¨ cambiato sul server!
+                        // L'operatore è stato rimosso o il PIN è cambiato sul server!
                         localStorage.removeItem('milella_last_authenticated_user');
                         localStorage.removeItem('milella_last_authenticated_role');
                         localStorage.removeItem('milella_last_authenticated_pin');
                         localStorage.removeItem('milella_last_authenticated_apps');
                         localStorage.removeItem('milella_bio_cred_id');
                         aggiornaVisibilitaBiometriaGate();
-                        alert('âš ï¸ Questo account non Ã¨ piÃ¹ attivo o Ã¨ stato rimosso dall\'amministratore. Inserisci il tuo nuovo PIN.');
+                        alert('⚠️ Questo account non è più attivo o è stato rimosso dall\'amministratore. Inserisci il tuo nuovo PIN.');
                         return;
                     }
                 } catch(e) {}
@@ -1791,7 +1791,7 @@ document.addEventListener('fullscreenchange', () => {
             if (gate) gate.style.display = 'none';
 
             applicaRuolo(savedLastRole, savedLastUser, savedLastApps);
-            alert('ðŸ‘† Impronta verificata! Benvenuto ' + savedLastUser);
+            alert('👆 Impronta verificata! Benvenuto ' + savedLastUser);
         } catch(e) {
             console.warn('Errore biometria:', e);
             if (err) {
@@ -1858,7 +1858,7 @@ document.addEventListener('fullscreenchange', () => {
         const tutte = Array.from(chks).every(c => c.checked);
         chks.forEach(c => c.checked = !tutte);
         const btn = document.getElementById('btnTutteNewOp');
-        if (btn) btn.textContent = tutte ? 'ðŸŒ Seleziona Tutte' : 'âœ• Deseleziona Tutte';
+        if (btn) btn.textContent = tutte ? '🌐 Seleziona Tutte' : '✕ Deseleziona Tutte';
     }
 
     function toggleTutteAppEditOp() {
@@ -1866,7 +1866,7 @@ document.addEventListener('fullscreenchange', () => {
         const tutte = Array.from(chks).every(c => c.checked);
         chks.forEach(c => c.checked = !tutte);
         const btn = document.getElementById('btnTutteEditOp');
-        if (btn) btn.textContent = tutte ? 'ðŸŒ Seleziona Tutte' : 'âœ• Deseleziona Tutte';
+        if (btn) btn.textContent = tutte ? '🌐 Seleziona Tutte' : '✕ Deseleziona Tutte';
     }
 
     function getSelectedAppsNewOp() {
@@ -1884,7 +1884,7 @@ document.addEventListener('fullscreenchange', () => {
         const tutti = Array.from(chks).every(c => c.checked);
         chks.forEach(c => c.checked = !tutti);
         const btn = document.getElementById('btnTuttiPazNewOp');
-        if (btn) btn.textContent = tutti ? 'ðŸŒ Tutti i Pazienti' : 'âœ• Deseleziona Tutti';
+        if (btn) btn.textContent = tutti ? '🌐 Tutti i Pazienti' : '✕ Deseleziona Tutti';
     }
 
     function toggleTuttiPazEditOp() {
@@ -1892,7 +1892,7 @@ document.addEventListener('fullscreenchange', () => {
         const tutti = Array.from(chks).every(c => c.checked);
         chks.forEach(c => c.checked = !tutti);
         const btn = document.getElementById('btnTuttiPazEditOp');
-        if (btn) btn.textContent = tutti ? 'ðŸŒ Tutti i Pazienti' : 'âœ• Deseleziona Tutti';
+        if (btn) btn.textContent = tutti ? '🌐 Tutti i Pazienti' : '✕ Deseleziona Tutti';
     }
 
     function aggiornaVisibilitaPazientiNewOp() {
@@ -1932,15 +1932,15 @@ document.addEventListener('fullscreenchange', () => {
         const container = document.getElementById('opsListContainer');
         container.innerHTML = '';
         const appNomi = {
-            'all': 'ðŸŒ Tutte le App Comuni',
-            'app_veicoli': 'ðŸš— Flotta Veicoli & Spese',
-            'app_inventario': 'ðŸ› ï¸ Inventario Attrezzi',
-            'app_ricettario': 'ðŸ‘¨â€ðŸ³ Il Ricettario',
-            'app_mednutri': 'ðŸ¥— MedNutri Pro',
-            'app_salute': 'â¤ï¸ Progetto Salute',
-            'app_careassist': 'ðŸ©º CareAssist Pro',
-            'app_gioco': 'ðŸŽ° Progetto Gioco',
-            'app_logistica': 'ðŸ“¦ Logistica Consegne'
+            'all': '🌐 Tutte le App Comuni',
+            'app_veicoli': '🚗 Flotta Veicoli & Spese',
+            'app_inventario': '🛠️ Inventario Attrezzi',
+            'app_ricettario': '👨‍🍳 Il Ricettario',
+            'app_mednutri': '🥗 MedNutri Pro',
+            'app_salute': '❤️ Progetto Salute',
+            'app_careassist': '🩺 CareAssist Pro',
+            'app_gioco': '🎰 Progetto Gioco',
+            'app_logistica': '📦 Logistica Consegne'
         };
 
         ops.forEach(op => {
@@ -1951,8 +1951,8 @@ document.addEventListener('fullscreenchange', () => {
             let appBadgeHtml = '';
             let appNomiArray = [];
             if (!op.appAbilitate || op.appAbilitate.length === 0 || op.appAbilitate.includes('all')) {
-                appBadgeHtml = `<span style="color:#38bdf8; background:rgba(56,189,248,0.15); padding:2px 8px; border-radius:6px; font-weight:700;">ðŸŒ Tutte le App Comuni</span>`;
-                appNomiArray = ['ðŸŒ Tutte le App Comuni'];
+                appBadgeHtml = `<span style="color:#38bdf8; background:rgba(56,189,248,0.15); padding:2px 8px; border-radius:6px; font-weight:700;">🌐 Tutte le App Comuni</span>`;
+                appNomiArray = ['🌐 Tutte le App Comuni'];
             } else {
                 appNomiArray = op.appAbilitate.map(id => appNomi[id] || id);
                 appBadgeHtml = op.appAbilitate.map(id => {
@@ -1968,22 +1968,22 @@ document.addEventListener('fullscreenchange', () => {
             const haCareassist = !op.appAbilitate || op.appAbilitate.includes('all') || op.appAbilitate.includes('app_careassist');
             if (haCareassist) {
                 if (!op.pazAbilitati || op.pazAbilitati.length === 0) {
-                    pazBadgeHtml = `<span style="color:#a7f3d0; background:rgba(16,185,129,0.15); padding:2px 7px; border-radius:5px; font-size:11px; font-weight:700;">ðŸŒ Tutti gli Assistiti</span>`;
+                    pazBadgeHtml = `<span style="color:#a7f3d0; background:rgba(16,185,129,0.15); padding:2px 7px; border-radius:5px; font-size:11px; font-weight:700;">🌐 Tutti gli Assistiti</span>`;
                     pazMsgStr = 'Tutti gli assistiti';
                 } else {
                     const pazNomiList = op.pazAbilitati.map(pid => NOMI_PAZIENTI_MAP[pid] || pid);
-                    pazBadgeHtml = pazNomiList.map(n => `<span style="color:#a7f3d0; background:rgba(16,185,129,0.15); padding:2px 7px; border-radius:5px; font-size:11px; font-weight:700; margin-right:3px;">ðŸ‘¤ ${n}</span>`).join('');
+                    pazBadgeHtml = pazNomiList.map(n => `<span style="color:#a7f3d0; background:rgba(16,185,129,0.15); padding:2px 7px; border-radius:5px; font-size:11px; font-weight:700; margin-right:3px;">👤 ${n}</span>`).join('');
                     pazMsgStr = pazNomiList.join(', ');
                 }
             }
 
             // Messaggio per invio rapido via WhatsApp o Mail
             const portaleUrl = window.location.origin + '/launcher.html';
-            let msgTesto = `Ciao ${op.nome},\necco il tuo accesso alla Suite Aziendale C. Milella.\n\nðŸŒ Portale: ${portaleUrl}\nðŸ”‘ Tuo PIN Personale: ${op.codice}\nðŸ“± Tue App Assegnate: ${appLabelText}`;
+            let msgTesto = `Ciao ${op.nome},\necco il tuo accesso alla Suite Aziendale C. Milella.\n\n🌐 Portale: ${portaleUrl}\n🔑 Tuo PIN Personale: ${op.codice}\n📱 Tue App Assegnate: ${appLabelText}`;
             if (haCareassist && pazMsgStr) {
-                msgTesto += `\nðŸ©º Pazienti Assegnati: ${pazMsgStr}`;
+                msgTesto += `\n🩺 Pazienti Assegnati: ${pazMsgStr}`;
             }
-            msgTesto += `\n\nApri il link e inserisci il tuo codice personale.\n\nâš ï¸ NOTA: Codice strettamente personale. Per qualsiasi informazione contattare l'amministratore Ciro Milella.`;
+            msgTesto += `\n\nApri il link e inserisci il tuo codice personale.\n\n⚠️ NOTA: Codice strettamente personale. Per qualsiasi informazione contattare l'amministratore Ciro Milella.`;
             const waLink = `https://wa.me/?text=${encodeURIComponent(msgTesto)}`;
             const mailLink = `mailto:?subject=${encodeURIComponent('Credenziali Accesso Suite C. Milella')}&body=${encodeURIComponent(msgTesto)}`;
 
@@ -1991,12 +1991,12 @@ document.addEventListener('fullscreenchange', () => {
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap;">
                     <div>
                         <div style="font-weight:700; color:${op.attivo ? '#fff' : '#64748b'}; font-size:15px; display:flex; align-items:center; gap:6px;">
-                            ${op.ruolo === 'admin' ? 'ðŸ‘‘' : 'ðŸ‘·'} ${op.nome} ${op.ruolo === 'admin' ? '<span style="background:rgba(212,175,55,0.25); color:#f59e0b; font-size:10.5px; padding:2px 6px; border-radius:6px; font-weight:800;">MASTER</span>' : ''}
+                            ${op.ruolo === 'admin' ? '👑' : '👷'} ${op.nome} ${op.ruolo === 'admin' ? '<span style="background:rgba(212,175,55,0.25); color:#f59e0b; font-size:10.5px; padding:2px 6px; border-radius:6px; font-weight:800;">MASTER</span>' : ''}
                         </div>
                         <div style="font-size:12px; color:#cbd5e1; margin-top:5px; display:flex; flex-direction:column; gap:4px;">
                             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                                 <span>PIN: <strong style="color:#f3e5ab; font-size:13px; font-family:monospace; background:rgba(0,0,0,0.3); padding:1px 6px; border-radius:4px;">${op.codice}</strong></span>
-                                <span style="color:${op.attivo ? '#4ade80':'#ef4444'}; font-weight:600;">â— ${op.attivo ? 'Attivo' : 'Disattivato'}</span>
+                                <span style="color:${op.attivo ? '#4ade80':'#ef4444'}; font-weight:600;">● ${op.attivo ? 'Attivo' : 'Disattivato'}</span>
                             </div>
                             <div style="margin-top:2px;">
                                 <span style="color:#94a3b8; font-size:11px;">App assegnate:</span> ${appBadgeHtml}
@@ -2010,7 +2010,7 @@ document.addEventListener('fullscreenchange', () => {
                             <div style="margin-top:2px;">
                                 <span style="color:#94a3b8; font-size:11px;">Permessi terapie:</span> 
                                 <span style="color:${op.canEditTerapie ? '#f59e0b' : '#38bdf8'}; background:${op.canEditTerapie ? 'rgba(245,158,11,0.15)' : 'rgba(56,189,248,0.15)'}; padding:2px 7px; border-radius:5px; font-size:11px; font-weight:700;">
-                                    ${op.canEditTerapie ? 'âœï¸ Modifica Farmaci Abilitata' : 'ðŸ”’ Sola Somministrazione / Lettura'}
+                                    ${op.canEditTerapie ? '✍️ Modifica Farmaci Abilitata' : '🔒 Sola Somministrazione / Lettura'}
                                 </span>
                             </div>
                             ` : ''}
@@ -2020,22 +2020,22 @@ document.addEventListener('fullscreenchange', () => {
                 ${op.ruolo !== 'admin' ? `
                     <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
                         <button onclick="avviaModificaOp('${op.id}')" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; padding:6px 12px; border-radius:8px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
-                            âœï¸ Modifica App & Pazienti
+                            ✏️ Modifica App & Pazienti
                         </button>
                         <a href="${waLink}" target="_blank" title="Invia credenziali WhatsApp" style="text-decoration:none; background:rgba(37,211,102,0.2); border:1px solid #25d366; color:#86efac; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
-                            ðŸ’¬ WhatsApp
+                            💬 WhatsApp
                         </a>
                         <a href="${mailLink}" target="_blank" title="Invia credenziali Email" style="text-decoration:none; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#7dd3fc; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
-                            âœ‰ï¸ Email
+                            ✉️ Email
                         </a>
                         <button onclick="toggleOp('${op.id}')" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; padding:5px 9px; border-radius:8px; font-size:11.5px; cursor:pointer;">
-                            ${op.attivo ? 'â¸ï¸ Disattiva' : 'â–¶ï¸ Attiva'}
+                            ${op.attivo ? '⏸️ Disattiva' : '▶️ Attiva'}
                         </button>
                         <button onclick="eliminaOp('${op.id}')" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:5px 9px; border-radius:8px; font-size:11.5px; cursor:pointer;">
-                            ðŸ—‘ï¸ Elimina
+                            🗑️ Elimina
                         </button>
                     </div>
-                ` : '<span style="font-size:11.5px; color:#d4af37; margin-top:2px;">ðŸ”’ Account protetto non modificabile</span>'}
+                ` : '<span style="font-size:11.5px; color:#d4af37; margin-top:2px;">🔒 Account protetto non modificabile</span>'}
             `;
             container.appendChild(card);
         });
@@ -2060,7 +2060,7 @@ document.addEventListener('fullscreenchange', () => {
             c.checked = isAll ? true : appAbilitate.includes(c.value);
         });
         const btn = document.getElementById('btnTutteEditOp');
-        if (btn) btn.textContent = isAll ? 'âœ• Deseleziona Tutte' : 'ðŸŒ Seleziona Tutte';
+        if (btn) btn.textContent = isAll ? '✕ Deseleziona Tutte' : '🌐 Seleziona Tutte';
 
         // Imposta i checkbox per i pazienti assegnati
         const pazAbilitati = op.pazAbilitati || [];
@@ -2070,7 +2070,7 @@ document.addEventListener('fullscreenchange', () => {
             cp.checked = isAllPaz ? true : pazAbilitati.includes(cp.value);
         });
         const btnPaz = document.getElementById('btnTuttiPazEditOp');
-        if (btnPaz) btnPaz.textContent = isAllPaz ? 'âœ• Deseleziona Tutti' : 'ðŸŒ Tutti i Pazienti';
+        if (btnPaz) btnPaz.textContent = isAllPaz ? '✕ Deseleziona Tutti' : '🌐 Tutti i Pazienti';
 
         aggiornaVisibilitaPazientiEditOp();
 
@@ -2103,12 +2103,12 @@ document.addEventListener('fullscreenchange', () => {
         const selectedApps = getSelectedAppsEditOp();
 
         if (!nome || !codice) {
-            mostraToastOp('âš ï¸ Inserisci sia il nome che il PIN', true);
+            mostraToastOp('⚠️ Inserisci sia il nome che il PIN', true);
             return;
         }
 
         if (selectedApps.length === 0) {
-            mostraToastOp('âš ï¸ Seleziona almeno un\'applicazione per il collega', true);
+            mostraToastOp('⚠️ Seleziona almeno un\'applicazione per il collega', true);
             return;
         }
 
@@ -2139,12 +2139,12 @@ document.addEventListener('fullscreenchange', () => {
             if (data.success) {
                 annullaModificaOp();
                 renderOps(data.operatori);
-                mostraToastOp(`âœ… Operatore ${nome} aggiornato con successo!`, false);
+                mostraToastOp(`✅ Operatore ${nome} aggiornato con successo!`, false);
             } else {
-                mostraToastOp('âŒ Errore: ' + (data.message || 'Impossibile aggiornare'), true);
+                mostraToastOp('❌ Errore: ' + (data.message || 'Impossibile aggiornare'), true);
             }
         } catch(e) {
-            mostraToastOp('âŒ Errore di connessione durante la modifica', true);
+            mostraToastOp('❌ Errore di connessione durante la modifica', true);
         }
     }
 
@@ -2154,12 +2154,12 @@ document.addEventListener('fullscreenchange', () => {
         const selectedApps = getSelectedAppsNewOp();
 
         if (!nome || !codice) {
-            mostraToastOp('âš ï¸ Inserisci sia il nome che il codice PIN', true);
+            mostraToastOp('⚠️ Inserisci sia il nome che il codice PIN', true);
             return;
         }
 
         if (selectedApps.length === 0) {
-            mostraToastOp('âš ï¸ Seleziona almeno un\'applicazione per il collega', true);
+            mostraToastOp('⚠️ Seleziona almeno un\'applicazione per il collega', true);
             return;
         }
 
@@ -2196,10 +2196,10 @@ document.addEventListener('fullscreenchange', () => {
                 const boxPaz = document.getElementById('boxPazientiNewOp');
                 if (boxPaz) boxPaz.style.display = 'none';
                 renderOps(data.operatori);
-                mostraToastOp(`âœ… Operatore ${nome} aggiunto con ${selectedApps.length} app! Condividi il PIN via WhatsApp o Email.`, false);
+                mostraToastOp(`✅ Operatore ${nome} aggiunto con ${selectedApps.length} app! Condividi il PIN via WhatsApp o Email.`, false);
             }
         } catch(e) {
-            mostraToastOp('âŒ Errore durante il salvataggio operatore', true);
+            mostraToastOp('❌ Errore durante il salvataggio operatore', true);
         }
     }
 
@@ -2233,13 +2233,13 @@ document.addEventListener('fullscreenchange', () => {
     // GESTIONE PROGETTI DINAMICI (AGGIUNGI / ELIMINA / ATTIVA / DISATTIVA)
     // ==============================================================================
     const CATALOGO_APP_DEFAULT = [
-        { id: "app_veicoli", titolo: "Flotta Veicoli & Spese", icona: "ðŸš—", url: "/veicoli_mobile/", descrizione: "Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.", visibilita: "tutti", attivo: true },
-        { id: "app_inventario", titolo: "Inventario Attrezzi", icona: "ðŸ› ï¸", url: "/inventario.html", descrizione: "Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.", visibilita: "tutti", attivo: true },
-        { id: "app_ricettario", titolo: "Il Ricettario", icona: "ðŸ‘¨â€ðŸ³", url: "/ricettario/", descrizione: "L'archivio prezioso delle tue ricette personali con lista della spesa automatica.", visibilita: "tutti", attivo: true },
-        { id: "app_mednutri", titolo: "MedNutri Pro", icona: "ðŸ¥—", url: "/mednutri/", descrizione: "Software avanzato per piani nutrizionali personalizzati e gestione clinica.", visibilita: "admin", attivo: true },
-        { id: "app_salute", titolo: "Progetto Salute", icona: "â¤ï¸", url: "/salute/", descrizione: "Monitoraggio parametri vitali, fitness e benessere personale quotidiano.", visibilita: "admin", attivo: true },
-        { id: "app_gioco", titolo: "Progetto Gioco", icona: "ðŸŽ°", url: "/progetto_gioco/", descrizione: "Monitoraggio statistico SuperEnalotto e Gratta & Vinci con bilancio netto.", visibilita: "admin", attivo: true },
-        { id: "app_careassist", titolo: "CareAssist Pro", icona: "ðŸ©º", url: "/careassist/", descrizione: "Diario socio-sanitario, terapie farmacologiche e gestione assistenza domiciliare.", visibilita: "admin", attivo: true }
+        { id: "app_veicoli", titolo: "Flotta Veicoli & Spese", icona: "🚗", url: "/veicoli_mobile/", descrizione: "Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.", visibilita: "tutti", attivo: true },
+        { id: "app_inventario", titolo: "Inventario Attrezzi", icona: "🛠️", url: "/inventario.html", descrizione: "Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.", visibilita: "tutti", attivo: true },
+        { id: "app_ricettario", titolo: "Il Ricettario", icona: "👨‍🍳", url: "/ricettario/", descrizione: "L'archivio prezioso delle tue ricette personali con lista della spesa automatica.", visibilita: "tutti", attivo: true },
+        { id: "app_mednutri", titolo: "MedNutri Pro", icona: "🥗", url: "/mednutri/", descrizione: "Software avanzato per piani nutrizionali personalizzati e gestione clinica.", visibilita: "admin", attivo: true },
+        { id: "app_salute", titolo: "Progetto Salute", icona: "❤️", url: "/salute/", descrizione: "Monitoraggio parametri vitali, fitness e benessere personale quotidiano.", visibilita: "admin", attivo: true },
+        { id: "app_gioco", titolo: "Progetto Gioco", icona: "🎰", url: "/progetto_gioco/", descrizione: "Monitoraggio statistico SuperEnalotto e Gratta & Vinci con bilancio netto.", visibilita: "admin", attivo: true },
+        { id: "app_careassist", titolo: "CareAssist Pro", icona: "🩺", url: "/careassist/", descrizione: "Diario socio-sanitario, terapie farmacologiche e gestione assistenza domiciliare.", visibilita: "admin", attivo: true }
     ];
     let listaProgettiAttuali = [...CATALOGO_APP_DEFAULT];
 
@@ -2267,7 +2267,7 @@ document.addEventListener('fullscreenchange', () => {
             if (!p.attivo) return;
             const isAdminProj = p.visibilita === 'admin';
 
-            // Regola di visibilitÃ :
+            // Regola di visibilità:
             // 1. Se Admin (Ciro Milella) -> vede sempre tutte le app
             // 2. Se Operatore con app specifica (es. Chiara -> ["app_careassist"]) -> vede SOLO le sue app
             // 3. Se Operatore con 'all' -> vede tutte le app pubbliche ('tutti')
@@ -2292,7 +2292,7 @@ document.addEventListener('fullscreenchange', () => {
             card.className = 'card ' + (isAdminProj ? 'admin-only-card' : '');
             card.style.display = 'flex';
             card.innerHTML = `
-                <div class="card-icon">${p.icona || 'ðŸ“'}</div>
+                <div class="card-icon">${p.icona || '📁'}</div>
                 <div class="card-title">${p.titolo}</div>
                 <div class="card-desc">${p.descrizione || ''}</div>
             `;
@@ -2331,56 +2331,56 @@ document.addEventListener('fullscreenchange', () => {
     // Preset App della Suite Aziendale
     const CATALOGO_APP_SUITE = {
         'veicoli': {
-            icona: 'ðŸš—',
+            icona: '🚗',
             titolo: 'Flotta Veicoli & Spese',
             url: '/veicoli_mobile/',
             visibilita: 'tutti',
             descrizione: 'Gestione rifornimenti, manutenzioni e flotta aziendale'
         },
         'attrezzi': {
-            icona: 'ðŸ› ï¸',
+            icona: '🛠️',
             titolo: 'Inventario Attrezzi',
             url: '/inventario.html',
             visibilita: 'tutti',
             descrizione: 'Catalogo attrezzature, prestiti, codice QR e assegnazione cantieri'
         },
         'ricettario': {
-            icona: 'ðŸ‘¨â€ðŸ³',
+            icona: '👨‍🍳',
             titolo: 'Il Ricettario',
             url: '/ricettario/',
             visibilita: 'tutti',
             descrizione: 'Ricette culinarie, dosi e preparazioni speciali'
         },
         'mednutri': {
-            icona: 'ðŸ¥—',
+            icona: '🥗',
             titolo: 'MedNutri Pro',
             url: '/mednutri/',
             visibilita: 'admin',
             descrizione: 'Piani nutrizionali, tabelle caloriche e diete personalizzate'
         },
         'salute': {
-            icona: 'â¤ï¸',
+            icona: '❤️',
             titolo: 'Progetto Salute',
             url: '/salute/',
             visibilita: 'admin',
             descrizione: 'Monitoraggio parametri vitali, cartelle e statistiche di salute'
         },
         'careassist': {
-            icona: 'ðŸ©º',
+            icona: '🩺',
             titolo: 'CareAssist Pro',
             url: '/careassist/',
             visibilita: 'admin',
             descrizione: 'Assistenza pazienti, turni e diaria clinica'
         },
         'gioco': {
-            icona: 'ðŸŽ°',
+            icona: '🎰',
             titolo: 'Progetto Gioco',
             url: '/progetto_gioco/',
             visibilita: 'admin',
             descrizione: 'Area relax, sfide e mini-giochi'
         },
         'logistica': {
-            icona: 'ðŸ“¦',
+            icona: '📦',
             titolo: 'Logistica Consegne',
             url: '/logistica/',
             visibilita: 'tutti',
@@ -2391,7 +2391,7 @@ document.addEventListener('fullscreenchange', () => {
     function selezionaPresetApp(key) {
         if (!key || !CATALOGO_APP_SUITE[key]) {
             if (key === 'custom') {
-                document.getElementById('newProjIcon').value = 'ðŸ“';
+                document.getElementById('newProjIcon').value = '📁';
                 document.getElementById('newProjTitle').value = '';
                 document.getElementById('newProjUrl').value = '';
                 document.getElementById('newProjDesc').value = '';
@@ -2416,12 +2416,12 @@ document.addEventListener('fullscreenchange', () => {
             row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:12px; gap:10px;';
             row.innerHTML = `
                 <div style="display:flex; align-items:center; gap:12px; overflow:hidden; flex:1;">
-                    <span style="font-size:24px;">${p.icona || 'ðŸ“'}</span>
+                    <span style="font-size:24px;">${p.icona || '📁'}</span>
                     <div style="overflow:hidden; width:100%;">
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-weight:700; color:${p.attivo ? '#fff' : '#64748b'}; font-size:14px;">
                             <span>${p.titolo}</span>
-                            <button onclick="toggleVisibilitaProgetto('${p.id}')" title="Clicca qui per cambiare visibilitÃ : Solo Admin â†” Tutti" style="border:none; cursor:pointer; font-size:11px; padding:3px 8px; border-radius:8px; background:${isAdmin ? 'rgba(212,175,55,0.25)' : 'rgba(56,189,248,0.25)'}; color:${isAdmin ? '#f3e5ab' : '#38bdf8'}; font-weight:700; transition:all 0.2s; border:1px solid ${isAdmin ? 'rgba(212,175,55,0.4)' : 'rgba(56,189,248,0.4)'};">
-                                ${isAdmin ? 'ðŸ”’ Solo Admin (Clicca per Tutti)' : 'ðŸ‘¥ Tutti (Clicca per Solo Admin)'}
+                            <button onclick="toggleVisibilitaProgetto('${p.id}')" title="Clicca qui per cambiare visibilità: Solo Admin ↔ Tutti" style="border:none; cursor:pointer; font-size:11px; padding:3px 8px; border-radius:8px; background:${isAdmin ? 'rgba(212,175,55,0.25)' : 'rgba(56,189,248,0.25)'}; color:${isAdmin ? '#f3e5ab' : '#38bdf8'}; font-weight:700; transition:all 0.2s; border:1px solid ${isAdmin ? 'rgba(212,175,55,0.4)' : 'rgba(56,189,248,0.4)'};">
+                                ${isAdmin ? '🔒 Solo Admin (Clicca per Tutti)' : '👥 Tutti (Clicca per Solo Admin)'}
                             </button>
                         </div>
                         <div style="font-size:12px; color:#94a3b8; font-family:monospace; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:280px; margin-top:2px;">URL: ${p.url}</div>
@@ -2450,12 +2450,12 @@ document.addEventListener('fullscreenchange', () => {
                 renderCardProgetti();
             }
         } catch(e) {
-            alert('Errore cambio visibilitÃ ');
+            alert('Errore cambio visibilità');
         }
     }
 
     async function salvaNuovoProgetto() {
-        const icona = document.getElementById('newProjIcon').value.trim() || 'ðŸ“¦';
+        const icona = document.getElementById('newProjIcon').value.trim() || '📦';
         const titolo = document.getElementById('newProjTitle').value.trim();
         const url = document.getElementById('newProjUrl').value.trim();
         const visibilita = document.getElementById('newProjVis').value;
@@ -2542,7 +2542,7 @@ document.addEventListener('fullscreenchange', () => {
     }
 
     // Inizializza ruolo all'avvio:
-    // Se c'Ã¨ giÃ  una sessione attiva (es. Admin o Operatore o Operatore con PIN), sblocca subito anche dopo riavvio browser
+    // Se c'è già una sessione attiva (es. Admin o Operatore o Operatore con PIN), sblocca subito anche dopo riavvio browser
     const savedAdminPin = localStorage.getItem('milella_admin_pin');
     const savedUserNome = localStorage.getItem('milella_user_nome');
     const savedUserPin = localStorage.getItem('milella_user_pin');
@@ -2555,10 +2555,10 @@ document.addEventListener('fullscreenchange', () => {
         const lastRole = localStorage.getItem('milella_last_authenticated_role');
 
         if (lastUser && lastRole) {
-            // L'utente ha giÃ  inserito il PIN con successo in precedenza: attiva e mostra il tasto impronta!
+            // L'utente ha già inserito il PIN con successo in precedenza: attiva e mostra il tasto impronta!
             if (btnBio) {
                 btnBio.style.display = 'inline-flex';
-                btnBio.innerHTML = '<span style="font-size:20px;">ðŸ‘†</span> ACCEDI CON IMPRONTA (' + lastUser + ')';
+                btnBio.innerHTML = '<span style="font-size:20px;">👆</span> ACCEDI CON IMPRONTA (' + lastUser + ')';
             }
             if (hintBio) hintBio.style.display = 'none';
         } else {
@@ -2575,7 +2575,7 @@ document.addEventListener('fullscreenchange', () => {
         currentAdminPin = savedAdminPin;
         applicaRuolo('admin', savedUserNome || 'Ciro Milella (Admin)', ['all']);
     } else if (savedUserPin && savedUserNome) {
-        // Operatore giÃ  loggato stabilmente su questo dispositivo
+        // Operatore già loggato stabilmente su questo dispositivo
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
         currentAppAbilitate = savedApps;
