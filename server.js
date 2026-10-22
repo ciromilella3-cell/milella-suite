@@ -901,6 +901,12 @@ const veicoliDir = fs.existsSync(path.join(__dirname, 'public', 'veicoli'))
 app.use('/veicoli', express.static(veicoliDir));
 app.use('/veicoli/File_Sistema', express.static(veicoliDir));
 
+// Flotta Veicoli - Versione Mobile
+const veicoliMobileDir = fs.existsSync(path.join(__dirname, 'public', 'veicoli_mobile'))
+    ? path.join(__dirname, 'public', 'veicoli_mobile')
+    : path.join(__dirname, 'public', 'veicoli', 'App_Mobile');
+app.use('/veicoli_mobile', express.static(veicoliMobileDir));
+
 // Integrazione CareAssist Pro
 const careAssistLocalPath = path.resolve(__dirname, '..', 'CareAssist_Pro');
 const careAssistPublicPath = path.join(__dirname, 'public', 'careassist');
@@ -1126,6 +1132,44 @@ app.delete('/api/upload/:filename', (req, res) => {
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
+});
+
+// API POST: Apri cartella backup in Esplora File (Windows Locale)
+app.post('/api/open-backup-folder', (req, res) => {
+    const { exec } = require('child_process');
+    const folder1 = path.resolve(__dirname, '..', 'Backup_Automatico_Dati');
+    const folder2 = path.resolve(__dirname, '..', 'documenti', 'Backup_Completo_Sistema');
+    const targetFolder = fs.existsSync(folder1) ? folder1 : (fs.existsSync(folder2) ? folder2 : __dirname);
+    
+    if (process.platform === 'win32') {
+        exec(`explorer.exe "${targetFolder}"`);
+        return res.json({ success: true, folder: targetFolder });
+    } else {
+        return res.json({ success: false, message: 'Funzione disponibile solo in ambiente Windows locale' });
+    }
+});
+
+// API POST: Crea o scarica Backup ZIP inventario
+app.post('/api/backup-inventario', (req, res) => {
+    const { exec } = require('child_process');
+    const destFolder = path.resolve(__dirname, '..', 'documenti', 'Backup_Completo_Sistema');
+    if (!fs.existsSync(destFolder)) fs.mkdirSync(destFolder, { recursive: true });
+    
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const zipName = `INVENTARIO_BACKUP_${timestamp}.zip`;
+    const zipPath = path.join(destFolder, zipName);
+    
+    // Compressione nativa ultra-rapida tramite tar di sistema
+    const srcDir = __dirname;
+    const cmd = `tar.exe -a -c -f "${zipPath}" --exclude="node_modules" --exclude=".git" -C "${srcDir}" data public`;
+    
+    exec(cmd, (err) => {
+        if (err) {
+            console.error('[ERRORE BACKUP TAR]', err);
+            return res.status(500).json({ error: 'Errore creazione ZIP' });
+        }
+        res.json({ success: true, file: zipName, path: zipPath });
+    });
 });
 
 // API POST: Avvia Logistica (Electron Nativo)

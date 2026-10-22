@@ -653,7 +653,13 @@ if (btnOpenBackupFolder) {
     btnOpenBackupFolder.addEventListener('click', async (e) => {
         e.preventDefault();
         try {
-            await fetch(`${API_BASE}/open-backup-folder`, { method: 'POST' });
+            const res = await fetch(`${API_BASE}/open-backup-folder`, { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                showToast("Cartella di backup aperta su Windows!");
+            } else {
+                showToast(data.message || "Apertura consentita solo sul PC locale");
+            }
         } catch(e) {
             showToast("Errore nell'apertura della cartella");
         }
