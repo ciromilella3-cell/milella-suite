@@ -9,9 +9,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Progetto Salute & Alimentazione</title>
-    <link rel="stylesheet" href="style.css?v=20261019_mobile1">
+    <link rel="stylesheet" href="style.css?v=20261022_v7">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <script src="chart.js"></script>
+    <script src="chart.js?v=20261022_v7"></script>
     <script src="libs/confetti.browser.min.js"></script>
     <script src="libs/html2pdf.bundle.min.js"></script>
 
@@ -83,10 +83,16 @@ window.onerror = function(msg, url, line) {
         var currentMarito = localStorage.getItem('profileName_marito');
         var currentMoglie = localStorage.getItem('profileName_moglie');
         var wMarito = localStorage.getItem('weightLog_marito');
-        var needsInit = (!wMarito || wMarito === '[]' || wMarito === 'null' || !currentMarito || currentMarito === 'Marito');
+        var isFakeMarito = false;
+        try {
+            var parsedW = JSON.parse(wMarito || '[]');
+            if (parsedW.length <= 1) isFakeMarito = true;
+        } catch(e) { isFakeMarito = true; }
 
-        // Se manca lo storico di Ciro, inizializzalo subito con le sue pesate storiche reali
-        if (!wMarito || wMarito === '[]' || wMarito === 'null') {
+        var needsInit = (!wMarito || wMarito === '[]' || wMarito === 'null' || isFakeMarito || !currentMarito || currentMarito === 'Marito');
+
+        // Se lo storico di Ciro è fittizio o vuoto, carica subito lo storico autentico reale
+        if (needsInit) {
             localStorage.setItem('weightLog_marito', JSON.stringify([
                 {"date":"2026-09-29","weight":81.3,"timestamp":1790660767214},
                 {"date":"2026-09-30","weight":79.6,"timestamp":1790743316276},
@@ -94,9 +100,8 @@ window.onerror = function(msg, url, line) {
                 {"date":"2026-10-07","weight":79.0,"timestamp":1791358292999}
             ]));
             localStorage.setItem('profileName_marito', 'Ciro Milella');
-            if (!localStorage.getItem('profileStats_marito')) {
-                localStorage.setItem('profileStats_marito', JSON.stringify({"dob":"1967-12-16","start":"81.3","goal":"65","kcal":"1400","height":"160"}));
-            }
+            localStorage.setItem('profileStats_marito', JSON.stringify({"dob":"1967-12-16","start":"81.3","goal":"65","kcal":"1400","height":"160"}));
+            localStorage.setItem('currentWeight_marito', '79.0');
         }
 
         // 1. Se siamo in Electron / Node, lettura sincrona istantanea da disco
