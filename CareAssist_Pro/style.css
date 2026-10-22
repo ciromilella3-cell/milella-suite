@@ -925,6 +925,58 @@ textarea.form-control {
 
 .form-row .form-group {
   flex: 1;
+  min-width: 0;
+}
+
+/* ===== MOBILE: schede anagrafica/medico leggibili ===== */
+select[id^="select-medico-farmacia-preset"] {
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .form-row .form-group {
+    flex: 1 1 auto !important;
+    width: 100%;
+  }
+  .form-label {
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+  /* Header sezione + select preset: impilati, select a tutta larghezza */
+  div:has(> div > select[id^="select-medico-farmacia-preset"]) {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  div:has(> select[id^="select-medico-farmacia-preset"]) {
+    flex-direction: column;
+    align-items: stretch !important;
+    width: 100%;
+  }
+  div:has(> select[id^="select-medico-farmacia-preset"]) > span {
+    white-space: normal;
+  }
+  select[id^="select-medico-farmacia-preset"] {
+    width: 100% !important;
+    font-size: 13px !important;
+    padding: 8px 10px !important;
+  }
+  /* Footer modale: bottoni che vanno a capo invece di uscire dallo schermo */
+  body .modal-footer {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+  body .modal-footer .btn,
+  body .modal-footer button {
+    flex: 1 1 auto;
+    white-space: nowrap;
+  }
 }
 
 .modal-footer {
