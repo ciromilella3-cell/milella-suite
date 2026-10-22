@@ -580,11 +580,16 @@ window.onerror = function(msg, url, line) {
         </div>
 
         <header class="main-header">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
                 <h1 style="margin: 0;">🌿 Progetto Salute <span style="font-size:0.75rem; color:#f59e0b; font-weight:800; margin-left:8px; vertical-align:middle;">👑 CIRO MILELLA</span></h1>
-                <button onclick="window.location.href='/launcher.html'" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 20px; border-radius: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.3); transition: all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="Torna al Portale Aziendale">
-                    🏠 Torna al Menu
-                </button>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button onclick="forceUpdateSaluteApp()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size:13px; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); display:flex; align-items:center; gap:6px; transition: all 0.2s;" title="Ricarica l'app e pulisci la cache offline">
+                        🔄 Aggiorna App
+                    </button>
+                    <button onclick="window.location.href='/launcher.html'" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 18px; border-radius: 20px; font-weight: 700; font-size:13px; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.3); transition: all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="Torna al Portale Aziendale">
+                        🏠 Torna al Menu
+                    </button>
+                </div>
             </div>
             <p>Il vostro piano in comune per il benessere e la forma fisica.</p>
             <img src="foto/banner.jpg" alt="Healthy Lifestyle" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
@@ -2581,6 +2586,39 @@ function toggleFullScreenApp() {
         if (document.exitFullscreen) document.exitFullscreen();
     }
 }
+
+// Funzione Infallibile di Aggiornamento App (Svuota Cache Offline, Service Worker e Ricarica i Dati Ufficiali)
+async function forceUpdateSaluteApp() {
+    if (confirm("Vuoi aggiornare l'applicazione con le ultime modifiche e ricaricare tutti i dati ufficiali?")) {
+        try {
+            // 1. Pulisci Cache Storage
+            if ('caches' in window) {
+                const keys = await caches.keys();
+                await Promise.all(keys.map(k => caches.delete(k)));
+            }
+            // 2. Unregister Service Worker
+            if ('serviceWorker' in navigator) {
+                const regs = await navigator.serviceWorker.getRegistrations();
+                for (let reg of regs) {
+                    await reg.unregister();
+                }
+            }
+            // 3. Ricarica dati ufficiali dal file di backup se presenti
+            try {
+                const r = await fetch('/salute/Backup_Salute/Ripristino_Ufficiale_Ciro_e_MariaCarmela.salute?t=' + Date.now());
+                const data = await r.json();
+                for (let k in data) {
+                    localStorage.setItem(k, typeof data[k] === 'object' ? JSON.stringify(data[k]) : data[k]);
+                }
+                localStorage.setItem('profileName_marito', 'Ciro Milella');
+                localStorage.setItem('profileName_moglie', 'Maria Carmela');
+            } catch(e) {}
+        } catch(e) {}
+        
+        // 4. Forza reload immediato pulito
+        window.location.href = '/salute/?updated=' + Date.now();
+    }
+}
 </script>
 
 <!-- BARRA DI CONTROLLO FISSA SMARTPHONE PER PROGETTO SALUTE -->
@@ -2597,13 +2635,9 @@ function toggleFullScreenApp() {
         <span>🍲</span>
         <span>Meal Prep</span>
     </button>
-    <button type="button" class="salute-bar-btn" onclick="openSosHungerModal()">
-        <span>🧘</span>
-        <span>SOS</span>
-    </button>
-    <button type="button" class="salute-bar-btn" onclick="openWeeklyReportModal()">
-        <span>🏆</span>
-        <span>Pagella</span>
+    <button type="button" class="salute-bar-btn" onclick="forceUpdateSaluteApp()" style="color:#f59e0b;" title="Svuota cache e aggiorna app">
+        <span>🔄</span>
+        <span>Aggiorna</span>
     </button>
     <button type="button" class="salute-bar-btn" onclick="openControlCenter()">
         <span>⚙️</span>
