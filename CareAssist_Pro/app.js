@@ -1203,11 +1203,12 @@ function renderPazientiSelector() {
         <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.cellulare)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con Aldo">🟢</a>
       </div>` : '';
 
-    // 4. CONTATTO DI RIFERIMENTO / CAREGIVER / FAMIGLIA (CHIAMATA, SMS, WHATSAPP)
+    // 4. CONTATTO DI RIFERIMENTO / CAREGIVER / FAMIGLIA (CHIAMATA, SMS, WHATSAPP, EMAIL)
     const parenteCell = activeP.moglieCellulare || '';
     const parenteNome = activeP.moglieNome || '';
+    const parenteEmail = activeP.caregiverEmail || activeP.moglieEmail || '';
     const moglie = parenteNome ? `
-      <div class="meta-item clinica-zoom-item" style="background:#eff6ff; border-color:#bfdbfe; color:#1e40af; cursor:pointer;" onmouseenter="mostraLenteClinica('Contatto di Riferimento / Caregiver', '${parenteNome} - Tel: ${parenteCell}', '👥')" onmouseleave="nascondiLenteClinica()">
+      <div class="meta-item clinica-zoom-item" style="background:#eff6ff; border-color:#bfdbfe; color:#1e40af; cursor:pointer;" onmouseenter="mostraLenteClinica('Contatto di Riferimento / Caregiver', '${parenteNome} - Tel: ${parenteCell}${parenteEmail ? ' - Email: ' + parenteEmail : ''}', '👥')" onmouseleave="nascondiLenteClinica()">
         <span>👥</span>
         <span>Caregiver / Famiglia: <b>${parenteNome}</b></span>
         ${parenteCell ? `
@@ -1216,12 +1217,17 @@ function renderPazientiSelector() {
           <a href="sms:${cleanNum(parenteCell)}" class="action-icon-btn sms" title="Invia SMS al Caregiver">💬</a>
           <a href="https://api.whatsapp.com/send?phone=${waNum(parenteCell)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con Caregiver / Familiare">🟢</a>
         ` : ''}
+        ${parenteEmail ? `
+          &bull; <span>✉️ <b style="font-size:11.5px;">${parenteEmail}</b></span>
+          <a href="mailto:${parenteEmail}?subject=Comunicazione%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="action-icon-btn mail" title="Invia Email al Caregiver">✉️</a>
+        ` : ''}
       </div>` : '';
     
     // 5. BADGE MEDICO CURANTE (LAYOUT CLINICO A 2 LIVELLI ELEGANTE & PROFESSIONALE)
     const medicoNome = activeP.medicoNome || activeP.medico || 'Dott. di Famiglia';
     const medCell = activeP.medicoTel || activeP.telMedico || '';
     const medEmail = activeP.medicoEmail || '';
+    const medPec = activeP.medicoPec || '';
     const infoStudio = getInfoStudioOggi(activeP);
     
     let sediStudioPulite = activeP.medicoIndirizzo || '';
@@ -1229,7 +1235,6 @@ function renderPazientiSelector() {
       sediStudioPulite = activeP.medicoStudio;
     }
     const telFissoStudio = (activeP.medicoTelStudio || (activeP.medicoStudio && !activeP.medicoStudio.includes('Sarconi') && !activeP.medicoStudio.includes('Via') ? activeP.medicoStudio : ''));
-    const isPec = (medEmail.toLowerCase().includes('pec') || medEmail.toLowerCase().includes('cert'));
 
     const medicoBadge = `
       <div class="clinica-zoom-item" style="background:#fefce8; border:1.5px solid #fde047; border-radius:12px; padding:10px 14px; color:#854d0e; cursor:pointer; display:flex; flex-direction:column; justify-content:space-between; gap:6px; box-shadow:0 1px 3px rgba(0,0,0,0.04); transition:all 0.15s ease;"
@@ -1287,14 +1292,25 @@ function renderPazientiSelector() {
             </div>
           ` : ''}
 
-          <!-- PEC / EMAIL -->
+          <!-- EMAIL ORDINARIA -->
           ${medEmail ? `
             <div style="display:flex; align-items:center; gap:5px;">
-              <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; border:1px solid #bae6fd;">${isPec ? 'P.E.C.' : 'P.E.C. / EMAIL'}</span>
-              <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link" style="color:#0284c7; font-weight:700;" title="Invia Email o PEC al Medico Curante">
+              <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; border:1px solid #bae6fd;">EMAIL</span>
+              <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link" style="color:#0284c7; font-weight:700;" title="Invia Email Ordinaria al Medico Curante">
                 <span>✉️</span> <b>${medEmail}</b>
               </a>
-              <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="action-icon-btn mail" title="Invia Email o PEC">✉️</a>
+              <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="action-icon-btn mail" title="Invia Email Ordinaria">✉️</a>
+            </div>
+          ` : ''}
+
+          <!-- PEC UFFICIALE SE PRESENTE -->
+          ${medPec ? `
+            <div style="display:flex; align-items:center; gap:5px;">
+              <span style="background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; border:1px solid #fde68a;">PEC</span>
+              <a href="mailto:${medPec}?subject=Comunicazione%20Ufficiale%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link" style="color:#b45309; font-weight:700;" title="Invia PEC Ufficiale al Medico Curante">
+                <span>🔒</span> <b>${medPec}</b>
+              </a>
+              <a href="mailto:${medPec}?subject=Comunicazione%20Ufficiale%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="action-icon-btn mail" style="background:#fef3c7; border-color:#fde68a; color:#b45309;" title="Invia PEC">🔒</a>
             </div>
           ` : ''}
         </div>
@@ -1507,7 +1523,8 @@ function mostraLenteMedicoCurante() {
         ${sediStudioPulite ? `<div>📍 <b style="color:#e2e8f0;">Sedi Studi:</b> ${sediStudioPulite}</div>` : ''}
         ${telFissoStudio ? `<div>☎️ <b style="color:#e2e8f0;">Tel. Studio:</b> ${telFissoStudio}</div>` : ''}
         ${medCell ? `<div>📱 <b style="color:#e2e8f0;">Cellulare / WhatsApp:</b> ${medCell}</div>` : ''}
-        ${medEmail ? `<div>✉️ <b style="color:#e2e8f0;">PEC / Email:</b> ${medEmail}</div>` : ''}
+        ${medEmail ? `<div>✉️ <b style="color:#e2e8f0;">Email:</b> ${medEmail}</div>` : ''}
+        ${p.medicoPec ? `<div>🔒 <b style="color:#fde68a;">PEC:</b> ${p.medicoPec}</div>` : ''}
       </div>
       <div style="font-size:13px; color:#94a3b8; background:rgba(255,255,255,0.03); padding:8px 12px; border-radius:8px; border-left:3px solid #38bdf8;">
         📅 <b style="color:#e2e8f0;">Orari Settimanali Completi:</b><br>
@@ -2135,9 +2152,20 @@ function sincronizzaNoteAllettatoDinamico() {
   }
 }
 
+function cambiaTabAnagrafica(tabId) {
+  ['paziente', 'medico', 'orari', 'ausili'].forEach(t => {
+    const btn = document.getElementById('tab-btn-' + t);
+    const pane = document.getElementById('pane-anagrafica-' + t);
+    if (btn) btn.classList.toggle('active', t === tabId);
+    if (pane) pane.classList.toggle('active', t === tabId);
+  });
+}
+
 function apriModificaAnagrafica() {
   const p = getActivePaziente();
   if (!p) return;
+
+  cambiaTabAnagrafica('paziente');
 
   document.getElementById('edit-paz-nome').value = p.nome || '';
   document.getElementById('edit-paz-nascita').value = p.dataNascita || '1935-04-18';
@@ -2149,6 +2177,7 @@ function apriModificaAnagrafica() {
   const defaultCaregiverCell = (p.id === 'paz_rosa' && (!p.moglieCellulare || p.moglieCellulare.trim() === ''))
     ? '338 739 76 71'
     : (p.moglieCellulare || '');
+  const defaultCaregiverEmail = p.caregiverEmail || p.moglieEmail || '';
   const defaultTelFisso = (p.id === 'paz_rosa' && (!p.telefonoFisso || p.telefonoFisso.trim() === ''))
     ? '097 169 32 21'
     : (p.telefonoFisso || '');
@@ -2157,6 +2186,9 @@ function apriModificaAnagrafica() {
   document.getElementById('edit-paz-cellulare').value = formattaNumeroTelefonico(p.cellulare || '');
   document.getElementById('edit-paz-moglie-nome').value = defaultCaregiverNome;
   document.getElementById('edit-paz-moglie-cell').value = formattaNumeroTelefonico(defaultCaregiverCell);
+  const elCaregiverMail = document.getElementById('edit-paz-caregiver-email');
+  if (elCaregiverMail) elCaregiverMail.value = defaultCaregiverEmail;
+
   document.getElementById('edit-paz-medico-nome').value = p.medicoNome || p.medico || 'Dott. Roberto Scarcia';
   // Sincronizzazione automatica orari e studio Dott. Scarcia sia per Aldo che per Angela
   const isScarcia = (p.id === 'paz_aldo' || p.id === 'paz_angela' || (p.medicoNome || '').includes('Scarcia') || (p.indirizzo || '').includes('Bari'));
@@ -2181,7 +2213,17 @@ function apriModificaAnagrafica() {
   const telStudioVal = (p.medicoTelStudio || (p.medicoStudio && !p.medicoStudio.includes('Sarconi') && !p.medicoStudio.includes('Via') ? p.medicoStudio : ''));
   document.getElementById('edit-paz-medico-studio').value = formattaNumeroTelefonico(telStudioVal);
   document.getElementById('edit-paz-medico-tel').value = formattaNumeroTelefonico(p.medicoTel || p.telMedico || '');
-  document.getElementById('edit-paz-medico-email').value = p.medicoEmail || 'scarcia.roberto@alice.it';
+  
+  // Assegnazione Email Ordinaria e PEC separata
+  const elMedEmail = document.getElementById('edit-paz-medico-email');
+  if (elMedEmail) {
+    elMedEmail.value = p.medicoEmail || (p.id === 'paz_rosa' ? 'carolina.potenza@gmail.com' : 'scarcia.roberto@alice.it');
+  }
+  const elMedPec = document.getElementById('edit-paz-medico-pec');
+  if (elMedPec) {
+    elMedPec.value = p.medicoPec || (p.id === 'paz_rosa' ? 'carolina.potenza@pec.it' : 'roberto.scarcia@pec.it');
+  }
+
   document.getElementById('edit-paz-farmacia').value = p.farmaciaDiRiferimento || 'Farmacia MACARIO';
   const elFarmTel = document.getElementById('edit-paz-farmacia-tel');
   if (elFarmTel) elFarmTel.value = formattaNumeroTelefonico(p.farmaciaTelefono || '');
@@ -2236,6 +2278,11 @@ function salvaModificaAnagrafica(e) {
   p.cellulare = formattaNumeroTelefonico(document.getElementById('edit-paz-cellulare').value.trim());
   p.moglieNome = document.getElementById('edit-paz-moglie-nome').value.trim();
   p.moglieCellulare = formattaNumeroTelefonico(document.getElementById('edit-paz-moglie-cell').value.trim());
+  const elCaregiverMailVal = document.getElementById('edit-paz-caregiver-email');
+  if (elCaregiverMailVal) {
+    p.caregiverEmail = elCaregiverMailVal.value.trim();
+    p.moglieEmail = p.caregiverEmail;
+  }
   p.medicoNome = document.getElementById('edit-paz-medico-nome').value.trim();
   p.medico = p.medicoNome;
   const elMedIndVal = document.getElementById('edit-paz-medico-indirizzo');
@@ -2248,11 +2295,16 @@ function salvaModificaAnagrafica(e) {
   p.medicoTel = formattaNumeroTelefonico(document.getElementById('edit-paz-medico-tel').value.trim());
   p.telMedico = p.medicoTel;
   p.medicoEmail = document.getElementById('edit-paz-medico-email').value.trim();
+  const elMedPecVal = document.getElementById('edit-paz-medico-pec');
+  if (elMedPecVal) {
+    p.medicoPec = elMedPecVal.value.trim();
+  }
   p.farmaciaDiRiferimento = document.getElementById('edit-paz-farmacia').value.trim() || 'Farmacia MACARIO';
   const elFarmTelVal = document.getElementById('edit-paz-farmacia-tel');
   if (elFarmTelVal) p.farmaciaTelefono = formattaNumeroTelefonico(elFarmTelVal.value.trim());
   const elFarmIndVal = document.getElementById('edit-paz-farmacia-indirizzo');
   if (elFarmIndVal) p.farmaciaIndirizzo = elFarmIndVal.value.trim();
+
   const eraAllettatoPrima = p.allettato;
   p.allettato = document.getElementById('edit-paz-allettato').checked;
 
@@ -6933,6 +6985,7 @@ const DB_PRESET_MEDICI_FARMACIE = {
     medicoTelStudio: '080 557 44 90',
     medicoCell: '347 126 59 71',
     medicoEmail: 'scarcia.roberto@alice.it',
+    medicoPec: 'roberto.scarcia@pec.it',
     medicoOrari: 'Lunedì: 10:00-13:00. Martedì: 10:00-13:00 e 16:00-19:00. Mercoledì: 10:00-13:00. Giovedì: 16:00-19:00. Venerdì: 10:00-13:00 (Bari - Via Muciaccia 11)',
     farmaciaNome: 'Farmacia Dott. MACARIO',
     farmaciaIndirizzo: 'Via G. Petroni, 69/b - Bari',
@@ -6944,6 +6997,7 @@ const DB_PRESET_MEDICI_FARMACIE = {
     medicoStudio: 'Sarconi: Via Provinciale 1 / Moliterno: Via Parco del Seggio 1',
     medicoCell: '338 379 05 64',
     medicoEmail: 'carolina.potenza@aspbasilicata.it',
+    medicoPec: 'carolina.potenza@pec.it',
     medicoOrari: 'Sarconi: Lun-Mer-Ven 9:30-13:00, Mar-Gio 15:00-18:30. Moliterno: Lun 15:00-18:00, Gio 9:00-13:00 (su appuntamento)',
     farmaciaNome: 'Farmacia Girasole Picconi',
     farmaciaIndirizzo: 'Via Ariosto, 4 / 16 - 85012 Corleto Perticara (PZ)',
@@ -6954,6 +7008,7 @@ const DB_PRESET_MEDICI_FARMACIE = {
     medicoStudio: '080 500 11 22',
     medicoCell: '335 123 45 67',
     medicoEmail: 'direzione.sanitaria@rsa-bari.it',
+    medicoPec: 'direzione.sanitaria@pec.rsa-bari.it',
     farmaciaNome: 'Farmacia Ospedaliera / Struttura RSA',
     farmaciaIndirizzo: 'Presidio Domiciliare Struttura',
     farmaciaTel: '080 500 11 33'
@@ -6963,6 +7018,7 @@ const DB_PRESET_MEDICI_FARMACIE = {
     medicoStudio: '080 584 11 11',
     medicoCell: '080 584 22 22',
     medicoEmail: 'adi.territorio@asl.bari.it',
+    medicoPec: 'protocollo.aslbari@pec.rupar.puglia.it',
     farmaciaNome: 'Farmacia Territoriale Distretto ASL',
     farmaciaIndirizzo: 'Distretto Socio Sanitario Bari',
     farmaciaTel: '080 584 33 44'
@@ -6994,6 +7050,7 @@ function applicaPresetMedicoFarmacia(chiave, modalType) {
     const elMedStudio = document.getElementById('edit-paz-medico-studio');
     const elMedCell = document.getElementById('edit-paz-medico-tel');
     const elMedEmail = document.getElementById('edit-paz-medico-email');
+    const elMedPec = document.getElementById('edit-paz-medico-pec');
     const elFarmNome = document.getElementById('edit-paz-farmacia');
 
     if (elMedNome) elMedNome.value = dati.medicoNome;
@@ -7005,6 +7062,7 @@ function applicaPresetMedicoFarmacia(chiave, modalType) {
     if (elMedStudio) elMedStudio.value = dati.medicoStudio || '';
     if (elMedCell) elMedCell.value = dati.medicoCell;
     if (elMedEmail) elMedEmail.value = dati.medicoEmail;
+    if (elMedPec) elMedPec.value = dati.medicoPec || '';
     if (elFarmNome) elFarmNome.value = dati.farmaciaNome;
     const elFarmTel = document.getElementById('edit-paz-farmacia-tel');
     if (elFarmTel) elFarmTel.value = formattaNumeroTelefonico(dati.farmaciaTel || '');
