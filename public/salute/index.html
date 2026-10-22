@@ -9,9 +9,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Progetto Salute & Alimentazione</title>
-    <link rel="stylesheet" href="style.css?v=20261022_v7">
+    <link rel="stylesheet" href="style.css?v=20261022_v8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <script src="chart.js?v=20261022_v7"></script>
+    <script src="chart.js?v=20261022_v8"></script>
     <script src="libs/confetti.browser.min.js"></script>
     <script src="libs/html2pdf.bundle.min.js"></script>
 
@@ -2592,9 +2592,10 @@ async function forceUpdateSaluteApp() {
                     await reg.unregister();
                 }
             }
-            // 3. Ricarica dati ufficiali dal file di backup se presenti
+            // 3. Ricarica dati ufficiali dal Cloud Render / API prima del fallback
             try {
-                const r = await fetch('/salute/Backup_Salute/Ripristino_Ufficiale_Ciro_e_MariaCarmela.salute?t=' + Date.now());
+                let r = await fetch('/api/salute/data?t=' + Date.now());
+                if (!r.ok) r = await fetch('/salute/Backup_Salute/Ripristino_Ufficiale_Ciro_e_MariaCarmela.salute?t=' + Date.now());
                 const data = await r.json();
                 for (let k in data) {
                     localStorage.setItem(k, typeof data[k] === 'object' ? JSON.stringify(data[k]) : data[k]);

@@ -1044,6 +1044,79 @@ app.post('/api/mednutri/save-data', (req, res) => {
     }
 });
 
+// ==============================================================================
+// API SINCRONIZZAZIONE PROGETTO SALUTE (CIRO MILELLA & MARIA CARMELA)
+// Condivisione istantanea tra PC e Smartphone con persistenza cloud
+// ==============================================================================
+const saluteDbPath = path.join(__dirname, 'data', 'salute_db.json');
+
+app.get(['/api/salute/data', '/salute/api/data'], (req, res) => {
+    try {
+        if (fs.existsSync(saluteDbPath)) {
+            const data = fs.readFileSync(saluteDbPath, 'utf8');
+            res.type('application/json').send(data || '{}');
+        } else {
+            // Fallback su Ultimo_Salvataggio_Automatico se salute_db.json non è presente
+            const autoSaveFile = path.join(__dirname, 'public', 'salute', 'Backup_Salute', 'Ultimo_Salvataggio_Automatico.salute');
+            if (fs.existsSync(autoSaveFile)) {
+                const data = fs.readFileSync(autoSaveFile, 'utf8');
+                res.type('application/json').send(data || '{}');
+            } else {
+                res.json({});
+            }
+        }
+    } catch(err) {
+        console.error('Errore lettura salute db:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post(['/api/salute/data', '/salute/api/data'], (req, res) => {
+    try {
+        if (!req.body || typeof req.body !== 'object') {
+            return res.status(400).json({ error: 'Body non valido' });
+        }
+        let current = {};
+        if (fs.existsSync(saluteDbPath)) {
+            try { current = JSON.parse(fs.readFileSync(saluteDbPath, 'utf8')); } catch(e){}
+        }
+        
+        // Merge intelligente: unisci campi e storici
+        const incoming = req.body;
+        const merged = Object.assign({}, current, incoming);
+        
+        // Se arrivano weightLog specifici, assicurati che uniamo gli array senza perdere date
+        ['weightLog_marito', 'weightLog_moglie', 'weightLog_salvatoresalva'].forEach(key => {
+            if (incoming[key]) {
+                try {
+                    const arrInc = typeof incoming[key] === 'string' ? JSON.parse(incoming[key]) : incoming[key];
+                    const arrCur = current[key] ? (typeof current[key] === 'string' ? JSON.parse(current[key]) : current[key]) : [];
+                    if (Array.isArray(arrInc) && Array.isArray(arrCur)) {
+                        const dateMap = new Map();
+                        arrCur.forEach(item => { if (item && item.date) dateMap.set(item.date, item); });
+                        arrInc.forEach(item => { if (item && item.date) dateMap.set(item.date, item); });
+                        const combined = Array.from(dateMap.values()).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                        merged[key] = JSON.stringify(combined);
+                    }
+                } catch(eMerge) {}
+            }
+        });
+        
+        safeWriteAtomic(saluteDbPath, JSON.stringify(merged, null, 2));
+        
+        // Copia anche in Ultimo_Salvataggio_Automatico se la cartella esiste
+        const autoSaveFile = path.join(__dirname, 'public', 'salute', 'Backup_Salute', 'Ultimo_Salvataggio_Automatico.salute');
+        try {
+            safeWriteAtomic(autoSaveFile, JSON.stringify(merged));
+        } catch(eAuto) {}
+
+        res.json({ success: true, timestamp: Date.now(), keys: Object.keys(merged).length });
+    } catch(err) {
+        console.error('Errore salvataggio salute db:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.get('/presentazione', (req, res) => {
     res.sendFile(path.resolve(__dirname, '..', '0_PRESENTAZIONE_E_ARCHITETTURA.html'));
 });

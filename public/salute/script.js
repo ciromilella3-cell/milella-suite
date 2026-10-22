@@ -214,6 +214,7 @@ function logWeight(profile, newWeight) {
     calculateStats(profile, newWeight, log);
     drawChart(profile, log, startWeight);
     updateBMI(profile, newWeight);
+    if (typeof window.syncSaluteToCloud === "function") { window.syncSaluteToCloud({ [key]: JSON.stringify(log) }); }
 }
 
 function loadProgress(profile) {
@@ -3801,6 +3802,7 @@ window.saveStoricoModal = function() {
     
     // Ricarica i progressi per aggiornare grafico e statistiche
     loadProgress(profile);
+    /* saveStoricoModalSync */ if (typeof window.syncSaluteToCloud === "function") { window.syncSaluteToCloud({ [key]: JSON.stringify(log) }); }
 };
 
 
@@ -7896,3 +7898,91 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+// =========================================================================
+// ☁️ MOTORE DI SINCRONIZZAZIONE CLOUD PROGETTO SALUTE (PC & SMARTPHONE)
+// =========================================================================
+window.syncSaluteToCloud = async function(customPayload) {
+    try {
+        let payload = customPayload;
+        if (!payload || typeof payload !== 'object') {
+            payload = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k) payload[k] = localStorage.getItem(k);
+            }
+        }
+        const resp = await fetch('/api/salute/data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (resp.ok) {
+            console.log('☁️ Progetto Salute: Sincronizzazione cloud riuscita!');
+        }
+    } catch(err) {
+        console.warn('☁️ Sync Cloud offline:', err);
+    }
+};
+
+window.pullSaluteFromCloud = async function(forceRefresh) {
+    try {
+        const resp = await fetch('/api/salute/data?t=' + Date.now());
+        if (!resp.ok) return false;
+        const cloudData = await resp.json();
+        if (!cloudData || typeof cloudData !== 'object' || Object.keys(cloudData).length === 0) return false;
+
+        let hasChanges = false;
+        for (let k in cloudData) {
+            const cloudVal = typeof cloudData[k] === 'object' ? JSON.stringify(cloudData[k]) : String(cloudData[k]);
+            const localVal = localStorage.getItem(k);
+            
+            // Per gli array di peso, fai merge intelligente per non perdere misurazioni
+            if (k.startsWith('weightLog_')) {
+                try {
+                    const cloudArr = JSON.parse(cloudVal);
+                    const localArr = localVal ? JSON.parse(localVal) : [];
+                    if (Array.isArray(cloudArr) && Array.isArray(localArr)) {
+                        const map = new Map();
+                        localArr.forEach(item => { if (item && item.date) map.set(item.date, item); });
+                        cloudArr.forEach(item => { if (item && item.date) map.set(item.date, item); });
+                        const mergedArr = Array.from(map.values()).sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
+                        const mergedStr = JSON.stringify(mergedArr);
+                        if (mergedStr !== localVal) {
+                            localStorage.setItem(k, mergedStr);
+                            hasChanges = true;
+                        }
+                        continue;
+                    }
+                } catch(eMerge) {}
+            }
+            
+            if (cloudVal !== localVal) {
+                localStorage.setItem(k, cloudVal);
+                hasChanges = true;
+            }
+        }
+        
+        localStorage.setItem('profileName_marito', 'Ciro Milella');
+        localStorage.setItem('profileName_moglie', 'Maria Carmela');
+        
+        if (hasChanges || forceRefresh) {
+            console.log('☁️ Progetto Salute: Dati sincronizzati dal Cloud!');
+            if (typeof loadProgress === 'function') {
+                loadProgress('marito');
+                loadProgress('moglie');
+            }
+        }
+        return true;
+    } catch(err) {
+        console.warn('☁️ Pull cloud error:', err);
+        return false;
+    }
+};
+
+// Sincronizzazione automatica all'avvio
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { setTimeout(() => window.pullSaluteFromCloud(false), 300); });
+} else {
+    setTimeout(() => window.pullSaluteFromCloud(false), 300);
+}
