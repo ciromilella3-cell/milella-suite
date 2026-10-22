@@ -2085,6 +2085,7 @@ select[id^="select-medico-farmacia-preset"] {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  touch-action: pan-x;
 }
 .modal-tabs-header::-webkit-scrollbar {
   display: none;
@@ -2092,12 +2093,12 @@ select[id^="select-medico-farmacia-preset"] {
 .modal-tab-btn {
   flex: 1 1 auto;
   min-width: fit-content;
-  padding: 9px 14px;
-  border: none;
+  padding: 10px 14px;
+  border: 1px solid transparent;
   background: transparent;
   color: #64748b;
   font-weight: 700;
-  font-size: 12.5px;
+  font-size: 13px;
   border-radius: 9px;
   cursor: pointer;
   display: flex;
@@ -2106,25 +2107,54 @@ select[id^="select-medico-farmacia-preset"] {
   gap: 7px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
-.modal-tab-btn:hover {
+.modal-tab-btn:hover, .modal-tab-btn:active {
   color: #0f172a;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.7);
 }
 .modal-tab-btn.active {
-  background: #ffffff;
-  color: #0284c7;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
-  font-weight: 800;
+  background: #ffffff !important;
+  color: #0284c7 !important;
+  border-color: #bae6fd !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12) !important;
+  font-weight: 800 !important;
 }
 .tab-pane-anagrafica {
   display: none;
-  animation: fadeInTab 0.22s ease-in-out;
 }
 .tab-pane-anagrafica.active {
-  display: block;
+  display: block !important;
+  animation: fadeInTab 0.2s ease-in-out;
 }
 @keyframes fadeInTab {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .modal-tabs-header {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+    padding: 6px !important;
+    overflow-x: visible !important;
+  }
+  .modal-tab-btn {
+    padding: 10px 8px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+    justify-content: center !important;
+    white-space: normal !important;
+    text-align: center !important;
+    min-height: 44px !important;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+  }
+  .modal-tab-btn.active {
+    background: #0284c7 !important;
+    color: #ffffff !important;
+    border-color: #0369a1 !important;
+  }
 }

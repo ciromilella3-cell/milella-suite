@@ -503,30 +503,6 @@ body {
   border-color: #3b82f6;
 }
 
-.action-icon-btn.pec:hover {
-  background: #0284c7;
-  color: white;
-  border-color: #0284c7;
-}
-
-.cta-chip-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.15s ease;
-  cursor: pointer;
-}
-
-.cta-chip-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.12);
-}
-
 /* ==========================================================================
    ALERTONS & BANNERS (INTELLIGENT ALVO)
    ========================================================================== */
@@ -956,6 +932,58 @@ textarea.form-control {
 
 .form-row .form-group {
   flex: 1;
+  min-width: 0;
+}
+
+/* ===== MOBILE: schede anagrafica/medico leggibili ===== */
+select[id^="select-medico-farmacia-preset"] {
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .form-row .form-group {
+    flex: 1 1 auto !important;
+    width: 100%;
+  }
+  .form-label {
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+  /* Header sezione + select preset: impilati, select a tutta larghezza */
+  div:has(> div > select[id^="select-medico-farmacia-preset"]) {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  div:has(> select[id^="select-medico-farmacia-preset"]) {
+    flex-direction: column;
+    align-items: stretch !important;
+    width: 100%;
+  }
+  div:has(> select[id^="select-medico-farmacia-preset"]) > span {
+    white-space: normal;
+  }
+  select[id^="select-medico-farmacia-preset"] {
+    width: 100% !important;
+    font-size: 13px !important;
+    padding: 8px 10px !important;
+  }
+  /* Footer modale: bottoni che vanno a capo invece di uscire dallo schermo */
+  body .modal-footer {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+  body .modal-footer .btn,
+  body .modal-footer button {
+    flex: 1 1 auto;
+    white-space: nowrap;
+  }
 }
 
 .modal-footer {
@@ -2044,50 +2072,89 @@ textarea.form-control {
   font-weight: 700 !important;
 }
 
-/* ===== MOBILE: schede anagrafica/medico leggibili (v15) ===== */
-.form-row .form-group { min-width: 0; }
-select[id^="select-medico-farmacia-preset"] { max-width: 100%; text-overflow: ellipsis; }
+/* ==========================================================================
+   SCHEDE A TAB ELEGANTE PER MODIFICA SCHEDA ANAGRAFICA E RECAPITI
+   ========================================================================== */
+.modal-tabs-header {
+  display: flex;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 6px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  touch-action: pan-x;
+}
+.modal-tabs-header::-webkit-scrollbar {
+  display: none;
+}
+.modal-tab-btn {
+  flex: 1 1 auto;
+  min-width: fit-content;
+  padding: 10px 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.modal-tab-btn:hover, .modal-tab-btn:active {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.7);
+}
+.modal-tab-btn.active {
+  background: #ffffff !important;
+  color: #0284c7 !important;
+  border-color: #bae6fd !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12) !important;
+  font-weight: 800 !important;
+}
+.tab-pane-anagrafica {
+  display: none;
+}
+.tab-pane-anagrafica.active {
+  display: block !important;
+  animation: fadeInTab 0.2s ease-in-out;
+}
+@keyframes fadeInTab {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 640px) {
-  body .form-row { flex-direction: column; gap: 10px; align-items: stretch; }
-  body .form-row .form-group { flex: 1 1 auto !important; width: 100%; }
-  body div:has(> div > select[id^="select-medico-farmacia-preset"]) { flex-direction: column; align-items: stretch !important; }
-  body div:has(> select[id^="select-medico-farmacia-preset"]) { flex-direction: column; align-items: stretch !important; width: 100%; }
-  body div:has(> select[id^="select-medico-farmacia-preset"]) > span { white-space: normal; }
-  body select[id^="select-medico-farmacia-preset"] { width: 100% !important; font-size: 13px !important; padding: 8px 10px !important; }
-  
-  /* Footer Elegante e Responsive per Modali */
-  body .modal-footer {
-    display: flex !important;
-    flex-direction: column-reverse !important;
-    gap: 12px !important;
-    padding: 14px 16px !important;
-    background: #f8fafc !important;
+  .modal-tabs-header {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+    padding: 6px !important;
+    overflow-x: visible !important;
   }
-  body .modal-footer .modal-footer-actions {
-    display: flex !important;
-    width: 100% !important;
-    gap: 10px !important;
-  }
-  body .modal-footer .modal-footer-actions .btn {
-    flex: 1 1 50% !important;
-    padding: 12px 14px !important;
-    font-size: 14px !important;
-    border-radius: 10px !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
-  }
-  body .modal-footer .btn-elimina-cartella {
-    width: 100% !important;
-    margin-top: 4px !important;
-    padding: 10px !important;
-    font-size: 12.5px !important;
+  .modal-tab-btn {
+    padding: 10px 8px !important;
+    font-size: 12px !important;
     border-radius: 8px !important;
-    order: 2 !important;
-    opacity: 0.85 !important;
+    justify-content: center !important;
+    white-space: normal !important;
+    text-align: center !important;
+    min-height: 44px !important;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
   }
-  body .modal-footer .btn-elimina-cartella:active {
-    opacity: 1 !important;
+  .modal-tab-btn.active {
+    background: #0284c7 !important;
+    color: #ffffff !important;
+    border-color: #0369a1 !important;
   }
 }
