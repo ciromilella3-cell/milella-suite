@@ -1521,18 +1521,7 @@ window.onerror = function(msg, url, line) {
     </script>
 
 <script>
-    (function(){
-        // AUTO-INJECT STORICO
-        ['marito', 'moglie'].forEach(p => {
-            let log = JSON.parse(localStorage.getItem('weightLog_' + p)) || [];
-            let startW = p === 'marito' ? 80.0 : 90.0;
-            if (!log.find(e => e.date === '2026-09-29')) {
-                log.unshift({ date: '2026-09-29', weight: startW, timestamp: new Date('2026-09-29').getTime() });
-                localStorage.setItem('weightLog_' + p, JSON.stringify(log));
-                console.log("Injected historical data for " + p);
-            }
-        });
-    })();
+    // Storico controllato e sincronizzato con Ripristino Ufficiale
 </script>
 
 <!-- MODALE INSERIMENTO STORICO -->

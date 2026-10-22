@@ -1,20 +1,25 @@
 {
-  "name": "Progetto Salute",
+  "name": "Progetto Salute - C. Milella",
   "short_name": "Salute",
-  "start_url": "./index.html",
+  "description": "Monitoraggio parametri vitali, fitness e benessere personale quotidiano",
+  "start_url": "/salute/",
+  "scope": "/salute/",
   "display": "standalone",
-  "background_color": "#f0f2f5",
-  "theme_color": "#2e7d32",
+  "orientation": "portrait",
+  "background_color": "#070d18",
+  "theme_color": "#10b981",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2965/2965879.png",
+      "src": "/salute/icon.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2965/2965879.png",
+      "src": "/salute/icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
