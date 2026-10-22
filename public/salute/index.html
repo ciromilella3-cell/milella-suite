@@ -2638,6 +2638,217 @@ async function forceUpdateSaluteApp() {
         <span>Menu</span>
     </button>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SINCRONIZZAZIONE CLOUD PROGETTO SALUTE - MongoDB Atlas / Server
+     Aggiunto automaticamente da Antigravity IDE
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+    'use strict';
+
+    // ── KEYS da sincronizzare (tutte quelle usate da Progetto Salute) ──
+    const SYNC_PREFIX = [
+        'activeProfile',
+        'health_profiles',
+        'profileName_',
+        'profileStats_',
+        'weightLog_',
+        'waterCount_',
+        'coffeeCount_',
+        'moodLog_',
+        'walks_',
+        'anamnesi_',
+        'pathology_',
+        'fast_start_',
+        'fast_end_',
+        'fast_type_',
+        'syncTarget_',
+        'darkMode',
+        'menuEdit_',
+        'saved_smart_shopping',
+        'last_fasting_hydration_notif',
+    ];
+
+    function isMyKey(key) {
+        return SYNC_PREFIX.some(p => key === p || key.startsWith(p));
+    }
+
+    // ── URL del server (locale o cloud) ──────────────────────────────
+    function getApiBase() {
+        // On Render / remote, use relative path
+        const loc = window.location;
+        if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1' || /^192\.168\./.test(loc.hostname)) {
+            return loc.origin;
+        }
+        return ''; // relative = same origin on Render
+    }
+
+    // ── INDICATORE VISIVO sincronizzazione ───────────────────────────
+    let _indicator = null;
+    function showSyncIndicator(state) { // 'saving' | 'ok' | 'error'
+        if (!_indicator) {
+            _indicator = document.createElement('div');
+            _indicator.style.cssText = 'position:fixed;bottom:14px;left:14px;z-index:99999;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.5px;transition:opacity 0.5s;box-shadow:0 2px 10px rgba(0,0,0,0.3);';
+            document.body.appendChild(_indicator);
+        }
+        clearTimeout(_indicator._fadeTimer);
+        if (state === 'saving') {
+            _indicator.style.background = '#1976d2';
+            _indicator.style.color = '#fff';
+            _indicator.style.opacity = '1';
+            _indicator.textContent = '☁️ Sync...';
+        } else if (state === 'ok') {
+            _indicator.style.background = '#388e3c';
+            _indicator.style.color = '#fff';
+            _indicator.style.opacity = '1';
+            _indicator.textContent = '✅ Dati Cloud Aggiornati';
+            _indicator._fadeTimer = setTimeout(() => { _indicator.style.opacity = '0'; }, 2500);
+        } else {
+            _indicator.style.background = '#d32f2f';
+            _indicator.style.color = '#fff';
+            _indicator.style.opacity = '1';
+            _indicator.textContent = '⚠️ Sync offline (locale OK)';
+            _indicator._fadeTimer = setTimeout(() => { _indicator.style.opacity = '0'; }, 4000);
+        }
+    }
+
+    // ── CARICA dati dal server e aggiorna localStorage ────────────────
+    async function loadFromCloud() {
+        try {
+            const resp = await fetch(getApiBase() + '/api/salute/data', { cache: 'no-store' });
+            if (!resp.ok) return;
+            const remote = await resp.json();
+            let loaded = 0;
+            Object.entries(remote).forEach(([k, v]) => {
+                if (!isMyKey(k)) return;
+                const stored = localStorage.getItem(k);
+                if (stored === null || stored === undefined || stored === '') {
+                    // Key missing locally → load from cloud
+                    localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+                    loaded++;
+                } else {
+                    // Both exist: for weightLog arrays, merge (cloud wins for extra entries)
+                    if (k.startsWith('weightLog_')) {
+                        try {
+                            const arrCloud = typeof v === 'string' ? JSON.parse(v) : (Array.isArray(v) ? v : []);
+                            const arrLocal = JSON.parse(stored);
+                            if (Array.isArray(arrCloud) && Array.isArray(arrLocal)) {
+                                const map = new Map();
+                                arrLocal.forEach(e => { if (e && e.date) map.set(e.date, e); });
+                                arrCloud.forEach(e => { if (e && e.date) map.set(e.date, e); });
+                                const merged = Array.from(map.values()).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                                localStorage.setItem(k, JSON.stringify(merged));
+                                loaded++;
+                            }
+                        } catch(e) {}
+                    } else if (k.startsWith('anamnesi_')) {
+                        // For anamnesi: use cloud version if it has more fields
+                        try {
+                            const cloudObj = typeof v === 'string' ? JSON.parse(v) : v;
+                            const localObj = JSON.parse(stored);
+                            if (cloudObj && typeof cloudObj === 'object') {
+                                const merged = Object.assign({}, localObj, cloudObj);
+                                // Keep local notes if longer
+                                ['patologie','farmaci','allergie','note'].forEach(f => {
+                                    if (localObj[f] && (!cloudObj[f] || localObj[f].length > cloudObj[f].length)) {
+                                        merged[f] = localObj[f];
+                                    }
+                                });
+                                localStorage.setItem(k, JSON.stringify(merged));
+                                loaded++;
+                            }
+                        } catch(e) {}
+                    }
+                }
+            });
+            if (loaded > 0) {
+                console.log('[Salute Cloud] Caricati ' + loaded + ' campi dal server. Pagina in aggiornamento...');
+                // Trigger render refresh if functions are available
+                setTimeout(() => {
+                    if (typeof renderTabs === 'function') try { renderTabs(); } catch(e) {}
+                    if (typeof updateBMI === 'function') {
+                        try {
+                            const profiles = JSON.parse(localStorage.getItem('health_profiles') || '[]');
+                            profiles.forEach(p => updateBMI(p));
+                        } catch(e) {}
+                    }
+                }, 400);
+            }
+        } catch(e) {
+            console.warn('[Salute Cloud] Caricamento offline - uso dati locali:', e.message);
+        }
+    }
+
+    // ── SALVA tutto il localStorage pertinente al server ─────────────
+    let _syncTimer = null;
+    function scheduleSyncToCloud(delay) {
+        clearTimeout(_syncTimer);
+        _syncTimer = setTimeout(syncToCloud, delay || 1500);
+    }
+
+    async function syncToCloud() {
+        const payload = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!isMyKey(key)) continue;
+            if (key.startsWith('photos_')) continue; // foto troppo grandi, skip
+            let val = localStorage.getItem(key);
+            try { val = JSON.parse(val); } catch(e) {}
+            payload[key] = val;
+        }
+        if (Object.keys(payload).length === 0) return;
+
+        showSyncIndicator('saving');
+        try {
+            const resp = await fetch(getApiBase() + '/api/salute/data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+                showSyncIndicator('ok');
+                console.log('[Salute Cloud] ✅ Sincronizzazione completata:', Object.keys(payload).length, 'chiavi');
+            } else {
+                showSyncIndicator('error');
+            }
+        } catch(e) {
+            showSyncIndicator('error');
+            console.warn('[Salute Cloud] Offline, dati salvati localmente:', e.message);
+        }
+    }
+
+    // ── INTERCETTA localStorage.setItem per auto-sync ─────────────────
+    const _origSetItem = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = function(key, value) {
+        _origSetItem(key, value);
+        if (isMyKey(key) && !key.startsWith('photos_')) {
+            scheduleSyncToCloud(1800); // debounce 1.8 secondi
+        }
+    };
+
+    // ── AVVIO: carica da cloud poi dopo 10s auto-save ─────────────────
+    window.addEventListener('DOMContentLoaded', function() {
+        // Prima carica dal cloud (riempie dati mancanti)
+        loadFromCloud().then(() => {
+            // Dopo 5 secondi, invia il merged locale al cloud
+            setTimeout(syncToCloud, 5000);
+        });
+    });
+
+    // ── Salva prima di chiudere/navigare ─────────────────────────────
+    window.addEventListener('beforeunload', function() {
+        syncToCloud();
+    });
+
+    // ── Esponi funzione globale per uso manuale ───────────────────────
+    window.saluteCloudSync = syncToCloud;
+    window.saluteCloudLoad = loadFromCloud;
+
+    console.log('[Salute Cloud] ✅ Modulo sincronizzazione cloud attivo');
+})();
+</script>
+
 </body>
 </html>
 
