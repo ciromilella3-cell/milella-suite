@@ -2012,3 +2012,17 @@ textarea.form-control {
   background-color: #fef2f2 !important;
   font-weight: 700 !important;
 }
+
+/* ===== MOBILE: schede anagrafica/medico leggibili (v13) ===== */
+.form-row .form-group { min-width: 0; }
+select[id^="select-medico-farmacia-preset"] { max-width: 100%; text-overflow: ellipsis; }
+@media (max-width: 640px) {
+  body .form-row { flex-direction: column; gap: 10px; align-items: stretch; }
+  body .form-row .form-group { flex: 1 1 auto !important; width: 100%; }
+  body div:has(> div > select[id^="select-medico-farmacia-preset"]) { flex-direction: column; align-items: stretch !important; }
+  body div:has(> select[id^="select-medico-farmacia-preset"]) { flex-direction: column; align-items: stretch !important; width: 100%; }
+  body div:has(> select[id^="select-medico-farmacia-preset"]) > span { white-space: normal; }
+  body select[id^="select-medico-farmacia-preset"] { width: 100% !important; font-size: 13px !important; padding: 8px 10px !important; }
+  body .modal-footer { flex-wrap: wrap; gap: 8px; padding: 12px 16px; }
+  body .modal-footer .btn, body .modal-footer button { flex: 1 1 auto; white-space: nowrap; }
+}
