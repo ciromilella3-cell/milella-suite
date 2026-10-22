@@ -7510,21 +7510,26 @@ function aggiornaCardBuongiornoMattino() {
   var adesso = new Date();
   var ora = adesso.getHours();
 
-  // Saluto dinamico in base all'ora
+  // 1. Riconoscimento dinamico dell'operatore autenticato
+  var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Ciro';
+  // Puliamo suffissi tipo (Admin) per un saluto elegante
+  var nomeDisplay = opNome.replace(/\(Admin\)/gi, '').trim();
+
+  // Saluto dinamico in base all'ora e all'operatore autenticato
   var salutoElem = document.getElementById('buongiorno-saluto-testo');
   var badgeElem = document.getElementById('buongiorno-orario-badge');
   if (salutoElem) {
     if (ora >= 5 && ora < 12) {
-      salutoElem.textContent = 'Buongiorno Ciro! ☀️ Buon inizio giornata!';
+      salutoElem.textContent = 'Buongiorno ' + nomeDisplay + '! ☀️ Buon inizio giornata!';
       if (badgeElem) badgeElem.textContent = '☕ Colazione & Mattino';
     } else if (ora >= 12 && ora < 15) {
-      salutoElem.textContent = 'Buon Pomeriggio Ciro! 🍲 Turno di Pranzo';
+      salutoElem.textContent = 'Buon Pomeriggio ' + nomeDisplay + '! 🍲 Turno di Pranzo';
       if (badgeElem) badgeElem.textContent = '🍲 Orario Pranzo';
     } else if (ora >= 15 && ora < 19) {
-      salutoElem.textContent = 'Pomeriggio Assistenziale 🌤️';
+      salutoElem.textContent = 'Pomeriggio Assistenziale ' + nomeDisplay + ' 🌤️';
       if (badgeElem) badgeElem.textContent = '🌤️ Pomeriggio';
     } else {
-      salutoElem.textContent = 'Buonasera Ciro! 🌙 Terapie Serali & Riposo';
+      salutoElem.textContent = 'Buonasera ' + nomeDisplay + '! 🌙 Terapie Serali & Riposo';
       if (badgeElem) badgeElem.textContent = '🌙 Orario Sera / Cena';
     }
   }
@@ -7532,7 +7537,10 @@ function aggiornaCardBuongiornoMattino() {
   var container = document.getElementById('buongiorno-chips-container');
   if (!container || !AppData || !AppData.pazienti) return;
 
-  var cardsPazientiHtml = AppData.pazienti.map(function(p) {
+  // 2. Filtro privacy: mostra SOLO i pazienti a cui l'operatore è abilitato (es. solo Rosa per M.C. Stoppelli)
+  var listaPazientiVisibili = typeof getPazientiAccessibili === 'function' ? getPazientiAccessibili() : AppData.pazienti;
+
+  var cardsPazientiHtml = listaPazientiVisibili.map(function(p) {
     var terapieMattino = (p.terapie || []).filter(function(t) {
       var f = (t.fascia || '').toLowerCase();
       var o = t.ora || '';
