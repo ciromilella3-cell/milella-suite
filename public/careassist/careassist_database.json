@@ -1,5 +1,5 @@
 {
-  "activePazienteId": "paz_aldo",
+  "activePazienteId": "paz_rosa",
   "pazienti": [
     {
       "id": "paz_aldo",
@@ -22,8 +22,9 @@
           "dosaggio": "40 mg (1 cpr gastroresistente)",
           "modo": "A DIGIUNO, 30 min prima di colazione (Protezione gastrica)",
           "cprPerScatola": 28,
-          "scorta": 26,
-          "fattoOggi": false
+          "scorta": 25,
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 102,
@@ -34,8 +35,9 @@
           "dosaggio": "1,25 mg (1 cpr rivestita)",
           "modo": "A colazione (Controllo frequenza cardiaca e pressione)",
           "cprPerScatola": 28,
-          "scorta": 26,
-          "fattoOggi": false
+          "scorta": 25,
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 103,
@@ -46,8 +48,9 @@
           "dosaggio": "100 mg (1 capsula)",
           "modo": "A colazione con acqua (Controllo neurologico)",
           "cprPerScatola": 56,
-          "scorta": 54,
-          "fattoOggi": false
+          "scorta": 53,
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 1032,
@@ -218,6 +221,48 @@
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 17 minuti! Orario previsto: 13:30 - Orario effettivo assunzione: 13:47. Rimanenza scorta: 54 cpr.",
           "operatore": "Operatore OSS / Caregiver"
+        },
+        {
+          "id": "log_1792658808289",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-10-22T08:46:48.289Z",
+          "farmacoId": 101,
+          "farmaco": "Pantoprazolo 40 mg",
+          "dosaggio": "40 mg (1 cpr gastroresistente)",
+          "orarioPrevisto": "07:30",
+          "orarioReale": "10:46",
+          "minutiRitardo": 196,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 ore e 16 min! Orario previsto: 07:30 - Orario effettivo assunzione: 10:46. Rimanenza scorta: 25 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1792658808878",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-10-22T08:46:48.877Z",
+          "farmacoId": 102,
+          "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
+          "dosaggio": "1,25 mg (1 cpr rivestita)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "10:46",
+          "minutiRitardo": 136,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 16 min! Orario previsto: 08:30 - Orario effettivo assunzione: 10:46. Rimanenza scorta: 25 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1792658810008",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-10-22T08:46:50.008Z",
+          "farmacoId": 103,
+          "farmaco": "VIMPAT 100 mg (1ª dose)",
+          "dosaggio": "100 mg (1 capsula)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "10:46",
+          "minutiRitardo": 136,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 16 min! Orario previsto: 08:30 - Orario effettivo assunzione: 10:46. Rimanenza scorta: 53 cpr.",
+          "operatore": "Ciro Milella (Admin)"
         }
       ],
       "visite": [
@@ -290,9 +335,10 @@
           "dosaggio": "1,25 mg (1 cpr rivestita con film)",
           "modo": "Al mattino a colazione (Beta-bloccante: controllo frequenza e battito cardiaco)",
           "cprPerScatola": 28,
-          "scorta": 26,
+          "scorta": 25,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 202,
@@ -303,9 +349,10 @@
           "dosaggio": "300 mg / 12,5 mg (1 cpr rivestita)",
           "modo": "Al mattino dopo colazione con acqua (Antipertensivo combinato per la pressione arteriosa)",
           "cprPerScatola": 28,
-          "scorta": 26,
+          "scorta": 25,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 203,
@@ -316,9 +363,10 @@
           "dosaggio": "25 mg (1 compressa)",
           "modo": "Al mattino (Diuretico dell'ansa per eliminazione liquidi in eccesso ed edemi)",
           "cprPerScatola": 30,
-          "scorta": 28,
+          "scorta": 27,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 204,
@@ -583,6 +631,48 @@
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 36 minuti! Orario previsto: 15:30 - Orario effettivo assunzione: 16:06. Rimanenza scorta: 18 cpr.",
           "operatore": "Operatore OSS / Caregiver"
+        },
+        {
+          "id": "log_1792658833880",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-10-22T08:47:13.880Z",
+          "farmacoId": 201,
+          "farmaco": "Bisoprololo Sandoz 1,25 mg",
+          "dosaggio": "1,25 mg (1 cpr rivestita con film)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "10:47",
+          "minutiRitardo": 167,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 47 min! Orario previsto: 08:00 - Orario effettivo assunzione: 10:47. Rimanenza scorta: 25 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1792658834905",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-10-22T08:47:14.904Z",
+          "farmacoId": 202,
+          "farmaco": "Irbesartan/Idroclorotiazide Teva 300 mg/12,5 mg",
+          "dosaggio": "300 mg / 12,5 mg (1 cpr rivestita)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "10:47",
+          "minutiRitardo": 137,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 17 min! Orario previsto: 08:30 - Orario effettivo assunzione: 10:47. Rimanenza scorta: 25 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1792658837212",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-10-22T08:47:17.211Z",
+          "farmacoId": 203,
+          "farmaco": "Lasix 25 mg (Furosemide)",
+          "dosaggio": "25 mg (1 compressa)",
+          "orarioPrevisto": "09:00",
+          "orarioReale": "10:47",
+          "minutiRitardo": 107,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 47 min! Orario previsto: 09:00 - Orario effettivo assunzione: 10:47. Rimanenza scorta: 27 cpr.",
+          "operatore": "Ciro Milella (Admin)"
         }
       ],
       "visite": [
@@ -947,7 +1037,7 @@
           "orarioReale": "11:30",
           "minutiRitardo": 240,
           "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 0 min! Orario previsto: 07:30 - Orario effettivo assunzione: 11:30. Rimanenza scorta: 49 cpr.",
+          "dettaglio": "���️ SOMMINISTRATO CON RITARDO DI 4 ore e 0 min! Orario previsto: 07:30 - Orario effettivo assunzione: 11:30. Rimanenza scorta: 49 cpr.",
           "operatore": "Operatore OSS / Caregiver"
         },
         {
@@ -1123,7 +1213,7 @@
     }
   ],
   "ultimoGiornoOperativo": "2026-10-22",
-  "lastModified": 1792656458889,
+  "lastModified": 1792659299850,
   "rosaInitializedOnce": true,
   "rosaTerapiaFoto20261017": true,
   "rosaSivastin20261017": true,
