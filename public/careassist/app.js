@@ -3303,7 +3303,7 @@ function verificaStatoOrarioFarmaco(orarioStr) {
   }
 
   // Se l'orario è passato da più di 15 minuti e non ancora preso: RITARDO / TERAPIA SALTATA!
-  if (diff <= -15) {
+  if (diff <= -5) {
     return {
       consentito: true,
       futuro: false,
@@ -3472,6 +3472,14 @@ function controllaTerapieGlobaliTuttiPazienti() {
 }
 
 // Chiusura allarme da parte dell'utente: arresta il suono e mette in pausa per 5 minuti
+function chiudiModalAllarmeSenzaSnooze() {
+  const modal = document.getElementById('modal-allarme-terapie');
+  if (modal) modal.classList.remove('active');
+  allarmeTerapieAttivo = false;
+  // Solo 15 secondi di respiro per navigare e cliccare senza che il popup si riapra istantaneamente
+  allarmeTerapieSnoozeFinoA = Date.now() + 15000;
+}
+
 function chiudiAllarmeTerapieGlobali() {
   const modal = document.getElementById('modal-allarme-terapie');
   if (modal) modal.classList.remove('active');
@@ -3481,7 +3489,7 @@ function chiudiAllarmeTerapieGlobali() {
 }
 
 function vaiACartellaPazienteDaAllarme(pazId, farmacoId) {
-  chiudiAllarmeTerapieGlobali();
+  chiudiModalAllarmeSenzaSnooze();
   cambiaPaziente(pazId);
   // Passa automaticamente alla scheda terapie
   var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
@@ -3493,7 +3501,7 @@ function vaiACartellaPazienteDaAllarme(pazId, farmacoId) {
 }
 
 function vaiADirettoFarmacoDaAllarme(pazId, farmacoId) {
-  chiudiAllarmeTerapieGlobali();
+  chiudiModalAllarmeSenzaSnooze();
   cambiaPaziente(pazId);
   var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
   if (tabBtn) tabBtn.click();
