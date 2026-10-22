@@ -3166,6 +3166,27 @@
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').then(reg => {
           console.log('CareAssist Service Worker registrato:', reg.scope);
+          // Controllo aggiornamenti istantaneo: controlla il server ogni volta che si apre o torna in primo piano
+          reg.update();
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              reg.update();
+            }
+          });
+
+          // Se c'è una nuova versione del codice pronta, ricarica automaticamente e applica
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('Nuova versione rilevata: aggiornamento immediato in corso...');
+                  window.location.reload();
+                }
+              });
+            }
+          });
+
           // Richiesta automatica o su interazione per le Notifiche di Sistema (Lock Screen / Standby)
           if ('Notification' in window && Notification.permission === 'default') {
             setTimeout(() => {

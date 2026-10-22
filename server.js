@@ -904,9 +904,23 @@ app.use('/careassist', (req, res, next) => {
     const p = decodeURIComponent(req.path || '');
     if (p.toLowerCase() === '/manifest.json') return next();
     if (CAREASSIST_BLOCKED.test(p)) return res.status(403).send('Accesso negato');
+    
+    // Per aggiornamenti immediati su smartphone: niente cache su HTML e Service Worker
+    if (p.endsWith('.html') || p === '' || p === '/' || p.endsWith('/sw.js') || p.endsWith('/auth_token.js')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+    }
     next();
 });
-app.use('/careassist', express.static(careAssistDir, { dotfiles: 'deny' }));
+app.use('/careassist', express.static(careAssistDir, {
+    dotfiles: 'deny',
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html') || filePath.endsWith('sw.js')) {
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        }
+    }
+}));
 
 // API sincronizzazione dati CareAssist Pro
 
