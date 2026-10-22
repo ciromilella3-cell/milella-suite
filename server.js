@@ -739,8 +739,26 @@ app.post('/api/inventory/prestito', (req, res) => {
     }
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(__dirname));
+// ==============================================================================
+// SICUREZZA GLOBALE: impedisce il download diretto di codice server, dati,
+// configurazioni, eseguibili e script. Deve stare PRIMA dei mount statici.
+// I dati restano accessibili solo tramite le API /api/...
+// ==============================================================================
+const STATIC_ALLOWED_JSON = new Set(['manifest.json', 'materiali_db.json']);
+const STATIC_BLOCKED_EXT = /\.(json|exe|bat|cmd|vbs|ps1|cs|log|zip|bak|tmp|env|ini|db|sqlite|hta)$/i;
+const STATIC_BLOCKED_PATH = /(^|\/)(\.git|\.env|node_modules|Dati_Clinici_USB)(\/|$)|^\/(server[^/]*\.js|index\.js)$|(^|\/)server_smartphone\.js$|\.tmp\.\d+$/i;
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    let p;
+    try { p = decodeURIComponent(req.path || ''); } catch (e) { return res.status(400).send('Richiesta non valida'); }
+    const base = p.split('/').pop().toLowerCase();
+    if (STATIC_BLOCKED_PATH.test(p)) return res.status(403).send('Accesso negato');
+    if (STATIC_BLOCKED_EXT.test(p) && !STATIC_ALLOWED_JSON.has(base)) return res.status(403).send('Accesso negato');
+    next();
+});
+
+app.use(express.static(path.join(__dirname, 'public'), { dotfiles: 'deny' }));
+app.use(express.static(__dirname, { dotfiles: 'deny' }));
 
 // MedNutri Pro
 const medNutriDir = fs.existsSync(path.join(__dirname, 'public', 'mednutri')) 
