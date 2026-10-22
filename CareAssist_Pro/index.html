@@ -1094,15 +1094,15 @@
 
         </div>
 
-        <!-- FOOTER MODALE -->
-        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; flex-shrink:0; background:#f8fafc; border-top:1px solid #e2e8f0; padding:12px 18px;">
-          <button type="button" class="btn btn-outline" style="color:#dc2626; border-color:#fca5a5; background:#fef2f2;" onclick="closeModal('modal-modifica-anagrafica'); eliminaPazienteAttivo();" title="Elimina definitivamente la cartella clinica di questo assistito">
+        <!-- FOOTER MODALE RESPONSIVE AD ALTA ERGONOMIA SMARTPHONE -->
+        <div class="modal-footer modal-footer-anagrafica">
+          <div class="footer-actions-primary">
+            <button type="button" class="btn btn-outline btn-annulla-anagrafica" onclick="closeModal('modal-modifica-anagrafica')">Annulla</button>
+            <button type="submit" class="btn btn-primary btn-salva-anagrafica">💾 Salva Modifiche</button>
+          </div>
+          <button type="button" class="btn btn-outline btn-elimina-anagrafica" onclick="closeModal('modal-modifica-anagrafica'); eliminaPazienteAttivo();" title="Elimina definitivamente la cartella clinica di questo assistito">
             🗑️ Elimina Cartella Assistito
           </button>
-          <div style="display:flex; gap:8px;">
-            <button type="button" class="btn btn-outline" onclick="closeModal('modal-modifica-anagrafica')">Annulla</button>
-            <button type="submit" class="btn btn-primary" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-weight:800;">💾 Salva Modifiche Anagrafica</button>
-          </div>
         </div>
       </form>
     </div>

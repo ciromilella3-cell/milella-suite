@@ -2214,3 +2214,99 @@ select[id^="select-medico-farmacia-preset"] {
     border-radius: 8px !important;
   }
 }
+
+/* ==========================================================================
+   FOOTER MODALE ANAGRAFICA AD ALTA ERGONOMIA (DESKTOP & SMARTPHONE)
+   ========================================================================== */
+.modal-footer-anagrafica {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+  background: #f8fafc !important;
+  border-top: 1px solid #e2e8f0 !important;
+  padding: 14px 20px !important;
+  gap: 12px !important;
+}
+
+.modal-footer-anagrafica .footer-actions-primary {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.modal-footer-anagrafica .btn-salva-anagrafica {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  padding: 10px 20px !important;
+  font-size: 14px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3) !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.modal-footer-anagrafica .btn-annulla-anagrafica {
+  padding: 10px 18px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: #475569 !important;
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+}
+
+.modal-footer-anagrafica .btn-elimina-anagrafica {
+  color: #dc2626 !important;
+  border: 1.5px solid #fca5a5 !important;
+  background: #fef2f2 !important;
+  padding: 9px 14px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+@media (max-width: 640px) {
+  .modal-footer-anagrafica {
+    flex-direction: column !important;
+    padding: 12px 14px 16px !important;
+    gap: 10px !important;
+    background: #ffffff !important;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.05) !important;
+  }
+
+  .modal-footer-anagrafica .footer-actions-primary {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
+  }
+
+  .modal-footer-anagrafica .btn-annulla-anagrafica {
+    flex: 1 1 35% !important;
+    padding: 12px 10px !important;
+    font-size: 13.5px !important;
+    text-align: center !important;
+  }
+
+  .modal-footer-anagrafica .btn-salva-anagrafica {
+    flex: 2 1 65% !important;
+    padding: 12px 14px !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  .modal-footer-anagrafica .btn-elimina-anagrafica {
+    width: 100% !important;
+    padding: 10px 12px !important;
+    font-size: 12.5px !important;
+    text-align: center !important;
+    margin-top: 2px !important;
+    opacity: 0.9 !important;
+  }
+}
