@@ -1899,3 +1899,82 @@ textarea.form-control {
   font-style: italic;
   line-height: 1.3;
 }
+
+/* ==========================================================================
+   ADATTAMENTO RESPONSIVO PERFETTO SCHEDA MODIFICA FARMACO SU SMARTPHONE
+   ========================================================================== */
+@media (max-width: 680px) {
+  #modal-modifica-farmaco .modal-card {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    margin: 8px auto !important;
+    border-radius: 18px !important;
+  }
+
+  #modal-modifica-farmaco .modal-header {
+    padding: 12px 14px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  #modal-modifica-farmaco .modal-title {
+    font-size: 15px !important;
+    line-height: 1.3 !important;
+  }
+
+  #modal-modifica-farmaco .modal-body {
+    padding: 14px 12px !important;
+  }
+
+  /* FORZA IL WRAP VERTICALE DEI CAMPI AFFIANCATI SU SMARTPHONE */
+  #modal-modifica-farmaco .form-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+
+  #modal-modifica-farmaco .form-row .form-group {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex: none !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Riga compatta per le scorte su smartphone (3 colonne o 2+1 flessibili) */
+  #modal-modifica-farmaco .form-row.row-scorte-mobile {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  #modal-modifica-farmaco .form-row.row-scorte-mobile .form-group {
+    flex: 1 1 calc(50% - 8px) !important;
+    width: auto !important;
+  }
+
+  #modal-modifica-farmaco .form-row.row-scorte-mobile .form-group.col-full-mobile {
+    flex: 1 1 100% !important;
+  }
+
+  #modal-modifica-farmaco .form-control {
+    font-size: 14px !important;
+    height: 42px !important;
+  }
+
+  #modal-modifica-farmaco textarea.form-control {
+    height: auto !important;
+    min-height: 75px !important;
+  }
+
+  #modal-modifica-farmaco .modal-footer {
+    padding: 12px 14px !important;
+    gap: 8px !important;
+  }
+
+  #modal-modifica-farmaco .modal-footer button {
+    padding: 10px 14px !important;
+    font-size: 13.5px !important;
+  }
+}
