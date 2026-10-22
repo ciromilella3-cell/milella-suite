@@ -7632,23 +7632,48 @@ function aggiornaCardBuongiornoMattino() {
   // Puliamo suffissi tipo (Admin) per un saluto elegante
   var nomeDisplay = opNome.replace(/\(Admin\)/gi, '').trim();
 
-  // Saluto dinamico in base all'ora e all'operatore autenticato
+  // Saluto e bottone dinamico in base all'ora e all'operatore autenticato
   var salutoElem = document.getElementById('buongiorno-saluto-testo');
   var badgeElem = document.getElementById('buongiorno-orario-badge');
-  if (salutoElem) {
-    if (ora >= 5 && ora < 12) {
-      salutoElem.textContent = 'Buongiorno ' + nomeDisplay + '! ☀️ Buon inizio giornata!';
-      if (badgeElem) badgeElem.textContent = '☕ Colazione & Mattino';
-    } else if (ora >= 12 && ora < 15) {
-      salutoElem.textContent = 'Buon Pomeriggio ' + nomeDisplay + '! 🍲 Turno di Pranzo';
-      if (badgeElem) badgeElem.textContent = '🍲 Orario Pranzo';
-    } else if (ora >= 15 && ora < 19) {
-      salutoElem.textContent = 'Pomeriggio Assistenziale ' + nomeDisplay + ' 🌤️';
-      if (badgeElem) badgeElem.textContent = '🌤️ Pomeriggio';
-    } else {
-      salutoElem.textContent = 'Buonasera ' + nomeDisplay + '! 🌙 Terapie Serali & Riposo';
-      if (badgeElem) badgeElem.textContent = '🌙 Orario Sera / Cena';
-    }
+  var routineBtn = document.querySelector('button[onclick="avviaRoutineMattino()"]');
+
+  var fasciaCorrente = 'mattino'; // mattino, pranzo, pomeriggio, sera
+  var etichettaFascia = 'Colazione & Mattino';
+  var iconaFascia = '☕';
+  var testoBottone = '☕ Avvia Routine Mattino';
+
+  if (ora >= 5 && ora < 12) {
+    fasciaCorrente = 'mattino';
+    etichettaFascia = 'Colazione & Mattino';
+    iconaFascia = '☕';
+    testoBottone = '☕ Avvia Routine Colazione';
+    if (salutoElem) salutoElem.textContent = 'Buongiorno ' + nomeDisplay + '! ☀️ Buon inizio giornata!';
+    if (badgeElem) badgeElem.textContent = '☕ Colazione & Mattino';
+  } else if (ora >= 12 && ora < 15) {
+    fasciaCorrente = 'pranzo';
+    etichettaFascia = 'Turno Pranzo';
+    iconaFascia = '🍲';
+    testoBottone = '🍲 Avvia Routine Pranzo';
+    if (salutoElem) salutoElem.textContent = 'Buon Pomeriggio ' + nomeDisplay + '! 🍲 Turno di Pranzo';
+    if (badgeElem) badgeElem.textContent = '🍲 Orario Pranzo';
+  } else if (ora >= 15 && ora < 19) {
+    fasciaCorrente = 'pomeriggio';
+    etichettaFascia = 'Turno Pomeridiano';
+    iconaFascia = '🌤️';
+    testoBottone = '🌤️ Avvia Routine Pomeriggio';
+    if (salutoElem) salutoElem.textContent = 'Pomeriggio Assistenziale ' + nomeDisplay + ' 🌤️';
+    if (badgeElem) badgeElem.textContent = '🌤️ Pomeriggio';
+  } else {
+    fasciaCorrente = 'sera';
+    etichettaFascia = 'Cena & Notte';
+    iconaFascia = '🌙';
+    testoBottone = '🌙 Avvia Routine Sera / Notte';
+    if (salutoElem) salutoElem.textContent = 'Buonasera ' + nomeDisplay + '! 🌙 Terapie Serali & Riposo';
+    if (badgeElem) badgeElem.textContent = '🌙 Orario Sera / Cena';
+  }
+
+  if (routineBtn) {
+    routineBtn.innerHTML = '<span>' + iconaFascia + '</span> ' + testoBottone;
   }
 
   var container = document.getElementById('buongiorno-chips-container');
@@ -7658,28 +7683,54 @@ function aggiornaCardBuongiornoMattino() {
   var listaPazientiVisibili = typeof getPazientiAccessibili === 'function' ? getPazientiAccessibili() : AppData.pazienti;
 
   var cardsPazientiHtml = listaPazientiVisibili.map(function(p) {
-    var terapieMattino = (p.terapie || []).filter(function(t) {
+    // Filtro terapie per fascia oraria corrente
+    var terapieFascia = (p.terapie || []).filter(function(t) {
       var f = (t.fascia || '').toLowerCase();
       var o = t.ora || '';
-      return f.indexOf('mattina') >= 0 || f.indexOf('digiuno') >= 0 || f.indexOf('colazione') >= 0 || (o >= '06:00' && o <= '10:30');
+      if (fasciaCorrente === 'mattino') {
+        return f.indexOf('mattina') >= 0 || f.indexOf('digiuno') >= 0 || f.indexOf('colazione') >= 0 || (o >= '06:00' && o <= '11:00');
+      } else if (fasciaCorrente === 'pranzo') {
+        return f.indexOf('pranzo') >= 0 || (o >= '11:30' && o <= '14:45');
+      } else if (fasciaCorrente === 'pomeriggio') {
+        return f.indexOf('pomeriggio') >= 0 || (o >= '15:00' && o <= '18:30');
+      } else {
+        return f.indexOf('sera') >= 0 || f.indexOf('cena') >= 0 || f.indexOf('notte') >= 0 || f.indexOf('dormire') >= 0 || (o >= '18:45' || o < '06:00');
+      }
     });
 
-    var fatteMattino = terapieMattino.filter(function(t) { return t.fattoOggi; }).length;
-    var totMattino = terapieMattino.length;
-    var tutteFatte = totMattino > 0 && fatteMattino === totMattino;
-    var stAuto = tutteFatte ? '✅ Colazione Completata' : (totMattino > 0 ? ('☕ ' + fatteMattino + '/' + totMattino + ' Terapie Mattino') : 'Nessuna terapia mattutina');
+    var fatteFascia = terapieFascia.filter(function(t) { return t.fattoOggi; }).length;
+    var totFascia = terapieFascia.length;
+    var tutteFatte = totFascia > 0 && fatteFascia === totFascia;
+    var stAuto = tutteFatte ? ('✅ ' + etichettaFascia + ' Completata') : (totFascia > 0 ? (iconaFascia + ' ' + fatteFascia + '/' + totFascia + ' Terapie ' + etichettaFascia) : 'Nessuna terapia in questa fascia');
+
+    // Controllo scorte farmaci in esaurimento (<= 3 compresse/dosi)
+    var farmaciScortaBassa = (p.terapie || []).filter(function(t) {
+      return typeof t.scorta === 'number' && t.scorta <= 3;
+    });
 
     var pNomeCompleto = (p.nome || 'Paziente');
     var isAttivo = (p.id === AppData.activePazienteId);
 
-    return '<div style="background: ' + (isAttivo ? '#ffffff' : 'rgba(255,255,255,0.7)') + '; border: 1.5px solid ' + (isAttivo ? '#d97706' : '#fde68a') + '; border-radius: 12px; padding: 10px 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: ' + (isAttivo ? '0 2px 6px rgba(217,119,6,0.15)' : 'none') + ';" onclick="cambiaPazienteDaBuongiorno(\'' + p.id + '\')">' +
+    var cardStyle = isAttivo
+      ? 'background: #ffffff; border: 2.5px solid #2563eb; border-radius: 12px; padding: 11px 13px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(37,99,235,0.22); position: relative;'
+      : 'background: rgba(255,255,255,0.78); border: 1.5px solid #fde68a; border-radius: 12px; padding: 10px 12px; cursor: pointer; transition: all 0.2s ease; position: relative;';
+
+    return '<div style="' + cardStyle + '" onclick="cambiaPazienteDaBuongiorno(\'' + p.id + '\')">' +
       '<div style="display:flex; justify-content:space-between; align-items:center; gap: 8px;">' +
-        '<b style="font-size: 13.5px; color: #0f172a; word-break: break-word;">👤 ' + pNomeCompleto + '</b>' +
+        '<div style="display:flex; align-items:center; gap: 6px; flex-wrap: wrap;">' +
+          '<b style="font-size: 13.5px; color: #0f172a; word-break: break-word;">👤 ' + pNomeCompleto + '</b>' +
+          (isAttivo ? '<span style="font-size: 9.5px; font-weight: 800; background: #2563eb; color: #ffffff; padding: 1.5px 6px; border-radius: 6px; letter-spacing: 0.3px;">IN VISITA ORA</span>' : '') +
+        '</div>' +
         '<span style="font-size: 10.5px; font-weight: 800; color: ' + (tutteFatte ? '#15803d' : '#b45309') + '; white-space: nowrap; flex-shrink: 0;">' + (tutteFatte ? '✓ OK' : 'Da dare') + '</span>' +
       '</div>' +
       '<div style="font-size: 11.5px; color: #475569; margin-top: 4px; font-weight: 600;">' +
         stAuto +
       '</div>' +
+      (farmaciScortaBassa.length > 0 ? (
+        '<div style="margin-top: 5px; font-size: 10.5px; font-weight: 700; color: #dc2626; background: #fee2e2; border-radius: 6px; padding: 2px 6px; display: inline-flex; align-items: center; gap: 4px;">' +
+          '<span>⚠️</span> <span>Scorte in esaurimento (' + farmaciScortaBassa.length + ')</span>' +
+        '</div>'
+      ) : '') +
     '</div>';
   }).join('');
 
@@ -7690,23 +7741,23 @@ function cambiaPazienteDaBuongiorno(pazId) {
   cambiaPaziente(pazId);
   var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
   if (tabBtn) tabBtn.click();
-  showToast('Aperto piano terapeutico di ' + (getActivePaziente() ? getActivePaziente().nome.split(' ')[0] : 'assistito'));
+  showToast('Aperto piano terapeutico di ' + (getActivePaziente() ? getActivePaziente().nome : 'assistito'));
 }
 
 function avviaRoutineMattino() {
   var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
   if (tabBtn) tabBtn.click();
   setTimeout(function() {
-    var primoFarmacoMattino = document.querySelector('#terapie-table-body tr');
-    if (primoFarmacoMattino) {
-      primoFarmacoMattino.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      primoFarmacoMattino.classList.add('terapia-row-highlight');
+    var primoFarmaco = document.querySelector('#terapie-table-body tr');
+    if (primoFarmaco) {
+      primoFarmaco.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      primoFarmaco.classList.add('terapia-row-highlight');
       setTimeout(function() {
-        primoFarmacoMattino.classList.remove('terapia-row-highlight');
+        primoFarmaco.classList.remove('terapia-row-highlight');
       }, 4000);
     }
   }, 250);
-  showToast('☕ Routine del mattino avviata! Ecco i farmaci da verificare per colazione.');
+  showToast('📋 Routine del turno avviata! Ecco le terapie da verificare.');
 }
 
 function chiudiCardBuongiorno() {
