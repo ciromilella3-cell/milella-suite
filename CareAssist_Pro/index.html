@@ -1310,6 +1310,7 @@
                   <option value="giornaliera">Tutti i giorni (Quotidiana)</option>
                   <option value="quindicinale_15_30">📅 Ogni 15 giorni (il 15 e il 30 del mese)</option>
                   <option value="alternati">A giorni alterni (Un giorno sì / no)</option>
+                  <option value="alternata_mezza_intera">🌓 Dose alternata: 1/2 cpr un giorno e 1 cpr il giorno dopo</option>
                   <option value="settimanale">Una volta a settimana (7 giorni)</option>
                   <option value="mensile">Una volta al mese (il 1° del mese)</option>
                   <option value="bisogno">Al bisogno (Sintomatico SOS)</option>
@@ -1335,13 +1336,29 @@
             </div>
 
             <!-- DOSAGGI, SCORTE E ALERT -->
-            <div class="form-row" style="margin-bottom:0; align-items:flex-end;">
+            <div class="form-row" style="margin-bottom:12px; align-items:flex-end;">
               <div class="form-group" style="flex:1.4; margin-bottom:0;">
                 <label class="form-label" title="Specificare la concentrazione o la dose per assunzione">
                   Dosaggio Unitario <span style="font-size:10px; color:#64748b; text-transform:none;">(es. 2,5 mg / 1 cpr)</span>
                 </label>
                 <input type="text" class="form-control" id="edit-farm-dosaggio" required placeholder="Es. 2,5 mg (1 cpr)">
               </div>
+              <div class="form-group" style="flex:1.4; margin-bottom:0;">
+                <label class="form-label" style="color:#0369a1; font-weight:800;">
+                  💊 Quantità per Somministrazione:
+                </label>
+                <select class="form-control" id="edit-farm-frazione-quota" style="font-weight:700; color:#0369a1; height:42px; border-color:#7dd3fc; background:#f0f9ff;">
+                  <option value="1">1 compressa intera (1 cpr)</option>
+                  <option value="0.5">1/2 compressa (Mezza dose - 0,5 cpr)</option>
+                  <option value="0.25">1/4 compressa (Un quarto - 0,25 cpr)</option>
+                  <option value="1.5">1 compressa e mezza (1,5 cpr)</option>
+                  <option value="2">2 compresse (2 cpr)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- SCORTE, SCATOLE E ALERT -->
+            <div class="form-row" style="margin-bottom:0; align-items:flex-end;">
               <div class="form-group" style="flex:1; margin-bottom:0;">
                 <label class="form-label">Cpr / Scatola</label>
                 <input type="number" class="form-control" id="edit-farm-cpr-scatola" min="1" placeholder="28">
@@ -1426,6 +1443,42 @@
               <span style="font-size:11px; color:#64748b; font-weight:600;">Testo espandibile</span>
             </div>
             <textarea class="form-control" id="edit-farm-modo" required rows="3" placeholder="Es. A colazione (Beta-bloccante: controllo frequenza cardiaca). Assumere con un bicchiere d'acqua." style="font-size:13.5px; line-height:1.5; padding:10px 12px; min-height:75px; resize:vertical; font-family:inherit;"></textarea>
+          </div>
+
+          <!-- SEZIONE 5: FONTE DELLA PRESCRIZIONE & STORICO MODIFICHE CLINICHE -->
+          <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:14px; padding:14px 16px; margin-top:16px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:16px;">🩺</span>
+                <span style="font-weight:800; color:#334155; font-size:12.5px; text-transform:uppercase; letter-spacing:0.3px;">
+                  Fonte Prescrizione & Tracciabilità Variazione Medica
+                </span>
+              </div>
+              <span style="font-size:11px; background:#e2e8f0; color:#475569; padding:2px 8px; border-radius:10px; font-weight:700;">
+                Audit Trail
+              </span>
+            </div>
+            
+            <div class="form-row" style="margin-bottom:10px;">
+              <div class="form-group" style="flex:1.2; margin-bottom:0;">
+                <label class="form-label" style="font-size:11px;">Chi dispone la variazione?</label>
+                <select class="form-control" id="edit-farm-fonte-tipo" style="font-weight:700; height:38px;">
+                  <option value="visita_specialistica">🩺 Visita Specialistica (es. Cardiologo / Geriatra / Neurologo)</option>
+                  <option value="medico_famiglia">👨‍⚕️ Medico di Famiglia / MMG</option>
+                  <option value="dimissione_ospedaliera">🏥 Dimissione Ospedaliera / P.S.</option>
+                  <option value="caregiver">👤 Familiare / Caregiver (Rettifica oraria/pratica)</option>
+                </select>
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label" style="font-size:11px;">Nome Medico / Specialista</label>
+                <input type="text" class="form-control" id="edit-farm-medico-nome" placeholder="Es. Dott. Cardiologo / Dr.ssa Potenza" style="height:38px;">
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="font-size:11px;">Motivazione della Modifica / Note di Visita:</label>
+              <input type="text" class="form-control" id="edit-farm-motivo-modifica" placeholder="Es. Visita cardiologica del 22/10: rimodulata dose per controllo pressione arteriosa" style="font-size:12.5px; height:38px;">
+            </div>
           </div>
 
         </div>

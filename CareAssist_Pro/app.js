@@ -428,7 +428,7 @@ function getTerapieRosaFoto() {
     mk(303, '08:00', 'Mattina (Colazione)', 'DIAMICRON 60 mg RM', 'Gliclazide', '60 mg (1 cpr rilascio modificato)', 'A colazione, non masticare (Diabete) - rischio ipoglicemia con insulina', 30),
     mk(304, '08:00', 'Mattina (Colazione)', 'FORXIGA 10 mg', 'Dapagliflozin', '10 mg (1 cpr)', 'Al mattino con acqua (Diabete / cuore / reni)', 28),
     mk(305, '08:00', 'Mattina (Colazione)', 'CONGESCOR 2,5 mg', 'Bisoprololo', '2,5 mg (1 cpr)', 'A colazione (Beta-bloccante: frequenza cardiaca)', 28),
-    mk(306, '08:00', 'Mattina (Colazione)', 'TRIATEC 5 mg', 'Ramipril', '5 mg (1 cpr)', 'A colazione con acqua (Pressione arteriosa)', 14),
+    Object.assign(mk(306, '08:00', 'Mattina (Colazione)', 'TRIATEC 5 mg', 'Ramipril', '5 mg (Dose alternata: ½ cpr e 1 cpr)', 'A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno dopo su indicazione medica', 14), { cadenzaTipo: 'alternata_mezza_intera', quantitaQuota: 0.5, dataInizioAlterni: '2026-10-18', ultimaModificaClinica: { data: '22/10/2026', fonte: 'Visita Specialistica', medico: 'Cardiologo', motivo: 'Alternanza mezza compressa e una compressa per modulazione pressoria' } }),
     mk(307, '08:30', 'Mattina (Colazione)', 'LASIX 25 mg', 'Furosemide', '25 mg (1 cpr)', 'Al mattino (Diuretico: edemi / scompenso)', 30),
     mk(308, '12:30', 'Pranzo', 'SINEMET 100+25 mg (2ª dose)', 'Levodopa + Carbidopa', '100/25 mg (1 cpr)', '30 min prima di pranzo (Parkinson)', 50),
     mk(314, '13:00', 'Pranzo', 'AVERELIX 75 mg', 'Clopidogrel', '75 mg (1 cpr rivestita)', 'A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare)', 28),
@@ -630,6 +630,25 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     rosaFoto.registrazioni = (rosaFoto.registrazioni || []).filter(r => !String(r.tipo || '').startsWith('farmaco'));
   }
   // Aggiunta una-tantum Sivastin 20 mg (17/10/2026)
+  // Configurazione automatica schema alternato Triatec per Rosa Annunziata
+  if (rosaFoto && !AppData.rosaTriatecAlternato20261022) {
+    AppData.rosaTriatecAlternato20261022 = true;
+    var triatecRosa = (rosaFoto.terapie || []).find(function(t) { return (t.farmaco || '').toUpperCase().indexOf('TRIATEC') >= 0; });
+    if (triatecRosa) {
+      triatecRosa.cadenzaTipo = 'alternata_mezza_intera';
+      triatecRosa.quantitaQuota = 0.5;
+      triatecRosa.dosaggio = '5 mg (Dose alternata: ½ cpr e 1 cpr)';
+      triatecRosa.modo = 'A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno successivo (Pressione arteriosa)';
+      triatecRosa.dataInizioAlterni = '2026-10-18';
+      triatecRosa.ultimaModificaClinica = {
+        data: '22/10/2026',
+        fonte: 'Visita Specialistica',
+        medico: 'Cardiologo',
+        motivo: 'Alternanza ½ cpr e 1 cpr a giorni alterni per controllo pressione'
+      };
+    }
+  }
+
   if (rosaFoto && !AppData.rosaSivastin20261017) {
     AppData.rosaSivastin20261017 = true;
     if (!(rosaFoto.terapie || []).some(t => t.id === 313)) {
@@ -2833,7 +2852,7 @@ function checkFarmaciScorteAlert() {
   const inAllarme = terapie.filter(t => {
     const scorta = typeof t.scorta !== 'undefined' ? t.scorta : 0;
     const sogliaAlert = Math.min(30, Math.max(1, parseInt(t.giorniAlert) || 7));
-    const giorniAutonomia = scorta > 0 ? scorta : 0;
+    const giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
     return giorniAutonomia <= sogliaAlert;
   });
 
@@ -2848,10 +2867,11 @@ function checkFarmaciScorteAlert() {
     const scorta = typeof t.scorta !== 'undefined' ? t.scorta : 0;
     const soglia = Math.min(30, Math.max(1, parseInt(t.giorniAlert) || 7));
     const isZero = scorta <= 0;
+    const giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
     let dataTermineStr = 'Esaurito';
-    if (scorta > 0) {
+    if (giorniAutonomia > 0) {
       const d = new Date();
-      d.setDate(d.getDate() + scorta);
+      d.setDate(d.getDate() + giorniAutonomia);
       dataTermineStr = d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
     }
     const bgPill = isZero ? '#fee2e2' : '#fef3c7';
@@ -2863,7 +2883,7 @@ function checkFarmaciScorteAlert() {
       <div style="background:${bgPill}; border:1px solid ${borderPill}; color:${textPill}; border-radius:8px; padding:6px 12px; display:inline-flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700;">
         <span>${iconPill} <b>${t.farmaco}</b></span>
         <span style="background:rgba(255,255,255,0.85); padding:2px 6px; border-radius:6px; font-size:11px;">
-          ${isZero ? 'ESAURITO (0 cpr)' : `Autonomia: <b>${scorta} gg</b> (Soglia alert: ${soglia} gg) • Fine: ${dataTermineStr}`}
+          ${isZero ? 'ESAURITO (0 cpr)' : `Autonomia: <b>${giorniAutonomia} gg</b> (${scorta} cpr) • Fine: ${dataTermineStr}`}
         </span>
       </div>`;
   }).join(' ');
@@ -2977,8 +2997,9 @@ function renderTerapie() {
   const canEdit = (role === 'admin') || (localStorage.getItem('milella_can_edit_terapie') === 'true');
 
   const html = (p.terapie || []).map(t => {
-    // Calcolo giorni autonomia e data presunta termine scorta
-    const giorniAutonomia = t.scorta > 0 ? t.scorta : 0;
+    // Calcolo giorni autonomia e data presunta termine scorta considerando dosi frazionate/alternate
+    const giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
+    const consumoGiornaliero = calcolaConsumoGiornalieroFarmaco(t);
     
     // Calcolo Data Presunta Termine Capsule esatta
     let dataTermineStr = 'Esaurito';
@@ -3013,6 +3034,13 @@ function renderTerapie() {
       <tr>
         <td>
   ${(() => {
+    if (t.cadenzaTipo === 'alternata_mezza_intera') {
+      const doseAlt = getDoseOdiernaAlternata(t);
+      const bgDose = doseAlt.isMezza ? '#fef3c7' : '#dcfce7';
+      const colDose = doseAlt.isMezza ? '#b45309' : '#15803d';
+      const iconDose = doseAlt.isMezza ? '🌓' : '🌕';
+      return `<span class="badge" style="background:${bgDose}; color:${colDose}; font-weight:800; border:1px solid ${colDose};">${iconDose} OGGI: ${doseAlt.testo}</span> <b>${t.ora}</b>`;
+    }
     if (t.cadenzaTipo === 'alterni') {
       if (!isTerapiaPrevistaOggi(t)) {
         return `<span class="badge" style="background:#e2e8f0; color:#475569; font-weight:700;">🔁 Giorni alterni</span><br><small style="color:#64748b; font-size:10.5px;">Non prevista oggi (tocca domani)</small>`;
@@ -3034,6 +3062,7 @@ function renderTerapie() {
           <div class="audit-pill-clickable" onclick="mostraAuditFarmaco(${t.id})" title="Clicca per aprire la tracciabilità e la cronologia">
             <b style="color:var(--primary); font-size:14.5px; text-decoration: underline; text-decoration-color: rgba(37,99,235,0.4);">${t.farmaco}</b>
             <span style="font-size:11px; margin-left:4px;" title="Storico">🔍</span>
+            ${t.ultimaModificaClinica ? `<span style="display:inline-block; font-size:10px; font-weight:800; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:1px 6px; border-radius:6px; margin-left:4px;" title="${t.ultimaModificaClinica.motivo || ''}">🩺 Agg. ${t.ultimaModificaClinica.fonte || 'Medico'} (${t.ultimaModificaClinica.data || ''})</span>` : ''}
             ${t.principio ? `<br><small style="color:#64748b;">Principio: ${t.principio}</small>` : ''}
           </div>
         </td>
@@ -3535,13 +3564,27 @@ async function toggleFarmacoConScarico(id) {
     const inRitardo = checkOrario.inRitardo;
     const minutiRitardo = checkOrario.minutiRitardo || 0;
 
-    // Si somministra: SCALARE 1 COMPRESSA DALLA SCORTA
+    // Si somministra: SCALARE LA DOSE EFFETTIVA DALLA SCORTA (Supporta 0.5 cpr, 1 cpr, ecc.)
     t.fattoOggi = true;
     delete t.saltatoOggi;
     delete t.motivoSalto;
-    if (t.scorta > 0) {
-      t.scorta--;
+
+    var quantitaDoseScarico = 1;
+    var infoDoseDettaglio = '1 compressa';
+
+    if (t.cadenzaTipo === 'alternata_mezza_intera') {
+      var doseAlt = getDoseOdiernaAlternata(t);
+      quantitaDoseScarico = doseAlt.quantita;
+      infoDoseDettaglio = doseAlt.testo;
+    } else {
+      quantitaDoseScarico = parseFloat(t.quantitaQuota) || calcolaConsumoGiornalieroFarmaco(t) || 1;
+      infoDoseDettaglio = quantitaDoseScarico === 0.5 ? '½ compressa (0,5 cpr)' : (quantitaDoseScarico + ' cpr');
     }
+
+    if (t.scorta > 0) {
+      t.scorta = Math.max(0, Math.round((t.scorta - quantitaDoseScarico) * 100) / 100);
+    }
+    t.ultimaDoseSomministrata = quantitaDoseScarico;
 
     // Registra nel diario OSS con dettagli tracciabili
     let tipoLog = 'farmaco';
@@ -3588,7 +3631,8 @@ async function toggleFarmacoConScarico(id) {
       t.fattoOggi = false;
       delete t.saltatoOggi;
       delete t.motivoSalto;
-      t.scorta++;
+      var qtaRipristino = t.ultimaDoseSomministrata || parseFloat(t.quantitaQuota) || 1;
+      t.scorta = Math.round((t.scorta + qtaRipristino) * 100) / 100;
 
       // Registra l'annullamento per tracciabilità
       p.registrazioni.push({
@@ -4131,11 +4175,13 @@ function generaTestoRichiesta() {
     elenco = farmaciSelezionati.map(t => {
       const dt = new Date();
       const scorta = typeof t.scorta !== 'undefined' ? t.scorta : 0;
-      dt.setDate(dt.getDate() + (scorta > 0 ? scorta : 0));
-      const fineScortaStr = scorta > 0 ? dt.toLocaleDateString('it-IT') : 'ESAURITO OGGI';
+      const ggAutonomia = calcolaGiorniAutonomiaFarmaco(t);
+      dt.setDate(dt.getDate() + (ggAutonomia > 0 ? ggAutonomia : 0));
+      const fineScortaStr = ggAutonomia > 0 ? dt.toLocaleDateString('it-IT') : 'ESAURITO OGGI';
       const soglia = Math.min(30, Math.max(1, parseInt(t.giorniAlert) || 7));
-      const urgenza = scorta <= 0 ? '🔴 URGENTE (Scorta a zero)' : (scorta <= soglia ? `⚠️ IN SCADENZA (Mancano ${scorta} giorni)` : `Scorta: ${scorta} gg`);
-      return `• ${t.farmaco} (Dosaggio: ${t.dosaggio}) -> ${urgenza} [Esaurimento previsto: ${fineScortaStr}]`;
+      const urgenza = scorta <= 0 ? '🔴 URGENTE (Scorta a zero)' : (ggAutonomia <= soglia ? `⚠️ IN SCADENZA (Autonomia: ${ggAutonomia} giorni)` : `Autonomia: ${ggAutonomia} gg`);
+      const schemaNote = t.cadenzaTipo === 'alternata_mezza_intera' ? ' [Posologia: ½ cpr / 1 cpr a giorni alterni]' : '';
+      return `• ${t.farmaco} (Dosaggio: ${t.dosaggio}${schemaNote}) -> ${urgenza} [Rimanenza: ${scorta} cpr - Fine stimata: ${fineScortaStr}]`;
     }).join('\n');
   }
 
@@ -4702,6 +4748,84 @@ function rimuoviDoseExtraRow(idRow) {
 // ============================================================================
 // LOGICA AUTOMATICA CALCOLO DOSI MULTIPLE SECONDO PRESCRIZIONE MEDICA
 // ============================================================================
+
+// ============================================================================
+// CALCOLO AVANZATO CONSUMO CLINICO, DOSI FRAZIONATE & SCHEMA ALTERNATO
+// ============================================================================
+function calcolaConsumoGiornalieroFarmaco(t) {
+  if (!t) return 1;
+  // Se al bisogno, consumo standard indicativo stimato
+  if (t.cadenzaTipo === 'bisogno' || t.fascia === 'Al Bisogno' || t.ora === 'Al Bisogno') {
+    return 0.5;
+  }
+  // Schema alternato: 1/2 cpr un giorno e 1 cpr il giorno dopo -> 1.5 cpr ogni 2 giorni = 0.75 cpr/die
+  if (t.cadenzaTipo === 'alternata_mezza_intera') {
+    return 0.75;
+  }
+  // Giorni alterni standard: 1 dose ogni 2 giorni = 0.5 dose/die
+  if (t.cadenzaTipo === 'alterni') {
+    var q = parseFloat(t.quantitaQuota) || 1;
+    return q / 2;
+  }
+  // Cadenza quindicinale: 2 dosi al mese ~ 2/30 = 0.0667 cpr/die
+  if (t.cadenzaTipo === 'quindicinale_15_30' || ((t.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0 && (t.modo || '').indexOf('15') >= 0)) {
+    var q = parseFloat(t.quantitaQuota) || 1;
+    return (q * 2) / 30;
+  }
+  // Settimanale: 1 volta ogni 7 giorni
+  if (t.cadenzaTipo === 'settimanale') {
+    var q = parseFloat(t.quantitaQuota) || 1;
+    return q / 7;
+  }
+  // Quotidiana: basata su quantitaQuota (es. 0.5 cpr, 1 cpr, 0.25 cpr)
+  var quota = parseFloat(t.quantitaQuota);
+  if (!isNaN(quota) && quota > 0) {
+    return quota;
+  }
+  // Deduzione automatica da stringa dosaggio o modo
+  var str = ((t.dosaggio || '') + ' ' + (t.modo || '')).toLowerCase();
+  if (str.indexOf('1/2') >= 0 || str.indexOf('mezza') >= 0 || str.indexOf('0,5') >= 0 || str.indexOf('0.5') >= 0) {
+    return 0.5;
+  }
+  if (str.indexOf('1/4') >= 0 || str.indexOf('un quarto') >= 0 || str.indexOf('0,25') >= 0 || str.indexOf('0.25') >= 0) {
+    return 0.25;
+  }
+  if (str.indexOf('2 cpr') >= 0 || str.indexOf('2 compresse') >= 0) {
+    return 2;
+  }
+  return 1;
+}
+
+function calcolaGiorniAutonomiaFarmaco(t) {
+  if (!t || typeof t.scorta === 'undefined') return 0;
+  var scorta = parseFloat(t.scorta) || 0;
+  if (scorta <= 0) return 0;
+  var consumoDie = calcolaConsumoGiornalieroFarmaco(t);
+  if (consumoDie <= 0) consumoDie = 1;
+  return Math.floor(scorta / consumoDie);
+}
+
+function getDoseOdiernaAlternata(t) {
+  if (!t || t.cadenzaTipo !== 'alternata_mezza_intera') {
+    return parseFloat(t.quantitaQuota) || 1;
+  }
+  var oggi = new Date();
+  var oggiMezzanotte = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate());
+  var inizio = new Date(2026, 9, 1); // 1 Ottobre 2026 come riferimento
+  if (t.dataInizioAlterni) {
+    var pz = t.dataInizioAlterni.split('-').map(Number);
+    inizio = new Date(pz[0], pz[1] - 1, pz[2]);
+  }
+  var diffGiorni = Math.round((oggiMezzanotte - inizio) / 86400000);
+  // Giorno pari: 1/2 cpr (0.5), Giorno dispari: 1 cpr (1.0)
+  var isMezza = (diffGiorni % 2 === 0);
+  return {
+    quantita: isMezza ? 0.5 : 1.0,
+    testo: isMezza ? '½ cpr (Mezza Dose)' : '1 cpr (Dose Intera)',
+    isMezza: isMezza
+  };
+}
+
 function calcolaOrarioSuccessivo(oraInizio, oreDaAggiungere) {
   if (!oraInizio || oraInizio.indexOf(':') < 0) oraInizio = '08:00';
   var parti = oraInizio.split(':');
@@ -4829,6 +4953,12 @@ function apriModificaFarmaco(farmacoId) {
   document.getElementById('edit-farm-nome').value = t.farmaco || '';
   document.getElementById('edit-farm-principio').value = t.principio || '';
   document.getElementById('edit-farm-dosaggio').value = t.dosaggio || '';
+  var elQuota = document.getElementById('edit-farm-frazione-quota');
+  if (elQuota) elQuota.value = t.quantitaQuota || (t.cadenzaTipo === 'alternata_mezza_intera' ? '0.5' : '1');
+  var elMotivoMod = document.getElementById('edit-farm-motivo-modifica');
+  if (elMotivoMod) elMotivoMod.value = t.ultimaModificaClinica ? (t.ultimaModificaClinica.motivo || '') : '';
+  var elMedNome = document.getElementById('edit-farm-medico-nome');
+  if (elMedNome) elMedNome.value = t.ultimaModificaClinica ? (t.ultimaModificaClinica.medico || '') : (p.medicoNome || '');
   document.getElementById('edit-farm-cpr-scatola').value = t.cprPerScatola || 28;
   document.getElementById('edit-farm-scorta').value = typeof t.scorta !== 'undefined' ? t.scorta : 28;
   var elGiorniAlert = document.getElementById('edit-farm-giorni-alert');
@@ -4890,15 +5020,60 @@ function salvaModificaFarmaco(e) {
   if (elEditGiorniAlert) {
     t.giorniAlert = Math.min(30, Math.max(1, parseInt(elEditGiorniAlert.value) || 7));
   }
-    var elCadSave = document.getElementById('edit-farm-cadenza');
+  var elCadSave = document.getElementById('edit-farm-cadenza');
   if (elCadSave) {
     t.cadenzaTipo = elCadSave.value;
     if (elCadSave.value === 'quindicinale_15_30') {
       if (modo.indexOf('15 e 30 del mese') < 0) {
         modo = modo + ' [Assunzione ogni 15 giorni: il 15 e il 30 del mese]';
       }
+    } else if (elCadSave.value === 'alternata_mezza_intera') {
+      if (modo.indexOf('Dose alternata') < 0) {
+        modo = modo + ' [Schema alternato: ½ cpr un giorno e 1 cpr il giorno successivo]';
+      }
     }
   }
+
+  var elQuotaSave = document.getElementById('edit-farm-frazione-quota');
+  if (elQuotaSave) {
+    t.quantitaQuota = parseFloat(elQuotaSave.value) || 1;
+  }
+
+  // Registrazione fonte clinica variazione
+  var fonteTipoEl = document.getElementById('edit-farm-fonte-tipo');
+  var medNomeEl = document.getElementById('edit-farm-medico-nome');
+  var motivoModEl = document.getElementById('edit-farm-motivo-modifica');
+
+  var fonteTipo = fonteTipoEl ? fonteTipoEl.value : 'medico_famiglia';
+  var fonteNome = fonteTipo === 'visita_specialistica' ? 'Visita Specialistica' : (fonteTipo === 'dimissione_ospedaliera' ? 'Dimissione Ospedaliera' : (fonteTipo === 'caregiver' ? 'Caregiver/Famiglia' : 'Medico di Base (MMG)'));
+  var nomeDoc = medNomeEl ? medNomeEl.value.trim() : '';
+  var motivoMod = motivoModEl ? motivoModEl.value.trim() : '';
+  var oggiStr = new Date().toLocaleDateString('it-IT');
+
+  t.ultimaModificaClinica = {
+    data: oggiStr,
+    fonte: fonteNome,
+    medico: nomeDoc,
+    motivo: motivoMod || 'Variazione posologia / orario'
+  };
+
+  // Registra nello storico clinico del paziente
+  if (!p.registrazioni) p.registrazioni = [];
+  p.registrazioni.push({
+    id: 'log_mod_' + Date.now(),
+    tipo: 'variazione_clinica',
+    farmacoId: t.id,
+    farmaco: t.farmaco,
+    dosaggio: t.dosaggio,
+    orario: t.ora,
+    timestamp: new Date().toISOString(),
+    azione: 'modifica_terapia',
+    fonte: fonteNome,
+    medico: nomeDoc,
+    desc: 'Variazione Terapia disposta da ' + fonteNome + (nomeDoc ? ' (' + nomeDoc + ')' : '') + ': ' + (motivoMod || 'Aggiornamento orario/posologia.') + ' (Orario: ' + t.ora + ', Cadenza: ' + (t.cadenzaTipo || 'quotidiana') + ', Dose: ' + (t.quantitaQuota || 1) + ' cpr).',
+    operatore: localStorage.getItem('milella_user_nome') || 'Amministratore'
+  });
+
   t.modo = modo;
 
   // 2. Rimuovi eventuali vecchie dosi collegate dello stesso farmaco per ricrearle coerentemente
@@ -6049,6 +6224,11 @@ function isTerapiaPrevistaOggi(t) {
   if (!t) return true;
   var oggi = new Date();
   var giornoMese = oggi.getDate();
+
+  // Schema alternato mezza / intera: prevista OGNI GIORNO (con dosaggio variabile 0.5 o 1)
+  if (t.cadenzaTipo === 'alternata_mezza_intera') {
+    return true;
+  }
 
   // 0. Giorni alterni: prevista se i giorni trascorsi dalla data di inizio sono pari (date locali)
   if (t.cadenzaTipo === 'alterni' && t.dataInizioAlterni) {
