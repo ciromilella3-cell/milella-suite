@@ -7669,13 +7669,13 @@ function aggiornaCardBuongiornoMattino() {
     var tutteFatte = totMattino > 0 && fatteMattino === totMattino;
     var stAuto = tutteFatte ? '✅ Colazione Completata' : (totMattino > 0 ? ('☕ ' + fatteMattino + '/' + totMattino + ' Terapie Mattino') : 'Nessuna terapia mattutina');
 
-    var pNomePrimo = (p.nome || 'Paziente').split(' ')[0];
+    var pNomeCompleto = (p.nome || 'Paziente');
     var isAttivo = (p.id === AppData.activePazienteId);
 
     return '<div style="background: ' + (isAttivo ? '#ffffff' : 'rgba(255,255,255,0.7)') + '; border: 1.5px solid ' + (isAttivo ? '#d97706' : '#fde68a') + '; border-radius: 12px; padding: 10px 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: ' + (isAttivo ? '0 2px 6px rgba(217,119,6,0.15)' : 'none') + ';" onclick="cambiaPazienteDaBuongiorno(\'' + p.id + '\')">' +
-      '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-        '<b style="font-size: 13px; color: #0f172a;">👤 ' + pNomePrimo + '</b>' +
-        '<span style="font-size: 10.5px; font-weight: 800; color: ' + (tutteFatte ? '#15803d' : '#b45309') + ';">' + (tutteFatte ? '✓ OK' : 'Da dare') + '</span>' +
+      '<div style="display:flex; justify-content:space-between; align-items:center; gap: 8px;">' +
+        '<b style="font-size: 13.5px; color: #0f172a; word-break: break-word;">👤 ' + pNomeCompleto + '</b>' +
+        '<span style="font-size: 10.5px; font-weight: 800; color: ' + (tutteFatte ? '#15803d' : '#b45309') + '; white-space: nowrap; flex-shrink: 0;">' + (tutteFatte ? '✓ OK' : 'Da dare') + '</span>' +
       '</div>' +
       '<div style="font-size: 11.5px; color: #475569; margin-top: 4px; font-weight: 600;">' +
         stAuto +
