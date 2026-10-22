@@ -44,8 +44,10 @@ async function startServer() {
 
     // Servizio statico diretto per foto e uploads (istantaneo, nessun ritardo o errore proxy)
     app.use('/Foto_Attrezzi', express.static(path.join(__dirname, 'data', 'Foto_Attrezzi')));
-    app.use('/uploads', express.static(path.join(__dirname, '..', 'RicettarioWeb', 'public', 'uploads')));
+    app.use('/Foto_Attrezzi', express.static(path.join(__dirname, 'public', 'Foto_Attrezzi')));
     app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+    app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+    app.use('/uploads', express.static(path.join(__dirname, '..', 'RicettarioWeb', 'public', 'uploads')));
 
     // Servizio Statico Ricettario (funziona sia in Cloud su Render sia in locale USB)
     const ricettarioDir = fs.existsSync(path.join(__dirname, 'public', 'ricettario')) 
