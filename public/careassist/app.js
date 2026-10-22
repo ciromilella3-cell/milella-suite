@@ -1792,6 +1792,9 @@ function salvaNuovoPaziente(e) {
   const medicoNome = document.getElementById('nuovo-paz-medico-nome').value.trim();
   const medicoTel = formattaNumeroTelefonico(document.getElementById('nuovo-paz-medico-tel').value.trim());
   const medicoEmail = document.getElementById('nuovo-paz-medico-email').value.trim();
+  const medicoPec = document.getElementById('nuovo-paz-medico-pec')?.value.trim() || '';
+  const caregiverEmail = document.getElementById('nuovo-paz-caregiver-email')?.value.trim() || '';
+  const caregiverPec = document.getElementById('nuovo-paz-caregiver-pec')?.value.trim() || '';
   const farmaciaNome = document.getElementById('nuovo-paz-farmacia').value.trim();
   const farmaciaTel = formattaNumeroTelefonico(document.getElementById('nuovo-paz-farmacia-tel').value.trim());
 
@@ -1805,11 +1808,16 @@ function salvaNuovoPaziente(e) {
   newPaz.cellulare = cellulare;
   newPaz.moglieNome = parenteNome;
   newPaz.moglieCellulare = parenteCell;
+  newPaz.caregiverEmail = caregiverEmail;
+  newPaz.caregiverPec = caregiverPec;
+  newPaz.moglieEmail = caregiverEmail;
+  newPaz.mogliePec = caregiverPec;
 
   newPaz.medico = medicoNome || 'Dott. Curante';
   newPaz.medicoNome = medicoNome;
   newPaz.medicoTel = medicoTel;
   newPaz.medicoEmail = medicoEmail;
+  newPaz.medicoPec = medicoPec;
   newPaz.farmaciaDiRiferimento = farmaciaNome || 'Farmacia di Riferimento';
   newPaz.farmaciaTelefono = farmaciaTel;
 
@@ -2182,6 +2190,12 @@ function apriModificaAnagrafica() {
   document.getElementById('edit-paz-medico-studio').value = formattaNumeroTelefonico(telStudioVal);
   document.getElementById('edit-paz-medico-tel').value = formattaNumeroTelefonico(p.medicoTel || p.telMedico || '');
   document.getElementById('edit-paz-medico-email').value = p.medicoEmail || 'scarcia.roberto@alice.it';
+  const elMedPec = document.getElementById('edit-paz-medico-pec');
+  if (elMedPec) elMedPec.value = p.medicoPec || '';
+  const elCareEmail = document.getElementById('edit-paz-caregiver-email');
+  if (elCareEmail) elCareEmail.value = p.caregiverEmail || p.moglieEmail || '';
+  const elCarePec = document.getElementById('edit-paz-caregiver-pec');
+  if (elCarePec) elCarePec.value = p.caregiverPec || p.mogliePec || '';
   document.getElementById('edit-paz-farmacia').value = p.farmaciaDiRiferimento || 'Farmacia MACARIO';
   const elFarmTel = document.getElementById('edit-paz-farmacia-tel');
   if (elFarmTel) elFarmTel.value = formattaNumeroTelefonico(p.farmaciaTelefono || '');
@@ -2236,6 +2250,16 @@ function salvaModificaAnagrafica(e) {
   p.cellulare = formattaNumeroTelefonico(document.getElementById('edit-paz-cellulare').value.trim());
   p.moglieNome = document.getElementById('edit-paz-moglie-nome').value.trim();
   p.moglieCellulare = formattaNumeroTelefonico(document.getElementById('edit-paz-moglie-cell').value.trim());
+  const elCareEmailVal = document.getElementById('edit-paz-caregiver-email');
+  if (elCareEmailVal) {
+    p.caregiverEmail = elCareEmailVal.value.trim();
+    p.moglieEmail = p.caregiverEmail;
+  }
+  const elCarePecVal = document.getElementById('edit-paz-caregiver-pec');
+  if (elCarePecVal) {
+    p.caregiverPec = elCarePecVal.value.trim();
+    p.mogliePec = p.caregiverPec;
+  }
   p.medicoNome = document.getElementById('edit-paz-medico-nome').value.trim();
   p.medico = p.medicoNome;
   const elMedIndVal = document.getElementById('edit-paz-medico-indirizzo');
@@ -2248,6 +2272,8 @@ function salvaModificaAnagrafica(e) {
   p.medicoTel = formattaNumeroTelefonico(document.getElementById('edit-paz-medico-tel').value.trim());
   p.telMedico = p.medicoTel;
   p.medicoEmail = document.getElementById('edit-paz-medico-email').value.trim();
+  const elMedPecVal = document.getElementById('edit-paz-medico-pec');
+  if (elMedPecVal) p.medicoPec = elMedPecVal.value.trim();
   p.farmaciaDiRiferimento = document.getElementById('edit-paz-farmacia').value.trim() || 'Farmacia MACARIO';
   const elFarmTelVal = document.getElementById('edit-paz-farmacia-tel');
   if (elFarmTelVal) p.farmaciaTelefono = formattaNumeroTelefonico(elFarmTelVal.value.trim());
@@ -6933,6 +6959,7 @@ const DB_PRESET_MEDICI_FARMACIE = {
     medicoTelStudio: '080 557 44 90',
     medicoCell: '347 126 59 71',
     medicoEmail: 'scarcia.roberto@alice.it',
+    medicoPec: 'roberto.scarcia@pec.it',
     medicoOrari: 'Lunedì: 10:00-13:00. Martedì: 10:00-13:00 e 16:00-19:00. Mercoledì: 10:00-13:00. Giovedì: 16:00-19:00. Venerdì: 10:00-13:00 (Bari - Via Muciaccia 11)',
     farmaciaNome: 'Farmacia Dott. MACARIO',
     farmaciaIndirizzo: 'Via G. Petroni, 69/b - Bari',
@@ -6944,6 +6971,7 @@ const DB_PRESET_MEDICI_FARMACIE = {
     medicoStudio: 'Sarconi: Via Provinciale 1 / Moliterno: Via Parco del Seggio 1',
     medicoCell: '338 379 05 64',
     medicoEmail: 'carolina.potenza@aspbasilicata.it',
+    medicoPec: 'carolina.potenza@pec.it',
     medicoOrari: 'Sarconi: Lun-Mer-Ven 9:30-13:00, Mar-Gio 15:00-18:30. Moliterno: Lun 15:00-18:00, Gio 9:00-13:00 (su appuntamento)',
     farmaciaNome: 'Farmacia Girasole Picconi',
     farmaciaIndirizzo: 'Via Ariosto, 4 / 16 - 85012 Corleto Perticara (PZ)',
@@ -6954,6 +6982,7 @@ const DB_PRESET_MEDICI_FARMACIE = {
     medicoStudio: '080 500 11 22',
     medicoCell: '335 123 45 67',
     medicoEmail: 'direzione.sanitaria@rsa-bari.it',
+    medicoPec: 'direzione.sanitaria@pec.rsa-bari.it',
     farmaciaNome: 'Farmacia Ospedaliera / Struttura RSA',
     farmaciaIndirizzo: 'Presidio Domiciliare Struttura',
     farmaciaTel: '080 500 11 33'
@@ -6963,6 +6992,7 @@ const DB_PRESET_MEDICI_FARMACIE = {
     medicoStudio: '080 584 11 11',
     medicoCell: '080 584 22 22',
     medicoEmail: 'adi.territorio@asl.bari.it',
+    medicoPec: 'adi.territorio@pec.asl.bari.it',
     farmaciaNome: 'Farmacia Territoriale Distretto ASL',
     farmaciaIndirizzo: 'Distretto Socio Sanitario Bari',
     farmaciaTel: '080 584 33 44'
@@ -6978,12 +7008,14 @@ function applicaPresetMedicoFarmacia(chiave, modalType) {
     const elMedNome = document.getElementById('nuovo-paz-medico-nome');
     const elMedTel = document.getElementById('nuovo-paz-medico-tel');
     const elMedEmail = document.getElementById('nuovo-paz-medico-email');
+    const elMedPec = document.getElementById('nuovo-paz-medico-pec');
     const elFarmNome = document.getElementById('nuovo-paz-farmacia');
     const elFarmTel = document.getElementById('nuovo-paz-farmacia-tel');
 
     if (elMedNome) elMedNome.value = dati.medicoNome;
     if (elMedTel) elMedTel.value = dati.medicoStudio || dati.medicoCell;
     if (elMedEmail) elMedEmail.value = dati.medicoEmail;
+    if (elMedPec) elMedPec.value = dati.medicoPec || '';
     if (elFarmNome) elFarmNome.value = dati.farmaciaNome + (dati.farmaciaIndirizzo ? ' (' + dati.farmaciaIndirizzo + ')' : '');
     if (elFarmTel) elFarmTel.value = dati.farmaciaTel;
 
@@ -6994,6 +7026,7 @@ function applicaPresetMedicoFarmacia(chiave, modalType) {
     const elMedStudio = document.getElementById('edit-paz-medico-studio');
     const elMedCell = document.getElementById('edit-paz-medico-tel');
     const elMedEmail = document.getElementById('edit-paz-medico-email');
+    const elMedPec = document.getElementById('edit-paz-medico-pec');
     const elFarmNome = document.getElementById('edit-paz-farmacia');
 
     if (elMedNome) elMedNome.value = dati.medicoNome;
@@ -7005,6 +7038,7 @@ function applicaPresetMedicoFarmacia(chiave, modalType) {
     if (elMedStudio) elMedStudio.value = dati.medicoStudio || '';
     if (elMedCell) elMedCell.value = dati.medicoCell;
     if (elMedEmail) elMedEmail.value = dati.medicoEmail;
+    if (elMedPec) elMedPec.value = dati.medicoPec || '';
     if (elFarmNome) elFarmNome.value = dati.farmaciaNome;
     const elFarmTel = document.getElementById('edit-paz-farmacia-tel');
     if (elFarmTel) elFarmTel.value = formattaNumeroTelefonico(dati.farmaciaTel || '');
