@@ -501,39 +501,149 @@ app.get('/api/operatori/lista-pubblica', (req, res) => {
     res.json(list);
 });
 
+// ------------------------------------------------------------------------------
+// TOKEN DI SESSIONE FIRMATO (HMAC-SHA256, stateless, scade dopo 12 ore)
+// Il token viene emesso al login con PIN e verificato dal server su ogni API protetta.
+// Viene invalidato subito se l'operatore viene disattivato/eliminato o se il PIN cambia.
+// ------------------------------------------------------------------------------
+const AUTH_TTL_MS = 12 * 60 * 60 * 1000;
+const AUTH_SECRET = process.env.AUTH_SECRET ||
+    crypto.createHash('sha256').update('milella-auth-v1|' + PIN_MASTER + '|' + LICENSE_SECRET).digest('hex');
+
+function pinHash(c) {
+    return crypto.createHash('sha256').update(String(c || '').trim().toLowerCase()).digest('hex').slice(0, 10);
+}
+function b64u(buf) {
+    return Buffer.from(buf).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function fromB64u(s) {
+    s = s.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    return Buffer.from(s, 'base64');
+}
+function signToken(payload) {
+    const body = b64u(JSON.stringify(payload));
+    const sig = b64u(crypto.createHmac('sha256', AUTH_SECRET).update(body).digest());
+    return body + '.' + sig;
+}
+function verifyToken(tok) {
+    try {
+        if (!tok || typeof tok !== 'string') return null;
+        const parts = tok.split('.');
+        if (parts.length !== 2) return null;
+        const expected = b64u(crypto.createHmac('sha256', AUTH_SECRET).update(parts[0]).digest());
+        const a = Buffer.from(parts[1]);
+        const b = Buffer.from(expected);
+        if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+        const p = JSON.parse(fromB64u(parts[0]).toString('utf8'));
+        if (!p.e || Date.now() > p.e) return null;
+        if (p.i === 'master') {
+            if (p.h !== pinHash(PIN_MASTER)) return null;
+            return { id: 'master', ruolo: 'admin', nome: 'Ciro Milella (Admin)', appAbilitate: ['all'] };
+        }
+        const op = loadOperatori().find(o => o.id === p.i && o.attivo);
+        if (!op || pinHash(op.codice) !== p.h) return null;
+        return { id: op.id, ruolo: op.ruolo || 'operatore', nome: op.nome, appAbilitate: op.appAbilitate || [] };
+    } catch (e) {
+        return null;
+    }
+}
+function authFromRequest(req, allowQuery) {
+    const h = String(req.headers['authorization'] || '');
+    let t = h.toLowerCase().startsWith('bearer ') ? h.slice(7).trim() : String(req.headers['x-auth-token'] || '');
+    if (!t && allowQuery && req.query && req.query.token) t = String(req.query.token);
+    return verifyToken(t);
+}
+// opts: { admin: true } solo Admin | { app: ['app_x'] } Admin oppure operatore abilitato all'app | { allowQuery: true } token anche in querystring (solo download)
+function requireAuth(opts) {
+    opts = opts || {};
+    return function (req, res, next) {
+        const a = authFromRequest(req, !!opts.allowQuery);
+        if (!a) {
+            return res.status(401).json({ success: false, error: 'AUTH_REQUIRED', message: 'Accesso non autorizzato: effettua il login con il tuo PIN.' });
+        }
+        if (opts.admin && a.ruolo !== 'admin') {
+            return res.status(403).json({ success: false, error: 'FORBIDDEN', message: 'Operazione riservata all\'amministratore.' });
+        }
+        if (opts.app && a.ruolo !== 'admin') {
+            const abil = a.appAbilitate || [];
+            if (!(abil.includes('all') || opts.app.some(x => abil.includes(x)))) {
+                return res.status(403).json({ success: false, error: 'FORBIDDEN', message: 'Non sei abilitato a questa applicazione.' });
+            }
+        }
+        req.auth = a;
+        next();
+    };
+}
+
+// Limite tentativi PIN errati (anti brute-force): 10 errori in 10 minuti per indirizzo IP
+const pinFails = new Map();
+const PIN_FAIL_WINDOW_MS = 10 * 60 * 1000;
+const PIN_FAIL_MAX = 10;
+function clientIp(req) {
+    return String(req.headers['x-forwarded-for'] || (req.socket && req.socket.remoteAddress) || '').split(',')[0].trim();
+}
+function pinBlocked(req) {
+    const ip = clientIp(req);
+    const r = pinFails.get(ip);
+    if (!r) return false;
+    if (Date.now() - r.first > PIN_FAIL_WINDOW_MS) { pinFails.delete(ip); return false; }
+    return r.n >= PIN_FAIL_MAX;
+}
+function pinFailed(req) {
+    const ip = clientIp(req);
+    const r = pinFails.get(ip);
+    if (!r || Date.now() - r.first > PIN_FAIL_WINDOW_MS) pinFails.set(ip, { n: 1, first: Date.now() });
+    else r.n++;
+}
+function pinOk(req) { pinFails.delete(clientIp(req)); }
+
 // Verifica autenticazione (PIN Master o Codice Operatore - Case-Insensitive per SOS999/sos999)
 app.post('/api/auth/login', (req, res) => {
+    if (pinBlocked(req)) {
+        return res.status(429).json({ success: false, message: 'Troppi tentativi errati. Riprova tra qualche minuto.' });
+    }
     const { codice } = req.body || {};
     const clean = (codice || '').trim();
     if (clean.toUpperCase() === PIN_MASTER.toUpperCase()) {
-        return res.json({ 
-            success: true, 
-            ruolo: 'admin', 
+        pinOk(req);
+        return res.json({
+            success: true,
+            ruolo: 'admin',
             nome: 'Ciro Milella (Admin)',
-            appAbilitate: ['all'] 
+            appAbilitate: ['all'],
+            token: signToken({ i: 'master', h: pinHash(PIN_MASTER.toUpperCase()), e: Date.now() + AUTH_TTL_MS })
         });
     }
     const ops = loadOperatori();
-    const found = ops.find(o => o.attivo && o.codice.toLowerCase() === clean.toLowerCase());
+    const found = clean && ops.find(o => o.attivo && String(o.codice || '').toLowerCase() === clean.toLowerCase());
     if (found) {
-        return res.json({ 
-            success: true, 
-            ruolo: found.ruolo || 'operatore', 
+        pinOk(req);
+        return res.json({
+            success: true,
+            ruolo: found.ruolo || 'operatore',
             nome: found.nome,
             appAbilitate: found.appAbilitate || [],
             pazAbilitati: found.pazAbilitati || [],
-            canEditTerapie: !!found.canEditTerapie
+            canEditTerapie: !!found.canEditTerapie,
+            token: signToken({ i: found.id, h: pinHash(found.codice), e: Date.now() + AUTH_TTL_MS })
         });
     }
+    pinFailed(req);
     return res.status(401).json({ success: false, message: 'Codice o PIN non riconosciuto.' });
 });
 
 // Gestione operatori (solo per Admin autenticato con PIN Master)
 app.post('/api/operatori/gestione', (req, res) => {
     const { pinAdmin, azione, operatore } = req.body || {};
+    if (pinBlocked(req)) {
+        return res.status(429).json({ success: false, message: 'Troppi tentativi errati. Riprova tra qualche minuto.' });
+    }
     if ((pinAdmin || '').trim().toUpperCase() !== PIN_MASTER.toUpperCase()) {
+        pinFailed(req);
         return res.status(403).json({ success: false, message: 'Accesso negato: PIN Master errato.' });
     }
+    pinOk(req);
     let ops = loadOperatori();
     if (azione === 'list') {
         return res.json({ success: true, operatori: ops });
@@ -831,7 +941,7 @@ app.post('/api/gioco/save-data', (req, res) => {
     }
 });
 
-app.get('/api/get-db', (req, res) => {
+app.get('/api/get-db', requireAuth({ app: ['app_careassist', 'careassist'] }), (req, res) => {
     try {
         if (fs.existsSync(careAssistDbFile)) {
             const data = fs.readFileSync(careAssistDbFile, 'utf8');
@@ -844,7 +954,7 @@ app.get('/api/get-db', (req, res) => {
     }
 });
 
-app.post('/api/save-db', (req, res) => {
+app.post('/api/save-db', requireAuth({ app: ['app_careassist', 'careassist'] }), (req, res) => {
     try {
         const payload = JSON.stringify(req.body, null, 2);
         // Salva nel percorso primario
@@ -1056,7 +1166,7 @@ app.get('/api/my-ip', (req, res) => {
 });
 
 // Chiusura aggraziata del server se richiesta
-app.post('/api/shutdown', (req, res) => {
+app.post('/api/shutdown', requireAuth({ admin: true }), (req, res) => {
     res.json({ success: true });
     setTimeout(() => {
         const { spawn } = require('child_process');
@@ -1073,7 +1183,7 @@ app.post('/api/shutdown', (req, res) => {
 // ==============================================================================
 // CENTRO SICUREZZA, BACKUP E SINCRONIZZAZIONE CLOUD SUITE C. MILELLA
 // ==============================================================================
-app.get('/api/sicurezza/scarica-backup-zip', (req, res) => {
+app.get('/api/sicurezza/scarica-backup-zip', requireAuth({ admin: true, allowQuery: true }), (req, res) => {
     try {
         const { execSync } = require('child_process');
         const sourceDir = fs.existsSync(path.join(__dirname, '..', 'AGGIORNAMENTO_RENDER')) 
@@ -1091,7 +1201,7 @@ app.get('/api/sicurezza/scarica-backup-zip', (req, res) => {
     }
 });
 
-app.post('/api/sicurezza/crea-backup-locale', (req, res) => {
+app.post('/api/sicurezza/crea-backup-locale', requireAuth({ admin: true }), (req, res) => {
     try {
         const { execSync } = require('child_process');
         const backupFolder = path.join(__dirname, '..', '_BACKUP_SICUREZZA');
@@ -1117,7 +1227,7 @@ app.post('/api/sicurezza/crea-backup-locale', (req, res) => {
     }
 });
 
-app.get('/api/sicurezza/lista-backup', (req, res) => {
+app.get('/api/sicurezza/lista-backup', requireAuth({ admin: true }), (req, res) => {
     try {
         const backupFolder = path.join(__dirname, '..', '_BACKUP_SICUREZZA');
         if (!fs.existsSync(backupFolder)) return res.json([]);
@@ -1139,7 +1249,7 @@ app.get('/api/sicurezza/lista-backup', (req, res) => {
 });
 
 // RIPRISTINO DIRETTO: Estrae il backup selezionato e ripristina la Suite
-app.post('/api/sicurezza/ripristina', (req, res) => {
+app.post('/api/sicurezza/ripristina', requireAuth({ admin: true }), (req, res) => {
     try {
         const { nomeBackup } = req.body || {};
         const { execSync } = require('child_process');
@@ -1268,7 +1378,7 @@ app.get('/api/get-license-status', (req, res) => {
 });
 
 // API: Elenco Completo Registro Licenze Rilasciate
-app.get('/api/list-released-licenses', (req, res) => {
+app.get('/api/list-released-licenses', requireAuth({ admin: true }), (req, res) => {
     try {
         const releasedBase = path.resolve('D:\\VERSIONI_RILASCIATE');
         if (!fs.existsSync(releasedBase)) {
@@ -1332,7 +1442,7 @@ app.get('/api/list-released-licenses', (req, res) => {
 });
 
 // API: Rinnovo Diretto da Registro Sala Regia
-app.post('/api/renew-license-direct', (req, res) => {
+app.post('/api/renew-license-direct', requireAuth({ admin: true }), (req, res) => {
     try {
         const { folderName, days } = req.body;
         if (!folderName || !days) return res.status(400).json({ error: 'Cartella e durata obbligatorie' });
@@ -1378,7 +1488,7 @@ app.post('/api/redeem-license-key', (req, res) => {
 });
 
 // API: Genera Nuova Chiave di Rinnovo (Sala Regia)
-app.post('/api/generate-license-key', (req, res) => {
+app.post('/api/generate-license-key', requireAuth({ admin: true }), (req, res) => {
     const { destName, days } = req.body;
     if (!destName || !days) {
         return res.status(400).json({ error: 'Nome destinatario e durata obbligatori' });
@@ -1387,7 +1497,7 @@ app.post('/api/generate-license-key', (req, res) => {
     res.json({ success: true, key, destName, days });
 });
 
-app.post('/api/export-project', (req, res) => {
+app.post('/api/export-project', requireAuth({ admin: true }), (req, res) => {
     const { projectId, destinationType, targetDrive } = req.body;
     const desktopPath = path.join(process.env.USERPROFILE || 'C:\\Users\\Utente', 'Desktop');
     const rootSuite = path.resolve(__dirname, '..');
@@ -1507,7 +1617,7 @@ app.post('/api/export-project', (req, res) => {
 });
 
 // 3. Apri cartella esportata in Esplora Risorse
-app.post('/api/open-exported-folder', (req, res) => {
+app.post('/api/open-exported-folder', requireAuth({ admin: true }), (req, res) => {
     let { folderPath } = req.body;
     if (!folderPath) {
         return res.status(400).json({ error: 'Nessun percorso fornito' });
@@ -1534,7 +1644,7 @@ app.post('/api/open-exported-folder', (req, res) => {
 });
 
 // 4. API Avanzata Generatore Versioni Personalizzate & Antigravity Orchestrator
-app.post('/api/generate-custom-version', (req, res) => {
+app.post('/api/generate-custom-version', requireAuth({ admin: true }), (req, res) => {
     const { destName, destCompany, isDemo, modules, destinationType, targetDrive, scadenza } = req.body;
     if (!destName || !destName.trim()) {
         return res.status(400).json({ error: 'Nome del destinatario obbligatorio' });

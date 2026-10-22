@@ -384,7 +384,8 @@
 @media (max-width: 768px) { #btnLogistica { display: none !important; } }
 @media (min-width: 769px) { #btnLogistica { display: flex !important; } }
 </style>
-<style>@media (max-width: 768px) { #floatingControlBar { display: none !important; } .container { padding: 1.2rem 1rem !important; } .cards-wrapper { grid-template-columns: 1fr !important; gap: 14px !important; } .card { border-radius: 20px !important; padding: 1.5rem 1.2rem !important; background: rgba(17, 24, 39, 0.65) !important; border: 1.5px solid rgba(212, 175, 55, 0.25) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; } .card:active { transform: scale(0.98) !important; border-color: #d4af37 !important; } .card-icon { font-size: 3rem !important; margin-bottom: 0.8rem !important; filter: drop-shadow(0 4px 12px rgba(212,175,55,0.4)) !important; } .card-title { font-size: 1.35rem !important; font-weight: 800 !important; letter-spacing: 0.5px !important; color: #ffffff !important; margin-bottom: 0.4rem !important; } .card-desc { font-size: 0.88rem !important; color: #94a3b8 !important; line-height: 1.45 !important; } }</style>    <script src="/qrcode.min.js"></script>
+<style>@media (max-width: 768px) { #floatingControlBar { display: none !important; } .container { padding: 1.2rem 1rem !important; } .cards-wrapper { grid-template-columns: 1fr !important; gap: 14px !important; } .card { border-radius: 20px !important; padding: 1.5rem 1.2rem !important; background: rgba(17, 24, 39, 0.65) !important; border: 1.5px solid rgba(212, 175, 55, 0.25) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; } .card:active { transform: scale(0.98) !important; border-color: #d4af37 !important; } .card-icon { font-size: 3rem !important; margin-bottom: 0.8rem !important; filter: drop-shadow(0 4px 12px rgba(212,175,55,0.4)) !important; } .card-title { font-size: 1.35rem !important; font-weight: 800 !important; letter-spacing: 0.5px !important; color: #ffffff !important; margin-bottom: 0.4rem !important; } .card-desc { font-size: 0.88rem !important; color: #94a3b8 !important; line-height: 1.45 !important; } }</style>    <script src="/auth_token.js"></script>
+    <script src="/qrcode.min.js"></script>
 </head>
 <body>
     <div class="bg-glow"></div>
@@ -1347,7 +1348,7 @@ document.addEventListener('fullscreenchange', () => {
     }
 
     function scaricaCopiaZip() {
-        window.location.href = '/api/sicurezza/scarica-backup-zip';
+        window.location.href = '/api/sicurezza/scarica-backup-zip?token=' + encodeURIComponent(localStorage.getItem('milella_token') || '');
     }
 
     async function creaBackupLocaleAutomatico() {
@@ -1799,6 +1800,7 @@ document.addEventListener('fullscreenchange', () => {
         localStorage.removeItem('milella_user_nome');
         localStorage.removeItem('milella_user_pin');
         localStorage.removeItem('milella_role');
+        localStorage.removeItem('milella_token');
         // Manteniamo milella_last_authenticated_user, role e pin in modo che il tasto impronta rimanga disponibile per il prossimo accesso!
         sessionStorage.clear();
         currentAdminPin = '';
