@@ -908,6 +908,8 @@ function sincronizzaDbDalServer(callback) {
           localStorage.removeItem('careassist_pending_sync');
         }
 
+        // Aggiorna badge visivo di sincronizzazione
+        aggiornaBadgeStatoSync(true);
         if (callback) callback(true);
       }
       _isSyncingInProgress = false;
@@ -930,12 +932,47 @@ function sincronizzaDbDalServer(callback) {
           })
           .catch(function() {
             _isSyncingInProgress = false;
+            aggiornaBadgeStatoSync(false);
           });
       });
   } catch(e) {
     _isSyncingInProgress = false;
+    aggiornaBadgeStatoSync(false);
     console.warn('Get-db sync error:', e);
   }
+}
+
+function aggiornaBadgeStatoSync(isOnline) {
+  var badge = document.getElementById('header-cloud-sync-badge');
+  var dot = document.getElementById('sync-dot');
+  var txt = document.getElementById('sync-status-text');
+  if (!badge || !dot || !txt) return;
+
+  var oraStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+  if (isOnline) {
+    badge.style.background = 'rgba(16, 185, 129, 0.15)';
+    badge.style.borderColor = '#10b981';
+    badge.style.color = '#10b981';
+    dot.style.background = '#10b981';
+    dot.style.boxShadow = '0 0 6px #10b981';
+    txt.textContent = 'Cloud Sincronizzato (' + oraStr + ')';
+  } else {
+    badge.style.background = 'rgba(239, 68, 68, 0.15)';
+    badge.style.borderColor = '#ef4444';
+    badge.style.color = '#ef4444';
+    dot.style.background = '#ef4444';
+    dot.style.boxShadow = 'none';
+    txt.textContent = 'Offline / Locale';
+  }
+}
+
+function forzaSincronizzazioneCloudManuale() {
+  var txt = document.getElementById('sync-status-text');
+  if (txt) txt.textContent = 'Sincronizzazione in corso...';
+  sincronizzaDbDalServer(function() {
+    showSyncToast('Allineamento Cloud completato con successo!', true);
+  });
 }
 
 function getPazientiAccessibili() {
