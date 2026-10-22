@@ -15,7 +15,158 @@ process.on('exit', (code) => {
     try { fs.appendFileSync(path.join(__dirname, 'server_exit.log'), `Exit code: ${code} at ${new Date().toISOString()}\n`); } catch(e){}
 });
 
+
+// ==============================================================================
+// CLOUD DATABASE LAYER (MONGODB ATLAS) CON FALLBACK LOCALE TRASPARENTE
+// ==============================================================================
+let mongoClient = null;
+let mongoDb = null;
+let mongoCollection = null;
+let isMongoReady = false;
+const memoryCache = new Map();
+
+async function initCloudDatabase() {
+    const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+        console.log('[DATABASE] MONGODB_URI non configurata: esecuzione in modalita locale (file JSON).');
+        return;
+    }
+
+    let MongoClient;
+    try {
+        MongoClient = require('mongodb').MongoClient;
+    } catch (e) {
+        console.log('[DATABASE] Driver mongodb non presente in locale: fallback su file JSON.');
+        return;
+    }
+
+    try {
+        console.log('[DATABASE] Connessione a MongoDB Atlas in corso...');
+        mongoClient = new MongoClient(mongoUri, {
+            serverSelectionTimeoutMS: 8000,
+            connectTimeoutMS: 10000
+        });
+        await mongoClient.connect();
+        mongoDb = mongoClient.db(process.env.MONGODB_DB_NAME || 'milella_suite');
+        mongoCollection = mongoDb.collection('suite_store');
+        isMongoReady = true;
+        console.log('[DATABASE] CONNESSO A MONGODB ATLAS: Dati permanenti attivi!');
+
+        // Precarica in memoria tutti i record da MongoDB
+        try {
+            const allDocs = await mongoCollection.find({}).toArray();
+            allDocs.forEach(doc => {
+                if (doc && doc._id && doc.data !== undefined) {
+                    memoryCache.set(doc._id, doc.data);
+                }
+            });
+            console.log(`[DATABASE] Sincronizzati ${allDocs.length} archivi da MongoDB nella cache.`);
+        } catch(e){}
+
+        // Se MongoDB e vuoto, popola con i file locali esistenti
+        await autoSeedCloudDatabase();
+    } catch (err) {
+        console.error('[DATABASE ERRORE] Impossibile connettersi a MongoDB Atlas:', err.message);
+        console.log('[DATABASE] Attivato fallback trasparente su file JSON.');
+        isMongoReady = false;
+    }
+}
+
+async function cloudGet(key, defaultVal) {
+    if (memoryCache.has(key)) return memoryCache.get(key);
+    if (isMongoReady && mongoCollection) {
+        try {
+            const doc = await mongoCollection.findOne({ _id: key });
+            if (doc && doc.data !== undefined) {
+                memoryCache.set(key, doc.data);
+                return doc.data;
+            }
+        } catch(e){}
+    }
+    return defaultVal;
+}
+
+async function cloudSet(key, data, localFilePath) {
+    memoryCache.set(key, data);
+
+    if (localFilePath) {
+        try {
+            const dir = path.dirname(localFilePath);
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            const str = typeof data === 'string' ? data : JSON.stringify(data, null, Array.isArray(data) ? 4 : 2);
+            safeWriteAtomic(localFilePath, str);
+        } catch (e) {
+            console.error(`[DATABASE] Errore salvataggio disco per ${key}:`, e.message);
+        }
+    }
+
+    if (isMongoReady && mongoCollection) {
+        try {
+            await mongoCollection.updateOne(
+                { _id: key },
+                { $set: { data: data, updatedAt: new Date() } },
+                { upsert: true }
+            );
+        } catch (e) {
+            console.error(`[DATABASE] Errore salvataggio MongoDB per ${key}:`, e.message);
+        }
+    }
+}
+
+async function autoSeedCloudDatabase() {
+    if (!isMongoReady || !mongoCollection) return;
+    try {
+        const count = await mongoCollection.countDocuments();
+        if (count > 0) return;
+
+        console.log('[DATABASE] Migrazione iniziale automatica: caricamento file JSON locali su MongoDB Atlas...');
+        const dDir = path.join(__dirname, 'data');
+        const invF = path.join(dDir, 'inventario.json');
+        if (fs.existsSync(invF)) {
+            try { await cloudSet('inventario', JSON.parse(fs.readFileSync(invF, 'utf8') || '[]')); } catch(e){}
+        }
+        const posF = path.join(dDir, 'posizioni.json');
+        if (fs.existsSync(posF)) {
+            try { await cloudSet('posizioni', JSON.parse(fs.readFileSync(posF, 'utf8') || '[]')); } catch(e){}
+        }
+        const ricF = path.join(dDir, 'ricette.json');
+        if (fs.existsSync(ricF)) {
+            try { await cloudSet('ricette', JSON.parse(fs.readFileSync(ricF, 'utf8') || '[]')); } catch(e){}
+        }
+        const opF = path.join(__dirname, 'operatori.json');
+        if (fs.existsSync(opF)) {
+            try { await cloudSet('operatori', JSON.parse(fs.readFileSync(opF, 'utf8') || '[]')); } catch(e){}
+        }
+        const prjF = path.join(__dirname, 'progetti_config.json');
+        if (fs.existsSync(prjF)) {
+            try { await cloudSet('progetti', JSON.parse(fs.readFileSync(prjF, 'utf8') || '[]')); } catch(e){}
+        }
+        const salF = path.join(dDir, 'salute_db.json');
+        if (fs.existsSync(salF)) {
+            try { await cloudSet('salute', JSON.parse(fs.readFileSync(salF, 'utf8') || '{}')); } catch(e){}
+        }
+        const careF = path.join(__dirname, 'CareAssist_Pro', 'careassist_database.json');
+        if (fs.existsSync(careF)) {
+            try { await cloudSet('careassist', JSON.parse(fs.readFileSync(careF, 'utf8') || '{}')); } catch(e){}
+        }
+        const medF = path.join(__dirname, 'MedNutri_Pro', 'mednutri_server_data.json');
+        if (fs.existsSync(medF)) {
+            try { await cloudSet('mednutri', JSON.parse(fs.readFileSync(medF, 'utf8') || '{}')); } catch(e){}
+        }
+        const gioF = path.join(dDir, 'gioco_records.json');
+        if (fs.existsSync(gioF)) {
+            try { await cloudSet('gioco', JSON.parse(fs.readFileSync(gioF, 'utf8') || '{}')); } catch(e){}
+        }
+        console.log('[DATABASE] Migrazione iniziale completata con successo su MongoDB Atlas!');
+    } catch(err) {
+        console.error('[DATABASE SEED ERROR]', err);
+    }
+}
+
 async function startServer() {
+    // Avvia connessione a MongoDB Atlas se configurato
+    await initCloudDatabase().catch(e => console.warn(e));
+
     let createProxyMiddleware;
     try {
         const hpm = await import('http-proxy-middleware');
@@ -488,10 +639,11 @@ let operatoriPath = path.join(__dirname, 'data', 'operatori.json');
 if (!fs.existsSync(operatoriPath) && fs.existsSync(path.join(__dirname, 'operatori.json'))) {
     operatoriPath = path.join(__dirname, 'operatori.json');
 }
-const PIN_MASTER = 'SOS999';
+const PIN_MASTER = process.env.PIN_MASTER || 'SOS999';
 
 function loadOperatori() {
     try {
+        if (memoryCache.has("operatori")) return memoryCache.get("operatori");
         if (!fs.existsSync(operatoriPath)) {
             const initial = [
                 { id: "op_master", nome: "Ciro Milella (Admin)", ruolo: "admin", codice: "SOS999", attivo: true },
@@ -651,9 +803,11 @@ app.post('/api/operatori/gestione', (req, res) => {
     if (pinBlocked(req)) {
         return res.status(429).json({ success: false, message: 'Troppi tentativi errati. Riprova tra qualche minuto.' });
     }
-    if ((pinAdmin || '').trim().toUpperCase() !== PIN_MASTER.toUpperCase()) {
-        pinFailed(req);
-        return res.status(403).json({ success: false, message: 'Accesso negato: PIN Master errato.' });
+    const auth = authFromRequest(req);
+    const isAdmin = (auth && auth.ruolo === 'admin') || ((pinAdmin || '').trim().toUpperCase() === PIN_MASTER.toUpperCase());
+    if (!isAdmin) {
+        if (pinAdmin) pinFailed(req);
+        return res.status(403).json({ success: false, message: "Accesso negato: PIN Master errato o sessione non valida." });
     }
     pinOk(req);
     let ops = loadOperatori();
@@ -674,7 +828,7 @@ app.post('/api/operatori/gestione', (req, res) => {
             attivo: true
         };
         ops.push(newOp);
-        fs.writeFileSync(operatoriPath, JSON.stringify(ops, null, 2), 'utf8');
+        cloudSet("operatori", ops, operatoriPath);
         return res.json({ success: true, operatori: ops });
     } else if (azione === 'update') {
         if (!operatore || !operatore.id) {
@@ -693,15 +847,15 @@ app.post('/api/operatori/gestione', (req, res) => {
             }
             return o;
         });
-        fs.writeFileSync(operatoriPath, JSON.stringify(ops, null, 2), 'utf8');
+        cloudSet("operatori", ops, operatoriPath);
         return res.json({ success: true, operatori: ops });
     } else if (azione === 'toggle') {
         ops = ops.map(o => o.id === operatore.id && o.id !== 'op_master' ? { ...o, attivo: !o.attivo } : o);
-        fs.writeFileSync(operatoriPath, JSON.stringify(ops, null, 2), 'utf8');
+        cloudSet("operatori", ops, operatoriPath);
         return res.json({ success: true, operatori: ops });
     } else if (azione === 'delete') {
         ops = ops.filter(o => o.id !== operatore.id || o.id === 'op_master');
-        fs.writeFileSync(operatoriPath, JSON.stringify(ops, null, 2), 'utf8');
+        cloudSet("operatori", ops, operatoriPath);
         return res.json({ success: true, operatori: ops });
     }
     res.status(400).json({ success: false, message: 'Azione non valida' });
@@ -717,6 +871,7 @@ if (!fs.existsSync(progettiConfigPath) && fs.existsSync(path.join(__dirname, 'pr
 
 function loadProgetti() {
     try {
+        if (memoryCache.has("progetti")) return memoryCache.get("progetti");
         if (!fs.existsSync(progettiConfigPath)) {
             const defProjects = [
                 { id: "app_veicoli", titolo: "Flotta Veicoli & Spese", icona: "🚗", url: "/veicoli_mobile/", descrizione: "Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.", visibilita: "tutti", attivo: true },
@@ -744,8 +899,10 @@ app.get('/api/progetti/lista', (req, res) => {
 // Modifica/Aggiunta/Eliminazione progetti (protetta da PIN Master)
 app.post('/api/progetti/gestione', (req, res) => {
     const { pinAdmin, azione, progetto } = req.body || {};
-    if ((pinAdmin || '').trim().toUpperCase() !== PIN_MASTER.toUpperCase()) {
-        return res.status(403).json({ success: false, message: 'Accesso negato: PIN Master errato.' });
+    const auth = authFromRequest(req);
+    const isAdmin = (auth && auth.ruolo === 'admin') || ((pinAdmin || '').trim().toUpperCase() === PIN_MASTER.toUpperCase());
+    if (!isAdmin) {
+        return res.status(403).json({ success: false, message: "Accesso negato: operazione riservata all'amministratore." });
     }
     let projs = loadProgetti();
     if (azione === 'list') {
@@ -764,11 +921,11 @@ app.post('/api/progetti/gestione', (req, res) => {
             attivo: true
         };
         projs.push(newP);
-        fs.writeFileSync(progettiConfigPath, JSON.stringify(projs, null, 2), 'utf8');
+        cloudSet("progetti", projs, progettiConfigPath);
         return res.json({ success: true, progetti: projs });
     } else if (azione === 'toggle') {
         projs = projs.map(p => p.id === progetto.id ? { ...p, attivo: !p.attivo } : p);
-        fs.writeFileSync(progettiConfigPath, JSON.stringify(projs, null, 2), 'utf8');
+        cloudSet("progetti", projs, progettiConfigPath);
         return res.json({ success: true, progetti: projs });
     } else if (azione === 'toggleVis') {
         // Cambia visibilità: da 'admin' a 'tutti' e viceversa con 1 clic!
@@ -783,7 +940,7 @@ app.post('/api/progetti/gestione', (req, res) => {
         return res.json({ success: true, progetti: projs });
     } else if (azione === 'delete') {
         projs = projs.filter(p => p.id !== progetto.id);
-        fs.writeFileSync(progettiConfigPath, JSON.stringify(projs, null, 2), 'utf8');
+        cloudSet("progetti", projs, progettiConfigPath);
         return res.json({ success: true, progetti: projs });
     }
     res.status(400).json({ success: false, message: 'Azione non valida' });
@@ -973,14 +1130,13 @@ app.post('/api/gioco/save-data', (req, res) => {
     }
 });
 
-app.get('/api/get-db', requireAuth({ app: ['app_careassist', 'careassist'] }), (req, res) => {
+app.get('/api/get-db', requireAuth({ app: ['app_careassist', 'careassist'] }), async (req, res) => {
     try {
-        if (fs.existsSync(careAssistDbFile)) {
-            const data = fs.readFileSync(careAssistDbFile, 'utf8');
-            res.type('application/json').send(data || '{}');
-        } else {
-            res.json({ status: 'not_found' });
+        let data = await cloudGet('careassist', null);
+        if (data === null) {
+            data = fs.existsSync(careAssistDbFile) ? JSON.parse(fs.readFileSync(careAssistDbFile, 'utf8') || '{}') : {};
         }
+        res.json(data);
     } catch(e) {
         res.status(500).json({ error: e.message });
     }
@@ -1013,11 +1169,13 @@ app.post('/api/save-db', requireAuth({ app: ['app_careassist', 'careassist'] }),
 const medNutriLocalPath = path.resolve(__dirname, '..', 'MedNutri_Pro');
 const medNutriDbFile = path.join(medNutriLocalPath, 'mednutri_server_data.json');
 
-app.get('/api/mednutri/get-data', (req, res) => {
+app.get('/api/mednutri/get-data', async (req, res) => {
     try {
+        let data = await cloudGet('mednutri', null);
+        if (data !== null) return res.json(data);
         if (fs.existsSync(medNutriDbFile)) {
-            const data = fs.readFileSync(medNutriDbFile, 'utf8');
-            res.type('application/json').send(data || '{}');
+            const dataF = fs.readFileSync(medNutriDbFile, 'utf8');
+            res.type('application/json').send(dataF || '{}');
         } else {
             const defaultData = {
                 "mednutri_doc_profile": JSON.stringify({"avatar":"👩‍⚕️","name":"Dott.ssa Chiara Diagnosi","spec":"Medico Chirurgo Nutrizionista","clinic":"Ambulatorio Medico"}),
@@ -1030,14 +1188,14 @@ app.get('/api/mednutri/get-data', (req, res) => {
     }
 });
 
-app.post('/api/mednutri/save-data', (req, res) => {
+app.post('/api/mednutri/save-data', async (req, res) => {
     try {
-        let current = {};
-        if (fs.existsSync(medNutriDbFile)) {
+        let current = await cloudGet('mednutri', null);
+        if (!current && fs.existsSync(medNutriDbFile)) {
             try { current = JSON.parse(fs.readFileSync(medNutriDbFile, 'utf8')); } catch(e){}
         }
-        const updated = Object.assign({}, current, req.body);
-        safeWriteAtomic(medNutriDbFile, JSON.stringify(updated, null, 2));
+        const updated = Object.assign({}, current || {}, req.body);
+        await cloudSet('mednutri', updated, medNutriDbFile);
         res.json({ success: true, timestamp: Date.now() });
     } catch(e) {
         res.status(500).json({ error: e.message });
@@ -1146,19 +1304,22 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // API GET: Leggi inventario
-app.get('/api/inventory', (req, res) => {
+app.get('/api/inventory', async (req, res) => {
     try {
-        const data = fs.readFileSync(jsonPath, 'utf8');
-        res.json(JSON.parse(data || '[]'));
+        let data = await cloudGet('inventario', null);
+        if (data === null) {
+            data = fs.existsSync(jsonPath) ? JSON.parse(fs.readFileSync(jsonPath, 'utf8') || '[]') : [];
+        }
+        res.json(data);
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
 // API POST: Salva inventario
-app.post('/api/inventory', (req, res) => {
+app.post('/api/inventory', async (req, res) => {
     try {
-        safeWriteAtomic(jsonPath, JSON.stringify(req.body, null, 4));
+        await cloudSet('inventario', req.body, jsonPath);
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -1166,19 +1327,22 @@ app.post('/api/inventory', (req, res) => {
 });
 
 // API GET: Leggi posizioni
-app.get('/api/locations', (req, res) => {
+app.get('/api/locations', async (req, res) => {
     try {
-        const data = fs.readFileSync(posizioniPath, 'utf8');
-        res.json(JSON.parse(data || '["Garage", "Casa", "Furgone"]'));
+        let data = await cloudGet('posizioni', null);
+        if (data === null) {
+            data = fs.existsSync(posizioniPath) ? JSON.parse(fs.readFileSync(posizioniPath, 'utf8') || '["Garage", "Casa", "Furgone"]') : ["Garage", "Casa", "Furgone"];
+        }
+        res.json(data);
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
 // API POST: Salva posizioni
-app.post('/api/locations', (req, res) => {
+app.post('/api/locations', async (req, res) => {
     try {
-        fs.writeFileSync(posizioniPath, JSON.stringify(req.body, null, 4));
+        await cloudSet('posizioni', req.body, posizioniPath);
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -1272,7 +1436,7 @@ app.post('/api/backup-inventario', (req, res) => {
     
     // Compressione nativa ultra-rapida tramite tar di sistema
     const srcDir = __dirname;
-    const cmd = `tar.exe -a -c -f "${zipPath}" --exclude="node_modules" --exclude=".git" -C "${srcDir}" data public`;
+    const cmd = process.platform === "win32" ? `tar.exe -a -c -f "${zipPath}" --exclude="node_modules" --exclude=".git" -C "${srcDir}" data public` : `tar -czf "${zipPath}" --exclude="node_modules" --exclude=".git" -C "${srcDir}" data public`;
     
     exec(cmd, (err) => {
         if (err) {
@@ -1362,6 +1526,143 @@ app.post('/api/shutdown', requireAuth({ admin: true }), (req, res) => {
 });
 
 // ==============================================================================
+// SINCRONIZZAZIONE DATI CLOUD <-> PC (BUNDLE DATI COMPLETO)
+// ==============================================================================
+
+// Esporta tutti i dati in formato JSON unico (per sincronizzazione con PC o backup)
+app.get('/api/sicurezza/export-data-bundle', (req, res) => {
+    const auth = authFromRequest(req, true);
+    const pin = (req.query && req.query.pin) || '';
+    const isAdmin = (auth && auth.ruolo === 'admin') || (pin.trim().toUpperCase() === PIN_MASTER.toUpperCase());
+    if (!isAdmin) {
+        return res.status(403).json({ success: false, message: "Accesso non autorizzato: operazione riservata all'amministratore." });
+    }
+
+    try {
+        const bundle = {
+            version: '1.0',
+            exportedAt: new Date().toISOString(),
+            source: process.env.RENDER ? 'Render-Cloud' : 'PC-Locale',
+            data: {}
+        };
+
+        const invFile = path.join(__dirname, 'data', 'inventario.json');
+        const posFile = path.join(__dirname, 'data', 'posizioni.json');
+        if (fs.existsSync(invFile)) {
+            try { bundle.data.inventario = JSON.parse(fs.readFileSync(invFile, 'utf8')); } catch(e){}
+        }
+        if (fs.existsSync(posFile)) {
+            try { bundle.data.posizioni = JSON.parse(fs.readFileSync(posFile, 'utf8')); } catch(e){}
+        }
+
+        const ricFile = fs.existsSync(ricettarioJsonPath) ? ricettarioJsonPath : path.join(__dirname, 'data', 'ricette.json');
+        if (fs.existsSync(ricFile)) {
+            try { bundle.data.ricette = JSON.parse(fs.readFileSync(ricFile, 'utf8')); } catch(e){}
+        }
+
+        if (fs.existsSync(operatoriPath)) {
+            try { bundle.data.operatori = JSON.parse(fs.readFileSync(operatoriPath, 'utf8')); } catch(e){}
+        }
+
+        if (fs.existsSync(progettiConfigPath)) {
+            try { bundle.data.progetti = JSON.parse(fs.readFileSync(progettiConfigPath, 'utf8')); } catch(e){}
+        }
+
+        const saluteFile = path.join(__dirname, 'data', 'salute_db.json');
+        if (fs.existsSync(saluteFile)) {
+            try { bundle.data.salute = JSON.parse(fs.readFileSync(saluteFile, 'utf8')); } catch(e){}
+        }
+
+        if (fs.existsSync(medNutriDbFile)) {
+            try { bundle.data.mednutri = JSON.parse(fs.readFileSync(medNutriDbFile, 'utf8')); } catch(e){}
+        }
+
+        if (fs.existsSync(careAssistDbFile)) {
+            try { bundle.data.careassist = JSON.parse(fs.readFileSync(careAssistDbFile, 'utf8')); } catch(e){}
+        }
+
+        const giocoFile = path.join(__dirname, 'data', 'gioco_records.json');
+        if (fs.existsSync(giocoFile)) {
+            try { bundle.data.gioco = JSON.parse(fs.readFileSync(giocoFile, 'utf8')); } catch(e){}
+        }
+
+        res.json({ success: true, bundle });
+    } catch(err) {
+        console.error('[ERRORE EXPORT DATA BUNDLE]', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Importa tutti i dati dal bundle JSON (dal PC al Cloud o viceversa)
+app.post('/api/sicurezza/import-data-bundle', (req, res) => {
+    const auth = authFromRequest(req, true);
+    const { pinAdmin, bundle } = req.body || {};
+    const isAdmin = (auth && auth.ruolo === 'admin') || ((pinAdmin || '').trim().toUpperCase() === PIN_MASTER.toUpperCase());
+    if (!isAdmin) {
+        return res.status(403).json({ success: false, message: "Accesso non autorizzato: operazione riservata all'amministratore." });
+    }
+    if (!bundle || !bundle.data) {
+        return res.status(400).json({ success: false, message: 'Bundle dati non valido.' });
+    }
+
+    try {
+        const b = bundle.data;
+        const updated = [];
+
+        const dDir = path.join(__dirname, 'data');
+        if (!fs.existsSync(dDir)) fs.mkdirSync(dDir, { recursive: true });
+
+        if (Array.isArray(b.inventario)) {
+            safeWriteAtomic(path.join(dDir, 'inventario.json'), JSON.stringify(b.inventario, null, 4));
+            updated.push('inventario');
+        }
+        if (Array.isArray(b.posizioni)) {
+            safeWriteAtomic(path.join(dDir, 'posizioni.json'), JSON.stringify(b.posizioni, null, 4));
+            updated.push('posizioni');
+        }
+        if (Array.isArray(b.ricette)) {
+            const ricFile = fs.existsSync(ricettarioJsonPath) ? ricettarioJsonPath : path.join(dDir, 'ricette.json');
+            safeWriteAtomic(ricFile, JSON.stringify(b.ricette, null, 4));
+            updated.push('ricette');
+        }
+        if (Array.isArray(b.operatori)) {
+            safeWriteAtomic(operatoriPath, JSON.stringify(b.operatori, null, 2));
+            updated.push('operatori');
+        }
+        if (Array.isArray(b.progetti)) {
+            safeWriteAtomic(progettiConfigPath, JSON.stringify(b.progetti, null, 2));
+            updated.push('progetti');
+        }
+        if (b.salute && typeof b.salute === 'object') {
+            safeWriteAtomic(path.join(dDir, 'salute_db.json'), JSON.stringify(b.salute, null, 2));
+            updated.push('salute');
+        }
+        if (b.mednutri && typeof b.mednutri === 'object') {
+            safeWriteAtomic(medNutriDbFile, JSON.stringify(b.mednutri, null, 2));
+            updated.push('mednutri');
+        }
+        if (b.careassist && typeof b.careassist === 'object') {
+            safeWriteAtomic(careAssistDbFile, JSON.stringify(b.careassist, null, 2));
+            updated.push('careassist');
+        }
+        if (b.gioco && typeof b.gioco === 'object') {
+            safeWriteAtomic(path.join(dDir, 'gioco_records.json'), JSON.stringify(b.gioco, null, 2));
+            updated.push('gioco');
+        }
+
+        res.json({
+            success: true,
+            message: 'Sincronizzazione completata con successo! Aggiornati: ' + updated.join(', '),
+            updated,
+            timestamp: Date.now()
+        });
+    } catch(err) {
+        console.error('[ERRORE IMPORT DATA BUNDLE]', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// ==============================================================================
 // CENTRO SICUREZZA, BACKUP E SINCRONIZZAZIONE CLOUD SUITE C. MILELLA
 // ==============================================================================
 app.get('/api/sicurezza/scarica-backup-zip', requireAuth({ admin: true, allowQuery: true }), (req, res) => {
@@ -1372,7 +1673,8 @@ app.get('/api/sicurezza/scarica-backup-zip', requireAuth({ admin: true, allowQue
             : __dirname;
         const tempZip = path.join(__dirname, 'data', `SUITE_MILELLA_BACKUP_${new Date().toISOString().slice(0,10)}.zip`);
         
-        execSync(`tar.exe -a -c -f "${tempZip}" -C "${sourceDir}" *`);
+        const tarZipCmd = process.platform === "win32" ? `tar.exe -a -c -f "${tempZip}" -C "${sourceDir}" *` : `tar -czf "${tempZip}" -C "${sourceDir}" *`;
+        execSync(tarZipCmd);
         res.download(tempZip, `SUITE_MILELLA_BACKUP_${new Date().toISOString().slice(0,10)}.zip`, (err) => {
             try { if (fs.existsSync(tempZip)) fs.unlinkSync(tempZip); } catch(e){}
         });
@@ -1398,7 +1700,8 @@ app.post('/api/sicurezza/crea-backup-locale', requireAuth({ admin: true }), (req
             ? path.join(__dirname, '..', 'AGGIORNAMENTO_RENDER')
             : __dirname;
 
-        execSync(`tar.exe -a -c -f "${destZip}" -C "${sourceDir}" *`);
+        const tarDestCmd = process.platform === "win32" ? `tar.exe -a -c -f "${destZip}" -C "${sourceDir}" *` : `tar -czf "${destZip}" -C "${sourceDir}" *`;
+        execSync(tarDestCmd);
         try { fs.copyFileSync(destZip, path.join(desktopFolder, zipName)); } catch(e){}
 
         const sizeMB = (fs.statSync(destZip).size / (1024 * 1024)).toFixed(1);
@@ -1457,7 +1760,8 @@ app.post('/api/sicurezza/ripristina', requireAuth({ admin: true }), (req, res) =
         }
 
         // Estrazione ripristino
-        execSync(`tar.exe -x -f "${zipPath}" -C "${targetDir}"`);
+        const tarExtractCmd = process.platform === "win32" ? `tar.exe -x -f "${zipPath}" -C "${targetDir}"` : `tar -xzf "${zipPath}" -C "${targetDir}"`;
+        execSync(tarExtractCmd);
         res.json({ success: true, message: 'Ripristino completato con successo!', file: path.basename(zipPath) });
     } catch(err) {
         console.error('Errore ripristino:', err);
