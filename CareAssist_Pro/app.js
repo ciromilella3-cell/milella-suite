@@ -7112,3 +7112,40 @@ async function forzaAggiornamentoApp() {
     window.location.reload(true);
   }, 400);
 }
+
+
+// ============================================================================
+// GUIDA INTERATTIVA AI CONTROLLI (TOUCH MOBILE & DESKTOP)
+// ============================================================================
+function toggleHelpBubble(bubbleId) {
+  var el = document.getElementById(bubbleId);
+  if (!el) return;
+  var isAct = el.classList.contains('active');
+  // Se già attivo, chiudi
+  if (isAct) {
+    el.classList.remove('active');
+  } else {
+    // Chiudi altri se aperti
+    document.querySelectorAll('.field-help-bubble.active').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    el.classList.add('active');
+  }
+}
+
+var _tuttiAiutiAperti = false;
+function toggleTuttiAiutiCampi() {
+  _tuttiAiutiAperti = !_tuttiAiutiAperti;
+  var bubbles = document.querySelectorAll('.field-help-bubble');
+  bubbles.forEach(function(b) {
+    if (_tuttiAiutiAperti) {
+      b.classList.add('active');
+    } else {
+      b.classList.remove('active');
+    }
+  });
+  var btnText = document.getElementById('btn-toggle-help-text');
+  if (btnText) {
+    btnText.textContent = _tuttiAiutiAperti ? 'Nascondi Guida' : 'Mostra Guida Campi';
+  }
+}

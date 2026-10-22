@@ -1277,7 +1277,12 @@
             </div>
           </div>
         </div>
-        <button type="button" class="modal-close" style="color:white; font-size:20px; width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onclick="closeModal('modal-modifica-farmaco')" title="Chiudi finestra" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" id="btn-toggle-field-help" class="btn" style="padding:5px 12px; font-size:11.5px; font-weight:800; background:rgba(255,255,255,0.2); color:#ffffff; border:1px solid rgba(255,255,255,0.35); border-radius:9999px; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" onclick="toggleTuttiAiutiCampi()" title="Tocca per mostrare o nascondere la spiegazione di tutti i campi">
+            <span>💡</span> <span id="btn-toggle-help-text">Mostra Guida Campi</span>
+          </button>
+          <button type="button" class="modal-close" style="color:white; font-size:20px; width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onclick="closeModal('modal-modifica-farmaco')" title="Chiudi finestra" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">✕</button>
+        </div>
       </div>
 
       <form onsubmit="salvaModificaFarmaco(event)">
@@ -1291,11 +1296,22 @@
             </div>
             <div class="form-row" style="margin-bottom:0;">
               <div class="form-group" style="flex:1; min-width:140px; margin-bottom:0;">
-                <label class="form-label" style="color:#1e3a8a;">⏰ Orario Previsto</label>
+                <label class="form-label" style="color:#1e3a8a;">
+                  ⏰ Orario Previsto <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-ora')" title="A cosa serve?">i</span>
+                </label>
+                <div id="help-ora" class="field-help-bubble">
+                  <b>⏰ A cosa serve:</b> L'orario esatto in cui deve suonare il promemoria per l'operatore o familiare.
+                </div>
                 <input type="time" class="form-control" id="edit-farm-ora" required onchange="ricalcolaDosiMultipleModifica()" style="font-weight:800; font-size:15px; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd; height:42px;">
+                <span class="field-help-hint">Ora promemoria sul telefono</span>
               </div>
               <div class="form-group" style="flex:1.4; min-width:170px; margin-bottom:0;">
-                <label class="form-label">Fascia della Giornata</label>
+                <label class="form-label">
+                  Fascia del Giorno <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-fascia')" title="A cosa serve?">i</span>
+                </label>
+                <div id="help-fascia" class="field-help-bubble">
+                  <b>🍽️ A cosa serve:</b> Il contesto del pasto (es. <i>A Colazione</i>, <i>Pranzo</i>, <i>Sera</i>). Aiuta a non dare il farmaco nel momento sbagliato.
+                </div>
                 <select class="form-control" id="edit-farm-fascia" required style="font-weight:600; height:42px;">
                   <option value="Mattina (Digiuno)">Mattina (A Digiuno)</option>
                   <option value="Mattina (Colazione)">Mattina (A Colazione)</option>
@@ -1306,9 +1322,15 @@
                   <option value="Notte (Prima di dormire)">Notte (Prima di dormire)</option>
                   <option value="Al Bisogno">Al Bisogno (SOS)</option>
                 </select>
+                <span class="field-help-hint">Momento rispetto ai pasti</span>
               </div>
               <div class="form-group" style="flex:1.6; min-width:200px; margin-bottom:0;">
-                <label class="form-label">📅 Frequenza / Cadenza</label>
+                <label class="form-label">
+                  📅 Frequenza / Cadenza <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-cadenza')" title="A cosa serve?">i</span>
+                </label>
+                <div id="help-cadenza" class="field-help-bubble">
+                  <b>📅 A cosa serve:</b> Imposta la regola (tutti i giorni, alternata 1/2 e 1 cpr, o giorni alterni). Il sistema calcola da solo cosa tocca oggi.
+                </div>
                 <select class="form-control" id="edit-farm-cadenza" style="font-weight:700; color:#0f172a; height:42px;">
                   <option value="giornaliera">Tutti i giorni (Quotidiana)</option>
                   <option value="quindicinale_15_30">📅 Ogni 15 giorni (il 15 e il 30 del mese)</option>
@@ -1318,6 +1340,7 @@
                   <option value="mensile">Una volta al mese (il 1° del mese)</option>
                   <option value="bisogno">Al bisogno (Sintomatico SOS)</option>
                 </select>
+                <span class="field-help-hint">Regola di ripetizione clinica</span>
               </div>
             </div>
           </div>
@@ -1329,11 +1352,21 @@
             </div>
             <div class="form-row" style="margin-bottom:12px;">
               <div class="form-group" style="flex:1.6; margin-bottom:0;">
-                <label class="form-label">Nome Commerciale Farmaco</label>
+                <label class="form-label">
+                  Nome Commerciale <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-nome')" title="A cosa serve?">i</span>
+                </label>
+                <div id="help-nome" class="field-help-bubble">
+                  <b>🏷️ A cosa serve:</b> Il nome scritto sulla confezione del farmaco (es. <i>Triatec 5 mg</i> o <i>Congescor 2,5 mg</i>).
+                </div>
                 <input type="text" class="form-control" id="edit-farm-nome" required placeholder="Es. Congescor 2,5 mg" style="font-weight:700; font-size:14px;">
               </div>
               <div class="form-group" style="flex:1.4; margin-bottom:0;">
-                <label class="form-label">Principio Attivo</label>
+                <label class="form-label">
+                  Principio Attivo <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-principio')" title="A cosa serve?">i</span>
+                </label>
+                <div id="help-principio" class="field-help-bubble">
+                  <b>🧪 A cosa serve:</b> La molecola chimica (es. <i>Ramipril</i>, <i>Bisoprololo</i>). Utile in caso di sostituzione con farmaco equivalente generico.
+                </div>
                 <input type="text" class="form-control" id="edit-farm-principio" placeholder="Es. Bisoprololo">
               </div>
             </div>
@@ -1342,14 +1375,21 @@
             <div class="form-row" style="margin-bottom:12px; align-items:flex-end;">
               <div class="form-group" style="flex:1.4; margin-bottom:0;">
                 <label class="form-label" title="Specificare la concentrazione o la dose per assunzione">
-                  Dosaggio Unitario <span style="font-size:10px; color:#64748b; text-transform:none;">(es. 2,5 mg / 1 cpr)</span>
+                  Dosaggio Unitario <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-dosaggio')" title="A cosa serve?">i</span>
                 </label>
+                <div id="help-dosaggio" class="field-help-bubble">
+                  <b>⚖️ A cosa serve:</b> La concentrazione della pastiglia prescritta dal medico (es. <i>5 mg</i>, <i>100+25 mg</i>).
+                </div>
                 <input type="text" class="form-control" id="edit-farm-dosaggio" required placeholder="Es. 2,5 mg (1 cpr)">
+                <span class="field-help-hint">Forza della compressa</span>
               </div>
               <div class="form-group" style="flex:1.4; margin-bottom:0;">
                 <label class="form-label" style="color:#0369a1; font-weight:800;">
-                  💊 Quantità per Somministrazione:
+                  💊 Quantità per Volta <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-quota')" title="A cosa serve?">i</span>
                 </label>
+                <div id="help-quota" class="field-help-bubble">
+                  <b>✂️ A cosa serve:</b> Indica se la signora prende mezza compressa (0,5 cpr) o una intera. Il sistema calcola esattamente quanto scalare dalla scatola e raddoppia i giorni di autonomia se prendi mezza pastiglia!
+                </div>
                 <select class="form-control" id="edit-farm-frazione-quota" style="font-weight:700; color:#0369a1; height:42px; border-color:#7dd3fc; background:#f0f9ff;">
                   <option value="1">1 compressa intera (1 cpr)</option>
                   <option value="0.5">1/2 compressa (Mezza dose - 0,5 cpr)</option>
@@ -1357,27 +1397,44 @@
                   <option value="1.5">1 compressa e mezza (1,5 cpr)</option>
                   <option value="2">2 compresse (2 cpr)</option>
                 </select>
+                <span class="field-help-hint">Mezza dose o intera</span>
               </div>
             </div>
 
             <!-- SCORTE, SCATOLE E ALERT -->
             <div class="form-row" style="margin-bottom:0; align-items:flex-end;">
               <div class="form-group" style="flex:1; margin-bottom:0;">
-                <label class="form-label">Cpr / Scatola</label>
+                <label class="form-label">
+                  Cpr / Scatola <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-cpr-scatola')" title="A cosa serve?">i</span>
+                </label>
+                <div id="help-cpr-scatola" class="field-help-bubble">
+                  <b>📦 A cosa serve:</b> Quante pastiglie contiene una confezione integra (es. 14, 28, 30 cpr). Serve al pulsante rapido "+1 Scatola".
+                </div>
                 <input type="number" class="form-control" id="edit-farm-cpr-scatola" min="1" placeholder="28">
+                <span class="field-help-hint">Formato farmacia</span>
               </div>
               <div class="form-group" style="flex:1; margin-bottom:0;">
-                <label class="form-label">Scorta (cpr)</label>
+                <label class="form-label">
+                  Scorta a Casa <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-scorta')" title="A cosa serve?">i</span>
+                </label>
+                <div id="help-scorta" class="field-help-bubble">
+                  <b>🏠 A cosa serve:</b> Quante pastiglie ci sono adesso nell'armadietto dei medicinali. Si scala in automatico a ogni somministrazione.
+                </div>
                 <input type="number" class="form-control" id="edit-farm-scorta" min="0" placeholder="28">
+                <span class="field-help-hint">Pastiglie disponibili ora</span>
               </div>
               <div class="form-group" style="flex:1.2; margin-bottom:0; background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:8px 12px;">
                 <label class="form-label" style="color:#b45309; font-weight:800; margin-bottom:4px; font-size:10.5px; display:flex; align-items:center; gap:4px;">
-                  🔔 Alert Scorte
+                  🔔 Alert Scorte <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-alert')" title="A cosa serve?">i</span>
                 </label>
+                <div id="help-alert" class="field-help-bubble">
+                  <b>🔔 A cosa serve:</b> Quanti giorni prima della fine scorta vuoi vedere l'avviso arancione per richiedere la ricetta al medico curante.
+                </div>
                 <div style="display:flex; align-items:center; gap:6px;">
                   <input type="number" class="form-control" id="edit-farm-giorni-alert" value="7" min="1" max="30" style="font-weight:800; color:#b45309; background:#ffffff; border-color:#fcd34d; height:34px; padding:4px 8px; text-align:center;">
                   <span style="font-size:11px; color:#92400e; font-weight:700; white-space:nowrap;" title="Notifica quando mancano meno di questi giorni">gg prima</span>
                 </div>
+                <span class="field-help-hint" style="color:#b45309;">Preavviso per la ricetta</span>
               </div>
             </div>
           </div>
@@ -1390,6 +1447,10 @@
                 <span style="font-weight:800; color:#166534; font-size:13px; text-transform:uppercase; letter-spacing:0.3px;">
                   Schema Posologico Intelligente
                 </span>
+                <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-schema')" title="A cosa serve?">i</span>
+                <div id="help-schema" class="field-help-bubble" style="width:100%; margin-top:6px;">
+                  <b>⚡ A cosa serve:</b> Se il farmaco va preso più volte al giorno (es. Sinemet 2 o 3 volte al dì), imposta quante dosi e il sistema calcola in automatico le ore distanziate (+12h o +8h).
+                </div>
                 <span style="font-size:11px; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid #86efac;">
                   Calcolo Automatico
                 </span>
@@ -1445,8 +1506,11 @@
           <div style="background:white; border-radius:14px; padding:14px 16px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
               <label class="form-label" style="color:#0f172a; font-weight:800; margin-bottom:0;" for="edit-farm-modo">
-                📋 Modalità di Assunzione & Istruzioni Cliniche
+                📋 Modalità di Assunzione & Istruzioni Cliniche <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-modo')" title="A cosa serve?">i</span>
               </label>
+              <div id="help-modo" class="field-help-bubble">
+                <b>📋 A cosa serve:</b> Istruzioni per chi dà il medicinale (es. <i>A stomaco vuoto 30 min prima dei pasti</i>, <i>Con un bicchiere d'acqua</i>, <i>Non masticare</i>).
+              </div>
               <span style="font-size:11px; color:#64748b; font-weight:600;">Testo espandibile</span>
             </div>
             <textarea class="form-control" id="edit-farm-modo" required rows="3" placeholder="Es. A colazione (Beta-bloccante: controllo frequenza cardiaca). Assumere con un bicchiere d'acqua." style="font-size:13.5px; line-height:1.5; padding:10px 12px; min-height:75px; resize:vertical; font-family:inherit;"></textarea>
@@ -1460,6 +1524,10 @@
                 <span style="font-weight:800; color:#334155; font-size:12.5px; text-transform:uppercase; letter-spacing:0.3px;">
                   Fonte Prescrizione & Tracciabilità Variazione Medica
                 </span>
+                <span class="help-tooltip-trigger" onclick="toggleHelpBubble('help-fonte')" title="A cosa serve?">i</span>
+                <div id="help-fonte" class="field-help-bubble" style="width:100%; margin-top:6px;">
+                  <b>🩺 A cosa serve:</b> Se il cardiologo o il medico di base cambiano l'orario o la dose, scrivi qui chi l'ha prescritto e perché. Rimarrà scritto nella cronologia così nessun operatore o parente si confonde.
+                </div>
               </div>
               <span style="font-size:11px; background:#e2e8f0; color:#475569; padding:2px 8px; border-radius:10px; font-weight:700;">
                 Audit Trail
