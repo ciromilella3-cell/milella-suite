@@ -819,6 +819,17 @@ window.onerror = function(msg, url, line) {
                             <button type="button" class="scale-btn" onclick="triggerScale('{PROF}')" style="width:100%; padding:14px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-size:1.1rem; font-weight:900; border-radius:12px; border:none; cursor:pointer; box-shadow:0 4px 15px rgba(16,185,129,0.4); display:flex; justify-content:center; align-items:center; gap:8px; transition:all 0.2s;">
                                 <span>⚖️</span> <span>REGISTRA PESO DI OGGI</span>
                             </button>
+
+                            <!-- 💧 RAPIDO BICCHIERE ACQUA -->
+                            <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:10px; padding:8px 12px;">
+                                <div style="display:flex; align-items:center; gap:6px; font-size:0.85rem; color:#bae6fd; font-weight:700;">
+                                    <span>💧 Idratazione:</span>
+                                    <span id="quick-water-count-{PROF}">0 bicchieri</span>
+                                </div>
+                                <button type="button" onclick="addQuickWater('{PROF}')" style="background:#0284c7; color:#fff; border:none; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.82rem; cursor:pointer; display:flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(2,132,199,0.4);">
+                                    +1 Bicchiere 🥛
+                                </button>
+                            </div>
                         </div>
 
                         <!-- GRAFICO IMMEDIATO -->
@@ -854,6 +865,34 @@ window.onerror = function(msg, url, line) {
 
                             <div class="progress-bar-container" style="margin-top:10px; background:rgba(255,255,255,0.1); border-radius:20px; overflow:hidden; height:20px;">
                                 <div id="progress-bar-{PROF}" style="height:100%; width:0%; background:#10b981; color:white; text-align:center; font-size:0.75rem; font-weight:bold; line-height:20px; transition:width 0.5s ease;">0%</div>
+                            </div>
+
+                            <!-- 🚀 STIMA INTELLIGENTE TRAGUARDO -->
+                            <div id="goal-prediction-{PROF}" style="margin-top:8px; font-size:0.8rem; font-weight:700; color:#38bdf8; text-align:center; background:rgba(56,189,248,0.08); padding:6px 10px; border-radius:8px; border:1px solid rgba(56,189,248,0.2);">
+                                🎯 Stima Traguardo: Calcolo in corso...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🍽️ VISTA RAPIDA "COSA C'È NEL PIATTO OGGI" -->
+                    <div id="today-meal-box-{PROF}" style="margin-top:16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:14px 16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px;">
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="font-size:1.2rem;">🥗</span>
+                                <span style="font-size:0.95rem; font-weight:800; color:#f8fafc;" id="today-meal-dayname-{PROF}">Menù di Oggi</span>
+                            </div>
+                            <button type="button" onclick="document.getElementById('weekly-menu-{PROF}')?.scrollIntoView({behavior:'smooth'})" style="background:transparent; color:#38bdf8; border:1px solid #38bdf8; padding:3px 10px; border-radius:8px; font-size:0.75rem; font-weight:700; cursor:pointer;">
+                                📅 Tutta la Settimana ➔
+                            </button>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
+                            <div style="background:rgba(15,23,42,0.6); padding:10px 12px; border-radius:10px; border-left:4px solid #10b981;">
+                                <div style="font-size:0.78rem; font-weight:800; color:#34d399; text-transform:uppercase; margin-bottom:4px;">☀️ Pranzo (13:30)</div>
+                                <div id="today-lunch-{PROF}" style="font-size:0.9rem; color:#e2e8f0; line-height:1.4;">Caricamento pasto...</div>
+                            </div>
+                            <div style="background:rgba(15,23,42,0.6); padding:10px 12px; border-radius:10px; border-left:4px solid #38bdf8;">
+                                <div style="font-size:0.78rem; font-weight:800; color:#7dd3fc; text-transform:uppercase; margin-bottom:4px;">🌙 Cena (20:00)</div>
+                                <div id="today-dinner-{PROF}" style="font-size:0.9rem; color:#e2e8f0; line-height:1.4;">Caricamento pasto...</div>
                             </div>
                         </div>
                     </div>

@@ -8211,3 +8211,121 @@ window.closeChartFocusBadge = function(profile) {
         attachChartTouchListeners(profile);
     };
 })();
+
+// ========================================================
+// 💧 QUICK WATER TAP (AGGIUNGI 1 BICCHIERE IN UN CLIC)
+// ========================================================
+window.addQuickWater = function(profile) {
+    if (typeof updateBeverage === 'function') {
+        updateBeverage(profile, 'water', 1);
+    }
+    window.refreshQuickWaterDisplay(profile);
+    if (typeof showToast === 'function') showToast("💧 +1 Bicchiere d'acqua registrato! Ottimo lavoro!");
+};
+
+window.refreshQuickWaterDisplay = function(profile) {
+    const key = 'waterCount_' + profile;
+    const count = parseInt(localStorage.getItem(key)) || 0;
+    const el = document.getElementById('quick-water-count-' + profile);
+    if (el) {
+        let max = 8;
+        if (typeof getPersonalizedWaterTarget === 'function') {
+            max = getPersonalizedWaterTarget(profile).glasses;
+        }
+        el.innerHTML = `<b>${count}</b> / ${max} bicchieri (${(count * 0.25).toFixed(1)}L)`;
+    }
+};
+
+// ========================================================
+// 🍽️ VISTA RAPIDA "COSA C'È NEL PIATTO OGGI"
+// ========================================================
+window.refreshTodayMealBox = function(profile) {
+    const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+    const now = new Date();
+    const dayIndex = now.getDay(); // 0 = Domenica, 1 = Lunedì...
+    const dayName = dayNames[dayIndex];
+
+    const titleEl = document.getElementById('today-meal-dayname-' + profile);
+    const lunchEl = document.getElementById('today-lunch-' + profile);
+    const dinnerEl = document.getElementById('today-dinner-' + profile);
+
+    if (titleEl) titleEl.innerText = `Menù di Oggi (${dayName})`;
+
+    const section = document.getElementById('section-' + profile);
+    if (!section) return;
+    const table = section.querySelector('.weekly-table');
+    if (!table) return;
+
+    // Le righe della tabella sono in ordine: Lunedì (0), Martedì (1), ..., Domenica (6)
+    // Se dayIndex è 0 (Domenica), la riga corrispondente è la 6. Altrimenti dayIndex - 1.
+    const tableRowIndex = (dayIndex === 0) ? 6 : (dayIndex - 1);
+    const rows = table.querySelectorAll('tbody tr');
+    if (rows && rows[tableRowIndex]) {
+        const cells = rows[tableRowIndex].querySelectorAll('td');
+        if (cells.length >= 3) {
+            const lunchText = cells[1].innerText.trim() || 'Nessun pranzo indicato';
+            const dinnerText = cells[2].innerText.trim() || 'Nessuna cena indicata';
+            if (lunchEl) lunchEl.innerHTML = lunchText;
+            if (dinnerEl) dinnerEl.innerHTML = dinnerText;
+        }
+    }
+};
+
+// ========================================================
+// 🚀 STIMA INTELLIGENTE DATA TRAGUARDO
+// ========================================================
+window.calculateGoalPrediction = function(profile, currentWeight, goalWeight, log) {
+    const el = document.getElementById('goal-prediction-' + profile);
+    if (!el) return;
+
+    if (!log || log.length < 2) {
+        el.innerHTML = `🎯 Inserisci qualche pesata nei prossimi giorni per calcolare la stima del traguardo!`;
+        return;
+    }
+
+    if (currentWeight <= goalWeight) {
+        el.innerHTML = `🏆 <b>Traguardo raggiunto!</b> Sei arrivato/a al tuo peso obiettivo (${goalWeight} kg)! 🎉`;
+        return;
+    }
+
+    // Calcolo velocità di perdita negli ultimi 14-30 giorni
+    const firstLog = log[0];
+    const daysElapsed = Math.max(1, (new Date().getTime() - (firstLog.timestamp || new Date(firstLog.date).getTime())) / (1000 * 60 * 60 * 24));
+    const totalLost = firstLog.weight - currentWeight;
+
+    if (totalLost <= 0) {
+        el.innerHTML = `🎯 Mancano <b>${(currentWeight - goalWeight).toFixed(1)} kg</b> all'obiettivo. Mantieni la costanza! 💪`;
+        return;
+    }
+
+    const ratePerDay = totalLost / daysElapsed; // kg persi al giorno
+    const kgRemaining = currentWeight - goalWeight;
+    const daysNeeded = Math.round(kgRemaining / ratePerDay);
+
+    if (daysNeeded > 0 && daysNeeded < 365 * 2) {
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + daysNeeded);
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        const formattedDate = targetDate.toLocaleDateString('it-IT', options);
+        el.innerHTML = `🚀 A questo ritmo (-${(ratePerDay * 7).toFixed(1)} kg/settimana), traguardo stimato: <b>${formattedDate}</b>!`;
+    } else {
+        el.innerHTML = `🎯 Mancano <b>${kgRemaining.toFixed(1)} kg</b> all'obiettivo (${goalWeight} kg). Avanti così!`;
+    }
+};
+
+// Intercettiamo loadProgress per aggiornare l'idratazione rapida, il pasto di oggi e la predizione
+(function() {
+    const origLoadProgress = loadProgress;
+    loadProgress = function(profile) {
+        origLoadProgress(profile);
+        window.refreshQuickWaterDisplay(profile);
+        window.refreshTodayMealBox(profile);
+
+        const key = `weightLog_${profile}`;
+        const log = JSON.parse(localStorage.getItem(key)) || [];
+        const curW = log.length > 0 ? log[log.length - 1].weight : parseFloat(document.getElementById('start_' + profile)?.innerText) || 80;
+        const goalW = parseFloat(document.getElementById('goal_' + profile)?.innerText) || 65;
+        window.calculateGoalPrediction(profile, curW, goalW, log);
+    };
+})();
+
