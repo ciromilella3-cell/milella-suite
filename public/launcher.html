@@ -755,7 +755,7 @@
                                 <span>🩺 CareAssist Pro</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
-                                <input type="checkbox" class="chk-new-app" value="app_salute" style="width:17px; height:17px; accent-color:#d4af37;">
+                                <input type="checkbox" class="chk-new-app" value="app_salute" onchange="aggiornaVisibilitaSaluteNewOp()" style="width:17px; height:17px; accent-color:#d4af37;">
                                 <span>❤️ Progetto Salute</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
@@ -784,6 +784,25 @@
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-new-paz" value="paz_rosa" style="width:16px; height:16px; accent-color:#38bdf8;">
                                 <span>👵 Rosa Annunziata Cavalcante</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Box Selezione Profili Salute (Aggiunta Nuovo) -->
+                    <div id="boxSaluteNewOp" style="display:none; background:rgba(236,72,153,0.08); border:1px solid rgba(236,72,153,0.3); border-radius:12px; padding:10px 12px; margin-top:4px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <label style="font-size:11.5px; color:#f472b6; font-weight:800;">❤️ Profili Benessere/Salute Assegnati:</label>
+                            <button type="button" onclick="toggleTuttiSaluteNewOp()" id="btnTuttiSaluteNewOp" style="background:rgba(236,72,153,0.2); border:1px solid rgba(236,72,153,0.5); color:#fff; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px; cursor:pointer;">
+                                🌐 Tutti i Profili
+                            </button>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:5px;">
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-new-salute" value="moglie" style="width:16px; height:16px; accent-color:#ec4899;">
+                                <span>👩 Maria Carmela (Personale)</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-new-salute" value="marito" style="width:16px; height:16px; accent-color:#ec4899;">
+                                <span>👨 Ciro Milella</span>
                             </label>
                         </div>
                     </div>
@@ -852,7 +871,7 @@
                                 <span>🩺 CareAssist Pro</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
-                                <input type="checkbox" class="chk-edit-app" value="app_salute" style="width:17px; height:17px; accent-color:#38bdf8;">
+                                <input type="checkbox" class="chk-edit-app" value="app_salute" onchange="aggiornaVisibilitaSaluteEditOp()" style="width:17px; height:17px; accent-color:#38bdf8;">
                                 <span>❤️ Progetto Salute</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); cursor:pointer; font-size:12.5px; color:#fff;">
@@ -881,6 +900,25 @@
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-edit-paz" value="paz_rosa" style="width:16px; height:16px; accent-color:#38bdf8;">
                                 <span>👵 Rosa Annunziata Cavalcante</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Box Selezione Profili Salute (Modifica Esistente) -->
+                    <div id="boxSaluteEditOp" style="display:none; background:rgba(236,72,153,0.1); border:1.5px solid rgba(236,72,153,0.4); border-radius:12px; padding:10px 12px; margin-top:2px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <label style="font-size:11.5px; color:#f472b6; font-weight:800;">❤️ Profili Benessere/Salute Assegnati:</label>
+                            <button type="button" onclick="toggleTuttiSaluteEditOp()" id="btnTuttiSaluteEditOp" style="background:rgba(236,72,153,0.25); border:1px solid rgba(236,72,153,0.5); color:#fff; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px; cursor:pointer;">
+                                🌐 Tutti i Profili
+                            </button>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:5px;">
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-edit-salute" value="moglie" style="width:16px; height:16px; accent-color:#ec4899;">
+                                <span>👩 Maria Carmela (Personale)</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-edit-salute" value="marito" style="width:16px; height:16px; accent-color:#ec4899;">
+                                <span>👨 Ciro Milella</span>
                             </label>
                         </div>
                     </div>
@@ -1618,6 +1656,7 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_user_pin', pin);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
+                    localStorage.setItem('milella_profili_salute', JSON.stringify(data.profiliSalute || []));
                     localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'operatore');
@@ -1674,6 +1713,7 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
                     localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
+                    localStorage.setItem('milella_profili_salute', JSON.stringify(['all']));
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'admin');
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
@@ -1692,6 +1732,7 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_user_pin', pin);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
+                    localStorage.setItem('milella_profili_salute', JSON.stringify(data.profiliSalute || []));
                     localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'operatore');
@@ -1977,10 +2018,57 @@ document.addEventListener('fullscreenchange', () => {
         return Array.from(chks).map(c => c.value);
     }
 
+    function toggleTuttiSaluteNewOp() {
+        const chks = document.querySelectorAll('.chk-new-salute');
+        const tutti = Array.from(chks).every(c => c.checked);
+        chks.forEach(c => c.checked = !tutti);
+        const btn = document.getElementById('btnTuttiSaluteNewOp');
+        if (btn) btn.textContent = tutti ? '🌐 Tutti i Profili' : '✕ Deseleziona Tutti';
+    }
+
+    function toggleTuttiSaluteEditOp() {
+        const chks = document.querySelectorAll('.chk-edit-salute');
+        const tutti = Array.from(chks).every(c => c.checked);
+        chks.forEach(c => c.checked = !tutti);
+        const btn = document.getElementById('btnTuttiSaluteEditOp');
+        if (btn) btn.textContent = tutti ? '🌐 Tutti i Profili' : '✕ Deseleziona Tutti';
+    }
+
+    function aggiornaVisibilitaSaluteNewOp() {
+        const chkSalute = document.querySelector('.chk-new-app[value="app_salute"]');
+        const box = document.getElementById('boxSaluteNewOp');
+        if (box) {
+            box.style.display = (chkSalute && chkSalute.checked) ? 'block' : 'none';
+        }
+    }
+
+    function aggiornaVisibilitaSaluteEditOp() {
+        const chkSalute = document.querySelector('.chk-edit-app[value="app_salute"]');
+        const box = document.getElementById('boxSaluteEditOp');
+        if (box) {
+            box.style.display = (chkSalute && chkSalute.checked) ? 'block' : 'none';
+        }
+    }
+
+    function getSelectedSaluteNewOp() {
+        const chks = document.querySelectorAll('.chk-new-salute:checked');
+        return Array.from(chks).map(c => c.value);
+    }
+
+    function getSelectedSaluteEditOp() {
+        const chks = document.querySelectorAll('.chk-edit-salute:checked');
+        return Array.from(chks).map(c => c.value);
+    }
+
     const NOMI_PAZIENTI_MAP = {
         'paz_aldo': 'Aldo Zamparino',
         'paz_angela': 'Angela Mazzicone',
         'paz_rosa': 'Rosa Annunziata Cavalcante'
+    };
+
+    const NOMI_SALUTE_MAP = {
+        'moglie': 'Maria Carmela',
+        'marito': 'Ciro Milella'
     };
 
     function renderOps(ops) {
@@ -2033,6 +2121,21 @@ document.addEventListener('fullscreenchange', () => {
                 }
             }
 
+            // Calcolo badge profili Salute se assegnata l'app
+            let saluteBadgeHtml = '';
+            let saluteMsgStr = '';
+            const haSalute = op.appAbilitate && (op.appAbilitate.includes('all') || op.appAbilitate.includes('app_salute'));
+            if (haSalute) {
+                if (!op.profiliSalute || op.profiliSalute.length === 0) {
+                    saluteBadgeHtml = `<span style="color:#f472b6; background:rgba(236,72,153,0.15); padding:2px 7px; border-radius:5px; font-size:11px; font-weight:700;">🌐 Tutti i Profili</span>`;
+                    saluteMsgStr = 'Tutti i profili';
+                } else {
+                    const salNomiList = op.profiliSalute.map(sid => NOMI_SALUTE_MAP[sid] || sid);
+                    saluteBadgeHtml = salNomiList.map(n => `<span style="color:#f472b6; background:rgba(236,72,153,0.15); padding:2px 7px; border-radius:5px; font-size:11px; font-weight:700; margin-right:3px;">👤 ${n}</span>`).join('');
+                    saluteMsgStr = salNomiList.join(', ');
+                }
+            }
+
             // Messaggio per invio rapido via WhatsApp o Mail
             const portaleUrl = window.location.origin + '/launcher.html';
             let msgTesto = `Ciao ${op.nome},\necco il tuo accesso alla Suite Aziendale C. Milella.\n\n🌐 Portale: ${portaleUrl}\n🔑 Tuo PIN Personale: ${op.codice}\n📱 Tue App Assegnate: ${appLabelText}`;
@@ -2062,6 +2165,11 @@ document.addEventListener('fullscreenchange', () => {
                                 <span style="color:#94a3b8; font-size:11px;">Pazienti abilitati:</span> ${pazBadgeHtml}
                             </div>
                             ` : ''}
+                            ${saluteBadgeHtml ? `
+                            <div style="margin-top:2px;">
+                                <span style="color:#94a3b8; font-size:11px;">Profili salute abilitati:</span> ${saluteBadgeHtml}
+                            </div>
+                            ` : ''}
                             ${op.ruolo !== 'admin' ? `
                             <div style="margin-top:2px;">
                                 <span style="color:#94a3b8; font-size:11px;">Permessi terapie:</span> 
@@ -2076,7 +2184,7 @@ document.addEventListener('fullscreenchange', () => {
                 ${op.ruolo !== 'admin' ? `
                     <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
                         <button onclick="avviaModificaOp('${op.id}')" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; padding:6px 12px; border-radius:8px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
-                            ✏️ Modifica App & Pazienti
+                            ✏️ Modifica App & Permessi
                         </button>
                         <a href="${waLink}" target="_blank" title="Invia credenziali WhatsApp" style="text-decoration:none; background:rgba(37,211,102,0.2); border:1px solid #25d366; color:#86efac; padding:5px 9px; border-radius:8px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
                             💬 WhatsApp
@@ -2128,7 +2236,18 @@ document.addEventListener('fullscreenchange', () => {
         const btnPaz = document.getElementById('btnTuttiPazEditOp');
         if (btnPaz) btnPaz.textContent = isAllPaz ? '✕ Deseleziona Tutti' : '🌐 Tutti i Pazienti';
 
+        // Imposta i checkbox per i profili salute assegnati
+        const profiliSalute = op.profiliSalute || [];
+        const isAllSal = profiliSalute.length === 0;
+        const chksSal = document.querySelectorAll('.chk-edit-salute');
+        chksSal.forEach(cs => {
+            cs.checked = isAllSal ? true : profiliSalute.includes(cs.value);
+        });
+        const btnSal = document.getElementById('btnTuttiSaluteEditOp');
+        if (btnSal) btnSal.textContent = isAllSal ? '✕ Deseleziona Tutti' : '🌐 Tutti i Profili';
+
         aggiornaVisibilitaPazientiEditOp();
+        aggiornaVisibilitaSaluteEditOp();
 
         if (box) {
             box.style.display = 'block';
@@ -2179,6 +2298,14 @@ document.addEventListener('fullscreenchange', () => {
             pazSalvati = (selPaz.length === totPaz || selPaz.length === 0) ? [] : selPaz;
         }
 
+        // Profili Salute selezionati
+        let saluteSalvati = [];
+        if (appSalvate.includes('all') || appSalvate.includes('app_salute')) {
+            const selSal = getSelectedSaluteEditOp();
+            const totSal = document.querySelectorAll('.chk-edit-salute').length;
+            saluteSalvati = (selSal.length === totSal || selSal.length === 0) ? [] : selSal;
+        }
+
         const canEditTerapie = document.getElementById('editOpCanEditTerapie') ? document.getElementById('editOpCanEditTerapie').checked : false;
 
         try {
@@ -2188,7 +2315,7 @@ document.addEventListener('fullscreenchange', () => {
                 body: JSON.stringify({
                     pinAdmin: currentAdminPin || "",
                     azione: 'update',
-                    operatore: { id, nome, codice, appAbilitate: appSalvate, pazAbilitati: pazSalvati, canEditTerapie }
+                    operatore: { id, nome, codice, appAbilitate: appSalvate, pazAbilitati: pazSalvati, profiliSalute: saluteSalvati, canEditTerapie }
                 })
             });
             const data = await res.json();
@@ -2230,6 +2357,14 @@ document.addEventListener('fullscreenchange', () => {
             pazSalvati = (selPaz.length === totPaz || selPaz.length === 0) ? [] : selPaz;
         }
 
+        // Profili Salute selezionati
+        let saluteSalvati = [];
+        if (appSalvate.includes('all') || appSalvate.includes('app_salute')) {
+            const selSal = getSelectedSaluteNewOp();
+            const totSal = document.querySelectorAll('.chk-new-salute').length;
+            saluteSalvati = (selSal.length === totSal || selSal.length === 0) ? [] : selSal;
+        }
+
         const canEditTerapie = document.getElementById('newOpCanEditTerapie') ? document.getElementById('newOpCanEditTerapie').checked : false;
 
         try {
@@ -2239,7 +2374,7 @@ document.addEventListener('fullscreenchange', () => {
                 body: JSON.stringify({
                     pinAdmin: currentAdminPin || "",
                     azione: 'add',
-                    operatore: { nome, codice, ruolo: 'operatore', appAbilitate: appSalvate, pazAbilitati: pazSalvati, canEditTerapie }
+                    operatore: { nome, codice, ruolo: 'operatore', appAbilitate: appSalvate, pazAbilitati: pazSalvati, profiliSalute: saluteSalvati, canEditTerapie }
                 })
             });
             const data = await res.json();
@@ -2249,8 +2384,11 @@ document.addEventListener('fullscreenchange', () => {
                 if (document.getElementById('newOpCanEditTerapie')) document.getElementById('newOpCanEditTerapie').checked = false;
                 document.querySelectorAll('.chk-new-app').forEach(c => c.checked = false);
                 document.querySelectorAll('.chk-new-paz').forEach(c => c.checked = false);
+                document.querySelectorAll('.chk-new-salute').forEach(c => c.checked = false);
                 const boxPaz = document.getElementById('boxPazientiNewOp');
                 if (boxPaz) boxPaz.style.display = 'none';
+                const boxSal = document.getElementById('boxSaluteNewOp');
+                if (boxSal) boxSal.style.display = 'none';
                 renderOps(data.operatori);
                 mostraToastOp(`✅ Operatore ${nome} aggiunto con ${selectedApps.length} app! Condividi il PIN via WhatsApp o Email.`, false);
             }
@@ -2809,9 +2947,11 @@ document.addEventListener('fullscreenchange', () => {
             if (data.success) {
                 localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
                 localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
+                localStorage.setItem('milella_profili_salute', JSON.stringify(data.profiliSalute || []));
                 localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
                 localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                 localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
+                localStorage.setItem('milella_last_authenticated_salute', JSON.stringify(data.profiliSalute || []));
                 localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
             }
         }).catch(() => {});

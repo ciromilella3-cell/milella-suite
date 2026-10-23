@@ -789,6 +789,7 @@ app.post('/api/auth/login', (req, res) => {
             nome: found.nome,
             appAbilitate: found.appAbilitate || [],
             pazAbilitati: found.pazAbilitati || [],
+            profiliSalute: found.profiliSalute || [],
             canEditTerapie: !!found.canEditTerapie,
             token: signToken({ i: found.id, h: pinHash(found.codice), e: Date.now() + AUTH_TTL_MS })
         });
@@ -824,6 +825,7 @@ app.post('/api/operatori/gestione', (req, res) => {
             codice: operatore.codice.trim(),
             appAbilitate: operatore.appAbilitate || (operatore.appId ? [operatore.appId] : []),
             pazAbilitati: operatore.pazAbilitati || [],
+            profiliSalute: operatore.profiliSalute || [],
             canEditTerapie: !!operatore.canEditTerapie,
             attivo: true
         };
@@ -842,6 +844,7 @@ app.post('/api/operatori/gestione', (req, res) => {
                     codice: operatore.codice !== undefined ? operatore.codice.trim() : o.codice,
                     appAbilitate: operatore.appAbilitate || (operatore.appId ? [operatore.appId] : o.appAbilitate),
                     pazAbilitati: operatore.pazAbilitati !== undefined ? operatore.pazAbilitati : (o.pazAbilitati || []),
+                    profiliSalute: operatore.profiliSalute !== undefined ? operatore.profiliSalute : (o.profiliSalute || []),
                     canEditTerapie: operatore.canEditTerapie !== undefined ? !!operatore.canEditTerapie : !!o.canEditTerapie
                 };
             }

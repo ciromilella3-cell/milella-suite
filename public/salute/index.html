@@ -802,8 +802,18 @@ window.onerror = function(msg, url, line) {
     if (!globalProfiles.includes('marito')) globalProfiles.unshift('marito');
     if (!globalProfiles.includes('moglie')) globalProfiles.push('moglie');
     localStorage.setItem('health_profiles', JSON.stringify(globalProfiles));
+
+    // Controllo permessi operatore: se l'operatore ha restrizioni sui profili salute, mostra SOLO i profili assegnati
+    const userRole = localStorage.getItem('milella_last_authenticated_role') || localStorage.getItem('milella_role');
+    const allowedHealthProfiles = JSON.parse(localStorage.getItem('milella_profili_salute') || '[]');
+    let visibleProfiles = [...globalProfiles];
+    if (userRole !== 'admin' && allowedHealthProfiles && allowedHealthProfiles.length > 0 && !allowedHealthProfiles.includes('all')) {
+        visibleProfiles = globalProfiles.filter(p => allowedHealthProfiles.includes(p));
+        if (visibleProfiles.length === 0) visibleProfiles = ['moglie'];
+    }
+
     let savedActive = localStorage.getItem('activeProfile');
-    let activeProfile = (savedActive && globalProfiles.includes(savedActive)) ? savedActive : 'marito';
+    let activeProfile = (savedActive && visibleProfiles.includes(savedActive)) ? savedActive : visibleProfiles[0];
     window.activeProfile = activeProfile;
     
     function getProfileDisplayName(prof) {
@@ -821,7 +831,7 @@ window.onerror = function(msg, url, line) {
         if(!bar) return;
         bar.innerHTML = '';
         
-        globalProfiles.forEach(prof => {
+        visibleProfiles.forEach(prof => {
             const btn = document.createElement('button');
             btn.className = 'btn-profile-pill';
             btn.style.padding = '12px 22px';
@@ -891,31 +901,33 @@ window.onerror = function(msg, url, line) {
             bar.appendChild(btn);
         });
         
-        // Pulsante Aggiungi
-        const addBtn = document.createElement('button');
-        addBtn.className = 'btn-print';
-        addBtn.style.background = '#ffb300';
-        addBtn.style.color = '#000';
-        addBtn.style.borderRadius = '20px';
-        addBtn.innerText = '➕ Nuovo';
-        addBtn.onclick = () => {
-            document.getElementById('new-profile-modal').style.display = 'flex';
-            setTimeout(() => document.getElementById('new-profile-name').focus(), 100);
-        };
-        bar.appendChild(addBtn);
+        // Pulsante Aggiungi (Solo per Master Admin)
+        if (userRole === 'admin') {
+            const addBtn = document.createElement('button');
+            addBtn.className = 'btn-print';
+            addBtn.style.background = '#ffb300';
+            addBtn.style.color = '#000';
+            addBtn.style.borderRadius = '20px';
+            addBtn.innerText = '➕ Nuovo';
+            addBtn.onclick = () => {
+                document.getElementById('new-profile-modal').style.display = 'flex';
+                setTimeout(() => document.getElementById('new-profile-name').focus(), 100);
+            };
+            bar.appendChild(addBtn);
+        }
     }
     
     function renderProfiles() {
         // Se un profilo non ha ancora la sua scheda nel DOM, rigenera le schede
-        let missing = globalProfiles.some(prof => !document.getElementById('section-' + prof));
+        let missing = visibleProfiles.some(prof => !document.getElementById('section-' + prof));
         if (missing && typeof generateHTMLForAll === 'function') {
             generateHTMLForAll();
         }
-        // Nascondi tutti i profili e mostra solo quello attivo
+        // Nascondi tutti i profili e mostra solo quello attivo e permesso
         globalProfiles.forEach(prof => {
             let section = document.getElementById('section-' + prof);
             if(section) {
-                section.style.display = (prof === activeProfile) ? 'block' : 'none';
+                section.style.display = (prof === activeProfile && visibleProfiles.includes(prof)) ? 'block' : 'none';
             }
         });
     }
