@@ -8111,3 +8111,103 @@ window.saveEditedWeightFromModal = function() {
 
     closeDeleteModal();
 };
+
+// ========================================================
+// 🔍 VISUALIZZAZIONE IN GRANDE AL TOCCO SUL PUNTO DEL GRAFICO
+// ========================================================
+window.showChartPointFocus = function(profile, index) {
+    const chart = charts[profile];
+    if (!chart || !chart.data || !chart.data.labels) return;
+
+    const label = chart.data.labels[index];
+    const dataset = chart.data.datasets[0];
+    if (!dataset || !dataset.data) return;
+    const weight = dataset.data[index];
+
+    const badge = document.getElementById(`chart-focus-badge-${profile}`);
+    const dateEl = document.getElementById(`chart-focus-date-${profile}`);
+    const weightEl = document.getElementById(`chart-focus-weight-${profile}`);
+    const diffEl = document.getElementById(`chart-focus-diff-${profile}`);
+    const manageBtn = document.getElementById(`chart-focus-manage-btn-${profile}`);
+
+    if (!badge || !dateEl || !weightEl || !diffEl) return;
+
+    // Formattazione data
+    dateEl.innerHTML = `📅 Pesata del <b>${label}</b>`;
+    weightEl.innerHTML = `${Number(weight).toFixed(1)} <span style="font-size:1.1rem; color:#94a3b8; font-weight:700;">kg</span>`;
+
+    // Calcolo variazione rispetto alla pesata precedente nel grafico
+    if (index > 0) {
+        const prevWeight = dataset.data[index - 1];
+        const diff = Math.round((weight - prevWeight) * 10) / 10;
+        if (diff < 0) {
+            diffEl.innerHTML = `📉 ${diff.toFixed(1)} kg`;
+            diffEl.style.background = 'rgba(16, 185, 129, 0.2)';
+            diffEl.style.color = '#34d399';
+            diffEl.style.border = '1px solid #059669';
+        } else if (diff > 0) {
+            diffEl.innerHTML = `📈 +${diff.toFixed(1)} kg`;
+            diffEl.style.background = 'rgba(239, 68, 68, 0.2)';
+            diffEl.style.color = '#f87171';
+            diffEl.style.border = '1px solid #dc2626';
+        } else {
+            diffEl.innerHTML = `⚖️ Stabile (0.0 kg)`;
+            diffEl.style.background = 'rgba(148, 163, 184, 0.2)';
+            diffEl.style.color = '#cbd5e1';
+            diffEl.style.border = '1px solid #64748b';
+        }
+        diffEl.style.display = 'inline-block';
+    } else {
+        diffEl.innerHTML = `🏁 Inizio rilevazione`;
+        diffEl.style.background = 'rgba(56, 189, 248, 0.2)';
+        diffEl.style.color = '#38bdf8';
+        diffEl.style.border = '1px solid #0284c7';
+        diffEl.style.display = 'inline-block';
+    }
+
+    // Configurazione pulsante Gestisci (Modifica / Elimina)
+    if (manageBtn) {
+        manageBtn.onclick = function() {
+            window._pendingDelete = { profile, label, value: weight };
+            const modalText = document.getElementById('delete-modal-text');
+            const modalInput = document.getElementById('edit-modal-weight-input');
+            if (modalText) modalText.innerHTML = `Pesata del <b>${label}</b> (Attuale: <b>${weight} kg</b>)`;
+            if (modalInput) modalInput.value = weight;
+            const modal = document.getElementById('delete-modal');
+            if (modal) modal.style.display = 'flex';
+        };
+    }
+
+    badge.style.display = 'block';
+};
+
+window.closeChartFocusBadge = function(profile) {
+    const badge = document.getElementById(`chart-focus-badge-${profile}`);
+    if (badge) badge.style.display = 'none';
+};
+
+// Riconfigurazione interattiva su click e tocco per i grafici
+(function() {
+    function attachChartTouchListeners(profile) {
+        const canvas = document.getElementById(`chart-${profile}`);
+        if (!canvas) return;
+
+        function handlePointer(evt) {
+            const chart = charts[profile];
+            if (!chart) return;
+            const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, true);
+            if (points && points.length > 0) {
+                const firstPoint = points[0];
+                window.showChartPointFocus(profile, firstPoint.index);
+            }
+        }
+
+        canvas.onclick = handlePointer;
+    }
+
+    const prevDraw = drawChart;
+    drawChart = function(profile, log, startWeight) {
+        prevDraw(profile, log, startWeight);
+        attachChartTouchListeners(profile);
+    };
+})();
