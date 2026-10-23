@@ -253,6 +253,7 @@ window.onerror = function(msg, url, line) {
             if (data && data.success) {
                 // Sblocco riuscito per questa sessione
                 sessionStorage.setItem('salute_session_unlocked', 'true');
+                sessionStorage.setItem('milella_session_unlocked', 'true');
                 sessionStorage.setItem('salute_user_nome', data.nome || 'Operatore');
                 localStorage.setItem('milella_last_authenticated_pin', pin);
                 if (data.token) localStorage.setItem('milella_token', data.token);

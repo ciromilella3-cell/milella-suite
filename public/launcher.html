@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -1643,6 +1643,8 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_last_authenticated_role', 'admin');
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
+                    sessionStorage.setItem('milella_session_unlocked', 'true');
+                    sessionStorage.setItem('salute_session_unlocked', 'true');
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
                     localStorage.setItem('milella_user_nome', data.nome);
@@ -1653,6 +1655,8 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'operatore');
                     localStorage.setItem('milella_last_authenticated_pin', pin);
+                    sessionStorage.setItem('milella_session_unlocked', 'true');
+                    sessionStorage.setItem('salute_session_unlocked', 'true');
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
                     localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
