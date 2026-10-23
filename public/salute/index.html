@@ -1785,7 +1785,7 @@ window.onerror = function(msg, url, line) {
 </div>
 
 <script>
-function confirmNewProfileModal() {
+async function confirmNewProfileModal() {
     let nameInput = document.getElementById('new-profile-name');
     let name = nameInput.value;
     if(name && name.trim()) {
@@ -1840,9 +1840,26 @@ function confirmNewProfileModal() {
             
             renderTabs();
             renderProfiles();
+
+            // Sincronizza immediatamente il nuovo profilo con il Cloud
+            try {
+                if (typeof window.syncSaluteToCloud === 'function') {
+                    const syncPayload = {
+                        health_profiles: JSON.stringify(globalProfiles),
+                        activeProfile: id
+                    };
+                    syncPayload['profileName_' + id] = name.trim();
+                    syncPayload['profileStats_' + id] = JSON.stringify(stats);
+                    if (w !== "---") {
+                        syncPayload['weightLog_' + id] = JSON.stringify([{ date: new Date().toISOString().split('T')[0], weight: parseFloat(w) }]);
+                    }
+                    await window.syncSaluteToCloud(syncPayload);
+                }
+            } catch(eSync) {}
+
             setTimeout(() => {
                 window.location.reload(); // reload for chart.js binds
-            }, 500);
+            }, 300);
         } else if(globalProfiles.includes(id)) {
             alert("Profilo già esistente!");
         }

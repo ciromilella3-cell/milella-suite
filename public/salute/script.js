@@ -7991,16 +7991,22 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
             console.log('☁️ Progetto Salute: Dati sincronizzati dal Cloud!');
             if (typeof renderTabs === 'function' && typeof globalProfiles !== 'undefined') {
                 try {
+                    const oldProfiles = [...globalProfiles];
                     globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
                     let act = localStorage.getItem('activeProfile');
                     activeProfile = (act && globalProfiles.includes(act)) ? act : globalProfiles[0];
+                    
+                    const isProfilesChanged = globalProfiles.length !== oldProfiles.length || globalProfiles.some((p, i) => p !== oldProfiles[i]);
+                    if (isProfilesChanged) {
+                        if (typeof generateHTMLForAll === 'function') generateHTMLForAll();
+                        if (typeof window.initAllProfiles === 'function') window.initAllProfiles();
+                    }
                     renderTabs();
                     if (typeof renderProfiles === 'function') renderProfiles();
                 } catch(eR) {}
             }
             if (typeof loadProgress === 'function') {
-                loadProgress('marito');
-                loadProgress('moglie');
+                (JSON.parse(localStorage.getItem('health_profiles') || '["marito","moglie"]')).forEach(p => loadProgress(p));
             }
         }
         return true;
