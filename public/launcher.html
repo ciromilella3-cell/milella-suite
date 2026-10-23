@@ -1645,6 +1645,8 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                     sessionStorage.setItem('milella_session_unlocked', 'true');
                     sessionStorage.setItem('salute_session_unlocked', 'true');
+                    localStorage.setItem('milella_session_unlocked', 'true');
+                    localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
                     localStorage.setItem('milella_user_nome', data.nome);
@@ -1657,6 +1659,8 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_last_authenticated_pin', pin);
                     sessionStorage.setItem('milella_session_unlocked', 'true');
                     sessionStorage.setItem('salute_session_unlocked', 'true');
+                    localStorage.setItem('milella_session_unlocked', 'true');
+                    localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
                     localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');

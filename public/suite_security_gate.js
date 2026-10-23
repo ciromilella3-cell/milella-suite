@@ -116,7 +116,24 @@
             });
             const data = await resp.json();
             if (data && data.success) {
+                // Se sul dispositivo l'accesso principale è stato effettuato da Admin, l'app accetta solo credenziali con permessi
+                const lastMainRole = localStorage.getItem('milella_last_authenticated_role');
+                if (lastMainRole === 'admin' && data.ruolo !== 'admin') {
+                    // Controlla se questo operatore è abilitato all'app corrente
+                    const enabledApps = data.appAbilitate || [];
+                    const currentAppKey = (path.includes('veicoli') ? 'veicoli' : (path.includes('salute') ? 'salute' : (path.includes('careassist') ? 'careassist' : (path.includes('inventario') ? 'attrezzi' : (path.includes('ricettario') ? 'ricettario' : '')))));
+                    if (currentAppKey && !enabledApps.includes('all') && !enabledApps.includes(currentAppKey)) {
+                        if (err) {
+                            err.textContent = 'Accesso negato: questa sessione richiede il PIN Admin.';
+                            err.style.display = 'block';
+                        }
+                        return;
+                    }
+                }
+
                 sessionStorage.setItem(SESSION_KEY, 'true');
+                localStorage.setItem(SESSION_KEY, 'true');
+                localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                 sessionStorage.setItem('milella_user_nome', data.nome || 'Operatore');
                 localStorage.setItem('milella_last_authenticated_pin', pin);
                 if (data.token) localStorage.setItem('milella_token', data.token);
@@ -134,6 +151,7 @@
             const savedPin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_user_pin') || localStorage.getItem('milella_last_authenticated_pin');
             if (savedPin && pin.toLowerCase() === savedPin.toLowerCase()) {
                 sessionStorage.setItem(SESSION_KEY, 'true');
+                localStorage.setItem(SESSION_KEY, 'true');
                 const overlay = document.getElementById('suiteSecurityGateOverlay');
                 if (overlay) overlay.style.display = 'none';
             } else {
@@ -153,12 +171,28 @@
             return;
         }
         sessionStorage.setItem(SESSION_KEY, 'true');
+        localStorage.setItem(SESSION_KEY, 'true');
+        localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
         const overlay = document.getElementById('suiteSecurityGateOverlay');
         if (overlay) overlay.style.display = 'none';
     }
 
     function checkGateState() {
-        const isUnlocked = sessionStorage.getItem(SESSION_KEY) === 'true';
+        // 1. Se la sessione è già sbloccata nel tab corrente (sessionStorage)
+        let isUnlocked = sessionStorage.getItem(SESSION_KEY) === 'true';
+
+        // 2. Se non è sbloccata nel tab, controlla se l'utente ha appena sbloccato il Launcher principale come Admin negli ultimi 60 minuti
+        if (!isUnlocked) {
+            const localUnlocked = localStorage.getItem(SESSION_KEY) === 'true';
+            const unlockTime = parseInt(localStorage.getItem('milella_session_unlocked_time') || '0', 10);
+            const isFresh = (Date.now() - unlockTime) < (60 * 60 * 1000); // 1 ora di sessione attiva condivisa
+            const role = localStorage.getItem('milella_last_authenticated_role');
+            if (localUnlocked && isFresh && role === 'admin') {
+                sessionStorage.setItem(SESSION_KEY, 'true');
+                isUnlocked = true;
+            }
+        }
+
         if (!isUnlocked) {
             injectGateUI();
             const overlay = document.getElementById('suiteSecurityGateOverlay');
@@ -169,12 +203,17 @@
                     if (inp) inp.focus();
                 }, 200);
             }
+        } else {
+            const overlay = document.getElementById('suiteSecurityGateOverlay');
+            if (overlay) overlay.style.display = 'none';
         }
     }
 
     // Funzione globale esportata per bloccare manualmente l'app
     window.lockMilellaSuite = function() {
         sessionStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem('milella_session_unlocked_time');
         checkGateState();
         const inp = document.getElementById('suiteGatePinInput');
         if (inp) { inp.value = ''; inp.focus(); }
