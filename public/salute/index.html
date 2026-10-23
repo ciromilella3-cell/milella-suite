@@ -611,17 +611,17 @@ window.onerror = function(msg, url, line) {
         <main class="dashboard">
             
     <!-- TABS INJECTED -->
-    <div class="sticky-profile-header no-print" style="position:sticky; top:10px; z-index:900; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); border-radius:18px; padding:14px 18px; margin-bottom:20px; box-shadow:0 8px 25px rgba(0,0,0,0.12); border:2px solid #e2e8f0;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+    <div class="sticky-profile-header no-print" style="position:relative; z-index:50; background:linear-gradient(135deg, #0b1120 0%, #1e293b 100%); border-radius:18px; padding:14px 18px; margin-bottom:18px; box-shadow:0 8px 20px rgba(0,0,0,0.35); border:1.5px solid #334155;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
             <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:1.3rem;">🎯</span>
-                <span style="font-size:0.85rem; text-transform:uppercase; font-weight:800; color:#64748b; letter-spacing:0.5px;">Scegli la Persona:</span>
+                <span style="font-size:1.2rem;">🎯</span>
+                <span style="font-size:0.85rem; text-transform:uppercase; font-weight:800; color:#94a3b8; letter-spacing:0.5px;">Scegli la Persona:</span>
             </div>
-            <div id="active-profile-indicator" style="font-size:0.95rem; font-weight:800; padding:4px 14px; border-radius:20px; background:#f1f5f9; color:#0f172a;">
-                Caricamento...
+            <div id="active-profile-indicator" style="font-size:0.9rem; font-weight:800; padding:4px 14px; border-radius:20px; background:rgba(255,255,255,0.1); color:#38bdf8; border:1px solid rgba(56,189,248,0.3);">
+                👤 Profilo Attivo: ...
             </div>
         </div>
-        <div id="tabs-bar" style="display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 8px 2px; align-items:center;">
+        <div id="tabs-bar" style="display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 4px 2px; align-items:center;">
             <!-- Tabs generate qui -->
         </div>
     </div>
@@ -701,7 +701,15 @@ window.onerror = function(msg, url, line) {
                 btn.style.boxShadow = '0 2px 6px rgba(0,0,0,0.06)';
             }
             
-            btn.innerHTML = '<span>' + profIcon + '</span> <span>' + getProfileDisplayName(prof) + '</span>' + (prof === activeProfile ? ' <span style="font-size:0.8rem; background:rgba(255,255,255,0.25); padding:2px 8px; border-radius:12px; margin-left:4px;">ATTIVO</span>' : '');
+            btn.innerHTML = '<span>' + profIcon + '</span> <span>' + getProfileDisplayName(prof) + '</span>' + (prof === activeProfile ? ' <span style="font-size:0.75rem; background:rgba(255,255,255,0.3); padding:2px 8px; border-radius:12px; margin-left:4px;">ATTIVO</span>' : '');
+            if (prof === activeProfile) {
+                const ind = document.getElementById('active-profile-indicator');
+                if (ind) {
+                    ind.innerHTML = profIcon + ' ' + getProfileDisplayName(prof);
+                    ind.style.borderColor = isMarito ? '#60a5fa' : (isMoglie ? '#f472b6' : '#4ade80');
+                    ind.style.color = isMarito ? '#93c5fd' : (isMoglie ? '#fbcfe8' : '#bbf7d0');
+                }
+            }
             btn.onclick = () => {
                 activeProfile = prof;
                 window.activeProfile = prof;
