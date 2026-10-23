@@ -7933,6 +7933,7 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
         if (!cloudData || typeof cloudData !== 'object' || Object.keys(cloudData).length === 0) return false;
 
         let hasChanges = false;
+        let profilesListChanged = false;
         for (let k in cloudData) {
             const cloudVal = typeof cloudData[k] === 'object' ? JSON.stringify(cloudData[k]) : String(cloudData[k]);
             const localVal = localStorage.getItem(k);
@@ -7963,13 +7964,24 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
             }
         }
         
-        // Se nel cloud l'elenco dei profili è diverso da quello locale, pulisci i profili eliminati
+        // Sincronizzazione dinamica dei profili Cloud -> Locale
         if (cloudData.health_profiles) {
             try {
                 const cloudPList = typeof cloudData.health_profiles === 'string' ? JSON.parse(cloudData.health_profiles) : cloudData.health_profiles;
                 if (Array.isArray(cloudPList) && cloudPList.length > 0) {
                     let localPList = JSON.parse(localStorage.getItem('health_profiles') || '[]');
-                    let strayP = localPList.filter(p => !cloudPList.includes(p));
+                    
+                    // Unione intelligente: se il cloud ha nuovi profili (es. 'peccato'), aggiungili a localPList
+                    let addedProfiles = false;
+                    cloudPList.forEach(cp => {
+                        if (!localPList.includes(cp)) {
+                            localPList.push(cp);
+                            addedProfiles = true;
+                        }
+                    });
+                    
+                    // Se nel cloud sono stati eliminati profili, rimuovili anche da locale
+                    let strayP = localPList.filter(p => !cloudPList.includes(p) && p !== 'marito' && p !== 'moglie');
                     strayP.forEach(sp => {
                         const keysToRemove = [];
                         for (let i = 0; i < localStorage.length; i++) {
@@ -7978,8 +7990,16 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
                         }
                         keysToRemove.forEach(lk => localStorage.removeItem(lk));
                     });
-                    localStorage.setItem('health_profiles', JSON.stringify(cloudPList));
-                    if (strayP.length > 0) hasChanges = true;
+                    
+                    localPList = localPList.filter(p => cloudPList.includes(p) || p === 'marito' || p === 'moglie');
+                    if (!localPList.includes('marito')) localPList.unshift('marito');
+                    if (!localPList.includes('moglie')) localPList.push('moglie');
+                    
+                    localStorage.setItem('health_profiles', JSON.stringify(localPList));
+                    if (addedProfiles || strayP.length > 0) {
+                        hasChanges = true;
+                        profilesListChanged = true;
+                    }
                 }
             } catch(ePl) {}
         }
@@ -7989,18 +8009,17 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
         
         if (hasChanges || forceRefresh) {
             console.log('☁️ Progetto Salute: Dati sincronizzati dal Cloud!');
+            if (profilesListChanged) {
+                // Se sono stati aggiunti o rimossi profili dal Cloud, ricarica la pagina pulita per montare Chart.js e i form
+                console.log('☁️ Nuovi profili rilevati dal Cloud, ricarico la vista...');
+                setTimeout(() => { window.location.reload(); }, 200);
+                return true;
+            }
             if (typeof renderTabs === 'function' && typeof globalProfiles !== 'undefined') {
                 try {
-                    const oldProfiles = [...globalProfiles];
                     globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
                     let act = localStorage.getItem('activeProfile');
                     activeProfile = (act && globalProfiles.includes(act)) ? act : globalProfiles[0];
-                    
-                    const isProfilesChanged = globalProfiles.length !== oldProfiles.length || globalProfiles.some((p, i) => p !== oldProfiles[i]);
-                    if (isProfilesChanged) {
-                        if (typeof generateHTMLForAll === 'function') generateHTMLForAll();
-                        if (typeof window.initAllProfiles === 'function') window.initAllProfiles();
-                    }
                     renderTabs();
                     if (typeof renderProfiles === 'function') renderProfiles();
                 } catch(eR) {}
