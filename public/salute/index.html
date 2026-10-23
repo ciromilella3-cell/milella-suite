@@ -610,18 +610,18 @@ window.onerror = function(msg, url, line) {
 
         <main class="dashboard">
             
-    <!-- TABS INJECTED -->
-    <div class="sticky-profile-header no-print" style="position:relative; z-index:50; background:linear-gradient(135deg, #0b1120 0%, #1e293b 100%); border-radius:18px; padding:14px 18px; margin-bottom:18px; box-shadow:0 8px 20px rgba(0,0,0,0.35); border:1.5px solid #334155;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+    <!-- TABS INJECTED (STICKY IN ALTO: NON SI PERDE MAI SCROLLANDO) -->
+    <div class="sticky-profile-header no-print" style="position:-webkit-sticky; position:sticky; top:10px; z-index:9999; background:linear-gradient(135deg, #0b1120 0%, #1e293b 100%); border-radius:18px; padding:12px 16px; margin-bottom:18px; box-shadow:0 8px 25px rgba(0,0,0,0.55); border:1.5px solid #38bdf8; backdrop-filter:blur(10px);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
             <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:1.2rem;">🎯</span>
+                <span style="font-size:1.15rem;">🎯</span>
                 <span style="font-size:0.85rem; text-transform:uppercase; font-weight:800; color:#94a3b8; letter-spacing:0.5px;">Scegli la Persona:</span>
             </div>
             <div id="active-profile-indicator" style="font-size:0.9rem; font-weight:800; padding:4px 14px; border-radius:20px; background:rgba(255,255,255,0.1); color:#38bdf8; border:1px solid rgba(56,189,248,0.3);">
                 👤 Profilo Attivo: ...
             </div>
         </div>
-        <div id="tabs-bar" style="display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 4px 2px; align-items:center;">
+        <div id="tabs-bar" style="display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 6px 2px; align-items:center;">
             <!-- Tabs generate qui -->
         </div>
     </div>
@@ -762,8 +762,8 @@ window.onerror = function(msg, url, line) {
         if(!container) return;
         
         const template = `<section class="profile-card full-width" id="section-{PROF}" style="display:none;">
-            <div class="card-header male-header">
-                <h2>{EMOJI} Profilo: <span id="profile_name_{PROF}" contenteditable="true" onblur="saveProfileName('{PROF}', this.innerText)" style="border-bottom: 1px dashed #1976d2; padding: 0 4px; outline: none;">{NAME}</span> 
+            <div class="card-header {HEADER_CLASS}">
+                <h2>{EMOJI} Profilo: <span id="profile_name_{PROF}" contenteditable="true" onblur="saveProfileName('{PROF}', this.innerText)" style="border-bottom: 1px dashed rgba(255,255,255,0.6); padding: 0 4px; outline: none;">{NAME}</span> 
                     <span id="streak_{PROF}" style="font-size:0.95rem; margin-left:10px; transition:0.3s;"></span>
                 </h2>
                 <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -778,9 +778,12 @@ window.onerror = function(msg, url, line) {
                 <!-- ========================================== -->
                 <div class="quick-weight-dashboard no-print" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius:18px; padding:18px; color:#fff; margin-bottom:22px; box-shadow:0 10px 25px rgba(15,23,42,0.35); border:1px solid #334155;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
-                        <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                             <span style="font-size:1.4rem;">⚖️</span>
-                            <span style="font-size:1.15rem; font-weight:800; color:#f8fafc;">Registra Peso & Andamento</span>
+                            <span style="font-size:1.15rem; font-weight:800; color:#f8fafc;">Registra Peso</span>
+                            <span style="font-size:0.85rem; font-weight:800; padding:3px 12px; border-radius:20px; background:rgba(56,189,248,0.18); border:1px solid #38bdf8; color:#38bdf8;">
+                                👤 {NAME}
+                            </span>
                         </div>
                         <div style="display:flex; gap:8px;">
                             <button type="button" onclick="promptStorico('{PROF}')" style="background:#f59e0b; color:#000; border:none; padding:7px 14px; border-radius:10px; font-weight:700; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:5px;">
@@ -1257,9 +1260,14 @@ window.onerror = function(msg, url, line) {
         globalProfiles.forEach(prof => {
             let pStats = JSON.parse(localStorage.getItem('profileStats_' + prof)) || {};
             let emoji = '👤';
+            let isFem = prof.toLowerCase().includes('moglie') || pStats.gender === 'F';
             if (prof.toLowerCase().includes('marito') || pStats.gender === 'M') emoji = '👨';
-            else if (prof.toLowerCase().includes('moglie') || pStats.gender === 'F') emoji = '👩';
-            allHtml += template.replace(/{PROF}/g, prof).replace(/{NAME}/g, getProfileDisplayName(prof)).replace('{EMOJI}', emoji);
+            else if (isFem) emoji = '👩';
+            let headerCls = isFem ? 'female-header' : 'male-header';
+            allHtml += template.replace(/{PROF}/g, prof)
+                               .replace(/{NAME}/g, getProfileDisplayName(prof))
+                               .replace('{EMOJI}', emoji)
+                               .replace('{HEADER_CLASS}', headerCls);
         });
         
         container.innerHTML = allHtml;
