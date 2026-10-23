@@ -2572,14 +2572,16 @@ document.addEventListener('fullscreenchange', () => {
         }
     }
 
+    const isSessionUnlocked = sessionStorage.getItem('milella_session_unlocked') === 'true';
     const savedLastRole = localStorage.getItem('milella_last_authenticated_role');
-    if (savedLastRole === 'admin' && savedAdminPin) {
+
+    if (isSessionUnlocked && savedLastRole === 'admin' && savedAdminPin) {
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
         currentAdminPin = savedAdminPin;
         applicaRuolo('admin', savedUserNome || 'Ciro Milella (Admin)', ['all']);
-    } else if (savedUserPin && savedUserNome) {
-        // Operatore già loggato stabilmente su questo dispositivo
+    } else if (isSessionUnlocked && savedUserPin && savedUserNome) {
+        // Operatore già loggato stabilmente su questo dispositivo con sessione attiva
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
         currentAppAbilitate = savedApps;
@@ -2601,7 +2603,7 @@ document.addEventListener('fullscreenchange', () => {
             }
         }).catch(() => {});
     } else {
-        // NESSUNA SESSIONE: Mostra il Gate di Benvenuto & Blocco PIN
+        // NESSUNA SESSIONE (App appena riaperta): Mostra il Gate di Benvenuto & Blocco PIN
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'flex';
         aggiornaVisibilitaBiometriaGate();
