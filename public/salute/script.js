@@ -3833,7 +3833,7 @@ function setupChartDoubleClick(profile) {
             
             // APRI MODALE SIMPATICA
             window._pendingDelete = { profile, label, value };
-            document.getElementById('delete-modal-text').innerHTML = `Sei sicuro di voler far sparire la pesata del <b>${label}</b> (Peso: <b>${value} kg</b>)? 🌬️`;
+            document.getElementById('delete-modal-text').innerHTML = `Pesata del <b>${label}</b> (Attuale: <b>${value} kg</b>)`; document.getElementById('edit-modal-weight-input').value = value;
             document.getElementById('delete-modal').style.display = 'flex';
         }
     };
@@ -8064,4 +8064,50 @@ window.deleteWeightEntry = function(profile, dateStr, weightVal) {
     }
     window.openWeightHistoryManager(profile);
     if (typeof showToast === 'function') showToast('Pesata rimossa con successo!');
+};
+
+// Funzioni di regolazione e salvataggio per la modale di Modifica / Elimina
+window.adjustEditModalWeight = function(delta) {
+    const input = document.getElementById('edit-modal-weight-input');
+    if (!input) return;
+    let val = parseFloat(input.value) || 80.0;
+    val = Math.round((val + delta) * 10) / 10;
+    if (val > 0) input.value = val.toFixed(1);
+};
+
+window.saveEditedWeightFromModal = function() {
+    if (!window._pendingDelete) return;
+    const { profile, label, value } = window._pendingDelete;
+    const input = document.getElementById('edit-modal-weight-input');
+    const newWeight = parseFloat(input.value);
+    if (isNaN(newWeight) || newWeight <= 0) {
+        alert("Inserisci un peso valido!");
+        return;
+    }
+
+    const key = 'weightLog_' + profile;
+    let log = JSON.parse(localStorage.getItem(key)) || [];
+    const [dd, mm] = label.split('/');
+    let foundIndex = -1;
+    for (let i = log.length - 1; i >= 0; i--) {
+        const logParts = log[i].date.split('-');
+        if (logParts[2] === dd && logParts[1] === mm && log[i].weight === value) {
+            foundIndex = i;
+            break;
+        }
+    }
+
+    if (foundIndex !== -1) {
+        log[foundIndex].weight = newWeight;
+        localStorage.setItem(key, JSON.stringify(log));
+        if (typeof showToast === 'function') showToast("Pesata modificata con successo!");
+        if (typeof loadProgress === 'function') loadProgress(profile);
+        if (typeof window.syncSaluteToCloud === 'function') {
+            window.syncSaluteToCloud({ [key]: JSON.stringify(log) });
+        }
+    } else {
+        alert("Impossibile trovare la pesata da modificare.");
+    }
+
+    closeDeleteModal();
 };
