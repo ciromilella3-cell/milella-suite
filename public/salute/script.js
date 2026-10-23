@@ -7963,11 +7963,41 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
             }
         }
         
+        // Se nel cloud l'elenco dei profili è diverso da quello locale, pulisci i profili eliminati
+        if (cloudData.health_profiles) {
+            try {
+                const cloudPList = typeof cloudData.health_profiles === 'string' ? JSON.parse(cloudData.health_profiles) : cloudData.health_profiles;
+                if (Array.isArray(cloudPList) && cloudPList.length > 0) {
+                    let localPList = JSON.parse(localStorage.getItem('health_profiles') || '[]');
+                    let strayP = localPList.filter(p => !cloudPList.includes(p));
+                    strayP.forEach(sp => {
+                        const keysToRemove = [];
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const lk = localStorage.key(i);
+                            if (lk && (lk.endsWith('_' + sp) || lk === 'profileName_' + sp || lk === 'weightLog_' + sp)) keysToRemove.push(lk);
+                        }
+                        keysToRemove.forEach(lk => localStorage.removeItem(lk));
+                    });
+                    localStorage.setItem('health_profiles', JSON.stringify(cloudPList));
+                    if (strayP.length > 0) hasChanges = true;
+                }
+            } catch(ePl) {}
+        }
+
         localStorage.setItem('profileName_marito', 'Ciro Milella');
         localStorage.setItem('profileName_moglie', 'Maria Carmela');
         
         if (hasChanges || forceRefresh) {
             console.log('☁️ Progetto Salute: Dati sincronizzati dal Cloud!');
+            if (typeof renderTabs === 'function' && typeof globalProfiles !== 'undefined') {
+                try {
+                    globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
+                    let act = localStorage.getItem('activeProfile');
+                    activeProfile = (act && globalProfiles.includes(act)) ? act : globalProfiles[0];
+                    renderTabs();
+                    if (typeof renderProfiles === 'function') renderProfiles();
+                } catch(eR) {}
+            }
             if (typeof loadProgress === 'function') {
                 loadProgress('marito');
                 loadProgress('moglie');

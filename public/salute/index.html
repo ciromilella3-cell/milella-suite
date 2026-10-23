@@ -1875,7 +1875,7 @@ function promptDeleteProfile(prof) {
     document.getElementById('delete-profile-modal').style.display = 'flex';
 }
 
-function confirmDeleteProfile() {
+async function confirmDeleteProfile() {
     let prof = document.getElementById('delete-profile-id').value;
     if(prof) {
         let index = globalProfiles.indexOf(prof);
@@ -1887,7 +1887,9 @@ function confirmDeleteProfile() {
             const keysToRemove = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const k = localStorage.key(i);
-                if (k && k.endsWith('_' + prof)) keysToRemove.push(k);
+                if (k && (k.endsWith('_' + prof) || k === 'profileName_' + prof || k === 'weightLog_' + prof || k === 'profileStats_' + prof || k === 'anamnesi_' + prof)) {
+                    keysToRemove.push(k);
+                }
             }
             keysToRemove.forEach(k => localStorage.removeItem(k));
             localStorage.removeItem('profileStats_' + prof);
@@ -1908,27 +1910,29 @@ function confirmDeleteProfile() {
                 window.activeProfile = activeProfile;
                 localStorage.setItem('activeProfile', activeProfile);
             } else {
-                activeProfile = '';
-                window.activeProfile = '';
-                localStorage.removeItem('activeProfile');
+                activeProfile = 'marito';
+                window.activeProfile = 'marito';
+                localStorage.setItem('activeProfile', 'marito');
             }
             
             document.getElementById('delete-profile-modal').style.display = 'none';
 
             // Sincronizza subito con il Cloud inviando l'indicazione del profilo eliminato
-            if (typeof window.syncSaluteToCloud === 'function') {
-                window.syncSaluteToCloud({
-                    health_profiles: JSON.stringify(globalProfiles),
-                    activeProfile: activeProfile,
-                    _deletedProfile: prof
-                });
-            }
+            try {
+                if (typeof window.syncSaluteToCloud === 'function') {
+                    await window.syncSaluteToCloud({
+                        health_profiles: JSON.stringify(globalProfiles),
+                        activeProfile: activeProfile,
+                        _deletedProfile: prof
+                    });
+                }
+            } catch(e) {}
 
             renderTabs();
             renderProfiles();
             setTimeout(() => {
-                window.location.reload();
-            }, 500);
+                window.location.href = '/salute/?deleted=' + prof + '&t=' + Date.now();
+            }, 300);
         }
     }
 }
