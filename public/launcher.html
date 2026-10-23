@@ -1544,6 +1544,9 @@ document.addEventListener('fullscreenchange', () => {
             adminBtns.forEach(b => b.style.display = 'none');
         }
         renderCardProgetti();
+        if (typeof caricaKpiStats === 'function') {
+            caricaKpiStats();
+        }
     }
 
     function apriLoginModal() {
@@ -2647,29 +2650,48 @@ document.addEventListener('fullscreenchange', () => {
                 // Rirenderizza le card per mostrare i badge attivi
                 renderCardProgetti();
 
-                // Popola il Banner Superiore Smart
+                // Determina permessi per visualizzare le notifiche e i KPI
+                const canSeeVeicoli = currentRole === 'admin' || (currentAppAbilitate && (currentAppAbilitate.includes('all') || currentAppAbilitate.includes('app_veicoli') || currentAppAbilitate.includes('veicoli')));
+                const canSeeAttrezzi = currentRole === 'admin' || (currentAppAbilitate && (currentAppAbilitate.includes('all') || currentAppAbilitate.includes('app_inventario') || currentAppAbilitate.includes('inventario') || currentAppAbilitate.includes('attrezzi')));
+                const canSeeSalute = currentRole === 'admin' || (currentAppAbilitate && (currentAppAbilitate.includes('all') || currentAppAbilitate.includes('app_salute') || currentAppAbilitate.includes('salute')));
+
+                // Mostra/Nascondi la dashboard KPI (solo se abilitato ad attrezzi o admin)
+                const kpiBar = document.getElementById('kpiDashboardBar');
+                if (kpiBar) {
+                    kpiBar.style.display = (canSeeAttrezzi || currentRole === 'admin') ? 'grid' : 'none';
+                }
+
+                // Popola il Banner Superiore Smart SOLO con notifiche rilevanti per l'operatore
                 const banner = document.getElementById('smartNotificationsBanner');
                 const badgeCount = document.getElementById('smartNotifBadgeCount');
                 const notifTitle = document.getElementById('smartNotifTitle');
                 const notifDetails = document.getElementById('smartNotifDetails');
 
-                const totalAlerts = (window.__smartVeicoliAlerts.length) + (window.__smartAttrezziInUso.length ? 1 : 0);
-                if (totalAlerts > 0) {
-                    if (banner) banner.style.display = 'block';
-                    if (badgeCount) badgeCount.textContent = totalAlerts;
+                let msgs = [];
+                let alertTitle = '';
 
-                    let msgs = [];
-                    if (window.__smartVeicoliAlerts.length > 0) {
-                        const a = window.__smartVeicoliAlerts[0];
-                        if (notifTitle) notifTitle.textContent = `🚗 Promemoria Mezzi: Scadenza ${a.tipo} (${a.veicolo})`;
-                        msgs.push(`La scadenza è prevista tra <strong>${a.giorni} giorni</strong> (${a.data}). Controlla la scheda prima dell'uso.`);
-                    } else if (window.__smartAttrezziInUso.length > 0) {
-                        if (notifTitle) notifTitle.textContent = `🛠️ Gestione Cantieri: ${window.__smartAttrezziInUso.length} attrezzi attualmente in prestito`;
-                        msgs.push(`Operatore attuale: ${window.__smartAttrezziInUso[0].prestato_a} (${window.__smartAttrezziInUso[0].nome})`);
-                    }
-                    if (window.__smartSaluteAlert) {
-                        msgs.push(`❤️ Salute: ${window.__smartSaluteAlert}`);
-                    }
+                if (canSeeVeicoli && window.__smartVeicoliAlerts && window.__smartVeicoliAlerts.length > 0) {
+                    const a = window.__smartVeicoliAlerts[0];
+                    alertTitle = `🚗 Promemoria Mezzi: Scadenza ${a.tipo} (${a.veicolo})`;
+                    msgs.push(`La scadenza è prevista tra <strong>${a.giorni} giorni</strong> (${a.data}). Controlla la scheda prima dell'uso.`);
+                }
+                if (canSeeAttrezzi && window.__smartAttrezziInUso && window.__smartAttrezziInUso.length > 0) {
+                    if (!alertTitle) alertTitle = `🛠️ Gestione Cantieri: ${window.__smartAttrezziInUso.length} attrezzi attualmente in prestito`;
+                    msgs.push(`Operatore attuale: ${window.__smartAttrezziInUso[0].prestato_a} (${window.__smartAttrezziInUso[0].nome})`);
+                }
+                if (canSeeSalute && window.__smartSaluteAlert) {
+                    if (!alertTitle) alertTitle = `❤️ Obiettivi Salute & Benessere`;
+                    msgs.push(`❤️ Salute: ${window.__smartSaluteAlert}`);
+                }
+
+                const filteredCount = (canSeeVeicoli ? (window.__smartVeicoliAlerts ? window.__smartVeicoliAlerts.length : 0) : 0) + 
+                                      (canSeeAttrezzi ? (window.__smartAttrezziInUso && window.__smartAttrezziInUso.length ? 1 : 0) : 0) + 
+                                      (canSeeSalute && window.__smartSaluteAlert ? 1 : 0);
+
+                if (msgs.length > 0 && filteredCount > 0) {
+                    if (banner) banner.style.display = 'block';
+                    if (badgeCount) badgeCount.textContent = filteredCount;
+                    if (notifTitle) notifTitle.textContent = alertTitle;
                     if (notifDetails) notifDetails.innerHTML = msgs.join(' &bull; ');
                 } else {
                     if (banner) banner.style.display = 'none';
