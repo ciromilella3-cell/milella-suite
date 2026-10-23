@@ -7991,10 +7991,10 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
                         }
                     }
 
-                    const nextStored = JSON.stringify(Array.from(validProfiles));
-                    const currentStored = JSON.stringify(localPList);
-                    if (currentStored !== nextStored) {
-                        localStorage.setItem('health_profiles', nextStored);
+                    const nextStoredArr = Array.from(validProfiles);
+                    const isSameList = localPList.length === nextStoredArr.length && nextStoredArr.every(p => localPList.includes(p));
+                    if (!isSameList) {
+                        localStorage.setItem('health_profiles', JSON.stringify(nextStoredArr));
                         hasChanges = true;
                         profilesListChanged = true;
                     }
@@ -8009,12 +8009,10 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
         
         if (hasChanges || forceRefresh) {
             console.log('☁️ Progetto Salute: Dati sincronizzati dal Cloud!');
-            if (profilesListChanged) {
-                // Se sono stati aggiunti o rimossi profili dal Cloud, ricarica la pagina pulita per montare Chart.js e i form
-                console.log('☁️ Nuovi profili rilevati dal Cloud, ricarico la vista...');
-                setTimeout(() => { window.location.reload(); }, 200);
-                return true;
-            }
+            
+            // NON ricaricare MAI la pagina con window.location.reload() in background
+            // per evitare di interrompere l'utente mentre digita o naviga.
+            // Aggiorna invece i componenti dinamicamente.
             if (typeof renderTabs === 'function' && typeof globalProfiles !== 'undefined') {
                 try {
                     globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
@@ -8024,7 +8022,11 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
                     if (typeof renderProfiles === 'function') renderProfiles();
                 } catch(eR) {}
             }
-            if (typeof loadProgress === 'function') {
+            
+            // Se l'utente sta digitando in un campo di input, non sovrascrivere la UI attiva
+            const activeEl = document.activeElement;
+            const isUserEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
+            if (!isUserEditing && typeof loadProgress === 'function') {
                 (JSON.parse(localStorage.getItem('health_profiles') || '["marito","moglie"]')).forEach(p => loadProgress(p));
             }
         }
@@ -8035,28 +8037,38 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
     }
 };
 
-// Sincronizzazione automatica all'avvio e in tempo reale
+// Sincronizzazione automatica all'avvio
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { setTimeout(() => window.pullSaluteFromCloud(false), 300); });
+    document.addEventListener('DOMContentLoaded', () => { setTimeout(() => window.pullSaluteFromCloud(false), 500); });
 } else {
-    setTimeout(() => window.pullSaluteFromCloud(false), 300);
+    setTimeout(() => window.pullSaluteFromCloud(false), 500);
 }
 
-// 🔄 AGGIORNAMENTO AUTOMATICO IN TEMPO REALE TRA CELLULARE E PC:
-// 1. Polling continuo silenzioso ogni 5 secondi (se un collaboratore inserisce dati da cellulare, il PC li riceve da solo)
+// 🔄 Sincronizzazione in tempo reale:
+// Polling a intervalli regolari (30s) per non stressare il browser né interrompere l'input
 setInterval(() => {
     if (!document.hidden && navigator.onLine) {
-        window.pullSaluteFromCloud(false);
+        const activeEl = document.activeElement;
+        const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+        if (!isEditing) {
+            window.pullSaluteFromCloud(false);
+        }
     }
-}, 5000);
+}, 30000);
 
-// 2. Quando l'utente torna sulla finestra o riattiva lo schermo del telefono/PC, aggiorna all'istante
+// Quando l'utente torna sulla finestra (focus o tab attiva), sincronizza se non sta digitando
 window.addEventListener('focus', () => {
-    if (navigator.onLine) window.pullSaluteFromCloud(false);
+    if (navigator.onLine) {
+        const activeEl = document.activeElement;
+        const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+        if (!isEditing) window.pullSaluteFromCloud(false);
+    }
 });
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden && navigator.onLine) {
-        window.pullSaluteFromCloud(false);
+        const activeEl = document.activeElement;
+        const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+        if (!isEditing) window.pullSaluteFromCloud(false);
     }
 });
 
