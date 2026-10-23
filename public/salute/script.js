@@ -7986,3 +7986,82 @@ if (document.readyState === 'loading') {
 } else {
     setTimeout(() => window.pullSaluteFromCloud(false), 300);
 }
+
+// =========================================================================
+// 🚀 CONTROLLI PESO SMART & GESTORE STORICO PESI
+// =========================================================================
+window.adjustQuickWeight = function(profile, delta) {
+    const input = document.getElementById('weight-' + profile);
+    if (!input) return;
+    let cur = parseFloat(input.value) || 80.0;
+    cur = Math.round((cur + delta) * 10) / 10;
+    if (cur > 0) {
+        input.value = cur.toFixed(1);
+    }
+};
+
+window.openWeightHistoryManager = function(profile) {
+    const key = 'weightLog_' + profile;
+    const log = JSON.parse(localStorage.getItem(key)) || [];
+    const profName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(profile) : profile;
+
+    let modal = document.getElementById('weight-history-manager-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'weight-history-manager-modal';
+        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); z-index:99999; display:flex; justify-content:center; align-items:center; padding:15px;';
+        document.body.appendChild(modal);
+    }
+
+    let itemsHtml = '';
+    if (log.length === 0) {
+        itemsHtml = '<p style="color:#94a3b8; text-align:center; padding:20px;">Nessuna pesata registrata.</p>';
+    } else {
+        const sortedLog = [...log].sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+        sortedLog.forEach((item) => {
+            itemsHtml += `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:8px;">
+                    <div>
+                        <strong style="font-size:1.05rem; color:#0f172a;">${item.date}</strong>
+                        <span style="margin-left:12px; font-weight:800; font-size:1.15rem; color:#0284c7;">${item.weight} kg</span>
+                    </div>
+                    <button type="button" onclick="deleteWeightEntry('${profile}', '${item.date}', ${item.weight})" style="background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.85rem; font-weight:700; cursor:pointer;">
+                        🗑️ Elimina
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    modal.innerHTML = `
+        <div style="background:#ffffff; border-radius:18px; width:100%; max-width:480px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden;">
+            <div style="padding:16px 20px; background:linear-gradient(135deg, #0f172a, #1e293b); color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0; font-size:1.1rem; color:#f8fafc;">📋 Storico Pesi: ${profName}</h3>
+                <button type="button" onclick="document.getElementById('weight-history-manager-modal').style.display='none'" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer; line-height:1;">&times;</button>
+            </div>
+            <div style="padding:16px; overflow-y:auto; flex:1;">
+                <p style="font-size:0.85rem; color:#64748b; margin-top:0; margin-bottom:12px;">Qui puoi consultare o eliminare con 1 click qualsiasi pesata passata:</p>
+                ${itemsHtml}
+            </div>
+            <div style="padding:12px 16px; background:#f1f5f9; text-align:right; border-top:1px solid #e2e8f0;">
+                <button type="button" onclick="document.getElementById('weight-history-manager-modal').style.display='none'" style="background:#64748b; color:#fff; border:none; padding:8px 18px; border-radius:10px; font-weight:700; cursor:pointer;">Chiudi</button>
+            </div>
+        </div>
+    `;
+    modal.style.display = 'flex';
+};
+
+window.deleteWeightEntry = function(profile, dateStr, weightVal) {
+    if (!confirm('Vuoi davvero cancellare la pesata del ' + dateStr + ' (' + weightVal + ' kg)?')) return;
+    const key = 'weightLog_' + profile;
+    let log = JSON.parse(localStorage.getItem(key)) || [];
+    log = log.filter(item => !(item.date === dateStr && Math.abs(item.weight - weightVal) < 0.01));
+    localStorage.setItem(key, JSON.stringify(log));
+
+    if (typeof loadProgress === 'function') loadProgress(profile);
+    if (typeof window.syncSaluteToCloud === 'function') {
+        window.syncSaluteToCloud({ [key]: JSON.stringify(log) });
+    }
+    window.openWeightHistoryManager(profile);
+    if (typeof showToast === 'function') showToast('Pesata rimossa con successo!');
+};

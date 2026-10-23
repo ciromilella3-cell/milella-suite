@@ -611,8 +611,19 @@ window.onerror = function(msg, url, line) {
         <main class="dashboard">
             
     <!-- TABS INJECTED -->
-    <div id="tabs-bar" style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px;">
-        <!-- Tabs verranno generate qui -->
+    <div class="sticky-profile-header no-print" style="position:sticky; top:10px; z-index:900; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); border-radius:18px; padding:14px 18px; margin-bottom:20px; box-shadow:0 8px 25px rgba(0,0,0,0.12); border:2px solid #e2e8f0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:1.3rem;">🎯</span>
+                <span style="font-size:0.85rem; text-transform:uppercase; font-weight:800; color:#64748b; letter-spacing:0.5px;">Scegli la Persona:</span>
+            </div>
+            <div id="active-profile-indicator" style="font-size:0.95rem; font-weight:800; padding:4px 14px; border-radius:20px; background:#f1f5f9; color:#0f172a;">
+                Caricamento...
+            </div>
+        </div>
+        <div id="tabs-bar" style="display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 8px 2px; align-items:center;">
+            <!-- Tabs generate qui -->
+        </div>
     </div>
     
     <div id="dynamic-profiles-container">
@@ -653,22 +664,44 @@ window.onerror = function(msg, url, line) {
         
         globalProfiles.forEach(prof => {
             const btn = document.createElement('button');
-            btn.className = 'btn-print';
-            btn.style.marginRight = '5px';
-            btn.style.borderRadius = '20px';
-            btn.style.fontWeight = 'bold';
+            btn.className = 'btn-profile-pill';
+            btn.style.padding = '12px 22px';
+            btn.style.borderRadius = '30px';
+            btn.style.fontWeight = '800';
+            btn.style.fontSize = '1.05rem';
+            btn.style.cursor = 'pointer';
+            btn.style.transition = 'all 0.25s ease';
+            btn.style.display = 'inline-flex';
+            btn.style.alignItems = 'center';
+            btn.style.gap = '8px';
+            btn.style.border = '2px solid transparent';
+            
+            const isMarito = prof === 'marito';
+            const isMoglie = prof === 'moglie';
+            const profIcon = isMarito ? '👨' : (isMoglie ? '👩' : '👤');
             
             if(prof === activeProfile) {
-                btn.style.background = '#4caf50'; // green for active
-                btn.style.borderColor = '#388e3c';
+                if (isMarito) {
+                    btn.style.background = 'linear-gradient(135deg, #1e88e5 0%, #1565c0 100%)';
+                    btn.style.borderColor = '#90caf9';
+                } else if (isMoglie) {
+                    btn.style.background = 'linear-gradient(135deg, #ab47bc 0%, #7b1fa2 100%)';
+                    btn.style.borderColor = '#f48fb1';
+                } else {
+                    btn.style.background = 'linear-gradient(135deg, #43a047 0%, #2e7d32 100%)';
+                    btn.style.borderColor = '#a5d6a7';
+                }
                 btn.style.color = '#fff';
+                btn.style.boxShadow = '0 6px 16px rgba(0,0,0,0.3)';
+                btn.style.transform = 'scale(1.05)';
             } else {
-                btn.style.background = '#e0e0e0';
-                btn.style.color = '#333';
-                btn.style.borderColor = '#ccc';
+                btn.style.background = '#ffffff';
+                btn.style.color = '#475569';
+                btn.style.borderColor = '#cbd5e1';
+                btn.style.boxShadow = '0 2px 6px rgba(0,0,0,0.06)';
             }
             
-            btn.innerText = getProfileDisplayName(prof);
+            btn.innerHTML = '<span>' + profIcon + '</span> <span>' + getProfileDisplayName(prof) + '</span>' + (prof === activeProfile ? ' <span style="font-size:0.8rem; background:rgba(255,255,255,0.25); padding:2px 8px; border-radius:12px; margin-left:4px;">ATTIVO</span>' : '');
             btn.onclick = () => {
                 activeProfile = prof;
                 window.activeProfile = prof;
@@ -732,6 +765,67 @@ window.onerror = function(msg, url, line) {
                 </div>
             </div>
             <div class="card-body">
+                <!-- ========================================== -->
+                <!-- 🚀 SEZIONE PESO & GRAFICO IMMEDIATI IN ALTO -->
+                <!-- ========================================== -->
+                <div class="quick-weight-dashboard no-print" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius:18px; padding:18px; color:#fff; margin-bottom:22px; box-shadow:0 10px 25px rgba(15,23,42,0.35); border:1px solid #334155;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:1.4rem;">⚖️</span>
+                            <span style="font-size:1.15rem; font-weight:800; color:#f8fafc;">Registra Peso & Andamento</span>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <button type="button" onclick="promptStorico('{PROF}')" style="background:#f59e0b; color:#000; border:none; padding:7px 14px; border-radius:10px; font-weight:700; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:5px;">
+                                📅 Data Passata
+                            </button>
+                            <button type="button" onclick="openWeightHistoryManager('{PROF}')" style="background:#3b82f6; color:#fff; border:none; padding:7px 14px; border-radius:10px; font-weight:700; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:5px;">
+                                ✏️ Storico / Elimina
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Layout affiancato desktop / incolonnato mobile -->
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); gap:18px; align-items:center;">
+                        <!-- BOX INSERIMENTO RAPIDO -->
+                        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:16px; text-align:center;">
+                            <div style="font-size:0.85rem; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">
+                                Ultimo Peso Rilevato
+                            </div>
+                            <div class="scale-display" id="scale-screen-{PROF}" style="font-size:2.8rem; font-weight:900; color:#38bdf8; text-shadow:0 0 20px rgba(56,189,248,0.4); margin:6px 0;">
+                                80.0<span class="scale-unit" style="font-size:1.2rem; color:#94a3b8; margin-left:4px;">kg</span>
+                            </div>
+                            <div class="bmi-badge" id="bmi_{PROF}" style="display:inline-block; margin-bottom:12px; padding:4px 14px; border-radius:20px; font-size:0.85rem; font-weight:700;"></div>
+
+                            <!-- CONTROLLI TOUCH FACILI + - -->
+                            <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:12px;">
+                                <button type="button" onclick="adjustQuickWeight('{PROF}', -0.5)" style="background:#334155; color:#fff; border:none; width:40px; height:40px; border-radius:10px; font-size:1.1rem; font-weight:900; cursor:pointer;">-½</button>
+                                <button type="button" onclick="adjustQuickWeight('{PROF}', -0.1)" style="background:#334155; color:#fff; border:none; width:40px; height:40px; border-radius:10px; font-size:1.1rem; font-weight:900; cursor:pointer;">-</button>
+                                <input type="number" id="weight-{PROF}" value="80.0" step="0.1" class="scale-input" style="width:110px; height:42px; text-align:center; font-size:1.4rem; font-weight:900; border-radius:10px; border:2px solid #38bdf8; background:#0f172a; color:#fff;" placeholder="80.0">
+                                <button type="button" onclick="adjustQuickWeight('{PROF}', 0.1)" style="background:#334155; color:#fff; border:none; width:40px; height:40px; border-radius:10px; font-size:1.1rem; font-weight:900; cursor:pointer;">+</button>
+                                <button type="button" onclick="adjustQuickWeight('{PROF}', 0.5)" style="background:#334155; color:#fff; border:none; width:40px; height:40px; border-radius:10px; font-size:1.1rem; font-weight:900; cursor:pointer;">+½</button>
+                            </div>
+
+                            <button type="button" class="scale-btn" onclick="triggerScale('{PROF}')" style="width:100%; padding:14px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-size:1.1rem; font-weight:900; border-radius:12px; border:none; cursor:pointer; box-shadow:0 4px 15px rgba(16,185,129,0.4); display:flex; justify-content:center; align-items:center; gap:8px; transition:all 0.2s;">
+                                <span>⚖️</span> <span>REGISTRA PESO DI OGGI</span>
+                            </button>
+                        </div>
+
+                        <!-- GRAFICO IMMEDIATO -->
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <span style="font-size:0.85rem; font-weight:700; color:#cbd5e1;">📈 Andamento Pesi Recenti</span>
+                                <span class="milestone-text" id="milestone-{PROF}" style="font-size:0.8rem; color:#38bdf8; font-weight:700;"></span>
+                            </div>
+                            <div class="chart-container" style="position:relative; height:240px; width:100%;">
+                                <canvas id="chart-{PROF}"></canvas>
+                            </div>
+                            <div class="progress-bar-container" style="margin-top:10px; background:rgba(255,255,255,0.1); border-radius:20px; overflow:hidden; height:20px;">
+                                <div id="progress-bar-{PROF}" style="height:100%; width:0%; background:#10b981; color:white; text-align:center; font-size:0.75rem; font-weight:bold; line-height:20px; transition:width 0.5s ease;">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="info-grid">
                     <div class="info-item"><strong>Nato il:</strong> <input type="date" id="dob_{PROF}" onchange="saveStats('{PROF}')" class="date-stat"> (<span id="eta_{PROF}">--</span> anni)</div>
                     <div class="info-item"><strong>Altezza:</strong> <span id="height_{PROF}" contenteditable="true" onblur="saveStats('{PROF}')" class="editable-stat">---</span> cm</div>
@@ -895,29 +989,7 @@ window.onerror = function(msg, url, line) {
                     <div class="stats-box no-print" id="stats-{PROF}" style="margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3; font-size: 0.95rem; line-height: 1.6;">
                         <!-- Stats injected here -->
                     </div>
-                <div class="progress-section no-print">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3>📈 Diario Dimagrimento</h3>
-                        <span class="milestone-text" id="milestone-{PROF}"></span>
-                    </div>
-                    
-                    <div class="scale-module no-print">
-                        <div class="scale-display" id="scale-screen-{PROF}">
-                            80.0<span class="scale-unit">kg</span>
-                        </div>
-                        <div class="bmi-badge" id="bmi_{PROF}"></div>
-                        <div class="scale-controls">
-                            <input type="number" id="weight-{PROF}" value="80.0" step="0.1" class="scale-input" placeholder="Es. 81.3">
-                            <button class="scale-btn" onclick="triggerScale('{PROF}')">⚖️ PESATI!</button>
-                            <button class="scale-btn" onclick="promptStorico('{PROF}')" style="margin-left:5px; background:#fbc02d; color:#000;">📅 Inserisci Storico</button>
-                            <button class="scale-btn" onclick="resetChartData('{PROF}')" style="margin-left:5px; background:#e53935; color:#fff;" title="Cancella tutto lo storico del grafico">🗑️ Azzera</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="chart-container" style="position: relative; height:350px; width:100%">
-                    <canvas id="chart-{PROF}"></canvas>
-                </div>
+<!-- Vecchio grafico spostato in alto -->
                 
                 <div class="photo-diary-section no-print" style="margin-top:20px; background:#fafafa; border-radius:12px; padding:15px; border:1px solid #ddd;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
