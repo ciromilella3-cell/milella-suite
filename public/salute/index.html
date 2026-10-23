@@ -906,6 +906,11 @@ window.onerror = function(msg, url, line) {
     }
     
     function renderProfiles() {
+        // Se un profilo non ha ancora la sua scheda nel DOM, rigenera le schede
+        let missing = globalProfiles.some(prof => !document.getElementById('section-' + prof));
+        if (missing && typeof generateHTMLForAll === 'function') {
+            generateHTMLForAll();
+        }
         // Nascondi tutti i profili e mostra solo quello attivo
         globalProfiles.forEach(prof => {
             let section = document.getElementById('section-' + prof);
