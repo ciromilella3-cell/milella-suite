@@ -1,7 +1,7 @@
 {
-  "name": "Suite C. Milella",
-  "short_name": "Milella Suite",
-  "description": "Piattaforma Aziendale e Personale C. Milella",
+  "name": "SUITE M.C.",
+  "short_name": "SUITE M.C.",
+  "description": "Piattaforma Aziendale e Personale SUITE M.C.",
   "start_url": "/launcher.html",
   "scope": "/",
   "display": "standalone",
