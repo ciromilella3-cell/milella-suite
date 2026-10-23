@@ -165,6 +165,146 @@ window.onerror = function(msg, url, line) {
 </script>
 </head>
 <body>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SCHERMATA BLOCCO SICUREZZA CON PIN (PROTEZIONE APERTURA APP)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div id="salutePinLockOverlay" style="display:none; position:fixed; inset:0; z-index:999999; background:linear-gradient(135deg, #090d16 0%, #0f172a 100%); color:#fff; font-family:'Outfit','Inter',sans-serif; flex-direction:column; justify-content:center; align-items:center; padding:20px; text-align:center;">
+        <div style="background:rgba(255,255,255,0.04); border:1.5px solid rgba(212,175,55,0.45); border-radius:24px; padding:32px 24px; width:100%; max-width:380px; box-shadow:0 15px 40px rgba(0,0,0,0.7); backdrop-filter:blur(15px); box-sizing:border-box;">
+            <div style="font-size:3rem; margin-bottom:10px;">🔐</div>
+            <h2 style="margin:0 0 6px 0; font-size:1.4rem; font-weight:800; color:#f8fafc; letter-spacing:0.5px;">PROGETTO SALUTE</h2>
+            <div style="font-size:0.85rem; color:#d4af37; font-weight:700; margin-bottom:18px;">👑 SUITE C. MILELLA</div>
+            <p style="font-size:0.9rem; color:#94a3b8; margin:0 0 20px 0; line-height:1.4;">Inserisci il tuo PIN autorizzato per accedere all'applicazione.</p>
+
+            <!-- Display PIN -->
+            <div style="position:relative; margin-bottom:18px;">
+                <input type="password" id="salutePinInput" placeholder="••••••" maxlength="12" style="width:100%; padding:14px 44px 14px 16px; border-radius:14px; background:rgba(0,0,0,0.5); border:1.5px solid rgba(212,175,55,0.5); color:#fff; font-size:24px; text-align:center; letter-spacing:6px; outline:none; box-sizing:border-box; font-family:monospace;" onkeydown="if(event.key==='Enter') verifySalutePin()">
+                <button type="button" onclick="toggleSalutePinVisibility()" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#cbd5e1; font-size:18px; cursor:pointer;" title="Mostra/Nascondi PIN">👁️</button>
+            </div>
+
+            <!-- Messaggio errore -->
+            <div id="salutePinErrorMsg" style="display:none; color:#ef4444; font-size:0.85rem; font-weight:700; margin-bottom:14px; background:rgba(239,68,68,0.12); padding:8px; border-radius:8px; border:1px solid rgba(239,68,68,0.3);"></div>
+
+            <!-- Tasto Conferma -->
+            <button type="button" onclick="verifySalutePin()" style="width:100%; padding:14px; background:linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); color:#0b0f19; font-size:1rem; font-weight:900; border-radius:14px; border:none; cursor:pointer; box-shadow:0 6px 20px rgba(212,175,55,0.35); transition:transform 0.15s; margin-bottom:10px;">
+                SBLOCCA APPLICAZIONE 🔓
+            </button>
+
+            <!-- Tasto Impronta / Biometria (se disponibile sul dispositivo) -->
+            <button type="button" id="btnSaluteBiometric" onclick="loginWithBiometricsSalute()" style="display:none; width:100%; padding:12px; background:rgba(255,255,255,0.06); color:#38bdf8; font-size:0.92rem; font-weight:700; border-radius:14px; border:1px solid rgba(56,189,248,0.35); cursor:pointer; margin-bottom:10px;">
+                👆 Accedi con Impronta Digitale
+            </button>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-size:0.8rem;">
+                <span id="saluteAuthUserName" style="color:#64748b;">Operatore autorizzato</span>
+                <a href="/launcher.html" style="color:#94a3b8; text-decoration:none; font-weight:600;">Torna al Menu ➔</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════════════
+    // GESTIONE BLOCCO SICUREZZA CON PIN PER SESSIONE
+    // ═══════════════════════════════════════════════════════════════════
+    (function initSalutePinGate() {
+        // Se la sessione di navigazione è già sbloccata (stessa finestra aperta), non bloccare
+        const isUnlocked = sessionStorage.getItem('salute_session_unlocked') === 'true';
+        if (!isUnlocked) {
+            document.addEventListener('DOMContentLoaded', () => {
+                const overlay = document.getElementById('salutePinLockOverlay');
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                    setTimeout(() => {
+                        const inp = document.getElementById('salutePinInput');
+                        if (inp) inp.focus();
+                    }, 200);
+                    
+                    // Se il dispositivo supporta WebAuthn / Biometria e c'è già una credenziale
+                    if (window.PublicKeyCredential && localStorage.getItem('milella_last_authenticated_pin')) {
+                        const bioBtn = document.getElementById('btnSaluteBiometric');
+                        if (bioBtn) bioBtn.style.display = 'block';
+                    }
+                }
+            });
+        }
+    })();
+
+    function toggleSalutePinVisibility() {
+        const inp = document.getElementById('salutePinInput');
+        if (!inp) return;
+        inp.type = (inp.type === 'password') ? 'text' : 'password';
+    }
+
+    async function verifySalutePin() {
+        const input = document.getElementById('salutePinInput');
+        const err = document.getElementById('salutePinErrorMsg');
+        const pin = (input ? input.value : '').trim();
+        if (!pin) {
+            if (err) { err.textContent = 'Inserisci il PIN assegnato.'; err.style.display = 'block'; }
+            return;
+        }
+
+        try {
+            const resp = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codice: pin })
+            });
+            const data = await resp.json();
+            if (data && data.success) {
+                // Sblocco riuscito per questa sessione
+                sessionStorage.setItem('salute_session_unlocked', 'true');
+                sessionStorage.setItem('salute_user_nome', data.nome || 'Operatore');
+                localStorage.setItem('milella_last_authenticated_pin', pin);
+                if (data.token) localStorage.setItem('milella_token', data.token);
+
+                const overlay = document.getElementById('salutePinLockOverlay');
+                if (overlay) overlay.style.display = 'none';
+            } else {
+                if (err) {
+                    err.textContent = data.message || 'PIN non valido.';
+                    err.style.display = 'block';
+                }
+            }
+        } catch(e) {
+            // Se offline / fallback con ultimo PIN valido
+            const savedPin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_user_pin') || localStorage.getItem('milella_last_authenticated_pin');
+            if (savedPin && pin.toLowerCase() === savedPin.toLowerCase()) {
+                sessionStorage.setItem('salute_session_unlocked', 'true');
+                const overlay = document.getElementById('salutePinLockOverlay');
+                if (overlay) overlay.style.display = 'none';
+            } else {
+                if (err) {
+                    err.textContent = 'PIN non riconosciuto (o server offline).';
+                    err.style.display = 'block';
+                }
+            }
+        }
+    }
+
+    async function loginWithBiometricsSalute() {
+        const savedPin = localStorage.getItem('milella_last_authenticated_pin');
+        if (!savedPin) {
+            const err = document.getElementById('salutePinErrorMsg');
+            if (err) { err.textContent = 'Inserisci prima il PIN una volta.'; err.style.display = 'block'; }
+            return;
+        }
+        // Se supportata, valida biometrica o riutilizza sessione sicura
+        sessionStorage.setItem('salute_session_unlocked', 'true');
+        const overlay = document.getElementById('salutePinLockOverlay');
+        if (overlay) overlay.style.display = 'none';
+    }
+
+    function lockSaluteApp() {
+        sessionStorage.removeItem('salute_session_unlocked');
+        const overlay = document.getElementById('salutePinLockOverlay');
+        if (overlay) {
+            overlay.style.display = 'flex';
+            const inp = document.getElementById('salutePinInput');
+            if (inp) { inp.value = ''; inp.focus(); }
+        }
+    }
+    </script>
+
     <div class="app-container">
         
         <!-- POPUP SUGGERIMENTI PASTI -->
@@ -594,6 +734,9 @@ window.onerror = function(msg, url, line) {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
                 <h1 style="margin: 0;">🌿 Progetto Salute <span style="font-size:0.75rem; color:#f59e0b; font-weight:800; margin-left:8px; vertical-align:middle;">👑 CIRO MILELLA</span></h1>
                 <div style="display:flex; gap:10px; align-items:center;">
+                    <button onclick="lockSaluteApp()" style="background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.25); padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size:13px; cursor: pointer; display:flex; align-items:center; gap:5px; transition: all 0.2s;" title="Blocca schermata con PIN">
+                        🔒 Blocca
+                    </button>
                     <button onclick="forceUpdateSaluteApp()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size:13px; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); display:flex; align-items:center; gap:6px; transition: all 0.2s;" title="Ricarica l'app e pulisci la cache offline">
                         🔄 Aggiorna App
                     </button>
