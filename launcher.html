@@ -1602,6 +1602,10 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
+                    currentAdminPin = '';
+                    localStorage.removeItem('milella_admin_pin');
+                    sessionStorage.removeItem('milella_admin_pin');
+                    localStorage.setItem('milella_role', 'operatore');
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_user_pin', pin);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
@@ -1610,9 +1614,6 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'operatore');
                     localStorage.setItem('milella_last_authenticated_pin', pin);
-                    localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
-                    localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
-                    localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
                     applicaRuolo('operatore', data.nome, data.appAbilitate || []);
                 }
                 aggiornaVisibilitaBiometriaGate();
@@ -1675,6 +1676,10 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
+                    currentAdminPin = '';
+                    localStorage.removeItem('milella_admin_pin');
+                    sessionStorage.removeItem('milella_admin_pin');
+                    localStorage.setItem('milella_role', 'operatore');
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_user_pin', pin);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
@@ -2340,17 +2345,19 @@ document.addEventListener('fullscreenchange', () => {
                 extraBadgeHtml = `<div style="margin-top:6px;"><span style="background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#38bdf8; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:8px;">🚚 ${window.__smartAttrezziInUso.length} in prestito</span></div>`;
             }
 
-            const card = document.createElement('a');
-            card.href = p.url;
-            card.className = 'card ' + (isAdminProj ? 'admin-only-card' : '');
-            card.style.display = 'flex';
-            card.innerHTML = `
-                <div class="card-icon">${p.icona || '📁'}</div>
-                <div class="card-title">${p.titolo}</div>
-                <div class="card-desc">${p.descrizione || ''}</div>
-                ${extraBadgeHtml}
-            `;
-            wrapper.appendChild(card);
+            if (visibile) {
+                const card = document.createElement('a');
+                card.href = p.url;
+                card.className = 'card ' + (isAdminProj ? 'admin-only-card' : '');
+                card.style.display = 'flex';
+                card.innerHTML = `
+                    <div class="card-icon">${p.icona || '📁'}</div>
+                    <div class="card-title">${p.titolo}</div>
+                    <div class="card-desc">${p.descrizione || ''}</div>
+                    ${extraBadgeHtml}
+                `;
+                wrapper.appendChild(card);
+            }
         });
     }
 

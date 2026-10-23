@@ -116,15 +116,17 @@
             });
             const data = await resp.json();
             if (data && data.success) {
-                // Se sul dispositivo l'accesso principale è stato effettuato da Admin, l'app accetta solo credenziali con permessi
-                const lastMainRole = localStorage.getItem('milella_last_authenticated_role');
-                if (lastMainRole === 'admin' && data.ruolo !== 'admin') {
-                    // Controlla se questo operatore è abilitato all'app corrente
+                // Controlla sempre se l'utente che sta sbloccando ha i permessi per questa app
+                if (data.ruolo !== 'admin') {
                     const enabledApps = data.appAbilitate || [];
-                    const currentAppKey = (path.includes('veicoli') ? 'veicoli' : (path.includes('salute') ? 'salute' : (path.includes('careassist') ? 'careassist' : (path.includes('inventario') ? 'attrezzi' : (path.includes('ricettario') ? 'ricettario' : '')))));
-                    if (currentAppKey && !enabledApps.includes('all') && !enabledApps.includes(currentAppKey)) {
+                    const currentAppKey = (path.includes('veicoli') ? 'veicoli' : (path.includes('salute') ? 'salute' : (path.includes('careassist') ? 'careassist' : (path.includes('inventario') ? 'inventario' : (path.includes('ricettario') ? 'ricettario' : (path.includes('mednutri') ? 'mednutri' : (path.includes('gioco') ? 'gioco' : '')))))));
+                    const hasAccess = enabledApps.includes('all') || 
+                                      enabledApps.includes(currentAppKey) || 
+                                      enabledApps.includes('app_' + currentAppKey) ||
+                                      (currentAppKey === 'inventario' && (enabledApps.includes('attrezzi') || enabledApps.includes('app_attrezzi')));
+                    if (currentAppKey && !hasAccess) {
                         if (err) {
-                            err.textContent = 'Accesso negato: questa sessione richiede il PIN Admin.';
+                            err.textContent = 'Accesso negato: app non abilitata per il profilo ' + (data.nome || 'operatore') + '.';
                             err.style.display = 'block';
                         }
                         return;
@@ -135,7 +137,16 @@
                 localStorage.setItem(SESSION_KEY, 'true');
                 localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                 sessionStorage.setItem('milella_user_nome', data.nome || 'Operatore');
+                localStorage.setItem('milella_user_nome', data.nome || 'Operatore');
                 localStorage.setItem('milella_last_authenticated_pin', pin);
+                localStorage.setItem('milella_last_authenticated_role', data.ruolo || 'operatore');
+                localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
+                if (data.ruolo === 'admin') {
+                    localStorage.setItem('milella_admin_pin', pin);
+                } else {
+                    localStorage.removeItem('milella_admin_pin');
+                    localStorage.setItem('milella_user_pin', pin);
+                }
                 if (data.token) localStorage.setItem('milella_token', data.token);
 
                 const overlay = document.getElementById('suiteSecurityGateOverlay');
@@ -210,15 +221,29 @@
         // 1. Se la sessione è già sbloccata nel tab corrente (sessionStorage)
         let isUnlocked = sessionStorage.getItem(SESSION_KEY) === 'true';
 
-        // 2. Se non è sbloccata nel tab, controlla se l'utente ha appena sbloccato il Launcher principale come Admin negli ultimi 60 minuti
+        // 2. Se non è sbloccata nel tab, controlla se l'utente ha una sessione recente valida
         if (!isUnlocked) {
             const localUnlocked = localStorage.getItem(SESSION_KEY) === 'true';
             const unlockTime = parseInt(localStorage.getItem('milella_session_unlocked_time') || '0', 10);
             const isFresh = (Date.now() - unlockTime) < (60 * 60 * 1000); // 1 ora di sessione attiva condivisa
             const role = localStorage.getItem('milella_last_authenticated_role');
-            if (localUnlocked && isFresh && role === 'admin') {
-                sessionStorage.setItem(SESSION_KEY, 'true');
-                isUnlocked = true;
+            if (localUnlocked && isFresh) {
+                if (role === 'admin') {
+                    sessionStorage.setItem(SESSION_KEY, 'true');
+                    isUnlocked = true;
+                } else if (role === 'operatore') {
+                    // Controlla se l'operatore corrente è abilitato a questa specifica app
+                    const savedApps = JSON.parse(localStorage.getItem('milella_app_abilitate') || '[]');
+                    const currentAppKey = (path.includes('veicoli') ? 'veicoli' : (path.includes('salute') ? 'salute' : (path.includes('careassist') ? 'careassist' : (path.includes('inventario') ? 'inventario' : (path.includes('ricettario') ? 'ricettario' : (path.includes('mednutri') ? 'mednutri' : (path.includes('gioco') ? 'gioco' : '')))))));
+                    const hasAccess = savedApps.includes('all') || 
+                                      savedApps.includes(currentAppKey) || 
+                                      savedApps.includes('app_' + currentAppKey) ||
+                                      (currentAppKey === 'inventario' && (savedApps.includes('attrezzi') || savedApps.includes('app_attrezzi')));
+                    if (hasAccess) {
+                        sessionStorage.setItem(SESSION_KEY, 'true');
+                        isUnlocked = true;
+                    }
+                }
             }
         }
 
