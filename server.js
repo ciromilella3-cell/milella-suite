@@ -1244,7 +1244,7 @@ app.post(['/api/salute/data', '/salute/api/data'], (req, res) => {
         const merged = Object.assign({}, current, incoming);
         
         // Se arrivano weightLog specifici, assicurati che uniamo gli array senza perdere date
-        ['weightLog_marito', 'weightLog_moglie', 'weightLog_salvatoresalva'].forEach(key => {
+        ['weightLog_marito', 'weightLog_moglie'].forEach(key => {
             if (incoming[key]) {
                 try {
                     const arrInc = typeof incoming[key] === 'string' ? JSON.parse(incoming[key]) : incoming[key];
@@ -1259,6 +1259,17 @@ app.post(['/api/salute/data', '/salute/api/data'], (req, res) => {
                 } catch(eMerge) {}
             }
         });
+
+        // Gestione rimozione profili eliminati
+        if (incoming._deletedProfile) {
+            const delProf = incoming._deletedProfile;
+            delete merged._deletedProfile;
+            Object.keys(merged).forEach(k => {
+                if (k.endsWith('_' + delProf)) {
+                    delete merged[k];
+                }
+            });
+        }
         
         safeWriteAtomic(saluteDbPath, JSON.stringify(merged, null, 2));
         

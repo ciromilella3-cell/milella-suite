@@ -68,18 +68,6 @@ window.onerror = function(msg, url, line) {
         if (!localStorage.getItem('waterCount_moglie')) localStorage.setItem('waterCount_moglie', '8');
         if (!localStorage.getItem('coffeeCount_moglie')) localStorage.setItem('coffeeCount_moglie', '3');
 
-        if (!profiles.includes('salvatoresalva')) {
-            profiles.push('salvatoresalva');
-            localStorage.setItem('health_profiles', JSON.stringify(profiles));
-        }
-        localStorage.setItem('profileName_salvatoresalva', 'Salvatore Salva.');
-        if (!localStorage.getItem('profileStats_salvatoresalva')) {
-            localStorage.setItem('profileStats_salvatoresalva', JSON.stringify({"dob":"1967-04-10","start":"80","goal":"68","kcal":"1600","height":"165","gender":"M"}));
-        }
-        if (!localStorage.getItem('weightLog_salvatoresalva')) {
-            localStorage.setItem('weightLog_salvatoresalva', JSON.stringify([{"date":"2026-10-08","weight":92}]));
-        }
-
         var currentMarito = localStorage.getItem('profileName_marito');
         var currentMoglie = localStorage.getItem('profileName_moglie');
         var wMarito = localStorage.getItem('weightLog_marito');
@@ -1868,10 +1856,24 @@ function confirmDeleteProfile() {
             globalProfiles.splice(index, 1);
             localStorage.setItem('health_profiles', JSON.stringify(globalProfiles));
             
-            // Cleanup some data
+            // Cleanup all keys associated with this profile
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k && k.endsWith('_' + prof)) keysToRemove.push(k);
+            }
+            keysToRemove.forEach(k => localStorage.removeItem(k));
             localStorage.removeItem('profileStats_' + prof);
             localStorage.removeItem('weightLog_' + prof);
             localStorage.removeItem('menuData_' + prof);
+            localStorage.removeItem('profileName_' + prof);
+            localStorage.removeItem('syncTarget_' + prof);
+            localStorage.removeItem('fast_type_' + prof);
+            localStorage.removeItem('fast_start_' + prof);
+            localStorage.removeItem('fast_end_' + prof);
+            localStorage.removeItem('waterCount_' + prof);
+            localStorage.removeItem('coffeeCount_' + prof);
+            localStorage.removeItem('anamnesi_' + prof);
             
             // Switch active profile to someone else if possible
             if(globalProfiles.length > 0) {
@@ -1885,11 +1887,21 @@ function confirmDeleteProfile() {
             }
             
             document.getElementById('delete-profile-modal').style.display = 'none';
+
+            // Sincronizza subito con il Cloud inviando l'indicazione del profilo eliminato
+            if (typeof window.syncSaluteToCloud === 'function') {
+                window.syncSaluteToCloud({
+                    health_profiles: JSON.stringify(globalProfiles),
+                    activeProfile: activeProfile,
+                    _deletedProfile: prof
+                });
+            }
+
             renderTabs();
             renderProfiles();
             setTimeout(() => {
                 window.location.reload();
-            }, 300);
+            }, 500);
         }
     }
 }
