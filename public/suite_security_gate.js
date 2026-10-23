@@ -163,18 +163,47 @@
         }
     }
 
-    function doBiometricUnlock() {
+    async function doBiometricUnlock() {
         const savedPin = localStorage.getItem('milella_last_authenticated_pin');
+        const err = document.getElementById('suiteGateErrorMsg');
         if (!savedPin) {
-            const err = document.getElementById('suiteGateErrorMsg');
-            if (err) { err.textContent = 'Inserisci prima il PIN una volta.'; err.style.display = 'block'; }
+            if (err) { err.textContent = 'Inserisci prima il tuo PIN una volta su questo dispositivo.'; err.style.display = 'block'; }
             return;
         }
+
+        // Se WebAuthn è disponibile, verifica con il sensore di impronta / Touch ID / Face ID
+        if (window.PublicKeyCredential && localStorage.getItem('milella_bio_cred_id')) {
+            try {
+                const rawCredId = localStorage.getItem('milella_bio_cred_id');
+                const credIdBytes = Uint8Array.from(atob(rawCredId), c => c.charCodeAt(0));
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                await navigator.credentials.get({
+                    publicKey: {
+                        challenge: challenge,
+                        allowCredentials: [{ id: credIdBytes, type: 'public-key' }],
+                        timeout: 60000,
+                        userVerification: "required"
+                    }
+                });
+            } catch(eBio) {
+                console.warn('Verifica biometrica annullata o fallita:', eBio);
+                if (err) { err.textContent = 'Impronta non riconosciuta. Usa il tuo PIN.'; err.style.display = 'block'; }
+                return;
+            }
+        }
+
         sessionStorage.setItem(SESSION_KEY, 'true');
+        sessionStorage.setItem('salute_session_unlocked', 'true');
         localStorage.setItem(SESSION_KEY, 'true');
         localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
         const overlay = document.getElementById('suiteSecurityGateOverlay');
-        if (overlay) overlay.style.display = 'none';
+        if (overlay) {
+            overlay.style.transition = 'opacity 0.25s ease-out';
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 250);
+        }
     }
 
     function checkGateState() {

@@ -947,7 +947,7 @@ app.post('/api/progetti/gestione', (req, res) => {
 });
 
 // ==============================================================================
-// 1. STATISTICHE KPI DASHBOARD LIVE (ATTREZZI, OPERATORI, PROGETTI, PRESTITI)
+// 1. STATISTICHE KPI DASHBOARD LIVE E NOTIFICHE SMART (ATTREZZI, SCADENZE FLOTTA, SALUTE)
 // ==============================================================================
 app.get('/api/kpi/stats', (req, res) => {
     try {
@@ -965,13 +965,57 @@ app.get('/api/kpi/stats', (req, res) => {
         const projs = loadProgetti().filter(p => p.attivo);
         const totProgetti = projs.length;
 
+        // Calcolo scadenze veicoli (default veicolo FG945VW o archivio)
+        let scadenzeVeicoli = [];
+        const veicoliDbPath = path.join(__dirname, 'data', 'veicoli_db.json');
+        let veicoliList = [
+            { targa: 'FG945VW', modello: 'Fiat Doblò Cargo', ass: '2026-11-20', bollo: '2026-12-31', rev: '2026-11-15' }
+        ];
+        if (fs.existsSync(veicoliDbPath)) {
+            try { veicoliList = JSON.parse(fs.readFileSync(veicoliDbPath, 'utf8') || '[]'); } catch(e){}
+        }
+        
+        const now = new Date();
+        const alertsVeicoli = [];
+        veicoliList.forEach(v => {
+            const checks = [
+                { tipo: 'Revisione', dataStr: v.rev },
+                { tipo: 'Assicurazione', dataStr: v.ass },
+                { tipo: 'Bollo Auto', dataStr: v.bollo }
+            ];
+            checks.forEach(c => {
+                if (c.dataStr) {
+                    const target = new Date(c.dataStr);
+                    const diffDays = Math.round((target - now) / (1000 * 60 * 60 * 24));
+                    if (diffDays <= 30) {
+                        alertsVeicoli.push({
+                            veicolo: v.targa || v.modello,
+                            tipo: c.tipo,
+                            data: c.dataStr,
+                            giorni: diffDays,
+                            urgente: diffDays <= 7
+                        });
+                    }
+                }
+            });
+        });
+
+        // Controlla prestiti attrezzi
+        const attrezziInUso = attrezzi.filter(a => a.prestato_a && a.prestato_a.trim() !== '').map(a => ({
+            nome: a.nome,
+            prestato_a: a.prestato_a,
+            data_prestito: a.data_prestito || a.data_modifica || 'In corso'
+        }));
+
         res.json({
             totAttrezzi,
             inUso,
             disponibili,
             totOperatori,
             totProgetti,
-            prossimaScadenza: "In regola"
+            prossimaScadenza: alertsVeicoli.length > 0 ? (alertsVeicoli[0].tipo + ' (' + alertsVeicoli[0].veicolo + '): ' + (alertsVeicoli[0].giorni <= 0 ? 'SCADUTO' : alertsVeicoli[0].giorni + 'gg')) : "In regola",
+            alertsVeicoli,
+            attrezziInUso
         });
     } catch(err) {
         res.status(500).json({ error: err.message });

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -10,8 +10,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Milella Suite">
-    <link rel="apple-touch-icon" href="/cm_logo_gold.ico">
+    <meta name="apple-mobile-web-app-title" content="SUITE M.C.">
+    <link rel="icon" type="image/png" href="/icon-512.png">
+    <link rel="apple-touch-icon" href="/icon-512.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -496,6 +497,31 @@
         <div class="header">
             <h2>Gestione Aziendale</h2>
             <h1>C. <span>MILELLA</span></h1>
+        </div>
+
+        <!-- BANNER SMART NOTIFICHE & PROMEMORIA SUITE -->
+        <div id="smartNotificationsBanner" style="display:none; width:100%; max-width:900px; margin:0 auto 1.5rem auto; background:linear-gradient(135deg, rgba(234,88,12,0.15) 0%, rgba(15,23,42,0.95) 100%); border:1.5px solid rgba(249,115,22,0.4); border-radius:20px; padding:16px 20px; box-shadow:0 12px 35px rgba(0,0,0,0.5); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); position:relative; overflow:hidden;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap;">
+                <div style="display:flex; gap:14px; align-items:center;">
+                    <div style="width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, #f97316, #ea580c); display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 6px 16px rgba(234,88,12,0.4); flex-shrink:0;">
+                        🔔
+                    </div>
+                    <div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:11px; text-transform:uppercase; letter-spacing:1.5px; font-weight:800; color:#fb923c;">Smart Hub Scadenze & Obiettivi</span>
+                            <span id="smartNotifBadgeCount" style="background:#ef4444; color:#fff; font-size:10.5px; font-weight:900; padding:2px 7px; border-radius:10px;">0</span>
+                        </div>
+                        <div id="smartNotifTitle" style="font-size:14px; font-weight:800; color:#ffffff; margin-top:3px;">Verifica scadenze in corso...</div>
+                        <div id="smartNotifDetails" style="font-size:12px; color:#cbd5e1; margin-top:3px; line-height:1.4;"></div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center; margin-left:auto;">
+                    <button id="btnAttivaPushNotif" onclick="attivaNotificheBrowser()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#f3e5ab; font-size:11.5px; font-weight:700; padding:6px 12px; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
+                        🔔 Attiva Notifiche Telefono
+                    </button>
+                    <button onclick="document.getElementById('smartNotificationsBanner').style.display='none'" style="background:transparent; border:none; color:#94a3b8; font-size:18px; cursor:pointer; padding:4px 8px;" title="Chiudi notifica">✕</button>
+                </div>
+            </div>
         </div>
 
         <!-- 5. CRUSCOTTO RIEPILOGATIVO VELOCE (DASHBOARD KPI LIVE) -->
@@ -1643,6 +1669,10 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_last_authenticated_role', 'admin');
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
+                    sessionStorage.setItem('milella_session_unlocked', 'true');
+                    sessionStorage.setItem('salute_session_unlocked', 'true');
+                    localStorage.setItem('milella_session_unlocked', 'true');
+                    localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
                     localStorage.setItem('milella_user_nome', data.nome);
@@ -1653,6 +1683,10 @@ document.addEventListener('fullscreenchange', () => {
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'operatore');
                     localStorage.setItem('milella_last_authenticated_pin', pin);
+                    sessionStorage.setItem('milella_session_unlocked', 'true');
+                    sessionStorage.setItem('salute_session_unlocked', 'true');
+                    localStorage.setItem('milella_session_unlocked', 'true');
+                    localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
                     localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
@@ -1775,6 +1809,11 @@ document.addEventListener('fullscreenchange', () => {
             }
 
             // Accesso consentito solo dopo verifica dell'impronta
+            sessionStorage.setItem('milella_session_unlocked', 'true');
+            sessionStorage.setItem('salute_session_unlocked', 'true');
+            localStorage.setItem('milella_session_unlocked', 'true');
+            localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
+
             if (savedLastRole === 'admin') {
                 currentAdminPin = localStorage.getItem('milella_last_authenticated_pin') || localStorage.getItem('milella_admin_pin') || '';
                 if (currentAdminPin) localStorage.setItem('milella_admin_pin', currentAdminPin);
@@ -1788,10 +1827,14 @@ document.addEventListener('fullscreenchange', () => {
             localStorage.setItem('milella_paz_abilitati', JSON.stringify(savedLastPaz));
 
             const gate = document.getElementById('gateBloccoIngresso');
-            if (gate) gate.style.display = 'none';
+            if (gate) {
+                gate.style.transition = 'opacity 0.25s ease-out';
+                gate.style.opacity = '0';
+                setTimeout(() => { gate.style.display = 'none'; }, 250);
+            }
 
             applicaRuolo(savedLastRole, savedLastUser, savedLastApps);
-            alert('👆 Impronta verificata! Benvenuto ' + savedLastUser);
+            mostraToastNotifica('👆 Accesso biometrico riuscito: benvenuto ' + savedLastUser + '!');
         } catch(e) {
             console.warn('Errore biometria:', e);
             if (err) {
@@ -2285,7 +2328,17 @@ document.addEventListener('fullscreenchange', () => {
                 visibile = !isAdminProj;
             }
 
-            if (!visibile) return;
+            let extraBadgeHtml = '';
+            if (p.id === 'app_veicoli' && window.__smartVeicoliAlerts && window.__smartVeicoliAlerts.length > 0) {
+                const a0 = window.__smartVeicoliAlerts[0];
+                const col = a0.urgente ? '#ef4444' : '#f59e0b';
+                const bg = a0.urgente ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)';
+                extraBadgeHtml = `<div style="margin-top:6px;"><span style="background:${bg}; border:1px solid ${col}; color:${col}; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:8px;">⚠️ ${a0.tipo} (${a0.giorni <= 0 ? 'SCADUTO' : a0.giorni + 'gg'})</span></div>`;
+            } else if (p.id === 'app_salute' && window.__smartSaluteAlert) {
+                extraBadgeHtml = `<div style="margin-top:6px;"><span style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#34d399; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:8px;">💧 ${window.__smartSaluteAlert}</span></div>`;
+            } else if (p.id === 'app_inventario' && window.__smartAttrezziInUso && window.__smartAttrezziInUso.length > 0) {
+                extraBadgeHtml = `<div style="margin-top:6px;"><span style="background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#38bdf8; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:8px;">🚚 ${window.__smartAttrezziInUso.length} in prestito</span></div>`;
+            }
 
             const card = document.createElement('a');
             card.href = p.url;
@@ -2295,6 +2348,7 @@ document.addEventListener('fullscreenchange', () => {
                 <div class="card-icon">${p.icona || '📁'}</div>
                 <div class="card-title">${p.titolo}</div>
                 <div class="card-desc">${p.descrizione || ''}</div>
+                ${extraBadgeHtml}
             `;
             wrapper.appendChild(card);
         });
@@ -2524,6 +2578,32 @@ document.addEventListener('fullscreenchange', () => {
         } catch(e) {}
     }
 
+    async function attivaNotificheBrowser() {
+        if (!("Notification" in window)) {
+            alert("Il browser su questo dispositivo non supporta le notifiche native.");
+            return;
+        }
+        try {
+            const perm = await Notification.requestPermission();
+            if (perm === "granted") {
+                const btn = document.getElementById('btnAttivaPushNotif');
+                if (btn) {
+                    btn.innerHTML = '✅ Notifiche Attive';
+                    btn.style.borderColor = '#10b981';
+                    btn.style.color = '#34d399';
+                }
+                new Notification("Suite C. Milella - Promemoria Attivi", {
+                    body: "Le notifiche automatiche per scadenze veicoli e obiettivi salute sono ora attive sul tuo dispositivo!",
+                    icon: "/icon-512.png"
+                });
+            } else {
+                alert("Permesso notifiche rifiutato. Puoi riattivarlo dalle impostazioni del browser.");
+            }
+        } catch(e) {
+            console.warn(e);
+        }
+    }
+
     async function caricaKpiStats() {
         try {
             const res = await fetch('/api/kpi/stats');
@@ -2537,6 +2617,56 @@ document.addEventListener('fullscreenchange', () => {
                 if (uso) uso.textContent = data.inUso || 0;
                 if (disp) disp.textContent = data.disponibili || 0;
                 if (ops) ops.textContent = data.totOperatori || 0;
+
+                // Gestione Smart Hub Notifiche & Promemoria
+                window.__smartVeicoliAlerts = data.alertsVeicoli || [];
+                window.__smartAttrezziInUso = data.attrezziInUso || [];
+
+                // Verifica obiettivi salute se presenti nel database o in localStorage
+                try {
+                    const salRes = await fetch('/api/salute/data');
+                    const salData = await salRes.json();
+                    if (salData) {
+                        const waterMarito = salData.waterCount_marito || 0;
+                        const fastMarito = salData.fast_end_marito || '19:30';
+                        if (waterMarito < 8) {
+                            window.__smartSaluteAlert = `Idratazione: ${waterMarito}/8 bicchieri`;
+                        } else {
+                            window.__smartSaluteAlert = `Finestra pasti: chiude alle ${fastMarito}`;
+                        }
+                    }
+                } catch(eSal) {}
+
+                // Rirenderizza le card per mostrare i badge attivi
+                renderCardProgetti();
+
+                // Popola il Banner Superiore Smart
+                const banner = document.getElementById('smartNotificationsBanner');
+                const badgeCount = document.getElementById('smartNotifBadgeCount');
+                const notifTitle = document.getElementById('smartNotifTitle');
+                const notifDetails = document.getElementById('smartNotifDetails');
+
+                const totalAlerts = (window.__smartVeicoliAlerts.length) + (window.__smartAttrezziInUso.length ? 1 : 0);
+                if (totalAlerts > 0) {
+                    if (banner) banner.style.display = 'block';
+                    if (badgeCount) badgeCount.textContent = totalAlerts;
+
+                    let msgs = [];
+                    if (window.__smartVeicoliAlerts.length > 0) {
+                        const a = window.__smartVeicoliAlerts[0];
+                        if (notifTitle) notifTitle.textContent = `🚗 Promemoria Mezzi: Scadenza ${a.tipo} (${a.veicolo})`;
+                        msgs.push(`La scadenza è prevista tra <strong>${a.giorni} giorni</strong> (${a.data}). Controlla la scheda prima dell'uso.`);
+                    } else if (window.__smartAttrezziInUso.length > 0) {
+                        if (notifTitle) notifTitle.textContent = `🛠️ Gestione Cantieri: ${window.__smartAttrezziInUso.length} attrezzi attualmente in prestito`;
+                        msgs.push(`Operatore attuale: ${window.__smartAttrezziInUso[0].prestato_a} (${window.__smartAttrezziInUso[0].nome})`);
+                    }
+                    if (window.__smartSaluteAlert) {
+                        msgs.push(`❤️ Salute: ${window.__smartSaluteAlert}`);
+                    }
+                    if (notifDetails) notifDetails.innerHTML = msgs.join(' &bull; ');
+                } else {
+                    if (banner) banner.style.display = 'none';
+                }
             }
         } catch(e) {}
     }
@@ -2568,14 +2698,16 @@ document.addEventListener('fullscreenchange', () => {
         }
     }
 
+    const isSessionUnlocked = sessionStorage.getItem('milella_session_unlocked') === 'true';
     const savedLastRole = localStorage.getItem('milella_last_authenticated_role');
-    if (savedLastRole === 'admin' && savedAdminPin) {
+
+    if (isSessionUnlocked && savedLastRole === 'admin' && savedAdminPin) {
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
         currentAdminPin = savedAdminPin;
         applicaRuolo('admin', savedUserNome || 'Ciro Milella (Admin)', ['all']);
-    } else if (savedUserPin && savedUserNome) {
-        // Operatore già loggato stabilmente su questo dispositivo
+    } else if (isSessionUnlocked && savedUserPin && savedUserNome) {
+        // Operatore già loggato stabilmente su questo dispositivo con sessione attiva
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
         currentAppAbilitate = savedApps;
@@ -2597,7 +2729,7 @@ document.addEventListener('fullscreenchange', () => {
             }
         }).catch(() => {});
     } else {
-        // NESSUNA SESSIONE: Mostra il Gate di Benvenuto & Blocco PIN
+        // NESSUNA SESSIONE (App appena riaperta): Mostra il Gate di Benvenuto & Blocco PIN
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'flex';
         aggiornaVisibilitaBiometriaGate();
