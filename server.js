@@ -969,10 +969,13 @@ app.get('/api/kpi/stats', (req, res) => {
         let scadenzeVeicoli = [];
         const veicoliDbPath = path.join(__dirname, 'data', 'veicoli_db.json');
         let veicoliList = [
-            { targa: 'FG945VW', modello: 'Fiat Doblò Cargo', ass: '2026-11-20', bollo: '2026-12-31', rev: '2026-11-15' }
+            { targa: 'FG945VW', modello: 'Fiat Doblò Cargo', ass: '2026-12-31', bollo: '2027-01-31', rev: '2027-05-31' }
         ];
         if (fs.existsSync(veicoliDbPath)) {
-            try { veicoliList = JSON.parse(fs.readFileSync(veicoliDbPath, 'utf8') || '[]'); } catch(e){}
+            try { 
+                const loaded = JSON.parse(fs.readFileSync(veicoliDbPath, 'utf8') || '[]');
+                if (Array.isArray(loaded) && loaded.length > 0) veicoliList = loaded;
+            } catch(e){}
         }
         
         const now = new Date();
