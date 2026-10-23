@@ -7964,42 +7964,41 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
             }
         }
         
-        // Sincronizzazione dinamica dei profili Cloud <-> Locale (Anti-perdita profili)
+        // Sincronizzazione dinamica dei profili Cloud -> Locale
         try {
-            let localPList = JSON.parse(localStorage.getItem('health_profiles') || '["marito", "moglie"]');
-            if (!Array.isArray(localPList)) localPList = ['marito', 'moglie'];
-            
-            // Insieme di tutti i profili scoperti da cloudData e local
-            const knownProfiles = new Set(localPList);
-            knownProfiles.add('marito');
-            knownProfiles.add('moglie');
-
-            // 1. Analizza health_profiles se fornito dal cloud
             if (cloudData.health_profiles) {
                 const cloudPList = typeof cloudData.health_profiles === 'string' ? JSON.parse(cloudData.health_profiles) : cloudData.health_profiles;
-                if (Array.isArray(cloudPList)) {
-                    cloudPList.forEach(p => { if (p && p.trim()) knownProfiles.add(p.trim()); });
-                }
-            }
+                if (Array.isArray(cloudPList) && cloudPList.length > 0) {
+                    let localPList = JSON.parse(localStorage.getItem('health_profiles') || '["marito", "moglie"]');
+                    if (!Array.isArray(localPList)) localPList = ['marito', 'moglie'];
+                    
+                    // Assicuriamoci che i profili nel cloud siano la lista autoritativa
+                    const validProfiles = new Set(cloudPList);
+                    validProfiles.add('marito');
+                    validProfiles.add('moglie');
+                    
+                    // Rimuovi da localStorage eventuali profili che sono stati eliminati dal Cloud
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const lk = localStorage.key(i);
+                        if (lk && lk.startsWith('profileName_')) {
+                            const pid = lk.replace('profileName_', '');
+                            if (pid && !validProfiles.has(pid)) {
+                                localStorage.removeItem(lk);
+                                localStorage.removeItem('profileStats_' + pid);
+                                localStorage.removeItem('weightLog_' + pid);
+                                localStorage.removeItem('syncTarget_' + pid);
+                            }
+                        }
+                    }
 
-            // 2. Analizza tutte le chiavi nel Cloud: se esiste profileName_ID o weightLog_ID, il profilo ESISTE!
-            for (let ck in cloudData) {
-                if (ck.startsWith('profileName_')) {
-                    const pid = ck.replace('profileName_', '').trim();
-                    if (pid && !['0', '1', 'a', 'salvatoresalva'].includes(pid)) {
-                        knownProfiles.add(pid);
+                    const nextStored = JSON.stringify(Array.from(validProfiles));
+                    const currentStored = JSON.stringify(localPList);
+                    if (currentStored !== nextStored) {
+                        localStorage.setItem('health_profiles', nextStored);
+                        hasChanges = true;
+                        profilesListChanged = true;
                     }
                 }
-            }
-
-            const mergedPList = Array.from(knownProfiles);
-            const currentStored = JSON.stringify(localPList);
-            const nextStored = JSON.stringify(mergedPList);
-
-            if (currentStored !== nextStored) {
-                localStorage.setItem('health_profiles', nextStored);
-                hasChanges = true;
-                profilesListChanged = true;
             }
         } catch(ePl) {
             console.warn('Errore riconciliazione profili:', ePl);
