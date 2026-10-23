@@ -40,15 +40,38 @@ window.onerror = function(msg, url, line) {
     }
 
     try {
-        // Auto-ripristino garantito di Maria Carmela
+        // Auto-pulizia profili di test indesiderati ('a', 'salvatoresalva')
         var profiles = [];
         try { profiles = JSON.parse(localStorage.getItem('health_profiles') || '[]'); } catch(eProfiles){}
-        if (!Array.isArray(profiles) || profiles.length === 0) profiles = ['marito'];
-        if (!profiles.includes('moglie')) {
-            profiles.push('moglie');
-            localStorage.setItem('health_profiles', JSON.stringify(profiles));
+        if (!Array.isArray(profiles) || profiles.length === 0) profiles = ['marito', 'moglie'];
+        profiles = profiles.filter(function(p) { return p !== 'a' && p !== 'salvatoresalva'; });
+        if (!profiles.includes('marito')) profiles.unshift('marito');
+        if (!profiles.includes('moglie')) profiles.push('moglie');
+        localStorage.setItem('health_profiles', JSON.stringify(profiles));
+
+        ['a', 'salvatoresalva'].forEach(function(stray) {
+            localStorage.removeItem('profileName_' + stray);
+            localStorage.removeItem('profileStats_' + stray);
+            localStorage.removeItem('weightLog_' + stray);
+            localStorage.removeItem('menuData_' + stray);
+            localStorage.removeItem('anamnesi_' + stray);
+            localStorage.removeItem('syncTarget_' + stray);
+            localStorage.removeItem('fast_type_' + stray);
+            localStorage.removeItem('fast_start_' + stray);
+            localStorage.removeItem('fast_end_' + stray);
+            localStorage.removeItem('waterCount_' + stray);
+            localStorage.removeItem('coffeeCount_' + stray);
+        });
+
+        var act = localStorage.getItem('activeProfile');
+        if (act === 'a' || act === 'salvatoresalva' || !profiles.includes(act)) {
+            localStorage.setItem('activeProfile', 'marito');
         }
+
+        // Auto-ripristino garantito di Maria Carmela e Ciro Milella
+        localStorage.setItem('profileName_marito', 'Ciro Milella');
         localStorage.setItem('profileName_moglie', 'Maria Carmela');
+        localStorage.setItem('profileName_0', 'Ciro Milella');
         localStorage.setItem('profileName_1', 'Maria Carmela');
 
         var wMoglie = localStorage.getItem('weightLog_moglie');
@@ -631,8 +654,12 @@ window.onerror = function(msg, url, line) {
         localStorage.setItem('anamnesi_moglie', anamMoglie.replace(/Elena Rossi/g, 'Maria Carmela'));
     }
     let globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
+    globalProfiles = globalProfiles.filter(p => p !== 'a' && p !== 'salvatoresalva');
+    if (!globalProfiles.includes('marito')) globalProfiles.unshift('marito');
+    if (!globalProfiles.includes('moglie')) globalProfiles.push('moglie');
+    localStorage.setItem('health_profiles', JSON.stringify(globalProfiles));
     let savedActive = localStorage.getItem('activeProfile');
-    let activeProfile = (savedActive && globalProfiles.includes(savedActive)) ? savedActive : globalProfiles[0];
+    let activeProfile = (savedActive && globalProfiles.includes(savedActive)) ? savedActive : 'marito';
     window.activeProfile = activeProfile;
     
     function getProfileDisplayName(prof) {
@@ -2784,6 +2811,26 @@ async function forceUpdateSaluteApp() {
                 }
                 localStorage.setItem('profileName_marito', 'Ciro Milella');
                 localStorage.setItem('profileName_moglie', 'Maria Carmela');
+            } catch(e) {}
+
+            // Pulizia forzata profili orfani o di test
+            try {
+                let pList = ['marito', 'moglie'];
+                try {
+                    let parsed = JSON.parse(localStorage.getItem('health_profiles') || '[]');
+                    pList = parsed.filter(p => p !== 'a' && p !== 'salvatoresalva');
+                    if (!pList.includes('marito')) pList.unshift('marito');
+                    if (!pList.includes('moglie')) pList.push('moglie');
+                } catch(e) {}
+                localStorage.setItem('health_profiles', JSON.stringify(pList));
+                ['a', 'salvatoresalva'].forEach(stray => {
+                    localStorage.removeItem('profileName_' + stray);
+                    localStorage.removeItem('profileStats_' + stray);
+                    localStorage.removeItem('weightLog_' + stray);
+                    localStorage.removeItem('menuData_' + stray);
+                    localStorage.removeItem('anamnesi_' + stray);
+                });
+                localStorage.setItem('activeProfile', 'marito');
             } catch(e) {}
         } catch(e) {}
         
