@@ -8036,12 +8036,30 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
     }
 };
 
-// Sincronizzazione automatica all'avvio
+// Sincronizzazione automatica all'avvio e in tempo reale
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => { setTimeout(() => window.pullSaluteFromCloud(false), 300); });
 } else {
     setTimeout(() => window.pullSaluteFromCloud(false), 300);
 }
+
+// 🔄 AGGIORNAMENTO AUTOMATICO IN TEMPO REALE TRA CELLULARE E PC:
+// 1. Polling continuo silenzioso ogni 5 secondi (se un collaboratore inserisce dati da cellulare, il PC li riceve da solo)
+setInterval(() => {
+    if (!document.hidden && navigator.onLine) {
+        window.pullSaluteFromCloud(false);
+    }
+}, 5000);
+
+// 2. Quando l'utente torna sulla finestra o riattiva lo schermo del telefono/PC, aggiorna all'istante
+window.addEventListener('focus', () => {
+    if (navigator.onLine) window.pullSaluteFromCloud(false);
+});
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && navigator.onLine) {
+        window.pullSaluteFromCloud(false);
+    }
+});
 
 // =========================================================================
 // 🚀 CONTROLLI PESO SMART & GESTORE STORICO PESI
