@@ -1,7 +1,7 @@
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
-    caches.open('salute-store-v20').then((cache) => cache.addAll([
+    caches.open('salute-store-v21').then((cache) => cache.addAll([
       './index.html',
       './style.css',
       './script.js'

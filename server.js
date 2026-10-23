@@ -1243,9 +1243,9 @@ app.post(['/api/salute/data', '/salute/api/data'], (req, res) => {
         const incoming = req.body;
         const merged = Object.assign({}, current, incoming);
         
-        // Se arrivano weightLog specifici, assicurati che uniamo gli array senza perdere date
-        ['weightLog_marito', 'weightLog_moglie'].forEach(key => {
-            if (incoming[key]) {
+        // Gestione profili e weightLog dinamici per QUALSIASI profilo presente
+        Object.keys(incoming).forEach(key => {
+            if (key.startsWith('weightLog_')) {
                 try {
                     const arrInc = typeof incoming[key] === 'string' ? JSON.parse(incoming[key]) : incoming[key];
                     const arrCur = current[key] ? (typeof current[key] === 'string' ? JSON.parse(current[key]) : current[key]) : [];
@@ -1269,6 +1269,36 @@ app.post(['/api/salute/data', '/salute/api/data'], (req, res) => {
                     delete merged[k];
                 }
             });
+            // Rimuovi esplicitamente dall'elenco profili
+            let pList = [];
+            try {
+                pList = typeof merged.health_profiles === 'string' ? JSON.parse(merged.health_profiles) : (merged.health_profiles || []);
+            } catch(e) {}
+            if (Array.isArray(pList)) {
+                merged.health_profiles = pList.filter(p => p !== delProf);
+            }
+        } else {
+            // Ricostruisci / proteggi l'elenco dei profili attivi in modo che nessun profilo venga mai perso
+            let pSet = new Set(['marito', 'moglie']);
+            // Aggiungi quelli salvati precedentemente
+            [current.health_profiles, incoming.health_profiles].forEach(hp => {
+                if (hp) {
+                    try {
+                        const arr = typeof hp === 'string' ? JSON.parse(hp) : hp;
+                        if (Array.isArray(arr)) arr.forEach(p => { if (p && p.trim()) pSet.add(p.trim()); });
+                    } catch(e) {}
+                }
+            });
+            // Rileva eventuali profili dai dati salvati (profileName_*)
+            Object.keys(merged).forEach(k => {
+                if (k.startsWith('profileName_')) {
+                    const pid = k.replace('profileName_', '').trim();
+                    if (pid && !['0', '1', 'a', 'salvatoresalva'].includes(pid)) {
+                        pSet.add(pid);
+                    }
+                }
+            });
+            merged.health_profiles = Array.from(pSet);
         }
         
         safeWriteAtomic(saluteDbPath, JSON.stringify(merged, null, 2));
