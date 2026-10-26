@@ -1416,7 +1416,7 @@
                 <div id="help-ora" class="field-help-bubble">
                   <b>⏰ A cosa serve:</b> L'orario esatto in cui deve suonare il promemoria per l'operatore o familiare.
                 </div>
-                <input type="time" class="form-control" id="edit-farm-ora" required onchange="ricalcolaDosiMultipleModifica()" style="font-weight:800; font-size:15px; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd; height:42px;">
+                <input type="time" class="form-control" id="edit-farm-ora" required oninput="aggiornaFasciaModificaDaOrario()" onchange="aggiornaFasciaModificaDaOrario(); ricalcolaDosiMultipleModifica();" style="font-weight:800; font-size:15px; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd; height:42px;">
                 <span class="field-help-hint">Ora promemoria sul telefono</span>
               </div>
               <div class="form-group" style="flex:1.4; min-width:170px; margin-bottom:0;">

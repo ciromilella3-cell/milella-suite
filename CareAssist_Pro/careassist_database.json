@@ -655,28 +655,15 @@
       "note": "Paziente di 88 anni. Cardiopatia ipertensiva in buon compenso, osteoartrosi diffusa e insufficienza venosa periferica.",
       "terapie": [
         {
-          "id": 301,
-          "ora": "07:30",
-          "fascia": "Mattina (Digiuno)",
-          "farmaco": "SINEMET 100+25 mg (1ª dose)",
-          "principio": "Levodopa + Carbidopa",
-          "dosaggio": "100/25 mg (1 cpr)",
-          "modo": "30 min prima di colazione (Parkinson) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 50,
-          "scorta": 49,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": true
-        },
-        {
-          "id": 302,
+          "id": 305,
           "ora": "08:00",
           "fascia": "Mattina (Colazione)",
-          "farmaco": "XULTOPHY penna",
-          "principio": "Insulina degludec + Liraglutide",
-          "dosaggio": "___ unità (sottocute)",
-          "modo": "Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 15,
-          "scorta": 14,
+          "farmaco": "CONGESCOR 2,5 mg",
+          "principio": "Bisoprololo",
+          "dosaggio": "2,5 mg (1 cpr)",
+          "modo": "A colazione (Beta-bloccante: frequenza cardiaca) ⚠️ Orario/dose da confermare col medico",
+          "cprPerScatola": 28,
+          "scorta": 27,
           "farmacia": "Farmacia Girasole Picconi",
           "fattoOggi": true
         },
@@ -707,17 +694,26 @@
           "fattoOggi": true
         },
         {
-          "id": 305,
+          "id": 1792933471231,
           "ora": "08:00",
           "fascia": "Mattina (Colazione)",
-          "farmaco": "CONGESCOR 2,5 mg",
-          "principio": "Bisoprololo",
-          "dosaggio": "2,5 mg (1 cpr)",
-          "modo": "A colazione (Beta-bloccante: frequenza cardiaca) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 28,
-          "scorta": 27,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": true
+          "farmaco": "SINEMET 100+25 mg (1ª dose - ore 08:00)",
+          "principio": "Levodopa + Carbidopa",
+          "dosaggio": "100/25 mg (1 cpr)",
+          "modo": "30 min prima di colazione (Parkinson) ⚠️ Orario/dose da confermare col medico",
+          "cprPerScatola": 50,
+          "scorta": 39,
+          "fattoOggi": true,
+          "giorniAlert": 7,
+          "cadenzaTipo": "giornaliera",
+          "quantitaQuota": 1,
+          "ultimaModificaClinica": {
+            "data": "26/10/2026",
+            "fonte": "Visita Specialistica",
+            "medico": "Dr.ssa Carolina Potenza",
+            "motivo": "Allineamento posologia 3 dosi giornaliere (08:00, 13:00, 20:00)"
+          },
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 306,
@@ -729,6 +725,19 @@
           "modo": "A colazione con acqua (Pressione arteriosa) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 14,
           "scorta": 13,
+          "farmacia": "Farmacia Girasole Picconi",
+          "fattoOggi": true
+        },
+        {
+          "id": 302,
+          "ora": "08:00",
+          "fascia": "Mattina (Colazione)",
+          "farmaco": "XULTOPHY penna",
+          "principio": "Insulina degludec + Liraglutide",
+          "dosaggio": "___ unità (sottocute)",
+          "modo": "Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete) ⚠️ Orario/dose da confermare col medico",
+          "cprPerScatola": 15,
+          "scorta": 14,
           "farmacia": "Farmacia Girasole Picconi",
           "fattoOggi": true
         },
@@ -746,19 +755,6 @@
           "fattoOggi": true
         },
         {
-          "id": 308,
-          "ora": "12:30",
-          "fascia": "Pranzo",
-          "farmaco": "SINEMET 100+25 mg (2ª dose)",
-          "principio": "Levodopa + Carbidopa",
-          "dosaggio": "100/25 mg (1 cpr)",
-          "modo": "30 min prima di pranzo (Parkinson) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 50,
-          "scorta": 49,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": true
-        },
-        {
           "id": 314,
           "ora": "13:00",
           "fascia": "Pranzo",
@@ -770,6 +766,21 @@
           "scorta": 27,
           "farmacia": "Farmacia Girasole Picconi",
           "fattoOggi": true
+        },
+        {
+          "id": 1792933601834,
+          "ora": "13:00",
+          "fascia": "Pranzo",
+          "farmaco": "SINEMET 100+25 mg (2ª dose - ore 13:00)",
+          "principio": "Levodopa + Carbidopa",
+          "dosaggio": "100/25 mg (1 cpr)",
+          "modo": "30 min prima di pranzo (Parkinson) ⚠️ Orario/dose da confermare col medico",
+          "cprPerScatola": 50,
+          "scorta": 39,
+          "fattoOggi": true,
+          "giorniAlert": 7,
+          "cadenzaTipo": "giornaliera",
+          "quantitaQuota": 1
         },
         {
           "id": 309,
@@ -800,17 +811,19 @@
           "fattoOggi": true
         },
         {
-          "id": 311,
-          "ora": "19:30",
+          "id": 1792933601971,
+          "ora": "20:00",
           "fascia": "Sera (Cena)",
-          "farmaco": "SINEMET 100+25 mg (3ª dose)",
+          "farmaco": "SINEMET 100+25 mg (3ª dose - ore 20:00)",
           "principio": "Levodopa + Carbidopa",
           "dosaggio": "100/25 mg (1 cpr)",
           "modo": "30 min prima di cena (Parkinson) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 50,
-          "scorta": 50,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false
+          "scorta": 39,
+          "fattoOggi": false,
+          "giorniAlert": 7,
+          "cadenzaTipo": "giornaliera",
+          "quantitaQuota": 1
         },
         {
           "id": 313,
@@ -1102,7 +1115,7 @@
     }
   ],
   "ultimoGiornoOperativo": "2026-10-20",
-  "lastModified": 1792515837504,
+  "lastModified": "2026-10-26T07:52:14.994Z",
   "rosaInitializedOnce": true,
   "rosaTerapiaFoto20261017": true,
   "rosaSivastin20261017": true,
@@ -1111,5 +1124,6 @@
   "rosaAverelix20261017": true,
   "rosaSerenityPantsRinnovo20270218": true,
   "rosaSerenityDDT20260821": true,
-  "lastModifiedDevice": "smartphone"
+  "lastModifiedDevice": "smartphone",
+  "lastModifiedBy": "Admin (Allineamento Terapia Sinemet)"
 }

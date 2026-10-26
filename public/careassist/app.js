@@ -528,7 +528,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
           scorta: 56,
           fattoOggi: false
         });
-        aldoEx.terapie.sort((a, b) => (a.ora || '').localeCompare(b.ora || ''));
+        aldoEx.terapie.sort(comparaOrariTerapie);
       }
     }
   }
@@ -708,7 +708,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       const averelixItem = getTerapieRosaFoto().find(t => t.id === 314);
       if (averelixItem) {
         rosaFoto.terapie.push(averelixItem);
-        rosaFoto.terapie.sort((a, b) => (a.ora || '').localeCompare(b.ora || ''));
+        rosaFoto.terapie.sort(comparaOrariTerapie);
       }
     }
     rosaFoto.patologie = rosaFoto.patologie || [];
@@ -3179,6 +3179,9 @@ function renderTerapie() {
   const container = document.getElementById('terapie-table-body');
   const preview = document.getElementById('terapie-preview-body');
   if (!container || !p) return;
+  if (p.terapie && typeof comparaOrariTerapie === 'function') {
+    p.terapie.sort(comparaOrariTerapie);
+  }
 
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
   const canEdit = (role === 'admin') || (localStorage.getItem('milella_can_edit_terapie') === 'true');
@@ -4970,7 +4973,7 @@ function aggiungiNuovaDoseModifica(oraPredefinita, fasciaPredefinita, quantitaPr
     '</div>' +
     '<div class="form-group" style="flex:1; margin-bottom:0;">' +
       '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">⏰ Orario</label>' +
-      '<input type="time" class="form-control edit-extra-ora" value="' + oraVal + '" style="font-size:13px; padding:4px 6px; font-weight:800; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd;">' +
+      '<input type="time" class="form-control edit-extra-ora" value="' + oraVal + '" oninput="aggiornaFasciaDoseExtraRow(this)" style="font-size:13px; padding:4px 6px; font-weight:800; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd;">' +
     '</div>' +
     '<div class="form-group" style="flex:1.3; margin-bottom:0;">' +
       '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">Fascia Giorno</label>' +
@@ -5114,14 +5117,56 @@ function calcolaOrarioSuccessivo(oraInizio, oreDaAggiungere) {
 }
 
 function deduciFasciaDaOrario(oraStr) {
-  if (!oraStr) return 'Mattina (Colazione)';
-  var h = parseInt(oraStr.split(':')[0]) || 8;
-  if (h >= 5 && h < 8) return 'Mattina (Digiuno)';
-  if (h >= 8 && h < 11) return 'Mattina (Colazione)';
-  if (h >= 11 && h < 15) return 'Pranzo';
+  if (!oraStr || typeof oraStr !== 'string') return 'Mattina (Colazione)';
+  var parts = oraStr.split(':');
+  var h = parseInt(parts[0], 10);
+  if (isNaN(h)) return 'Mattina (Colazione)';
+  if (h >= 0 && h < 6) return 'Notte (Prima di dormire)';
+  if (h >= 6 && h < 8) return 'Mattina (Digiuno)';
+  if (h >= 8 && h < 12) return 'Mattina (Colazione)';
+  if (h >= 12 && h < 15) return 'Pranzo';
   if (h >= 15 && h < 19) return 'Pomeriggio';
   if (h >= 19 && h < 22) return 'Sera (Cena)';
   return 'Notte (Prima di dormire)';
+}
+
+function orarioToMinutiGiornata(oraStr) {
+  if (!oraStr || typeof oraStr !== 'string') return 9999;
+  if (oraStr.toLowerCase().indexOf('bisogno') >= 0 || oraStr.toLowerCase().indexOf('sos') >= 0) return 9999;
+  if (oraStr.indexOf(':') < 0) return 9999;
+  var parts = oraStr.split(':');
+  var h = parseInt(parts[0], 10);
+  var m = parseInt(parts[1], 10) || 0;
+  if (isNaN(h)) return 9999;
+  // La giornata terapeutica assistenziale inizia alle 06:00 (mattina/risveglio).
+  // Gli orari notturni dopo mezzanotte (00:00 - 05:59) vanno in fondo alla giornata assistenziale.
+  if (h < 6) h += 24;
+  return h * 60 + m;
+}
+
+function comparaOrariTerapie(a, b) {
+  var minA = orarioToMinutiGiornata(a ? a.ora : '');
+  var minB = orarioToMinutiGiornata(b ? b.ora : '');
+  if (minA !== minB) return minA - minB;
+  return (a && a.farmaco ? a.farmaco : '').localeCompare(b && b.farmaco ? b.farmaco : '');
+}
+
+function aggiornaFasciaModificaDaOrario() {
+  var inp = document.getElementById('edit-farm-ora');
+  var sel = document.getElementById('edit-farm-fascia');
+  if (inp && sel && inp.value) {
+    sel.value = deduciFasciaDaOrario(inp.value);
+  }
+}
+
+function aggiornaFasciaDoseExtraRow(inputEl) {
+  if (!inputEl) return;
+  var row = inputEl.closest('.form-row');
+  if (!row) return;
+  var sel = row.querySelector('.edit-extra-fascia');
+  if (sel && inputEl.value) {
+    sel.value = deduciFasciaDaOrario(inputEl.value);
+  }
 }
 
 function applicaSchemaDosiModifica(forceRecalc) {
@@ -5211,7 +5256,8 @@ function apriModificaFarmaco(farmacoId) {
   var elPaziente = document.getElementById('edit-farm-header-paziente');
   var elFarmaco = document.getElementById('edit-farm-header-nome');
   if (elPaziente) elPaziente.textContent = (p.nome || 'Paziente').replace(/\s*\(\d+\s*anni\)/gi, '');
-  if (elFarmaco) elFarmaco.textContent = t.farmaco || 'Farmaco';
+  var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
+  if (elFarmaco) elFarmaco.textContent = cleanNome || 'Farmaco';
 
   document.getElementById('edit-farm-id').value = t.id;
   document.getElementById('edit-farm-ora').value = t.ora || '08:00';
@@ -5226,7 +5272,9 @@ function apriModificaFarmaco(farmacoId) {
       elCad.value = 'giornaliera';
     }
   }
-  document.getElementById('edit-farm-nome').value = t.farmaco || '';
+  document.getElementById('edit-farm-nome').value = cleanNome;
+  var elOraInp = document.getElementById('edit-farm-ora');
+  if (elOraInp) elOraInp.oninput = aggiornaFasciaModificaDaOrario;
   document.getElementById('edit-farm-principio').value = t.principio || '';
   document.getElementById('edit-farm-dosaggio').value = t.dosaggio || '';
   var elQuota = document.getElementById('edit-farm-frazione-quota');
@@ -5247,10 +5295,10 @@ function apriModificaFarmaco(farmacoId) {
   _dosiExtraCounter = 0;
 
   // Cerca se esistono già altre dosi dello stesso farmaco registrate (es. VIMPAT dose 2, 3...)
-  var nomeBase = (t.farmaco || '').split('(')[0].trim().toLowerCase();
+  var nomeBase = cleanNome.toLowerCase();
   var altreDosi = p.terapie.filter(function(item) {
     if (item.id === t.id) return false;
-    var n = (item.farmaco || '').split('(')[0].trim().toLowerCase();
+    var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
     return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
   });
 
@@ -5302,7 +5350,8 @@ function salvaModificaFarmaco(e) {
   var t = p.terapie.find(function(item) { return item.id === farmId; });
   if (!t) return;
 
-  var nome = document.getElementById('edit-farm-nome').value.trim();
+  var rawNome = document.getElementById('edit-farm-nome').value.trim();
+  var nome = rawNome.replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
   var principio = document.getElementById('edit-farm-principio').value.trim();
   var dosaggio = document.getElementById('edit-farm-dosaggio').value.trim();
   var cprPerScatola = parseInt(document.getElementById('edit-farm-cpr-scatola').value) || 28;
@@ -5378,10 +5427,10 @@ function salvaModificaFarmaco(e) {
   t.modo = modo;
 
   // 2. Rimuovi eventuali vecchie dosi collegate dello stesso farmaco per ricrearle coerentemente
-  var nomeBase = nome.split('(')[0].trim().toLowerCase();
+  var nomeBase = nome.toLowerCase();
   p.terapie = p.terapie.filter(function(item) {
     if (item.id === t.id) return true;
-    var n = (item.farmaco || '').split('(')[0].trim().toLowerCase();
+    var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
     var isColl = n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
     return !isColl;
   });
@@ -5395,7 +5444,7 @@ function salvaModificaFarmaco(e) {
 
     extraRows.forEach(function(row) {
       var oraExtra = row.querySelector('.edit-extra-ora').value || '13:30';
-      var fasciaExtra = row.querySelector('.edit-extra-fascia').value || 'Pranzo';
+      var fasciaExtra = row.querySelector('.edit-extra-fascia').value || deduciFasciaDaOrario(oraExtra);
       var qtaExtra = row.querySelector('.edit-extra-qta').value || dosaggio;
 
       p.terapie.push({
@@ -5412,10 +5461,12 @@ function salvaModificaFarmaco(e) {
       });
       doseProgressivo++;
     });
+  } else {
+    t.farmaco = nome;
   }
 
   // Riordina cronologicamente le terapie del paziente
-  p.terapie.sort(function(a, b) { return (a.ora || '').localeCompare(b.ora || ''); });
+  p.terapie.sort(comparaOrariTerapie);
 
   closeModal('modal-modifica-farmaco');
   saveDb();
@@ -5524,7 +5575,7 @@ function salvaNuovoFarmaco(e) {
     });
   }
 
-  p.terapie.sort(function(a, b) { return (a.ora || '').localeCompare(b.ora || ''); });
+  p.terapie.sort(comparaOrariTerapie);
 
   closeModal('modal-farmaco');
   saveDb();
