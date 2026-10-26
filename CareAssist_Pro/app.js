@@ -487,8 +487,9 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     if (!aldoEx.ausili || aldoEx.ausili.length === 0) aldoEx.ausili = getPazienteAldoInit().ausili;
     if (typeof aldoEx.allettato === 'undefined') aldoEx.allettato = true;
 
-    // Sincronizza posologia esatta 4 capsule VIMPAT
-    if (aldoEx.terapie) {
+    // Sincronizza posologia iniziale VIMPAT solo se mai inizializzato (rispetta tassativamente le modifiche dell'utente!)
+    if (aldoEx.terapie && !AppData.aldoVimpatInizializzato2026) {
+      AppData.aldoVimpatInizializzato2026 = true;
       const haVimpatPranzo = aldoEx.terapie.some(t => (t.ora === '13:30' || t.ora === '14:00') && (t.farmaco || '').toUpperCase().includes('VIMPAT'));
       if (!haVimpatPranzo) {
         aldoEx.terapie = aldoEx.terapie.filter(t => !(t.farmaco || '').toUpperCase().includes('VIMPAT'));
@@ -576,7 +577,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       }
     }
 
-    if (!angelaEx.terapie || angelaEx.terapie.length < 5) {
+    if (!angelaEx.terapie || angelaEx.terapie.length === 0) {
       angelaEx.terapie = getPazienteAngelaInit().terapie;
     }
   }
@@ -873,11 +874,24 @@ function saveDb() {
   inviaModificheAlServer();
 }
 
+function getCareAssistSyncBase() {
+  try {
+    if (window.location && window.location.protocol === 'file:') {
+      return 'https://milella-suite.onrender.com';
+    }
+    if (window.location && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || /^192\.168\./.test(window.location.hostname))) {
+      return window.location.origin;
+    }
+    return ''; // Relativo sul Cloud Render
+  } catch (e) {
+    return 'https://milella-suite.onrender.com';
+  }
+}
+
 function inviaModificheAlServer(onSuccess) {
   try {
-    var syncUrl = (window.location && window.location.protocol.indexOf('http') === 0)
-      ? '/api/save-db'
-      : 'http://127.0.0.1:3000/api/save-db';
+    var primaryBase = getCareAssistSyncBase();
+    var syncUrl = primaryBase ? (primaryBase + '/api/save-db') : '/api/save-db';
 
     var sendData = JSON.stringify(AppData);
 
@@ -899,17 +913,28 @@ function inviaModificheAlServer(onSuccess) {
       localStorage.removeItem('careassist_pending_sync');
       if (onSuccess) onSuccess(data);
     }).catch(function() {
-      // Se fallisce, prova con l'IP Wi-Fi diretto
-      fetch('http://192.168.1.5:3000/api/save-db', {
+      // Se il Cloud o la connessione primaria fallisce, prova con il server locale su porta 3000
+      fetch('http://127.0.0.1:3000/api/save-db', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: reqHeaders,
         body: sendData,
         cache: 'no-store'
       }).then(function(r) { return r.json(); }).then(function(data) {
         localStorage.removeItem('careassist_pending_sync');
         if (onSuccess) onSuccess(data);
       }).catch(function() {
-        console.log('PC non raggiungibile: modifiche salvate in locale, verranno inviate appena il PC si riaccende.');
+        // Fallback finale Wi-Fi locale
+        fetch('http://192.168.1.5:3000/api/save-db', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: sendData,
+          cache: 'no-store'
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          localStorage.removeItem('careassist_pending_sync');
+          if (onSuccess) onSuccess(data);
+        }).catch(function() {
+          console.log('Server Cloud/Locale non raggiungibile: modifiche conservate in locale per il prossimo allineamento.');
+        });
       });
     });
   } catch (e) {
@@ -924,11 +949,8 @@ function sincronizzaDbDalServer(callback) {
   _isSyncingInProgress = true;
 
   try {
-    var baseUrl = (window.location && window.location.protocol.indexOf('http') === 0)
-      ? ''
-      : 'http://127.0.0.1:3000';
-
-    var getUrl = baseUrl + '/api/get-db?_t=' + Date.now();
+    var primaryBase = getCareAssistSyncBase();
+    var getUrl = (primaryBase ? primaryBase : '') + '/api/get-db?_t=' + Date.now();
 
     var reconcileData = function(serverData) {
       if (serverData && serverData.pazienti && serverData.pazienti.length > 0) {
@@ -936,16 +958,16 @@ function sincronizzaDbDalServer(callback) {
         var serverTime = Number(serverData.lastModified) || 0;
         var isPendingSync = localStorage.getItem('careassist_pending_sync') === 'true';
 
-        // Caso 1: Lo Smartphone ha modifiche più recenti fatte mentre il PC era spento
+        // Caso 1: Lo Smartphone o PC locale ha modifiche più recenti fatte offline
         if (isPendingSync && localTime > serverTime) {
-          console.log('Rilevate modifiche offline sul dispositivo più recenti del PC. Invio al server...');
+          console.log('Rilevate modifiche offline sul dispositivo più recenti del server. Invio al Cloud...');
           inviaModificheAlServer(function() {
-            showSyncToast('PC aggiornato con le modifiche dal cellulare!', true);
+            showSyncToast('Cloud aggiornato con le ultime modifiche!', true);
           });
         }
-        // Caso 2: Il Server sul PC ha dati più recenti
+        // Caso 2: Il Server Cloud ha dati più recenti
         else if (serverTime > localTime) {
-          console.log('Rilevate modifiche più recenti sul PC. Aggiornamento interfaccia...');
+          console.log('Rilevate modifiche più recenti sul Cloud. Aggiornamento interfaccia...');
           AppData = serverData;
           localStorage.setItem(DB_KEY, JSON.stringify(serverData));
           localStorage.removeItem('careassist_pending_sync');
@@ -957,7 +979,7 @@ function sincronizzaDbDalServer(callback) {
               var chi = modBy.nome || 'M.C. Stoppelli';
               var paz = modBy.paziente ? ' (' + modBy.paziente + ')' : '';
               var ora = modBy.ora || new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-              showAdminSyncToast('?? Sincronizzazione in tempo reale: ' + chi + ' ha aggiornato i dati' + paz + ' alle ' + ora, true);
+              showAdminSyncToast('☁️ Sincronizzazione in tempo reale: ' + chi + ' ha aggiornato i dati' + paz + ' alle ' + ora, true);
             } else {
               showSyncToast('Cloud aggiornato all\'ultima versione!', true);
             }
@@ -990,15 +1012,19 @@ function sincronizzaDbDalServer(callback) {
         reconcileData(serverData);
       })
       .catch(function() {
-        // Fallback prova diretta su IP Wi-Fi
-        fetch('http://192.168.1.5:3000/api/get-db?_t=' + Date.now(), { cache: 'no-store' })
+        // Fallback secondario su server locale porta 3000
+        fetch('http://127.0.0.1:3000/api/get-db?_t=' + Date.now(), { cache: 'no-store' })
           .then(function(r) { return r.json(); })
-          .then(function(data) {
-            reconcileData(data);
-          })
+          .then(function(data) { reconcileData(data); })
           .catch(function() {
-            _isSyncingInProgress = false;
-            aggiornaBadgeStatoSync(false);
+            // Fallback terziario su IP Wi-Fi
+            fetch('http://192.168.1.5:3000/api/get-db?_t=' + Date.now(), { cache: 'no-store' })
+              .then(function(r) { return r.json(); })
+              .then(function(data) { reconcileData(data); })
+              .catch(function() {
+                _isSyncingInProgress = false;
+                aggiornaBadgeStatoSync(false);
+              });
           });
       });
   } catch(e) {
