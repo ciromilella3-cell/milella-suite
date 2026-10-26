@@ -450,27 +450,20 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   text-decoration: none;
-  font-size: 13.5px;
+  font-size: 11px;
   background: #f1f5f9;
   color: #334155;
   border: 1px solid #cbd5e1;
   transition: all 0.15s ease;
-  margin-left: 3px;
-  touch-action: manipulation;
-  cursor: pointer;
+  margin-left: 2px;
 }
 
-.action-icon-btn:hover, .action-icon-btn:active {
-  transform: scale(1.18);
-}
-
-.action-icon-btn.call {
-  background: #ecfdf5;
-  border-color: #a7f3d0;
+.action-icon-btn:hover {
+  transform: scale(1.15);
 }
 
 .action-icon-btn.call:hover {
@@ -932,58 +925,6 @@ textarea.form-control {
 
 .form-row .form-group {
   flex: 1;
-  min-width: 0;
-}
-
-/* ===== MOBILE: schede anagrafica/medico leggibili ===== */
-select[id^="select-medico-farmacia-preset"] {
-  max-width: 100%;
-  text-overflow: ellipsis;
-}
-
-@media (max-width: 640px) {
-  .form-row {
-    flex-direction: column;
-    gap: 10px;
-    align-items: stretch;
-  }
-  .form-row .form-group {
-    flex: 1 1 auto !important;
-    width: 100%;
-  }
-  .form-label {
-    word-break: normal;
-    overflow-wrap: break-word;
-  }
-  /* Header sezione + select preset: impilati, select a tutta larghezza */
-  div:has(> div > select[id^="select-medico-farmacia-preset"]) {
-    flex-direction: column;
-    align-items: stretch !important;
-  }
-  div:has(> select[id^="select-medico-farmacia-preset"]) {
-    flex-direction: column;
-    align-items: stretch !important;
-    width: 100%;
-  }
-  div:has(> select[id^="select-medico-farmacia-preset"]) > span {
-    white-space: normal;
-  }
-  select[id^="select-medico-farmacia-preset"] {
-    width: 100% !important;
-    font-size: 13px !important;
-    padding: 8px 10px !important;
-  }
-  /* Footer modale: bottoni che vanno a capo invece di uscire dallo schermo */
-  body .modal-footer {
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px 16px;
-  }
-  body .modal-footer .btn,
-  body .modal-footer button {
-    flex: 1 1 auto;
-    white-space: nowrap;
-  }
 }
 
 .modal-footer {
@@ -1635,34 +1576,27 @@ select[id^="select-medico-farmacia-preset"] {
 @media (max-width: 640px) {
   body {
     font-size: 14px;
-    overflow-x: hidden;
   }
   
-  /* HEADER SMARTPHONE COMPATTO & OTTIMIZZATO */
+  /* HEADER SMARTPHONE COMPATTO */
   .app-header {
-    padding: 10px 12px;
+    padding: 8px 10px;
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
+    gap: 8px;
     position: relative;
     top: auto;
-    width: 100%;
-    box-sizing: border-box;
   }
-
   .header-left {
-    display: flex;
     justify-content: space-between;
-    align-items: center;
     width: 100%;
   }
-
   .brand {
     gap: 8px;
   }
   .brand-icon {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     font-size: 18px;
     border-radius: 8px;
   }
@@ -1670,101 +1604,80 @@ select[id^="select-medico-farmacia-preset"] {
     font-size: 17px;
   }
   .brand-sub {
-    font-size: 9px;
+    font-size: 9.5px;
     letter-spacing: 0.3px;
   }
 
-  .header-clock-pill {
-    padding: 3px 8px;
-    font-size: 11px;
-  }
-  #header-data-live-testo {
-    font-size: 11px !important;
-  }
-  #header-ora-live-testo {
-    font-size: 9.5px !important;
-  }
-
-  /* SELETTORE PAZIENTE SMARTPHONE */
+  /* SELETTORE CARTELLA SMARTPHONE */
   .header-center-patient {
-    width: 100%;
-    max-width: 100%;
-    flex: none;
+    max-width: 100% !important;
+    width: 100% !important;
+    flex: auto !important;
   }
-
   .patient-picker-box {
-    width: 100%;
-    padding: 6px 8px;
-    gap: 6px;
-    border-radius: 10px;
-    flex-wrap: wrap;
-    box-sizing: border-box;
+    padding: 4px 8px !important;
+    gap: 6px !important;
+    border-radius: 10px !important;
   }
-
   .patient-picker-label {
-    font-size: 10.5px;
-  }
-
-  .patient-select-input {
-    flex: 1 1 140px;
-    font-size: 12.5px;
-    padding: 5px 6px;
-    min-width: 120px;
-  }
-
-  .btn-new-patient {
     font-size: 11px !important;
-    padding: 5px 8px !important;
+  }
+  .patient-select-input {
+    font-size: 13px !important;
+    padding: 6px 6px !important;
+  }
+  .btn-new-patient {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
   }
 
-  /* BARRA AZIONI HEADER SMARTPHONE: DISPOSTA IN GRIGLIA ADATTIVA */
+  /* BARRA PULSANTI HEADER SU SMARTPHONE (SCORRIMENTO ORIZZONTALE FLUIDO) */
+  .header-actions,
   .header-right-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 6px;
-    width: 100%;
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    padding: 2px 2px 6px 2px !important;
+    gap: 8px !important;
+    width: 100% !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
-
+  .header-actions::-webkit-scrollbar,
+  .header-right-actions::-webkit-scrollbar {
+    display: none;
+  }
+  .header-actions .btn,
   .header-right-actions .btn,
-  .btn-stampa-rapida,
-  .btn-tools-toggle {
-    width: 100%;
-    padding: 6px 4px !important;
+  .btn-header-action {
+    padding: 6px 12px !important;
     font-size: 11.5px !important;
-    text-align: center;
-    justify-content: center;
-    white-space: nowrap;
-    border-radius: 8px !important;
-    box-sizing: border-box;
+    flex-shrink: 0 !important;
   }
 
-  .dropdown-tools-wrapper {
-    width: 100%;
-  }
-
-  /* NAV BAR SCORREVOLE TOUCH-FRIENDLY */
+  /* NAV BAR A CAROSELLO SCORREVOLE SOTTO HEADER */
   .nav-bar {
     position: sticky;
     top: 0;
     z-index: 45;
-    padding: 6px 8px;
-    gap: 6px;
+    padding: 8px 6px;
+    gap: 8px;
     background: rgba(255, 255, 255, 0.98);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    overflow-x: auto;
-    white-space: nowrap;
-    display: flex;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    display: flex !important;
   }
   .nav-bar::-webkit-scrollbar {
     display: none;
   }
   .nav-tab {
-    padding: 6px 12px !important;
-    font-size: 12px !important;
-    border-radius: 16px !important;
-    flex-shrink: 0;
+    padding: 7px 14px !important;
+    font-size: 12.5px !important;
+    border-radius: 20px !important;
+    flex-shrink: 0 !important;
   }
 
   /* ANAGRAFICA HERO CARD SU SCHERMI PICCOLI */
@@ -1846,469 +1759,116 @@ select[id^="select-medico-farmacia-preset"] {
 
   /* FINESTRE POPUP & MODALI SMARTPHONE FULL-FIT */
   .modal-overlay {
-    padding: 16px !important;
-    box-sizing: border-box !important;
-    align-items: center !important;
-    justify-content: center !important;
+    padding: 6px !important;
   }
   .modal-card {
     width: 100% !important;
-    max-width: min(92vw, 400px) !important;
-    max-height: 88vh !important;
-    border-radius: 24px !important;
-    margin: auto !important;
-    box-sizing: border-box !important;
-    overflow-y: auto !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important;
+    max-width: 100% !important;
+    max-height: 94vh !important;
+    border-radius: 14px !important;
+    margin: auto 0 !important;
   }
   .modal-header {
-    padding: 14px 16px !important;
+    padding: 12px 14px !important;
   }
   .modal-body {
-    padding: 20px 18px 14px !important;
-    word-break: break-word !important;
+    padding: 12px 10px !important;
   }
   .modal-footer {
-    padding: 0 18px 20px !important;
-    flex-wrap: nowrap !important;
-    gap: 10px !important;
-    display: flex !important;
+    padding: 10px 12px !important;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   .modal-footer button,
   .modal-footer a {
-    flex: 1 !important;
-    text-align: center !important;
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    padding: 12px 14px !important;
-    border-radius: 14px !important;
-    white-space: nowrap !important;
-  }
-  #confirm-modal-icon {
-    font-size: 38px !important;
-    margin-bottom: 8px !important;
-  }
-  #confirm-modal-title {
-    font-size: 17px !important;
-    line-height: 1.3 !important;
-    margin-bottom: 8px !important;
-  }
-  #confirm-modal-text {
-    font-size: 13px !important;
-    line-height: 1.5 !important;
-    color: #475569 !important;
-  }
-}
-
-
-
-/* ==========================================================================
-   TOOLTIP E GUIDA TOUCH AI CAMPI (DESKTOP & MOBILE FRIENDLY)
-   ========================================================================== */
-.help-tooltip-trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  background: #e0f2fe;
-  color: #0284c7;
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-  margin-left: 5px;
-  border: 1px solid #bae6fd;
-  transition: all 0.2s ease;
-  user-select: none;
-  vertical-align: middle;
-  line-height: 1;
-}
-
-.help-tooltip-trigger:hover, .help-tooltip-trigger:active {
-  background: #0284c7;
-  color: #ffffff;
-  transform: scale(1.1);
-}
-
-.field-help-bubble {
-  display: none;
-  background: #0f172a;
-  color: #f8fafc;
-  font-size: 11.5px;
-  line-height: 1.4;
-  padding: 8px 12px;
-  border-radius: 8px;
-  margin-top: 4px;
-  margin-bottom: 6px;
-  border-left: 3px solid #38bdf8;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
-  animation: fadeIn 0.2s ease;
-}
-
-.field-help-bubble.active {
-  display: block !important;
-}
-
-.field-help-hint {
-  display: block;
-  font-size: 11px;
-  color: #64748b;
-  margin-top: 3px;
-  font-style: italic;
-  line-height: 1.3;
-}
-
-/* ==========================================================================
-   ADATTAMENTO RESPONSIVO PERFETTO SCHEDA MODIFICA FARMACO SU SMARTPHONE
-   ========================================================================== */
-@media (max-width: 680px) {
-  #modal-modifica-farmaco .modal-card {
-    max-width: 95vw !important;
-    width: 95vw !important;
-    margin: 8px auto !important;
-    border-radius: 18px !important;
+    flex: 1;
+    text-align: center;
+    font-size: 12.5px !important;
+    padding: 8px 10px !important;
   }
 
-  #modal-modifica-farmaco .modal-header {
-    padding: 12px 14px !important;
-    gap: 8px !important;
-    flex-wrap: wrap !important;
-  }
-
-  #modal-modifica-farmaco .modal-title {
-    font-size: 15px !important;
-    line-height: 1.3 !important;
-  }
-
-  #modal-modifica-farmaco .modal-body {
-    padding: 14px 12px !important;
-  }
-
-  /* FORZA IL WRAP VERTICALE DEI CAMPI AFFIANCATI SU SMARTPHONE */
-  #modal-modifica-farmaco .form-row {
+  /* MODAL ALLARME TERAPIE SU SMARTPHONE (FULL RESPONSIVE TOUCH) */
+  #modal-allarme-terapie .modal-card {
+    border-width: 2px !important;
+    border-radius: 16px !important;
+    max-height: 92vh !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 12px !important;
-    align-items: stretch !important;
   }
-
-  #modal-modifica-farmaco .form-row .form-group {
-    width: 100% !important;
-    min-width: 0 !important;
-    flex: none !important;
-    margin-bottom: 0 !important;
-  }
-
-  /* Riga compatta per le scorte su smartphone (3 colonne o 2+1 flessibili) */
-  #modal-modifica-farmaco .form-row.row-scorte-mobile {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-  }
-
-  #modal-modifica-farmaco .form-row.row-scorte-mobile .form-group {
-    flex: 1 1 calc(50% - 8px) !important;
-    width: auto !important;
-  }
-
-  #modal-modifica-farmaco .form-row.row-scorte-mobile .form-group.col-full-mobile {
-    flex: 1 1 100% !important;
-  }
-
-  #modal-modifica-farmaco .form-control {
-    font-size: 14px !important;
-    height: 42px !important;
-  }
-
-  #modal-modifica-farmaco textarea.form-control {
-    height: auto !important;
-    min-height: 75px !important;
-  }
-
-  #modal-modifica-farmaco .modal-footer {
+  #modal-allarme-terapie .modal-header {
     padding: 12px 14px !important;
-    gap: 8px !important;
   }
-
-  #modal-modifica-farmaco .modal-footer button {
-    padding: 10px 14px !important;
-    font-size: 13.5px !important;
+  #modal-allarme-terapie .modal-header h3 {
+    font-size: 15px !important;
+    line-height: 1.25 !important;
   }
-}
-
-/* ==========================================================================
-   EFFETTO FARO / EVIDENZIATORE RIGA FARMACO SCADUTO DA ALLERTA
-   ========================================================================== */
-@keyframes pulseHighlightFarmaco {
-  0% {
-    background-color: #fee2e2;
-    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
-    transform: scale(1);
+  #modal-allarme-terapie .modal-header p {
+    font-size: 10.5px !important;
   }
-  50% {
-    background-color: #fecaca;
-    box-shadow: 0 0 25px 5px rgba(220, 38, 38, 0.4);
-    transform: scale(1.015);
-  }
-  100% {
-    background-color: #fee2e2;
-    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
-    transform: scale(1);
-  }
-}
-
-.terapia-row-highlight {
-  animation: pulseHighlightFarmaco 1.2s infinite ease-in-out !important;
-  border: 3px solid #dc2626 !important;
-  position: relative !important;
-  z-index: 50 !important;
-  border-radius: 10px !important;
-}
-
-.terapia-row-highlight td {
-  background-color: #fef2f2 !important;
-  font-weight: 700 !important;
-}
-
-/* ==========================================================================
-   SCHEDE A TAB ELEGANTE PER MODIFICA SCHEDA ANAGRAFICA E RECAPITI
-   ========================================================================== */
-.modal-tabs-header {
-  display: flex;
-  gap: 6px;
-  background: #f1f5f9;
-  padding: 6px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  touch-action: pan-x;
-}
-.modal-tabs-header::-webkit-scrollbar {
-  display: none;
-}
-.modal-tab-btn {
-  flex: 1 1 auto;
-  min-width: fit-content;
-  padding: 10px 14px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: #64748b;
-  font-weight: 700;
-  font-size: 13px;
-  border-radius: 9px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-.modal-tab-btn:hover, .modal-tab-btn:active {
-  color: #0f172a;
-  background: rgba(255, 255, 255, 0.7);
-}
-.modal-tab-btn.active {
-  background: #ffffff !important;
-  color: #0284c7 !important;
-  border-color: #bae6fd !important;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12) !important;
-  font-weight: 800 !important;
-}
-.tab-pane-anagrafica {
-  display: none;
-}
-.tab-pane-anagrafica.active {
-  display: block !important;
-  animation: fadeInTab 0.2s ease-in-out;
-}
-@keyframes fadeInTab {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 640px) {
-  .modal-tabs-header {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 6px !important;
-    padding: 6px !important;
-    overflow-x: visible !important;
-  }
-  .modal-tab-btn {
+  #modal-allarme-terapie .modal-body {
     padding: 10px 8px !important;
-    font-size: 12px !important;
-    border-radius: 8px !important;
-    justify-content: center !important;
-    white-space: normal !important;
-    text-align: center !important;
-    min-height: 44px !important;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    flex: 1 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
   }
-  .modal-tab-btn.active {
-    background: #0284c7 !important;
+
+  /* BARRA INFERIORE DI CONTROLLO FISSA SU SMARTPHONE */
+  .mobile-bottom-bar {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 58px;
+    background: #0f172a;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+    z-index: 9999;
+    align-items: center;
+    justify-content: space-around;
+    padding: 4px 6px;
+  }
+  .mobile-bar-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    flex: 1;
+    padding: 4px 0;
+    transition: color 0.15s ease;
+  }
+  .mobile-bar-btn span:first-child {
+    font-size: 18px;
+    line-height: 1.1;
+  }
+  .mobile-bar-btn.active,
+  .mobile-bar-btn:active {
+    color: #38bdf8;
+  }
+  .mobile-bar-btn-save {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
     color: #ffffff !important;
-    border-color: #0369a1 !important;
+    border-radius: 12px;
+    padding: 6px 12px !important;
+    flex: 1.2;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
   }
 
-  /* TRASFORMA LA TABELLA ORARI MMG IN SCHEDE CHIARE E LEGGIBILI SU MOBILE */
-  .tabella-planner-orari, 
-  .tabella-planner-orari tbody, 
-  .tabella-planner-orari tr, 
-  .tabella-planner-orari td {
-    display: block !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-  .tabella-planner-orari thead {
-    display: none !important; /* Nasconde le intestazioni schiacciate G I O R N O ... */
-  }
-  .tabella-planner-orari tr {
-    background: #ffffff !important;
-    border: 1.5px solid #cbd5e1 !important;
-    border-radius: 12px !important;
-    padding: 12px !important;
-    margin-bottom: 12px !important;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.04) !important;
-  }
-  .tabella-planner-orari td {
-    padding: 4px 0 !important;
-    border: none !important;
-    border-radius: 0 !important;
-    white-space: normal !important;
-  }
-  .tabella-planner-orari td:first-child {
-    font-size: 15px !important;
-    font-weight: 800 !important;
-    color: #0f172a !important;
-    border-left: none !important;
-    padding-bottom: 6px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-  }
-  .tabella-planner-orari td input.form-control {
-    font-size: 13.5px !important;
-    height: 40px !important;
-    padding: 6px 10px !important;
-    margin-top: 4px !important;
-    margin-bottom: 6px !important;
-    border-radius: 8px !important;
-  }
-  .tabella-planner-orari td:last-child {
-    text-align: right !important;
-    padding-top: 6px !important;
-    border-top: 1px dashed #e2e8f0 !important;
-  }
-  .tabella-planner-orari td:last-child button {
-    width: 100% !important;
-    padding: 8px !important;
-    font-size: 12.5px !important;
-    border-radius: 8px !important;
+  /* Spazio in fondo al container per non coprire i contenuti con la barra fissa */
+  .container {
+    padding-bottom: 74px !important;
   }
 }
 
-/* ==========================================================================
-   FOOTER MODALE ANAGRAFICA AD ALTA ERGONOMIA (DESKTOP & SMARTPHONE)
-   ========================================================================== */
-.modal-footer-anagrafica {
-  display: flex !important;
-  flex-direction: row-reverse !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  flex-shrink: 0 !important;
-  background: #f8fafc !important;
-  border-top: 1px solid #e2e8f0 !important;
-  padding: 14px 20px !important;
-  gap: 12px !important;
-}
-
-.modal-footer-anagrafica .footer-actions-primary {
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-}
-
-.modal-footer-anagrafica .btn-salva-anagrafica {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
-  color: #ffffff !important;
-  font-weight: 800 !important;
-  padding: 10px 20px !important;
-  font-size: 14px !important;
-  border-radius: 10px !important;
-  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3) !important;
-  border: none !important;
-  cursor: pointer !important;
-}
-
-.modal-footer-anagrafica .btn-annulla-anagrafica {
-  padding: 10px 18px !important;
-  font-size: 13.5px !important;
-  font-weight: 700 !important;
-  color: #475569 !important;
-  background: #ffffff !important;
-  border: 1.5px solid #cbd5e1 !important;
-  border-radius: 10px !important;
-  cursor: pointer !important;
-}
-
-.modal-footer-anagrafica .btn-elimina-anagrafica {
-  color: #dc2626 !important;
-  border: 1.5px solid #fca5a5 !important;
-  background: #fef2f2 !important;
-  padding: 9px 14px !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  border-radius: 10px !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-}
-
-@media (max-width: 640px) {
-  .modal-footer-anagrafica {
-    flex-direction: column !important;
-    padding: 12px 14px 16px !important;
-    gap: 10px !important;
-    background: #ffffff !important;
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.05) !important;
-  }
-
-  .modal-footer-anagrafica .footer-actions-primary {
-    width: 100% !important;
-    display: flex !important;
-    gap: 8px !important;
-  }
-
-  .modal-footer-anagrafica .btn-annulla-anagrafica {
-    flex: 1 1 35% !important;
-    padding: 12px 10px !important;
-    font-size: 13.5px !important;
-    text-align: center !important;
-  }
-
-  .modal-footer-anagrafica .btn-salva-anagrafica {
-    flex: 2 1 65% !important;
-    padding: 12px 14px !important;
-    font-size: 14px !important;
-    text-align: center !important;
-    letter-spacing: 0.2px !important;
-  }
-
-  .modal-footer-anagrafica .btn-elimina-anagrafica {
-    width: 100% !important;
-    padding: 10px 12px !important;
-    font-size: 12.5px !important;
-    text-align: center !important;
-    margin-top: 2px !important;
-    opacity: 0.9 !important;
-  }
+/* Nascondi barra mobile su PC desktop */
+.mobile-bottom-bar {
+  display: none;
 }
 
 
@@ -2527,4 +2087,142 @@ select[id^="select-medico-farmacia-preset"] {
   font-size: 11px;
   font-weight: 800;
   margin-top: 3px;
+}
+
+
+/* ==========================================================================
+   BARRA STICKY CONTESTO ASSISTITO (PERMANENTE DURANTE LO SCROLL)
+   ========================================================================== */
+.sticky-patient-bar {
+  background: linear-gradient(135deg, #0b1f38 0%, #173252 100%);
+  color: #ffffff;
+  border-bottom: 2px solid #0284c7;
+  padding: 6px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 124px;
+  z-index: 39;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  transition: all 0.2s ease;
+}
+
+.sticky-patient-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  min-width: 0;
+  flex: 1;
+}
+
+.sticky-patient-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.2);
+  border: 1.5px solid #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.sticky-patient-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sticky-patient-name {
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.sticky-patient-sub {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #93c5fd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.sticky-patient-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-sticky-cambia {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.btn-sticky-cambia:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: #ffffff;
+}
+
+.sticky-alert-pill {
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #f87171;
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.6);
+  cursor: pointer;
+  animation: pulseStickyAlert 1.5s infinite;
+}
+
+@keyframes pulseStickyAlert {
+  0% { transform: scale(1); box-shadow: 0 0 6px rgba(220, 38, 38, 0.5); }
+  50% { transform: scale(1.05); box-shadow: 0 0 12px rgba(220, 38, 38, 0.9); }
+  100% { transform: scale(1); box-shadow: 0 0 6px rgba(220, 38, 38, 0.5); }
+}
+
+@media (max-width: 768px) {
+  .sticky-patient-bar {
+    top: 41px; /* Direttamente ancorato sotto i tab di navigazione mobili */
+    padding: 5px 12px;
+    z-index: 39;
+  }
+  .sticky-patient-name {
+    font-size: 12.5px;
+    max-width: 150px;
+  }
+  .sticky-patient-sub {
+    font-size: 9.5px;
+    max-width: 150px;
+  }
+  .btn-sticky-cambia {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
 }

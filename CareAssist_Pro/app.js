@@ -1241,6 +1241,7 @@ function getInfoStudioOggi(paziente) {
 }
 
 function renderPazientiSelector() {
+  setTimeout(aggiornaStickyPatientBar, 10);
   const select = document.getElementById('select-paziente-attivo');
   if (!select) return;
 
@@ -3394,19 +3395,47 @@ function renderTerapie() {
   container.innerHTML = html || '<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:16px;">Nessun farmaco in terapia per questo paziente.</td></tr>';
 
   if (preview) {
-    preview.innerHTML = (p.terapie || []).slice(0, 6).map(t => {
-      let btnPreview = `<button class="btn ${t.fattoOggi ? 'btn-success' : 'btn-outline'}" style="padding:3px 8px; font-size:11px;" onclick="toggleFarmacoConScarico(${t.id})">${t.fattoOggi ? '✅ Fatto' : '⚪ Da dare'}</button>`;
-      if (!t.fattoOggi) {
+    const tutteTerapie = p.terapie || [];
+    // Priorità alle terapie previste per oggi
+    const terapieOggi = tutteTerapie.filter(t => isTerapiaPrevistaOggi(t));
+    const terapieNonOggi = tutteTerapie.filter(t => !isTerapiaPrevistaOggi(t));
+    const terapieDaMostrare = [...terapieOggi, ...terapieNonOggi].slice(0, 8);
+
+    preview.innerHTML = terapieDaMostrare.map(t => {
+      const previstaOggi = isTerapiaPrevistaOggi(t);
+      let btnPreview = '';
+
+      if (!previstaOggi) {
+        // Terapia periodica (es. DIBASE il 15 e 30, o giorni alterni non di oggi)
+        // NON deve MAI mostrare "Ritardo!" perché non è prevista per la data odierna
+        let proxData = '';
+        if (t.cadenzaTipo === 'quindicinale_15_30' || ((t.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0)) {
+          proxData = ' (Prox: 30 Ottobre)';
+        } else if (t.cadenzaTipo === 'alterni') {
+          proxData = ' (Tocca domani)';
+        }
+        btnPreview = `<span class="badge" style="background:#f1f5f9; color:#64748b; font-size:10.5px; font-weight:700; border:1px solid #cbd5e1; padding:4px 8px; border-radius:8px;" title="Terapia periodica non programmata per la giornata odierna">📅 Non oggi${proxData}</span>`;
+      } else if (t.fattoOggi) {
+        btnPreview = `<button class="btn btn-success" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:8px;" onclick="toggleFarmacoConScarico(${t.id})">✅ Fatto</button>`;
+      } else {
         const check = verificaStatoOrarioFarmaco(t.ora);
         if (!check.consentito) {
-          btnPreview = `<button class="btn btn-outline" style="padding:3px 8px; font-size:11px; background:#fffbeb; color:#b45309; border-color:#fde68a;" onclick="toggleFarmacoConScarico(${t.id})" title="Orario non raggiunto">🕒 ${t.ora}</button>`;
+          btnPreview = `<button class="btn btn-outline" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:8px; background:#fffbeb; color:#b45309; border-color:#fde68a;" onclick="toggleFarmacoConScarico(${t.id})" title="Orario non raggiunto">🕒 ${t.ora}</button>`;
         } else if (check.inRitardo) {
-          btnPreview = `<button class="btn farmaco-in-ritardo-btn" style="padding:3px 8px; font-size:11px;" onclick="toggleFarmacoConScarico(${t.id})" title="Terapia in ritardo!">🔔 Ritardo!</button>`;
+          btnPreview = `<button class="btn farmaco-in-ritardo-btn" style="padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px;" onclick="toggleFarmacoConScarico(${t.id})" title="Terapia in ritardo!">🔔 Ritardo!</button>`;
+        } else {
+          btnPreview = `<button class="btn btn-outline" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:8px;" onclick="toggleFarmacoConScarico(${t.id})">⚪ Da dare</button>`;
         }
       }
+
+      const rigaStile = !previstaOggi ? 'opacity: 0.85; background: #fafbfc;' : '';
+
       return `
-      <tr>
-        <td>${canEdit ? `<b style="cursor:pointer; color:#0284c7;" onclick="apriModificaFarmaco(${t.id})" title="Clicca per modificare orario">${t.ora} ✏️</b>` : `<b style="color:#0f172a;">${t.ora}</b>`}</td>
+      <tr style="${rigaStile}">
+        <td>
+          ${canEdit ? `<b style="cursor:pointer; color:#0284c7;" onclick="apriModificaFarmaco(${t.id})" title="Clicca per modificare orario">${t.ora} ✏️</b>` : `<b style="color:#0f172a;">${t.ora}</b>`}
+          ${!previstaOggi ? `<div style="font-size:9.5px; color:#64748b; font-weight:600;">Periodico</div>` : ''}
+        </td>
         <td>
           <div class="audit-pill-clickable" onclick="mostraAuditFarmaco(${t.id})" title="Clicca per visualizzare la traccia oraria">
             <b style="color:var(--primary);">${t.farmaco}</b><br>
@@ -3591,6 +3620,7 @@ function suonaChimeInsistenteElegante() {
 
 // Funzione globale che analizza i pazienti accessibili per rilevare chi ha terapie in ritardo
 function controllaTerapieGlobaliTuttiPazienti() {
+  aggiornaStickyPatientBar(); // sync sticky pill
   if (!AppData || !AppData.pazienti) return;
 
   const adessoMs = Date.now();
@@ -3614,6 +3644,28 @@ function controllaTerapieGlobaliTuttiPazienti() {
 
   if (pazientiConRitardi.length > 0) {
     allarmeTerapieAttivo = true;
+    
+    // Vibrazione Smartphone su ritardi reali
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate([400, 200, 400]); } catch(e) {}
+    }
+    
+    // Notifica di sistema push
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const adessoNotif = Date.now();
+      if (adessoNotif - ultimoNotificaRitardoTimestamp >= 60000) {
+        ultimoNotificaRitardoTimestamp = adessoNotif;
+        try {
+          const totR = pazientiConRitardi.reduce((sum, it) => sum + it.farmaci.length, 0);
+          const pPrimo = pazientiConRitardi[0].paziente.nome;
+          new Notification('🚨 TERAPIA IN RITARDO!', {
+            body: `${totR} farmaco/i scaduto/i da somministrare a ${pPrimo}!`,
+            icon: 'careassist_icon.jpg',
+            tag: 'terapia-ritardo'
+          });
+        } catch(e) {}
+      }
+    }
 
     // Popola lista pazienti e terapie scadute
     if (listaContainer) {
@@ -8175,3 +8227,134 @@ function apriMascheraNuovoFarmaco() {
 
   openModal('modal-modifica-farmaco');
 }
+
+
+// ==========================================================================
+// GESTIONE BARRA STICKY CONTESTO ASSISTITO & SWITCH RAPIDO SENZA SCROLL
+// ==========================================================================
+function apriAllarmiTerapieManuale() {
+  allarmeTerapieSnoozeFinoA = 0;
+  controllaTerapieGlobaliTuttiPazienti();
+  const modalAllarme = document.getElementById('modal-allarme-terapie');
+  if (modalAllarme) modalAllarme.classList.add('active');
+}
+
+function aggiornaStickyPatientBar() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const elName = document.getElementById('sticky-patient-name');
+  const elSub = document.getElementById('sticky-patient-sub');
+  const elAlertPill = document.getElementById('sticky-patient-alert-pill');
+  const elAlertCount = document.getElementById('sticky-patient-alert-count');
+
+  const eta = calcolaAnniDaData(p.dataNascita);
+  const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+
+  if (elName) elName.textContent = pulitoNome;
+  if (elSub) {
+    const stanza = p.stanza ? `Stanza ${p.stanza} • ` : 'Domiciliare • ';
+    elSub.textContent = `${eta} anni • ${stanza}Cartella Attiva`;
+  }
+
+  if (elAlertPill && elAlertCount) {
+    const ritardiAttivi = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo);
+    if (ritardiAttivi.length > 0) {
+      elAlertCount.textContent = ritardiAttivi.length;
+      elAlertPill.style.display = 'inline-flex';
+    } else {
+      elAlertPill.style.display = 'none';
+    }
+  }
+}
+
+function apriSwitchPazienteRapido() {
+  const modal = document.getElementById('modal-switch-paziente-rapido');
+  const container = document.getElementById('lista-switch-pazienti-rapido');
+  if (!modal || !container) return;
+
+  const lista = typeof getPazientiAccessibili === 'function' ? getPazientiAccessibili() : (AppData ? AppData.pazienti : []);
+  const activeId = AppData ? AppData.activePazienteId : null;
+
+  container.innerHTML = lista.map(p => {
+    const isAttivo = (p.id === activeId);
+    const eta = calcolaAnniDaData(p.dataNascita);
+    const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+    const ritardi = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo).length;
+    
+    return `
+      <div onclick="selezionaPazienteRapido('${p.id}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:12px; cursor:pointer; transition:all 0.2s; border:1.5px solid ${isAttivo ? '#0284c7' : '#e2e8f0'}; background:${isAttivo ? '#f0f9ff' : '#ffffff'}; box-shadow:${isAttivo ? '0 2px 8px rgba(2,132,199,0.18)' : '0 1px 3px rgba(0,0,0,0.04)'};">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:24px;">👤</span>
+          <div>
+            <div style="font-size:14.5px; font-weight:800; color:${isAttivo ? '#0369a1' : '#0f172a'};">${pulitoNome}</div>
+            <div style="font-size:11.5px; color:#64748b; font-weight:600;">${eta} anni &bull; ${p.stanza ? 'Stanza ' + p.stanza : 'Assistito Domiciliare'}</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          ${ritardi > 0 ? `<span class="badge" style="background:#dc2626; color:#fff; font-size:11px; font-weight:800; padding:4px 8px; border-radius:12px;">🚨 ${ritardi} Ritardi</span>` : ''}
+          ${isAttivo 
+            ? `<span style="font-size:12px; font-weight:800; color:#0284c7; background:#e0f2fe; padding:4px 10px; border-radius:20px;">✓ In Uso</span>`
+            : `<span style="font-size:12px; font-weight:700; color:#64748b; background:#f1f5f9; padding:4px 10px; border-radius:20px;">Apri ➔</span>`
+          }
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  modal.classList.add('active');
+}
+
+function selezionaPazienteRapido(pazienteId) {
+  closeModal('modal-switch-paziente-rapido');
+  if (pazienteId !== AppData.activePazienteId) {
+    cambiaPaziente(pazienteId);
+    showToast('Cartella assistito caricata con successo! 👤');
+  }
+}
+
+// ==========================================================================
+// NOTIFICHE PUSH SMARTPHONE & SBLOCCO AUDIO AUTOMATICO
+// ==========================================================================
+let ultimoNotificaRitardoTimestamp = 0;
+
+function abilitaNotificheEAudioSmartphone() {
+  const ctx = getAudioContext();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume();
+  }
+  
+  if ('vibrate' in navigator) {
+    try { navigator.vibrate([200, 100, 200]); } catch(e) {}
+  }
+  
+  suonaSegnaleDolce();
+
+  if ('Notification' in window) {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        showToast('Notifiche e Audio attivati su Smartphone! 🔔📲', 'success');
+        try {
+          new Notification('CareAssist Pro: Allarmi Attivi', {
+            body: 'Le notifiche e gli avvisi di terapia sono stati configurati correttamente!',
+            icon: 'careassist_icon.jpg'
+          });
+        } catch(e) {}
+      } else {
+        showToast('Audio sbloccato. Notifiche di sistema non autorizzate nel browser.', 'info');
+      }
+    });
+  } else {
+    showToast('Audio sbloccato con successo! 🔔', 'success');
+  }
+}
+
+function sbloccaAudioSilenziosoAlPrimoGesto() {
+  try {
+    const ctx = getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume();
+    }
+  } catch(e) {}
+}
+window.addEventListener('click', sbloccaAudioSilenziosoAlPrimoGesto, { once: true, passive: true });
+window.addEventListener('touchstart', sbloccaAudioSilenziosoAlPrimoGesto, { once: true, passive: true });

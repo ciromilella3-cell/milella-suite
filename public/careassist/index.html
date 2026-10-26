@@ -12,8 +12,13 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CareAssist Pro - Diario Socio-Sanitario Multi-Paziente</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
+  <link rel="apple-touch-icon" href="careassist_icon.jpg">
+  <meta name="theme-color" content="#0284c7">
   <link rel="stylesheet" href="style.css">
-  <script src="/suite_security_gate.js?v=1"></script>
 </head>
 <body>
 
@@ -24,21 +29,16 @@
         <div class="brand-icon">🩺</div>
         <div>
           <div class="brand-title">CareAssist Pro</div>
-          <div class="brand-sub">Diario Socio-Sanitario &bull; <span style="color:#f59e0b; font-weight:800;">👑 CIRO MILELLA</span></div>
+          <div class="brand-sub">Diario Socio-Sanitario Domiciliare</div>
         </div>
       </div>
-      <!-- DATA & ORA ODIERNA IN TEMPO REALE -->
+      <!-- DATA & ORA ODIE RNA IN TEMPO REALE -->
       <div id="header-data-ora-live" class="header-clock-pill">
         <span style="font-size:16px;">📅</span>
         <div style="line-height:1.2;">
           <div id="header-data-live-testo" style="font-size:12.5px; font-weight:800; color:#ffffff; letter-spacing:0.2px;">--/--/----</div>
           <div id="header-ora-live-testo" style="font-size:10.5px; font-weight:600; color:#bae6fd;">Ore --:--:--</div>
         </div>
-      </div>
-      <!-- BADGE STATO SINCRONIZZAZIONE CLOUD H24 -->
-      <div id="header-cloud-sync-badge" onclick="forzaSincronizzazioneCloudManuale()" style="cursor:pointer; display:flex; align-items:center; gap:6px; background:rgba(16, 185, 129, 0.15); border:1px solid #10b981; border-radius:20px; padding:4px 10px; font-size:11px; font-weight:700; color:#10b981;" title="Clicca per forzare l'allineamento istantaneo con Render Cloud">
-        <span id="sync-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 6px #10b981;"></span>
-        <span id="sync-status-text">Cloud Sincronizzato</span>
       </div>
     </div>
 
@@ -57,14 +57,16 @@
 
     <!-- AZIONI PRINCIPALI & MENU STRUMENTI / OPZIONI -->
     <div class="header-right-actions">
-      <button class="btn btn-outline" onclick="forzaAggiornamentoApp()" style="font-weight:800; background:#f0fdf4; color:#166534; border-color:#86efac; font-size:12px; padding:6px 10px;" title="Se non vedi le nuove modifiche sul telefono o browser, clicca qui per forzare l'aggiornamento immediato">
-        🔄 Aggiorna App
+      <button class="btn" onclick="window.location.href='/launcher.html'" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; font-weight:700; border-radius:12px; padding:8px 16px; border:1px solid rgba(255,255,255,0.25); box-shadow:0 2px 8px rgba(2,132,199,0.3); cursor:pointer;" title="Torna al Portale Aziendale">
+        🏠 Torna al Menu
       </button>
-      <a href="/launcher.html" class="btn" style="text-decoration:none; background:linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); color:#050811; font-weight:800; border:1px solid #f3e5ab; box-shadow:0 2px 6px rgba(212,175,55,0.3); display:inline-flex; align-items:center; gap:5px;" title="Accedi a tutti i progetti della Suite Aziendale C. Milella">
-        👑 Tutta la Suite
-      </a>
+
       <button class="btn btn-stampa-rapida" onclick="stampaReport()" title="Stampa il diario clinico giornaliero dell'assistito">
         📄 Stampa Diario
+      </button>
+
+      <button class="btn btn-smartphone-header" onclick="apriModalSmartphone()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:700; border-radius:12px; padding:8px 16px; border:1px solid rgba(255,255,255,0.25); box-shadow:0 2px 8px rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Connetti Smartphone o Tablet via Wi-Fi tramite QR Code">
+        📱 Smartphone
       </button>
 
       <!-- MENU A COMPARSA STRUMENTI / OPZIONI AVANZATE -->
@@ -85,9 +87,6 @@
           </a>
           <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalKitCartaceo()">
             <span>🖨️</span> Cartella Cartacea A4 (5 Schede)
-          </button>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalProspettoTascabile()" style="background:#eff6ff; font-weight:700; color:#1e40af;">
-            <span>📋</span> Prospetto Tascabile Medico & QR Code
           </button>
           <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); openModal('modal-scopri-progetto')">
             <span>💡</span> Info sul Progetto CareAssist
@@ -121,42 +120,27 @@
     <button class="nav-tab" data-target="tab-diario">📋 Storico Completo (Diario)</button>
   </nav>
 
-  <!-- CONTAINER -->
-  <main class="container">
-
-    <!-- ☀️ REGALO DEL MATTINO: MORNING BRIEFING ASSISTENZA DOMICILIARE ☀️ -->
-    <div id="card-buongiorno-mattino" class="card" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #eff6ff 100%); border: 2px solid #fcd34d; border-radius: 18px; padding: 16px 20px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.12); position: relative; overflow: hidden;">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="width: 48px; height: 48px; border-radius: 14px; background: #fef08a; border: 1.5px solid #facc15; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 2px 8px rgba(234, 179, 8, 0.25); flex-shrink: 0;">
-            ☀️
-          </div>
-          <div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span id="buongiorno-saluto-testo" style="font-size: 17px; font-weight: 800; color: #92400e;">Buongiorno Ciro! ☀️</span>
-              <span id="buongiorno-orario-badge" style="font-size: 11px; font-weight: 800; background: #fef08a; color: #854d0e; padding: 2px 8px; border-radius: 10px; border: 1px solid #facc15;">Mattino Attivo</span>
-            </div>
-            <div id="buongiorno-sottotitolo" style="font-size: 12.5px; color: #78350f; font-weight: 600; margin-top: 2px;">
-              Ecco il riepilogo clinico rapido per iniziare al meglio la giornata assistenziale.
-            </div>
-          </div>
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <button type="button" class="btn" onclick="avviaRoutineMattino()" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: #ffffff; font-weight: 800; font-size: 12.5px; padding: 8px 16px; border-radius: 10px; border: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 3px 8px rgba(180, 83, 9, 0.3); cursor: pointer;">
-            <span>☕</span> Avvia Routine Colazione
-          </button>
-          <button type="button" class="btn btn-outline" onclick="chiudiCardBuongiorno()" style="padding: 6px 10px; font-size: 12px; font-weight: 700; color: #92400e; border-color: #fde68a; background: rgba(255,255,255,0.7); border-radius: 8px;" title="Riduci briefing per visualizzare la scheda">
-            ✕ Riduci
-          </button>
-        </div>
-      </div>
-
-      <!-- CRUSCOTTO RAPIDO MULTI-PAZIENTE DEL MATTINO -->
-      <div id="buongiorno-chips-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 14px; border-top: 1px dashed rgba(217, 119, 6, 0.35); padding-top: 12px;">
-        <!-- Generato dinamicamente da app.js -->
+  <!-- BARRA STICKY CONTESTO ASSISTITO (SEMPRE VISIBILE ANCHE DURANTE LO SCROLL) -->
+  <div id="sticky-patient-bar" class="sticky-patient-bar">
+    <div class="sticky-patient-info" onclick="apriSwitchPazienteRapido()" title="Tocca per cambiare assistito o vedere dettagli">
+      <span class="sticky-patient-avatar">👤</span>
+      <div class="sticky-patient-meta">
+        <div class="sticky-patient-name" id="sticky-patient-name">Caricamento assistito...</div>
+        <div class="sticky-patient-sub" id="sticky-patient-sub">Cartella Attiva</div>
       </div>
     </div>
+    <div class="sticky-patient-actions">
+      <span id="sticky-patient-alert-pill" class="sticky-alert-pill" style="display:none;" onclick="apriAllarmiTerapieManuale()" title="Terapie in ritardo per questo assistito">
+        🚨 <span id="sticky-patient-alert-count">0</span> RITARDI
+      </span>
+      <button type="button" class="btn-sticky-cambia" onclick="apriSwitchPazienteRapido()" title="Cambia assistito istantaneamente">
+        🔄 <span>Cambia</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTAINER -->
+  <main class="container">
 
     <!-- HERO CARD ANAGRAFICA COMPLETA & RECAPITI -->
     <div class="anagrafica-hero">
@@ -329,6 +313,9 @@
               <button class="btn btn-outline" style="border-color:#ef4444; color:#dc2626; background:#fff5f5; font-size:11.5px; padding:4px 10px;" onclick="simulaAllarmeTerapieTest()" title="Simula istantaneamente il ritardo e ascolta il suono insistente">
                 🚨 Simula Allarme Terapia
               </button>
+              <button class="btn btn-outline" id="btn-abilita-notifiche-audio" onclick="abilitaNotificheEAudioSmartphone()" style="border-color:#0284c7; color:#0284c7; background:#f0f9ff; font-size:11.5px; padding:4px 10px; font-weight:700;" title="Abilita audio e notifiche native su smartphone">
+                🔔 Notifiche & Audio
+              </button>
               <button class="btn btn-outline" onclick="document.querySelector('[data-target=\'tab-farmaci\']').click()">Tutti i farmaci &rarr;</button>
             </div>
           </div>
@@ -376,19 +363,9 @@
 
       <!-- CARD ATTIVITA' RECENTI (DIARIO OSS) -->
       <div class="card">
-        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div>
-            <div class="card-title">📝 Ultime Annotazioni Socio-Sanitarie</div>
-            <span style="font-size:12px; color:var(--text-muted);">Parametri, Alvo, Posture e Note di Turno</span>
-          </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="apriModalNuovaNotaTurno()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px;">
-              📝 Lascia Nota Turno
-            </button>
-            <button class="btn btn-success" onclick="inviaReportTurnoWhatsApp()" style="background:#25d366; border-color:#16a34a; font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px;">
-              💬 Invia Report a Ciro
-            </button>
-          </div>
+        <div class="card-header">
+          <div class="card-title">📝 Ultime Annotazioni Socio-Sanitarie</div>
+          <span style="font-size:12px; color:var(--text-muted);">Parametri, Alvo, Posture registrate</span>
         </div>
         <div class="table-responsive">
           <table class="custom-table">
@@ -440,6 +417,10 @@
                 <option value="tutti">📋 Tutti i Pazienti</option>
               </select>
             </div>
+            <!-- PULSANTE DIARIO GLICEMICO INTELLIGENTE: Visibile in automatico per pazienti con terapia diabetica/insulina -->
+            <button id="btn-quick-diario-glicemico" class="btn" style="display:none; background:linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); color:#fff; font-weight:800; font-size:12.5px; padding:7px 12px; border-radius:8px; border:1.5px solid #bfdbfe; box-shadow:0 2px 8px rgba(29,78,216,0.25);" onclick="apriDiarioGlicemicoAssistitoAttivo()" title="Visualizza e stampa il Diario Glicemico & Insulina dell'assistito">
+              🩸 Diario Glicemico (<span id="btn-quick-glicemia-nome">Assistito</span>)
+            </button>
             <button class="btn btn-primary" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-weight:800;" onclick="apriRichiestaRicetteMedico()">
               📲 Richiedi Ricette al Medico
             </button>
@@ -665,16 +646,6 @@
               <input type="text" class="form-control" id="nuovo-paz-parente-cell" placeholder="Es. 347 123 45 67">
             </div>
           </div>
-          <div class="form-row" style="background:#f8fafc; padding:0 10px 10px 10px; border-radius:8px; border:1px solid #e2e8f0; border-top:none;">
-            <div class="form-group" style="margin-bottom:0; flex:1;">
-              <label class="form-label">✉️ Email Familiare/Caregiver</label>
-              <input type="email" class="form-control" id="nuovo-paz-parente-email" placeholder="Es. caregiver@email.it">
-            </div>
-            <div class="form-group" style="margin-bottom:0; flex:1;">
-              <label class="form-label">🏛️ PEC Familiare/Caregiver</label>
-              <input type="email" class="form-control" id="nuovo-paz-parente-pec" placeholder="Es. caregiver@pec.it">
-            </div>
-          </div>
 
           <!-- SEZIONE 3: QUADRO CLINICO E PATOLOGIE PERSONALI CON CHIP RAPIDI & AGGIUNTA PERSONALIZZATA -->
           <div style="font-weight:800; font-size:12.5px; color:#b45309; text-transform:uppercase; margin:14px 0 10px; display:flex; align-items:center; gap:6px;">
@@ -793,160 +764,105 @@
 
   <!-- MODAL EDIT ANAGRAFICA COMPLETA -->
   <div class="modal-overlay" id="modal-modifica-anagrafica">
-    <div class="modal-card" style="max-width:960px; width:95%; max-height:92vh; display:flex; flex-direction:column;">
-      <div class="modal-header" style="flex-shrink:0;">
+    <div class="modal-card" style="max-width:960px; width:95%;">
+      <div class="modal-header">
         <div class="modal-title">✏️ Modifica Scheda Anagrafica e Recapiti</div>
         <button class="btn btn-outline" onclick="closeModal('modal-modifica-anagrafica')">✕</button>
       </div>
-      <form onsubmit="salvaModificaAnagrafica(event)" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
-        <div class="modal-body" style="overflow-y:auto; flex:1; padding:18px;">
-          
-          <!-- TAB NAVIGATORE A SCHEDE -->
-          <div class="modal-tabs-header">
-            <button type="button" class="modal-tab-btn active" id="tab-btn-paziente" onclick="cambiaTabAnagrafica('paziente')">
-              <span>👤</span> <span>1. Assistito & Caregiver</span>
-            </button>
-            <button type="button" class="modal-tab-btn" id="tab-btn-medico" onclick="cambiaTabAnagrafica('medico')">
-              <span>🩺</span> <span>2. Medico (Email & PEC)</span>
-            </button>
-            <button type="button" class="modal-tab-btn" id="tab-btn-orari" onclick="cambiaTabAnagrafica('orari')">
-              <span>🗓️</span> <span>3. Orari MMG & Farmacia</span>
-            </button>
-            <button type="button" class="modal-tab-btn" id="tab-btn-ausili" onclick="cambiaTabAnagrafica('ausili')">
-              <span>🛡️</span> <span>4. Ausili & Quadro Clinico</span>
-            </button>
-          </div>
-
-          <!-- PANNELLO 1: ASSISTITO & CAREGIVER -->
-          <div class="tab-pane-anagrafica active" id="pane-anagrafica-paziente">
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; margin-bottom:14px;">
-              <div style="font-weight:800; font-size:12px; color:#0f172a; text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
-                <span>👤</span> <span>Dati Anagrafici Assistito</span>
-              </div>
-              <div class="form-row">
-                <div class="form-group" style="flex:2;">
-                  <label class="form-label" style="font-weight:700;">Nome e Cognome Assistito</label>
-                  <input type="text" class="form-control" id="edit-paz-nome" required>
-                </div>
-                <div class="form-group" style="flex:1.2;">
-                  <label class="form-label" style="font-weight:700;">Data di Nascita</label>
-                  <input type="date" class="form-control" id="edit-paz-nascita" onchange="aggiornaEtaEdit(this.value)">
-                </div>
-                <div class="form-group" style="flex:0.8;">
-                  <label class="form-label" style="font-weight:700;">Età</label>
-                  <input type="text" class="form-control" id="edit-paz-eta" readonly style="background:#f1f5f9; font-weight:bold; color:#0369a1;">
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" style="font-weight:700;">Indirizzo di Residenza / Domicilio (con visualizzazione Mappa)</label>
-                <input type="text" class="form-control" id="edit-paz-indirizzo" placeholder="Es. Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)">
-              </div>
-
-              <div class="form-row">
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-weight:700;">☎️ Telefono Fisso di Casa</label>
-                  <input type="text" class="form-control" id="edit-paz-telefono" placeholder="Es. 0971 693 221">
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-weight:700;">📱 Cellulare Assistito</label>
-                  <input type="text" class="form-control" id="edit-paz-cellulare" placeholder="Es. 338 379 76 71">
-                </div>
-              </div>
+      <form onsubmit="salvaModificaAnagrafica(event)">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group" style="flex:2;">
+              <label class="form-label">Nome e Cognome Assistito</label>
+              <input type="text" class="form-control" id="edit-paz-nome" required>
             </div>
-
-            <!-- CONTATTO CAREGIVER CON EMAIL E CELLULARE DEDICATI -->
-            <div style="background:#f0f9ff; padding:14px; border-radius:12px; border:1.5px solid #bae6fd;">
-              <div style="font-weight:800; font-size:12px; color:#0369a1; text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
-                <span>👥</span> <span>Contatto di Riferimento / Caregiver Familiare</span>
-              </div>
-              <div class="form-row" style="margin-bottom:10px;">
-                <div class="form-group" style="flex:1.5; margin-bottom:0;">
-                  <label class="form-label" style="color:#0369a1; font-weight:700;">Nome e Grado di Parentela Caregiver</label>
-                  <input type="text" class="form-control" id="edit-paz-moglie-nome" placeholder="Es. Maria Carmela (Figlia / Caregiver)" style="font-weight:600;">
-                </div>
-                <div class="form-group" style="flex:1.2; margin-bottom:0;">
-                  <label class="form-label" style="color:#0369a1; font-weight:700;">📱 Cellulare Caregiver (WhatsApp & Chiamate)</label>
-                  <input type="text" class="form-control" id="edit-paz-moglie-cell" placeholder="Es. 338 739 76 71" style="font-weight:600;">
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group" style="flex:1; margin-bottom:0;">
-                  <label class="form-label" style="color:#0369a1; font-weight:700;">✉️ Email Ordinaria Caregiver</label>
-                  <input type="email" class="form-control" id="edit-paz-caregiver-email" placeholder="Es. caregiver@email.it" style="font-weight:600;">
-                </div>
-                <div class="form-group" style="flex:1; margin-bottom:0;">
-                  <label class="form-label" style="color:#0369a1; font-weight:700;">🏛️ PEC Caregiver (Comunicazioni legali / ASL)</label>
-                  <input type="email" class="form-control" id="edit-paz-caregiver-pec" placeholder="Es. caregiver@pec.it" style="font-weight:600;">
-                </div>
-              </div>
+            <div class="form-group" style="flex:1.2;">
+              <label class="form-label">Data di Nascita</label>
+              <input type="date" class="form-control" id="edit-paz-nascita" onchange="aggiornaEtaEdit(this.value)">
+            </div>
+            <div class="form-group" style="flex:0.8;">
+              <label class="form-label">Età</label>
+              <input type="text" class="form-control" id="edit-paz-eta" readonly style="background:#f1f5f9; font-weight:bold;">
             </div>
           </div>
 
-          <!-- PANNELLO 2: MEDICO CURANTE (EMAIL ORDINARIA + PEC UFFICIALE SEPARATE) -->
-          <div class="tab-pane-anagrafica" id="pane-anagrafica-medico">
-            <div style="background:#f0fdf4; padding:16px; border-radius:12px; border:1.5px solid #86efac;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-                <div style="font-weight:800; font-size:12.5px; color:#166534; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
-                  <span>🩺</span> <span>Riferimenti Medico Curante (MMG)</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <span style="font-size:11.5px; font-weight:700; color:#15803d;">⚡ Preset da Rubrica:</span>
-                  <select id="select-medico-farmacia-preset-edit" class="form-control" style="font-size:11.5px; padding:4px 8px; width:auto; border-color:#22c55e; font-weight:700; background:#fff;" onchange="applicaPresetMedicoFarmacia(this.value, 'edit')">
-                    <option value="">-- Seleziona da Rubrica Struttura --</option>
-                    <option value="scarcia_macario">🩺 Dott. Roberto Scarcia + 🏥 Farmacia MACARIO (Bari)</option>
-                    <option value="potenza">🩺 Dr.ssa Carolina Potenza (Sarconi/Moliterno) + Farmacia Girasole Picconi (Corleto Perticara)</option>
-                    <option value="medico_rsa">🏥 Medico di Struttura RSA + Farmacia Ospedaliera</option>
-                    <option value="adi_bari">🚑 Servizio Territoriale ADI ASL Bari</option>
-                    <option value="manuale">✏️ Inserimento Manuale / Altro</option>
-                  </select>
-                </div>
-              </div>
+          <div class="form-group">
+            <label class="form-label">Indirizzo di Residenza / Domicilio</label>
+            <input type="text" class="form-control" id="edit-paz-indirizzo" placeholder="Es. Via Giovanni Modugno, 25 - BARI (BA)">
+          </div>
 
-              <div class="form-row" style="margin-bottom:12px;">
-                <div class="form-group" style="flex:1.4; margin-bottom:0;">
-                  <label class="form-label" style="font-weight:700; color:#14532d;">Nome Medico Curante</label>
-                  <input type="text" class="form-control" id="edit-paz-medico-nome" placeholder="Es. Dr.ssa Carolina Potenza" style="font-weight:600;">
-                </div>
-                <div class="form-group" style="flex:1; margin-bottom:0;">
-                  <label class="form-label" style="font-weight:700; color:#14532d;">☎️ Tel. Studio / Fisso</label>
-                  <input type="text" class="form-control" id="edit-paz-medico-studio" placeholder="Es. 0971 123456" style="font-weight:600;">
-                </div>
-                <div class="form-group" style="flex:1; margin-bottom:0;">
-                  <label class="form-label" style="font-weight:700; color:#14532d;">📱 Cellulare / WhatsApp</label>
-                  <input type="text" class="form-control" id="edit-paz-medico-tel" placeholder="Es. 338 379 05 64" style="font-weight:600;">
-                </div>
-              </div>
-
-              <div class="form-row" style="margin-bottom:12px;">
-                <div class="form-group" style="flex:1; margin-bottom:0;">
-                  <label class="form-label" style="font-weight:700; color:#14532d;">🏥 Sedi Ambulatori / Indirizzi Studi (Anche multipli)</label>
-                  <input type="text" class="form-control" id="edit-paz-medico-indirizzo" placeholder="Es. Sarconi: Via Provinciale 1 / Moliterno: Via Parco del Seggio 1" style="font-weight:600; color:#0f172a;">
-                </div>
-              </div>
-
-              <!-- DUE CAMPI INDIPENDENTI: EMAIL ORDINARIA & PEC UFFICIALE -->
-              <div class="form-row" style="background:#ffffff; border:1px solid #bbf7d0; border-radius:10px; padding:12px;">
-                <div class="form-group" style="flex:1; margin-bottom:0;">
-                  <label class="form-label" style="font-weight:700; color:#166534; display:flex; align-items:center; gap:6px;">
-                    <span>✉️</span> <span>Email Ordinaria Medico (Richiesta Ricette & WhatsApp)</span>
-                  </label>
-                  <input type="email" class="form-control" id="edit-paz-medico-email" placeholder="Es. carolina.potenza@gmail.com" style="font-weight:600;">
-                </div>
-                <div class="form-group" style="flex:1; margin-bottom:0;">
-                  <label class="form-label" style="font-weight:700; color:#0369a1; display:flex; align-items:center; gap:6px;">
-                    <span>🔒</span> <span>PEC Ufficiale Medico (Certificati, Piani Terapeutici & ASL)</span>
-                  </label>
-                  <input type="email" class="form-control" id="edit-paz-medico-pec" placeholder="Es. carolina.potenza@pec.it" style="font-weight:600; border-color:#93c5fd;">
-                </div>
-              </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Telefono Fisso di Casa</label>
+              <input type="text" class="form-control" id="edit-paz-telefono" placeholder="Es. 080 561 57 14">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cellulare Assistito</label>
+              <input type="text" class="form-control" id="edit-paz-cellulare" placeholder="Es. 338 306 69 05">
             </div>
           </div>
 
-          <!-- PANNELLO 3: ORARI RICEVIMENTO & FARMACIA TERRITORIALE -->
-          <div class="tab-pane-anagrafica" id="pane-anagrafica-orari">
-            <!-- SEZIONE FARMACIA TERRITORIALE DEDICATA -->
-            <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:12px 14px; margin-bottom:14px;">
+          <div class="form-row" style="background:#f0f9ff; padding:12px 14px; border-radius:10px; border:1.5px solid #bae6fd; margin-bottom:14px;">
+            <div class="form-group" style="margin-bottom:0; flex:1.5;">
+              <label class="form-label" style="color:#0369a1; font-weight:700;">👥 Contatto di Riferimento / Caregiver (Familiare, Figlio/a, Coniuge)</label>
+              <input type="text" class="form-control" id="edit-paz-moglie-nome" placeholder="Es. Maria Carmela (Caregiver / Familiare) o Coniuge" style="font-weight:600;">
+            </div>
+            <div class="form-group" style="margin-bottom:0; flex:1.2;">
+              <label class="form-label" style="color:#0369a1; font-weight:700;">📱 Cellulare Caregiver / Familiare (WhatsApp & Chiamate)</label>
+              <input type="text" class="form-control" id="edit-paz-moglie-cell" placeholder="Es. 338 739 76 71" style="font-weight:600;">
+            </div>
+          </div>
+
+          <!-- RECAPITI MEDICO CURANTE & FARMACIA CON AUTO-COMPILAZIONE -->
+          <div style="background:#f0fdf4; padding:14px; border-radius:12px; border:1.5px solid #86efac; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+              <div style="font-weight:800; font-size:12px; color:#166534; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+                <span>🩺</span> <span>Riferimenti Medico Curante & Farmacia</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11.5px; font-weight:700; color:#15803d;">⚡ Seleziona Medico & Farmacia:</span>
+                <select id="select-medico-farmacia-preset-edit" class="form-control" style="font-size:11.5px; padding:3px 8px; width:auto; border-color:#22c55e; font-weight:700; background:#fff;" onchange="applicaPresetMedicoFarmacia(this.value, 'edit')">
+                  <option value="">-- Seleziona da Rubrica Struttura --</option>
+                  <option value="scarcia_macario">🩺 Dott. Roberto Scarcia + 🏥 Farmacia MACARIO (Bari)</option>
+                  <option value="potenza">🩺 Dr.ssa Carolina Potenza (Sarconi/Moliterno) + Farmacia Girasole Picconi (Corleto Perticara)</option>
+                  <option value="medico_rsa">🏥 Medico di Struttura RSA + Farmacia Ospedaliera</option>
+                  <option value="adi_bari">🚑 Servizio Territoriale ADI ASL Bari</option>
+                  <option value="manuale">✏️ Inserimento Manuale / Altro</option>
+                </select>
+              </div>
+            </div>
+            <!-- RIGA 1: NOME MEDICO E RECAPITI TELEFONICI (SPAZIOSI) -->
+            <div class="form-row" style="margin-bottom:10px;">
+              <div class="form-group" style="flex:1.4; margin-bottom:0;">
+                <label class="form-label" style="font-weight:700;">Nome Medico Curante (MMG)</label>
+                <input type="text" class="form-control" id="edit-paz-medico-nome" placeholder="Es. Dr.ssa Carolina Potenza" style="font-weight:600;">
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label" style="font-weight:700;">Tel. Studio / Fisso</label>
+                <input type="text" class="form-control" id="edit-paz-medico-studio" placeholder="Es. 0971 123456" style="font-weight:600;">
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label" style="font-weight:700;">Cellulare / WhatsApp</label>
+                <input type="text" class="form-control" id="edit-paz-medico-tel" placeholder="Es. 338 379 05 64" style="font-weight:600;">
+              </div>
+            </div>
+
+            <!-- RIGA 2: SEDI STUDI / AMBULATORI MULTIPLI AD AMPIA LARGHEZZA -->
+            <div class="form-row" style="margin-bottom:10px;">
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label" style="font-weight:700;">🏥 Sedi Ambulatori / Indirizzi Studi (Anche multipli)</label>
+                <input type="text" class="form-control" id="edit-paz-medico-indirizzo" placeholder="Es. Sarconi: Via Provinciale 1 / Moliterno: Via Parco del Seggio 1" style="font-weight:600; color:#0f172a;">
+              </div>
+            </div>
+            <div class="form-row" style="margin-bottom:12px;">
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label" style="font-weight:700;">✉️ Email / PEC Medico Curante</label>
+                <input type="email" class="form-control" id="edit-paz-medico-email" placeholder="Es. carolina.potenza@aspbasilicata.it" style="font-weight:600;">
+              </div>
+            </div>
+
+            <!-- SEZIONE FARMACIA TERRITORIALE DEDICATA & ARRICCHITA -->
+            <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:12px 14px; margin-top:8px; margin-bottom:12px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
                 <div style="font-size:12.5px; font-weight:800; color:#15803d; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
                   <span>🏥</span> <span>Farmacia Territoriale di Riferimento (Ritiro Farmaci & DPC)</span>
@@ -972,24 +888,23 @@
                 </div>
               </div>
             </div>
-
             <!-- QUADRO MEDICO SETTIMANALE ELEGANTE & INTUITIVO -->
-            <div style="background:#ffffff; border:1.5px solid #bfdbfe; border-radius:12px; padding:14px; box-shadow:0 4px 12px rgba(15,23,42,0.04);">
+            <div style="margin-top:14px; background:#ffffff; border:1.5px solid #bfdbfe; border-radius:12px; padding:14px; box-shadow:0 4px 12px rgba(15,23,42,0.04);">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
                 <div>
                   <div style="font-size:13px; font-weight:800; color:#0369a1; text-transform:uppercase; display:flex; align-items:center; gap:8px;">
                     <span style="font-size:16px;">🗓️</span> <span>Quadro Settimanale Ricevimento Studi & Ambulatori</span>
                   </div>
                   <div style="font-size:11px; color:#64748b; font-weight:600; margin-top:2px;">
-                    Configura gli orari mattutini e pomeridiani per ciascuna sede.
+                    Configura gli orari mattutini e pomeridiani per ciascuna sede. I giorni con orario attivo appariranno automaticamente con badge orario e calcolo del giorno corrente.
                   </div>
                 </div>
                 <div style="display:flex; gap:8px;">
                   <button type="button" class="btn" style="background:#0369a1; color:#ffffff; font-size:11.5px; font-weight:700; padding:5px 12px; border-radius:8px; border:none; box-shadow:0 2px 4px rgba(3,105,161,0.25);" onclick="applicaOrarioModello('scarcia')">
-                    ⚡ Dott. Scarcia (Bari)
+                    ⚡ Orari Dott. Scarcia (Bari - Via Muciaccia)
                   </button>
                   <button type="button" class="btn" style="background:#0284c7; color:#ffffff; font-size:11.5px; font-weight:700; padding:5px 12px; border-radius:8px; border:none; box-shadow:0 2px 4px rgba(2,132,199,0.25);" onclick="applicaOrarioModello('potenza')">
-                    ⚡ Dr.ssa Potenza (Sarconi/Moliterno)
+                    ⚡ Orari Dr.ssa Potenza (Sarconi & Moliterno)
                   </button>
                   <button type="button" class="btn btn-outline" style="font-size:11.5px; padding:5px 10px; background:#ffffff; color:#475569; border-color:#cbd5e1; font-weight:700;" onclick="toggleOrariManuale()">
                     📝 Note Aggiuntive
@@ -997,113 +912,159 @@
                 </div>
               </div>
 
-              <!-- TABELLA MEDICA -->
+              <!-- TABELLA MEDICA A RIGHE SPAZIOSE E BEN LEGGIBILI -->
               <div style="overflow-x:auto;">
-                <table class="tabella-planner-orari" style="width:100%; border-collapse:separate; border-spacing:0 6px; font-size:12.5px;">
+                <table style="width:100%; border-collapse:separate; border-spacing:0 6px; font-size:12.5px;">
                   <thead>
                     <tr style="color:#64748b; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.3px;">
                       <th style="padding:6px 10px; text-align:left; width:130px;">Giorno</th>
                       <th style="padding:6px 10px; text-align:left; width:100px;">Stato</th>
-                      <th style="padding:6px 10px; text-align:left; width:34%;">Orario Ambulatorio</th>
-                      <th style="padding:6px 10px; text-align:left; width:36%;">Comune / Sede Attiva</th>
-                      <th style="padding:6px 10px; text-align:center; width:90px;">Azione</th>
+                      <th style="padding:6px 10px; text-align:left; width:34%;">Orario Ambulatorio (Mattina / Pomeriggio)</th>
+                      <th style="padding:6px 10px; text-align:left; width:36%;">Comune / Sede Studio Attiva</th>
+                      <th style="padding:6px 10px; text-align:center; width:90px;">Scelta Rapida</th>
                     </tr>
                   </thead>
                   <tbody>
                     <!-- LUNEDÌ -->
-                    <tr id="row-lun" style="background:#f8fafc; border:1px solid #e2e8f0;">
-                      <td style="padding:8px 10px; font-weight:800; color:#1e293b; border-radius:8px 0 0 8px; border-left:4px solid #0284c7;">Lunedì</td>
-                      <td style="padding:8px 10px;"><span id="badge-lun" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Attivo</span></td>
-                      <td style="padding:8px 10px;"><input type="text" id="orario-giorno-lun" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700;" placeholder="Es. 09:30-13:00" oninput="sincronizzaPlannerVersoTesto()"></td>
-                      <td style="padding:8px 10px;"><input type="text" id="sede-giorno-lun" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; color:#0369a1;" placeholder="Es. Sarconi / Moliterno" oninput="sincronizzaPlannerVersoTesto()"></td>
-                      <td style="padding:8px 10px; text-align:center; border-radius:0 8px 8px 0;"><button type="button" class="btn btn-outline" style="font-size:11px; padding:3px 8px; border-color:#cbd5e1; background:#fff; font-weight:600;" onclick="impostaGiornoChiuso('lun')">Chiuso</button></td>
+                    <tr id="row-lun" style="background:#f8fafc; border:1px solid #e2e8f0; transition:all 0.15s ease;">
+                      <td style="padding:8px 10px; font-weight:800; color:#1e293b; border-radius:8px 0 0 8px; border-left:4px solid #0284c7;">
+                        Lunedì
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <span id="badge-lun" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Attivo</span>
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <input type="text" id="orario-giorno-lun" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700;" placeholder="Es. 09:30-13:00 / 15:00-18:00" oninput="sincronizzaPlannerVersoTesto()">
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <input type="text" id="sede-giorno-lun" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; color:#0369a1;" placeholder="Es. Sarconi (mattina) / Moliterno (pomeriggio)" oninput="sincronizzaPlannerVersoTesto()">
+                      </td>
+                      <td style="padding:8px 10px; text-align:center; border-radius:0 8px 8px 0;">
+                        <button type="button" class="btn btn-outline" style="font-size:11px; padding:3px 8px; border-color:#cbd5e1; background:#fff; font-weight:600;" onclick="impostaGiornoChiuso('lun')">Chiuso</button>
+                      </td>
                     </tr>
+
                     <!-- MARTEDÌ -->
-                    <tr id="row-mar" style="background:#f8fafc; border:1px solid #e2e8f0;">
-                      <td style="padding:8px 10px; font-weight:800; color:#1e293b; border-radius:8px 0 0 8px; border-left:4px solid #0284c7;">Martedì</td>
-                      <td style="padding:8px 10px;"><span id="badge-mar" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Attivo</span></td>
-                      <td style="padding:8px 10px;"><input type="text" id="orario-giorno-mar" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700;" placeholder="Es. 15:00-18:30" oninput="sincronizzaPlannerVersoTesto()"></td>
-                      <td style="padding:8px 10px;"><input type="text" id="sede-giorno-mar" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; color:#0369a1;" placeholder="Es. Sarconi" oninput="sincronizzaPlannerVersoTesto()"></td>
-                      <td style="padding:8px 10px; text-align:center; border-radius:0 8px 8px 0;"><button type="button" class="btn btn-outline" style="font-size:11px; padding:3px 8px; border-color:#cbd5e1; background:#fff; font-weight:600;" onclick="impostaGiornoChiuso('mar')">Chiuso</button></td>
+                    <tr id="row-mar" style="background:#f8fafc; border:1px solid #e2e8f0; transition:all 0.15s ease;">
+                      <td style="padding:8px 10px; font-weight:800; color:#1e293b; border-radius:8px 0 0 8px; border-left:4px solid #0284c7;">
+                        Martedì
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <span id="badge-mar" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Attivo</span>
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <input type="text" id="orario-giorno-mar" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700;" placeholder="Es. 15:00-18:30" oninput="sincronizzaPlannerVersoTesto()">
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <input type="text" id="sede-giorno-mar" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; color:#0369a1;" placeholder="Es. Sarconi" oninput="sincronizzaPlannerVersoTesto()">
+                      </td>
+                      <td style="padding:8px 10px; text-align:center; border-radius:0 8px 8px 0;">
+                        <button type="button" class="btn btn-outline" style="font-size:11px; padding:3px 8px; border-color:#cbd5e1; background:#fff; font-weight:600;" onclick="impostaGiornoChiuso('mar')">Chiuso</button>
+                      </td>
                     </tr>
+
                     <!-- MERCOLEDÌ -->
-                    <tr id="row-mer" style="background:#f8fafc; border:1px solid #e2e8f0;">
-                      <td style="padding:8px 10px; font-weight:800; color:#1e293b; border-radius:8px 0 0 8px; border-left:4px solid #0284c7;">Mercoledì</td>
-                      <td style="padding:8px 10px;"><span id="badge-mer" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Attivo</span></td>
-                      <td style="padding:8px 10px;"><input type="text" id="orario-giorno-mer" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700;" placeholder="Es. 09:30-13:00" oninput="sincronizzaPlannerVersoTesto()"></td>
-                      <td style="padding:8px 10px;"><input type="text" id="sede-giorno-mer" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; color:#0369a1;" placeholder="Es. Sarconi" oninput="sincronizzaPlannerVersoTesto()"></td>
-                      <td style="padding:8px 10px; text-align:center; border-radius:0 8px 8px 0;"><button type="button" class="btn btn-outline" style="font-size:11px; padding:3px 8px; border-color:#cbd5e1; background:#fff; font-weight:600;" onclick="impostaGiornoChiuso('mer')">Chiuso</button></td>
+                    <tr id="row-mer" style="background:#f8fafc; border:1px solid #e2e8f0; transition:all 0.15s ease;">
+                      <td style="padding:8px 10px; font-weight:800; color:#1e293b; border-radius:8px 0 0 8px; border-left:4px solid #0284c7;">
+                        Mercoledì
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <span id="badge-mer" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Attivo</span>
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <input type="text" id="orario-giorno-mer" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700;" placeholder="Es. 09:30-13:00" oninput="sincronizzaPlannerVersoTesto()">
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <input type="text" id="sede-giorno-mer" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; color:#0369a1;" placeholder="Es. Sarconi" oninput="sincronizzaPlannerVersoTesto()">
+                      </td>
+                      <td style="padding:8px 10px; text-align:center; border-radius:0 8px 8px 0;">
+                        <button type="button" class="btn btn-outline" style="font-size:11px; padding:3px 8px; border-color:#cbd5e1; background:#fff; font-weight:600;" onclick="impostaGiornoChiuso('mer')">Chiuso</button>
+                      </td>
                     </tr>
+
                     <!-- GIOVEDÌ -->
-                    <tr id="row-gio" style="background:#f8fafc; border:1px solid #e2e8f0;">
-                      <td style="padding:8px 10px; font-weight:800; color:#1e293b; border-radius:8px 0 0 8px; border-left:4px solid #0284c7;">Giovedì</td>
-                      <td style="padding:8px 10px;"><span id="badge-gio" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Attivo</span></td>
-                      <td style="padding:8px 10px;"><input type="text" id="orario-giorno-gio" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700;" placeholder="Es. 09:00-13:00 / 15:00-18:30" oninput="sincronizzaPlannerVersoTesto()"></td>
-                      <td style="padding:8px 10px;"><input type="text" id="sede-giorno-gio" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; color:#0369a1;" placeholder="Es. Moliterno (mattina) / Sarconi" oninput="sincronizzaPlannerVersoTesto()"></td>
-                      <td style="padding:8px 10px; text-align:center; border-radius:0 8px 8px 0;"><button type="button" class="btn btn-outline" style="font-size:11px; padding:3px 8px; border-color:#cbd5e1; background:#fff; font-weight:600;" onclick="impostaGiornoChiuso('gio')">Chiuso</button></td>
+                    <tr id="row-gio" style="background:#f8fafc; border:1px solid #e2e8f0; transition:all 0.15s ease;">
+                      <td style="padding:8px 10px; font-weight:800; color:#1e293b; border-radius:8px 0 0 8px; border-left:4px solid #0284c7;">
+                        Giovedì
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <span id="badge-gio" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Attivo</span>
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <input type="text" id="orario-giorno-gio" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700;" placeholder="Es. 09:00-13:00 / 15:00-18:30" oninput="sincronizzaPlannerVersoTesto()">
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <input type="text" id="sede-giorno-gio" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; color:#0369a1;" placeholder="Es. Moliterno (mattina) / Sarconi (pomeriggio)" oninput="sincronizzaPlannerVersoTesto()">
+                      </td>
+                      <td style="padding:8px 10px; text-align:center; border-radius:0 8px 8px 0;">
+                        <button type="button" class="btn btn-outline" style="font-size:11px; padding:3px 8px; border-color:#cbd5e1; background:#fff; font-weight:600;" onclick="impostaGiornoChiuso('gio')">Chiuso</button>
+                      </td>
                     </tr>
-                    <!-- VENERDÌ -->
-                    <tr id="row-ven" style="background:#f0fdf4; border:1px solid #86efac;">
-                      <td style="padding:8px 10px; font-weight:800; color:#166534; border-radius:8px 0 0 8px; border-left:4px solid #16a34a;">Venerdì</td>
-                      <td style="padding:8px 10px;"><span id="badge-ven" class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Oggi ⭐</span></td>
-                      <td style="padding:8px 10px;"><input type="text" id="orario-giorno-ven" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; border-color:#86efac;" placeholder="Es. 09:30-13:00" oninput="sincronizzaPlannerVersoTesto()"></td>
-                      <td style="padding:8px 10px;"><input type="text" id="sede-giorno-ven" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; color:#15803d; border-color:#86efac;" placeholder="Es. Sarconi" oninput="sincronizzaPlannerVersoTesto()"></td>
-                      <td style="padding:8px 10px; text-align:center; border-radius:0 8px 8px 0;"><button type="button" class="btn btn-outline" style="font-size:11px; padding:3px 8px; border-color:#86efac; background:#fff; font-weight:600; color:#166534;" onclick="impostaGiornoChiuso('ven')">Chiuso</button></td>
+
+                    <!-- VENERDÌ (EVIDENZIATO IN VERDE PERCHÉ OGGI È VENERDÌ) -->
+                    <tr id="row-ven" style="background:#f0fdf4; border:1px solid #86efac; transition:all 0.15s ease;">
+                      <td style="padding:8px 10px; font-weight:800; color:#166534; border-radius:8px 0 0 8px; border-left:4px solid #16a34a;">
+                        Venerdì
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <span id="badge-ven" class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Oggi ⭐</span>
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <input type="text" id="orario-giorno-ven" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; border-color:#86efac;" placeholder="Es. 09:30-13:00" oninput="sincronizzaPlannerVersoTesto()">
+                      </td>
+                      <td style="padding:8px 10px;">
+                        <input type="text" id="sede-giorno-ven" class="form-control" style="font-size:12.5px; padding:6px 10px; font-weight:700; color:#15803d; border-color:#86efac;" placeholder="Es. Sarconi" oninput="sincronizzaPlannerVersoTesto()">
+                      </td>
+                      <td style="padding:8px 10px; text-align:center; border-radius:0 8px 8px 0;">
+                        <button type="button" class="btn btn-outline" style="font-size:11px; padding:3px 8px; border-color:#86efac; background:#fff; font-weight:600; color:#166534;" onclick="impostaGiornoChiuso('ven')">Chiuso</button>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              <!-- AREA NOTE COMPLESSE -->
+              <!-- AREA TEXTAREA PER NOTE COMPLESSE / RICEVIMENTO SU APPUNTAMENTO -->
               <div id="planner-orari-manuale-box" style="display:none; margin-top:12px; background:#f1f5f9; padding:10px; border-radius:8px;">
                 <label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:4px; display:block;">Note generali di ricevimento e modalità di accesso:</label>
-                <textarea class="form-control" id="edit-paz-medico-orari" rows="2" placeholder="Es. Si riceve su appuntamento eccetto urgenze mediche." oninput="sincronizzaTestoVersoPlanner()"></textarea>
+                <textarea class="form-control" id="edit-paz-medico-orari" rows="2" placeholder="Es. Si riceve su appuntamento eccetto urgenze mediche. Richiesta farmaci continuativi preferibilmente via WhatsApp." oninput="sincronizzaTestoVersoPlanner()"></textarea>
               </div>
             </div>
           </div>
 
-          <!-- PANNELLO 4: AUSILI SANITARI & QUADRO CLINICO -->
-          <div class="tab-pane-anagrafica" id="pane-anagrafica-ausili">
-            <!-- SEZIONE AUSILI CON SCADENZE -->
-            <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:12px; padding:14px; margin-bottom:14px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-                <div style="font-weight:800; font-size:12.5px; color:#1e40af; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
-                  <span>🛡️</span> <span>Ausili Sanitari, Presidi & Rifornimenti</span>
-                </div>
-                <button type="button" class="btn btn-outline" style="background:#fff; color:#0284c7; border-color:#93c5fd; font-size:11.5px; font-weight:700; padding:2px 8px;" onclick="aggiungiRigaAusilioModifica()">➕ Aggiungi Altro Ausilio</button>
+          <!-- SEZIONE AUSILI SANITARI & RIFORNIMENTI CON SCADENZE -->
+          <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:12px; padding:14px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+              <div style="font-weight:800; font-size:12.5px; color:#1e40af; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+                <span>🛡️</span> <span>Ausili Sanitari, Presidi & Rifornimenti (Scelta Multipla)</span>
               </div>
-              <div id="container-catalogo-ausili-edit" style="display:flex; flex-direction:column; gap:8px;">
-                <!-- Generato dinamicamente via JS -->
-              </div>
+              <button type="button" class="btn btn-outline" style="background:#fff; color:#0284c7; border-color:#93c5fd; font-size:11.5px; font-weight:700; padding:2px 8px;" onclick="aggiungiRigaAusilioModifica()">➕ Aggiungi Altro Ausilio</button>
             </div>
-
-            <!-- OPZIONE PAZIENTE ALLETATO & NOTE CLINICHE -->
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
-              <div class="form-group" style="margin-bottom:12px;">
-                <label style="display:flex; align-items:center; gap:10px; font-weight:700; color:#0f172a; cursor:pointer;">
-                  <input type="checkbox" id="edit-paz-allettato" style="width:19px; height:19px; accent-color:#0284c7;">
-                  <span>Paziente Allettato (Attiva rotazione posturale q2h e prevenzione lesioni da decubito)</span>
-                </label>
-              </div>
-
-              <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label" style="font-weight:700;">Note Cliniche / Diagnosi</label>
-                <textarea class="form-control" id="edit-paz-note" rows="3" placeholder="Diagnosi principali, allergie e note di rilievo clinico..."></textarea>
-              </div>
+            
+            <div id="container-catalogo-ausili-edit" style="display:flex; flex-direction:column; gap:8px;">
+              <!-- Generato dinamicamente via JavaScript con checkbox, date rifornimento/scadenza e alert -->
             </div>
           </div>
 
+          <div class="form-group">
+            <label style="display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer;">
+              <input type="checkbox" id="edit-paz-allettato" style="width:18px; height:18px;">
+              Paziente Allettato (Attiva rotazione q2h e prevenzione lesioni da pressione)
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Note Cliniche / Diagnosi</label>
+            <textarea class="form-control" id="edit-paz-note" rows="2"></textarea>
+          </div>
         </div>
-
-        <!-- FOOTER MODALE RESPONSIVE AD ALTA ERGONOMIA SMARTPHONE -->
-        <div class="modal-footer modal-footer-anagrafica">
-          <div class="footer-actions-primary">
-            <button type="button" class="btn btn-outline btn-annulla-anagrafica" onclick="closeModal('modal-modifica-anagrafica')">Annulla</button>
-            <button type="submit" class="btn btn-primary btn-salva-anagrafica">💾 Salva Modifiche</button>
-          </div>
-          <button type="button" class="btn btn-outline btn-elimina-anagrafica" onclick="closeModal('modal-modifica-anagrafica'); eliminaPazienteAttivo();" title="Elimina definitivamente la cartella clinica di questo assistito">
+        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+          <button type="button" class="btn btn-outline" style="color:#dc2626; border-color:#fca5a5; background:#fef2f2;" onclick="closeModal('modal-modifica-anagrafica'); eliminaPazienteAttivo();" title="Elimina definitivamente la cartella clinica di questo assistito">
             🗑️ Elimina Cartella Assistito
           </button>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn btn-outline" onclick="closeModal('modal-modifica-anagrafica')">Annulla</button>
+            <button type="submit" class="btn btn-primary">Salva Modifiche Anagrafica</button>
+          </div>
         </div>
       </form>
     </div>
@@ -1320,58 +1281,6 @@
   <!-- MODAL 4: AGGIUNGI FARMACO -->
     <!-- MODAL: AGGIUNGI FARMACO ALLA TERAPIA CON PIANIFICAZIONE AVANZATA -->
   
-  <!-- MODAL: PROSPETTO TERAPIE TASCABILE CON QR CODE PER IL MEDICO -->
-  <div class="modal-overlay" id="modal-prospetto-tascabile">
-    <div class="modal-card" style="max-width: 640px; border-radius: 20px; box-shadow: 0 25px 60px rgba(15, 23, 42, 0.4);">
-      <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:white; padding:16px 20px;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:24px;">📋</span>
-          <div>
-            <div class="modal-title" style="color:white; font-size:16px; font-weight:800;">Prospetto Terapie Tascabile per Medico / Specialista</div>
-            <div style="font-size:11.5px; color:#93c5fd;">Pronto per la visita, stampabile in formato cartolina o tascabile</div>
-          </div>
-        </div>
-        <button type="button" class="modal-close" style="color:white; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:8px; width:32px; height:32px; cursor:pointer;" onclick="closeModal('modal-prospetto-tascabile')">✕</button>
-      </div>
-      <div class="modal-body" style="padding:18px; background:#f8fafc; max-height:75vh; overflow-y:auto;" id="tascabile-print-area">
-        <div style="background:white; border:1px solid #cbd5e1; border-radius:12px; padding:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-          <!-- HEADER SCHEDA TASCABILE -->
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #1e3a8a; padding-bottom:10px; margin-bottom:12px;">
-            <div>
-              <div style="font-size:10px; font-weight:800; color:#1e40af; text-transform:uppercase; letter-spacing:0.5px;">SCHEDA CLINICA TERAPEUTICA DOMICILIARE</div>
-              <div id="tascabile-paziente-nome" style="font-size:17px; font-weight:900; color:#0f172a;">Rosa Annunziata Cavalcante</div>
-              <div id="tascabile-paziente-info" style="font-size:11.5px; color:#475569; margin-top:2px;">Nata il 16/06/1938 (88 anni) • Medico: Dr.ssa Potenza</div>
-            </div>
-            <div style="text-align:right;">
-              <div id="tascabile-qrcode-box" style="display:inline-block; padding:3px; background:white; border:1px solid #cbd5e1; border-radius:6px;">
-                <canvas id="tascabile-qrcode-canvas" width="68" height="68"></canvas>
-              </div>
-              <div style="font-size:9.5px; color:#64748b; font-weight:700; margin-top:2px;">Scansiona Terapia</div>
-            </div>
-          </div>
-
-          <!-- LISTA TERAPIE CHIARE E COMPATTE -->
-          <div style="font-size:11px; font-weight:800; color:#334155; text-transform:uppercase; margin-bottom:6px;">Piano Terapeutico Attivo Aggiornato:</div>
-          <div id="tascabile-lista-farmaci" style="display:flex; flex-direction:column; gap:6px;">
-            <!-- generato dinamicamente -->
-          </div>
-
-          <div style="margin-top:12px; padding:8px 10px; background:#f1f5f9; border-radius:8px; font-size:10.5px; color:#475569; display:flex; justify-content:space-between;">
-            <span>Doc. generato il: <b id="tascabile-data-generazione">22/10/2026</b></span>
-            <span>Suite Sanitaria CareAssist Pro</span>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer" style="padding:12px 18px; background:#f1f5f9; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between;">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-prospetto-tascabile')">Chiudi</button>
-        <button type="button" class="btn btn-primary" onclick="stampaProspettoTascabile()" style="background:#1e40af; font-weight:800; display:inline-flex; align-items:center; gap:6px;">
-          <span>🖨️</span> Stampa Prospetto Tascabile
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: MODIFICA FARMACO ESISTENTE (VERSIONE MODERNA & VERSATILE) -->
     <!-- MODAL UNIFICATO: MASCHERA TERAPIA CAPSULA & PIANO POSOLOGICO -->
   <div class="modal-overlay" id="modal-modifica-farmaco">
     <div class="modal-card" style="max-width: 680px;">
@@ -1565,7 +1474,7 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="modal-farmaco">
+<div class="modal-overlay" id="modal-farmaco">
     <div class="modal-card" style="max-width: 680px;">
       <div class="modal-header">
         <div class="modal-title">💊 Aggiungi Farmaco & Posologia Avanzata</div>
@@ -1752,19 +1661,23 @@
             <span style="font-size:11px; background:#e0f2fe; color:#0284c7; padding:2px 6px; border-radius:4px; font-weight:700;">Porta 3000</span>
           </div>
           <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:4px;">
-            <div id="label-ip-smartphone" style="font-size:15px; font-weight:900; color:#1d4ed8; letter-spacing:0.5px; font-family:monospace; word-break:break-all;">
-              http://192.168.1.5:3000/launcher.html
+            <div id="label-smartphone-url" style="font-size:15px; font-weight:900; color:#1d4ed8; letter-spacing:0.5px; font-family:monospace; word-break:break-all;">
+              http://192.168.1.6:3000/careassist/
             </div>
-            <a id="link-browser-smartphone" href="http://192.168.1.5:3000/launcher.html" target="_blank" class="btn btn-outline" style="font-size:11.5px; padding:4px 10px; text-decoration:none; background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:700; white-space:nowrap;">
+            <a id="btn-smartphone-open-browser" href="http://192.168.1.6:3000/careassist/" target="_blank" class="btn btn-outline" style="font-size:11.5px; padding:4px 10px; text-decoration:none; background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:700; white-space:nowrap;">
               🌐 Apri nel Browser
             </a>
           </div>
         </div>
 
         <div style="font-size:12px; color:#334155; line-height:1.5; text-align:left; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px;">
-          <div style="font-weight:800; color:#15803d; margin-bottom:4px;">🚀 Connessione Attiva:</div>
-          <div>Il server è <b>attivo e in ascolto</b> sul tuo PC.</div>
-          <div style="margin-top:4px; color:#475569;">Punta la fotocamera del tuo cellulare o tablet (connesso allo stesso Wi-Fi di casa) sul QR Code in alto: ti comparirà la notifica per aprire subito CareAssist Pro sul telefono!</div>
+          <div style="font-weight:800; color:#15803d; margin-bottom:4px;">🚀 Connessione & Utilizzo Offline Domiciliare:</div>
+          <div>Inquadra il QR Code col cellulare quando sei a casa (stesso Wi-Fi o hotspot) per aprirlo la prima volta.</div>
+          <div style="margin-top:6px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:8px; color:#1e40af; font-size:11.5px;">
+            <b>📲 Come usarlo SEMPRE OFFLINE a domicilio (senza Wi-Fi):</b><br/>
+            Nel browser del tuo cellulare tocca i <b>3 puntini</b> (su Chrome/Brave) o l'icona <b>Condividi</b> (su iPhone Safari) e scegli <b>"Aggiungi a schermata Home"</b> (o <i>"Installa app"</i>).<br/>
+            Avrai l'icona di <b>CareAssist Pro</b> sul telefono come una vera app e potrai usarla e registrare farmaci e parametri a casa degli assistiti <u>anche in 4G/5G o completamente senza internet</u>!
+          </div>
         </div>
       </div>
       <div class="modal-footer" style="display:flex; justify-content:space-between;">
@@ -2701,37 +2614,20 @@
     </div>
   </div>
 
-  <!-- MODALE NOTA DI TURNO / CONSEGNA OPERATORE -->
-  <div class="modal-overlay" id="modal-nota-turno">
-    <div class="modal" style="max-width:500px; width:92%;">
-      <div class="modal-header">
-        <h3 class="modal-title">📝 Registra Nota di Turno / Consegna</h3>
-        <button class="btn-close" onclick="closeModal('modal-nota-turno')">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group" style="margin-bottom:12px;">
-          <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:5px;">Assistito Corrente:</label>
-          <input type="text" id="nota-turno-paziente-nome" readonly style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; background:#f1f5f9; font-weight:700; font-size:13.5px; box-sizing:border-box;">
-        </div>
-        <div class="form-group" style="margin-bottom:12px;">
-          <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:5px;">Nome Operatore:</label>
-          <input type="text" id="nota-turno-operatore" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13.5px; box-sizing:border-box;" placeholder="Il tuo nome (es. M.C. Stoppelli)">
-        </div>
-        <div class="form-group" style="margin-bottom:12px;">
-          <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:5px;">Note sull'Assistito / Eventi del Turno:</label>
-          <textarea id="nota-turno-testo" rows="4" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13px; box-sizing:border-box; resize:vertical;" placeholder="Es: Condizioni generali stabili, ha cenato con appetito, pressione 125/80, riposo notturno regolare..."></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeModal('modal-nota-turno')">Annulla</button>
-        <button class="btn btn-primary" onclick="salvaNotaTurno()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-weight:800;">Salva nel Diario ✅</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="/auth_token.js"></script>
   <script src="qrcode_data_uri.js"></script>
-  <script src="app.js?v=13"></script>
+  <script src="app.js"></script>
+  <script>
+    // Registrazione Service Worker per utilizzo offline al 100% da cellulare
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js').then(function(reg) {
+          console.log('CareAssist Pro Offline Service Worker registrato con successo:', reg.scope);
+        }).catch(function(err) {
+          console.warn('Avviso registrazione Service Worker:', err);
+        });
+      });
+    }
+  </script>
 
   <!-- MODAL: KIT CARTACEO UFFICIALE PAZIENTE (PERSONALIZZATO IN TEMPO REALE) -->
   <div class="modal-overlay" id="modal-kit-cartaceo" style="z-index: 10005;">
@@ -2991,39 +2887,51 @@
       </div>
 
     </div>
+  <!-- BARRA DI CONTROLLO RAPIDA SMARTPHONE (FISSA IN BASSO SUL CELLULARE) -->
+  
+  <!-- MODAL CAMBIO ASSISTITO RAPIDO DALLA BARRA STICKY -->
+  <div id="modal-switch-paziente-rapido" class="modal-overlay">
+    <div class="modal-content" style="max-width:440px; border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.25);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+        <h3 style="margin:0; font-size:17px; font-weight:800; color:#0f2744; display:flex; align-items:center; gap:8px;">
+          <span>👤</span> Seleziona Cartella Assistito
+        </h3>
+        <button type="button" class="btn-close-modal" onclick="closeModal('modal-switch-paziente-rapido')">&times;</button>
+      </div>
+      <div style="font-size:12.5px; color:#64748b; margin-bottom:12px;">
+        Tocca un assistito per passare istantaneamente alla sua cartella clinica senza dover scrollare:
+      </div>
+      <div id="lista-switch-pazienti-rapido" style="display:flex; flex-direction:column; gap:8px; max-height:60vh; overflow-y:auto; padding-right:4px;">
+        <!-- Popolato dinamicamente -->
+      </div>
+      <div style="margin-top:14px; text-align:right;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-switch-paziente-rapido')">Chiudi</button>
+      </div>
+    </div>
   </div>
 
+  <div class="mobile-bottom-bar" id="mobile-control-bar">
+    <button type="button" class="mobile-bar-btn" onclick="document.querySelector('[data-target=\'tab-dashboard\']').click()">
+      <span>📊</span>
+      <span>Diario</span>
+    </button>
+    <button type="button" class="mobile-bar-btn" onclick="document.querySelector('[data-target=\'tab-farmaci\']').click()">
+      <span>💊</span>
+      <span>Farmaci</span>
+    </button>
+    <button type="button" class="mobile-bar-btn" onclick="document.querySelector('[data-target=\'tab-glicemia\']').click()">
+      <span>🩸</span>
+      <span>Glicemie</span>
+    </button>
+    <button type="button" class="mobile-bar-btn mobile-bar-btn-save" onclick="salvaEDocumentaMobile()" title="Salva e sincronizza i dati inseriti">
+      <span>💾</span>
+      <span>Salva Dati</span>
+    </button>
+    <button type="button" class="mobile-bar-btn" onclick="toggleMenuStrumenti(event)">
+      <span>⚙️</span>
+      <span>Opzioni</span>
+    </button>
+  </div>
 
-  <!-- Universal Suite Mobile Bottom Navigation -->
-  <script src="/suite_nav.js"></script>
-
-  <!-- REGISTRAZIONE SERVICE WORKER & NOTIFICHE PUSH ANCHE AD APP CHIUSA -->
-  <script>
-    (function initPushNotifications() {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').then(reg => {
-          console.log('CareAssist Service Worker registrato:', reg.scope);
-          // Richiesta automatica o su interazione per le Notifiche di Sistema (Lock Screen / Standby)
-          if ('Notification' in window && Notification.permission === 'default') {
-            setTimeout(() => {
-              Notification.requestPermission().then(perm => {
-                if (perm === 'granted') {
-                  console.log('Permesso Notifiche di Sistema concesso!');
-                  if (reg.showNotification) {
-                    reg.showNotification('✅ Notifiche CareAssist Pro Attive', {
-                      body: 'Riceverai gli allarmi clinici e scadenze anche a schermo spento!',
-                      icon: './careassist_icon.jpg'
-                    });
-                  }
-                }
-              });
-            }, 3000);
-          }
-        }).catch(err => {
-          console.warn('Registrazione SW non riuscita (probabile HTTP locale o restrizione):', err);
-        });
-      }
-    })();
-  </script>
 </body>
 </html>

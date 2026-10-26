@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare
-const CACHE_NAME = 'careassist-pro-v23';
+const CACHE_NAME = 'careassist-pro-v24';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -55,52 +55,6 @@ self.addEventListener('fetch', (event) => {
       });
 
       return cachedResponse || fetchPromise;
-    })
-  );
-});
-
-// ==============================================================================
-// GESTIONE NOTIFICHE PUSH ANCHE CON APP CHIUSA / IN BACKGROUND
-// ==============================================================================
-self.addEventListener('push', (event) => {
-  let data = { title: '🚨 Allarme CareAssist Pro', body: 'Attenzione: controllo clinico richiesto per il paziente.', url: './' };
-  try {
-    if (event.data) {
-      data = event.data.json();
-    }
-  } catch(e) {
-    if (event.data) data.body = event.data.text();
-  }
-
-  const options = {
-    body: data.body,
-    icon: './careassist_icon.jpg',
-    badge: './careassist_icon.jpg',
-    vibrate: [200, 100, 200, 100, 200],
-    data: { url: data.url || './' },
-    actions: [
-      { action: 'open', title: 'Apri Cartella Assistito' }
-    ]
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
-});
-
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const targetUrl = event.notification.data?.url || './';
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      for (let client of windowClients) {
-        if (client.url.includes('careassist') && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow(targetUrl);
-      }
     })
   );
 });
