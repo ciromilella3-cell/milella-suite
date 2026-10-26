@@ -2310,3 +2310,221 @@ select[id^="select-medico-farmacia-preset"] {
     opacity: 0.9 !important;
   }
 }
+
+
+/* ==========================================================================
+   MASCHERA TERAPIA CAPSULA & POSOLOGIA REATTIVA
+   ========================================================================== */
+.capsula-freq-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.btn-freq-pill {
+  flex: 1 1 calc(25% - 8px);
+  min-width: 120px;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.btn-freq-pill:hover {
+  border-color: #3b82f6;
+  background: #f0f9ff;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.btn-freq-pill.active {
+  background: linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%) !important;
+  border-color: #1e40af !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.28) !important;
+}
+
+.box-dosi-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.dose-card-item {
+  background: #ffffff;
+  border: 1.5px solid #bae6fd;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.dose-card-item:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.12);
+}
+
+.dose-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.dose-card-badge {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0369a1;
+  background: #e0f2fe;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid #bae6fd;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-remove-dose-card {
+  background: #fff;
+  border: 1.5px solid #fca5a5;
+  color: #dc2626;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-dose-card:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+.quota-pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.quota-pill {
+  flex: 1 1 calc(50% - 6px);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.quota-pill:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.quota-pill.active {
+  font-weight: 800 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+.quota-pill.active[data-quota="0.5"] {
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+  border-color: #f59e0b !important;
+}
+
+.quota-pill.active[data-quota="1"] {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #10b981 !important;
+}
+
+.quota-pill.active[data-quota="1.5"] {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  border-color: #0284c7 !important;
+}
+
+.quota-pill.active[data-quota="2"] {
+  background: #e0e7ff !important;
+  color: #3730a3 !important;
+  border-color: #6366f1 !important;
+}
+
+.capsula-summary-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%);
+  border: 1.5px solid #86efac;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+}
+
+.capsula-summary-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #166534;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.capsula-summary-desc {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.45;
+}
+
+.capsula-summary-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(22, 101, 52, 0.25);
+  font-size: 12px;
+}
+
+.badge-quota-cell {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  margin-top: 3px;
+}

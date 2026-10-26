@@ -3256,7 +3256,22 @@ function renderTerapie() {
             ${t.principio ? `<br><small style="color:#64748b;">Principio: ${t.principio}</small>` : ''}
           </div>
         </td>
-        <td><b>${t.dosaggio}</b></td>
+        <td>
+          <b>${t.dosaggio}</b>
+          ${(() => {
+            const q = parseFloat(t.quantitaQuota);
+            if (q === 0.5 || (t.dosaggio && t.dosaggio.includes('½')) || (t.farmaco && t.farmaco.includes('½ cpr'))) {
+              return '<br><span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; border:1px solid #f59e0b; font-size:11px; margin-top:3px; display:inline-block;">🌓 PRENDI: ½ DOSE (Mezza cpr)</span>';
+            } else if (q === 1 || (t.dosaggio && t.dosaggio.includes('1 cpr'))) {
+              return '<br><span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; border:1px solid #86efac; font-size:11px; margin-top:3px; display:inline-block;">🌕 PRENDI: 1 DOSE INTERA (1 cpr)</span>';
+            } else if (q === 1.5) {
+              return '<br><span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1px solid #7dd3fc; font-size:11px; margin-top:3px; display:inline-block;">💊🌓 PRENDI: 1½ DOSE (1,5 cpr)</span>';
+            } else if (q === 2) {
+              return '<br><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:800; border:1px solid #818cf8; font-size:11px; margin-top:3px; display:inline-block;">💊💊 PRENDI: 2 COMPRESSE</span>';
+            }
+            return '';
+          })()}
+        </td>
         <td>
           ${(() => {
             const isSinemet = (t.farmaco || '').toUpperCase().includes('SINEMET');
@@ -4734,6 +4749,7 @@ async function eliminaVisita(id) {
 
 // Gestione Modali
 function openModal(id) {
+  if (id === 'modal-farmaco') return apriMascheraNuovoFarmaco();
   const el = document.getElementById(id);
   if (el) {
     el.classList.add('active');
@@ -5253,224 +5269,156 @@ function apriModificaFarmaco(farmacoId) {
   var t = p.terapie.find(function(item) { return item.id === farmacoId; });
   if (!t) return;
 
-  var elPaziente = document.getElementById('edit-farm-header-paziente');
-  var elFarmaco = document.getElementById('edit-farm-header-nome');
-  if (elPaziente) elPaziente.textContent = (p.nome || 'Paziente').replace(/\s*\(\d+\s*anni\)/gi, '');
   var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
-  if (elFarmaco) elFarmaco.textContent = cleanNome || 'Farmaco';
+
+  var titleEl = document.getElementById('edit-farm-modal-title');
+  if (titleEl) titleEl.innerHTML = '✏️ Scheda Capsula: <span id="edit-farm-header-nome" style="color:#fef08a;">' + (cleanNome || 'Farmaco') + '</span>';
+
+  var elPaziente = document.getElementById('edit-farm-header-paziente');
+  if (elPaziente) elPaziente.textContent = (p.nome || 'Paziente').replace(/\s*\(\d+\s*anni\)/gi, '');
 
   document.getElementById('edit-farm-id').value = t.id;
-  document.getElementById('edit-farm-ora').value = t.ora || '08:00';
-    document.getElementById('edit-farm-fascia').value = t.fascia || 'Mattina (Colazione)';
-  var elCad = document.getElementById('edit-farm-cadenza');
-  if (elCad) {
-    if (t.cadenzaTipo) {
-      elCad.value = t.cadenzaTipo;
-    } else if ((t.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0 || (t.modo || '').indexOf('15') >= 0) {
-      elCad.value = 'quindicinale_15_30';
-    } else {
-      elCad.value = 'giornaliera';
-    }
-  }
   document.getElementById('edit-farm-nome').value = cleanNome;
-  var elOraInp = document.getElementById('edit-farm-ora');
-  if (elOraInp) elOraInp.oninput = aggiornaFasciaModificaDaOrario;
   document.getElementById('edit-farm-principio').value = t.principio || '';
-  document.getElementById('edit-farm-dosaggio').value = t.dosaggio || '';
-  var elQuota = document.getElementById('edit-farm-frazione-quota');
-  if (elQuota) elQuota.value = t.quantitaQuota || (t.cadenzaTipo === 'alternata_mezza_intera' ? '0.5' : '1');
-  var elMotivoMod = document.getElementById('edit-farm-motivo-modifica');
-  if (elMotivoMod) elMotivoMod.value = t.ultimaModificaClinica ? (t.ultimaModificaClinica.motivo || '') : '';
-  var elMedNome = document.getElementById('edit-farm-medico-nome');
-  if (elMedNome) elMedNome.value = t.ultimaModificaClinica ? (t.ultimaModificaClinica.medico || '') : (p.medicoNome || '');
+  
+  // Ripulisci il dosaggio base (senza "(½ cpr)" o simili)
+  var cleanDosaggio = (t.dosaggio || '').replace(/\s*\([^)]*\)/gi, '').trim();
+  document.getElementById('edit-farm-dosaggio').value = cleanDosaggio || t.dosaggio || '1 cpr';
+  
+  document.getElementById('edit-farm-modo').value = t.modo || '';
   document.getElementById('edit-farm-cpr-scatola').value = t.cprPerScatola || 28;
   document.getElementById('edit-farm-scorta').value = typeof t.scorta !== 'undefined' ? t.scorta : 28;
-  var elGiorniAlert = document.getElementById('edit-farm-giorni-alert');
-  if (elGiorniAlert) elGiorniAlert.value = Math.min(30, Math.max(1, parseInt(t.giorniAlert) || 7));
-  document.getElementById('edit-farm-modo').value = t.modo || '';
+  document.getElementById('edit-farm-giorni-alert').value = t.giorniAlert || 7;
+  
+  var elCad = document.getElementById('edit-farm-cadenza');
+  if (elCad) elCad.value = t.cadenzaTipo || 'giornaliera';
 
-  // Pulisci contenitore dosi extra
-  var containerDosiExtra = document.getElementById('edit-farm-dosi-extra-list');
-  if (containerDosiExtra) containerDosiExtra.innerHTML = '';
-  _dosiExtraCounter = 0;
-
-  // Cerca se esistono già altre dosi dello stesso farmaco registrate (es. VIMPAT dose 2, 3...)
+  // Cerca tutte le dosi esistenti di questo farmaco
   var nomeBase = cleanNome.toLowerCase();
-  var altreDosi = p.terapie.filter(function(item) {
-    if (item.id === t.id) return false;
+  var tutteDosi = p.terapie.filter(function(item) {
     var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
     return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
   });
 
-  var totDosi = 1 + (altreDosi ? altreDosi.length : 0);
-  var elNumDosi = document.getElementById('edit-farm-num-dosi');
-  var elInterv = document.getElementById('edit-farm-intervallo-tipo');
-  if (elNumDosi) elNumDosi.value = Math.min(4, Math.max(1, totDosi));
+  if (tutteDosi.length === 0) tutteDosi = [t];
 
-  if (altreDosi && altreDosi.length > 0) {
-    altreDosi.forEach(function(doseColl) {
-      aggiungiNuovaDoseModifica(doseColl.ora, doseColl.fascia, doseColl.dosaggio);
-    });
-  }
-  aggiornaMessaggioDosiExtra();
+  // Ordina cronologicamente
+  tutteDosi.sort(comparaOrariTerapie);
 
-  // Ricalcola subito previsione scorte e simulatore cadenza per il farmaco aperto
-  if (typeof ricalcolaAutonomiaScorteModifica === 'function') ricalcolaAutonomiaScorteModifica();
-  if (typeof ricalcolaSimulatoreCadenzaOggi === 'function') ricalcolaSimulatoreCadenzaOggi();
-
-  // Aggancia ascoltatori per calcolo in tempo reale durante la digitazione
-  var elScortaInput = document.getElementById('edit-farm-scorta');
-  var elQuotaInput = document.getElementById('edit-farm-frazione-quota');
-  var elCadInput = document.getElementById('edit-farm-cadenza');
-  var elAlertInput = document.getElementById('edit-farm-giorni-alert');
-  if (elScortaInput) elScortaInput.oninput = ricalcolaAutonomiaScorteModifica;
-  if (elAlertInput) elAlertInput.oninput = ricalcolaAutonomiaScorteModifica;
-  if (elQuotaInput) {
-    elQuotaInput.onchange = function() {
-      ricalcolaAutonomiaScorteModifica();
-      ricalcolaSimulatoreCadenzaOggi();
+  _capsulaCurrentDosi = tutteDosi.map(function(item) {
+    var q = parseFloat(item.quantitaQuota);
+    if (isNaN(q) || q <= 0) {
+      if ((item.dosaggio || '').indexOf('½') >= 0 || (item.farmaco || '').indexOf('½') >= 0) q = 0.5;
+      else q = 1.0;
+    }
+    return {
+      ora: item.ora || '08:00',
+      fascia: item.fascia || deduciFasciaDaOrario(item.ora || '08:00'),
+      quota: q
     };
-  }
-  if (elCadInput) {
-    elCadInput.onchange = function() {
-      ricalcolaAutonomiaScorteModifica();
-      ricalcolaSimulatoreCadenzaOggi();
-    };
-  }
+  });
+
+  // Aggiorna pulsante frequenza
+  var freqCount = _capsulaCurrentDosi.length;
+  var buttons = document.querySelectorAll('.capsula-freq-selector .btn-freq-pill');
+  buttons.forEach(function(b) {
+    if (parseInt(b.getAttribute('data-freq')) === freqCount) {
+      b.classList.add('active');
+    } else {
+      b.classList.remove('active');
+    }
+  });
+
+  renderDosiCards();
+  ricalcolaRiepilogoCapsula();
 
   openModal('modal-modifica-farmaco');
 }
 
 function salvaModificaFarmaco(e) {
-  e.preventDefault();
+  if (e && e.preventDefault) e.preventDefault();
   var p = getActivePaziente();
   if (!p || !p.terapie) return;
 
-  var farmId = parseInt(document.getElementById('edit-farm-id').value);
-  var t = p.terapie.find(function(item) { return item.id === farmId; });
-  if (!t) return;
-
   var rawNome = document.getElementById('edit-farm-nome').value.trim();
-  var nome = rawNome.replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
+  var cleanNome = rawNome.replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
+  if (!cleanNome) {
+    showToast('Inserisci il nome del farmaco.');
+    return;
+  }
+
   var principio = document.getElementById('edit-farm-principio').value.trim();
-  var dosaggio = document.getElementById('edit-farm-dosaggio').value.trim();
+  var dosaggioBase = document.getElementById('edit-farm-dosaggio').value.trim() || '1 cpr';
   var cprPerScatola = parseInt(document.getElementById('edit-farm-cpr-scatola').value) || 28;
   var scorta = parseInt(document.getElementById('edit-farm-scorta').value) || 0;
-  var modo = document.getElementById('edit-farm-modo').value.trim();
+  var giorniAlert = parseInt(document.getElementById('edit-farm-giorni-alert').value) || 7;
+  var modoBase = document.getElementById('edit-farm-modo').value.trim();
+  var cadenza = document.getElementById('edit-farm-cadenza') ? document.getElementById('edit-farm-cadenza').value : 'giornaliera';
 
-  // 1. Aggiorna la 1ª dose principale
-  t.ora = document.getElementById('edit-farm-ora').value;
-  t.fascia = document.getElementById('edit-farm-fascia').value;
-  t.farmaco = nome;
-  t.principio = principio;
-  t.dosaggio = dosaggio;
-  t.cprPerScatola = cprPerScatola;
-  t.scorta = scorta;
-  var elEditGiorniAlert = document.getElementById('edit-farm-giorni-alert');
-  if (elEditGiorniAlert) {
-    t.giorniAlert = Math.min(30, Math.max(1, parseInt(elEditGiorniAlert.value) || 7));
-  }
-  var elCadSave = document.getElementById('edit-farm-cadenza');
-  if (elCadSave) {
-    t.cadenzaTipo = elCadSave.value;
-    if (elCadSave.value === 'quindicinale_15_30') {
-      if (modo.indexOf('15 e 30 del mese') < 0) {
-        modo = modo + ' [Assunzione ogni 15 giorni: il 15 e il 30 del mese]';
-      }
-    } else if (elCadSave.value === 'alternata_mezza_intera') {
-      if (modo.indexOf('Dose alternata') < 0) {
-        modo = modo + ' [Schema alternato: ½ cpr un giorno e 1 cpr il giorno successivo]';
-      }
-    }
-  }
-
-  var elQuotaSave = document.getElementById('edit-farm-frazione-quota');
-  if (elQuotaSave) {
-    t.quantitaQuota = parseFloat(elQuotaSave.value) || 1;
-  }
-
-  // Registrazione fonte clinica variazione
   var fonteTipoEl = document.getElementById('edit-farm-fonte-tipo');
   var medNomeEl = document.getElementById('edit-farm-medico-nome');
   var motivoModEl = document.getElementById('edit-farm-motivo-modifica');
 
-  var fonteTipo = fonteTipoEl ? fonteTipoEl.value : 'medico_famiglia';
-  var fonteNome = fonteTipo === 'visita_specialistica' ? 'Visita Specialistica' : (fonteTipo === 'dimissione_ospedaliera' ? 'Dimissione Ospedaliera' : (fonteTipo === 'caregiver' ? 'Caregiver/Famiglia' : 'Medico di Base (MMG)'));
+  var fonteNome = (fonteTipoEl && fonteTipoEl.value === 'visita_specialistica') ? 'Visita Specialistica' : 'Medico di Base (MMG)';
   var nomeDoc = medNomeEl ? medNomeEl.value.trim() : '';
-  var motivoMod = motivoModEl ? motivoModEl.value.trim() : '';
+  var motivoMod = motivoModEl ? motivoModEl.value.trim() : 'Aggiornamento schema posologico capsula';
   var oggiStr = new Date().toLocaleDateString('it-IT');
 
-  t.ultimaModificaClinica = {
+  var ultimaMod = {
     data: oggiStr,
     fonte: fonteNome,
     medico: nomeDoc,
-    motivo: motivoMod || 'Variazione posologia / orario'
+    motivo: motivoMod
   };
 
-  // Registra nello storico clinico del paziente
-  if (!p.registrazioni) p.registrazioni = [];
-  p.registrazioni.push({
-    id: 'log_mod_' + Date.now(),
-    tipo: 'variazione_clinica',
-    farmacoId: t.id,
-    farmaco: t.farmaco,
-    dosaggio: t.dosaggio,
-    orario: t.ora,
-    timestamp: new Date().toISOString(),
-    azione: 'modifica_terapia',
-    fonte: fonteNome,
-    medico: nomeDoc,
-    desc: 'Variazione Terapia disposta da ' + fonteNome + (nomeDoc ? ' (' + nomeDoc + ')' : '') + ': ' + (motivoMod || 'Aggiornamento orario/posologia.') + ' (Orario: ' + t.ora + ', Cadenza: ' + (t.cadenzaTipo || 'quotidiana') + ', Dose: ' + (t.quantitaQuota || 1) + ' cpr).',
-    operatore: localStorage.getItem('milella_user_nome') || 'Amministratore'
-  });
-
-  t.modo = modo;
-
-  // 2. Rimuovi eventuali vecchie dosi collegate dello stesso farmaco per ricrearle coerentemente
-  var nomeBase = nome.toLowerCase();
+  // 1. Rimuovi tutte le dosi preesistenti dello stesso farmaco per ricrearle coerentemente
+  var nomeBase = cleanNome.toLowerCase();
   p.terapie = p.terapie.filter(function(item) {
-    if (item.id === t.id) return true;
     var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
     var isColl = n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
     return !isColl;
   });
 
-  // 3. Raccogli e inserisci le dosi extra aggiunte (fino a 4 dosi totali)
-  var extraRows = document.querySelectorAll('#edit-farm-dosi-extra-list .form-row');
-  var doseProgressivo = 2;
-  if (extraRows && extraRows.length > 0) {
-    // Rinomina la dose 1 con suffisso per chiarezza
-    t.farmaco = nome + ' (1ª dose - ore ' + t.ora + ')';
+  // 2. Leggi le card dal form
+  var cardElements = document.querySelectorAll('#box-dosi-cards-container .dose-card-item');
+  var totalDosi = cardElements.length;
 
-    extraRows.forEach(function(row) {
-      var oraExtra = row.querySelector('.edit-extra-ora').value || '13:30';
-      var fasciaExtra = row.querySelector('.edit-extra-fascia').value || deduciFasciaDaOrario(oraExtra);
-      var qtaExtra = row.querySelector('.edit-extra-qta').value || dosaggio;
+  cardElements.forEach(function(card, idx) {
+    var oraVal = card.querySelector('.dose-card-ora').value || '08:00';
+    var fasciaVal = card.querySelector('.dose-card-fascia').value || deduciFasciaDaOrario(oraVal);
+    var quotaVal = parseFloat(card.querySelector('.dose-card-quota-val').value) || 1.0;
 
-      p.terapie.push({
-        id: Date.now() + doseProgressivo * 137,
-        ora: oraExtra,
-        fascia: fasciaExtra,
-        farmaco: nome + ' (' + doseProgressivo + 'ª dose - ore ' + oraExtra + ')',
-        principio: principio,
-        dosaggio: qtaExtra,
-        modo: modo,
-        cprPerScatola: cprPerScatola,
-        scorta: scorta,
-        fattoOggi: false
-      });
-      doseProgressivo++;
+    var quotaLabel = (quotaVal === 0.5) ? '½ cpr' : (quotaVal === 1 ? '1 cpr' : (quotaVal === 1.5 ? '1½ cpr' : quotaVal + ' cpr'));
+
+    var farmacoNomeFinal = cleanNome;
+    if (totalDosi > 1) {
+      farmacoNomeFinal = cleanNome + ' (' + (idx + 1) + 'ª dose: ' + quotaLabel + ' - ore ' + oraVal + ')';
+    }
+
+    p.terapie.push({
+      id: Date.now() + idx * 311,
+      ora: oraVal,
+      fascia: fasciaVal,
+      farmaco: farmacoNomeFinal,
+      principio: principio,
+      dosaggio: dosaggioBase + ' (' + quotaLabel + ')',
+      quantitaQuota: quotaVal,
+      modo: modoBase,
+      cprPerScatola: cprPerScatola,
+      scorta: scorta,
+      giorniAlert: giorniAlert,
+      cadenzaTipo: cadenza,
+      fattoOggi: false,
+      ultimaModificaClinica: ultimaMod
     });
-  } else {
-    t.farmaco = nome;
-  }
+  });
 
-  // Riordina cronologicamente le terapie del paziente
+  // 3. Ordina cronologicamente le terapie secondo il ciclo clinico
   p.terapie.sort(comparaOrariTerapie);
 
   closeModal('modal-modifica-farmaco');
   saveDb();
-  showToast('Terapia per "' + nome + '" aggiornata con successo con tutte le dosi programmate! ⏰');
+  showToast('Terapia per "' + cleanNome + '" salvata con successo con ' + totalDosi + ' somministrazioni! 💊');
 }
 
 
@@ -7896,4 +7844,262 @@ function chiudiCardBuongiorno() {
     card.style.display = 'none';
     showToast('Card ridotta. Buona giornata!');
   }
+}
+
+
+// ============================================================================
+// MASCHERA CAPSULA & PIANO POSOLOGICO REATTIVO
+// ============================================================================
+var _capsulaCurrentDosi = [];
+
+function selezionaFrequenzaCapsula(freq) {
+  var buttons = document.querySelectorAll('.capsula-freq-selector .btn-freq-pill');
+  buttons.forEach(function(b) {
+    if (b.getAttribute('data-freq') == freq) {
+      b.classList.add('active');
+    } else {
+      b.classList.remove('active');
+    }
+  });
+
+  var dosi = [];
+  if (freq === 1) {
+    dosi = [
+      { ora: '08:00', fascia: 'Mattina (Colazione)', quota: 1.0 }
+    ];
+  } else if (freq === 2) {
+    // Esempio preferenziale clinico: 1/2 dose la mattina (08:00) e 1 dose la sera (20:00)
+    dosi = [
+      { ora: '08:00', fascia: 'Mattina (Colazione)', quota: 0.5 },
+      { ora: '20:00', fascia: 'Sera (Cena)', quota: 1.0 }
+    ];
+  } else if (freq === 3) {
+    dosi = [
+      { ora: '08:00', fascia: 'Mattina (Colazione)', quota: 1.0 },
+      { ora: '13:00', fascia: 'Pranzo', quota: 1.0 },
+      { ora: '20:00', fascia: 'Sera (Cena)', quota: 1.0 }
+    ];
+  } else if (freq === 4) {
+    dosi = [
+      { ora: '08:00', fascia: 'Mattina (Colazione)', quota: 1.0 },
+      { ora: '13:00', fascia: 'Pranzo', quota: 1.0 },
+      { ora: '17:00', fascia: 'Pomeriggio', quota: 1.0 },
+      { ora: '21:30', fascia: 'Notte (Prima di dormire)', quota: 1.0 }
+    ];
+  } else if (freq === 'bisogno') {
+    dosi = [
+      { ora: 'Al Bisogno', fascia: 'Al Bisogno (SOS)', quota: 1.0 }
+    ];
+  }
+
+  _capsulaCurrentDosi = dosi;
+  renderDosiCards();
+  ricalcolaRiepilogoCapsula();
+}
+
+function renderDosiCards() {
+  var container = document.getElementById('box-dosi-cards-container');
+  if (!container) return;
+
+  var html = '';
+  _capsulaCurrentDosi.forEach(function(d, idx) {
+    var doseNum = idx + 1;
+    var isBisogno = (d.ora === 'Al Bisogno' || (d.fascia && d.fascia.indexOf('Bisogno') >= 0));
+    var quotaVal = typeof d.quota !== 'undefined' ? d.quota : 1.0;
+
+    html += '<div class="dose-card-item" id="dose-card-' + idx + '">' +
+      '<div class="dose-card-header">' +
+        '<span class="dose-card-badge">' +
+          '<span>💊</span> <b>' + doseNum + 'ª Somministrazione</b>' +
+        '</span>' +
+        (_capsulaCurrentDosi.length > 1 ? '<button type="button" class="btn-remove-dose-card" onclick="rimuoviDoseCard(' + idx + ')" title="Rimuovi questa dose">✕</button>' : '') +
+      '</div>' +
+      '<div class="form-row" style="margin-bottom:8px;">' +
+        '<div class="form-group" style="flex:1; margin-bottom:0;">' +
+          '<label style="font-size:11px; font-weight:800; color:#1e3a8a; margin-bottom:2px; display:block;">⏰ Orario</label>' +
+          (isBisogno ? 
+            '<input type="text" class="form-control dose-card-ora" value="Al Bisogno" readonly style="font-weight:800; font-size:13.5px; color:#b45309; background:#fffbeb;">' :
+            '<input type="time" class="form-control dose-card-ora" value="' + (d.ora || '08:00') + '" oninput="onDoseCardOraChanged(' + idx + ', this.value)" style="font-weight:800; font-size:14px; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd;">'
+          ) +
+        '</div>' +
+        '<div class="form-group" style="flex:1.4; margin-bottom:0;">' +
+          '<label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">🍽️ Fascia della Giornata</label>' +
+          '<select class="form-control dose-card-fascia" onchange="onDoseCardFasciaChanged(' + idx + ', this.value)" style="font-weight:600; font-size:12.5px;">' +
+            '<option value="Mattina (Digiuno)"' + (d.fascia && d.fascia.indexOf('Digiuno') >= 0 ? ' selected' : '') + '>Mattina (A Digiuno)</option>' +
+            '<option value="Mattina (Colazione)"' + (!d.fascia || d.fascia.indexOf('Colazione') >= 0 ? ' selected' : '') + '>Mattina (A Colazione)</option>' +
+            '<option value="Pranzo"' + (d.fascia && d.fascia.indexOf('Pranzo') >= 0 ? ' selected' : '') + '>Pranzo</option>' +
+            '<option value="Pomeriggio"' + (d.fascia && d.fascia.indexOf('Pomeriggio') >= 0 ? ' selected' : '') + '>Pomeriggio</option>' +
+            '<option value="Sera (Cena)"' + (d.fascia && d.fascia.indexOf('Cena') >= 0 ? ' selected' : '') + '>Sera (A Cena)</option>' +
+            '<option value="Notte (Prima di dormire)"' + (d.fascia && d.fascia.indexOf('Notte') >= 0 ? ' selected' : '') + '>Notte (Prima di dormire)</option>' +
+            '<option value="Al Bisogno (SOS)"' + (isBisogno ? ' selected' : '') + '>Al Bisogno (SOS)</option>' +
+          '</select>' +
+        '</div>' +
+      '</div>' +
+      '<div>' +
+        '<label style="font-size:11px; font-weight:800; color:#0f172a; margin-bottom:4px; display:block;">' +
+          '💊 Assunzione / Quota per questo orario:' +
+        '</label>' +
+        '<div class="quota-pill-group">' +
+          '<button type="button" class="quota-pill' + (quotaVal === 0.5 ? ' active' : '') + '" data-quota="0.5" onclick="setDoseCardQuota(' + idx + ', 0.5)">' +
+            '🌓 ½ dose (Mezza cpr)' +
+          '</button>' +
+          '<button type="button" class="quota-pill' + (quotaVal === 1 ? ' active' : '') + '" data-quota="1" onclick="setDoseCardQuota(' + idx + ', 1)">' +
+            '🌕 1 dose intera (1 cpr)' +
+          '</button>' +
+          '<button type="button" class="quota-pill' + (quotaVal === 1.5 ? ' active' : '') + '" data-quota="1.5" onclick="setDoseCardQuota(' + idx + ', 1.5)">' +
+            '💊🌓 1½ dose (1,5 cpr)' +
+          '</button>' +
+          '<button type="button" class="quota-pill' + (quotaVal === 2 ? ' active' : '') + '" data-quota="2" onclick="setDoseCardQuota(' + idx + ', 2)">' +
+            '💊💊 2 compresse (2 cpr)' +
+          '</button>' +
+        '</div>' +
+        '<input type="hidden" class="dose-card-quota-val" value="' + quotaVal + '">' +
+      '</div>' +
+    '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function setDoseCardQuota(cardIdx, quotaVal) {
+  if (!_capsulaCurrentDosi[cardIdx]) return;
+  _capsulaCurrentDosi[cardIdx].quota = parseFloat(quotaVal) || 1.0;
+  
+  var card = document.getElementById('dose-card-' + cardIdx);
+  if (card) {
+    var hidden = card.querySelector('.dose-card-quota-val');
+    if (hidden) hidden.value = quotaVal;
+    var pills = card.querySelectorAll('.quota-pill');
+    pills.forEach(function(p) {
+      if (parseFloat(p.getAttribute('data-quota')) === quotaVal) {
+        p.classList.add('active');
+      } else {
+        p.classList.remove('active');
+      }
+    });
+  }
+  ricalcolaRiepilogoCapsula();
+}
+
+function onDoseCardOraChanged(cardIdx, oraVal) {
+  if (!_capsulaCurrentDosi[cardIdx]) return;
+  _capsulaCurrentDosi[cardIdx].ora = oraVal;
+  var card = document.getElementById('dose-card-' + cardIdx);
+  if (card) {
+    var sel = card.querySelector('.dose-card-fascia');
+    if (sel && oraVal) {
+      var f = deduciFasciaDaOrario(oraVal);
+      sel.value = f;
+      _capsulaCurrentDosi[cardIdx].fascia = f;
+    }
+  }
+  ricalcolaRiepilogoCapsula();
+}
+
+function onDoseCardFasciaChanged(cardIdx, fasciaVal) {
+  if (!_capsulaCurrentDosi[cardIdx]) return;
+  _capsulaCurrentDosi[cardIdx].fascia = fasciaVal;
+  ricalcolaRiepilogoCapsula();
+}
+
+function aggiungiDoseCardManuale() {
+  var last = _capsulaCurrentDosi[_capsulaCurrentDosi.length - 1];
+  var nextOra = '13:00';
+  if (last && last.ora && last.ora.indexOf(':') >= 0) {
+    nextOra = calcolaOrarioSuccessivo(last.ora, 5);
+  }
+  var nextFascia = deduciFasciaDaOrario(nextOra);
+  _capsulaCurrentDosi.push({
+    ora: nextOra,
+    fascia: nextFascia,
+    quota: 1.0
+  });
+  renderDosiCards();
+  ricalcolaRiepilogoCapsula();
+}
+
+function rimuoviDoseCard(cardIdx) {
+  if (_capsulaCurrentDosi.length <= 1) {
+    showToast('Almeno una somministrazione deve rimanere programmata.');
+    return;
+  }
+  _capsulaCurrentDosi.splice(cardIdx, 1);
+  renderDosiCards();
+  ricalcolaRiepilogoCapsula();
+}
+
+function ricalcolaRiepilogoCapsula() {
+  var box = document.getElementById('box-capsula-riepilogo');
+  if (!box) return;
+
+  var totCprDie = 0;
+  var descParti = [];
+
+  _capsulaCurrentDosi.forEach(function(d, i) {
+    var q = typeof d.quota !== 'undefined' ? d.quota : 1.0;
+    totCprDie += q;
+    var qStr = (q === 0.5) ? '½ cpr' : (q === 1 ? '1 cpr' : (q === 1.5 ? '1½ cpr' : q + ' cpr'));
+    descParti.push((i + 1) + 'ª dose (' + qStr + ' alle ' + d.ora + ')');
+  });
+
+  var scorta = parseInt(document.getElementById('edit-farm-scorta') ? document.getElementById('edit-farm-scorta').value : 0) || 0;
+  var cprScatola = parseInt(document.getElementById('edit-farm-cpr-scatola') ? document.getElementById('edit-farm-cpr-scatola').value : 28) || 28;
+
+  var giorniAutonomia = 0;
+  var dataScadenzaStr = 'Esaurito';
+  if (totCprDie > 0 && scorta > 0) {
+    giorniAutonomia = Math.floor(scorta / totCprDie);
+    var dFine = new Date();
+    dFine.setDate(dFine.getDate() + giorniAutonomia);
+    dataScadenzaStr = dFine.toLocaleDateString('it-IT');
+  }
+
+  box.innerHTML = 
+    '<div class="capsula-summary-title">' +
+      '<span>📊</span> Piano Terapeutico: ' + _capsulaCurrentDosi.length + ' Somministrazion' + (_capsulaCurrentDosi.length > 1 ? 'i' : 'e') + ' al giorno' +
+    '</div>' +
+    '<div class="capsula-summary-desc">' +
+      descParti.join(' + ') +
+    '</div>' +
+    '<div class="capsula-summary-metrics">' +
+      '<div><b>⚖️ Consumo Giornaliero:</b> <span style="color:#166534; font-weight:800;">' + totCprDie + ' cpr / die</span></div>' +
+      '<div><b>📦 Scorte Attuali:</b> <span style="color:#0f172a; font-weight:800;">' + scorta + ' compresse</span></div>' +
+      '<div><b>⏳ Autonomia Stimata:</b> <span style="color:#1d4ed8; font-weight:800;">~' + giorniAutonomia + ' giorni (fino al ' + dataScadenzaStr + ')</span></div>' +
+    '</div>';
+}
+
+function applicaModoRapido(testo) {
+  var el = document.getElementById('edit-farm-modo');
+  if (el) {
+    el.value = testo;
+    el.focus();
+  }
+}
+
+function apriMascheraNuovoFarmaco() {
+  var p = getActivePaziente();
+  if (!p) return;
+
+  var titleEl = document.getElementById('edit-farm-modal-title');
+  if (titleEl) titleEl.innerHTML = '💊 Nuova Capsula / Farmaco & Piano Posologico';
+
+  var elPaziente = document.getElementById('edit-farm-header-paziente');
+  if (elPaziente) elPaziente.textContent = (p.nome || 'Paziente').replace(/\s*\(\d+\s*anni\)/gi, '');
+
+  var elHeaderNome = document.getElementById('edit-farm-header-nome');
+  if (elHeaderNome) elHeaderNome.textContent = 'Nuovo Farmaco';
+
+  document.getElementById('edit-farm-id').value = '';
+  document.getElementById('edit-farm-nome').value = '';
+  document.getElementById('edit-farm-principio').value = '';
+  document.getElementById('edit-farm-dosaggio').value = '1 cpr';
+  document.getElementById('edit-farm-modo').value = '30 min prima dei pasti con acqua';
+  document.getElementById('edit-farm-cpr-scatola').value = '28';
+  document.getElementById('edit-farm-scorta').value = '28';
+  document.getElementById('edit-farm-giorni-alert').value = '7';
+
+  // Default: 1 dose al giorno alle 08:00
+  selezionaFrequenzaCapsula(1);
+
+  openModal('modal-modifica-farmaco');
 }
