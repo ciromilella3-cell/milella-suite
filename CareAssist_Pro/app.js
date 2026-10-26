@@ -4884,6 +4884,7 @@ function openModal(id) {
     if (id === 'modal-nuovo-paziente') {
       renderCatalogoAusiliForm('container-catalogo-ausili-nuovo', []);
     }
+    document.body.classList.add('modal-open');
   }
 }
 
@@ -4893,6 +4894,12 @@ function closeModal(id) {
     el.classList.remove('active');
     el.style.display = 'none';
   }
+  setTimeout(function() {
+    const anyActive = document.querySelector('.modal-overlay.active, .modal-overlay[style*="display: flex"]');
+    if (!anyActive) {
+      document.body.classList.remove('modal-open');
+    }
+  }, 40);
 }
 
 // Salvataggi dai Form Modali
@@ -8509,6 +8516,7 @@ function apriModalScheda118() {
     if (modalEl) {
       modalEl.classList.add('active');
       modalEl.style.display = 'flex';
+      document.body.classList.add('modal-open');
     }
   } catch(err) {
     console.error('Errore apriModalScheda118:', err);
@@ -8516,6 +8524,7 @@ function apriModalScheda118() {
     if (modalEl) {
       modalEl.classList.add('active');
       modalEl.style.display = 'flex';
+      document.body.classList.add('modal-open');
     }
   }
 }
@@ -8591,6 +8600,7 @@ _Aggiornamento inviato con il sistema CareAssist Pro C. Milella_`;
     if (modalEl) {
       modalEl.classList.add('active');
       modalEl.style.display = 'flex';
+      document.body.classList.add('modal-open');
     }
   } catch(err) {
     console.error('Errore apriModalReportWhatsApp:', err);
@@ -8598,6 +8608,7 @@ _Aggiornamento inviato con il sistema CareAssist Pro C. Milella_`;
     if (modalEl) {
       modalEl.classList.add('active');
       modalEl.style.display = 'flex';
+      document.body.classList.add('modal-open');
     }
   }
 }

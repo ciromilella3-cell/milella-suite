@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=31">
+  <link rel="stylesheet" href="style.css?v=33">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -70,7 +70,8 @@
       if (m) {
         m.classList.add('active');
         m.style.setProperty('display', 'flex', 'important');
-        m.style.setProperty('z-index', '10008', 'important');
+        m.style.removeProperty('z-index');
+        document.body.classList.add('modal-open');
       }
     }
 
@@ -114,12 +115,28 @@
       if (m) {
         m.classList.add('active');
         m.style.setProperty('display', 'flex', 'important');
-        m.style.setProperty('z-index', '10008', 'important');
+        m.style.removeProperty('z-index');
+        document.body.classList.add('modal-open');
       }
+    }
+
+    function closeModal(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('active');
+        el.style.display = 'none';
+      }
+      setTimeout(function() {
+        var anyActive = document.querySelector('.modal-overlay.active, .modal-overlay[style*="display: flex"]');
+        if (!anyActive) {
+          document.body.classList.remove('modal-open');
+        }
+      }, 40);
     }
 
     window.apriModalScheda118 = apriModalScheda118;
     window.apriModalReportWhatsApp = apriModalReportWhatsApp;
+    window.closeModal = closeModal;
 
     // Forzatura auto-aggiornamento Service Worker per invalidare qualsiasi vecchia cache mobile
     if ('serviceWorker' in navigator) {
@@ -2737,7 +2754,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=31"></script>
+  <script src="app.js?v=33"></script>
   <script>
     // Registrazione Service Worker per utilizzo offline al 100% da cellulare
     if ('serviceWorker' in navigator) {
@@ -3051,7 +3068,7 @@
 
   
   <!-- MODAL: SCHEDA EMERGENZA CLINICA 118 / PRONTO SOCCORSO -->
-  <div id="modal-scheda-118" class="modal-overlay" style="z-index: 10008;">
+  <div id="modal-scheda-118" class="modal-overlay">
     <div class="scheda-118-card modal-card">
       <div class="scheda-118-header">
         <div style="display:flex; align-items:center; gap:10px;">
@@ -3132,9 +3149,9 @@
   </div>
 
   <!-- MODAL: REPORT GIORNALIERO WHATSAPP PER I FAMILIARI -->
-  <div id="modal-report-whatsapp" class="modal-overlay" style="z-index: 10008;">
+  <div id="modal-report-whatsapp" class="modal-overlay">
     <div class="report-wa-card modal-card">
-      <div style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="modal-header" style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
         <div style="display:flex; align-items:center; gap:10px;">
           <span style="font-size:24px;">💬</span>
           <div>
@@ -3145,7 +3162,7 @@
         <button type="button" class="btn-close-modal btn-close-light" onclick="closeModal('modal-report-whatsapp')" title="Chiudi Report WhatsApp" aria-label="Chiudi">✕</button>
       </div>
 
-      <div style="padding:18px 20px;">
+      <div class="modal-body" style="padding:18px 20px;">
         <div style="margin-bottom:12px;">
           <label style="font-size:12px; font-weight:700; color:#334155; display:block; margin-bottom:5px;">Destinatario WhatsApp:</label>
           <select id="report-wa-destinatario" class="form-control" style="font-size:13px; font-weight:700;">

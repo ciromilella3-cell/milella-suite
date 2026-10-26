@@ -24,6 +24,16 @@
       transform: translateY(6px);
     }
 
+    /* Nasconde automaticamente la barra inferiore quando un modale è aperto per lasciare pieno spazio ai tasti azione */
+    body.modal-open #suite-unified-bottom-nav,
+    body:has(.modal-overlay.active) #suite-unified-bottom-nav,
+    body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
+      transform: translateY(115%) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: transform 0.25s ease, opacity 0.2s ease !important;
+    }
+
     /* BARRA INFERIORE FLOTTANTE */
     #suite-unified-bottom-nav {
       position: fixed;
