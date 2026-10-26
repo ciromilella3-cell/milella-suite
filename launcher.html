@@ -1469,6 +1469,7 @@ document.addEventListener('fullscreenchange', () => {
             const res = await fetch('/api/sicurezza/crea-backup-locale', { method: 'POST' });
             const data = await res.json();
             if (data.success) {
+                if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 alert('✅ Backup salvato con successo sia in D:\\ che sul tuo Desktop!\nNome file: ' + data.nome + ' (' + data.sizeMB + ' MB)');
                 caricaListaBackupSicurezza();
             } else {
@@ -1526,6 +1527,7 @@ document.addEventListener('fullscreenchange', () => {
             });
             const data = await res.json();
             if (data.success) {
+                if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 alert('✅ RIPRISTINO COMPLETATO CON SUCCESSO!\n\nLa Suite e tutti i dati sono stati ripristinati. La pagina verrà ricaricata tra poco.');
                 setTimeout(() => window.location.reload(), 1500);
             } else {
@@ -1636,6 +1638,7 @@ document.addEventListener('fullscreenchange', () => {
             });
             const data = await res.json();
             if (data.success) {
+                if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 if (data.ruolo === 'admin') {
                     currentAdminPin = pin;
                     localStorage.setItem('milella_admin_pin', pin);
@@ -1707,6 +1710,7 @@ document.addEventListener('fullscreenchange', () => {
             });
             const data = await res.json();
             if (data.success) {
+                if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 if (data.ruolo === 'admin') {
                     currentAdminPin = pin;
                     localStorage.setItem('milella_admin_pin', pin);
@@ -2320,6 +2324,7 @@ document.addEventListener('fullscreenchange', () => {
             });
             const data = await res.json();
             if (data.success) {
+                if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 annullaModificaOp();
                 renderOps(data.operatori);
                 mostraToastOp(`✅ Operatore ${nome} aggiornato con successo!`, false);
@@ -2379,6 +2384,7 @@ document.addEventListener('fullscreenchange', () => {
             });
             const data = await res.json();
             if (data.success) {
+                if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 document.getElementById('newOpNome').value = '';
                 document.getElementById('newOpCodice').value = '';
                 if (document.getElementById('newOpCanEditTerapie')) document.getElementById('newOpCanEditTerapie').checked = false;
@@ -2652,6 +2658,7 @@ document.addEventListener('fullscreenchange', () => {
             });
             const data = await res.json();
             if (data.success) {
+                if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 listaProgettiAttuali = data.progetti;
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
@@ -2685,6 +2692,7 @@ document.addEventListener('fullscreenchange', () => {
             });
             const data = await res.json();
             if (data.success) {
+                if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 document.getElementById('newProjTitle').value = '';
                 document.getElementById('newProjUrl').value = '';
                 document.getElementById('newProjDesc').value = '';
@@ -2707,6 +2715,7 @@ document.addEventListener('fullscreenchange', () => {
             });
             const data = await res.json();
             if (data.success) {
+                if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 listaProgettiAttuali = data.progetti;
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
@@ -2724,6 +2733,7 @@ document.addEventListener('fullscreenchange', () => {
             });
             const data = await res.json();
             if (data.success) {
+                if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 listaProgettiAttuali = data.progetti;
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();

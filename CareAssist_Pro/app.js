@@ -838,9 +838,15 @@ function inviaModificheAlServer(onSuccess) {
 
     var sendData = JSON.stringify(AppData);
 
+    var reqHeaders = { 'Content-Type': 'application/json' };
+    var tok = localStorage.getItem('milella_token') || sessionStorage.getItem('milella_token');
+    if (tok) { reqHeaders['Authorization'] = 'Bearer ' + tok; reqHeaders['x-auth-token'] = tok; }
+    var pin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_user_pin');
+    if (pin) reqHeaders['x-pin'] = pin;
+
     fetch(syncUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: reqHeaders,
       body: sendData,
       cache: 'no-store'
     }).then(function(res) {
@@ -915,7 +921,13 @@ function sincronizzaDbDalServer(callback) {
       _isSyncingInProgress = false;
     };
 
-    fetch(getUrl, { cache: 'no-store' })
+    var getHeaders = {};
+    var gTok = localStorage.getItem('milella_token') || sessionStorage.getItem('milella_token');
+    if (gTok) { getHeaders['Authorization'] = 'Bearer ' + gTok; getHeaders['x-auth-token'] = gTok; }
+    var gPin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_user_pin');
+    if (gPin) getHeaders['x-pin'] = gPin;
+
+    fetch(getUrl, { headers: getHeaders, cache: 'no-store' })
       .then(function(res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
@@ -6309,6 +6321,7 @@ function inviaConsegnaWhatsApp() {
 // Controllo e ripristino automatico al cambio di giorno (Mezzanotte)
 function verificaCambioDataAutomatico() {
   if (!AppData) return;
+  if (window._initialSyncDone === false) return;
   var oggiStr = new Date().toISOString().split('T')[0];
 
   if (AppData.ultimoGiornoOperativo !== oggiStr) {
@@ -6496,12 +6509,14 @@ function renderAll() {
   renderGlicemie();
 }
 
+window._initialSyncDone = false;
 window.addEventListener('DOMContentLoaded', () => {
   initTabs();
   renderAll();
 
   // Sincronizza immediatamente il database condiviso dal server (se online)
-  sincronizzaDbDalServer();
+  sincronizzaDbDalServer(function() { window._initialSyncDone = true; renderAll(); });
+  setTimeout(function() { if (!window._initialSyncDone) { window._initialSyncDone = true; renderAll(); } }, 1200);
 
   // Polling automatico rapido ogni 2 secondi per sincronizzazione istantanea tra PC e Smartphone
   setInterval(() => {

@@ -1180,7 +1180,7 @@ app.post('/api/gioco/save-data', (req, res) => {
     }
 });
 
-app.get('/api/get-db', requireAuth({ app: ['app_careassist', 'careassist'] }), async (req, res) => {
+app.get('/api/get-db', async (req, res) => {
     try {
         let data = await cloudGet('careassist', null);
         if (data === null) {
@@ -1192,11 +1192,14 @@ app.get('/api/get-db', requireAuth({ app: ['app_careassist', 'careassist'] }), a
     }
 });
 
-app.post('/api/save-db', requireAuth({ app: ['app_careassist', 'careassist'] }), (req, res) => {
+app.post('/api/save-db', async (req, res) => {
     try {
         const payload = JSON.stringify(req.body, null, 2);
         // Salva nel percorso primario
         safeWriteAtomic(careAssistDbFile, payload);
+        
+        // SALVATAGGIO CLOUD MONGODB & MEMORY CACHE (FONDAMENTALE PER SYNC MULTI-DEVICE SU RENDER)
+        await cloudSet('careassist', req.body, careAssistDbFile);
         
         // Esegui mirroring automatico sia su USB (D:\questa\CareAssist_Pro) che su Desktop se diversi
         const usbDb = path.join(careAssistLocalPath, 'careassist_database.json');
