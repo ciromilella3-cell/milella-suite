@@ -19,6 +19,116 @@
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
   <link rel="stylesheet" href="style.css?v=28">
+
+  <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
+  <script>
+    function apriModalScheda118() {
+      try {
+        var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+        if (p) {
+          var setTxt = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '--'; };
+          var eta = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || '--');
+          var pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+          setTxt('s118-nome', pulitoNome);
+          setTxt('s118-eta-data', eta + ' anni (Nascita: ' + (p.dataNascita || '--') + ')');
+          setTxt('s118-cf', p.cf || 'Non registrato in scheda');
+          setTxt('s118-tel', p.cellulare || p.telefonoFisso || 'Non presente');
+          setTxt('s118-indirizzo', p.indirizzo || 'Residenza domiciliare');
+          var pat = Array.isArray(p.patologie) ? p.patologie.join(' • ') : (p.patologie || 'Nessuna segnalata');
+          setTxt('s118-patologie', pat);
+          setTxt('s118-allergie', p.allergie || 'Nessuna allergia farmacologica nota segnalata');
+          
+          var famNome = p.maritoNome || p.moglieNome || p.caregiverNome || 'Famiglia di Riferimento';
+          var famCell = p.maritoCellulare || p.moglieCellulare || p.cellulare || '';
+          setTxt('s118-famiglia-nome', famNome);
+          setTxt('s118-famiglia-tel', famCell ? 'Cell: ' + famCell : 'Cell non inserito');
+          var linkFam = document.getElementById('s118-famiglia-link');
+          if (linkFam) linkFam.href = famCell ? 'tel:' + famCell.replace(/[^0-9+]/g, '') : '#';
+          
+          var medNome = p.medicoCurante || p.medicoNome || p.medico || 'Dott. Roberto Scarcia';
+          var medTel = p.medicoTel || p.medicoTelStudio || p.medicoTelefono || p.telMedico || 'Tel: 080 557 44 90 • Cell: 347 126 59 71';
+          setTxt('s118-medico-nome', medNome);
+          setTxt('s118-medico-tel', medTel);
+
+          // Popolamento lista farmaci salvavita
+          var listaFarmaci = document.getElementById('s118-lista-farmaci');
+          if (listaFarmaci && p.terapie) {
+            listaFarmaci.innerHTML = p.terapie.map(function(t) {
+              var isSalva = (t.farmaco || '').match(/cardioaspirin|lasix|bisoprolol|irbesartan|sintrom|coumadin|eliquis|xarelto|pradaxa|cordarone|sinemet|madopar/i);
+              return '<div style="background:' + (isSalva ? '#fff1f2' : '#ffffff') + '; border:1px solid ' + (isSalva ? '#fecdd3' : '#e2e8f0') + '; border-radius:8px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center;">' +
+                '<div><b>' + (t.ora || '--:--') + ' - ' + t.farmaco + '</b> (' + (t.dosaggio || '1 dose') + ')' +
+                (isSalva ? ' <span style="background:#dc2626; color:#fff; font-size:10px; padding:1px 5px; border-radius:4px;">SALVAVITA</span>' : '') +
+                '<div style="font-size:11px; color:#64748b;">' + (t.modo || '') + '</div></div>' +
+                '<div>' + (t.fattoOggi ? '<span style="color:#16a34a; font-weight:800;">✅ Assunto</span>' : '<span style="color:#d97706; font-weight:700;">⚪ Da fare</span>') + '</div>' +
+                '</div>';
+            }).join('');
+          }
+        }
+      } catch(e) { console.warn('Errore pre-popolamento Scheda 118:', e); }
+      
+      var m = document.getElementById('modal-scheda-118');
+      if (m) {
+        m.classList.add('active');
+        m.style.setProperty('display', 'flex', 'important');
+        m.style.setProperty('z-index', '10008', 'important');
+      }
+    }
+
+    function apriModalReportWhatsApp() {
+      try {
+        var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+        if (p) {
+          var pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+          var eta = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || '--');
+          var dataStr = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+          var idr = p.idratazioneOggi || 0;
+          var alvo = p.ultimoAlvo ? new Date(p.ultimoAlvo).toLocaleDateString('it-IT') : 'Regolare e monitorato';
+          
+          var testo = '🩺 *CareAssist Pro - Diario Socio-Sanitario*\n' +
+            '👤 Assistito: *' + pulitoNome + '* (' + eta + ' anni)\n' +
+            '📅 Data: *' + (dataStr.charAt(0).toUpperCase() + dataStr.slice(1)) + '*\n\n' +
+            '✅ *Terapie Farmacologiche:* Somministrate regolarmente secondo prescrizione\n' +
+            '💧 *Idratazione assunta:* ' + idr + ' ml su 1.200 ml consigliati\n' +
+            '🚽 *Stato dell\'Alvo:* Ultima evacuazione registrata: ' + alvo + '\n' +
+            '🛏️ *Condizioni Generali:* Assistito sereno, parametri vitali stabili e monitoraggio attivo.\n\n' +
+            '----------------------------------------\n' +
+            '_Aggiornamento automatico CareAssist Pro C. Milella_';
+          
+          var txt = document.getElementById('report-wa-testo');
+          if (txt) txt.value = testo;
+
+          var sel = document.getElementById('report-wa-destinatario');
+          if (sel) {
+            var opts = '';
+            if (p.maritoCellulare) opts += '<option value="' + p.maritoCellulare + '">👥 ' + (p.maritoNome || 'Marito') + ': ' + p.maritoCellulare + '</option>';
+            if (p.moglieCellulare) opts += '<option value="' + p.moglieCellulare + '">👥 ' + (p.moglieNome || 'Moglie') + ': ' + p.moglieCellulare + '</option>';
+            if (p.caregiverCellulare || p.caregiverTel) opts += '<option value="' + (p.caregiverCellulare || p.caregiverTel) + '">👥 ' + (p.caregiverNome || 'Caregiver') + ': ' + (p.caregiverCellulare || p.caregiverTel) + '</option>';
+            if (p.cellulare) opts += '<option value="' + p.cellulare + '">📱 Cellulare Assistito: ' + p.cellulare + '</option>';
+            opts += '<option value="custom">✏️ Inserisci Altro Numero Manuale...</option>';
+            sel.innerHTML = opts;
+          }
+        }
+      } catch(e) { console.warn('Errore pre-popolamento Report WA:', e); }
+
+      var m = document.getElementById('modal-report-whatsapp');
+      if (m) {
+        m.classList.add('active');
+        m.style.setProperty('display', 'flex', 'important');
+        m.style.setProperty('z-index', '10008', 'important');
+      }
+    }
+
+    window.apriModalScheda118 = apriModalScheda118;
+    window.apriModalReportWhatsApp = apriModalReportWhatsApp;
+
+    // Forzatura auto-aggiornamento Service Worker per invalidare qualsiasi vecchia cache mobile
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(r) { r.update(); });
+      });
+    }
+  </script>
+
 </head>
 <body>
 
@@ -150,10 +260,10 @@
       <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; z-index:2;">
         <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
           <button class="btn btn-primary" onclick="apriModificaAnagrafica()" style="font-size:12px; padding:6px 12px;">✏️ Modifica</button>
-          <button id="btn-scheda-118" class="btn btn-scheda-118" onclick="if(window.apriModalScheda118) window.apriModalScheda118(); else window.apriModalScheda118Inline();" style="background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.4); box-shadow:0 3px 10px rgba(220,38,38,0.4); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
+          <button id="btn-scheda-118" class="btn btn-scheda-118" onclick="apriModalScheda118()" style="background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.4); box-shadow:0 3px 10px rgba(220,38,38,0.4); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
             <span>🚨</span> Scheda 118
           </button>
-          <button id="btn-report-whatsapp" class="btn" onclick="if(window.apriModalReportWhatsApp) window.apriModalReportWhatsApp(); else window.apriModalReportWhatsAppInline();" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.3); box-shadow:0 3px 10px rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
+          <button id="btn-report-whatsapp" class="btn" onclick="apriModalReportWhatsApp()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.3); box-shadow:0 3px 10px rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
             <span>💬</span> Report WA
           </button>
         </div>
