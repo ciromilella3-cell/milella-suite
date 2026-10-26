@@ -319,14 +319,9 @@
 
     document.getElementById('suite-btn-lock')?.addEventListener('click', (e) => {
       e.preventDefault();
-      triggerHaptic(40);
+      triggerHaptic(50);
       if (typeof window.lockMilellaSuite === 'function') {
         window.lockMilellaSuite();
-      } else if (typeof lockSaluteApp === 'function') {
-        lockSaluteApp();
-      } else {
-        sessionStorage.removeItem('milella_session_unlocked');
-        window.location.reload();
       }
     });
 
@@ -336,11 +331,215 @@
     });
   }
 
-  // Auto-caricamento del Security Gate se non già presente nella pagina
-  if (!window.__milellaSecurityGateInit && window.location.pathname !== '/launcher.html' && window.location.pathname !== '/') {
-    const gateScript = document.createElement('script');
-    gateScript.src = '/suite_security_gate.js?v=1';
-    document.head.appendChild(gateScript);
+  // =========================================================================
+  // GESTIONE UNIFICATA & IMMEDIATA: BLOCCO SICUREZZA SUITE CON PIN (SECURITY GATE)
+  // =========================================================================
+  const SESSION_KEY = 'milella_session_unlocked';
+  const LOCK_FLAG = 'milella_app_locked';
+
+  function getCurrentAppInfo() {
+    const p = (window.location.pathname || '').toLowerCase();
+    if (p.includes('careassist')) return { title: 'CAREASSIST PRO', icon: '🩺' };
+    if (p.includes('salute')) return { title: 'PROGETTO SALUTE', icon: '🫀' };
+    if (p.includes('inventario')) return { title: 'INVENTARIO ATTREZZI', icon: '📦' };
+    if (p.includes('veicoli')) return { title: 'FLOTTA VEICOLI & SPESE', icon: '🚗' };
+    if (p.includes('ricettario')) return { title: 'IL RICETTARIO', icon: '🍽️' };
+    if (p.includes('mednutri')) return { title: 'MEDNUTRI PRO', icon: '🥗' };
+    return { title: 'SUITE C. MILELLA', icon: '🔐' };
+  }
+
+  function ensureSecurityGateUI() {
+    let overlay = document.getElementById('suiteSecurityGateOverlay');
+    if (overlay) return overlay;
+
+    const info = getCurrentAppInfo();
+    overlay = document.createElement('div');
+    overlay.id = 'suiteSecurityGateOverlay';
+    overlay.style.cssText = 'display:none; position:fixed; inset:0; z-index:2147483647 !important; background:rgba(7, 11, 20, 0.96); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); color:#fff; font-family:"Plus Jakarta Sans","Outfit","Inter",sans-serif; flex-direction:column; justify-content:center; align-items:center; padding:18px; text-align:center; box-sizing:border-box;';
+
+    overlay.innerHTML = `
+      <div style="background:rgba(255,255,255,0.05); border:1.5px solid rgba(212,175,55,0.55); border-radius:24px; padding:28px 22px; width:100%; max-width:390px; box-shadow:0 20px 60px rgba(0,0,0,0.85); box-sizing:border-box;">
+        <div style="font-size:3.2rem; margin-bottom:6px; line-height:1;">🔒</div>
+        <h2 style="margin:0 0 4px 0; font-size:1.35rem; font-weight:900; color:#f8fafc; letter-spacing:0.5px;">${info.icon} ${info.title}</h2>
+        <div style="font-size:0.85rem; color:#d4af37; font-weight:800; margin-bottom:14px; text-transform:uppercase; letter-spacing:1px;">🔐 APPLICAZIONE BLOCCATA</div>
+        <p style="font-size:0.88rem; color:#94a3b8; margin:0 0 18px 0; line-height:1.45;">Accesso riservato. Inserisci il PIN di sicurezza per continuare ad operare.</p>
+
+        <div style="position:relative; margin-bottom:14px;">
+          <input type="password" id="suiteGatePinInput" placeholder="Inserisci PIN..." maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="characters" style="width:100%; padding:14px 44px 14px 16px; border-radius:14px; background:rgba(0,0,0,0.65); border:1.5px solid rgba(212,175,55,0.6); color:#fff; font-size:22px; text-align:center; letter-spacing:4px; outline:none; box-sizing:border-box; font-family:monospace; font-weight:800;">
+          <button type="button" id="btnSuiteGatePinToggle" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#cbd5e1; font-size:18px; cursor:pointer; padding:4px;" title="Mostra/Nascondi PIN">👁️</button>
+        </div>
+
+        <div id="suiteGateErrorMsg" style="display:none; color:#f87171; font-size:0.85rem; font-weight:800; margin-bottom:14px; background:rgba(239,68,68,0.15); padding:10px 14px; border-radius:12px; border:1px solid rgba(239,68,68,0.4); text-align:center;"></div>
+
+        <button type="button" id="btnSuiteGateUnlock" style="width:100%; padding:14px; background:linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); color:#0b0f19; font-size:1rem; font-weight:900; border-radius:14px; border:none; cursor:pointer; box-shadow:0 6px 22px rgba(212,175,55,0.4); transition:transform 0.15s; margin-bottom:10px; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+          <span>🔓</span> SBLOCCA APPLICAZIONE
+        </button>
+
+        <button type="button" id="btnSuiteGateBiometric" style="display:none; width:100%; padding:12px; background:rgba(255,255,255,0.06); color:#38bdf8; font-size:0.92rem; font-weight:800; border-radius:14px; border:1px solid rgba(56,189,248,0.35); cursor:pointer; margin-bottom:10px;">
+          👆 Accedi con Impronta Digitale
+        </button>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; font-size:0.82rem; padding-top:12px; border-top:1px solid rgba(255,255,255,0.1);">
+          <span style="color:#64748b;">Suite C. Milella</span>
+          <a href="/launcher.html" style="color:#38bdf8; text-decoration:none; font-weight:800; display:inline-flex; align-items:center; gap:4px;">
+            <span>Menu Suite</span> ➔
+          </a>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const pinInp = document.getElementById('suiteGatePinInput');
+    const eyeBtn = document.getElementById('btnSuiteGatePinToggle');
+    const unlockBtn = document.getElementById('btnSuiteGateUnlock');
+    const bioBtn = document.getElementById('btnSuiteGateBiometric');
+
+    if (eyeBtn && pinInp) {
+      eyeBtn.onclick = () => {
+        pinInp.type = (pinInp.type === 'password') ? 'text' : 'password';
+        eyeBtn.textContent = (pinInp.type === 'password') ? '👁️' : '🔒';
+      };
+    }
+
+    if (pinInp) {
+      pinInp.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          doVerifyPin();
+        }
+      };
+    }
+
+    if (unlockBtn) unlockBtn.onclick = doVerifyPin;
+    if (bioBtn) bioBtn.onclick = doBiometricUnlock;
+
+    if (window.PublicKeyCredential && localStorage.getItem('milella_last_authenticated_pin')) {
+      if (bioBtn) bioBtn.style.display = 'block';
+    }
+
+    return overlay;
+  }
+
+  async function doVerifyPin() {
+    const inp = document.getElementById('suiteGatePinInput');
+    const err = document.getElementById('suiteGateErrorMsg');
+    const pin = (inp ? inp.value : '').trim();
+
+    if (!pin) {
+      if (err) { err.textContent = 'Inserisci il PIN di sicurezza.'; err.style.display = 'block'; }
+      return;
+    }
+
+    // 1. Verifica PIN Master SOS999 (immediata sia online che offline)
+    const isMaster = (pin.toUpperCase() === 'SOS999');
+
+    // 2. Verifica online con endpoint server se raggiungibile
+    let serverOk = false;
+    let authData = null;
+    try {
+      const resp = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codice: pin })
+      });
+      if (resp.ok) {
+        authData = await resp.json();
+        if (authData && authData.success) {
+          serverOk = true;
+        }
+      }
+    } catch(e) {
+      // Server offline o esecuzione locale
+    }
+
+    // 3. Verifica credenziali salvate localmente
+    const savedPin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_user_pin') || localStorage.getItem('milella_last_authenticated_pin');
+    const localMatch = savedPin && (savedPin.toLowerCase() === pin.toLowerCase());
+
+    if (isMaster || serverOk || localMatch) {
+      sessionStorage.setItem(SESSION_KEY, 'true');
+      localStorage.setItem(SESSION_KEY, 'true');
+      localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
+      sessionStorage.removeItem(LOCK_FLAG);
+
+      if (authData) {
+        if (authData.nome) localStorage.setItem('milella_user_nome', authData.nome);
+        if (authData.ruolo) localStorage.setItem('milella_last_authenticated_role', authData.ruolo);
+        if (authData.token) localStorage.setItem('milella_token', authData.token);
+      }
+      localStorage.setItem('milella_last_authenticated_pin', pin);
+
+      const overlay = document.getElementById('suiteSecurityGateOverlay');
+      if (overlay) {
+        overlay.style.transition = 'opacity 0.2s ease-out';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.style.display = 'none';
+          overlay.style.opacity = '1';
+        }, 200);
+      }
+
+      document.body.classList.remove('modal-open');
+      const navEl = document.getElementById('suite-unified-bottom-nav');
+      if (navEl) navEl.style.display = '';
+
+      if (typeof window.showToast === 'function') {
+        window.showToast('🔓 Applicazione Sbloccata con Successo!', 'success');
+      }
+    } else {
+      triggerHaptic(60);
+      if (err) {
+        err.textContent = '❌ PIN non corretto. Riprova o usa il PIN Master SOS999.';
+        err.style.display = 'block';
+      }
+      if (inp) {
+        inp.value = '';
+        inp.focus();
+      }
+    }
+  }
+
+  async function doBiometricUnlock() {
+    const savedPin = localStorage.getItem('milella_last_authenticated_pin');
+    const err = document.getElementById('suiteGateErrorMsg');
+    if (!savedPin) {
+      if (err) { err.textContent = 'Inserisci prima il tuo PIN una volta su questo dispositivo.'; err.style.display = 'block'; }
+      return;
+    }
+    const inp = document.getElementById('suiteGatePinInput');
+    if (inp) inp.value = savedPin;
+    doVerifyPin();
+  }
+
+  window.lockMilellaSuite = function() {
+    triggerHaptic(50);
+    sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem('milella_session_unlocked_time');
+    sessionStorage.setItem(LOCK_FLAG, 'true');
+
+    const overlay = ensureSecurityGateUI();
+    if (overlay) {
+      overlay.style.display = 'flex';
+      overlay.style.opacity = '1';
+      document.body.classList.add('modal-open');
+      const navEl = document.getElementById('suite-unified-bottom-nav');
+      if (navEl) navEl.style.display = 'none';
+
+      setTimeout(() => {
+        const inp = document.getElementById('suiteGatePinInput');
+        const err = document.getElementById('suiteGateErrorMsg');
+        if (err) err.style.display = 'none';
+        if (inp) { inp.value = ''; inp.focus(); }
+      }, 150);
+    }
+  };
+  window.lockSaluteApp = window.lockMilellaSuite;
+
+  // Auto-ripristino stato blocco se ricaricata pagina mentre bloccata
+  if (sessionStorage.getItem(LOCK_FLAG) === 'true') {
+    setTimeout(window.lockMilellaSuite, 50);
   }
 
   // 5. BANNER PWA / "AGGIUNGI A SCHERMATA HOME"
