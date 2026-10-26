@@ -236,17 +236,75 @@
       }
     } catch(e) {}
   }
+  // 3. RESOLVER DINAMICO INDIRIZZO HOME SUITE LAUNCHER
+  function resolveLauncherUrl() {
+    if (window.location.protocol === 'file:') {
+      return '../launcher.html';
+    }
+    return '/launcher.html';
+  }
 
-  // 3. NAVIGAZIONE CON TRANSIZIONE FLUIDA
+  // 4. NAVIGAZIONE CON TRANSIZIONE FLUIDA E RESILIENTE
   function navigateWithTransition(url) {
     triggerHaptic(30);
     document.body.classList.add('page-transitioning');
     setTimeout(() => {
       window.location.href = url;
-    }, 180);
+      // Timeout di sicurezza per pulire la classe se la navigazione viene interrotta
+      setTimeout(() => {
+        document.body.classList.remove('page-transitioning');
+      }, 700);
+    }, 120);
   }
 
-  // 4. CREAZIONE DOM DELLA BARRA
+  // 5. GESTIONE AZIONE "INDIETRO" INTELLIGENTE E MULTILIVELLO
+  function handleBackAction(e) {
+    if (e) e.preventDefault();
+    triggerHaptic(25);
+
+    // Livello 1: Se c'è un modale aperto, chiudilo all'istante
+    const activeModal = document.querySelector('.modal-overlay.active, .modal-overlay[style*="display: flex"], #suiteSecurityGateOverlay[style*="display: flex"]');
+    if (activeModal) {
+      if (activeModal.id === 'suiteSecurityGateOverlay') {
+        navigateWithTransition(resolveLauncherUrl());
+        return;
+      }
+      if (typeof window.closeModal === 'function') {
+        window.closeModal(activeModal.id);
+      } else {
+        activeModal.classList.remove('active');
+        activeModal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+      }
+      return;
+    }
+
+    // Livello 2: Se siamo su una tab secondaria (es. Terapie o Visite), torna alla prima tab principale (Dashboard)
+    const navTabs = document.querySelectorAll('.nav-tab');
+    if (navTabs.length > 1 && !navTabs[0].classList.contains('active')) {
+      navTabs[0].click();
+      return;
+    }
+
+    // Livello 3: Torna alla pagina precedente della Suite se presente, altrimenti torna al Launcher
+    const ref = document.referrer || '';
+    const currentOrigin = window.location.origin;
+    const isInternalSuiteRef = ref && currentOrigin && ref.startsWith(currentOrigin) && !ref.includes(window.location.pathname);
+
+    if (isInternalSuiteRef && window.history.length > 1) {
+      document.body.classList.add('page-transitioning');
+      setTimeout(() => {
+        window.history.back();
+        setTimeout(() => {
+          document.body.classList.remove('page-transitioning');
+        }, 500);
+      }, 100);
+    } else {
+      navigateWithTransition(resolveLauncherUrl());
+    }
+  }
+
+  // 6. CREAZIONE DOM DELLA BARRA
   const nav = document.createElement('nav');
   nav.id = 'suite-unified-bottom-nav';
   nav.innerHTML = `
@@ -277,7 +335,7 @@
 
     <!-- 4. BLOCCA CON PIN -->
     <button type="button" class="suite-nav-btn" id="suite-btn-lock" title="Blocca App con PIN" style="color:#f59e0b;">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       <span>Blocca</span>
     </button>
 
@@ -286,7 +344,6 @@
       <div class="suite-badge" title="Scadenze / Attenzioni attive"></div>
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
-        <circle cx="7" cy="17" r="2"/>
         <path d="M9 17h6"/>
         <circle cx="17" cy="17" r="2"/>
       </svg>
@@ -296,25 +353,16 @@
 
   // Collega eventi con feedback aptico e animazione
   function bindNavEvents() {
-    document.getElementById('suite-btn-back')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      triggerHaptic(20);
-      if (window.history.length > 1) {
-        document.body.classList.add('page-transitioning');
-        setTimeout(() => window.history.back(), 180);
-      } else {
-        navigateWithTransition('/launcher.html');
-      }
-    });
+    document.getElementById('suite-btn-back')?.addEventListener('click', handleBackAction);
 
     document.getElementById('suite-btn-home')?.addEventListener('click', (e) => {
       e.preventDefault();
-      navigateWithTransition('/launcher.html');
+      navigateWithTransition(resolveLauncherUrl());
     });
 
     document.getElementById('suite-btn-menu')?.addEventListener('click', (e) => {
       e.preventDefault();
-      navigateWithTransition('/launcher.html');
+      navigateWithTransition(resolveLauncherUrl());
     });
 
     document.getElementById('suite-btn-lock')?.addEventListener('click', (e) => {
