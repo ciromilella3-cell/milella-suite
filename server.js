@@ -1131,7 +1131,7 @@ app.use('/careassist', (req, res, next) => {
     if (CAREASSIST_BLOCKED.test(p)) return res.status(403).send('Accesso negato');
     
     // Per aggiornamenti immediati su smartphone: niente cache su HTML e Service Worker
-    if (p.endsWith('.html') || p === '' || p === '/' || p.endsWith('/sw.js') || p.endsWith('/auth_token.js')) {
+    if (p.endsWith('.html') || p === '' || p === '/' || p.endsWith('.js') || p.endsWith('.css') || p.endsWith('/sw.js') || p.endsWith('/auth_token.js')) {
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');

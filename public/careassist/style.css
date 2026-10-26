@@ -778,6 +778,7 @@ body {
 }
 
 .modal-overlay.active {
+  display: flex !important;
   display: flex;
   animation: fadeIn 0.2s ease-out;
 }
@@ -2292,6 +2293,7 @@ textarea.form-control {
 
 /* Modale Scheda Emergenza 118 */
 .scheda-118-card {
+  margin: auto;
   max-width: 680px;
   width: 95%;
   background: #ffffff;
@@ -2378,6 +2380,7 @@ textarea.form-control {
 
 /* Modal Report WhatsApp */
 .report-wa-card {
+  margin: auto;
   max-width: 540px;
   width: 92%;
   background: #ffffff;

@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=28">
 </head>
 <body>
 
@@ -150,10 +150,10 @@
       <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; z-index:2;">
         <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
           <button class="btn btn-primary" onclick="apriModificaAnagrafica()" style="font-size:12px; padding:6px 12px;">✏️ Modifica</button>
-          <button class="btn btn-scheda-118" onclick="apriModalScheda118()" style="background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.4); box-shadow:0 3px 10px rgba(220,38,38,0.4); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
+          <button id="btn-scheda-118" class="btn btn-scheda-118" onclick="if(window.apriModalScheda118) window.apriModalScheda118(); else window.apriModalScheda118Inline();" style="background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.4); box-shadow:0 3px 10px rgba(220,38,38,0.4); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
             <span>🚨</span> Scheda 118
           </button>
-          <button class="btn" onclick="apriModalReportWhatsApp()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.3); box-shadow:0 3px 10px rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
+          <button id="btn-report-whatsapp" class="btn" onclick="if(window.apriModalReportWhatsApp) window.apriModalReportWhatsApp(); else window.apriModalReportWhatsAppInline();" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.3); box-shadow:0 3px 10px rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
             <span>💬</span> Report WA
           </button>
         </div>
@@ -2629,7 +2629,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=28"></script>
   <script>
     // Registrazione Service Worker per utilizzo offline al 100% da cellulare
     if ('serviceWorker' in navigator) {
@@ -2943,7 +2943,7 @@
   
   <!-- MODAL: SCHEDA EMERGENZA CLINICA 118 / PRONTO SOCCORSO -->
   <div id="modal-scheda-118" class="modal-overlay" style="z-index: 10008;">
-    <div class="scheda-118-card">
+    <div class="scheda-118-card modal-card">
       <div class="scheda-118-header">
         <div style="display:flex; align-items:center; gap:10px;">
           <span style="font-size:24px;">🚨</span>
@@ -3024,7 +3024,7 @@
 
   <!-- MODAL: REPORT GIORNALIERO WHATSAPP PER I FAMILIARI -->
   <div id="modal-report-whatsapp" class="modal-overlay" style="z-index: 10008;">
-    <div class="report-wa-card">
+    <div class="report-wa-card modal-card">
       <div style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
         <div style="display:flex; align-items:center; gap:10px;">
           <span style="font-size:24px;">💬</span>

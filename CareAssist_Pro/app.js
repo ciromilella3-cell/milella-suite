@@ -4862,7 +4862,10 @@ function openModal(id) {
 
 function closeModal(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.remove('active');
+  if (el) {
+    el.classList.remove('active');
+    el.style.display = 'none';
+  }
 }
 
 // Salvataggi dai Form Modali
@@ -8399,173 +8402,127 @@ function vaiATerapiaInRitardoAttiva() {
 // MODULO LIVELLO SUPERIORE: SCHEDA 118, DETTATURA VOCALE, REPORT WHATSAPP & RICETTA MMG
 // ==========================================================================
 
-// 1. SCHEDA EMERGENZA CLINICA 118
+// 1. SCHEDA EMERGENZA CLINICA 118 (ULTRA-ROBUSTA E COMPATIBILE MOBILE)
 function apriModalScheda118() {
-  const p = getActivePaziente();
-  if (!p) return;
-
-  const eta = calcolaAnniDaData(p.dataNascita);
-  const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
-
-  document.getElementById('s118-nome').textContent = pulitoNome;
-  document.getElementById('s118-eta-data').textContent = `${eta} anni (Nascita: ${p.dataNascita || '--'})`;
-  document.getElementById('s118-cf').textContent = p.cf || 'Non registrato in scheda';
-  document.getElementById('s118-tel').textContent = p.cellulare || p.telefonoFisso || 'Non presente';
-  document.getElementById('s118-indirizzo').textContent = p.indirizzo || 'Residenza domiciliare';
-  
-  if (p.patologie) {
-    document.getElementById('s118-patologie').textContent = p.patologie;
-  }
-  if (p.allergie) {
-    document.getElementById('s118-allergie').textContent = p.allergie;
-  }
-
-  // Terapie salvavita
-  const listaFarmaciContainer = document.getElementById('s118-lista-farmaci');
-  if (listaFarmaciContainer) {
-    listaFarmaciContainer.innerHTML = (p.terapie || []).map(t => {
-      const isSalvavita = (t.farmaco || '').match(/cardioaspirin|lasix|bisoprolol|irbesartan|sintrom|coumadin|eliquis|xarelto|pradaxa|cordarone/i);
-      const bg = isSalvavita ? '#fff1f2' : '#ffffff';
-      const border = isSalvavita ? '1.5px solid #fecdd3' : '1px solid #e2e8f0';
-      const statoText = t.fattoOggi ? '<span style="color:#16a34a; font-weight:800;">✅ Assunto</span>' : '<span style="color:#d97706; font-weight:700;">⚪ Da somministrare</span>';
-      return `
-        <div style="background:${bg}; border:${border}; border-radius:8px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <b>${t.ora} - ${t.farmaco}</b> (${t.dosaggio || '1 dose'})
-            ${isSalvavita ? '<span class="badge" style="background:#dc2626; color:#fff; font-size:10px; padding:1px 5px; margin-left:4px;">SALVAVITA</span>' : ''}
-            <div style="font-size:11px; color:#64748b;">${t.modo || ''}</div>
-          </div>
-          <div>${statoText}</div>
-        </div>
-      `;
-    }).join('') || '<div style="color:#94a3b8;">Nessun farmaco configurato.</div>';
-  }
-
-  // Medico
-  const medicoNome = p.medicoCurante || p.medico || 'Dott. Roberto Scarcia';
-  const medicoTel = p.medicoTelefono || 'Tel Studio: 080 557 44 90 • Cell: 347 126 59 71';
-  document.getElementById('s118-medico-nome').textContent = medicoNome;
-  document.getElementById('s118-medico-tel').textContent = medicoTel;
-
-  // Famiglia
-  const famNome = p.moglieNome || p.caregiverNome || 'Famiglia di Riferimento';
-  const famCell = p.moglieCellulare || p.cellulare || '';
-  document.getElementById('s118-famiglia-nome').textContent = famNome;
-  document.getElementById('s118-famiglia-tel').textContent = famCell ? 'Cell: ' + famCell : 'Cell non inserito';
-  const linkFam = document.getElementById('s118-famiglia-link');
-  if (linkFam) {
-    linkFam.href = famCell ? 'tel:' + famCell.replace(/[^0-9+]/g, '') : '#';
-  }
-
-  openModal('modal-scheda-118');
-}
-
-// 2. DETTATURA VOCALE PER NOTE CONSEGNA
-let speechRecognitionInstance = null;
-let speechIsListening = false;
-
-function toggleDettaturaVocaleNota() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const btn = document.getElementById('btn-mic-dettatura-nota');
-  const textarea = document.getElementById('nota-turno-testo');
-  
-  if (!SpeechRecognition) {
-    alert('La dettatura vocale è supportata nativamente in Google Chrome / Brave su Android e PC. Usa Chrome per dettare con la voce.');
-    return;
-  }
-
-  if (speechIsListening && speechRecognitionInstance) {
-    speechRecognitionInstance.stop();
-    speechIsListening = false;
-    if (btn) {
-      btn.innerHTML = '<span>🎤</span> Dettatura Vocale';
-      btn.style.background = '#f0f9ff';
-      btn.style.color = '#0284c7';
-      btn.style.borderColor = '#0284c7';
-    }
-    return;
-  }
-
   try {
-    speechRecognitionInstance = new SpeechRecognition();
-    speechRecognitionInstance.lang = 'it-IT';
-    speechRecognitionInstance.continuous = true;
-    speechRecognitionInstance.interimResults = false;
+    const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+    if (!p) {
+      if (typeof showToast === 'function') showToast('Seleziona un assistito per visualizzare la Scheda 118', 'warning');
+      return;
+    }
 
-    speechRecognitionInstance.onstart = function() {
-      speechIsListening = true;
-      if (btn) {
-        btn.innerHTML = '<span style="color:#dc2626; font-size:14px; animation:pulse 1s infinite;">🔴</span> Parla adesso...';
-        btn.style.background = '#fee2e2';
-        btn.style.color = '#dc2626';
-        btn.style.borderColor = '#dc2626';
-      }
-      showToast('Microfono attivo: detta la tua nota!', 'info');
+    const eta = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || '--');
+    const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+
+    const setTxt = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val ?? '--';
     };
 
-    speechRecognitionInstance.onresult = function(event) {
-      let detto = '';
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          detto += event.results[i][0].transcript + ' ';
-        }
-      }
-      if (detto && textarea) {
-        const curr = textarea.value.trim();
-        textarea.value = (curr ? curr + '. ' : '') + detto.trim();
-        showToast('Nota vocale trascritta! ✍️', 'success');
-      }
-    };
+    setTxt('s118-nome', pulitoNome || 'Assistito');
+    setTxt('s118-eta-data', `${eta} anni (Nascita: ${p.dataNascita || '--'})`);
+    setTxt('s118-cf', p.cf || 'Non registrato in scheda');
+    setTxt('s118-tel', p.cellulare || p.telefonoFisso || 'Non presente');
+    setTxt('s118-indirizzo', p.indirizzo || 'Residenza domiciliare');
+    
+    // Patologie & Allergie
+    const patologieStr = Array.isArray(p.patologie) ? p.patologie.join(' • ') : (p.patologie || 'Nessuna patologia segnalata');
+    setTxt('s118-patologie', patologieStr);
 
-    speechRecognitionInstance.onerror = function(err) {
-      console.warn('Errore Speech:', err);
-      speechIsListening = false;
-      if (btn) {
-        btn.innerHTML = '<span>🎤</span> Dettatura Vocale';
-        btn.style.background = '#f0f9ff';
-        btn.style.color = '#0284c7';
-      }
-    };
+    const allergieStr = p.allergie || 'Nessuna allergia farmacologica nota segnalata';
+    setTxt('s118-allergie', allergieStr);
 
-    speechRecognitionInstance.onend = function() {
-      speechIsListening = false;
-      if (btn) {
-        btn.innerHTML = '<span>🎤</span> Dettatura Vocale';
-        btn.style.background = '#f0f9ff';
-        btn.style.color = '#0284c7';
+    // Terapie salvavita
+    const listaFarmaciContainer = document.getElementById('s118-lista-farmaci');
+    if (listaFarmaciContainer) {
+      const terapieList = p.terapie || [];
+      if (terapieList.length === 0) {
+        listaFarmaciContainer.innerHTML = '<div style="color:#94a3b8; padding:8px;">Nessun farmaco configurato.</div>';
+      } else {
+        listaFarmaciContainer.innerHTML = terapieList.map(t => {
+          const isSalvavita = (t.farmaco || '').match(/cardioaspirin|lasix|bisoprolol|irbesartan|sintrom|coumadin|eliquis|xarelto|pradaxa|cordarone|sinemet|madopar/i);
+          const bg = isSalvavita ? '#fff1f2' : '#ffffff';
+          const border = isSalvavita ? '1.5px solid #fecdd3' : '1px solid #e2e8f0';
+          const statoText = t.fattoOggi ? '<span style="color:#16a34a; font-weight:800;">✅ Assunto</span>' : '<span style="color:#d97706; font-weight:700;">⚪ Da somministrare</span>';
+          return `
+            <div style="background:${bg}; border:${border}; border-radius:8px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <b>${t.ora || '--:--'} - ${t.farmaco}</b> (${t.dosaggio || '1 dose'})
+                ${isSalvavita ? '<span class="badge" style="background:#dc2626; color:#fff; font-size:10px; padding:1px 5px; margin-left:4px;">SALVAVITA</span>' : ''}
+                <div style="font-size:11px; color:#64748b;">${t.modo || ''}</div>
+              </div>
+              <div style="text-align:right;">${statoText}</div>
+            </div>
+          `;
+        }).join('');
       }
-    };
+    }
 
-    speechRecognitionInstance.start();
-  } catch(e) {
-    console.error('Avvio dettatura fallito:', e);
+    // Medico curante
+    const medicoNome = p.medicoCurante || p.medicoNome || p.medico || 'Dott. Roberto Scarcia';
+    const medicoTel = p.medicoTel || p.medicoTelStudio || p.medicoTelefono || p.telMedico || 'Tel Studio: 080 557 44 90 • Cell: 347 126 59 71';
+    setTxt('s118-medico-nome', medicoNome);
+    setTxt('s118-medico-tel', medicoTel);
+
+    // Contatto Famiglia / Caregiver (ricerca tra coniuge e caregiver)
+    const famNome = p.maritoNome || p.moglieNome || p.caregiverNome || 'Famiglia di Riferimento';
+    const famCell = p.maritoCellulare || p.moglieCellulare || p.cellulare || '';
+    setTxt('s118-famiglia-nome', famNome);
+    setTxt('s118-famiglia-tel', famCell ? 'Cell: ' + famCell : 'Cell non inserito');
+    const linkFam = document.getElementById('s118-famiglia-link');
+    if (linkFam) {
+      linkFam.href = famCell ? 'tel:' + famCell.replace(/[^0-9+]/g, '') : '#';
+    }
+
+    // Apertura sicura del modale
+    if (typeof openModal === 'function') {
+      openModal('modal-scheda-118');
+    }
+    const modalEl = document.getElementById('modal-scheda-118');
+    if (modalEl) {
+      modalEl.classList.add('active');
+      modalEl.style.display = 'flex';
+    }
+  } catch(err) {
+    console.error('Errore apriModalScheda118:', err);
+    const modalEl = document.getElementById('modal-scheda-118');
+    if (modalEl) {
+      modalEl.classList.add('active');
+      modalEl.style.display = 'flex';
+    }
   }
 }
+window.apriModalScheda118 = apriModalScheda118;
 
 // 3. REPORT GIORNALIERO WHATSAPP PER FAMILIARI
 function apriModalReportWhatsApp() {
-  const p = getActivePaziente();
-  if (!p) return;
+  try {
+    const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+    if (!p) {
+      if (typeof showToast === 'function') showToast('Seleziona un assistito per creare il report WhatsApp', 'warning');
+      return;
+    }
 
-  const now = new Date();
-  const dataStr = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
-  const operatore = localStorage.getItem('milella_user_name') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore CareAssist';
+    const now = new Date();
+    const dataStr = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+    const operatore = localStorage.getItem('milella_user_name') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore CareAssist';
+    const eta = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || '--');
 
-  // Calcolo statistiche farmaci
-  const terapieOggi = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t));
-  const fatteOggi = terapieOggi.filter(t => t.fattoOggi).length;
-  const totOggi = terapieOggi.length;
-  const farmaciStato = totOggi > 0 ? `${fatteOggi}/${totOggi} somministrate regolarmente (${Math.round((fatteOggi/totOggi)*100)}%)` : 'Nessuna terapia prevista oggi';
+    // Calcolo statistiche farmaci
+    const terapieOggi = (p.terapie || []).filter(t => (typeof isTerapiaPrevistaOggi === 'function') ? isTerapiaPrevistaOggi(t) : true);
+    const fatteOggi = terapieOggi.filter(t => t.fattoOggi).length;
+    const totOggi = terapieOggi.length;
+    const farmaciStato = totOggi > 0 ? `${fatteOggi}/${totOggi} somministrate regolarmente (${Math.round((fatteOggi/totOggi)*100)}%)` : 'Nessuna terapia prevista oggi';
 
-  // Idratazione
-  const idratazioneMl = p.idratazioneOggi || 0;
+    // Idratazione
+    const idratazioneMl = p.idratazioneOggi || 0;
 
-  // Ultima nota o alvo
-  const ultimoAlvo = p.ultimoAlvo ? new Date(p.ultimoAlvo).toLocaleDateString('it-IT') : 'Regolare';
+    // Ultima nota o alvo
+    const ultimoAlvo = p.ultimoAlvo ? new Date(p.ultimoAlvo).toLocaleDateString('it-IT') : 'Monitorata e regolare';
 
-  const testoReport = `🩺 *CareAssist Pro - Diario Socio-Sanitario*
-👤 Assistito: *${pulitoNome}* (${calcolaAnniDaData(p.dataNascita)} anni)
+    const testoReport = `🩺 *CareAssist Pro - Diario Socio-Sanitario*
+👤 Assistito: *${pulitoNome}* (${eta} anni)
 📅 Data: *${dataStr.charAt(0).toUpperCase() + dataStr.slice(1)}*
 
 ✅ *Terapie Farmacologiche:* ${farmaciStato}
@@ -8577,47 +8534,79 @@ function apriModalReportWhatsApp() {
 ----------------------------------------
 _Aggiornamento inviato con il sistema CareAssist Pro C. Milella_`;
 
-  const textarea = document.getElementById('report-wa-testo');
-  if (textarea) textarea.value = testoReport;
+    const textarea = document.getElementById('report-wa-testo');
+    if (textarea) textarea.value = testoReport;
 
-  // Popola selettore destinatari
-  const select = document.getElementById('report-wa-destinatario');
-  if (select) {
-    const opzioni = [];
-    if (p.moglieCellulare) {
-      opzioni.push(`<option value="${p.moglieCellulare}">👥 ${p.moglieNome || 'Famiglia'}: ${p.moglieCellulare}</option>`);
+    // Popola selettore destinatari
+    const select = document.getElementById('report-wa-destinatario');
+    if (select) {
+      const opzioni = [];
+      if (p.maritoCellulare) {
+        opzioni.push(`<option value="${p.maritoCellulare}">👥 ${p.maritoNome || 'Marito'}: ${p.maritoCellulare}</option>`);
+      }
+      if (p.moglieCellulare) {
+        opzioni.push(`<option value="${p.moglieCellulare}">👥 ${p.moglieNome || 'Moglie'}: ${p.moglieCellulare}</option>`);
+      }
+      if (p.caregiverCellulare || p.caregiverTel) {
+        opzioni.push(`<option value="${p.caregiverCellulare || p.caregiverTel}">👥 ${p.caregiverNome || 'Caregiver'}: ${p.caregiverCellulare || p.caregiverTel}</option>`);
+      }
+      if (p.cellulare) {
+        opzioni.push(`<option value="${p.cellulare}">📱 Cellulare Assistito: ${p.cellulare}</option>`);
+      }
+      opzioni.push(`<option value="custom">✏️ Inserisci Altro Numero Manuale...</option>`);
+      select.innerHTML = opzioni.join('');
     }
-    if (p.cellulare) {
-      opzioni.push(`<option value="${p.cellulare}">📱 Cellulare Assistito: ${p.cellulare}</option>`);
+
+    if (typeof openModal === 'function') {
+      openModal('modal-report-whatsapp');
     }
-    opzioni.push(`<option value="custom">✏️ Inserisci Altro Numero Manuale...</option>`);
-    select.innerHTML = opzioni.join('');
+    const modalEl = document.getElementById('modal-report-whatsapp');
+    if (modalEl) {
+      modalEl.classList.add('active');
+      modalEl.style.display = 'flex';
+    }
+  } catch(err) {
+    console.error('Errore apriModalReportWhatsApp:', err);
+    const modalEl = document.getElementById('modal-report-whatsapp');
+    if (modalEl) {
+      modalEl.classList.add('active');
+      modalEl.style.display = 'flex';
+    }
   }
-
-  openModal('modal-report-whatsapp');
 }
+window.apriModalReportWhatsApp = apriModalReportWhatsApp;
 
 function inviaReportWhatsAppDiretto() {
-  const textarea = document.getElementById('report-wa-testo');
-  const select = document.getElementById('report-wa-destinatario');
-  if (!textarea) return;
+  try {
+    const textarea = document.getElementById('report-wa-testo');
+    const select = document.getElementById('report-wa-destinatario');
+    if (!textarea) return;
 
-  let phone = select ? select.value : '';
-  if (phone === 'custom' || !phone) {
-    phone = prompt('Inserisci il numero di cellulare a cui inviare il report WhatsApp (es. 3471234567):', '');
-    if (!phone) return;
+    let phone = select ? select.value : '';
+    if (phone === 'custom' || !phone) {
+      phone = prompt('Inserisci il numero di cellulare a cui inviare il report WhatsApp (es. 3471234567):', '');
+      if (!phone) return;
+    }
+
+    const cleanNum = (n) => (n || '').replace(/[^0-9]/g, '');
+    let waPhone = cleanNum(phone);
+    if (waPhone.length === 10) waPhone = '39' + waPhone;
+
+    const msg = textarea.value;
+    const url = `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+    if (typeof closeModal === 'function') closeModal('modal-report-whatsapp');
+    const modalEl = document.getElementById('modal-report-whatsapp');
+    if (modalEl) {
+      modalEl.classList.remove('active');
+      modalEl.style.display = 'none';
+    }
+    if (typeof showToast === 'function') showToast('Apertura WhatsApp completata! 📲', 'success');
+  } catch(e) {
+    console.error('Errore inviaReportWhatsAppDiretto:', e);
   }
-
-  const cleanNum = (n) => (n || '').replace(/[^0-9]/g, '');
-  let waPhone = cleanNum(phone);
-  if (waPhone.length === 10) waPhone = '39' + waPhone;
-
-  const msg = textarea.value;
-  const url = `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(msg)}`;
-  window.open(url, '_blank');
-  closeModal('modal-report-whatsapp');
-  showToast('Apertura WhatsApp completata! 📲', 'success');
 }
+window.inviaReportWhatsAppDiretto = inviaReportWhatsAppDiretto;
 
 // 4. RICHIESTA RICETTA AUTOMATICA AL MEDICO CURANTE
 function richiediRicettaMedico(farmacoId) {

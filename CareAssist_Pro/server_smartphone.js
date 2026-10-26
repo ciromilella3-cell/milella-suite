@@ -101,7 +101,10 @@ const server = http.createServer((req, res) => {
 
     res.writeHead(200, {
       'Content-Type': contentType,
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': (ext === '.html' || ext === '.js' || ext === '.css') ? 'no-cache, no-store, must-revalidate' : 'public, max-age=86400',
+      'Pragma': 'no-cache',
+      'Expires': '0'
     });
     fs.createReadStream(safePath).pipe(res);
   });
