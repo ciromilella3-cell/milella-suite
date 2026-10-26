@@ -1265,7 +1265,25 @@ app.get(['/api/salute/data', '/salute/api/data'], (req, res) => {
     try {
         if (fs.existsSync(saluteDbPath)) {
             const data = fs.readFileSync(saluteDbPath, 'utf8');
-            res.type('application/json').send(data || '{}');
+            let parsed = {};
+            try { parsed = JSON.parse(data || '{}'); } catch(e){}
+            // Escludi pesate cancellate memorizzate in _deletedWeightsLog
+            const delSet = new Set(parsed._deletedWeightsLog || []);
+            if (delSet.size > 0) {
+                Object.keys(parsed).forEach(k => {
+                    if (k.startsWith('weightLog_')) {
+                        const prof = k.replace('weightLog_', '');
+                        try {
+                            let arr = typeof parsed[k] === 'string' ? JSON.parse(parsed[k]) : parsed[k];
+                            if (Array.isArray(arr)) {
+                                arr = arr.filter(item => item && item.date && !delSet.has(`${prof}|${item.date}`));
+                                parsed[k] = JSON.stringify(arr);
+                            }
+                        } catch(e) {}
+                    }
+                });
+            }
+            res.json(parsed);
         } else {
             // Fallback su Ultimo_Salvataggio_Automatico se salute_db.json non è presente
             const autoSaveFile = path.join(__dirname, 'public', 'salute', 'Backup_Salute', 'Ultimo_Salvataggio_Automatico.salute');
@@ -1295,19 +1313,44 @@ app.post(['/api/salute/data', '/salute/api/data'], (req, res) => {
         // Merge intelligente: unisci campi e storici
         const incoming = req.body;
         const merged = Object.assign({}, current, incoming);
+
+        // Registro autoritativo cancellazioni pesate (_deletedWeightsLog)
+        let delSet = new Set(current._deletedWeightsLog || []);
+        if (incoming._deletedWeights && Array.isArray(incoming._deletedWeights)) {
+            incoming._deletedWeights.forEach(dw => {
+                if (dw && dw.profile && dw.date) delSet.add(`${dw.profile}|${dw.date}`);
+            });
+        }
+        merged._deletedWeightsLog = Array.from(delSet);
         
         // Gestione profili e weightLog dinamici per QUALSIASI profilo presente
         Object.keys(incoming).forEach(key => {
             if (key.startsWith('weightLog_')) {
+                const prof = key.replace('weightLog_', '');
                 try {
                     const arrInc = typeof incoming[key] === 'string' ? JSON.parse(incoming[key]) : incoming[key];
                     const arrCur = current[key] ? (typeof current[key] === 'string' ? JSON.parse(current[key]) : current[key]) : [];
-                    if (Array.isArray(arrInc) && Array.isArray(arrCur)) {
-                        const dateMap = new Map();
-                        arrCur.forEach(item => { if (item && item.date) dateMap.set(item.date, item); });
-                        arrInc.forEach(item => { if (item && item.date) dateMap.set(item.date, item); });
-                        const combined = Array.from(dateMap.values()).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-                        merged[key] = JSON.stringify(combined);
+                    if (Array.isArray(arrInc)) {
+                        if (incoming._forceWeightLog) {
+                            const filtered = arrInc.filter(item => item && item.date && !delSet.has(`${prof}|${item.date}`));
+                            merged[key] = JSON.stringify(filtered);
+                        } else {
+                            const dateMap = new Map();
+                            if (Array.isArray(arrCur)) {
+                                arrCur.forEach(item => {
+                                    if (item && item.date && !delSet.has(`${prof}|${item.date}`)) {
+                                        dateMap.set(item.date, item);
+                                    }
+                                });
+                            }
+                            arrInc.forEach(item => {
+                                if (item && item.date && !delSet.has(`${prof}|${item.date}`)) {
+                                    dateMap.set(item.date, item);
+                                }
+                            });
+                            const combined = Array.from(dateMap.values()).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                            merged[key] = JSON.stringify(combined);
+                        }
                     }
                 } catch(eMerge) {}
             }

@@ -1,3 +1,32 @@
+
+/* AUTO-CLEANUP PESATA ERRATA 79.9 */
+(function cleanupErroneousWeightMariaCarmela() {
+    try {
+        const k = 'weightLog_moglie';
+        const local = localStorage.getItem(k);
+        if (local && (local.includes('79.9') || local.includes('2026-10-23'))) {
+            let arr = JSON.parse(local);
+            if (Array.isArray(arr)) {
+                const clean = arr.filter(item => !(item && item.date === '2026-10-23' && Math.abs(item.weight - 79.9) < 0.2));
+                if (clean.length !== arr.length) {
+                    localStorage.setItem(k, JSON.stringify(clean));
+                    const delKey = 'deletedWeights_moglie';
+                    const delList = JSON.parse(localStorage.getItem(delKey) || '[]');
+                    if (!delList.includes('2026-10-23')) delList.push('2026-10-23');
+                    localStorage.setItem(delKey, JSON.stringify(delList));
+                    if (typeof window.syncSaluteToCloud === 'function') {
+                        window.syncSaluteToCloud({
+                            [k]: JSON.stringify(clean),
+                            _forceWeightLog: true,
+                            _deletedWeights: [{ profile: 'moglie', date: '2026-10-23' }]
+                        });
+                    }
+                    console.log('[Salute] Pesata errata 79.9 del 23/10 rimossa dal localStorage locale.');
+                }
+            }
+        }
+    } catch(e) {}
+})();
 // ---- BEVERAGES (Water & Coffee) CON CALCOLATORE SU MISURA ----
 window.getPersonalizedWaterTarget = function(profile) {
     let weight = 75;
@@ -3860,29 +3889,61 @@ window.confirmDeleteModal = function() {
     
     const [dd, mm] = label.split('/');
     let foundIndex = -1;
+    // 1. Cerca per data e peso
     for (let i = log.length - 1; i >= 0; i--) {
         const logParts = log[i].date.split('-');
-        if (logParts[2] === dd && logParts[1] === mm && log[i].weight === value) {
+        if (logParts[2] === dd && logParts[1] === mm && (value === undefined || Math.abs(log[i].weight - parseFloat(value)) < 0.1 || log[i].weight === value)) {
             foundIndex = i;
             break;
         }
     }
+    // 2. Se non trova per peso esatto, cerca solo per data (giorno e mese)
+    if (foundIndex === -1) {
+        for (let i = log.length - 1; i >= 0; i--) {
+            const logParts = log[i].date.split('-');
+            if (logParts[2] === dd && logParts[1] === mm) {
+                foundIndex = i;
+                break;
+            }
+        }
+    }
     
     if (foundIndex !== -1) {
-        log.splice(foundIndex, 1);
+        const removedItem = log.splice(foundIndex, 1)[0];
         localStorage.setItem(key, JSON.stringify(log));
-        if(typeof showToast === 'function') showToast("Pesata disingegrata! 💥");
-        loadProgress(profile);
+
+        // Registro permanente cancellazione per evitare che il cloud la ripristini
+        if (removedItem && removedItem.date) {
+            const delKey = 'deletedWeights_' + profile;
+            const delList = JSON.parse(localStorage.getItem(delKey) || '[]');
+            if (!delList.includes(removedItem.date)) {
+                delList.push(removedItem.date);
+                localStorage.setItem(delKey, JSON.stringify(delList));
+            }
+            if (typeof window.syncSaluteToCloud === 'function') {
+                window.syncSaluteToCloud({
+                    [key]: JSON.stringify(log),
+                    _forceWeightLog: true,
+                    _deletedWeights: [{ profile, date: removedItem.date }]
+                });
+            }
+        }
+
+        if(typeof showToast === 'function') showToast(`Pesata del ${label} eliminata definitivamente! 🗑️`);
+        if (typeof loadProgress === 'function') loadProgress(profile);
+        if (typeof window.refreshDashboardStats === 'function') window.refreshDashboardStats(profile);
     } else {
         if (label === '29/09') {
              if (typeof showCustomAlert === 'function') showCustomAlert("Questo è il peso iniziale. Se vuoi modificarlo, cambia il Peso Iniziale in alto.");
              else showToast("Questo è il peso iniziale. Se vuoi modificarlo, cambia il Peso Iniziale in alto.");
+        } else {
+             if (typeof showToast === 'function') showToast("Pesata non trovata o già rimossa.");
         }
     }
     
+    if (typeof closeChartFocusBadge === 'function') closeChartFocusBadge(profile);
     closeDeleteModal();
 };
-
 
 // ---- TOAST NOTIFICATIONS (BEAUTIFUL ALERTS) ----
 window.showToast = function(message, isError = false) {
@@ -7938,15 +7999,30 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
             const cloudVal = typeof cloudData[k] === 'object' ? JSON.stringify(cloudData[k]) : String(cloudData[k]);
             const localVal = localStorage.getItem(k);
             
-            // Per gli array di peso, fai merge intelligente per non perdere misurazioni
+            // Per gli array di peso, fai merge intelligente escludendo le pesate eliminate
             if (k.startsWith('weightLog_')) {
                 try {
+                    const prof = k.replace('weightLog_', '');
+                    const delKey = 'deletedWeights_' + prof;
+                    const delList = JSON.parse(localStorage.getItem(delKey) || '[]');
+                    const delSet = new Set(delList);
+                    if (cloudData._deletedWeightsLog && Array.isArray(cloudData._deletedWeightsLog)) {
+                        cloudData._deletedWeightsLog.forEach(tag => {
+                            const [p, d] = String(tag).split('|');
+                            if (p === prof && d) delSet.add(d);
+                        });
+                    }
+
                     const cloudArr = JSON.parse(cloudVal);
                     const localArr = localVal ? JSON.parse(localVal) : [];
                     if (Array.isArray(cloudArr) && Array.isArray(localArr)) {
                         const map = new Map();
-                        localArr.forEach(item => { if (item && item.date) map.set(item.date, item); });
-                        cloudArr.forEach(item => { if (item && item.date) map.set(item.date, item); });
+                        localArr.forEach(item => {
+                            if (item && item.date && !delSet.has(item.date)) map.set(item.date, item);
+                        });
+                        cloudArr.forEach(item => {
+                            if (item && item.date && !delSet.has(item.date)) map.set(item.date, item);
+                        });
                         const mergedArr = Array.from(map.values()).sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
                         const mergedStr = JSON.stringify(mergedArr);
                         if (mergedStr !== localVal) {
@@ -8137,18 +8213,32 @@ window.openWeightHistoryManager = function(profile) {
 };
 
 window.deleteWeightEntry = function(profile, dateStr, weightVal) {
-    if (!confirm('Vuoi davvero cancellare la pesata del ' + dateStr + ' (' + weightVal + ' kg)?')) return;
+    const msg = weightVal ? `Vuoi davvero cancellare la pesata del ${dateStr} (${weightVal} kg)?` : `Vuoi davvero cancellare la pesata del ${dateStr}?`;
+    if (!confirm(msg)) return;
     const key = 'weightLog_' + profile;
     let log = JSON.parse(localStorage.getItem(key)) || [];
-    log = log.filter(item => !(item.date === dateStr && Math.abs(item.weight - weightVal) < 0.01));
+    log = log.filter(item => item && item.date !== dateStr);
     localStorage.setItem(key, JSON.stringify(log));
 
+    // Registro cancellazione locale e cloud autoritativo
+    const delKey = 'deletedWeights_' + profile;
+    const delList = JSON.parse(localStorage.getItem(delKey) || '[]');
+    if (!delList.includes(dateStr)) {
+        delList.push(dateStr);
+        localStorage.setItem(delKey, JSON.stringify(delList));
+    }
+
     if (typeof loadProgress === 'function') loadProgress(profile);
+    if (typeof window.refreshDashboardStats === 'function') window.refreshDashboardStats(profile);
     if (typeof window.syncSaluteToCloud === 'function') {
-        window.syncSaluteToCloud({ [key]: JSON.stringify(log) });
+        window.syncSaluteToCloud({
+            [key]: JSON.stringify(log),
+            _forceWeightLog: true,
+            _deletedWeights: [{ profile, date: dateStr }]
+        });
     }
     window.openWeightHistoryManager(profile);
-    if (typeof showToast === 'function') showToast('Pesata rimossa con successo!');
+    if (typeof showToast === 'function') showToast('Pesata rimossa con successo! 🗑️');
 };
 
 // Funzioni di regolazione e salvataggio per la modale di Modifica / Elimina
@@ -8176,19 +8266,32 @@ window.saveEditedWeightFromModal = function() {
     let foundIndex = -1;
     for (let i = log.length - 1; i >= 0; i--) {
         const logParts = log[i].date.split('-');
-        if (logParts[2] === dd && logParts[1] === mm && log[i].weight === value) {
+        if (logParts[2] === dd && logParts[1] === mm && (value === undefined || Math.abs(log[i].weight - parseFloat(value)) < 0.1 || log[i].weight === value)) {
             foundIndex = i;
             break;
+        }
+    }
+    if (foundIndex === -1) {
+        for (let i = log.length - 1; i >= 0; i--) {
+            const logParts = log[i].date.split('-');
+            if (logParts[2] === dd && logParts[1] === mm) {
+                foundIndex = i;
+                break;
+            }
         }
     }
 
     if (foundIndex !== -1) {
         log[foundIndex].weight = newWeight;
         localStorage.setItem(key, JSON.stringify(log));
-        if (typeof showToast === 'function') showToast("Pesata modificata con successo!");
+        if (typeof showToast === 'function') showToast("Pesata modificata con successo! 💾");
         if (typeof loadProgress === 'function') loadProgress(profile);
+        if (typeof window.refreshDashboardStats === 'function') window.refreshDashboardStats(profile);
         if (typeof window.syncSaluteToCloud === 'function') {
-            window.syncSaluteToCloud({ [key]: JSON.stringify(log) });
+            window.syncSaluteToCloud({
+                [key]: JSON.stringify(log),
+                _forceWeightLog: true
+            });
         }
     } else {
         alert("Impossibile trovare la pesata da modificare.");
@@ -8288,6 +8391,8 @@ window.closeChartFocusBadge = function(profile) {
         }
 
         canvas.onclick = handlePointer;
+        // Su mobile touchstart/pointerup garantisce immediata risposta
+        canvas.onpointerup = handlePointer;
     }
 
     const prevDraw = drawChart;

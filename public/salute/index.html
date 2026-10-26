@@ -1010,9 +1010,14 @@ window.onerror = function(msg, url, line) {
 
                         <!-- GRAFICO IMMEDIATO -->
                         <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:12px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
                                 <span style="font-size:0.85rem; font-weight:700; color:#cbd5e1;">📈 Andamento Pesi Recenti</span>
-                                <span class="milestone-text" id="milestone-{PROF}" style="font-size:0.8rem; color:#38bdf8; font-weight:700;"></span>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span class="milestone-text" id="milestone-{PROF}" style="font-size:0.8rem; color:#38bdf8; font-weight:700;"></span>
+                                    <button type="button" onclick="openWeightHistoryManager('{PROF}')" style="background:rgba(59,130,246,0.25); border:1px solid #38bdf8; color:#38bdf8; padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(0,0,0,0.25);" title="Visualizza storico pesate ed elimina eventuali valori errati">
+                                        🗂️ Storico / Elimina
+                                    </button>
+                                </div>
                             </div>
                             <div class="chart-container" style="position:relative; height:240px; width:100%;">
                                 <canvas id="chart-{PROF}"></canvas>
