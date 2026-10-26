@@ -4830,6 +4830,7 @@ function openModal(id) {
   const el = document.getElementById(id);
   if (el) {
     el.classList.add('active');
+    el.style.display = 'flex';
 
     // Inietta o aggiorna in automatico l'indicazione chiara del paziente attivo
     const p = getActivePaziente();
