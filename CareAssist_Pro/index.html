@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=29">
+  <link rel="stylesheet" href="style.css?v=30">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -2737,7 +2737,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=29"></script>
+  <script src="app.js?v=30"></script>
   <script>
     // Registrazione Service Worker per utilizzo offline al 100% da cellulare
     if ('serviceWorker' in navigator) {
@@ -3021,7 +3021,7 @@
         <h3 class="modal-title" style="margin:0; font-size:16px; font-weight:800; color:#0f2744; display:flex; align-items:center; gap:8px;">
           <span>📝</span> Registra Nota di Turno / Consegna
         </h3>
-        <button type="button" class="btn-close-modal" onclick="closeModal('modal-nota-turno')" style="background:none; border:none; font-size:22px; cursor:pointer;">&times;</button>
+        <button type="button" class="btn-close-modal btn-close-dark" onclick="closeModal('modal-nota-turno')" title="Chiudi Finestra" aria-label="Chiudi">✕</button>
       </div>
       <div class="modal-body" style="padding:16px 20px;">
         <div class="form-group" style="margin-bottom:12px;">
@@ -3061,7 +3061,7 @@
             <div style="font-size:11px; color:#fecaca; font-weight:600;">Dati salvavita per Sanitari & Pronto Soccorso</div>
           </div>
         </div>
-        <button type="button" class="btn-close-modal" onclick="closeModal('modal-scheda-118')" style="color:#fff; font-size:24px;">&times;</button>
+        <button type="button" class="btn-close-modal btn-close-light" onclick="closeModal('modal-scheda-118')" title="Chiudi Scheda 118" aria-label="Chiudi">✕</button>
       </div>
 
       <div class="scheda-118-body" id="scheda-118-content-body">
@@ -3142,7 +3142,7 @@
             <div style="font-size:11px; color:#d1fae5;">Invia l'aggiornamento clinico e assistenziale ai familiari</div>
           </div>
         </div>
-        <button type="button" class="btn-close-modal" onclick="closeModal('modal-report-whatsapp')" style="color:#fff; font-size:24px;">&times;</button>
+        <button type="button" class="btn-close-modal btn-close-light" onclick="closeModal('modal-report-whatsapp')" title="Chiudi Report WhatsApp" aria-label="Chiudi">✕</button>
       </div>
 
       <div style="padding:18px 20px;">
@@ -3178,7 +3178,7 @@
         <h3 style="margin:0; font-size:17px; font-weight:800; color:#0f2744; display:flex; align-items:center; gap:8px;">
           <span>👤</span> Seleziona Cartella Assistito
         </h3>
-        <button type="button" class="btn-close-modal" onclick="closeModal('modal-switch-paziente-rapido')">&times;</button>
+        <button type="button" class="btn-close-modal btn-close-dark" onclick="closeModal('modal-switch-paziente-rapido')" title="Chiudi Finestra" aria-label="Chiudi">✕</button>
       </div>
       <div style="font-size:12.5px; color:#64748b; margin-bottom:12px;">
         Tocca un assistito per passare istantaneamente alla sua cartella clinica senza dover scrollare:
