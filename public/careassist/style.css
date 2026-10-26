@@ -2226,3 +2226,52 @@ textarea.form-control {
     font-size: 11px;
   }
 }
+
+
+/* ==========================================================================
+   EFFETTO FARO / EVIDENZIATORE LAMPEGGIANTE RIGA FARMACO SCADUTO DA ALLERTA
+   ========================================================================== */
+@keyframes pulseHighlightFarmaco {
+  0% {
+    background-color: #fee2e2 !important;
+    box-shadow: inset 0 0 0 3px #dc2626, 0 0 18px rgba(220, 38, 38, 0.75) !important;
+    transform: scale(1);
+  }
+  50% {
+    background-color: #fca5a5 !important;
+    box-shadow: inset 0 0 0 4px #b91c1c, 0 0 32px 8px rgba(220, 38, 38, 0.95) !important;
+    transform: scale(1.02);
+  }
+  100% {
+    background-color: #fee2e2 !important;
+    box-shadow: inset 0 0 0 3px #dc2626, 0 0 18px rgba(220, 38, 38, 0.75) !important;
+    transform: scale(1);
+  }
+}
+
+.terapia-row-highlight {
+  animation: pulseHighlightFarmaco 0.9s infinite ease-in-out !important;
+  position: relative !important;
+  z-index: 50 !important;
+  border-radius: 12px !important;
+}
+
+.terapia-row-highlight td {
+  background-color: #fef2f2 !important;
+  color: #7f1d1d !important;
+  font-weight: 800 !important;
+  border-top: 2.5px solid #dc2626 !important;
+  border-bottom: 2.5px solid #dc2626 !important;
+}
+
+.terapia-row-highlight td:first-child {
+  border-left: 3.5px solid #dc2626 !important;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.terapia-row-highlight td:last-child {
+  border-right: 3.5px solid #dc2626 !important;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}

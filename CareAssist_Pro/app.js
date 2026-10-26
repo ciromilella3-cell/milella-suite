@@ -3697,12 +3697,12 @@ function controllaTerapieGlobaliTuttiPazienti() {
 
         return `
           <div style="background:#fff5f5; border:2px solid #fca5a5; border-radius:14px; padding:14px; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #fee2e2; padding-bottom:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #fee2e2; padding-bottom:8px; cursor:pointer;" onclick="vaiACartellaPazienteDaAllarme('${p.id}', ${item.farmaci[0] ? item.farmaci[0].id : null})">
               <div style="display:flex; align-items:center; gap:8px;">
                 <span style="font-size:22px;">👤</span>
                 <div>
-                  <div style="font-size:15px; font-weight:800; color:#1e293b;">${p.nome} (${calcolaAnniDaData(p.dataNascita)} anni)</div>
-                  <div style="font-size:11px; color:#ef4444; font-weight:700;">⚠️ ${item.farmaci.length} Terapia/e in ritardo!</div>
+                  <div style="font-size:15px; font-weight:800; color:#1e293b; text-decoration:underline;" title="Tocca per andare direttamente alla cartella farmaci">${p.nome} (${calcolaAnniDaData(p.dataNascita)} anni) ➔</div>
+                  <div style="font-size:11px; color:#ef4444; font-weight:700;">⚠️ ${item.farmaci.length} Terapia/e in ritardo! (Tocca per vedere)</div>
                 </div>
               </div>
               <button class="btn btn-primary" style="padding:6px 14px; font-size:12px; font-weight:800;" onclick="vaiACartellaPazienteDaAllarme('${p.id}', ${item.farmaci[0] ? item.farmaci[0].id : null})">
@@ -3758,13 +3758,9 @@ function chiudiAllarmeTerapieGlobali() {
 function vaiACartellaPazienteDaAllarme(pazId, farmacoId) {
   chiudiModalAllarmeSenzaSnooze();
   cambiaPaziente(pazId);
-  // Passa automaticamente alla scheda terapie
   var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
   if (tabBtn) tabBtn.click();
-
-  if (farmacoId) {
-    evidenziaEScrollaAFarmaco(farmacoId);
-  }
+  evidenziaEScrollaAFarmaco(farmacoId);
 }
 
 function vaiADirettoFarmacoDaAllarme(pazId, farmacoId) {
@@ -3778,36 +3774,54 @@ function vaiADirettoFarmacoDaAllarme(pazId, farmacoId) {
   }
 }
 
-// FUNZIONE PER SCROLL FLUIDO ED EFFETTO FARO/EVIDENZIATORE SUL FARMACO INTERESSATO
+// FUNZIONE PER SCROLL FLUIDO ED EFFETTO FARO/EVIDENZIATORE SUL FARMACO INTERESSATO CON RETRY E SUPPORTO MOBILE
 function evidenziaEScrollaAFarmaco(farmacoId) {
-  setTimeout(function() {
-    var row = document.getElementById('terapia-row-' + farmacoId);
+  // Se non viene passato un farmacoId specifico, trova la prima terapia in ritardo del paziente attivo
+  if (!farmacoId) {
+    const p = getActivePaziente();
+    if (p && p.terapie) {
+      const tRitardo = p.terapie.find(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo);
+      if (tRitardo) farmacoId = tRitardo.id;
+      else if (p.terapie.length > 0) farmacoId = p.terapie[0].id;
+    }
+  }
+
+  let tentativi = 0;
+  function provaEvidenziare() {
+    tentativi++;
+    var row = null;
+    if (farmacoId) {
+      row = document.getElementById('terapia-row-' + farmacoId) || document.querySelector('tr[data-farmaco-id="' + farmacoId + '"]');
+    }
+    
+    // Fallback: cerca la prima riga nella tabella terapie che ha un pulsante di ritardo
     if (!row) {
-      // Prova a cercare per data attribute
-      row = document.querySelector('tr[data-farmaco-id="' + farmacoId + '"]');
+      const btnRitardo = document.querySelector('#terapie-table-body .farmaco-in-ritardo-btn, #terapie-table-body .badge-danger');
+      if (btnRitardo) {
+        row = btnRitardo.closest('tr');
+      }
     }
 
     if (row) {
-      // Scroll fluido immediato che centra l'elemento verticalmente nello schermo
       row.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-      // Rimuovi precedenti evidenziazioni
       document.querySelectorAll('.terapia-row-highlight').forEach(function(el) {
         el.classList.remove('terapia-row-highlight');
       });
 
-      // Applica la classe evidenziatore faro
       row.classList.add('terapia-row-highlight');
+      showToast('👉 Ecco la terapia interessata in ritardo!', 'warning');
 
-      // Mostra toast di orientamento per l'utente
-      showToast('👉 Ecco il farmaco da somministrare!', 'info');
-
-      // Rimuovi dopo 4.5 secondi
+      // Resta lampeggiante per 7 secondi completi
       setTimeout(function() {
         if (row) row.classList.remove('terapia-row-highlight');
-      }, 4500);
+      }, 7000);
+    } else if (tentativi < 6) {
+      setTimeout(provaEvidenziare, 200);
     }
-  }, 350); // piccolo timeout per consentire il rendering del cambio paziente
+  }
+
+  setTimeout(provaEvidenziare, 150);
 }
 
 function azioneRapidaMancanzaDaAllarme(pazId, farmacoId) {
@@ -8310,6 +8324,16 @@ function selezionaPazienteRapido(pazienteId) {
     cambiaPaziente(pazienteId);
     showToast('Cartella assistito caricata con successo! 👤');
   }
+  // Se l'assistito ha ritardi, porta l'operatore subito alla riga lampeggiante
+  const p = (AppData.pazienti || []).find(it => it.id === pazienteId);
+  if (p && p.terapie) {
+    const tRitardo = p.terapie.find(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo);
+    if (tRitardo) {
+      var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
+      if (tabBtn) tabBtn.click();
+      evidenziaEScrollaAFarmaco(tRitardo.id);
+    }
+  }
 }
 
 // ==========================================================================
@@ -8358,3 +8382,13 @@ function sbloccaAudioSilenziosoAlPrimoGesto() {
 }
 window.addEventListener('click', sbloccaAudioSilenziosoAlPrimoGesto, { once: true, passive: true });
 window.addEventListener('touchstart', sbloccaAudioSilenziosoAlPrimoGesto, { once: true, passive: true });
+
+
+function vaiATerapiaInRitardoAttiva() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const tRitardo = (p.terapie || []).find(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo);
+  var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
+  if (tabBtn) tabBtn.click();
+  evidenziaEScrollaAFarmaco(tRitardo ? tRitardo.id : null);
+}
