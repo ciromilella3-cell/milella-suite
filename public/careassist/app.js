@@ -802,6 +802,29 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
 }
 
+function showAdminSyncToast(msg, isHighlight) {
+  var role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
+  // RIGOROSAMENTE SOLO PER ADMIN: gli operatori NON devono vederlo!
+  if (role !== 'admin') return;
+
+  var existing = document.getElementById('careassist-admin-sync-toast');
+  if (existing) existing.remove();
+  
+  var toast = document.createElement('div');
+  toast.id = 'careassist-admin-sync-toast';
+  toast.style.cssText = 'position:fixed; top:24px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg, #090d16 0%, #1e293b 100%); color:#ffffff; border:1.5px solid ' + (isHighlight ? '#38bdf8' : '#10b981') + '; padding:12px 24px; border-radius:30px; font-size:13px; font-weight:700; z-index:9999999; box-shadow:0 12px 35px rgba(0,0,0,0.6), 0 0 15px ' + (isHighlight ? 'rgba(56,189,248,0.3)' : 'rgba(16,185,129,0.3)') + '; display:flex; align-items:center; gap:10px; pointer-events:none; transition:all 0.35s cubic-bezier(0.16, 1, 0.3, 1);';
+  
+  var icon = isHighlight ? '??' : '??';
+  toast.innerHTML = '<span style="font-size:19px;">' + icon + '</span> <span>' + msg + '</span>';
+  document.body.appendChild(toast);
+  
+  setTimeout(function() {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(-12px)';
+    setTimeout(function() { toast.remove(); }, 380);
+  }, 4800);
+}
+
 function showSyncToast(msg, isSuccess) {
   var existing = document.getElementById('careassist-sync-toast');
   if (existing) existing.remove();
@@ -818,10 +841,27 @@ function showSyncToast(msg, isSuccess) {
 }
 
 function saveDb() {
+  var currUser = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Admin';
+  var currRole = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
+  var pAttivo = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+
   AppData.lastModified = Date.now();
   AppData.lastModifiedDevice = (window.innerWidth <= 900) ? 'smartphone' : 'pc';
+  AppData.lastModifiedBy = {
+    nome: currUser,
+    ruolo: currRole,
+    paziente: pAttivo ? (pAttivo.nome || 'Rosa Annunziata') : '',
+    ora: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
+    timestamp: Date.now()
+  };
+
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
   renderAll();
+
+  // NOTIFICA ESCLUSIVA PER ADMIN: conferma visiva che tutti gli operatori sono allineati
+  if (currRole === 'admin') {
+    showAdminSyncToast('?? Dati salvati e sincronizzati nel Cloud: allineati con tutti gli operatori (M.C. Stoppelli)', false);
+  }
 
   // Flag per indicare modifiche in sospeso se offline
   localStorage.setItem('careassist_pending_sync', 'true');
@@ -907,7 +947,18 @@ function sincronizzaDbDalServer(callback) {
           localStorage.setItem(DB_KEY, JSON.stringify(serverData));
           localStorage.removeItem('careassist_pending_sync');
           renderAll();
-          showSyncToast('Dati allineati all\'ultima versione dal PC!', true);
+          var currRole = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
+          var modBy = serverData.lastModifiedBy;
+          if (currRole === 'admin') {
+            if (modBy && modBy.ruolo !== 'admin') {
+              var chi = modBy.nome || 'M.C. Stoppelli';
+              var paz = modBy.paziente ? ' (' + modBy.paziente + ')' : '';
+              var ora = modBy.ora || new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+              showAdminSyncToast('?? Sincronizzazione in tempo reale: ' + chi + ' ha aggiornato i dati' + paz + ' alle ' + ora, true);
+            } else {
+              showSyncToast('Cloud aggiornato all\'ultima versione!', true);
+            }
+          }
         }
         // Caso 3: Stessa versione o nessuna differenza
         else {
@@ -968,7 +1019,17 @@ function aggiornaBadgeStatoSync(isOnline) {
     badge.style.color = '#10b981';
     dot.style.background = '#10b981';
     dot.style.boxShadow = '0 0 6px #10b981';
-    txt.textContent = 'Cloud Sincronizzato (' + oraStr + ')';
+
+    var role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
+    if (role === 'admin') {
+      var lastOpInfo = '';
+      if (AppData && AppData.lastModifiedBy && AppData.lastModifiedBy.ruolo !== 'admin') {
+        lastOpInfo = ' • Ultimo: ' + AppData.lastModifiedBy.nome + ' (' + AppData.lastModifiedBy.ora + ')';
+      }
+      txt.textContent = 'Cloud Live Tutti gli Utenti (' + oraStr + ')' + lastOpInfo;
+    } else {
+      txt.textContent = 'Cloud Sincronizzato (' + oraStr + ')';
+    }
   } else {
     badge.style.background = 'rgba(239, 68, 68, 0.15)';
     badge.style.borderColor = '#ef4444';
