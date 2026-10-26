@@ -148,7 +148,15 @@
         Caricamento cartella clinica...
       </div>
       <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; z-index:2;">
-        <button class="btn btn-primary" onclick="apriModificaAnagrafica()">✏️ Modifica Scheda & Recapiti</button>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="btn btn-primary" onclick="apriModificaAnagrafica()" style="font-size:12px; padding:6px 12px;">✏️ Modifica</button>
+          <button class="btn btn-scheda-118" onclick="apriModalScheda118()" style="background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.4); box-shadow:0 3px 10px rgba(220,38,38,0.4); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
+            <span>🚨</span> Scheda 118
+          </button>
+          <button class="btn" onclick="apriModalReportWhatsApp()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.3); box-shadow:0 3px 10px rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
+            <span>💬</span> Report WA
+          </button>
+        </div>
         <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
           <span id="hero-badge-data-oggi" class="badge" style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-size:12px; font-weight:700;">📅 Oggi: --/--/----</span>
           <span class="badge badge-success">● Monitoraggio Attivo</span>
@@ -222,6 +230,10 @@
 
           <div class="hydration-bar-wrapper">
             <div class="hydration-bar-fill" id="hydration-bar-fill" style="width: 0%;">0%</div>
+          </div>
+          <!-- BICCHIERI D'ACQUA VISUALI CLICCABILI (8 Bicchieri x 150ml = 1.200 ml) -->
+          <div id="water-glasses-row" style="display:flex; justify-content:center; align-items:center; gap:7px; margin:10px 0; flex-wrap:wrap;">
+            <!-- Popolato da aggiornaGraficaBicchieriIdratazione() -->
           </div>
 
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
@@ -2912,13 +2924,141 @@
           <input type="text" id="nota-turno-operatore" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13.5px; box-sizing:border-box;" placeholder="Il tuo nome (es. M.C. Stoppelli)">
         </div>
         <div class="form-group" style="margin-bottom:12px;">
-          <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:5px;">Note sull'Assistito / Eventi del Turno:</label>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <label style="font-size:12px; font-weight:700; color:#475569;">Note sull'Assistito / Eventi del Turno:</label>
+            <button type="button" id="btn-mic-dettatura-nota" onclick="toggleDettaturaVocaleNota()" style="background:#f0f9ff; border:1.5px solid #0284c7; color:#0284c7; font-size:11.5px; font-weight:800; padding:3px 9px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Premi e parla per dettare la nota con la voce">
+              <span>🎤</span> Dettatura Vocale
+            </button>
+          </div>
           <textarea id="nota-turno-testo" rows="4" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13px; box-sizing:border-box; resize:vertical;" placeholder="Es: Condizioni generali stabili, ha cenato con appetito, pressione 125/80, riposo notturno regolare..."></textarea>
         </div>
       </div>
       <div class="modal-footer" style="padding:12px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between;">
         <button type="button" class="btn btn-outline" onclick="closeModal('modal-nota-turno')">Annulla</button>
         <button type="button" class="btn btn-primary" onclick="salvaNotaTurno()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-weight:800;">Salva nel Diario ✅</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- MODAL: SCHEDA EMERGENZA CLINICA 118 / PRONTO SOCCORSO -->
+  <div id="modal-scheda-118" class="modal-overlay" style="z-index: 10008;">
+    <div class="scheda-118-card">
+      <div class="scheda-118-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:24px;">🚨</span>
+          <div>
+            <h3 style="margin:0; font-size:16px; font-weight:900; letter-spacing:0.5px;">SCHEDA CLINICA EMERGENZA 118</h3>
+            <div style="font-size:11px; color:#fecaca; font-weight:600;">Dati salvavita per Sanitari & Pronto Soccorso</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('modal-scheda-118')" style="color:#fff; font-size:24px;">&times;</button>
+      </div>
+
+      <div class="scheda-118-body" id="scheda-118-content-body">
+        <!-- 1. ANAGRAFICA & RECAPITO RAPIDO -->
+        <div class="scheda-118-box">
+          <div class="scheda-118-title" style="color:#0369a1;">👤 Anagrafica & Domicilio Assistito</div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+            <div>Paziente: <b id="s118-nome" style="font-size:14px; color:#0f172a;">--</b></div>
+            <div>Età / Nascita: <b id="s118-eta-data">--</b></div>
+            <div>Codice Fiscale: <b id="s118-cf" style="letter-spacing:0.5px; color:#1e3a8a;">--</b></div>
+            <div>Telefono Casa/Cell: <b id="s118-tel">--</b></div>
+          </div>
+          <div style="margin-top:6px; padding-top:6px; border-top:1px dashed #cbd5e1;">
+            📍 Indirizzo Residenza: <b id="s118-indirizzo" style="color:#0369a1;">--</b>
+          </div>
+        </div>
+
+        <!-- 2. DIAGNOSI ATTIVE & ALLERGIE -->
+        <div class="scheda-118-box-alert">
+          <div class="scheda-118-title" style="color:#dc2626;">⚠️ Patologie Attive & Allergie Note</div>
+          <div style="margin-bottom:6px;">
+            Diagnosi / Patologie: <b id="s118-patologie" style="color:#991b1b;">Ipertensione arteriosa, Cardiopatia, Ictus pregresso, Diabete Tipo 2, OSAS</b>
+          </div>
+          <div style="background:#fee2e2; padding:6px 10px; border-radius:8px; color:#991b1b; font-weight:700;">
+            🚫 Allergie / Intolleranze a Farmaci: <span id="s118-allergie">Nessuna allergia farmacologica nota segnalata</span>
+          </div>
+        </div>
+
+        <!-- 3. TERAPIE SALVAVITA & ANTICOAGULANTI ATTIVI OGGI -->
+        <div class="scheda-118-box">
+          <div class="scheda-118-title" style="color:#15803d;">💊 Terapie Salvavita & Farmaci del Giorno</div>
+          <div id="s118-lista-farmaci" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;">
+            <!-- Popolato dinamicamente -->
+          </div>
+        </div>
+
+        <!-- 4. CONTATTI MEDICO & FAMIGLIA -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+          <div class="scheda-118-box" style="border-color:#bfdbfe; background:#eff6ff;">
+            <div class="scheda-118-title" style="color:#1e40af;">👨‍⚕️ Medico Curante (MMG)</div>
+            <div id="s118-medico-nome" style="font-weight:800; color:#1e3a8a;">Dott. Roberto Scarcia</div>
+            <div id="s118-medico-tel" style="font-size:12px; margin-top:2px;">Tel: 080 557 44 90</div>
+            <div style="margin-top:6px;">
+              <a href="tel:3471265971" class="btn btn-primary" style="padding:4px 8px; font-size:11px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">📞 Chiama Medico</a>
+            </div>
+          </div>
+          <div class="scheda-118-box" style="border-color:#bbf7d0; background:#f0fdf4;">
+            <div class="scheda-118-title" style="color:#166534;">👥 Contatto Famiglia / Caregiver</div>
+            <div id="s118-famiglia-nome" style="font-weight:800; color:#14532d;">Contatto di Riferimento</div>
+            <div id="s118-famiglia-tel" style="font-size:12px; margin-top:2px;">Cell: --</div>
+            <div style="margin-top:6px;">
+              <a id="s118-famiglia-link" href="#" class="btn btn-success" style="padding:4px 8px; font-size:11px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">📞 Chiama Famiglia</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding:12px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <a href="tel:118" class="btn" style="background:#dc2626; color:#ffffff; font-weight:900; font-size:13.5px; padding:8px 16px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(220,38,38,0.35);">
+          <span>📞</span> CHIAMA IL 118 ORA
+        </a>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-outline" onclick="window.print()">🖨️ Stampa Scheda A4</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-scheda-118')">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REPORT GIORNALIERO WHATSAPP PER I FAMILIARI -->
+  <div id="modal-report-whatsapp" class="modal-overlay" style="z-index: 10008;">
+    <div class="report-wa-card">
+      <div style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:24px;">💬</span>
+          <div>
+            <h3 style="margin:0; font-size:16px; font-weight:800;">Report Giornaliero WhatsApp</h3>
+            <div style="font-size:11px; color:#d1fae5;">Invia l'aggiornamento clinico e assistenziale ai familiari</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('modal-report-whatsapp')" style="color:#fff; font-size:24px;">&times;</button>
+      </div>
+
+      <div style="padding:18px 20px;">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px; font-weight:700; color:#334155; display:block; margin-bottom:5px;">Destinatario WhatsApp:</label>
+          <select id="report-wa-destinatario" class="form-control" style="font-size:13px; font-weight:700;">
+            <!-- Popolato dinamicamente -->
+          </select>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <label style="font-size:12px; font-weight:700; color:#334155;">Testo Messaggio (Modificabile):</label>
+            <span style="font-size:11px; color:#10b981; font-weight:700;">✨ Precompilato in automatico</span>
+          </div>
+          <textarea id="report-wa-testo" rows="8" style="width:100%; box-sizing:border-box; padding:12px; border-radius:12px; border:1.5px solid #a7f3d0; background:#f0fdf4; color:#064e3b; font-size:12.5px; font-family:inherit; line-height:1.5; resize:vertical;"></textarea>
+        </div>
+
+        <button type="button" class="btn" onclick="inviaReportWhatsAppDiretto()" style="width:100%; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:900; font-size:14px; padding:12px; border-radius:12px; border:none; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 15px rgba(16,185,129,0.35);">
+          <span>🟢</span> APRI SU WHATSAPP ED INVIA ➔
+        </button>
+      </div>
+
+      <div class="modal-footer" style="padding:10px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; text-align:right;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-report-whatsapp')">Annulla</button>
       </div>
     </div>
   </div>
