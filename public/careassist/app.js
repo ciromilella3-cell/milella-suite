@@ -804,7 +804,6 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
 
 function showAdminSyncToast(msg, isHighlight) {
   var role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
-  // RIGOROSAMENTE SOLO PER ADMIN: gli operatori NON devono vederlo!
   if (role !== 'admin') return;
 
   var existing = document.getElementById('careassist-admin-sync-toast');
@@ -812,15 +811,19 @@ function showAdminSyncToast(msg, isHighlight) {
   
   var toast = document.createElement('div');
   toast.id = 'careassist-admin-sync-toast';
-  toast.style.cssText = 'position:fixed; top:24px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg, #090d16 0%, #1e293b 100%); color:#ffffff; border:1.5px solid ' + (isHighlight ? '#38bdf8' : '#10b981') + '; padding:12px 24px; border-radius:30px; font-size:13px; font-weight:700; z-index:9999999; box-shadow:0 12px 35px rgba(0,0,0,0.6), 0 0 15px ' + (isHighlight ? 'rgba(56,189,248,0.3)' : 'rgba(16,185,129,0.3)') + '; display:flex; align-items:center; gap:10px; pointer-events:none; transition:all 0.35s cubic-bezier(0.16, 1, 0.3, 1);';
+  toast.style.cssText = 'position:fixed; top:16px; left:50%; transform:translateX(-50%); width:calc(100% - 32px); max-width:440px; box-sizing:border-box; background:linear-gradient(135deg, rgba(15, 23, 42, 0.97) 0%, rgba(30, 41, 59, 0.97) 100%); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); color:#ffffff; border:1.5px solid ' + (isHighlight ? '#38bdf8' : '#10b981') + '; padding:10px 18px; border-radius:24px; font-size:12.5px; font-weight:700; line-height:1.35; z-index:9999999; box-shadow:0 12px 35px rgba(0,0,0,0.65), 0 0 16px ' + (isHighlight ? 'rgba(56,189,248,0.35)' : 'rgba(16,185,129,0.35)') + '; display:flex; align-items:center; justify-content:center; gap:10px; text-align:center; pointer-events:none; transition:all 0.35s cubic-bezier(0.16, 1, 0.3, 1);';
   
-  var icon = isHighlight ? '??' : '??';
-  toast.innerHTML = '<span style="font-size:19px;">' + icon + '</span> <span>' + msg + '</span>';
+  var iconSvg = isHighlight
+    ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/><path d="m9 9 2 2 4-4"/></svg>'
+    : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><polyline points="10 13 12 15 16 10"/></svg>';
+  
+  var cleanMsg = msg.replace(/\?\?/g, '').trim();
+  toast.innerHTML = iconSvg + ' <span>' + cleanMsg + '</span>';
   document.body.appendChild(toast);
   
   setTimeout(function() {
     toast.style.opacity = '0';
-    toast.style.transform = 'translateX(-50%) translateY(-12px)';
+    toast.style.transform = 'translateX(-50%) translateY(-14px)';
     setTimeout(function() { toast.remove(); }, 380);
   }, 4800);
 }
@@ -860,7 +863,7 @@ function saveDb() {
 
   // NOTIFICA ESCLUSIVA PER ADMIN: conferma visiva che tutti gli operatori sono allineati
   if (currRole === 'admin') {
-    showAdminSyncToast('?? Dati salvati e sincronizzati nel Cloud: allineati con tutti gli operatori (M.C. Stoppelli)', false);
+    showAdminSyncToast('Dati salvati e sincronizzati nel Cloud: allineati con tutti gli operatori (M.C. Stoppelli)', false);
   }
 
   // Flag per indicare modifiche in sospeso se offline
@@ -1024,7 +1027,7 @@ function aggiornaBadgeStatoSync(isOnline) {
     if (role === 'admin') {
       var lastOpInfo = '';
       if (AppData && AppData.lastModifiedBy && AppData.lastModifiedBy.ruolo !== 'admin') {
-        lastOpInfo = ' • Ultimo: ' + AppData.lastModifiedBy.nome + ' (' + AppData.lastModifiedBy.ora + ')';
+        lastOpInfo = ' â€¢ Ultimo: ' + AppData.lastModifiedBy.nome + ' (' + AppData.lastModifiedBy.ora + ')';
       }
       txt.textContent = 'Cloud Live Tutti gli Utenti (' + oraStr + ')' + lastOpInfo;
     } else {
