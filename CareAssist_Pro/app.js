@@ -3260,14 +3260,24 @@ function renderTerapie() {
           <b>${t.dosaggio}</b>
           ${(() => {
             const q = parseFloat(t.quantitaQuota);
-            if (q === 0.5 || (t.dosaggio && t.dosaggio.includes('½')) || (t.farmaco && t.farmaco.includes('½ cpr'))) {
+            if (q === 0.25) {
+              return '<br><span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; border:1px solid #f59e0b; font-size:11px; margin-top:3px; display:inline-block;">¼ PRENDI: ¼ DOSE (Un quarto cpr)</span>';
+            } else if (q === 0.5 || (t.dosaggio && t.dosaggio.includes('½')) || (t.farmaco && t.farmaco.includes('½ cpr'))) {
               return '<br><span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; border:1px solid #f59e0b; font-size:11px; margin-top:3px; display:inline-block;">🌓 PRENDI: ½ DOSE (Mezza cpr)</span>';
             } else if (q === 1 || (t.dosaggio && t.dosaggio.includes('1 cpr'))) {
               return '<br><span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; border:1px solid #86efac; font-size:11px; margin-top:3px; display:inline-block;">🌕 PRENDI: 1 DOSE INTERA (1 cpr)</span>';
             } else if (q === 1.5) {
               return '<br><span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1px solid #7dd3fc; font-size:11px; margin-top:3px; display:inline-block;">💊🌓 PRENDI: 1½ DOSE (1,5 cpr)</span>';
             } else if (q === 2) {
-              return '<br><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:800; border:1px solid #818cf8; font-size:11px; margin-top:3px; display:inline-block;">💊💊 PRENDI: 2 COMPRESSE</span>';
+              return '<br><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:800; border:1px solid #818cf8; font-size:11px; margin-top:3px; display:inline-block;">💊💊 PRENDI: 2 COMPRESSE (2 cpr)</span>';
+            } else if (q === 2.5) {
+              return '<br><span class="badge" style="background:#ede9fe; color:#6b21a8; font-weight:800; border:1px solid #c084fc; font-size:11px; margin-top:3px; display:inline-block;">💊💊🌓 PRENDI: 2½ COMPRESSE (2,5 cpr)</span>';
+            } else if (q === 3) {
+              return '<br><span class="badge" style="background:#fce7f3; color:#9d174d; font-weight:800; border:1px solid #f472b6; font-size:11px; margin-top:3px; display:inline-block;">💊💊💊 PRENDI: 3 COMPRESSE (3 cpr)</span>';
+            } else if (q === 4) {
+              return '<br><span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; border:1px solid #f87171; font-size:11px; margin-top:3px; display:inline-block;">💊💊💊💊 PRENDI: 4 COMPRESSE (4 cpr)</span>';
+            } else if (q > 0) {
+              return '<br><span class="badge" style="background:#f1f5f9; color:#0f172a; font-weight:800; border:1px solid #94a3b8; font-size:11px; margin-top:3px; display:inline-block;">💊 PRENDI: ' + q + ' COMPRESSE</span>';
             }
             return '';
           })()}
@@ -7868,7 +7878,6 @@ function selezionaFrequenzaCapsula(freq) {
       { ora: '08:00', fascia: 'Mattina (Colazione)', quota: 1.0 }
     ];
   } else if (freq === 2) {
-    // Esempio preferenziale clinico: 1/2 dose la mattina (08:00) e 1 dose la sera (20:00)
     dosi = [
       { ora: '08:00', fascia: 'Mattina (Colazione)', quota: 0.5 },
       { ora: '20:00', fascia: 'Sera (Cena)', quota: 1.0 }
@@ -7882,9 +7891,28 @@ function selezionaFrequenzaCapsula(freq) {
   } else if (freq === 4) {
     dosi = [
       { ora: '08:00', fascia: 'Mattina (Colazione)', quota: 1.0 },
+      { ora: '12:00', fascia: 'Pranzo', quota: 1.0 },
+      { ora: '16:00', fascia: 'Pomeriggio', quota: 1.0 },
+      { ora: '20:00', fascia: 'Sera (Cena)', quota: 1.0 }
+    ];
+  } else if (freq === 5) {
+    // Frazionamento clinico neurologico (Parkinson / Levodopa) ogni 3.5 ore
+    dosi = [
+      { ora: '07:00', fascia: 'Mattina (Digiuno)', quota: 1.0 },
+      { ora: '10:30', fascia: 'Mattina (Colazione)', quota: 1.0 },
+      { ora: '14:00', fascia: 'Pranzo', quota: 1.0 },
+      { ora: '17:30', fascia: 'Pomeriggio', quota: 1.0 },
+      { ora: '21:00', fascia: 'Sera (Cena)', quota: 1.0 }
+    ];
+  } else if (freq === 6) {
+    // Frazionamento intensivo ogni 3 ore
+    dosi = [
+      { ora: '07:00', fascia: 'Mattina (Digiuno)', quota: 1.0 },
+      { ora: '10:00', fascia: 'Mattina (Colazione)', quota: 1.0 },
       { ora: '13:00', fascia: 'Pranzo', quota: 1.0 },
-      { ora: '17:00', fascia: 'Pomeriggio', quota: 1.0 },
-      { ora: '21:30', fascia: 'Notte (Prima di dormire)', quota: 1.0 }
+      { ora: '16:00', fascia: 'Pomeriggio', quota: 1.0 },
+      { ora: '19:00', fascia: 'Sera (Cena)', quota: 1.0 },
+      { ora: '22:00', fascia: 'Notte (Prima di dormire)', quota: 1.0 }
     ];
   } else if (freq === 'bisogno') {
     dosi = [
@@ -7906,6 +7934,8 @@ function renderDosiCards() {
     var doseNum = idx + 1;
     var isBisogno = (d.ora === 'Al Bisogno' || (d.fascia && d.fascia.indexOf('Bisogno') >= 0));
     var quotaVal = typeof d.quota !== 'undefined' ? d.quota : 1.0;
+
+    var quotaLabel = (quotaVal === 0.25 ? '¼ cpr' : (quotaVal === 0.5 ? '½ cpr' : (quotaVal === 1 ? '1 cpr' : (quotaVal === 1.5 ? '1½ cpr' : (quotaVal === 2 ? '2 cpr' : (quotaVal === 2.5 ? '2½ cpr' : (quotaVal === 3 ? '3 cpr' : (quotaVal === 3.5 ? '3½ cpr' : (quotaVal === 4 ? '4 cpr' : quotaVal + ' cpr')))))))));
 
     html += '<div class="dose-card-item" id="dose-card-' + idx + '">' +
       '<div class="dose-card-header">' +
@@ -7936,22 +7966,41 @@ function renderDosiCards() {
         '</div>' +
       '</div>' +
       '<div>' +
-        '<label style="font-size:11px; font-weight:800; color:#0f172a; margin-bottom:4px; display:block;">' +
-          '💊 Assunzione / Quota per questo orario:' +
-        '</label>' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
+          '<label style="font-size:11px; font-weight:800; color:#0f172a; margin:0;">' +
+            '💊 Assunzione per questo orario:' +
+          '</label>' +
+          '<span style="font-size:11.5px; font-weight:800; color:#1d4ed8; background:#eff6ff; padding:2px 8px; border-radius:6px; border:1px solid #bfdbfe;">' +
+            'Dose attiva: <b>' + quotaLabel + '</b>' +
+          '</span>' +
+        '</div>' +
         '<div class="quota-pill-group">' +
           '<button type="button" class="quota-pill' + (quotaVal === 0.5 ? ' active' : '') + '" data-quota="0.5" onclick="setDoseCardQuota(' + idx + ', 0.5)">' +
-            '🌓 ½ dose (Mezza cpr)' +
+            '🌓 ½ dose (0,5 cpr)' +
           '</button>' +
           '<button type="button" class="quota-pill' + (quotaVal === 1 ? ' active' : '') + '" data-quota="1" onclick="setDoseCardQuota(' + idx + ', 1)">' +
-            '🌕 1 dose intera (1 cpr)' +
+            '🌕 1 dose (1 cpr)' +
           '</button>' +
           '<button type="button" class="quota-pill' + (quotaVal === 1.5 ? ' active' : '') + '" data-quota="1.5" onclick="setDoseCardQuota(' + idx + ', 1.5)">' +
-            '💊🌓 1½ dose (1,5 cpr)' +
+            '1½ cpr (1,5 cpr)' +
           '</button>' +
           '<button type="button" class="quota-pill' + (quotaVal === 2 ? ' active' : '') + '" data-quota="2" onclick="setDoseCardQuota(' + idx + ', 2)">' +
-            '💊💊 2 compresse (2 cpr)' +
+            '💊💊 2 compresse' +
           '</button>' +
+          '<button type="button" class="quota-pill' + (quotaVal === 2.5 ? ' active' : '') + '" data-quota="2.5" onclick="setDoseCardQuota(' + idx + ', 2.5)">' +
+            '2½ compresse' +
+          '</button>' +
+          '<button type="button" class="quota-pill' + (quotaVal === 3 ? ' active' : '') + '" data-quota="3" onclick="setDoseCardQuota(' + idx + ', 3)">' +
+            '💊💊💊 3 compresse' +
+          '</button>' +
+          '<button type="button" class="quota-pill' + (quotaVal === 4 ? ' active' : '') + '" data-quota="4" onclick="setDoseCardQuota(' + idx + ', 4)">' +
+            '4 compresse' +
+          '</button>' +
+        '</div>' +
+        '<div style="margin-top:8px; display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px 10px;">' +
+          '<label style="font-size:11px; font-weight:700; color:#475569; margin:0; white-space:nowrap;">✏️ Oppure inserisci quantità libera:</label>' +
+          '<input type="number" step="0.25" min="0.25" max="30" class="form-control" style="width:85px; height:32px; font-weight:800; font-size:13px; padding:2px 6px; color:#1e3a8a; border-color:#93c5fd;" value="' + quotaVal + '" oninput="setDoseCardQuotaCustom(' + idx + ', this.value)">' +
+          '<span style="font-size:11.5px; font-weight:700; color:#475569;">cpr</span>' +
         '</div>' +
         '<input type="hidden" class="dose-card-quota-val" value="' + quotaVal + '">' +
       '</div>' +
@@ -7959,6 +8008,29 @@ function renderDosiCards() {
   });
 
   container.innerHTML = html;
+}
+
+
+function setDoseCardQuotaCustom(cardIdx, rawVal) {
+  var v = parseFloat(rawVal);
+  if (isNaN(v) || v <= 0) return;
+  if (!_capsulaCurrentDosi[cardIdx]) return;
+  _capsulaCurrentDosi[cardIdx].quota = v;
+
+  var card = document.getElementById('dose-card-' + cardIdx);
+  if (card) {
+    var hidden = card.querySelector('.dose-card-quota-val');
+    if (hidden) hidden.value = v;
+    var pills = card.querySelectorAll('.quota-pill');
+    pills.forEach(function(p) {
+      if (parseFloat(p.getAttribute('data-quota')) === v) {
+        p.classList.add('active');
+      } else {
+        p.classList.remove('active');
+      }
+    });
+  }
+  ricalcolaRiepilogoCapsula();
 }
 
 function setDoseCardQuota(cardIdx, quotaVal) {
