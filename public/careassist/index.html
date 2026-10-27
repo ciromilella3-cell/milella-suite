@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=37">
+  <link rel="stylesheet" href="style.css?v=38">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -775,26 +775,29 @@
           <div style="font-weight:800; font-size:12.5px; color:#1e40af; text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
             <span>📋</span> <span>1. Dati Anagrafici & Mobilità</span>
           </div>
-          <div class="form-row">
-            <div class="form-group" style="flex:2;">
-              <label class="form-label">Nome e Cognome Assistito</label>
-              <input type="text" class="form-control" id="nuovo-paz-nome" placeholder="Es. Maria Rossi" required>
-            </div>
-            <div class="form-group" style="flex:2.2; min-width:270px;">
+          <!-- NOME E COGNOME SU RIGA DEDICATA PER NON TRONCARE IL TESTO -->
+          <div class="form-group" style="margin-bottom:12px;">
+            <label class="form-label" style="font-weight:700; color:#0f2744;">Nome e Cognome Assistito</label>
+            <input type="text" class="form-control" id="nuovo-paz-nome" placeholder="Es. Maria Rossi" required style="font-size:15px; font-weight:700;">
+          </div>
+
+          <!-- DATA DI NASCITA ED ETA SU RIGA DEDICATA CON AMPIO SPAZIO -->
+          <div class="form-row anagrafica-nascita-row" style="margin-bottom:14px; align-items:flex-end;">
+            <div class="form-group" style="flex:3.5; min-width:210px; margin-bottom:0;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
                 <label class="form-label" style="margin-bottom:0; font-weight:700; color:#1e3a8a;">📅 Data di Nascita (Giorno / Mese / Anno)</label>
                 <button type="button" class="btn btn-sm" id="nuovo-toggle-cal" onclick="toggleDataPickerModalita('nuovo')" style="font-size:11px; padding:2px 7px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:6px; cursor:pointer;" title="Alterna tra selezione rapida dei mesi e calendario nativo">🗓️ Calendario</button>
               </div>
               <div id="nuovo-paz-nascita-selects" style="display:flex; gap:6px;">
-                <select id="nuovo-paz-nascita-giorno" class="form-control" style="flex:1; min-width:54px; font-weight:700; text-align:center; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Giorno"></select>
-                <select id="nuovo-paz-nascita-mese" class="form-control" style="flex:2.2; min-width:130px; font-weight:700; padding:8px 6px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Mese"></select>
-                <select id="nuovo-paz-nascita-anno" class="form-control" style="flex:1.3; min-width:72px; font-weight:700; text-align:center; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Anno"></select>
+                <select id="nuovo-paz-nascita-giorno" class="form-control" style="flex:1; min-width:50px; font-weight:700; text-align:center; padding:8px 3px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Giorno"></select>
+                <select id="nuovo-paz-nascita-mese" class="form-control" style="flex:2.2; min-width:115px; font-weight:700; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Mese"></select>
+                <select id="nuovo-paz-nascita-anno" class="form-control" style="flex:1.2; min-width:62px; font-weight:700; text-align:center; padding:8px 3px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Anno"></select>
               </div>
               <input type="date" class="form-control" id="nuovo-paz-nascita" min="1910-01-01" max="2026-12-31" style="display:none; margin-top:4px;" onchange="sincronizzaSelectsDaData('nuovo', this.value); calcolaEtaDinamica(this.value)" required>
             </div>
-            <div class="form-group" style="flex:0.8; min-width:90px;">
-              <label class="form-label">Età Calcolata</label>
-              <input type="text" class="form-control" id="nuovo-paz-eta-preview" placeholder="-- anni" readonly style="background:#f1f5f9; font-weight:bold; color:#0369a1;">
+            <div class="form-group" style="flex:1; min-width:65px; max-width:85px; margin-bottom:0;">
+              <label class="form-label" style="font-weight:700; text-align:center; display:block;">Età Calcolata</label>
+              <input type="text" class="form-control" id="nuovo-paz-eta-preview" placeholder="-- anni" readonly style="background:#f1f5f9; font-weight:bold; color:#0369a1; text-align:center; padding:8px 2px;">
             </div>
           </div>
 
@@ -902,13 +905,13 @@
 
           <!-- SEZIONE 5: MEDICO CURANTE & FARMACIA CON AUTO-COMPILAZIONE RSA / STRUTTURA -->
           <div style="background:#fefce8; border:1.5px solid #fde047; border-radius:12px; padding:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
               <div style="font-weight:800; font-size:12px; color:#854d0e; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
                 <span>🩺</span> <span>5. Riferimenti Medico Curante & Farmacia (Rubrica RSA & Domicilio)</span>
               </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:11.5px; font-weight:700; color:#b45309;">⚡ Predefiniti RSA:</span>
-                <select id="select-medico-farmacia-preset-nuovo" class="form-control" style="font-size:11.5px; padding:3px 8px; width:auto; border-color:#f59e0b; font-weight:700; background:#fff;" onchange="applicaPresetMedicoFarmacia(this.value, 'nuovo')">
+              <div style="display:flex; flex-direction:column; gap:4px; width:100%;">
+                <label for="select-medico-farmacia-preset-nuovo" style="font-size:11.5px; font-weight:700; color:#b45309;">⚡ Predefiniti RSA & Rubrica:</label>
+                <select id="select-medico-farmacia-preset-nuovo" class="form-control" style="font-size:12px; padding:6px 10px; width:100%; border-color:#f59e0b; font-weight:700; background:#fff;" onchange="applicaPresetMedicoFarmacia(this.value, 'nuovo')">
                   <option value="">-- Seleziona da Rubrica Struttura --</option>
                   <option value="scarcia_macario">🩺 Dott. Roberto Scarcia + 🏥 Farmacia MACARIO (Bari)</option>
                   <option value="potenza">🩺 Dr.ssa Carolina Potenza (Sarconi/Moliterno) + Farmacia Girasole Picconi (Corleto Perticara)</option>
@@ -918,18 +921,20 @@
                 </select>
               </div>
             </div>
-            <div class="form-row">
-              <div class="form-group" style="flex:1.2;">
-                <label class="form-label" style="font-size:12px;">Nome Medico Curante</label>
-                <input type="text" class="form-control" id="nuovo-paz-medico-nome" placeholder="Es. Dott. Roberto Scarcia">
+            <!-- RIGA 1: NOME MEDICO (LARGHEZZA INTERA) -->
+            <div class="form-group" style="margin-bottom:10px;">
+              <label class="form-label" style="font-weight:700;">Nome Medico Curante</label>
+              <input type="text" class="form-control" id="nuovo-paz-medico-nome" placeholder="Es. Dott. Roberto Scarcia" style="font-weight:700; font-size:14.5px;">
+            </div>
+            <!-- RIGA 2: RECAPITI TELEFONICI E EMAIL (2 COLONNE AMPIE) -->
+            <div class="form-row" style="margin-bottom:10px;">
+              <div class="form-group" style="flex:1; min-width:130px; margin-bottom:0;">
+                <label class="form-label" style="font-weight:700;">Telefono Medico</label>
+                <input type="text" class="form-control" id="nuovo-paz-medico-tel" placeholder="Es. 080 557 44 90" style="font-weight:600;">
               </div>
-              <div class="form-group" style="flex:1;">
-                <label class="form-label" style="font-size:12px;">Telefono Medico</label>
-                <input type="text" class="form-control" id="nuovo-paz-medico-tel" placeholder="Es. 080 ...">
-              </div>
-              <div class="form-group" style="flex:1.3;">
-                <label class="form-label" style="font-size:12px;">Email per Richiesta Ricette</label>
-                <input type="email" class="form-control" id="nuovo-paz-medico-email" placeholder="Es. dottore@email.it">
+              <div class="form-group" style="flex:1; min-width:130px; margin-bottom:0;">
+                <label class="form-label" style="font-weight:700;">Email per Richiesta Ricette</label>
+                <input type="email" class="form-control" id="nuovo-paz-medico-email" placeholder="Es. scarcia.roberto@alice.it" style="font-weight:600;">
               </div>
             </div>
             <div class="form-row" style="margin-top:6px;">
@@ -986,26 +991,29 @@
       </div>
       <form onsubmit="salvaModificaAnagrafica(event)">
         <div class="modal-body">
-          <div class="form-row">
-            <div class="form-group" style="flex:2;">
-              <label class="form-label">Nome e Cognome Assistito</label>
-              <input type="text" class="form-control" id="edit-paz-nome" required>
-            </div>
-            <div class="form-group" style="flex:2.2; min-width:270px;">
+          <!-- NOME E COGNOME SU RIGA DEDICATA PER NON TRONCARE IL TESTO -->
+          <div class="form-group" style="margin-bottom:12px;">
+            <label class="form-label" style="font-weight:700; color:#0f2744;">Nome e Cognome Assistito</label>
+            <input type="text" class="form-control" id="edit-paz-nome" required style="font-size:15px; font-weight:700;">
+          </div>
+
+          <!-- DATA DI NASCITA ED ETA SU RIGA DEDICATA CON AMPIO SPAZIO -->
+          <div class="form-row anagrafica-nascita-row" style="margin-bottom:14px; align-items:flex-end;">
+            <div class="form-group" style="flex:3.5; min-width:210px; margin-bottom:0;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
                 <label class="form-label" style="margin-bottom:0; font-weight:700; color:#1e3a8a;">📅 Data di Nascita (Giorno / Mese / Anno)</label>
                 <button type="button" class="btn btn-sm" id="edit-toggle-cal" onclick="toggleDataPickerModalita('edit')" style="font-size:11px; padding:2px 7px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:6px; cursor:pointer;" title="Alterna tra selezione rapida dei mesi e calendario nativo">🗓️ Calendario</button>
               </div>
               <div id="edit-paz-nascita-selects" style="display:flex; gap:6px;">
-                <select id="edit-paz-nascita-giorno" class="form-control" style="flex:1; min-width:54px; font-weight:700; text-align:center; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('edit')" title="Giorno"></select>
-                <select id="edit-paz-nascita-mese" class="form-control" style="flex:2.2; min-width:130px; font-weight:700; padding:8px 6px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('edit')" title="Mese"></select>
-                <select id="edit-paz-nascita-anno" class="form-control" style="flex:1.3; min-width:72px; font-weight:700; text-align:center; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('edit')" title="Anno"></select>
+                <select id="edit-paz-nascita-giorno" class="form-control" style="flex:1; min-width:50px; font-weight:700; text-align:center; padding:8px 3px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('edit')" title="Giorno"></select>
+                <select id="edit-paz-nascita-mese" class="form-control" style="flex:2.2; min-width:115px; font-weight:700; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('edit')" title="Mese"></select>
+                <select id="edit-paz-nascita-anno" class="form-control" style="flex:1.2; min-width:62px; font-weight:700; text-align:center; padding:8px 3px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('edit')" title="Anno"></select>
               </div>
               <input type="date" class="form-control" id="edit-paz-nascita" min="1910-01-01" max="2026-12-31" style="display:none; margin-top:4px;" onchange="sincronizzaSelectsDaData('edit', this.value); aggiornaEtaEdit(this.value)">
             </div>
-            <div class="form-group" style="flex:0.8; min-width:90px;">
-              <label class="form-label">Età</label>
-              <input type="text" class="form-control" id="edit-paz-eta" readonly style="background:#f1f5f9; font-weight:bold; color:#0369a1;">
+            <div class="form-group" style="flex:1; min-width:65px; max-width:85px; margin-bottom:0;">
+              <label class="form-label" style="font-weight:700; text-align:center; display:block;">Età</label>
+              <input type="text" class="form-control" id="edit-paz-eta" readonly style="background:#f1f5f9; font-weight:bold; color:#0369a1; text-align:center; padding:8px 2px;">
             </div>
           </div>
 
@@ -1026,25 +1034,25 @@
           </div>
 
           <div class="form-row" style="background:#f0f9ff; padding:12px 14px; border-radius:10px; border:1.5px solid #bae6fd; margin-bottom:14px;">
-            <div class="form-group" style="margin-bottom:0; flex:1.5;">
+            <div class="form-group" style="margin-bottom:0; flex:1.5; min-width:140px;">
               <label class="form-label" style="color:#0369a1; font-weight:700;">👥 Contatto di Riferimento / Caregiver (Familiare, Figlio/a, Coniuge)</label>
               <input type="text" class="form-control" id="edit-paz-moglie-nome" placeholder="Es. Maria Carmela (Caregiver / Familiare) o Coniuge" style="font-weight:600;">
             </div>
-            <div class="form-group" style="margin-bottom:0; flex:1.2;">
-              <label class="form-label" style="color:#0369a1; font-weight:700;">📱 Cellulare Caregiver / Familiare (WhatsApp & Chiamate)</label>
+            <div class="form-group" style="margin-bottom:0; flex:1.2; min-width:130px;">
+              <label class="form-label" style="color:#0369a1; font-weight:700;">📱 Cellulare Caregiver (WhatsApp & Chiamate)</label>
               <input type="text" class="form-control" id="edit-paz-moglie-cell" placeholder="Es. 338 739 76 71" style="font-weight:600;">
             </div>
           </div>
 
           <!-- RECAPITI MEDICO CURANTE & FARMACIA CON AUTO-COMPILAZIONE -->
           <div style="background:#f0fdf4; padding:14px; border-radius:12px; border:1.5px solid #86efac; margin-bottom:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
               <div style="font-weight:800; font-size:12px; color:#166534; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
                 <span>🩺</span> <span>Riferimenti Medico Curante & Farmacia</span>
               </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:11.5px; font-weight:700; color:#15803d;">⚡ Seleziona Medico & Farmacia:</span>
-                <select id="select-medico-farmacia-preset-edit" class="form-control" style="font-size:11.5px; padding:3px 8px; width:auto; border-color:#22c55e; font-weight:700; background:#fff;" onchange="applicaPresetMedicoFarmacia(this.value, 'edit')">
+              <div style="display:flex; flex-direction:column; gap:4px; width:100%;">
+                <label for="select-medico-farmacia-preset-edit" style="font-size:11.5px; font-weight:700; color:#15803d;">⚡ Seleziona Medico & Farmacia da Rubrica:</label>
+                <select id="select-medico-farmacia-preset-edit" class="form-control" style="font-size:12px; padding:6px 10px; width:100%; border-color:#22c55e; font-weight:700; background:#fff;" onchange="applicaPresetMedicoFarmacia(this.value, 'edit')">
                   <option value="">-- Seleziona da Rubrica Struttura --</option>
                   <option value="scarcia_macario">🩺 Dott. Roberto Scarcia + 🏥 Farmacia MACARIO (Bari)</option>
                   <option value="potenza">🩺 Dr.ssa Carolina Potenza (Sarconi/Moliterno) + Farmacia Girasole Picconi (Corleto Perticara)</option>
@@ -1054,19 +1062,22 @@
                 </select>
               </div>
             </div>
-            <!-- RIGA 1: NOME MEDICO E RECAPITI TELEFONICI (SPAZIOSI) -->
+
+            <!-- RIGA 1: NOME MEDICO (LARGHEZZA INTERA PER VISUALIZZARE NOME E COGNOME COMPLETO) -->
+            <div class="form-group" style="margin-bottom:10px;">
+              <label class="form-label" style="font-weight:700;">Nome Medico Curante (MMG)</label>
+              <input type="text" class="form-control" id="edit-paz-medico-nome" placeholder="Es. Dott. Roberto Scarcia" style="font-weight:700; font-size:14.5px;">
+            </div>
+
+            <!-- RIGA 2: RECAPITI TELEFONICI DEL MEDICO (2 COLONNE AMPIE) -->
             <div class="form-row" style="margin-bottom:10px;">
-              <div class="form-group" style="flex:1.4; margin-bottom:0;">
-                <label class="form-label" style="font-weight:700;">Nome Medico Curante (MMG)</label>
-                <input type="text" class="form-control" id="edit-paz-medico-nome" placeholder="Es. Dr.ssa Carolina Potenza" style="font-weight:600;">
+              <div class="form-group" style="flex:1; min-width:130px; margin-bottom:0;">
+                <label class="form-label" style="font-weight:700;">☎️ Tel. Studio / Fisso</label>
+                <input type="text" class="form-control" id="edit-paz-medico-studio" placeholder="Es. 080 557 44 90" style="font-weight:600;">
               </div>
-              <div class="form-group" style="flex:1; margin-bottom:0;">
-                <label class="form-label" style="font-weight:700;">Tel. Studio / Fisso</label>
-                <input type="text" class="form-control" id="edit-paz-medico-studio" placeholder="Es. 0971 123456" style="font-weight:600;">
-              </div>
-              <div class="form-group" style="flex:1; margin-bottom:0;">
-                <label class="form-label" style="font-weight:700;">Cellulare / WhatsApp</label>
-                <input type="text" class="form-control" id="edit-paz-medico-tel" placeholder="Es. 338 379 05 64" style="font-weight:600;">
+              <div class="form-group" style="flex:1; min-width:130px; margin-bottom:0;">
+                <label class="form-label" style="font-weight:700;">📱 Cellulare / WhatsApp</label>
+                <input type="text" class="form-control" id="edit-paz-medico-tel" placeholder="Es. 347 126 59 71" style="font-weight:600;">
               </div>
             </div>
 
@@ -2894,7 +2905,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=37"></script>
+  <script src="app.js?v=38"></script>
   <script>
     // Registrazione Service Worker per utilizzo offline al 100% da cellulare
     if ('serviceWorker' in navigator) {

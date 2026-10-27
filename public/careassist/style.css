@@ -2278,6 +2278,45 @@ textarea.form-control {
     justify-content: center !important;
   }
 
+  /* MODALI ANAGRAFICA & FORM INPUTS SU SMARTPHONE (PREVENZIONE TRONCAMENTO DATI) */
+  .anagrafica-nascita-row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    align-items: flex-end !important;
+  }
+  .anagrafica-nascita-row > .form-group:first-child {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+  .anagrafica-nascita-row > .form-group:last-child {
+    flex: 0 0 68px !important;
+    min-width: 60px !important;
+    max-width: 75px !important;
+  }
+  #edit-paz-nascita-selects,
+  #nuovo-paz-nascita-selects {
+    display: flex !important;
+    gap: 4px !important;
+    width: 100% !important;
+  }
+  #edit-paz-nascita-selects select,
+  #nuovo-paz-nascita-selects select {
+    font-size: 13px !important;
+    padding: 7px 3px !important;
+  }
+
+  /* Riga contatti e recapiti responsive: va a capo se lo spazio è ridotto per evitare troncamenti */
+  .modal-card .form-row:not(.anagrafica-nascita-row) {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+  .modal-card .form-row:not(.anagrafica-nascita-row) > .form-group {
+    min-width: 140px !important;
+    flex: 1 1 140px !important;
+  }
+
   /* MODAL ALLARME TERAPIE SU SMARTPHONE (FULL RESPONSIVE TOUCH) */
   #modal-allarme-terapie .modal-card {
     border-width: 2px !important;
