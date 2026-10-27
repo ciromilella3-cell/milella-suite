@@ -141,6 +141,34 @@
             transform: scale(0.94);
             background: rgba(212,175,55,0.35);
         }
+        .alpha-btn {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(212,175,55,0.25);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 10px 4px;
+            border-radius: 9px;
+            cursor: pointer;
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+            transition: all 0.15s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .alpha-btn:hover {
+            background: rgba(212,175,55,0.25);
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+        .alpha-btn:active {
+            transform: scale(0.94);
+            background: rgba(212,175,55,0.4);
+        }
+            transform: scale(0.94);
+            background: rgba(212,175,55,0.35);
+        }
         .numpad-action {
             color: #f3e5ab;
             font-size: 15px;
@@ -550,26 +578,76 @@
 
                 <!-- Input PIN con Occhietto -->
                 <div style="position:relative; width:100%; margin-bottom:1rem;">
-                    <input type="password" id="inputPinGate" placeholder="PIN o SOS999" autocomplete="current-password" style="width:100%; padding:15px 48px 15px 16px; border-radius:14px; background:rgba(0,0,0,0.55); border:1.5px solid rgba(212,175,55,0.4); color:#fff; font-size:22px; text-align:center; letter-spacing:6px; outline:none; box-sizing:border-box; transition:border 0.2s;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,0.4)'" onkeydown="if(event.key==='Enter') verificaPinGate()">
+                    <input type="password" id="inputPinGate" placeholder="Codice Personale" autocomplete="current-password" style="width:100%; padding:15px 48px 15px 16px; border-radius:14px; background:rgba(0,0,0,0.55); border:1.5px solid rgba(212,175,55,0.4); color:#fff; font-size:22px; text-align:center; letter-spacing:6px; outline:none; box-sizing:border-box; transition:border 0.2s;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,0.4)'" onkeydown="if(event.key==='Enter') verificaPinGate()">
                     <button type="button" onclick="toggleMostraPasswordGate()" id="btnToggleEyeGate" title="Mostra/Nascondi codice" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.85;">
                         👁️
                     </button>
                 </div>
 
-                <!-- Tastierino Touch Rapido per Smartphone e Schermo Intero -->
-                <div id="gateNumpad" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:9px; max-width:270px; margin:0.8rem auto 1.2rem auto;">
-                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('1')">1</button>
-                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('2')">2</button>
-                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('3')">3</button>
-                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('4')">4</button>
-                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('5')">5</button>
-                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('6')">6</button>
-                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('7')">7</button>
-                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('8')">8</button>
-                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('9')">9</button>
-                    <button type="button" class="numpad-btn numpad-action" onclick="inserisciCifraGate('SOS')" style="background:linear-gradient(135deg, rgba(212,175,55,0.3) 0%, rgba(170,124,17,0.15) 100%); border-color:#d4af37; color:#f3e5ab; font-weight:800; font-size:15px; letter-spacing:1px;" title="Inserisci SOS">SOS</button>
-                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('0')">0</button>
-                    <button type="button" class="numpad-btn numpad-action" onclick="cancellaUltimaCifraGate()" title="Cancella ultima cifra">⌫</button>
+                <!-- Tastierino Touch Polivalente (123 Numerico con Punto + ABC Lettere) -->
+                <div id="gateKeypadContainer" style="max-width:320px; margin:0.8rem auto 1.2rem auto;">
+                    <!-- Sezione Tastierino Numerico (123) con PUNTO per codici tipo .002 -->
+                    <div id="gatePad123" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:9px; max-width:270px; margin:0 auto;">
+                        <button type="button" class="numpad-btn" onclick="inserisciCifraGate('1')">1</button>
+                        <button type="button" class="numpad-btn" onclick="inserisciCifraGate('2')">2</button>
+                        <button type="button" class="numpad-btn" onclick="inserisciCifraGate('3')">3</button>
+                        <button type="button" class="numpad-btn" onclick="inserisciCifraGate('4')">4</button>
+                        <button type="button" class="numpad-btn" onclick="inserisciCifraGate('5')">5</button>
+                        <button type="button" class="numpad-btn" onclick="inserisciCifraGate('6')">6</button>
+                        <button type="button" class="numpad-btn" onclick="inserisciCifraGate('7')">7</button>
+                        <button type="button" class="numpad-btn" onclick="inserisciCifraGate('8')">8</button>
+                        <button type="button" class="numpad-btn" onclick="inserisciCifraGate('9')">9</button>
+                        <button type="button" class="numpad-btn numpad-action" onclick="inserisciCifraGate('.')" title="Punto (per codici speciali tipo .002)" style="font-size:24px; line-height:1; font-weight:900; color:#f3e5ab;">.</button>
+                        <button type="button" class="numpad-btn" onclick="inserisciCifraGate('0')">0</button>
+                        <button type="button" class="numpad-btn numpad-action" onclick="cancellaUltimaCifraGate()" title="Cancella ultima cifra">⌫</button>
+                    </div>
+
+                    <!-- Sezione Tastiera Lettere (ABC) per codici con testo o lettere -->
+                    <div id="gatePadABC" style="display:none; flex-direction:column; gap:7px; width:100%;">
+                        <div style="display:flex; justify-content:center; gap:5px;">
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('Q')">Q</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('W')">W</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('E')">E</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('R')">R</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('T')">T</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('Y')">Y</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('U')">U</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('I')">I</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('O')">O</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('P')">P</button>
+                        </div>
+                        <div style="display:flex; justify-content:center; gap:5px;">
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('A')">A</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('S')">S</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('D')">D</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('F')">F</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('G')">G</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('H')">H</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('J')">J</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('K')">K</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('L')">L</button>
+                        </div>
+                        <div style="display:flex; justify-content:center; gap:5px;">
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('Z')">Z</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('X')">X</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('C')">C</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('V')">V</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('B')">B</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('N')">N</button>
+                            <button type="button" class="alpha-btn" onclick="inserisciCifraGate('M')">M</button>
+                            <button type="button" class="alpha-btn" style="color:#f3e5ab; font-weight:800;" onclick="cancellaUltimaCifraGate()" title="Cancella">⌫</button>
+                        </div>
+                    </div>
+
+                    <!-- Selettore Switch Rapido 123 / ABC + Svuota -->
+                    <div style="margin-top:11px; display:flex; justify-content:space-between; align-items:center; padding:0 4px;">
+                        <button type="button" id="btnToggleKeyboardMode" onclick="toggleKeyboardModeGate()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(212,175,55,0.35); color:#f3e5ab; font-size:12px; font-weight:700; padding:6px 14px; border-radius:18px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s;">
+                            <span id="keyboardModeIcon">🔤</span> <span id="keyboardModeLabel">Tastiera Lettere (ABC)</span>
+                        </button>
+                        <button type="button" onclick="cancellaTuttoGate()" style="background:transparent; border:none; color:#94a3b8; font-size:12px; font-weight:600; cursor:pointer; text-decoration:underline;">
+                            Svuota
+                        </button>
+                    </div>
                 </div>
 
                 <div id="gateErrorMsg" style="color:#ef4444; font-size:0.85rem; font-weight:700; margin-bottom:1rem; display:none;"></div>
@@ -834,7 +912,7 @@
             <p style="color:#94a3b8; font-size:0.88rem; margin-bottom:1.5rem;">Inserisci il PIN Master o il Codice Operatore per sbloccare le funzionalità riservate.</p>
             
             <div style="position:relative; width:100%; margin-bottom:1rem;">
-                <input type="password" id="inputPinLogin" placeholder="••••••••" style="width:100%; padding:14px 48px 14px 14px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:20px; text-align:center; letter-spacing:5px; outline:none; box-sizing:border-box;" onkeydown="if(event.key==='Enter') verificaPinLogin()">
+                <input type="password" id="inputPinLogin" placeholder="Codice Personale" style="width:100%; padding:14px 48px 14px 14px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:20px; text-align:center; letter-spacing:5px; outline:none; box-sizing:border-box;" onkeydown="if(event.key==='Enter') verificaPinLogin()">
                 <button type="button" onclick="toggleMostraPassword()" id="btnToggleEye" title="Mostra/Nascondi password" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.8; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
                     👁️
                 </button>
@@ -3173,6 +3251,27 @@
     // ==============================================================================
     // HELPER NUOVE FUNZIONALITA' LAUNCHER SUITE (NUMPAD, SEARCH, PING, FULLSCREEN)
     // ==============================================================================
+    
+    function toggleKeyboardModeGate() {
+        const pad123 = document.getElementById('gatePad123');
+        const padABC = document.getElementById('gatePadABC');
+        const icon = document.getElementById('keyboardModeIcon');
+        const label = document.getElementById('keyboardModeLabel');
+        if (!pad123 || !padABC) return;
+        
+        if (pad123.style.display !== 'none') {
+            pad123.style.display = 'none';
+            padABC.style.display = 'flex';
+            if (icon) icon.textContent = '🔢';
+            if (label) label.textContent = 'Tastierino Numerico (123)';
+        } else {
+            pad123.style.display = 'grid';
+            padABC.style.display = 'none';
+            if (icon) icon.textContent = '🔤';
+            if (label) label.textContent = 'Tastiera Lettere (ABC)';
+        }
+    }
+    
     function inserisciCifraGate(cifra) {
         const inp = document.getElementById('inputPinGate');
         if (!inp) return;
