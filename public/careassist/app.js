@@ -1477,11 +1477,18 @@ function renderPazientiSelector() {
     AppData.activePazienteId = lista[0].id;
   }
 
-  select.innerHTML = lista.map(p => `
-    <option value="${p.id}" ${p.id === AppData.activePazienteId ? 'selected' : ''}>
-      👤 ${(p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '')} (${calcolaAnniDaData(p.dataNascita)} anni)
-    </option>
-  `).join('');
+  select.innerHTML = lista.map(p => {
+    const eta = calcolaAnniDaData(p.dataNascita);
+    const dataFmt = (typeof formattaDataNascitaItaliana === 'function') ? formattaDataNascitaItaliana(p.dataNascita) : '';
+    const anno = (p.dataNascita && p.dataNascita.includes('-')) ? p.dataNascita.split('-')[0] : ((dataFmt && dataFmt.includes('/')) ? dataFmt.split('/')[2] : '');
+    const annoStr = anno ? ` • Anno ${anno}` : '';
+    const pulito = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+    return `
+      <option value="${p.id}" ${p.id === AppData.activePazienteId ? 'selected' : ''}>
+        👤 ${pulito} (${eta} anni${annoStr})
+      </option>
+    `;
+  }).join('');
 
   if (lista.length === 1) {
     select.style.pointerEvents = 'none';
@@ -1497,6 +1504,12 @@ function renderPazientiSelector() {
   const badgeInfo = document.getElementById('paziente-badge-info');
   if (badgeInfo && activeP) {
     const eta = calcolaAnniDaData(activeP.dataNascita);
+    const dataNascitaFmt = (typeof formattaDataNascitaItaliana === 'function')
+      ? formattaDataNascitaItaliana(activeP.dataNascita)
+      : (activeP.dataNascita || '--');
+    const annoNascita = (activeP.dataNascita && activeP.dataNascita.includes('-'))
+      ? activeP.dataNascita.split('-')[0]
+      : ((dataNascitaFmt && dataNascitaFmt.includes('/')) ? dataNascitaFmt.split('/')[2] : '');
     // Helper per pulire numeri di telefono per i link tel/sms/wa
     const cleanNum = (n) => (n || '').replace(/[^0-9+]/g, '');
     const waNum = (n) => {
@@ -1877,8 +1890,8 @@ function renderPazientiSelector() {
             <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h) per prevenzione lesioni da decubito.' : 'Paziente deambulante in modo autonomo o assistito.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
               ${activeP.allettato ? '🛏️ Paziente Allettato (q2h)' : '🚶 Deambulante'}
             </span>
-            <span class="badge badge-warning clinica-zoom-item" style="font-size:12.5px; cursor:pointer;" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${new Date(activeP.dataNascita).toLocaleDateString('it-IT')} (${eta} anni compiuti)', '🎂')" onmouseleave="nascondiLenteClinica()">
-              🎂 ${eta} anni
+            <span class="badge badge-warning clinica-zoom-item" style="font-size:12.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px;" onclick="apriModificaAnagrafica()" title="Tocca per aprire e modificare cartella anagrafica e data di nascita" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${dataNascitaFmt} (Anno ${annoNascita || '--'}, ${eta} anni)', '🎂')" onmouseleave="nascondiLenteClinica()">
+              🎂 ${eta} anni • Anno ${annoNascita || '--'} (${dataNascitaFmt || '--'})
             </span>
             ${allergieBadge}
             ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe Elevato (Braden)</span>' : ''}
@@ -8621,12 +8634,15 @@ function aggiornaStickyPatientBar() {
   const elAlertCount = document.getElementById('sticky-patient-alert-count');
 
   const eta = calcolaAnniDaData(p.dataNascita);
+  const dataNascitaFmt = (typeof formattaDataNascitaItaliana === 'function') ? formattaDataNascitaItaliana(p.dataNascita) : '';
+  const annoNascita = (p.dataNascita && p.dataNascita.includes('-')) ? p.dataNascita.split('-')[0] : ((dataNascitaFmt && dataNascitaFmt.includes('/')) ? dataNascitaFmt.split('/')[2] : '');
   const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
 
   if (elName) elName.textContent = pulitoNome;
   if (elSub) {
     const stanza = p.stanza ? `Stanza ${p.stanza} • ` : 'Domiciliare • ';
-    elSub.textContent = `${eta} anni • ${stanza}Cartella Attiva`;
+    const annoStr = annoNascita ? ` • Anno ${annoNascita}` : '';
+    elSub.textContent = `${eta} anni${annoStr} (${dataNascitaFmt}) • ${stanza}Cartella Attiva`;
   }
 
   if (elAlertPill && elAlertCount) {
