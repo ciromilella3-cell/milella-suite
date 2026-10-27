@@ -2025,18 +2025,18 @@ function mostraLenteFarmacia() {
   mostraLenteClinica('Farmacia di Riferimento Assistito', html, '💊');
 }
 
-let _lenteTimer = null;
-window._cancellaTimerLente = function() {
-  if (_lenteTimer) {
-    clearTimeout(_lenteTimer);
-    _lenteTimer = null;
-  }
-};
+let _isOverTrigger = false;
+let _isOverOverlay = false;
+let _lenteHideTimer = null;
 
 function mostraLenteClinica(titolo, testo, icona = '🩺') {
-  window._cancellaTimerLente();
+  _isOverTrigger = true;
+  if (_lenteHideTimer) {
+    clearTimeout(_lenteHideTimer);
+    _lenteHideTimer = null;
+  }
+
   const overlay = document.getElementById('clinica-lente-overlay');
-  const backdrop = document.getElementById('clinica-lente-backdrop');
   const txtTitolo = document.getElementById('lente-titolo');
   const txtCorpo = document.getElementById('lente-testo');
   const txtIcona = document.getElementById('lente-icona');
@@ -2059,51 +2059,62 @@ function mostraLenteClinica(titolo, testo, icona = '🩺') {
 
   overlay.style.pointerEvents = 'auto';
   overlay.style.display = 'block';
-  overlay.style.opacity = '0';
-  overlay.style.transform = 'translate(-50%, -50%) scale(0.92)';
-
-  if (backdrop) {
-    backdrop.style.display = 'block';
-    backdrop.style.opacity = '0';
-  }
 
   requestAnimationFrame(() => {
-    overlay.style.transition = 'all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    overlay.style.transition = 'opacity 0.16s ease, transform 0.16s ease';
     overlay.style.opacity = '1';
     overlay.style.transform = 'translate(-50%, -50%) scale(1)';
-    if (backdrop) {
-      backdrop.style.transition = 'opacity 0.18s ease';
-      backdrop.style.opacity = '1';
-    }
   });
 }
 
 function nascondiLenteClinica(event, immediate = false) {
   if (event && event.stopPropagation) event.stopPropagation();
-  window._cancellaTimerLente();
-
-  const doHide = () => {
-    const overlay = document.getElementById('clinica-lente-overlay');
-    const backdrop = document.getElementById('clinica-lente-backdrop');
-    if (!overlay) return;
-    overlay.style.opacity = '0';
-    overlay.style.transform = 'translate(-50%, -50%) scale(0.94)';
-    if (backdrop) backdrop.style.opacity = '0';
-    setTimeout(() => {
-      if (overlay.style.opacity === '0') {
-        overlay.style.display = 'none';
-        if (backdrop) backdrop.style.display = 'none';
-      }
-    }, 160);
-  };
 
   if (immediate) {
-    doHide();
-  } else {
-    // Breve tolleranza (250ms) per permettere al mouse di entrare nella card
-    _lenteTimer = setTimeout(doHide, 250);
+    _isOverTrigger = false;
+    _isOverOverlay = false;
+    if (_lenteHideTimer) {
+      clearTimeout(_lenteHideTimer);
+      _lenteHideTimer = null;
+    }
+    const overlay = document.getElementById('clinica-lente-overlay');
+    if (!overlay) return;
+    overlay.style.opacity = '0';
+    overlay.style.transform = 'translate(-50%, -50%) scale(0.95)';
+    setTimeout(() => {
+      if (!_isOverTrigger && !_isOverOverlay) {
+        overlay.style.display = 'none';
+      }
+    }, 150);
+    return;
   }
+
+  // Uscita dal mouse: chiudi solo se il cursore non si trova né sul trigger né sulla scheda overlay
+  _isOverTrigger = false;
+  if (_lenteHideTimer) clearTimeout(_lenteHideTimer);
+  _lenteHideTimer = setTimeout(() => {
+    if (!_isOverTrigger && !_isOverOverlay) {
+      const overlay = document.getElementById('clinica-lente-overlay');
+      if (!overlay) return;
+      overlay.style.opacity = '0';
+      overlay.style.transform = 'translate(-50%, -50%) scale(0.95)';
+      setTimeout(() => {
+        if (!_isOverTrigger && !_isOverOverlay) {
+          overlay.style.display = 'none';
+        }
+      }, 150);
+    }
+  }, 220);
 }
+
+// Chiudi HUD lente al tocco o click all'esterno (senza backdrop bloccante)
+document.addEventListener('pointerdown', (e) => {
+  const overlay = document.getElementById('clinica-lente-overlay');
+  if (!overlay || overlay.style.display === 'none' || overlay.style.opacity === '0') return;
+  if (!overlay.contains(e.target) && !e.target.closest('.clinica-zoom-item')) {
+    nascondiLenteClinica(null, true);
+  }
+});
 
 // Chiudi HUD lente con tasto ESC
 document.addEventListener('keydown', (e) => {

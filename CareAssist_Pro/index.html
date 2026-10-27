@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=36">
+  <link rel="stylesheet" href="style.css?v=37">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -2749,13 +2749,10 @@
     </div>
   </div>
 
-  <!-- BACKDROP SCURO DISMISSABILE AL CLICK ESTERNO PER OVERLAY LENTE CLINICA -->
-  <div id="clinica-lente-backdrop" onclick="nascondiLenteClinica(event, true)"></div>
-
   <!-- OVERLAY INGRANDIMENTO CENTRALE (HUD LENTE CLINICA CON TASTO CHIUSURA X) -->
   <div id="clinica-lente-overlay" 
-       onmouseenter="if(window._cancellaTimerLente) window._cancellaTimerLente();" 
-       onmouseleave="nascondiLenteClinica(event, false)">
+       onmouseenter="_isOverOverlay = true; if(_lenteHideTimer) clearTimeout(_lenteHideTimer);" 
+       onmouseleave="_isOverOverlay = false; nascondiLenteClinica(event, false)">
     
     <!-- HEADER CON ICONA, TITOLO E TASTO CHIUSURA X -->
     <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid rgba(56, 189, 248, 0.25);">
@@ -2897,7 +2894,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=36"></script>
+  <script src="app.js?v=37"></script>
   <script>
     // Registrazione Service Worker per utilizzo offline al 100% da cellulare
     if ('serviceWorker' in navigator) {
