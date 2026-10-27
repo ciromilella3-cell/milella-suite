@@ -497,6 +497,100 @@ body {
 }
 
 /* ==========================================================================
+   CAREGIVER & CONTATTI HERO PROFESSIONALI (ANTI-SQUASH & MOBILE-FIRST)
+   ========================================================================== */
+.nowrap-num {
+  white-space: nowrap !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2px;
+}
+
+.contact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.contact-chip:hover {
+  border-color: #94a3b8;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.caregiver-card {
+  background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+  border: 1.5px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 9px 14px;
+  color: #1e3a8a;
+  box-shadow: 0 1px 3px rgba(30, 64, 175, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.caregiver-card:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.12);
+}
+
+.caregiver-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cg-title-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cg-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #1d4ed8;
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
+  padding: 2px 7px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.cg-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-top: 1px dashed #bfdbfe;
+  padding-top: 6px;
+}
+
+.cg-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #bfdbfe;
+  padding: 3px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  color: #1e40af;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  max-width: 100%;
+}
+
+/* ==========================================================================
    ALERTONS & BANNERS (INTELLIGENT ALVO)
    ========================================================================== */
 .alert-banner {
@@ -1704,17 +1798,45 @@ textarea.form-control {
   .anagrafica-hero > div:last-child {
     align-items: stretch !important;
     width: 100%;
+    margin-top: 8px;
+    border-top: 1px dashed #cbd5e1;
+    padding-top: 10px;
+  }
+  .anagrafica-hero > div:last-child > div:first-child {
+    display: grid !important;
+    grid-template-columns: 1fr 1.3fr 1.3fr !important;
+    gap: 6px !important;
+    width: 100% !important;
   }
   .anagrafica-hero > div:last-child button {
-    width: 100%;
+    width: 100% !important;
     justify-content: center;
+    padding: 8px 4px !important;
+    font-size: 11.5px !important;
   }
   .paziente-name {
-    font-size: 20px !important;
+    font-size: 21px !important;
   }
-  .meta-item {
-    font-size: 12px;
-    padding: 5px 10px;
+  .meta-item,
+  .contact-chip {
+    font-size: 12px !important;
+    padding: 4px 10px !important;
+  }
+  .action-icon-btn {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 12.5px !important;
+  }
+  .caregiver-card {
+    padding: 8px 10px !important;
+    gap: 6px !important;
+  }
+  .cg-details {
+    gap: 6px !important;
+  }
+  .cg-pill {
+    font-size: 11.5px !important;
+    padding: 3px 8px !important;
   }
 
   /* TILE DI AZIONE RAPIDA SU 2 COLONNE PERFETTE */
