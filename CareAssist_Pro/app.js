@@ -45,6 +45,45 @@ function calcolaEtaDinamica(dataVal) {
   }
 }
 
+// Formattazione data italiana chiara (GG/MM/AAAA) con mese per esteso opzionale
+function formattaDataNascitaItaliana(dataStr, conMeseEsteso = false) {
+  if (!dataStr) return '--';
+  let g = '', m = '', a = '';
+  const str = String(dataStr).trim();
+  if (str.includes('-')) {
+    const parts = str.split('T')[0].split('-');
+    if (parts.length === 3) {
+      a = parts[0];
+      m = parts[1].padStart(2, '0');
+      g = parts[2].padStart(2, '0');
+    }
+  } else if (str.includes('/')) {
+    const parts = str.split('/');
+    if (parts.length === 3) {
+      g = parts[0].padStart(2, '0');
+      m = parts[1].padStart(2, '0');
+      a = parts[2];
+    }
+  }
+  if (g && m && a) {
+    const mesiNomi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+    const idx = parseInt(m, 10) - 1;
+    const nomeMese = (idx >= 0 && idx < 12) ? mesiNomi[idx] : '';
+    if (conMeseEsteso && nomeMese) {
+      return `${g}/${m}/${a} (${parseInt(g, 10)} ${nomeMese} ${a})`;
+    }
+    return `${g}/${m}/${a}`;
+  }
+  try {
+    const d = new Date(dataStr);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('it-IT');
+    }
+  } catch (e) {}
+  return dataStr;
+}
+window.formattaDataNascitaItaliana = formattaDataNascitaItaliana;
+
 // --- SELETTORE DATA DI NASCITA ITALIANO (Giorno / Mese per esteso / Anno) ---
 const MESI_ITALIANI = [
   { val: '01', nome: '01 - Gennaio' },
@@ -8761,8 +8800,11 @@ function apriModalScheda118() {
       if (el) el.textContent = val ?? '--';
     };
 
+    const dataNascitaFmt = (typeof formattaDataNascitaItaliana === 'function')
+      ? formattaDataNascitaItaliana(p.dataNascita, true)
+      : (p.dataNascita || '--');
     setTxt('s118-nome', pulitoNome || 'Assistito');
-    setTxt('s118-eta-data', `${eta} anni (Nascita: ${p.dataNascita || '--'})`);
+    setTxt('s118-eta-data', `${eta} anni (Nascita: ${dataNascitaFmt})`);
     setTxt('s118-cf', p.cf || 'Non registrato in scheda');
     setTxt('s118-tel', p.cellulare || p.telefonoFisso || 'Non presente');
     setTxt('s118-indirizzo', p.indirizzo || 'Residenza domiciliare');

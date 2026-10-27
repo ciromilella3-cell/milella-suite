@@ -22,6 +22,29 @@
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
+    function formattaDataNascitaItaliana(dataStr, conMeseEsteso) {
+      if (!dataStr) return '--';
+      var g = '', m = '', a = '';
+      var str = String(dataStr).trim();
+      if (str.indexOf('-') !== -1) {
+        var parts = str.split('T')[0].split('-');
+        if (parts.length === 3) { a = parts[0]; m = (parts[1].length < 2 ? '0' : '') + parts[1]; g = (parts[2].length < 2 ? '0' : '') + parts[2]; }
+      } else if (str.indexOf('/') !== -1) {
+        var parts = str.split('/');
+        if (parts.length === 3) { g = (parts[0].length < 2 ? '0' : '') + parts[0]; m = (parts[1].length < 2 ? '0' : '') + parts[1]; a = parts[2]; }
+      }
+      if (g && m && a) {
+        var mesiNomi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+        var idx = parseInt(m, 10) - 1;
+        var nomeMese = (idx >= 0 && idx < 12) ? mesiNomi[idx] : '';
+        if (conMeseEsteso && nomeMese) {
+          return g + '/' + m + '/' + a + ' (' + parseInt(g, 10) + ' ' + nomeMese + ' ' + a + ')';
+        }
+        return g + '/' + m + '/' + a;
+      }
+      return dataStr;
+    }
+
     function apriModalScheda118() {
       try {
         var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
@@ -29,8 +52,9 @@
           var setTxt = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '--'; };
           var eta = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || '--');
           var pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+          var dataNascitaFmt = formattaDataNascitaItaliana(p.dataNascita, true);
           setTxt('s118-nome', pulitoNome);
-          setTxt('s118-eta-data', eta + ' anni (Nascita: ' + (p.dataNascita || '--') + ')');
+          setTxt('s118-eta-data', eta + ' anni (Nascita: ' + dataNascitaFmt + ')');
           setTxt('s118-cf', p.cf || 'Non registrato in scheda');
           setTxt('s118-tel', p.cellulare || p.telefonoFisso || 'Non presente');
           setTxt('s118-indirizzo', p.indirizzo || 'Residenza domiciliare');
