@@ -1479,13 +1479,10 @@ function renderPazientiSelector() {
 
   select.innerHTML = lista.map(p => {
     const eta = calcolaAnniDaData(p.dataNascita);
-    const dataFmt = (typeof formattaDataNascitaItaliana === 'function') ? formattaDataNascitaItaliana(p.dataNascita) : '';
-    const anno = (p.dataNascita && p.dataNascita.includes('-')) ? p.dataNascita.split('-')[0] : ((dataFmt && dataFmt.includes('/')) ? dataFmt.split('/')[2] : '');
-    const annoStr = anno ? ` • Anno ${anno}` : '';
     const pulito = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
     return `
-      <option value="${p.id}" ${p.id === AppData.activePazienteId ? 'selected' : ''}>
-        👤 ${pulito} (${eta} anni${annoStr})
+      <option value="${p.id}" ${p.id === AppData.activePazienteId ? 'selected' : ''} title="${pulito} (${eta} anni)">
+        👤 ${pulito} (${eta} anni)
       </option>
     `;
   }).join('');
