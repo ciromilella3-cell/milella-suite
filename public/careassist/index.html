@@ -756,11 +756,19 @@
               <label class="form-label">Nome e Cognome Assistito</label>
               <input type="text" class="form-control" id="nuovo-paz-nome" placeholder="Es. Maria Rossi" required>
             </div>
-            <div class="form-group" style="flex:1.2;">
-              <label class="form-label">Data di Nascita</label>
-              <input type="date" class="form-control" id="nuovo-paz-nascita" onchange="calcolaEtaDinamica(this.value)" required>
+            <div class="form-group" style="flex:2.2; min-width:270px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                <label class="form-label" style="margin-bottom:0; font-weight:700; color:#1e3a8a;">📅 Data di Nascita (Giorno / Mese / Anno)</label>
+                <button type="button" class="btn btn-sm" id="nuovo-toggle-cal" onclick="toggleDataPickerModalita('nuovo')" style="font-size:11px; padding:2px 7px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:6px; cursor:pointer;" title="Alterna tra selezione rapida dei mesi e calendario nativo">🗓️ Calendario</button>
+              </div>
+              <div id="nuovo-paz-nascita-selects" style="display:flex; gap:6px;">
+                <select id="nuovo-paz-nascita-giorno" class="form-control" style="flex:1; min-width:54px; font-weight:700; text-align:center; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Giorno"></select>
+                <select id="nuovo-paz-nascita-mese" class="form-control" style="flex:2.2; min-width:130px; font-weight:700; padding:8px 6px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Mese"></select>
+                <select id="nuovo-paz-nascita-anno" class="form-control" style="flex:1.3; min-width:72px; font-weight:700; text-align:center; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Anno"></select>
+              </div>
+              <input type="date" class="form-control" id="nuovo-paz-nascita" min="1910-01-01" max="2026-12-31" style="display:none; margin-top:4px;" onchange="sincronizzaSelectsDaData('nuovo', this.value); calcolaEtaDinamica(this.value)" required>
             </div>
-            <div class="form-group" style="flex:0.8;">
+            <div class="form-group" style="flex:0.8; min-width:90px;">
               <label class="form-label">Età Calcolata</label>
               <input type="text" class="form-control" id="nuovo-paz-eta-preview" placeholder="-- anni" readonly style="background:#f1f5f9; font-weight:bold; color:#0369a1;">
             </div>
@@ -959,13 +967,21 @@
               <label class="form-label">Nome e Cognome Assistito</label>
               <input type="text" class="form-control" id="edit-paz-nome" required>
             </div>
-            <div class="form-group" style="flex:1.2;">
-              <label class="form-label">Data di Nascita</label>
-              <input type="date" class="form-control" id="edit-paz-nascita" onchange="aggiornaEtaEdit(this.value)">
+            <div class="form-group" style="flex:2.2; min-width:270px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                <label class="form-label" style="margin-bottom:0; font-weight:700; color:#1e3a8a;">📅 Data di Nascita (Giorno / Mese / Anno)</label>
+                <button type="button" class="btn btn-sm" id="edit-toggle-cal" onclick="toggleDataPickerModalita('edit')" style="font-size:11px; padding:2px 7px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:6px; cursor:pointer;" title="Alterna tra selezione rapida dei mesi e calendario nativo">🗓️ Calendario</button>
+              </div>
+              <div id="edit-paz-nascita-selects" style="display:flex; gap:6px;">
+                <select id="edit-paz-nascita-giorno" class="form-control" style="flex:1; min-width:54px; font-weight:700; text-align:center; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('edit')" title="Giorno"></select>
+                <select id="edit-paz-nascita-mese" class="form-control" style="flex:2.2; min-width:130px; font-weight:700; padding:8px 6px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('edit')" title="Mese"></select>
+                <select id="edit-paz-nascita-anno" class="form-control" style="flex:1.3; min-width:72px; font-weight:700; text-align:center; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('edit')" title="Anno"></select>
+              </div>
+              <input type="date" class="form-control" id="edit-paz-nascita" min="1910-01-01" max="2026-12-31" style="display:none; margin-top:4px;" onchange="sincronizzaSelectsDaData('edit', this.value); aggiornaEtaEdit(this.value)">
             </div>
-            <div class="form-group" style="flex:0.8;">
+            <div class="form-group" style="flex:0.8; min-width:90px;">
               <label class="form-label">Età</label>
-              <input type="text" class="form-control" id="edit-paz-eta" readonly style="background:#f1f5f9; font-weight:bold;">
+              <input type="text" class="form-control" id="edit-paz-eta" readonly style="background:#f1f5f9; font-weight:bold; color:#0369a1;">
             </div>
           </div>
 
@@ -1323,12 +1339,12 @@
             </div>
             <div class="form-group" style="flex:1;">
               <label class="form-label" style="font-weight:700; color:#0369a1;">📦 Data Rifornimento</label>
-              <input type="date" id="nuovo-ausilio-data-rifornimento" class="form-control" onchange="aggiornaTempiNuovoAusilioModal()">
+              <input type="date" id="nuovo-ausilio-data-rifornimento" min="2020-01-01" max="2035-12-31" class="form-control" onchange="aggiornaTempiNuovoAusilioModal()">
               <small style="color:var(--text-muted); font-size:11px;">Data consegna o inizio scorta.</small>
             </div>
             <div class="form-group" style="flex:1;">
               <label class="form-label" style="font-weight:700; color:#b91c1c;">📅 Data Richiesta Rinnovo</label>
-              <input type="date" id="nuovo-ausilio-scadenza" class="form-control" style="border-color:#fca5a5; font-weight:700;" onchange="aggiornaTempiNuovoAusilioModal()">
+              <input type="date" id="nuovo-ausilio-scadenza" min="2020-01-01" max="2035-12-31" class="form-control" style="border-color:#fca5a5; font-weight:700;" onchange="aggiornaTempiNuovoAusilioModal()">
               <small style="color:var(--text-muted); font-size:11px;">Data richiesta rinnovo / ricetta.</small>
             </div>
           </div>
@@ -2080,7 +2096,7 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Data Appuntamento</label>
-              <input type="date" class="form-control" id="vis-data" required>
+              <input type="date" class="form-control" id="vis-data" min="2020-01-01" max="2035-12-31" required>
             </div>
             <div class="form-group">
               <label class="form-label">Orario</label>

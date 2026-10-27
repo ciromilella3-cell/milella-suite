@@ -45,6 +45,159 @@ function calcolaEtaDinamica(dataVal) {
   }
 }
 
+// --- SELETTORE DATA DI NASCITA ITALIANO (Giorno / Mese per esteso / Anno) ---
+const MESI_ITALIANI = [
+  { val: '01', nome: '01 - Gennaio' },
+  { val: '02', nome: '02 - Febbraio' },
+  { val: '03', nome: '03 - Marzo' },
+  { val: '04', nome: '04 - Aprile' },
+  { val: '05', nome: '05 - Maggio' },
+  { val: '06', nome: '06 - Giugno' },
+  { val: '07', nome: '07 - Luglio' },
+  { val: '08', nome: '08 - Agosto' },
+  { val: '09', nome: '09 - Settembre' },
+  { val: '10', nome: '10 - Ottobre' },
+  { val: '11', nome: '11 - Novembre' },
+  { val: '12', nome: '12 - Dicembre' }
+];
+
+function popolaSelettoreDataItaliano(prefix, dataInit) {
+  const selGiorno = document.getElementById(`${prefix}-paz-nascita-giorno`);
+  const selMese = document.getElementById(`${prefix}-paz-nascita-mese`);
+  const selAnno = document.getElementById(`${prefix}-paz-nascita-anno`);
+  const inputNativo = document.getElementById(`${prefix}-paz-nascita`);
+  if (!selGiorno || !selMese || !selAnno) return;
+
+  // Popola giorni se vuoto (1..31)
+  if (selGiorno.options.length === 0) {
+    for (let d = 1; d <= 31; d++) {
+      const valStr = d < 10 ? '0' + d : '' + d;
+      const opt = document.createElement('option');
+      opt.value = valStr;
+      opt.textContent = valStr;
+      selGiorno.appendChild(opt);
+    }
+  }
+
+  // Popola tutti i 12 mesi in italiano se vuoto
+  if (selMese.options.length === 0) {
+    MESI_ITALIANI.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.val;
+      opt.textContent = m.nome;
+      selMese.appendChild(opt);
+    });
+  }
+
+  // Popola anni se vuoto (dal corrente fino al 1910)
+  if (selAnno.options.length === 0) {
+    const currentYear = new Date().getFullYear();
+    for (let y = currentYear; y >= 1910; y--) {
+      const opt = document.createElement('option');
+      opt.value = '' + y;
+      opt.textContent = '' + y;
+      selAnno.appendChild(opt);
+    }
+  }
+
+  impostaValoreSelettoreData(prefix, dataInit);
+}
+
+function impostaValoreSelettoreData(prefix, dataStr) {
+  const selGiorno = document.getElementById(`${prefix}-paz-nascita-giorno`);
+  const selMese = document.getElementById(`${prefix}-paz-nascita-mese`);
+  const selAnno = document.getElementById(`${prefix}-paz-nascita-anno`);
+  const inputNativo = document.getElementById(`${prefix}-paz-nascita`);
+
+  let g = '18', m = '04', a = '1935';
+  if (dataStr && typeof dataStr === 'string' && dataStr.trim() !== '') {
+    if (dataStr.includes('-')) {
+      const parts = dataStr.trim().split('-');
+      if (parts.length >= 3) {
+        a = parts[0];
+        m = parts[1].padStart(2, '0');
+        g = parts[2].padStart(2, '0');
+      }
+    } else if (dataStr.includes('/')) {
+      const parts = dataStr.trim().split('/');
+      if (parts.length >= 3) {
+        g = parts[0].padStart(2, '0');
+        m = parts[1].padStart(2, '0');
+        a = parts[2];
+      }
+    }
+  }
+
+  if (selGiorno) selGiorno.value = g;
+  if (selMese) selMese.value = m;
+  if (selAnno) selAnno.value = a;
+
+  const isoDate = `${a}-${m}-${g}`;
+  if (inputNativo) {
+    inputNativo.value = isoDate;
+    inputNativo.min = '1910-01-01';
+    inputNativo.max = `${new Date().getFullYear()}-12-31`;
+  }
+
+  if (prefix === 'edit') {
+    aggiornaEtaEdit(isoDate);
+    if (typeof sincronizzaNoteAllettatoDinamico === 'function') sincronizzaNoteAllettatoDinamico();
+  } else if (prefix === 'nuovo') {
+    calcolaEtaDinamica(isoDate);
+  }
+}
+
+function sincronizzaDataDaSelects(prefix) {
+  const selGiorno = document.getElementById(`${prefix}-paz-nascita-giorno`);
+  const selMese = document.getElementById(`${prefix}-paz-nascita-mese`);
+  const selAnno = document.getElementById(`${prefix}-paz-nascita-anno`);
+  const inputNativo = document.getElementById(`${prefix}-paz-nascita`);
+  if (!selGiorno || !selMese || !selAnno) return;
+
+  const g = (selGiorno.value || '01').padStart(2, '0');
+  const m = (selMese.value || '01').padStart(2, '0');
+  const a = selAnno.value || '1935';
+
+  const isoDate = `${a}-${m}-${g}`;
+  if (inputNativo) inputNativo.value = isoDate;
+
+  if (prefix === 'edit') {
+    aggiornaEtaEdit(isoDate);
+    if (typeof sincronizzaNoteAllettatoDinamico === 'function') sincronizzaNoteAllettatoDinamico();
+  } else if (prefix === 'nuovo') {
+    calcolaEtaDinamica(isoDate);
+  }
+}
+
+function sincronizzaSelectsDaData(prefix, dateStr) {
+  if (!dateStr) return;
+  impostaValoreSelettoreData(prefix, dateStr);
+}
+
+function toggleDataPickerModalita(prefix) {
+  const selectsWrap = document.getElementById(`${prefix}-paz-nascita-selects`);
+  const inputNativo = document.getElementById(`${prefix}-paz-nascita`);
+  const btnToggle = document.getElementById(`${prefix}-toggle-cal`);
+  if (!selectsWrap || !inputNativo) return;
+
+  const isNativoVisible = inputNativo.style.display !== 'none';
+  if (isNativoVisible) {
+    inputNativo.style.display = 'none';
+    selectsWrap.style.display = 'flex';
+    if (btnToggle) btnToggle.innerHTML = '🗓️ Calendario Nativo';
+  } else {
+    selectsWrap.style.display = 'none';
+    inputNativo.style.display = 'block';
+    if (btnToggle) btnToggle.innerHTML = '📋 Selettore Mesi';
+  }
+}
+
+window.popolaSelettoreDataItaliano = popolaSelettoreDataItaliano;
+window.impostaValoreSelettoreData = impostaValoreSelettoreData;
+window.sincronizzaDataDaSelects = sincronizzaDataDaSelects;
+window.sincronizzaSelectsDaData = sincronizzaSelectsDaData;
+window.toggleDataPickerModalita = toggleDataPickerModalita;
+
 // Template per un nuovo paziente
 function createPazienteTemplate(id, nome, dataNascita, note = '') {
   const eta = calcolaAnniDaData(dataNascita);
@@ -2424,7 +2577,7 @@ function apriModificaAnagrafica() {
   cambiaTabAnagrafica('paziente');
 
   document.getElementById('edit-paz-nome').value = p.nome || '';
-  document.getElementById('edit-paz-nascita').value = p.dataNascita || '1935-04-18';
+  popolaSelettoreDataItaliano('edit', p.dataNascita || '1935-04-18');
   document.getElementById('edit-paz-eta').value = `${calcolaAnniDaData(p.dataNascita)} anni`;
   document.getElementById('edit-paz-indirizzo').value = p.indirizzo || '';
   const defaultCaregiverNome = (p.id === 'paz_rosa' && (!p.moglieNome || p.moglieNome.trim() === ''))
@@ -4994,6 +5147,7 @@ function openModal(id) {
     }
 
     if (id === 'modal-nuovo-paziente') {
+      popolaSelettoreDataItaliano('nuovo', '1938-05-15');
       renderCatalogoAusiliForm('container-catalogo-ausili-nuovo', []);
     }
     document.body.classList.add('modal-open');
