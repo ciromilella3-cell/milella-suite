@@ -1537,8 +1537,10 @@ function renderPazientiSelector() {
       <div class="meta-item clinica-zoom-item contact-chip phone-chip" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Telefono Abitazione / Fisso', '${activeP.telefonoFisso}', '☎️')" onmouseleave="nascondiLenteClinica()">
         <span>☎️</span>
         <span>Casa: <b class="nowrap-num">${activeP.telefonoFisso}</b></span>
-        <a href="tel:${cleanNum(activeP.telefonoFisso)}" class="action-icon-btn call" title="Chiama Casa">📞</a>
-        <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.telefonoFisso)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con Telefono Casa">🟢</a>
+        <div class="chip-actions">
+          <a href="tel:${cleanNum(activeP.telefonoFisso)}" class="action-icon-btn call" title="Chiama Casa">📞</a>
+          <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.telefonoFisso)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con Telefono Casa">💬</a>
+        </div>
       </div>` : '';
 
     // 3. CELLULARE ASSISTITO (CHIAMATA, SMS, WHATSAPP)
@@ -1546,9 +1548,11 @@ function renderPazientiSelector() {
       <div class="meta-item clinica-zoom-item contact-chip phone-chip" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Cellulare Assistito (${activeP.nome})', '${activeP.cellulare}', '📱')" onmouseleave="nascondiLenteClinica()">
         <span>📱</span>
         <span>Cell: <b class="nowrap-num">${activeP.cellulare}</b></span>
-        <a href="tel:${cleanNum(activeP.cellulare)}" class="action-icon-btn call" title="Chiama ${activeP.nome}">📞</a>
-        <a href="sms:${cleanNum(activeP.cellulare)}" class="action-icon-btn sms" title="Invia SMS a ${activeP.nome}">💬</a>
-        <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.cellulare)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con ${activeP.nome}">🟢</a>
+        <div class="chip-actions">
+          <a href="tel:${cleanNum(activeP.cellulare)}" class="action-icon-btn call" title="Chiama ${activeP.nome}">📞</a>
+          <a href="sms:${cleanNum(activeP.cellulare)}" class="action-icon-btn sms" title="Invia SMS a ${activeP.nome}">✉️</a>
+          <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.cellulare)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con ${activeP.nome}">💬</a>
+        </div>
       </div>` : '';
 
     // 4. CONTATTO DI RIFERIMENTO / CAREGIVER / FAMIGLIA (LAYOUT DEDICATO ANTI-SQUASH CON CHIP E PULSANTI TOUCH)
@@ -1561,40 +1565,50 @@ function renderPazientiSelector() {
       <div class="caregiver-card clinica-zoom-item" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Contatto di Riferimento / Caregiver', '${parenteNome.replace(/'/g, "\\'")} - Tel: ${parenteCell}${parenteEmail ? ' - Email: ' + parenteEmail : ''}', '👥')" onmouseleave="nascondiLenteClinica()">
         <div class="caregiver-header">
           <div class="cg-title-box">
-            <span style="font-size:16px;">👥</span>
+            <span class="cg-icon">👥</span>
             <span class="cg-badge">Caregiver & Famiglia</span>
-            <b class="cg-name" style="font-size:13.5px; color:#1e3a8a;">${parenteNome}</b>
+            <b class="cg-name">${parenteNome}</b>
           </div>
         </div>
         <div class="cg-details">
           ${parenteCell ? `
             <div class="cg-pill cg-phone-pill">
-              <span>📱</span>
-              <span style="color:#64748b; font-weight:600; font-size:11.5px;">Cell:</span>
-              <b class="nowrap-num" style="color:#0f172a; font-size:13px;">${parenteCell}</b>
-              <div class="cg-actions" style="display:inline-flex; align-items:center; gap:3px; margin-left:4px;">
+              <div class="cg-pill-left">
+                <span>📱</span>
+                <span class="cg-pill-label">Cell:</span>
+                <b class="nowrap-num cg-pill-val">${parenteCell}</b>
+              </div>
+              <div class="cg-actions">
                 <a href="tel:${cleanNum(parenteCell)}" class="action-icon-btn call" title="Chiama Caregiver / Familiare">📞</a>
-                <a href="sms:${cleanNum(parenteCell)}" class="action-icon-btn sms" title="Invia SMS al Caregiver">💬</a>
-                <a href="https://api.whatsapp.com/send?phone=${waNum(parenteCell)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con Caregiver">🟢</a>
+                <a href="sms:${cleanNum(parenteCell)}" class="action-icon-btn sms" title="Invia SMS al Caregiver">✉️</a>
+                <a href="https://api.whatsapp.com/send?phone=${waNum(parenteCell)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con Caregiver">💬</a>
               </div>
             </div>
           ` : ''}
           ${parenteEmail ? `
             <div class="cg-pill cg-email-pill">
-              <span style="background:#e0f2fe; color:#0369a1; padding:1px 6px; border-radius:5px; font-size:10px; font-weight:800; border:1px solid #bae6fd;">EMAIL</span>
-              <a href="mailto:${parenteEmail}?subject=Comunicazione%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="smart-link cg-email-link" style="color:#0284c7; font-weight:700; max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Invia Email al Caregiver">
-                <b>${parenteEmail}</b>
-              </a>
-              <a href="mailto:${parenteEmail}?subject=Comunicazione%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="action-icon-btn mail" title="Invia Email al Caregiver">✉️</a>
+              <div class="cg-pill-left">
+                <span class="cg-tag-badge email">EMAIL</span>
+                <a href="mailto:${parenteEmail}?subject=Comunicazione%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="smart-link cg-email-link" title="Invia Email al Caregiver">
+                  <b>${parenteEmail}</b>
+                </a>
+              </div>
+              <div class="cg-actions">
+                <a href="mailto:${parenteEmail}?subject=Comunicazione%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="action-icon-btn mail" title="Invia Email al Caregiver">✉️</a>
+              </div>
             </div>
           ` : ''}
           ${parentePec ? `
-            <div class="cg-pill cg-pec-pill" style="background:#fffbeb; border-color:#fde68a;">
-              <span style="background:#fef3c7; color:#92400e; padding:1px 6px; border-radius:5px; font-size:10px; font-weight:800; border:1px solid #fde68a;">PEC</span>
-              <a href="mailto:${parentePec}?subject=Comunicazione%20Ufficiale%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="smart-link cg-pec-link" style="color:#b45309; font-weight:700; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Invia PEC al Caregiver">
-                <b>${parentePec}</b>
-              </a>
-              <a href="mailto:${parentePec}?subject=Comunicazione%20Ufficiale%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="action-icon-btn mail" style="background:#fef3c7; border-color:#fde68a; color:#b45309;" title="Invia PEC al Caregiver">🔒</a>
+            <div class="cg-pill cg-pec-pill">
+              <div class="cg-pill-left">
+                <span class="cg-tag-badge pec">PEC</span>
+                <a href="mailto:${parentePec}?subject=Comunicazione%20Ufficiale%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="smart-link cg-pec-link" title="Invia PEC al Caregiver">
+                  <b>${parentePec}</b>
+                </a>
+              </div>
+              <div class="cg-actions">
+                <a href="mailto:${parentePec}?subject=Comunicazione%20Ufficiale%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="action-icon-btn pec" title="Invia PEC al Caregiver">🔒</a>
+              </div>
             </div>
           ` : ''}
         </div>
@@ -1614,21 +1628,21 @@ function renderPazientiSelector() {
     const telFissoStudio = (activeP.medicoTelStudio || (activeP.medicoStudio && !activeP.medicoStudio.includes('Sarconi') && !activeP.medicoStudio.includes('Via') ? activeP.medicoStudio : ''));
 
     const medicoBadge = `
-      <div class="clinica-zoom-item" style="background:#fefce8; border:1.5px solid #fde047; border-radius:12px; padding:10px 14px; color:#854d0e; cursor:pointer; display:flex; flex-direction:column; justify-content:space-between; gap:6px; box-shadow:0 1px 3px rgba(0,0,0,0.04); transition:all 0.15s ease;"
+      <div class="clinica-zoom-item medico-card-box"
            onmouseenter="mostraLenteMedicoCurante()" 
            onmouseleave="nascondiLenteClinica()">
         
         <!-- LIVELLO 1: MEDICO, STATO AMBULATORIO OGGI E AZIONE ORARI -->
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:16px;">🩺</span>
-            <span style="font-size:13.5px; font-weight:800; color:#713f12;">${medicoNome}</span>
-            <span style="font-size:11px; font-weight:700; color:#a16207; background:#fef9c3; border:1px solid #fef08a; padding:1px 6px; border-radius:6px;">MMG</span>
+        <div class="medico-header-row">
+          <div class="medico-title-left">
+            <span style="font-size:17px;">🩺</span>
+            <span class="medico-nome">${medicoNome}</span>
+            <span class="medico-mmg-badge">MMG</span>
           </div>
 
           <!-- BADGE DI STATO AMBULATORIO OGGI (IN PRIMO PIANO) -->
           ${infoStudio.testoOggi ? `
-            <div style="background:${infoStudio.badgeBg}; color:${infoStudio.badgeColore}; border:1.5px solid ${infoStudio.badgeBorder}; padding:4px 12px; border-radius:20px; font-weight:800; font-size:12px; display:inline-flex; align-items:center; gap:6px; box-shadow:0 1px 2px rgba(0,0,0,0.03); transition:all 0.2s ease;">
+            <div class="medico-status-pill ${infoStudio.isOpenNow ? 'open-now-pulse' : ''}" style="background:${infoStudio.badgeBg}; color:${infoStudio.badgeColore}; border:1.5px solid ${infoStudio.badgeBorder};">
               <span style="font-size:13px; line-height:1;">${infoStudio.badgeIcona}</span> 
               <span>${infoStudio.testoOggi}</span>
             </div>
@@ -1636,58 +1650,71 @@ function renderPazientiSelector() {
         </div>
 
         <!-- LIVELLO 2: SEDI STUDI E CONTATTI COMPLETI SENZA DUPLICAZIONI -->
-        <div style="display:flex; align-items:center; gap:10px; font-size:12px; color:#475569; flex-wrap:wrap; border-top:1px dashed #fef08a; padding-top:6px;">
+        <div class="medico-contacts-row">
           
-          <!-- SEDI AMBULATORI -->
+          <!-- SEDI AMBULATORI CON LINK MAPPE -->
           ${sediStudioPulite ? `
-            <div style="display:flex; align-items:center; gap:4px;" title="${sediStudioPulite}">
+            <div class="medico-contact-item studio-addr" title="${sediStudioPulite}">
               <span style="font-size:13px;">📍</span>
               <span style="color:#64748b; font-weight:600;">Studi:</span>
               <b style="color:#0f172a;">${sediStudioPulite}</b>
+              <a href="${mapsLink(sediStudioPulite)}" target="_blank" class="gps-nav-btn" style="margin-left:4px; font-size:10.5px; padding:2px 6px;" title="Apri posizione studio su Google Maps">
+                <span>🧭</span> Mappa
+              </a>
             </div>
           ` : ''}
 
           <!-- TELEFONO FISSO STUDIO SE PRESENTE -->
           ${telFissoStudio ? `
-            <div style="display:flex; align-items:center; gap:4px;">
-              <span>☎️</span>
-              <span style="color:#64748b; font-weight:600;">Studio:</span>
-              <b class="nowrap-num" style="color:#0f172a;">${telFissoStudio}</b>
+            <div class="medico-contact-item">
+              <div style="display:flex; align-items:center; gap:4px;">
+                <span>☎️</span>
+                <span style="color:#64748b; font-weight:600;">Studio:</span>
+                <b class="nowrap-num" style="color:#0f172a;">${telFissoStudio}</b>
+              </div>
               <a href="tel:${cleanNum(telFissoStudio)}" class="action-icon-btn call" title="Chiama Studio Medico">📞</a>
             </div>
           ` : ''}
 
           <!-- CELLULARE E WHATSAPP -->
           ${medCell ? `
-            <div style="display:flex; align-items:center; gap:4px;">
-              <span>📱</span>
-              <span style="color:#64748b; font-weight:600;">Cell:</span>
-              <b class="nowrap-num" style="color:#0f172a;">${medCell}</b>
-              <a href="tel:${cleanNum(medCell)}" class="action-icon-btn call" title="Chiama Medico">📞</a>
-              <a href="sms:${cleanNum(medCell)}" class="action-icon-btn sms" title="Invia SMS al Medico">💬</a>
-              <a href="https://api.whatsapp.com/send?phone=${waNum(medCell)}" target="_blank" class="action-icon-btn wa" title="WhatsApp col Medico">🟢</a>
+            <div class="medico-contact-item">
+              <div style="display:flex; align-items:center; gap:4px;">
+                <span>📱</span>
+                <span style="color:#64748b; font-weight:600;">Cell:</span>
+                <b class="nowrap-num" style="color:#0f172a;">${medCell}</b>
+              </div>
+              <div class="cg-actions">
+                <a href="tel:${cleanNum(medCell)}" class="action-icon-btn call" title="Chiama Medico">📞</a>
+                <a href="sms:${cleanNum(medCell)}" class="action-icon-btn sms" title="Invia SMS al Medico">✉️</a>
+                <a href="https://api.whatsapp.com/send?phone=${waNum(medCell)}" target="_blank" class="action-icon-btn wa" title="WhatsApp col Medico">💬</a>
+              </div>
             </div>
           ` : ''}
 
           <!-- EMAIL ORDINARIA -->
           ${medEmail ? `
-            <div style="display:flex; align-items:center; gap:5px;">
-              <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; border:1px solid #bae6fd;">EMAIL</span>
-              <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link" style="color:#0284c7; font-weight:700; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Invia Email Ordinaria al Medico Curante">
-                <b>${medEmail}</b>
-              </a>
+            <div class="medico-contact-item">
+              <div style="display:flex; align-items:center; gap:4px; min-width:0;">
+                <span class="cg-tag-badge email">EMAIL</span>
+                <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link" style="color:#0284c7; font-weight:700; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Invia Email Ordinaria al Medico Curante">
+                  <b>${medEmail}</b>
+                </a>
+              </div>
               <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="action-icon-btn mail" title="Invia Email Ordinaria">✉️</a>
             </div>
           ` : ''}
 
           <!-- PEC UFFICIALE SE PRESENTE -->
           ${medPec ? `
-            <div style="display:flex; align-items:center; gap:5px;">
-              <span style="background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; border:1px solid #fde68a;">PEC</span>
-              <a href="mailto:${medPec}?subject=Comunicazione%20Ufficiale%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link" style="color:#b45309; font-weight:700; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Invia PEC Ufficiale al Medico Curante">
-                <b>${medPec}</b>
-              </a>
-              <a href="mailto:${medPec}?subject=Comunicazione%20Ufficiale%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="action-icon-btn mail" style="background:#fef3c7; border-color:#fde68a; color:#b45309;" title="Invia PEC">🔒</a>
+            <div class="medico-contact-item">
+              <div style="display:flex; align-items:center; gap:4px; min-width:0;">
+                <span class="cg-tag-badge pec">PEC</span>
+                <a href="mailto:${medPec}?subject=Comunicazione%20Ufficiale%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link" style="color:#b45309; font-weight:700; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Invia PEC Ufficiale al Medico Curante">
+                  <b>${medPec}</b>
+                </a>
+              </div>
+              <a href="mailto:${medPec}?subject=Comunicazione%20Ufficiale%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="action-icon-btn pec" title="Invia PEC">🔒</a>
             </div>
           ` : ''}
         </div>
@@ -1699,28 +1726,28 @@ function renderPazientiSelector() {
     const farmTel = activeP.farmaciaTelefono || '';
 
     const farmaciaBadge = `
-      <div class="clinica-zoom-item" style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:10px 14px; color:#14532d; display:flex; flex-direction:column; justify-content:space-between; gap:6px; box-shadow:0 1px 3px rgba(0,0,0,0.04); transition:all 0.15s ease;"
+      <div class="clinica-zoom-item farmacia-card-box"
            onmouseenter="mostraLenteFarmacia()" 
            onmouseleave="nascondiLenteClinica()">
         
         <!-- LIVELLO 1: INTESTAZIONE FARMACIA -->
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:16px;">💊</span>
-            <span style="font-size:13.5px; font-weight:800; color:#14532d;">${farmNome}</span>
-            <span style="font-size:11px; font-weight:700; color:#15803d; background:#dcfce7; border:1px solid #bbf7d0; padding:1px 6px; border-radius:6px;">Ritiro Farmaci</span>
+        <div class="farmacia-header-row">
+          <div class="farmacia-title-left">
+            <span style="font-size:17px;">💊</span>
+            <span class="farmacia-nome">${farmNome}</span>
+            <span class="farmacia-tag">Ritiro Farmaci</span>
           </div>
           ${farmInd ? `
-            <a href="${mapsLink(farmInd)}" target="_blank" class="btn btn-outline" style="font-size:11px; padding:2px 8px; border-color:#86efac; background:#fff; color:#166534; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="Apri navigatore Google Maps">
-              <span>🗺️</span> Mappa
+            <a href="${mapsLink(farmInd)}" target="_blank" class="gps-nav-btn" style="font-size:11px; padding:3px 8px; background:linear-gradient(135deg, #16a34a 0%, #15803d 100%);" title="Apri navigatore Google Maps">
+              <span>🗺️</span> <span>Mappa</span>
             </a>
           ` : ''}
         </div>
 
         <!-- LIVELLO 2: INDIRIZZO E CONTATTI RAPIDI -->
-        <div style="display:flex; align-items:center; gap:12px; font-size:12px; color:#166534; flex-wrap:wrap; border-top:1px dashed #bbf7d0; padding-top:6px;">
+        <div class="farmacia-contacts-row">
           ${farmInd ? `
-            <div style="display:flex; align-items:center; gap:4px;">
+            <div class="farmacia-contact-item">
               <span style="font-size:13px;">📍</span>
               <a href="${mapsLink(farmInd)}" target="_blank" class="smart-link" style="color:#15803d; font-weight:600;" title="Indicazioni Stradali">
                 <b>${farmInd}</b>
@@ -1729,11 +1756,15 @@ function renderPazientiSelector() {
           ` : ''}
 
           ${farmTel ? `
-            <div style="display:flex; align-items:center; gap:4px; margin-left:auto;">
-              <span>☎️</span>
-              <span style="color:#15803d; font-weight:600;">${farmTel}</span>
-              <a href="tel:${cleanNum(farmTel)}" class="action-icon-btn call" title="Chiama Farmacia">📞</a>
-              <a href="https://api.whatsapp.com/send?phone=${waNum(farmTel)}" target="_blank" class="action-icon-btn wa" title="WhatsApp Farmacia">🟢</a>
+            <div class="farmacia-contact-item phone-row">
+              <div style="display:flex; align-items:center; gap:4px;">
+                <span>☎️</span>
+                <b class="nowrap-num" style="color:#15803d; font-weight:700;">${farmTel}</b>
+              </div>
+              <div class="cg-actions">
+                <a href="tel:${cleanNum(farmTel)}" class="action-icon-btn call" title="Chiama Farmacia">📞</a>
+                <a href="https://api.whatsapp.com/send?phone=${waNum(farmTel)}" target="_blank" class="action-icon-btn wa" title="WhatsApp Farmacia">💬</a>
+              </div>
             </div>
           ` : ''}
         </div>
@@ -1886,6 +1917,7 @@ function renderPazientiSelector() {
         <!-- RIGA 1: NOME PAZIENTE, BADGE CLINICI & CONTATTI RAPIDI DOMICILIO -->
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;">
           <div class="paziente-name" style="margin-bottom:0; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span class="patient-avatar-badge">👤</span>
             <span style="font-size:24px; font-weight:800; color:#0f172a; letter-spacing:-0.5px;">${activeP.nome}</span>
             <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h) per prevenzione lesioni da decubito.' : 'Paziente deambulante in modo autonomo o assistito.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
               ${activeP.allettato ? '🛏️ Paziente Allettato (q2h)' : '🚶 Deambulante'}
