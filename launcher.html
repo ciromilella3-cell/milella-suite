@@ -499,7 +499,7 @@
 
                 <!-- Input PIN con Occhietto -->
                 <div style="position:relative; width:100%; margin-bottom:1rem;">
-                    <input type="password" id="inputPinGate" placeholder="••••••••" style="width:100%; padding:15px 48px 15px 16px; border-radius:14px; background:rgba(0,0,0,0.55); border:1.5px solid rgba(212,175,55,0.4); color:#fff; font-size:22px; text-align:center; letter-spacing:6px; outline:none; box-sizing:border-box; transition:border 0.2s;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,0.4)'" onkeydown="if(event.key==='Enter') verificaPinGate()">
+                    <input type="password" id="inputPinGate" placeholder="PIN o SOS999" autocomplete="current-password" style="width:100%; padding:15px 48px 15px 16px; border-radius:14px; background:rgba(0,0,0,0.55); border:1.5px solid rgba(212,175,55,0.4); color:#fff; font-size:22px; text-align:center; letter-spacing:6px; outline:none; box-sizing:border-box; transition:border 0.2s;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,0.4)'" onkeydown="if(event.key==='Enter') verificaPinGate()">
                     <button type="button" onclick="toggleMostraPasswordGate()" id="btnToggleEyeGate" title="Mostra/Nascondi codice" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.85;">
                         👁️
                     </button>
@@ -516,7 +516,7 @@
                     <button type="button" class="numpad-btn" onclick="inserisciCifraGate('7')">7</button>
                     <button type="button" class="numpad-btn" onclick="inserisciCifraGate('8')">8</button>
                     <button type="button" class="numpad-btn" onclick="inserisciCifraGate('9')">9</button>
-                    <button type="button" class="numpad-btn numpad-action" onclick="cancellaTuttoGate()" title="Cancella tutto">C</button>
+                    <button type="button" class="numpad-btn numpad-action" onclick="inserisciCifraGate('SOS')" style="background:linear-gradient(135deg, rgba(212,175,55,0.3) 0%, rgba(170,124,17,0.15) 100%); border-color:#d4af37; color:#f3e5ab; font-weight:800; font-size:15px; letter-spacing:1px;" title="Inserisci SOS">SOS</button>
                     <button type="button" class="numpad-btn" onclick="inserisciCifraGate('0')">0</button>
                     <button type="button" class="numpad-btn numpad-action" onclick="cancellaUltimaCifraGate()" title="Cancella ultima cifra">⌫</button>
                 </div>
@@ -3064,7 +3064,11 @@
     function cancellaUltimaCifraGate() {
         const inp = document.getElementById('inputPinGate');
         if (!inp) return;
-        inp.value = inp.value.slice(0, -1);
+        if (inp.value.toUpperCase().endsWith('SOS')) {
+            inp.value = inp.value.slice(0, -3);
+        } else {
+            inp.value = inp.value.slice(0, -1);
+        }
     }
     function cancellaTuttoGate() {
         const inp = document.getElementById('inputPinGate');
