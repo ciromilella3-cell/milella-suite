@@ -1154,8 +1154,11 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
 
 .modal-overlay.active {
   display: flex !important;
-  display: flex;
   animation: fadeIn 0.2s ease-out;
+}
+
+#modal-custom-confirm {
+  z-index: 10000005 !important;
 }
 
 @keyframes fadeIn {

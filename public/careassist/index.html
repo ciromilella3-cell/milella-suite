@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=42">
+  <link rel="stylesheet" href="style.css?v=43">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -2222,8 +2222,9 @@
   </div>
 
   <!-- MODAL CUSTOM CONFIRM (EFFETTO WAOO AL POSTO DI CONFIRM NATIVO) -->
-  <div class="modal-overlay" id="modal-custom-confirm" style="z-index: 9999;">
-    <div class="modal-card" style="max-width: 440px; text-align: center; border-radius: 20px; box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.4);">
+  <div class="modal-overlay" id="modal-custom-confirm" style="z-index: 10000005;">
+    <div class="modal-card" style="max-width: 440px; text-align: center; border-radius: 20px; box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.4); position: relative;">
+      <button type="button" class="btn btn-outline" id="confirm-modal-x-btn" style="position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; border-color: #e2e8f0; color: #64748b; background: #fff;" title="Chiudi">✕</button>
       <div class="modal-body" style="padding: 32px 24px 20px;">
         <div id="confirm-modal-icon" style="font-size: 44px; margin-bottom: 14px;">🔄</div>
         <div id="confirm-modal-title" style="font-family:'Outfit',sans-serif; font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Conferma Azione</div>
@@ -2231,7 +2232,7 @@
       </div>
       <div class="modal-footer" style="background: transparent; border-top: none; padding: 0 24px 24px; justify-content: center; gap: 12px;">
         <button type="button" class="btn btn-outline" id="confirm-modal-cancel" style="padding: 10px 22px; border-radius: 30px;">Annulla</button>
-        <button type="button" class="btn btn-primary" id="confirm-modal-ok" style="padding: 10px 24px; border-radius: 30px;">Conferma</button>
+        <button type="button" class="btn btn-primary" id="confirm-modal-ok" style="padding: 10px 24px; border-radius: 30px; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); border-color: #dc2626;">Conferma</button>
       </div>
     </div>
   </div>
@@ -2955,7 +2956,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=42"></script>
+  <script src="app.js?v=44"></script>
   <script>
     // Registrazione Service Worker per utilizzo offline al 100% da cellulare
     if ('serviceWorker' in navigator) {

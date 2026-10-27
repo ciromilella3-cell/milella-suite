@@ -2028,8 +2028,9 @@ function mostraLenteFarmacia() {
 let _isOverTrigger = false;
 let _isOverOverlay = false;
 let _lenteHideTimer = null;
+let _currentLenteActionFn = null;
 
-function mostraLenteClinica(titolo, testo, icona = '🩺') {
+function mostraLenteClinica(titolo, testo, icona = '🩺', actionFn = null, actionLabel = 'Apri Scheda') {
   _isOverTrigger = true;
   if (_lenteHideTimer) {
     clearTimeout(_lenteHideTimer);
@@ -2040,6 +2041,9 @@ function mostraLenteClinica(titolo, testo, icona = '🩺') {
   const txtTitolo = document.getElementById('lente-titolo');
   const txtCorpo = document.getElementById('lente-testo');
   const txtIcona = document.getElementById('lente-icona');
+  const btnApri = document.getElementById('btn-apri-lente');
+  const lblApri = document.getElementById('btn-apri-lente-label');
+  const hintBox = document.getElementById('lente-hint');
 
   if (!overlay || !txtCorpo) return;
 
@@ -2061,6 +2065,31 @@ function mostraLenteClinica(titolo, testo, icona = '🩺') {
   }
   if (txtIcona) txtIcona.textContent = icona;
 
+  // Gestione dinamica del pulsante e dell'azione Apri Scheda / Modulo
+  if (actionFn && (typeof actionFn === 'function' || typeof actionFn === 'string')) {
+    _currentLenteActionFn = actionFn;
+    if (btnApri) {
+      btnApri.style.display = 'inline-flex';
+      btnApri.disabled = false;
+      btnApri.setAttribute('aria-hidden', 'false');
+    }
+    if (lblApri) {
+      lblApri.textContent = actionLabel || 'Apri Scheda';
+    }
+    if (hintBox) {
+      hintBox.style.display = 'flex';
+    }
+  } else {
+    _currentLenteActionFn = null;
+    if (btnApri) {
+      btnApri.style.display = 'none';
+      btnApri.setAttribute('aria-hidden', 'true');
+    }
+    if (hintBox) {
+      hintBox.style.display = 'none';
+    }
+  }
+
   overlay.style.pointerEvents = 'auto';
   overlay.style.display = 'block';
 
@@ -2069,6 +2098,26 @@ function mostraLenteClinica(titolo, testo, icona = '🩺') {
     overlay.style.opacity = '1';
     overlay.style.transform = 'translate(-50%, -50%) scale(1)';
   });
+}
+
+function eseguiAzioneLenteClinica(event) {
+  if (event) {
+    if (event.preventDefault) event.preventDefault();
+    if (event.stopPropagation) event.stopPropagation();
+  }
+  const fn = _currentLenteActionFn;
+  nascondiLenteClinica(event, true);
+  if (fn) {
+    try {
+      if (typeof fn === 'function') {
+        fn();
+      } else if (typeof fn === 'string') {
+        new Function(fn)();
+      }
+    } catch (err) {
+      console.error('Errore durante esecuzione azione lente clinica:', err);
+    }
+  }
 }
 
 function nascondiLenteClinica(event, immediate = false) {
@@ -2108,14 +2157,14 @@ function nascondiLenteClinica(event, immediate = false) {
         }
       }, 150);
     }
-  }, 220);
+  }, 400);
 }
 
 // Chiudi HUD lente al tocco o click all'esterno (senza backdrop bloccante)
 document.addEventListener('pointerdown', (e) => {
   const overlay = document.getElementById('clinica-lente-overlay');
   if (!overlay || overlay.style.display === 'none' || overlay.style.opacity === '0') return;
-  if (!overlay.contains(e.target) && !e.target.closest('.clinica-zoom-item')) {
+  if (!overlay.contains(e.target) && !e.target.closest('.clinica-zoom-item') && !e.target.closest('.tile')) {
     nascondiLenteClinica(null, true);
   }
 });
@@ -2127,6 +2176,11 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// Esponi globalmente per gli handler inline HTML
+window.mostraLenteClinica = mostraLenteClinica;
+window.nascondiLenteClinica = nascondiLenteClinica;
+window.eseguiAzioneLenteClinica = eseguiAzioneLenteClinica;
+
 // Finestra di Conferma Personalizzata (Custom Dialog Elegante)
 function customConfirm(titolo, testo, icona = '💊') {
   return new Promise((resolve) => {
@@ -2137,6 +2191,7 @@ function customConfirm(titolo, testo, icona = '💊') {
 
     const btnOk = document.getElementById('confirm-modal-ok');
     const btnCancel = document.getElementById('confirm-modal-cancel');
+    const btnX = document.getElementById('confirm-modal-x-btn');
 
     modal.classList.add('active');
 
@@ -2154,10 +2209,12 @@ function customConfirm(titolo, testo, icona = '💊') {
       modal.classList.remove('active');
       btnOk.removeEventListener('click', handleOk);
       btnCancel.removeEventListener('click', handleCancel);
+      if (btnX) btnX.removeEventListener('click', handleCancel);
     };
 
     btnOk.addEventListener('click', handleOk);
     btnCancel.addEventListener('click', handleCancel);
+    if (btnX) btnX.addEventListener('click', handleCancel);
   });
 }
 
