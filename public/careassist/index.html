@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=40">
+  <link rel="stylesheet" href="style.css?v=41">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -546,19 +546,34 @@
 
       <!-- CARD ATTIVITA' RECENTI (DIARIO OSS) -->
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">📝 Ultime Annotazioni Socio-Sanitarie</div>
-          <span style="font-size:12px; color:var(--text-muted);">Parametri, Alvo, Posture registrate</span>
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div class="card-title" style="margin-bottom:2px;">📝 Ultime Annotazioni Socio-Sanitarie</div>
+            <span style="font-size:12px; color:var(--text-muted);">Parametri, Alvo, Posture registrate</span>
+          </div>
+          <div class="diario-bulk-toolbar" id="diario-bulk-toolbar">
+            <button type="button" class="btn btn-sm btn-outline" id="btn-diario-select-all" onclick="toggleSelectAllDiarioBtn('diario')" style="font-size:12px; padding:6px 12px; display:inline-flex; align-items:center; gap:6px; border-radius:8px; cursor:pointer;" title="Seleziona o deseleziona tutte le annotazioni visibili">
+              <span id="btn-diario-select-all-icon">☑️</span>
+              <span id="btn-diario-select-all-text">Seleziona Tutti</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-elimina-massiva" id="btn-diario-elimina-selezionati" onclick="eliminaAnnotazioniSelezionate('diario')" style="font-size:12px; padding:6px 14px; display:none; align-items:center; gap:6px;" title="Elimina annotazioni selezionate">
+              <span>🗑️</span>
+              <span>Elimina Selezionati (<b id="diario-selected-count">0</b>)</span>
+            </button>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="custom-table">
             <thead>
               <tr>
+                <th class="table-checkbox-cell" style="width:44px; text-align:center;">
+                  <input type="checkbox" id="diario-select-all-cb" onchange="toggleSelectAllDiario(this.checked, 'diario')" title="Seleziona / Deseleziona tutti">
+                </th>
                 <th style="width:160px;">Data e Ora</th>
                 <th style="width:130px;">Evento</th>
                 <th>Dettaglio Clinico / Operativo</th>
                 <th style="width:120px;">Registrato da</th>
-                <th style="width:40px;"></th>
+                <th style="width:40px; text-align:center;"></th>
               </tr>
             </thead>
             <tbody id="diario-table-body">
@@ -734,18 +749,34 @@
 
     <section id="tab-diario" class="tab-content" style="display:none;">
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">📋 Cartella Clinica Domiciliare - Storico Eventi</div>
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div class="card-title" style="margin-bottom:2px;">📋 Cartella Clinica Domiciliare - Storico Eventi</div>
+            <span style="font-size:12px; color:var(--text-muted);">Registro completo di tutte le attività socio-sanitarie</span>
+          </div>
+          <div class="diario-bulk-toolbar" id="diario-full-bulk-toolbar">
+            <button type="button" class="btn btn-sm btn-outline" id="btn-full-select-all" onclick="toggleSelectAllDiarioBtn('full')" style="font-size:12px; padding:6px 12px; display:inline-flex; align-items:center; gap:6px; border-radius:8px; cursor:pointer;" title="Seleziona o deseleziona tutti">
+              <span id="btn-full-select-all-icon">☑️</span>
+              <span id="btn-full-select-all-text">Seleziona Tutti</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-elimina-massiva" id="btn-full-elimina-selezionati" onclick="eliminaAnnotazioniSelezionate('full')" style="font-size:12px; padding:6px 14px; display:none; align-items:center; gap:6px;" title="Elimina annotazioni selezionate">
+              <span>🗑️</span>
+              <span>Elimina Selezionati (<b id="full-selected-count">0</b>)</span>
+            </button>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="custom-table">
             <thead>
               <tr>
-                <th>Data e Ora</th>
-                <th>Tipo</th>
+                <th class="table-checkbox-cell" style="width:44px; text-align:center;">
+                  <input type="checkbox" id="full-select-all-cb" onchange="toggleSelectAllDiario(this.checked, 'full')" title="Seleziona / Deseleziona tutti">
+                </th>
+                <th style="width:160px;">Data e Ora</th>
+                <th style="width:130px;">Tipo</th>
                 <th>Dettagli Registrati</th>
-                <th>Operatore</th>
-                <th></th>
+                <th style="width:120px;">Operatore</th>
+                <th style="width:40px; text-align:center;"></th>
               </tr>
             </thead>
             <tbody id="diario-full-table-body">
@@ -2924,7 +2955,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=40"></script>
+  <script src="app.js?v=41"></script>
   <script>
     // Registrazione Service Worker per utilizzo offline al 100% da cellulare
     if ('serviceWorker' in navigator) {

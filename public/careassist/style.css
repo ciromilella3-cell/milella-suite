@@ -3309,6 +3309,11 @@ textarea.form-control {
     min-width: 75px !important;
   }
 
+  .modal-footer {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
   .modal-card input,
   .modal-card select,
   .modal-card textarea {

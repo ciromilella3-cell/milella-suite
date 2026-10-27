@@ -5061,7 +5061,97 @@ async function eliminaTerapia(id) {
   }
 }
 
-// Rendering Registro Attività Recenti (Diario OSS)
+// Rendering Registro Attività Recenti (Diario OSS) con Selezione ed Eliminazione Massiva
+function getDiarioCheckboxes(scope) {
+  return Array.from(document.querySelectorAll(`.diario-cb-${scope}`));
+}
+
+function onDiarioCheckboxChange(scope) {
+  const cbs = getDiarioCheckboxes(scope);
+  const checked = cbs.filter(cb => cb.checked);
+  const total = cbs.length;
+
+  cbs.forEach(cb => {
+    const tr = cb.closest('tr');
+    if (tr) {
+      if (cb.checked) tr.classList.add('selected-row');
+      else tr.classList.remove('selected-row');
+    }
+  });
+
+  const headerCb = document.getElementById(`${scope}-select-all-cb`);
+  if (headerCb) {
+    headerCb.checked = total > 0 && checked.length === total;
+    headerCb.indeterminate = checked.length > 0 && checked.length < total;
+  }
+
+  const btnText = document.getElementById(`btn-${scope}-select-all-text`);
+  const btnIcon = document.getElementById(`btn-${scope}-select-all-icon`);
+  if (btnText && btnIcon) {
+    if (total > 0 && checked.length === total) {
+      btnText.textContent = 'Deseleziona Tutti';
+      btnIcon.textContent = '◻️';
+    } else {
+      btnText.textContent = 'Seleziona Tutti';
+      btnIcon.textContent = '☑️';
+    }
+  }
+
+  const btnDel = document.getElementById(`btn-${scope}-elimina-selezionati`);
+  const countSpan = document.getElementById(`${scope}-selected-count`);
+  if (btnDel) {
+    if (checked.length > 0) {
+      btnDel.style.display = 'inline-flex';
+      if (countSpan) countSpan.textContent = checked.length;
+    } else {
+      btnDel.style.display = 'none';
+      if (countSpan) countSpan.textContent = '0';
+    }
+  }
+}
+
+function toggleSelectAllDiario(isChecked, scope) {
+  const cbs = getDiarioCheckboxes(scope);
+  cbs.forEach(cb => {
+    cb.checked = isChecked;
+  });
+  onDiarioCheckboxChange(scope);
+}
+
+function toggleSelectAllDiarioBtn(scope) {
+  const cbs = getDiarioCheckboxes(scope);
+  if (!cbs.length) return;
+  const anyUnchecked = cbs.some(cb => !cb.checked);
+  toggleSelectAllDiario(anyUnchecked, scope);
+}
+
+async function eliminaAnnotazioniSelezionate(scope) {
+  const p = getActivePaziente();
+  if (!p) return;
+
+  const cbs = getDiarioCheckboxes(scope).filter(cb => cb.checked);
+  const count = cbs.length;
+  if (!count) {
+    showToast('Nessuna annotazione selezionata.', 'warning');
+    return;
+  }
+
+  const idsToDelete = new Set(cbs.map(cb => String(cb.dataset.id)));
+
+  const ok = await customConfirm(
+    'Elimina Annotazioni Selezionate',
+    `Sei sicuro di voler eliminare definitivamente <b>${count}</b> annotazion${count === 1 ? 'e' : 'i'} dal registro?`,
+    '🗑️'
+  );
+
+  if (ok) {
+    p.registrazioni = (p.registrazioni || []).filter(r => !idsToDelete.has(String(r.id)));
+    saveDb();
+    renderDiario();
+    showToast(`Eliminate ${count} annotazion${count === 1 ? 'e' : 'i'} con successo.`);
+  }
+}
+
 function renderDiario() {
   const p = getActivePaziente();
   const container = document.getElementById('diario-table-body');
@@ -5071,13 +5161,15 @@ function renderDiario() {
   const sorted = [...(p.registrazioni || [])].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   if (!sorted.length) {
-    const emptyHtml = '<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:20px;">Nessuna registrazione recente per questo paziente.</td></tr>';
+    const emptyHtml = '<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:20px;">Nessuna registrazione recente per questo paziente.</td></tr>';
     container.innerHTML = emptyHtml;
     if (fullContainer) fullContainer.innerHTML = emptyHtml;
+    onDiarioCheckboxChange('recent');
+    onDiarioCheckboxChange('full');
     return;
   }
 
-  const renderRows = (list) => list.map(r => {
+  const renderRows = (list, scope) => list.map(r => {
     let icon = '📝';
     let badge = 'badge-primary';
     let desc = '';
@@ -5165,18 +5257,24 @@ function renderDiario() {
     const dataStr = `${d.toLocaleDateString('it-IT')} ${d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}`;
 
     return `
-      <tr>
+      <tr id="diario-row-${scope}-${r.id}">
+        <td class="table-checkbox-cell" style="text-align:center;">
+          <input type="checkbox" class="diario-cb-${scope}" data-id="${r.id}" onchange="onDiarioCheckboxChange('${scope}')" title="Seleziona riga">
+        </td>
         <td><b>${dataStr}</b></td>
         <td><span class="badge ${badge}">${icon} ${r.tipo.toUpperCase()}</span></td>
         <td>${desc}</td>
         <td><small>${r.operatore || 'Caregiver'}</small></td>
-        <td><button class="btn btn-outline" style="padding:2px 6px; font-size:10px;" onclick="eliminaLog('${r.id}')">✕</button></td>
+        <td style="text-align:center;"><button class="btn btn-outline" style="padding:2px 6px; font-size:10px; border-radius:4px;" onclick="eliminaLog('${r.id}')" title="Elimina singola riga">✕</button></td>
       </tr>
     `;
   }).join('');
 
-  container.innerHTML = renderRows(sorted.slice(0, 10));
-  if (fullContainer) fullContainer.innerHTML = renderRows(sorted);
+  container.innerHTML = renderRows(sorted.slice(0, 10), 'recent');
+  if (fullContainer) fullContainer.innerHTML = renderRows(sorted, 'full');
+
+  onDiarioCheckboxChange('recent');
+  onDiarioCheckboxChange('full');
 }
 
 async function eliminaLog(id) {
@@ -5188,8 +5286,9 @@ async function eliminaLog(id) {
     '🗑️'
   );
   if (ok) {
-    p.registrazioni = p.registrazioni.filter(r => r.id !== id);
+    p.registrazioni = p.registrazioni.filter(r => String(r.id) !== String(id));
     saveDb();
+    renderDiario();
     showToast('Registrazione rimossa.');
   }
 }
