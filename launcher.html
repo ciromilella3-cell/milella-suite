@@ -165,6 +165,57 @@
             transform: translateY(-3px) scale(1.04);
         }
 
+        /* Quick Action Pill Buttons on Cards */
+        .card-quick-actions {
+            margin-top: auto;
+            padding-top: 14px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            z-index: 2;
+        }
+        .quick-pill-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            color: #f3e5ab;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            backdrop-filter: blur(8px);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .quick-pill-btn:hover {
+            background: linear-gradient(135deg, rgba(212,175,55,0.35) 0%, rgba(170,124,17,0.2) 100%);
+            border-color: #d4af37;
+            color: #ffffff;
+            transform: translateY(-2px) scale(1.06);
+            box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+        }
+        .quick-pill-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Interactive KPI Cards */
+        .kpi-card-interactive {
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .kpi-card-interactive:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            filter: brightness(1.2);
+        }
+            transform: translateY(-3px) scale(1.04);
+        }
+
         .old-cards-wrapper {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -619,12 +670,28 @@
         </div>
 
         <!-- 5. CRUSCOTTO RIEPILOGATIVO VELOCE (DASHBOARD KPI LIVE) -->
-        <div id="kpiDashboardBar" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px; width:100%; max-width:900px; margin: 0 auto 2rem auto;">
-            <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(212,175,55,0.25); border-radius:16px; padding:12px 10px; text-align:center;">
+        <div id="kpiDashboardBar" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px; width:100%; max-width:960px; margin: 0 auto 2rem auto;">
+            <div class="kpi-card-interactive" onclick="window.location.href='/inventario.html'" title="Visualizza Catalogo Attrezzi Completo" style="background:rgba(15,23,42,0.7); border:1px solid rgba(212,175,55,0.3); border-radius:18px; padding:12px 10px; text-align:center; cursor:pointer; backdrop-filter:blur(10px);">
                 <div style="font-size:20px; margin-bottom:4px;">🛠️</div>
-                <div style="font-size:18px; font-weight:800; color:#fff;" id="kpiTotAttrezzi">--</div>
-                <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Tot. Attrezzi</div>
+                <div style="font-size:19px; font-weight:900; color:#f3e5ab;" id="kpiTotAttrezzi">--</div>
+                <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">Tot. Attrezzi ↗</div>
             </div>
+            <div class="kpi-card-interactive" onclick="window.location.href='/inventario.html?filtro=in_uso'" title="Visualizza Attrezzi in Uso / Prestito" style="background:rgba(15,23,42,0.7); border:1px solid rgba(239,68,68,0.35); border-radius:18px; padding:12px 10px; text-align:center; cursor:pointer; backdrop-filter:blur(10px);">
+                <div style="font-size:20px; margin-bottom:4px;">🚚</div>
+                <div style="font-size:19px; font-weight:900; color:#f87171;" id="kpiInUso">--</div>
+                <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">In Cantiere / Uso ↗</div>
+            </div>
+            <div class="kpi-card-interactive" onclick="window.location.href='/inventario.html?filtro=disponibili'" title="Visualizza Attrezzi Pronti e Disponibili" style="background:rgba(15,23,42,0.7); border:1px solid rgba(34,197,94,0.35); border-radius:18px; padding:12px 10px; text-align:center; cursor:pointer; backdrop-filter:blur(10px);">
+                <div style="font-size:20px; margin-bottom:4px;">✅</div>
+                <div style="font-size:19px; font-weight:900; color:#4ade80;" id="kpiDisponibili">--</div>
+                <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">Disponibili ↗</div>
+            </div>
+            <div class="kpi-card-interactive" onclick="apriGestioneOperatoriModal()" title="Gestisci Collaboratori e Permessi" style="background:rgba(15,23,42,0.7); border:1px solid rgba(56,189,248,0.35); border-radius:18px; padding:12px 10px; text-align:center; cursor:pointer; backdrop-filter:blur(10px);">
+                <div style="font-size:20px; margin-bottom:4px;">👥</div>
+                <div style="font-size:19px; font-weight:900; color:#38bdf8;" id="kpiOperatori">--</div>
+                <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">Operatori Attivi ↗</div>
+            </div>
+        </div>
             <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(239,68,68,0.25); border-radius:16px; padding:12px 10px; text-align:center;">
                 <div style="font-size:20px; margin-bottom:4px;">🚚</div>
                 <div style="font-size:18px; font-weight:800; color:#f87171;" id="kpiInUso">--</div>
@@ -2533,6 +2600,62 @@
         }
     }
 
+    
+    // Helper Quick Actions per App
+    function getQuickActionsPerApp(appId, appTitolo) {
+        const id = (appId || '').toLowerCase();
+        const tit = (appTitolo || '').toLowerCase();
+        if (id.includes('logistica') || tit.includes('logistica')) {
+            return [
+                { label: '📦 Consegne', url: '/veicoli/consegne.html' },
+                { label: '📊 Cruscotto', url: '/veicoli/dashboard.html' }
+            ];
+        }
+        if (id.includes('veicoli') || tit.includes('veicoli') || tit.includes('flotta')) {
+            return [
+                { label: '🚗 Mobile', url: '/veicoli_mobile/' },
+                { label: '📅 Scadenze', url: '/veicoli/promemoria.html' }
+            ];
+        }
+        if (id.includes('inventario') || tit.includes('inventario') || tit.includes('attrezzi')) {
+            return [
+                { label: '🛠️ Catalogo', url: '/inventario.html' },
+                { label: '🚚 In Uso', url: '/inventario.html?filtro=in_uso' }
+            ];
+        }
+        if (id.includes('ricettario') || tit.includes('ricettario')) {
+            return [
+                { label: '📖 Ricette', url: '/ricettario/' },
+                { label: '🛒 Spesa', url: '/ricettario/#spesa' }
+            ];
+        }
+        if (id.includes('mednutri') || tit.includes('mednutri')) {
+            return [
+                { label: '🥗 Piani', url: '/mednutri/' },
+                { label: '👤 Clinica', url: '/mednutri/#pazienti' }
+            ];
+        }
+        if (id.includes('salute') || tit.includes('salute')) {
+            return [
+                { label: '💧 Idratazione', url: '/salute/' },
+                { label: '⚖️ Peso', url: '/salute/' }
+            ];
+        }
+        if (id.includes('gioco') || tit.includes('gioco')) {
+            return [
+                { label: '🎰 SuperEnalotto', url: '/progetto_gioco/' },
+                { label: '📊 Statistiche', url: '/progetto_gioco/' }
+            ];
+        }
+        if (id.includes('careassist') || tit.includes('careassist')) {
+            return [
+                { label: '💊 Terapie', url: '/careassist/PROSPETTO_FARMACI_ROSA.html' },
+                { label: '🩺 Diario', url: '/careassist/' }
+            ];
+        }
+        return [];
+    }
+    
     function renderCardProgetti() {
         const wrapper = document.querySelector('.cards-wrapper');
         if (!wrapper) return;
@@ -2574,15 +2697,27 @@
             }
 
             if (visibile) {
-                const card = document.createElement('a');
-                card.href = p.url;
+                const card = document.createElement('div');
                 card.className = 'card ' + (isAdminProj ? 'admin-only-card' : '');
                 card.style.display = 'flex';
+                card.style.cursor = 'pointer';
+                card.onclick = () => window.location.href = p.url;
+
+                // Genera Quick Actions rapide per modulo
+                let quickActionsHtml = '';
+                const qa = getQuickActionsPerApp(p.id, p.titolo);
+                if (qa && qa.length > 0) {
+                    quickActionsHtml = `<div class="card-quick-actions">
+                        ${qa.map(a => `<button type="button" class="quick-pill-btn" onclick="event.stopPropagation(); window.location.href='${a.url}';">${a.label}</button>`).join('')}
+                    </div>`;
+                }
+
                 card.innerHTML = `
                     <div class="card-icon">${p.icona || '📁'}</div>
                     <div class="card-title">${p.titolo}</div>
                     <div class="card-desc">${p.descrizione || ''}</div>
                     ${extraBadgeHtml}
+                    ${quickActionsHtml}
                 `;
                 wrapper.appendChild(card);
             }
