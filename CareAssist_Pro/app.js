@@ -5063,11 +5063,16 @@ async function eliminaTerapia(id) {
 
 // Rendering Registro Attività Recenti (Diario OSS) con Selezione ed Eliminazione Massiva
 function getDiarioCheckboxes(scope) {
-  return Array.from(document.querySelectorAll(`.diario-cb-${scope}`));
+  const normScope = (scope === 'recent') ? 'diario' : (scope || 'diario');
+  const selector = (normScope === 'diario')
+    ? '.diario-cb-diario, .diario-cb-recent'
+    : `.diario-cb-${normScope}`;
+  return Array.from(document.querySelectorAll(selector));
 }
 
 function onDiarioCheckboxChange(scope) {
-  const cbs = getDiarioCheckboxes(scope);
+  const normScope = (scope === 'recent') ? 'diario' : (scope || 'diario');
+  const cbs = getDiarioCheckboxes(normScope);
   const checked = cbs.filter(cb => cb.checked);
   const total = cbs.length;
 
@@ -5079,14 +5084,14 @@ function onDiarioCheckboxChange(scope) {
     }
   });
 
-  const headerCb = document.getElementById(`${scope}-select-all-cb`);
+  const headerCb = document.getElementById(`${normScope}-select-all-cb`) || document.getElementById(`${scope}-select-all-cb`);
   if (headerCb) {
     headerCb.checked = total > 0 && checked.length === total;
     headerCb.indeterminate = checked.length > 0 && checked.length < total;
   }
 
-  const btnText = document.getElementById(`btn-${scope}-select-all-text`);
-  const btnIcon = document.getElementById(`btn-${scope}-select-all-icon`);
+  const btnText = document.getElementById(`btn-${normScope}-select-all-text`) || document.getElementById(`btn-${scope}-select-all-text`);
+  const btnIcon = document.getElementById(`btn-${normScope}-select-all-icon`) || document.getElementById(`btn-${scope}-select-all-icon`);
   if (btnText && btnIcon) {
     if (total > 0 && checked.length === total) {
       btnText.textContent = 'Deseleziona Tutti';
@@ -5097,8 +5102,8 @@ function onDiarioCheckboxChange(scope) {
     }
   }
 
-  const btnDel = document.getElementById(`btn-${scope}-elimina-selezionati`);
-  const countSpan = document.getElementById(`${scope}-selected-count`);
+  const btnDel = document.getElementById(`btn-${normScope}-elimina-selezionati`) || document.getElementById(`btn-${scope}-elimina-selezionati`);
+  const countSpan = document.getElementById(`${normScope}-selected-count`) || document.getElementById(`${scope}-selected-count`);
   if (btnDel) {
     if (checked.length > 0) {
       btnDel.style.display = 'inline-flex';
@@ -5111,25 +5116,28 @@ function onDiarioCheckboxChange(scope) {
 }
 
 function toggleSelectAllDiario(isChecked, scope) {
-  const cbs = getDiarioCheckboxes(scope);
+  const normScope = (scope === 'recent') ? 'diario' : (scope || 'diario');
+  const cbs = getDiarioCheckboxes(normScope);
   cbs.forEach(cb => {
     cb.checked = isChecked;
   });
-  onDiarioCheckboxChange(scope);
+  onDiarioCheckboxChange(normScope);
 }
 
 function toggleSelectAllDiarioBtn(scope) {
-  const cbs = getDiarioCheckboxes(scope);
+  const normScope = (scope === 'recent') ? 'diario' : (scope || 'diario');
+  const cbs = getDiarioCheckboxes(normScope);
   if (!cbs.length) return;
   const anyUnchecked = cbs.some(cb => !cb.checked);
-  toggleSelectAllDiario(anyUnchecked, scope);
+  toggleSelectAllDiario(anyUnchecked, normScope);
 }
 
 async function eliminaAnnotazioniSelezionate(scope) {
+  const normScope = (scope === 'recent') ? 'diario' : (scope || 'diario');
   const p = getActivePaziente();
   if (!p) return;
 
-  const cbs = getDiarioCheckboxes(scope).filter(cb => cb.checked);
+  const cbs = getDiarioCheckboxes(normScope).filter(cb => cb.checked);
   const count = cbs.length;
   if (!count) {
     showToast('Nessuna annotazione selezionata.', 'warning');
@@ -5152,6 +5160,12 @@ async function eliminaAnnotazioniSelezionate(scope) {
   }
 }
 
+window.getDiarioCheckboxes = getDiarioCheckboxes;
+window.onDiarioCheckboxChange = onDiarioCheckboxChange;
+window.toggleSelectAllDiario = toggleSelectAllDiario;
+window.toggleSelectAllDiarioBtn = toggleSelectAllDiarioBtn;
+window.eliminaAnnotazioniSelezionate = eliminaAnnotazioniSelezionate;
+
 function renderDiario() {
   const p = getActivePaziente();
   const container = document.getElementById('diario-table-body');
@@ -5164,7 +5178,7 @@ function renderDiario() {
     const emptyHtml = '<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:20px;">Nessuna registrazione recente per questo paziente.</td></tr>';
     container.innerHTML = emptyHtml;
     if (fullContainer) fullContainer.innerHTML = emptyHtml;
-    onDiarioCheckboxChange('recent');
+    onDiarioCheckboxChange('diario');
     onDiarioCheckboxChange('full');
     return;
   }
@@ -5258,7 +5272,7 @@ function renderDiario() {
 
     return `
       <tr id="diario-row-${scope}-${r.id}">
-        <td class="table-checkbox-cell" style="text-align:center;">
+        <td class="table-checkbox-cell" style="text-align:center; cursor:pointer;" onclick="if(event.target.tagName!=='INPUT'){const cb=this.querySelector('input');if(cb){cb.checked=!cb.checked;onDiarioCheckboxChange('${scope}');}}">
           <input type="checkbox" class="diario-cb-${scope}" data-id="${r.id}" onchange="onDiarioCheckboxChange('${scope}')" title="Seleziona riga">
         </td>
         <td><b>${dataStr}</b></td>
@@ -5270,10 +5284,10 @@ function renderDiario() {
     `;
   }).join('');
 
-  container.innerHTML = renderRows(sorted.slice(0, 10), 'recent');
+  container.innerHTML = renderRows(sorted.slice(0, 10), 'diario');
   if (fullContainer) fullContainer.innerHTML = renderRows(sorted, 'full');
 
-  onDiarioCheckboxChange('recent');
+  onDiarioCheckboxChange('diario');
   onDiarioCheckboxChange('full');
 }
 

@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=41">
+  <link rel="stylesheet" href="style.css?v=42">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -566,7 +566,7 @@
           <table class="custom-table">
             <thead>
               <tr>
-                <th class="table-checkbox-cell" style="width:44px; text-align:center;">
+                <th class="table-checkbox-cell" style="width:44px; text-align:center; cursor:pointer;" onclick="if(event.target.tagName!=='INPUT'){const cb=this.querySelector('input');if(cb){cb.checked=!cb.checked;toggleSelectAllDiario(cb.checked, 'diario');}}" title="Tocca per selezionare o deselezionare tutti">
                   <input type="checkbox" id="diario-select-all-cb" onchange="toggleSelectAllDiario(this.checked, 'diario')" title="Seleziona / Deseleziona tutti">
                 </th>
                 <th style="width:160px;">Data e Ora</th>
@@ -769,7 +769,7 @@
           <table class="custom-table">
             <thead>
               <tr>
-                <th class="table-checkbox-cell" style="width:44px; text-align:center;">
+                <th class="table-checkbox-cell" style="width:44px; text-align:center; cursor:pointer;" onclick="if(event.target.tagName!=='INPUT'){const cb=this.querySelector('input');if(cb){cb.checked=!cb.checked;toggleSelectAllDiario(cb.checked, 'full');}}" title="Tocca per selezionare o deselezionare tutti">
                   <input type="checkbox" id="full-select-all-cb" onchange="toggleSelectAllDiario(this.checked, 'full')" title="Seleziona / Deseleziona tutti">
                 </th>
                 <th style="width:160px;">Data e Ora</th>
@@ -2955,7 +2955,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=41"></script>
+  <script src="app.js?v=42"></script>
   <script>
     // Registrazione Service Worker per utilizzo offline al 100% da cellulare
     if ('serviceWorker' in navigator) {
