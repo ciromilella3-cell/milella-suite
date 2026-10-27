@@ -2043,6 +2043,10 @@ function mostraLenteClinica(titolo, testo, icona = '🩺') {
 
   if (!overlay || !txtCorpo) return;
 
+  if (!icona || icona === '??' || icona === '?') {
+    icona = '🩺';
+  }
+
   if (txtTitolo) txtTitolo.textContent = titolo || 'Quadro Clinico Assistito';
   if (txtCorpo) {
     if (typeof testo === 'string' && (testo.includes('<') || testo.includes('&'))) {
