@@ -1629,8 +1629,9 @@ function renderPazientiSelector() {
 
     const medicoBadge = `
       <div class="clinica-zoom-item medico-card-box"
+           onclick="if(!event.target.closest('a, button')) mostraLenteMedicoCurante()"
            onmouseenter="mostraLenteMedicoCurante()" 
-           onmouseleave="nascondiLenteClinica()">
+           onmouseleave="nascondiLenteClinica(event, false)">
         
         <!-- LIVELLO 1: MEDICO, STATO AMBULATORIO OGGI E AZIONE ORARI -->
         <div class="medico-header-row">
@@ -1727,8 +1728,9 @@ function renderPazientiSelector() {
 
     const farmaciaBadge = `
       <div class="clinica-zoom-item farmacia-card-box"
+           onclick="if(!event.target.closest('a, button')) mostraLenteFarmacia()"
            onmouseenter="mostraLenteFarmacia()" 
-           onmouseleave="nascondiLenteClinica()">
+           onmouseleave="nascondiLenteClinica(event, false)">
         
         <!-- LIVELLO 1: INTESTAZIONE FARMACIA -->
         <div class="farmacia-header-row">
@@ -1800,8 +1802,9 @@ function renderPazientiSelector() {
 
         return `
           <div class="clinica-zoom-item" style="background:${bgCard}; border:${bordoCard}; border-radius:10px; padding:7px 12px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.04);" 
+               onclick="if(!event.target.closest('button, a')) mostraLenteClinica('${(a.tipo || 'Ausilio Sanitario').replace(/'/g, "\\'")}', '${getDettaglioAusilio(a).replace(/'/g, "\\'")}${scadenzaInfo.testo ? ' • ' + scadenzaInfo.testo.replace(/'/g, "\\'") : ''}', '${icona}')"
                onmouseenter="mostraLenteClinica('${(a.tipo || 'Ausilio Sanitario').replace(/'/g, "\\'")}', '${getDettaglioAusilio(a).replace(/'/g, "\\'")}${scadenzaInfo.testo ? ' • ' + scadenzaInfo.testo.replace(/'/g, "\\'") : ''}', '${icona}')" 
-               onmouseleave="nascondiLenteClinica()">
+               onmouseleave="nascondiLenteClinica(event, false)">
             <span style="font-size:20px;">${icona}</span>
             <div>
               <div style="font-size:12.5px; font-weight:800; color:#1e3a8a; display:flex; align-items:center; gap:6px;">
@@ -1851,8 +1854,9 @@ function renderPazientiSelector() {
       const pTags = activeP.patologie.map((pat, idx) => `
         <span class="clinica-zoom-item patologia-pill ${idx >= 3 ? 'patologia-collapsible' : ''}" 
               style="background:#ffffff; border:1px solid #cbd5e1; border-radius:14px; padding:4px 10px; font-size:11.5px; font-weight:700; color:#1e293b; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all 0.15s ease;"
+              onclick="mostraLenteClinica('Diagnosi Clinica Assistito', '${pat.replace(/'/g, "\\'")}', '🩺')"
               onmouseenter="mostraLenteClinica('Diagnosi Clinica Assistito', '${pat.replace(/'/g, "\\'")}', '🩺')" 
-              onmouseleave="nascondiLenteClinica()">
+              onmouseleave="nascondiLenteClinica(event, false)">
           • ${pat}
         </span>
       `).join('');
@@ -1975,20 +1979,20 @@ function mostraLenteMedicoCurante() {
 
   const html = `
     <div style="display:flex; flex-direction:column; gap:8px; font-size:15px; color:#f8fafc; font-weight:normal; line-height:1.45;">
-      <div style="font-size:18px; font-weight:800; color:#38bdf8; border-bottom:1px solid rgba(56, 189, 248, 0.3); padding-bottom:4px;">
-        🩺 ${medicoNome} <span style="font-size:12px; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px; margin-left:6px;">MMG</span>
+      <div style="font-size:18px; font-weight:800; color:#38bdf8; border-bottom:1px solid rgba(56, 189, 248, 0.3); padding-bottom:4px; display:flex; align-items:center; justify-content:space-between;">
+        <span>🩺 ${medicoNome} <span style="font-size:12px; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px; margin-left:6px;">MMG</span></span>
       </div>
       ${infoStudio.testoOggi ? `<div style="background:rgba(34, 197, 94, 0.15); border:1px solid #22c55e; border-radius:8px; padding:6px 12px; color:#86efac; font-weight:700;">⏰ ${infoStudio.testoOggi}</div>` : ''}
-      <div style="display:flex; flex-direction:column; gap:4px; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px;">
+      <div style="display:flex; flex-direction:column; gap:6px; background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:10px;">
         ${sediStudioPulite ? `<div>📍 <b style="color:#e2e8f0;">Sedi Studi:</b> ${sediStudioPulite}</div>` : ''}
-        ${telFissoStudio ? `<div>☎️ <b style="color:#e2e8f0;">Tel. Studio:</b> ${telFissoStudio}</div>` : ''}
-        ${medCell ? `<div>📱 <b style="color:#e2e8f0;">Cellulare / WhatsApp:</b> ${medCell}</div>` : ''}
-        ${medEmail ? `<div>✉️ <b style="color:#e2e8f0;">Email:</b> ${medEmail}</div>` : ''}
-        ${p.medicoPec ? `<div>🔒 <b style="color:#fde68a;">PEC:</b> ${p.medicoPec}</div>` : ''}
+        ${telFissoStudio ? `<div>☎️ <b style="color:#e2e8f0;">Tel. Studio:</b> <a href="tel:${telFissoStudio.replace(/\s+/g,'')}" style="color:#38bdf8; text-decoration:none; font-weight:700; margin-left:4px;">${telFissoStudio}</a></div>` : ''}
+        ${medCell ? `<div>📱 <b style="color:#e2e8f0;">Cellulare / WhatsApp:</b> <a href="tel:${medCell.replace(/\s+/g,'')}" style="color:#38bdf8; text-decoration:none; font-weight:700; margin-left:4px;">${medCell}</a> <a href="https://wa.me/${medCell.replace(/[^0-9]/g,'')}" target="_blank" style="margin-left:8px; background:#16a34a; color:#fff; padding:3px 8px; border-radius:6px; font-size:11.5px; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:3px;">💬 WhatsApp</a></div>` : ''}
+        ${medEmail ? `<div>✉️ <b style="color:#e2e8f0;">Email:</b> <a href="mailto:${medEmail}" style="color:#38bdf8; text-decoration:none; margin-left:4px;">${medEmail}</a></div>` : ''}
+        ${p.medicoPec ? `<div>🔒 <b style="color:#fde68a;">PEC:</b> <a href="mailto:${p.medicoPec}" style="color:#fde68a; text-decoration:none; margin-left:4px;">${p.medicoPec}</a></div>` : ''}
       </div>
-      <div style="font-size:13px; color:#94a3b8; background:rgba(255,255,255,0.03); padding:8px 12px; border-radius:8px; border-left:3px solid #38bdf8;">
+      <div style="font-size:13px; color:#94a3b8; background:rgba(255,255,255,0.03); padding:10px 12px; border-radius:10px; border-left:3px solid #38bdf8;">
         📅 <b style="color:#e2e8f0;">Orari Settimanali Completi:</b><br>
-        <span style="color:#cbd5e1;">${(infoStudio.orariCompleti || 'Riceve su appuntamento eccetto urgenze').replace(/\n/g, '<br>')}</span>
+        <span style="color:#cbd5e1; display:inline-block; margin-top:4px;">${(infoStudio.orariCompleti || 'Riceve su appuntamento eccetto urgenze').replace(/\n/g, '<br>')}</span>
       </div>
     </div>
   `;
@@ -2008,9 +2012,9 @@ function mostraLenteFarmacia() {
       <div style="font-size:18px; font-weight:800; color:#4ade80; border-bottom:1px solid rgba(74, 222, 128, 0.3); padding-bottom:4px;">
         💊 ${farmNome} <span style="font-size:12px; background:#16a34a; color:#fff; padding:2px 6px; border-radius:4px; margin-left:6px;">Ritiro Farmaci</span>
       </div>
-      <div style="display:flex; flex-direction:column; gap:4px; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px;">
+      <div style="display:flex; flex-direction:column; gap:6px; background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:10px;">
         ${farmInd ? `<div>📍 <b style="color:#e2e8f0;">Indirizzo Farmacia:</b> ${farmInd}</div>` : ''}
-        ${farmTel ? `<div>📞 <b style="color:#e2e8f0;">Telefono / WhatsApp:</b> ${farmTel}</div>` : ''}
+        ${farmTel ? `<div>📞 <b style="color:#e2e8f0;">Telefono / WhatsApp:</b> <a href="tel:${farmTel.replace(/\s+/g,'')}" style="color:#4ade80; text-decoration:none; font-weight:700; margin-left:4px;">${farmTel}</a></div>` : ''}
       </div>
       <div style="font-size:13px; color:#94a3b8; font-style:italic;">
         Presidio farmaceutico convenzionato per ritiro ricette e dispensazione piano terapeutico.
@@ -2021,8 +2025,18 @@ function mostraLenteFarmacia() {
   mostraLenteClinica('Farmacia di Riferimento Assistito', html, '💊');
 }
 
+let _lenteTimer = null;
+window._cancellaTimerLente = function() {
+  if (_lenteTimer) {
+    clearTimeout(_lenteTimer);
+    _lenteTimer = null;
+  }
+};
+
 function mostraLenteClinica(titolo, testo, icona = '🩺') {
+  window._cancellaTimerLente();
   const overlay = document.getElementById('clinica-lente-overlay');
+  const backdrop = document.getElementById('clinica-lente-backdrop');
   const txtTitolo = document.getElementById('lente-titolo');
   const txtCorpo = document.getElementById('lente-testo');
   const txtIcona = document.getElementById('lente-icona');
@@ -2033,38 +2047,70 @@ function mostraLenteClinica(titolo, testo, icona = '🩺') {
   if (txtCorpo) {
     if (typeof testo === 'string' && (testo.includes('<') || testo.includes('&'))) {
       txtCorpo.innerHTML = testo;
-      txtCorpo.style.fontSize = '16px';
+      txtCorpo.style.fontSize = '15.5px';
       txtCorpo.style.fontWeight = '500';
     } else {
       txtCorpo.textContent = testo || '';
-      txtCorpo.style.fontSize = (testo && testo.length > 80) ? '18px' : '22px';
-      txtCorpo.style.fontWeight = '700';
+      txtCorpo.style.fontSize = (testo && testo.length > 80) ? '17px' : '20px';
+      txtCorpo.style.fontWeight = '600';
     }
   }
   if (txtIcona) txtIcona.textContent = icona;
 
+  overlay.style.pointerEvents = 'auto';
   overlay.style.display = 'block';
   overlay.style.opacity = '0';
   overlay.style.transform = 'translate(-50%, -50%) scale(0.92)';
+
+  if (backdrop) {
+    backdrop.style.display = 'block';
+    backdrop.style.opacity = '0';
+  }
 
   requestAnimationFrame(() => {
     overlay.style.transition = 'all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)';
     overlay.style.opacity = '1';
     overlay.style.transform = 'translate(-50%, -50%) scale(1)';
+    if (backdrop) {
+      backdrop.style.transition = 'opacity 0.18s ease';
+      backdrop.style.opacity = '1';
+    }
   });
 }
 
-function nascondiLenteClinica() {
-  const overlay = document.getElementById('clinica-lente-overlay');
-  if (!overlay) return;
-  overlay.style.opacity = '0';
-  overlay.style.transform = 'translate(-50%, -50%) scale(0.94)';
-  setTimeout(() => {
-    if (overlay.style.opacity === '0') {
-      overlay.style.display = 'none';
-    }
-  }, 160);
+function nascondiLenteClinica(event, immediate = false) {
+  if (event && event.stopPropagation) event.stopPropagation();
+  window._cancellaTimerLente();
+
+  const doHide = () => {
+    const overlay = document.getElementById('clinica-lente-overlay');
+    const backdrop = document.getElementById('clinica-lente-backdrop');
+    if (!overlay) return;
+    overlay.style.opacity = '0';
+    overlay.style.transform = 'translate(-50%, -50%) scale(0.94)';
+    if (backdrop) backdrop.style.opacity = '0';
+    setTimeout(() => {
+      if (overlay.style.opacity === '0') {
+        overlay.style.display = 'none';
+        if (backdrop) backdrop.style.display = 'none';
+      }
+    }, 160);
+  };
+
+  if (immediate) {
+    doHide();
+  } else {
+    // Breve tolleranza (250ms) per permettere al mouse di entrare nella card
+    _lenteTimer = setTimeout(doHide, 250);
+  }
 }
+
+// Chiudi HUD lente con tasto ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    nascondiLenteClinica(null, true);
+  }
+});
 
 // Finestra di Conferma Personalizzata (Custom Dialog Elegante)
 function customConfirm(titolo, testo, icona = '💊') {
