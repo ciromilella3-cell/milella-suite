@@ -1,5 +1,14 @@
 [
   {
+    "id": "app_logistica",
+    "titolo": "Logistica Consegne",
+    "icona": "📦",
+    "url": "/veicoli/dashboard.html",
+    "descrizione": "Gestione completa spedizioni, tracciamento consegne e magazzino principale.",
+    "visibilita": "admin",
+    "attivo": true
+  },
+  {
     "id": "app_veicoli",
     "titolo": "Flotta Veicoli & Spese",
     "icona": "🚗",

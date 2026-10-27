@@ -104,6 +104,69 @@
         /* CARDS GRID */
         .cards-wrapper {
             display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            max-width: 1360px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        @media (max-width: 1200px) {
+            .cards-wrapper { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 640px) {
+            .cards-wrapper { grid-template-columns: 1fr !important; }
+        }
+        
+        /* Touch Keypad on Gate */
+        .numpad-btn {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(212,175,55,0.25);
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            padding: 11px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .numpad-btn:hover {
+            background: rgba(212,175,55,0.2);
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+        .numpad-btn:active {
+            transform: scale(0.94);
+            background: rgba(212,175,55,0.35);
+        }
+        .numpad-action {
+            color: #f3e5ab;
+            font-size: 15px;
+        }
+        .shake-gate {
+            animation: shakeGate 0.45s ease-in-out;
+        }
+        @keyframes shakeGate {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(0.8); }
+        }
+        
+        .dock-btn {
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .dock-btn:hover {
+            transform: translateY(-3px) scale(1.04);
+        }
+
+        .old-cards-wrapper {
+            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1.25rem;
             max-width: 1280px;
@@ -442,6 +505,22 @@
                     </button>
                 </div>
 
+                <!-- Tastierino Touch Rapido per Smartphone e Schermo Intero -->
+                <div id="gateNumpad" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:9px; max-width:270px; margin:0.8rem auto 1.2rem auto;">
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('1')">1</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('2')">2</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('3')">3</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('4')">4</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('5')">5</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('6')">6</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('7')">7</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('8')">8</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('9')">9</button>
+                    <button type="button" class="numpad-btn numpad-action" onclick="cancellaTuttoGate()" title="Cancella tutto">C</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraGate('0')">0</button>
+                    <button type="button" class="numpad-btn numpad-action" onclick="cancellaUltimaCifraGate()" title="Cancella ultima cifra">⌫</button>
+                </div>
+
                 <div id="gateErrorMsg" style="color:#ef4444; font-size:0.85rem; font-weight:700; margin-bottom:1rem; display:none;"></div>
 
                 <div style="display:flex; flex-direction:column; gap:10px;">
@@ -469,27 +548,37 @@
             @keyframes fadeInGate { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
         </style>
 
-        <!-- BARRA STATUS RUOLO / LOGIN MASTER PIN -->
-        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:1100px; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
-            <div id="userBadge" style="display:flex; align-items:center; gap:8px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.3); padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; color:#f3e5ab;">
+        <!-- BARRA STATUS SUPERIORE UNIFICATA PREMIUM -->
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:1360px; margin-bottom:1.5rem; flex-wrap:wrap; gap:12px; background:rgba(15,23,42,0.6); border:1px solid rgba(212,175,55,0.25); border-radius:24px; padding:10px 18px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 8px 30px rgba(0,0,0,0.4);">
+            <!-- Sinistra: Badge Utente -->
+            <div id="userBadge" style="display:flex; align-items:center; gap:8px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.3); padding:6px 14px; border-radius:18px; font-size:13px; font-weight:700; color:#f3e5ab;">
                 <span id="userBadgeIcon">👷</span>
                 <span id="userBadgeText">Modalità: In attesa di PIN</span>
             </div>
-            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                <a href="https://milella-suite.onrender.com/launcher.html" target="_blank" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:1px solid rgba(56,189,248,0.5); color:#fff; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; box-shadow:0 3px 10px rgba(2,132,199,0.35); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    <span style="font-size:15px;">☁️</span> SITO CLOUD ONLINE
-                </a>
-                <button id="btnSwitchRole" onclick="apriLoginModal()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(212,175,55,0.4); color:#fff; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.2s;">
-                    🔑 CAMBIA UTENTE (PIN)
-                </button>
-                <button id="btnManageOps" onclick="apriGestioneOperatoriModal()" style="display:none; background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
+
+            <!-- Centro: Stato Cloud e Ping -->
+            <div id="cloudStatusBadge" style="display:flex; align-items:center; gap:8px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); padding:6px 14px; border-radius:18px; font-size:12px; font-weight:700; color:#34d399;">
+                <span style="width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 10px #10b981; animation:pulseDot 2s infinite;"></span>
+                <span id="cloudStatusLabel">Cloud Online H24</span>
+                <span id="cloudPingLabel" style="color:#a7f3d0; font-size:11px; opacity:0.85; margin-left:2px;">(Render)</span>
+            </div>
+
+            <!-- Destra: Azioni e Controlli -->
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button id="btnManageOps" onclick="apriGestioneOperatoriModal()" style="display:none; background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
                     👥 OPERATORI
                 </button>
-                <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
-                    🛠️ GESTIONE PROGETTI (APP)
+                <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
+                    🛠️ MODULI
                 </button>
-                <button id="btnLogoutRole" onclick="esciAdmin()" style="display:none; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:700; cursor:pointer;">
-                    🔒 Esci / Blocca
+                <button id="btnToggleFullscreen" onclick="toggleFullScreen()" title="Schermo Intero (F11)" style="background:rgba(255,255,255,0.06); border:1px solid rgba(212,175,55,0.35); color:#d4af37; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
+                    <span id="fsIcon">⛶</span> <span id="fsText">Schermo Intero</span>
+                </button>
+                <button id="btnSwitchRole" onclick="apriAdminLoginModal()" style="display:none; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#f3e5ab; padding:6px 12px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
+                    🔑 PIN
+                </button>
+                <button id="btnLogoutRole" onclick="esciAdmin()" style="display:none; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
+                    🔒 Esci
                 </button>
             </div>
         </div>
@@ -553,6 +642,13 @@
             </div>
         </div>
 
+        <!-- BARRA DI RICERCA RAPIDA (SPOTLIGHT / QUICK SEARCH) -->
+        <div class="search-bar-wrapper" style="max-width:560px; margin:0 auto 1.8rem auto; position:relative; width:100%;">
+            <span style="position:absolute; left:16px; top:50%; transform:translateY(-50%); font-size:17px; color:#d4af37; pointer-events:none; opacity:0.85;">🔍</span>
+            <input type="text" id="globalAppSearch" oninput="filtraAppLauncher(this.value)" placeholder="Cerca applicazione o servizio... (premi '/' per cercare)" style="width:100%; padding:13px 44px 13px 46px; border-radius:30px; background:rgba(15,23,42,0.8); border:1.5px solid rgba(212,175,55,0.35); color:#fff; font-size:14px; font-weight:500; outline:none; transition:all 0.25s; backdrop-filter:blur(14px); box-sizing:border-box;" onfocus="this.style.borderColor='#d4af37'; this.style.boxShadow='0 0 20px rgba(212,175,55,0.25)';" onblur="this.style.borderColor='rgba(212,175,55,0.35)'; this.style.boxShadow='none';">
+            <button type="button" id="btnClearSearch" onclick="pulisciRicercaApp()" style="display:none; position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:#94a3b8; font-size:16px; cursor:pointer; padding:4px;" title="Cancella ricerca">✕</button>
+        </div>
+
         <div class="cards-wrapper">
     <!-- 1. APP LOGISTICA (Solo PC Console Desktop) -->
     <a href="#" class="card desktop-only-card" id="btnLogistica" style="display:none;" class="card desktop-only-card-hidden">
@@ -611,32 +707,47 @@
     </a>
 </div>
 
-<div class="launcher-footer-actions" style="margin-top: 2.5rem; animation: fadeUp 1s ease-out backwards; animation-delay: 0.6s; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-    <button onclick="window.open('/presentazione', '_blank')" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: #fff; border: 1px solid rgba(255,255,255,0.4); padding: 12px 28px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(2, 132, 199, 0.45); transition: all 0.3s; align-items: center; justify-content: center; gap: 8px;">
-        🛡️ PRESENTAZIONE & ARCHITETTURA AI
-    </button>
-    <button id="btnOpenQrModal" class="btn-qr-promo" onclick="apriQrModal()" style="display:flex; align-items:center; gap:8px;">
-        📱 MOSTRA QR CODE
-    </button>
+<!-- FLOATING COMMAND DOCK SUPERIORE/INFERIORE MODERNA -->
+        <div id="launcherCommandDock" class="command-dock-wrapper" style="margin-top:2.8rem; width:100%; max-width:980px; display:flex; justify-content:center;">
+            <div class="command-dock" style="background:rgba(15,23,42,0.88); border:1.5px solid rgba(212,175,55,0.35); border-radius:40px; padding:10px 20px; display:flex; align-items:center; gap:12px; box-shadow:0 20px 50px rgba(0,0,0,0.6), 0 0 25px rgba(212,175,55,0.12); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); flex-wrap:wrap; justify-content:center;">
+                <!-- Gruppo 1: Mobile & Connessione -->
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button id="btnOpenQrModal" onclick="apriQrModal()" class="dock-btn" style="background:linear-gradient(135deg, #0ea5e9, #0284c7); color:#fff; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 14px rgba(14,165,233,0.35);">
+                        <span>📱</span> <span>MOSTRA QR</span>
+                    </button>
+                    <button onclick="condividiWhatsApp()" class="dock-btn" style="background:linear-gradient(135deg, #25D366, #128C7E); color:#fff; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 14px rgba(37,211,102,0.3);">
+                        <span>💬</span> <span>WHATSAPP</span>
+                    </button>
+                    <button id="btnPonteMobile" class="dock-btn desktop-only-btn admin-only-btn" onclick="window.open('http://localhost:3002/', '_blank')" style="display:none; background:rgba(255,255,255,0.06); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; padding:9px 16px; border-radius:24px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        <span>🌐</span> <span>PONTE</span>
+                    </button>
+                </div>
 
-    <button onclick="condividiWhatsApp()" class="btn-footer-action" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #fff; border: 1px solid rgba(255,255,255,0.4); padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-        💬 CONDIVIDI SU WHATSAPP
-    </button>
+                <div style="width:1px; height:24px; background:rgba(212,175,55,0.25);"></div>
 
-    <button onclick="window.location.href='/esporta_progetti.html'" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #fef08a 0%, #d4af37 50%, #b45309 100%); color: #0b0f19; border: 1px solid rgba(255,255,255,0.4); padding: 12px 28px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(212, 175, 55, 0.45); transition: all 0.3s; align-items: center; justify-content: center; gap: 8px;">
-        ⚡ GENERATORE VERSIONI PERSONALIZZATE (AI)
-    </button>
+                <!-- Gruppo 2: Funzioni AI -->
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="apriPresentazioneAI()" class="dock-btn desktop-only-btn admin-only-btn" style="display:none; background:rgba(255,255,255,0.06); border:1px solid rgba(56,189,248,0.35); color:#7dd3fc; padding:9px 16px; border-radius:24px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        <span>🤖</span> <span>ARCHITETTURA AI</span>
+                    </button>
+                    <button onclick="window.location.href='/esporta_progetti.html'" class="dock-btn desktop-only-btn admin-only-btn" style="display:none; background:rgba(255,255,255,0.06); border:1px solid rgba(212,175,55,0.35); color:#f3e5ab; padding:9px 16px; border-radius:24px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        <span>⚡</span> <span>VERSIONI AI</span>
+                    </button>
+                </div>
 
-    <button id="btnCentroSicurezza" onclick="apriCentroSicurezzaModal()" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; border: 1.5px solid rgba(254,243,199,0.3); padding: 12px 26px; border-radius: 30px; font-size: 13.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
-        🛡️ CENTRO SICUREZZA & BACKUP
-    </button>
-    <button id="btnPonteMobile" class="btn-footer-action desktop-only-btn admin-only-btn" onclick="window.open('http://localhost:3002/', '_blank')" style="display:none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px 30px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); transition: all 0.3s; align-items: center; justify-content: center;">
-        🌐 PONTE MOBILE
-    </button>
-    <button id="btnShutdownSystem" class="btn-footer-action desktop-only-btn admin-only-btn" style="display:none; background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px 30px; border-radius: 30px; font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); transition: all 0.3s; align-items: center; justify-content: center;">
-        🛑 SPEGNI SISTEMA
-    </button>
-</div>
+                <div style="width:1px; height:24px; background:rgba(212,175,55,0.25);"></div>
+
+                <!-- Gruppo 3: Sicurezza & Spegni -->
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button id="btnCentroSicurezza" onclick="apriCentroSicurezzaModal()" class="dock-btn desktop-only-btn admin-only-btn" style="display:none; background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 14px rgba(245,158,11,0.35);">
+                        <span>🛡️</span> <span>SICUREZZA & BACKUP</span>
+                    </button>
+                    <button id="btnShutdownSystem" class="dock-btn desktop-only-btn admin-only-btn" onclick="document.getElementById('confirmModal').style.display='flex';" style="display:none; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        <span>🛑</span> <span>SPEGNI</span>
+                    </button>
+                </div>
+            </div>
+        </div>
 
         </div>
     </div>
@@ -1285,45 +1396,7 @@
         // Auto-fullscreen rimosso per consentire flessibilita' e finestra standard
     </script>
 <!-- Barra Controlli Rapidi Flessibile in Alto a Destra -->
-<div id="floatingControlBar" class="desktop-only-card" style="position:fixed; top:16px; right:20px; z-index:9999; display:flex; align-items:center; gap:10px;">
-    <a href="https://milella-suite.onrender.com/launcher.html" target="_blank" title="Apri Portale Cloud Online H24" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:1px solid rgba(56,189,248,0.5); color:#fff; padding:8px 14px; border-radius:12px; font-weight:700; font-size:13px; cursor:pointer; backdrop-filter:blur(8px); display:flex; align-items:center; gap:6px; text-decoration:none; box-shadow:0 4px 12px rgba(2,132,199,0.35); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.04)'; this.style.boxShadow='0 6px 18px rgba(56,189,248,0.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(2,132,199,0.35)'">
-        <span style="font-size:16px;">☁️</span> <span>SITO CLOUD ONLINE</span>
-    </a>
-    <button id="btnTopExit" onclick="document.getElementById('confirmModal').style.display='flex';" title="Chiudi / Spegni Sistema" style="background:rgba(220,38,38,0.85); border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 14px; border-radius:12px; font-weight:700; font-size:13px; cursor:pointer; backdrop-filter:blur(8px); display:flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(220,38,38,0.4); transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,1)'; this.style.transform='scale(1.04)'" onmouseout="this.style.background='rgba(220,38,38,0.85)'; this.style.transform='scale(1)'">
-        <span>❌</span> <span>ESCI / SPEGNI</span>
-    </button>
-    <button id="btnToggleFullscreen" onclick="toggleFullScreen()" title="Schermo Intero (F11)" style="background:rgba(17,24,39,0.8); border:1px solid rgba(212,175,55,0.4); color:#d4af37; padding:8px 14px; border-radius:12px; font-weight:600; font-size:13px; cursor:pointer; backdrop-filter:blur(8px); display:flex; align-items:center; gap:6px; transition:all 0.2s;" onmouseover="this.style.background='rgba(212,175,55,0.25)'" onmouseout="this.style.background='rgba(17,24,39,0.8)'">
-        <span id="fsIcon">⛶</span> <span id="fsText">Schermo Intero</span>
-    </button>
-</div>
-<script>
-function toggleFullScreen() {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(()=>{});
-        const icon = document.getElementById('fsIcon');
-        const txt = document.getElementById('fsText');
-        if (icon) icon.textContent = '🗗';
-        if (txt) txt.textContent = 'Riduci';
-    } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-        const icon = document.getElementById('fsIcon');
-        const txt = document.getElementById('fsText');
-        if (icon) icon.textContent = '⛶';
-        if (txt) txt.textContent = 'Schermo Intero';
-    }
-}
-document.addEventListener('fullscreenchange', () => {
-    const icon = document.getElementById('fsIcon');
-    const txt = document.getElementById('fsText');
-    if (document.fullscreenElement) {
-        if (icon) icon.textContent = '🗗';
-        if (txt) txt.textContent = 'Riduci';
-    } else {
-        if (icon) icon.textContent = '⛶';
-        if (txt) txt.textContent = 'Schermo Intero';
-    }
-});
-</script>
+<!-- FloatingControlBar unificata nella TopBar principale -->
 <script>
     // GESTIONE AUTOMATICA DINAMICA QR CODE
     function renderQrFallbackImg(container, url) {
@@ -1699,6 +1772,7 @@ document.addEventListener('fullscreenchange', () => {
         const err = document.getElementById('gateErrorMsg');
         if (!pin) {
             if (err) { err.textContent = 'Inserisci il tuo codice PIN personale'; err.style.display = 'block'; }
+            const gc = document.querySelector('#gateBloccoIngresso > div'); if (gc) { gc.classList.remove('shake-gate'); void gc.offsetWidth; gc.classList.add('shake-gate'); }
             return;
         }
 
@@ -1754,6 +1828,7 @@ document.addEventListener('fullscreenchange', () => {
             } else {
                 err.textContent = data.message || 'Codice PIN non valido';
                 err.style.display = 'block';
+                const gc = document.querySelector('#gateBloccoIngresso > div'); if (gc) { gc.classList.remove('shake-gate'); void gc.offsetWidth; gc.classList.add('shake-gate'); }
             }
         } catch(e) {
             err.textContent = 'Errore di connessione al server: riprova tra qualche istante.';
@@ -2433,6 +2508,7 @@ document.addEventListener('fullscreenchange', () => {
     // GESTIONE PROGETTI DINAMICI (AGGIUNGI / ELIMINA / ATTIVA / DISATTIVA)
     // ==============================================================================
     const CATALOGO_APP_DEFAULT = [
+        { id: "app_logistica", titolo: "Logistica Consegne", icona: "📦", url: "/veicoli/dashboard.html", descrizione: "Gestione completa spedizioni, tracciamento consegne e magazzino principale.", visibilita: "admin", attivo: true },
         { id: "app_veicoli", titolo: "Flotta Veicoli & Spese", icona: "🚗", url: "/veicoli_mobile/", descrizione: "Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.", visibilita: "tutti", attivo: true },
         { id: "app_inventario", titolo: "Inventario Attrezzi", icona: "🛠️", url: "/inventario.html", descrizione: "Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.", visibilita: "tutti", attivo: true },
         { id: "app_ricettario", titolo: "Il Ricettario", icona: "👨‍🍳", url: "/ricettario/", descrizione: "L'archivio prezioso delle tue ricette personali con lista della spesa automatica.", visibilita: "tutti", attivo: true },
@@ -2974,6 +3050,117 @@ document.addEventListener('fullscreenchange', () => {
     }
     caricaProgettiDinamici();
     caricaKpiStats();
+
+    // ==============================================================================
+    // HELPER NUOVE FUNZIONALITA' LAUNCHER SUITE (NUMPAD, SEARCH, PING, FULLSCREEN)
+    // ==============================================================================
+    function inserisciCifraGate(cifra) {
+        const inp = document.getElementById('inputPinGate');
+        if (!inp) return;
+        if (inp.value.length < 16) inp.value += cifra;
+        const err = document.getElementById('gateErrorMsg');
+        if (err) err.style.display = 'none';
+    }
+    function cancellaUltimaCifraGate() {
+        const inp = document.getElementById('inputPinGate');
+        if (!inp) return;
+        inp.value = inp.value.slice(0, -1);
+    }
+    function cancellaTuttoGate() {
+        const inp = document.getElementById('inputPinGate');
+        if (!inp) return;
+        inp.value = '';
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(()=>{});
+            const icon = document.getElementById('fsIcon');
+            const txt = document.getElementById('fsText');
+            if (icon) icon.textContent = '🗗';
+            if (txt) txt.textContent = 'Riduci';
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            const icon = document.getElementById('fsIcon');
+            const txt = document.getElementById('fsText');
+            if (icon) icon.textContent = '⛶';
+            if (txt) txt.textContent = 'Schermo Intero';
+        }
+    }
+    document.addEventListener('fullscreenchange', () => {
+        const icon = document.getElementById('fsIcon');
+        const txt = document.getElementById('fsText');
+        if (icon && txt) {
+            if (document.fullscreenElement) {
+                icon.textContent = '🗗';
+                txt.textContent = 'Riduci';
+            } else {
+                icon.textContent = '⛶';
+                txt.textContent = 'Schermo Intero';
+            }
+        }
+    });
+
+    function filtraAppLauncher(query) {
+        query = (query || '').toLowerCase().trim();
+        const clearBtn = document.getElementById('btnClearSearch');
+        if (clearBtn) clearBtn.style.display = query ? 'block' : 'none';
+        const cards = document.querySelectorAll('.cards-wrapper .card');
+        let visibleCount = 0;
+        cards.forEach(c => {
+            const title = (c.querySelector('.card-title')?.textContent || '').toLowerCase();
+            const desc = (c.querySelector('.card-desc')?.textContent || '').toLowerCase();
+            const match = !query || title.includes(query) || desc.includes(query);
+            c.style.display = match ? 'flex' : 'none';
+            if (match) visibleCount++;
+        });
+        let noResultsMsg = document.getElementById('noSearchResultsMsg');
+        if (!noResultsMsg) {
+            noResultsMsg = document.createElement('div');
+            noResultsMsg.id = 'noSearchResultsMsg';
+            noResultsMsg.style.cssText = 'grid-column:1/-1; padding:2rem; text-align:center; color:#94a3b8; font-size:15px; display:none; background:rgba(15,23,42,0.5); border-radius:18px; border:1px dashed rgba(212,175,55,0.3);';
+            noResultsMsg.innerHTML = '🔍 Nessun modulo o servizio corrisponde alla ricerca inserita.';
+            const wrapper = document.querySelector('.cards-wrapper');
+            if (wrapper) wrapper.appendChild(noResultsMsg);
+        }
+        noResultsMsg.style.display = (visibleCount === 0 && query) ? 'block' : 'none';
+    }
+
+    function pulisciRicercaApp() {
+        const inp = document.getElementById('globalAppSearch');
+        if (inp) {
+            inp.value = '';
+            filtraAppLauncher('');
+            inp.focus();
+        }
+    }
+
+    // Shortcut '/' per attivare istantaneamente la ricerca
+    document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+            const inp = document.getElementById('globalAppSearch');
+            if (inp && inp.offsetParent !== null) {
+                e.preventDefault();
+                inp.focus();
+            }
+        }
+    });
+
+    // Controllo Ping Cloud reale verso il server Render
+    async function misuraPingCloud() {
+        const pingLabel = document.getElementById('cloudPingLabel');
+        const start = Date.now();
+        try {
+            const res = await fetch('/api/auth/session-token?t=' + start);
+            const latency = Date.now() - start;
+            if (pingLabel) pingLabel.textContent = '(' + latency + 'ms)';
+        } catch(e) {
+            if (pingLabel) pingLabel.textContent = '(Locale)';
+        }
+    }
+    setTimeout(misuraPingCloud, 1200);
+    setInterval(misuraPingCloud, 30000);
+
 </script>
 </body>
 </html>

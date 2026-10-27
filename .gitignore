@@ -3,3 +3,4 @@ requests.log
 server_exit.log
 *.tmp.*
 node_modules/
+*.bak*
