@@ -36,7 +36,27 @@
           setTxt('s118-indirizzo', p.indirizzo || 'Residenza domiciliare');
           var pat = Array.isArray(p.patologie) ? p.patologie.join(' • ') : (p.patologie || 'Nessuna segnalata');
           setTxt('s118-patologie', pat);
-          setTxt('s118-allergie', p.allergie || 'Nessuna allergia farmacologica nota segnalata');
+          
+          var haAllergie = p.allergie && !p.allergie.toLowerCase().includes('nessun') && p.allergie.trim() !== '';
+          var elAllergie = document.getElementById('s118-allergie');
+          var boxAllergie = document.getElementById('s118-allergie-box');
+          if (elAllergie) {
+            if (haAllergie) {
+              elAllergie.innerHTML = '<b style="font-size:14px; color:#b91c1c; text-transform:uppercase; letter-spacing:0.3px;">⚠️ ' + p.allergie + '</b><br><span style="font-size:11px; color:#991b1b; font-weight:800;">⛔ NON SOMMINISTRARE FARMACI CONTENENTI QUESTI PRINCIPI ATTIVI!</span>';
+              if (boxAllergie) {
+                boxAllergie.style.background = '#fef2f2';
+                boxAllergie.style.border = '2px solid #dc2626';
+                boxAllergie.style.boxShadow = '0 0 10px rgba(220, 38, 38, 0.3)';
+              }
+            } else {
+              elAllergie.innerHTML = '<span style="color:#166534; font-weight:700;">🛡️ Nessuna allergia farmacologica nota riferita (NKDA)</span>';
+              if (boxAllergie) {
+                boxAllergie.style.background = '#f0fdf4';
+                boxAllergie.style.border = '1.5px solid #86efac';
+                boxAllergie.style.boxShadow = 'none';
+              }
+            }
+          }
           
           var famNome = p.maritoNome || p.moglieNome || p.caregiverNome || 'Famiglia di Riferimento';
           var famCell = p.maritoCellulare || p.moglieCellulare || p.cellulare || '';
@@ -892,6 +912,30 @@
             </div>
           </div>
 
+          <!-- SEZIONE 6: ALLERGIE, INTOLLERANZE & REAZIONI AVVERSE FARMACOLOGICHE (EMERGENZA 118) -->
+          <div style="background:#fff1f2; border:1.5px solid #fecdd3; border-radius:12px; padding:14px; margin-top:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+              <div style="font-weight:800; font-size:12px; color:#991b1b; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+                <span>🚫</span> <span>6. Allergie, Intolleranze & Reazioni Avverse (Dati Scheda 118)</span>
+              </div>
+              <span style="font-size:11px; background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:700; border:1px solid #fca5a5;">⚠️ Salvavita</span>
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label class="form-label" style="font-size:12px; color:#7f1d1d; font-weight:700;">Specificare Allergie a Farmaci, Alimenti o Sostanze:</label>
+              <input type="text" class="form-control" id="nuovo-paz-allergie" placeholder="Es. Penicilline, FANS (Aspirina/Ibuprofene), Lattice, oppure: Nessuna nota" value="Nessuna nota" style="font-weight:700; border-color:#fca5a5; color:#991b1b; background:#fff;">
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+              <span style="font-size:11px; font-weight:800; color:#991b1b;">Scelta Rapida:</span>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="impostaAllergiaRapida('nuovo', 'Nessuna nota (NKDA)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#86efac; color:#166534; font-weight:700;">✅ Nessuna nota (NKDA)</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'Penicilline / Beta-lattamici')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">💊 Penicilline</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'FANS (Aspirina, Ibuprofene)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">💊 FANS</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'Lattice (Latex)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">🛡️ Lattice</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'Glutine (Celiachia)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fed7aa; color:#9a3412; font-weight:700;">🌾 Glutine</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'Lattosio')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fed7aa; color:#9a3412; font-weight:700;">🥛 Lattosio</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'Mezzo di Contrasto Iodato')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">🧪 Mezzo Contrasto</button>
+            </div>
+          </div>
+
         </div>
         <div class="modal-footer" style="background:#f8fafc; border-top:1px solid #e2e8f0;">
           <button type="button" class="btn btn-outline" onclick="closeModal('modal-nuovo-paziente')">Annulla</button>
@@ -1189,6 +1233,35 @@
               <input type="checkbox" id="edit-paz-allettato" style="width:18px; height:18px;">
               Paziente Allettato (Attiva rotazione q2h e prevenzione lesioni da pressione)
             </label>
+          </div>
+
+          <!-- SEZIONE ALLERGIE, INTOLLERANZE & REAZIONI AVVERSE (FARMACOVIGILANZA 118) -->
+          <div style="background:#fff1f2; border:1.5px solid #fecdd3; border-radius:12px; padding:14px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+              <div style="font-weight:800; font-size:12.5px; color:#991b1b; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+                <span>🚫</span> <span>Allergie, Intolleranze & Reazioni Avverse (Dati Scheda 118)</span>
+              </div>
+              <span style="font-size:11px; background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:700; border:1px solid #fca5a5;">⚠️ Salvavita</span>
+            </div>
+
+            <div class="form-group" style="margin-bottom:8px;">
+              <label class="form-label" style="color:#7f1d1d; font-weight:700; font-size:12.5px;">Specificare Allergie a Farmaci, Alimenti o Sostanze:</label>
+              <input type="text" class="form-control" id="edit-paz-allergie" placeholder="Es. Penicilline, FANS (Aspirina/Ibuprofene), Lattice, oppure: Nessuna nota" style="font-weight:700; border-color:#fca5a5; color:#991b1b; background:#fff;">
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+              <span style="font-size:11px; font-weight:800; color:#991b1b;">Scelta Rapida:</span>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="impostaAllergiaRapida('edit', 'Nessuna nota (NKDA)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#86efac; color:#166534; font-weight:700;">✅ Nessuna nota (NKDA)</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('edit', 'Penicilline / Beta-lattamici')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">💊 Penicilline</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('edit', 'FANS (Aspirina, Ibuprofene)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">💊 FANS</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('edit', 'Lattice (Latex)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">🛡️ Lattice</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('edit', 'Glutine (Celiachia)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fed7aa; color:#9a3412; font-weight:700;">🌾 Glutine</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('edit', 'Lattosio')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fed7aa; color:#9a3412; font-weight:700;">🥛 Lattosio</button>
+              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('edit', 'Mezzo di Contrasto Iodato')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">🧪 Mezzo Contrasto</button>
+            </div>
+            <div style="font-size:11px; color:#991b1b; margin-top:6px; font-weight:600;">
+              ℹ️ Questo dato viene riportato automaticamente nella <b>Scheda di Emergenza 118</b> per evitare somministrazioni a rischio da parte dei soccorritori.
+            </div>
           </div>
 
           <div class="form-group">
@@ -3102,8 +3175,9 @@
           <div style="margin-bottom:6px;">
             Diagnosi / Patologie: <b id="s118-patologie" style="color:#991b1b;">Ipertensione arteriosa, Cardiopatia, Ictus pregresso, Diabete Tipo 2, OSAS</b>
           </div>
-          <div style="background:#fee2e2; padding:6px 10px; border-radius:8px; color:#991b1b; font-weight:700;">
-            🚫 Allergie / Intolleranze a Farmaci: <span id="s118-allergie">Nessuna allergia farmacologica nota segnalata</span>
+          <div id="s118-allergie-box" style="background:#fee2e2; padding:8px 12px; border-radius:8px; color:#991b1b; font-weight:700; border:1.5px solid #fca5a5; margin-top:6px; transition:all 0.2s;">
+            <div style="font-size:11.5px; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:2px;">🚫 ALLERGIE & INTOLLERANZE FARMACOLOGICHE:</div>
+            <div id="s118-allergie" style="font-size:13.5px; font-weight:800;">Nessuna allergia farmacologica nota segnalata</div>
           </div>
         </div>
 

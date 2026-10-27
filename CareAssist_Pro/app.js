@@ -1626,7 +1626,42 @@ function renderPazientiSelector() {
       `;
     }
 
-        // LAYOUT DASHBOARD CLINICA MODERNO, PULITO & AD ALTO IMPATTO
+    // 9. STATO ALLERGIE & INTOLLERANZE FARMACOLOGICHE (SICUREZZA CLINICA & 118)
+    const haAllergie = activeP.allergie && 
+      !activeP.allergie.toLowerCase().includes('nessun') && 
+      activeP.allergie.trim() !== '' && 
+      activeP.allergie.trim() !== '-';
+
+    const allergieBadge = haAllergie ? `
+      <span class="badge badge-danger clinica-zoom-item allergy-alert-badge" style="background:#dc2626; color:#ffffff; font-weight:800; cursor:pointer; box-shadow:0 0 10px rgba(220,38,38,0.5); border:1.5px solid #f87171;"
+            onmouseenter="mostraLenteClinica('Allergie & Reazioni Avverse Note', 'ATTENZIONE FARMACOVIGILANZA: ${activeP.allergie.replace(/'/g, "\\'")}. Riferire sempre al personale del 118!', '🚫')" 
+            onmouseleave="nascondiLenteClinica()" onclick="apriModificaAnagrafica()" title="Clicca per modificare lo stato allergico">
+        🚫 ALLERGIE: ${activeP.allergie}
+      </span>
+    ` : `
+      <span class="badge clinica-zoom-item" style="background:#f0fdf4; color:#166534; border:1px solid #86efac; font-size:12px; cursor:pointer;"
+            onmouseenter="mostraLenteClinica('Stato Allergie Assistito', 'Nessuna allergia farmacologica nota riferita (NKDA - No Known Drug Allergies). Clicca per aggiornare la cartella.', '🛡️')" 
+            onmouseleave="nascondiLenteClinica()" onclick="apriModificaAnagrafica()" title="Clicca per modificare lo stato allergico">
+        🛡️ Allergie: Nessuna nota (NKDA)
+      </span>
+    `;
+
+    const allergieBanner = haAllergie ? `
+      <div class="clinica-zoom-item allergy-alert-badge" style="background:#fff1f2; border:1.5px solid #f87171; border-radius:12px; padding:10px 14px; margin-top:8px; display:flex; align-items:center; gap:10px; color:#991b1b; cursor:pointer;"
+           onmouseenter="mostraLenteClinica('Allerta Allergie & Reazioni Avverse', 'ATTENZIONE: ${activeP.allergie.replace(/'/g, "\\'")}. Vietata la somministrazione di farmaci o principi attivi correlati.', '🚨')" 
+           onmouseleave="nascondiLenteClinica()" onclick="apriModificaAnagrafica()" title="Clicca per modificare la scheda anagrafica">
+        <span style="font-size:22px; line-height:1;">🚫</span>
+        <div>
+          <div style="font-size:11.5px; font-weight:800; color:#dc2626; text-transform:uppercase; letter-spacing:0.5px;">Allerta Farmacovigilanza & Soccorsi 118:</div>
+          <div style="font-size:13px; font-weight:800; color:#991b1b;">
+            Allergie / Reazioni Avverse Note: <b style="text-decoration:underline;">${activeP.allergie}</b>
+          </div>
+          <div style="font-size:11px; color:#b91c1c;">Segnalata automaticamente nella Scheda Clinica 118. Verificare la tollerabilità prima di ogni nuova somministrazione farmacologica.</div>
+        </div>
+      </div>
+    ` : '';
+
+    // LAYOUT DASHBOARD CLINICA MODERNO, PULITO & AD ALTO IMPATTO
     badgeInfo.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:10px;">
         <!-- RIGA 1: NOME PAZIENTE, BADGE CLINICI & CONTATTI RAPIDI DOMICILIO -->
@@ -1639,6 +1674,7 @@ function renderPazientiSelector() {
             <span class="badge badge-warning clinica-zoom-item" style="font-size:12.5px; cursor:pointer;" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${new Date(activeP.dataNascita).toLocaleDateString('it-IT')} (${eta} anni compiuti)', '🎂')" onmouseleave="nascondiLenteClinica()">
               🎂 ${eta} anni
             </span>
+            ${allergieBadge}
             ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe Elevato (Braden)</span>' : ''}
             ${activeP.id === 'paz_angela' ? '<span class="badge badge-danger" style="background:#dc2626;">🫁 Ausilio CPAP Notturna (OSAS)</span>' : ''}
           </div>
@@ -1665,6 +1701,7 @@ function renderPazientiSelector() {
 
         ${ausiliBadge}
         ${patologieHtml}
+        ${allergieBanner}
       </div>
     `;
   }
@@ -1960,6 +1997,27 @@ function aggiungiPatologiaPersonalizzata() {
   showToast(`Patologia "${nuovaPatologia}" aggiunta ed inclusa nel catalogo!`);
 }
 
+function impostaAllergiaRapida(prefix, valore) {
+  const el = document.getElementById(prefix + '-paz-allergie');
+  if (el) el.value = valore;
+}
+
+function aggiungiAllergiaRapida(prefix, allergia) {
+  const el = document.getElementById(prefix + '-paz-allergie');
+  if (!el) return;
+  const cur = (el.value || '').trim();
+  if (!cur || cur.toLowerCase().includes('nessuna') || cur.toLowerCase().includes('nessun')) {
+    el.value = allergia;
+  } else {
+    const list = cur.split(',').map(s => s.trim().toLowerCase());
+    if (!list.includes(allergia.toLowerCase())) {
+      el.value = cur + ', ' + allergia;
+    }
+  }
+}
+window.impostaAllergiaRapida = impostaAllergiaRapida;
+window.aggiungiAllergiaRapida = aggiungiAllergiaRapida;
+
 function salvaNuovoPaziente(e) {
   e.preventDefault();
   const nome = document.getElementById('nuovo-paz-nome').value.trim();
@@ -1974,6 +2032,9 @@ function salvaNuovoPaziente(e) {
   const parenteEmail = elNParenEmail ? elNParenEmail.value.trim() : '';
   const elNParenPec = document.getElementById('nuovo-paz-parente-pec');
   const parentePec = elNParenPec ? elNParenPec.value.trim() : '';
+
+  const elAllergieNuovo = document.getElementById('nuovo-paz-allergie');
+  const allergieNuovo = elAllergieNuovo ? elAllergieNuovo.value.trim() : 'Nessuna nota';
 
   const patologieTesto = document.getElementById('nuovo-paz-patologie-testo').value.trim();
   const isCpap = document.getElementById('nuovo-paz-cpap').checked;
@@ -2002,6 +2063,7 @@ function salvaNuovoPaziente(e) {
   newPaz.moglieEmail = parenteEmail;
   newPaz.caregiverPec = parentePec;
   newPaz.mogliePec = parentePec;
+  newPaz.allergie = allergieNuovo || 'Nessuna nota';
 
   newPaz.medico = medicoNome || 'Dott. Curante';
   newPaz.medicoNome = medicoNome;
@@ -2419,6 +2481,11 @@ function apriModificaAnagrafica() {
   }
   document.getElementById('edit-paz-note').value = p.note || '';
 
+  const elEditAllergie = document.getElementById('edit-paz-allergie');
+  if (elEditAllergie) {
+    elEditAllergie.value = p.allergie || 'Nessuna nota';
+  }
+
   const elAllettatoChk = document.getElementById('edit-paz-allettato');
   if (elAllettatoChk) {
     elAllettatoChk.onchange = sincronizzaNoteAllettatoDinamico;
@@ -2510,6 +2577,11 @@ function salvaModificaAnagrafica(e) {
     ultimoSuonoScadutoTimestamp = 0;
   }
   p.note = document.getElementById('edit-paz-note').value.trim();
+
+  const elEditAllergieVal = document.getElementById('edit-paz-allergie');
+  if (elEditAllergieVal) {
+    p.allergie = elEditAllergieVal.value.trim() || 'Nessuna nota';
+  }
 
   // Estrazione e salvataggio del Catalogo Ausili con Rifornimenti e Scadenze
   p.ausili = estraiAusiliSelezionatiDaForm('edit-aus');
@@ -8505,8 +8577,28 @@ function apriModalScheda118() {
     const patologieStr = Array.isArray(p.patologie) ? p.patologie.join(' • ') : (p.patologie || 'Nessuna patologia segnalata');
     setTxt('s118-patologie', patologieStr);
 
-    const allergieStr = p.allergie || 'Nessuna allergia farmacologica nota segnalata';
-    setTxt('s118-allergie', allergieStr);
+    const haAllergie = p.allergie && !p.allergie.toLowerCase().includes('nessun') && p.allergie.trim() !== '' && p.allergie.trim() !== '-';
+    const allergieEl = document.getElementById('s118-allergie');
+    const allergieBox = document.getElementById('s118-allergie-box');
+    if (allergieEl) {
+      if (haAllergie) {
+        allergieEl.innerHTML = `<b style="font-size:14px; color:#b91c1c; text-transform:uppercase; letter-spacing:0.3px;">⚠️ ${p.allergie}</b><br><span style="font-size:11px; color:#991b1b; font-weight:800;">⛔ NON SOMMINISTRARE FARMACI CONTENENTI QUESTI PRINCIPI ATTIVI!</span>`;
+        if (allergieBox) {
+          allergieBox.style.background = '#fef2f2';
+          allergieBox.style.border = '2px solid #dc2626';
+          allergieBox.style.boxShadow = '0 0 12px rgba(220, 38, 38, 0.35)';
+        }
+      } else {
+        allergieEl.innerHTML = `<span style="color:#166534; font-weight:700;">🛡️ Nessuna allergia farmacologica nota riferita (NKDA)</span>`;
+        if (allergieBox) {
+          allergieBox.style.background = '#f0fdf4';
+          allergieBox.style.border = '1.5px solid #86efac';
+          allergieBox.style.boxShadow = 'none';
+        }
+      }
+    } else {
+      setTxt('s118-allergie', p.allergie || 'Nessuna allergia farmacologica nota segnalata');
+    }
 
     // Terapie salvavita
     const listaFarmaciContainer = document.getElementById('s118-lista-farmaci');
@@ -8599,8 +8691,12 @@ function apriModalReportWhatsApp() {
     // Ultima nota o alvo
     const ultimoAlvo = p.ultimoAlvo ? new Date(p.ultimoAlvo).toLocaleDateString('it-IT') : 'Monitorata e regolare';
 
+    // Allergie segnalate
+    const haAllergie = p.allergie && !p.allergie.toLowerCase().includes('nessun') && p.allergie.trim() !== '' && p.allergie.trim() !== '-';
+    const rigaAllergie = haAllergie ? `\n🚫 *Allergie Note:* ⚠️ ${p.allergie}` : '';
+
     const testoReport = `🩺 *CareAssist Pro - Diario Socio-Sanitario*
-👤 Assistito: *${pulitoNome}* (${eta} anni)
+👤 Assistito: *${pulitoNome}* (${eta} anni)${rigaAllergie}
 📅 Data: *${dataStr.charAt(0).toUpperCase() + dataStr.slice(1)}*
 
 ✅ *Terapie Farmacologiche:* ${farmaciStato}

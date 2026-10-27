@@ -2609,3 +2609,27 @@ textarea.form-control {
   border: 1.5px solid #10b981;
   overflow: hidden;
 }
+
+/* ALLERGIE 118 ALERT & PILLS */
+@keyframes pulseAllergyAlert {
+  0% { box-shadow: 0 0 4px rgba(220, 38, 38, 0.4); }
+  50% { box-shadow: 0 0 12px rgba(220, 38, 38, 0.85); transform: scale(1.02); }
+  100% { box-shadow: 0 0 4px rgba(220, 38, 38, 0.4); }
+}
+
+.allergy-alert-badge {
+  animation: pulseAllergyAlert 2.2s infinite ease-in-out;
+}
+
+.allergy-quick-btn {
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.allergy-quick-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.allergy-quick-btn:active {
+  transform: scale(0.95);
+}
+
