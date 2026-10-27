@@ -550,6 +550,117 @@
             box-shadow: 0 0 12px rgba(212,175,55,0.25);
         }
     
+    
+        /* Responsive Smart Alert Cards (Mobile-first optimization) */
+        .smart-alert-card {
+            background: rgba(15, 23, 42, 0.92);
+            border-radius: 16px;
+            padding: 13px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .smart-alert-card:hover {
+            background: rgba(30, 41, 59, 0.96);
+        }
+        .smart-alert-header-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .smart-alert-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .smart-alert-title {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.35;
+        }
+        .smart-alert-desc {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+        .smart-alert-footer-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-wrap: wrap;
+        }
+        .smart-alert-badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+        .smart-alert-btn {
+            border: none;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 8px 14px;
+            border-radius: 10px;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            transition: transform 0.15s, opacity 0.2s;
+            text-align: center;
+        }
+        .smart-alert-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+        .smart-alert-btn:active {
+            transform: scale(0.97);
+        }
+
+        @media (max-width: 580px) {
+            .smart-alert-card {
+                padding: 12px 12px;
+                gap: 9px;
+            }
+            .smart-alert-footer-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .smart-alert-btn {
+                width: 100%;
+                padding: 10px 14px;
+                font-size: 12.5px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .smart-alert-card {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                gap: 16px;
+            }
+            .smart-alert-body {
+                flex: 1;
+            }
+            .smart-alert-footer-row {
+                padding-top: 0;
+                border-top: none;
+                flex-direction: row;
+                flex-shrink: 0;
+            }
+        }
+  
     </style>
 <style>
 @media (max-width: 768px) { #btnLogistica { display: none !important; } }
@@ -3106,7 +3217,12 @@
         }
     }
 
+    let isCaricamentoKpiInCorso = false;
+
     async function caricaKpiStats() {
+        if (isCaricamentoKpiInCorso) return;
+        isCaricamentoKpiInCorso = true;
+
         try {
             const res = await fetch('/api/kpi/stats');
             const data = await res.json();
@@ -3154,8 +3270,9 @@
                     kpiBar.style.display = (canSeeAttrezzi || currentRole === 'admin') ? 'grid' : 'none';
                 }
 
-                // 2. RACCOLTA DATI CAREASSIST PRO (Terapie assistiti & Scorte farmaci)
-                window.__careAssistAlerts = [];
+                // 2. RACCOLTA DATI CAREASSIST PRO CON DEDUPLICAZIONE RIGOROSA
+                const careAlertsMap = new Map();
+
                 if (canSeeCareAssist) {
                     try {
                         const careRes = await fetch('/api/get-db');
@@ -3173,8 +3290,15 @@
                             const now = new Date();
                             const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
+                            // Set per tracciare i pazienti già elaborati ed evitare doppioni
+                            const processedPazientiIds = new Set();
+
                             careDb.pazienti.forEach(paz => {
+                                if (!paz || !paz.id) return;
+                                if (processedPazientiIds.has(paz.id)) return; // Salta duplicati nel DB
                                 if (!pazAbilitati.includes('all') && !pazAbilitati.includes(paz.id)) return;
+
+                                processedPazientiIds.add(paz.id);
 
                                 const terapie = paz.terapie || [];
                                 let terapieOggiDaFare = [];
@@ -3205,56 +3329,65 @@
                                 // Notifica Terapie In Ritardo o Da Fare
                                 if (terapieInRitardo.length > 0) {
                                     const nomi = terapieInRitardo.map(t => t.farmaco + ' (' + t.ora + ')').join(', ');
-                                    window.__careAssistAlerts.push({
-                                        category: 'careassist',
-                                        isUrgente: true,
-                                        pazienteId: paz.id,
-                                        titolo: '⚠️ Terapie da Somministrare: ' + paz.nome,
-                                        descrizione: '<strong>' + terapieInRitardo.length + ' somministrazioni in orario/attesa:</strong> ' + nomi,
-                                        tagText: '🚨 DA FARE (' + terapieInRitardo.length + ')',
-                                        tagColor: '#ef4444',
-                                        tagBg: 'rgba(239,68,68,0.2)',
-                                        url: '/careassist/?paziente=' + paz.id + '&tab=terapie',
-                                        btnLabel: 'Somministra Ora ➔',
-                                        btnBg: 'linear-gradient(135deg, #0284c7, #0369a1)',
-                                        waText: paz.nome + ': ' + terapieInRitardo.length + ' terapie da somministrare (' + nomi + ')'
-                                    });
+                                    const alertKey = paz.id + '_ritardo';
+                                    if (!careAlertsMap.has(alertKey)) {
+                                        careAlertsMap.set(alertKey, {
+                                            category: 'careassist',
+                                            isUrgente: true,
+                                            pazienteId: paz.id,
+                                            titolo: '⚠️ Terapie da Somministrare: ' + paz.nome,
+                                            descrizione: '<strong>' + terapieInRitardo.length + ' somministrazioni in orario/attesa:</strong> ' + nomi,
+                                            tagText: '🚨 DA FARE (' + terapieInRitardo.length + ')',
+                                            tagColor: '#ef4444',
+                                            tagBg: 'rgba(239,68,68,0.2)',
+                                            url: '/careassist/?paziente=' + paz.id + '&tab=terapie',
+                                            btnLabel: 'Somministra Ora ➔',
+                                            btnBg: 'linear-gradient(135deg, #0284c7, #0369a1)',
+                                            waText: paz.nome + ': ' + terapieInRitardo.length + ' terapie da somministrare (' + nomi + ')'
+                                        });
+                                    }
                                 } else if (terapieOggiDaFare.length > 0) {
                                     const prox = terapieOggiDaFare[0];
-                                    window.__careAssistAlerts.push({
-                                        category: 'careassist',
-                                        isUrgente: false,
-                                        pazienteId: paz.id,
-                                        titolo: '🩺 Terapie Programmate: ' + paz.nome,
-                                        descrizione: terapieOggiDaFare.length + ' farmaci previsti per oggi • Prossima dose: <strong>' + prox.farmaco + '</strong> alle ore <strong>' + prox.ora + '</strong>',
-                                        tagText: 'In Programma (' + terapieOggiDaFare.length + ')',
-                                        tagColor: '#38bdf8',
-                                        tagBg: 'rgba(56,189,248,0.2)',
-                                        url: '/careassist/?paziente=' + paz.id + '&tab=terapie',
-                                        btnLabel: 'Apri Cartella ➔',
-                                        btnBg: 'linear-gradient(135deg, #0284c7, #0369a1)',
-                                        waText: paz.nome + ': ' + terapieOggiDaFare.length + ' terapie in programma (Prossimo: ' + prox.farmaco + ' ore ' + prox.ora + ')'
-                                    });
+                                    const alertKey = paz.id + '_programma';
+                                    if (!careAlertsMap.has(alertKey)) {
+                                        careAlertsMap.set(alertKey, {
+                                            category: 'careassist',
+                                            isUrgente: false,
+                                            pazienteId: paz.id,
+                                            titolo: '🩺 Terapie Programmate: ' + paz.nome,
+                                            descrizione: terapieOggiDaFare.length + ' farmaci previsti per oggi • Prossima dose: <strong>' + prox.farmaco + '</strong> alle ore <strong>' + prox.ora + '</strong>',
+                                            tagText: 'In Programma (' + terapieOggiDaFare.length + ')',
+                                            tagColor: '#38bdf8',
+                                            tagBg: 'rgba(56,189,248,0.2)',
+                                            url: '/careassist/?paziente=' + paz.id + '&tab=terapie',
+                                            btnLabel: 'Apri Cartella ➔',
+                                            btnBg: 'linear-gradient(135deg, #0284c7, #0369a1)',
+                                            waText: paz.nome + ': ' + terapieOggiDaFare.length + ' terapie in programma (Prossimo: ' + prox.farmaco + ' ore ' + prox.ora + ')'
+                                        });
+                                    }
                                 }
 
                                 // Notifica Scorte Basse
                                 if (farmaciScortaBassa.length > 0) {
                                     farmaciScortaBassa.forEach(f => {
                                         const isZero = Number(f.scorta) <= 0;
-                                        window.__careAssistAlerts.push({
-                                            category: 'careassist',
-                                            isUrgente: isZero,
-                                            pazienteId: paz.id,
-                                            titolo: (isZero ? '🚨 Scorta Esaurita (0 dosi)' : '⚠️ Scorta Farmaco Bassa') + ': ' + paz.nome,
-                                            descrizione: 'Farmaco <strong>' + f.farmaco + '</strong> rimaste: <strong style="color:' + (isZero ? '#ef4444' : '#f59e0b') + ';">' + f.scorta + ' compresse/dosi</strong>. Richiedere ricetta.',
-                                            tagText: isZero ? 'SCORTA ZERO' : 'Rimaste: ' + f.scorta,
-                                            tagColor: isZero ? '#ef4444' : '#f59e0b',
-                                            tagBg: isZero ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)',
-                                            url: '/careassist/?paziente=' + paz.id + '&tab=farmaci',
-                                            btnLabel: 'Richiedi Ricetta ➔',
-                                            btnBg: 'linear-gradient(135deg, #d97706, #b45309)',
-                                            waText: '⚠️ Scorta in esaurimento per ' + paz.nome + ': ' + f.farmaco + ' (rimangono ' + f.scorta + ' dosi)'
-                                        });
+                                        const alertKey = paz.id + '_scorta_' + f.farmaco;
+                                        if (!careAlertsMap.has(alertKey)) {
+                                            careAlertsMap.set(scortaKey = alertKey, {
+                                                category: 'careassist',
+                                                isUrgente: isZero,
+                                                pazienteId: paz.id,
+                                                titolo: (isZero ? '🚨 Scorta Esaurita (0 dosi)' : '⚠️ Scorta Farmaco Bassa') + ': ' + paz.nome,
+                                                descrizione: 'Farmaco <strong>' + f.farmaco + '</strong> rimaste: <strong style="color:' + (isZero ? '#ef4444' : '#f59e0b') + ';">' + f.scorta + ' compresse/dosi</strong>. Richiedere ricetta.',
+                                                tagText: isZero ? 'SCORTA ZERO' : 'Rimaste: ' + f.scorta,
+                                                tagColor: isZero ? '#ef4444' : '#f59e0b',
+                                                tagBg: isZero ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)',
+                                                url: '/careassist/?paziente=' + paz.id + '&tab=farmaci',
+                                                btnLabel: 'Richiedi Ricetta ➔',
+                                                btnBg: 'linear-gradient(135deg, #d97706, #b45309)',
+                                                waText: '⚠️ Scorta in esaurimento per ' + paz.nome + ': ' + f.farmaco + ' (rimangono ' + f.scorta + ' dosi)'
+                                            });
+                                        }
                                     });
                                 }
                             });
@@ -3264,43 +3397,39 @@
                     }
                 }
 
-                // 3. COSTRUZIONE CARDS NOTIFICHE E CONTEGGI
+                // Assegna la lista deduplicata a livello globale
+                window.__careAssistAlerts = Array.from(careAlertsMap.values());
+
+                // 3. COSTRUZIONE CARDS RESPONSIVE MOBILE-FIRST
                 const banner = document.getElementById('smartNotificationsBanner');
                 const badgeCount = document.getElementById('smartNotifBadgeCount');
                 const alertsList = document.getElementById('smartAlertsList');
 
                 let alertCards = [];
-                let countCareAssist = 0;
+                let countCareAssist = window.__careAssistAlerts.length;
                 let countVeicoli = 0;
                 let countAttrezzi = 0;
                 let countSalute = 0;
 
                 // A. CareAssist Alerts
-                if (window.__careAssistAlerts && window.__careAssistAlerts.length > 0) {
-                    countCareAssist = window.__careAssistAlerts.length;
-                    window.__careAssistAlerts.forEach(ca => {
-                        const borderColor = ca.isUrgente ? '#ef4444' : (ca.tagColor || '#38bdf8');
-                        alertCards.push(`
-                            <div data-category="careassist" style="background:rgba(15,23,42,0.85); border-left:4px solid ${borderColor}; border-radius:12px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px; transition:transform 0.15s;" onmouseover="this.style.background='rgba(30,41,59,0.95)'" onmouseout="this.style.background='rgba(15,23,42,0.85)'">
-                                <div style="display:flex; align-items:center; gap:10px;">
-                                    <span style="font-size:22px;">${ca.isUrgente ? '🚨' : '🩺'}</span>
-                                    <div>
-                                        <div style="font-size:13px; font-weight:800; color:#fff;">
-                                            ${ca.titolo}
-                                        </div>
-                                        <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">
-                                            ${ca.descrizione}
-                                        </div>
-                                    </div>
+                window.__careAssistAlerts.forEach(ca => {
+                    const borderColor = ca.isUrgente ? '#ef4444' : (ca.tagColor || '#38bdf8');
+                    alertCards.push(`
+                        <div class="smart-alert-card" data-category="careassist" style="border-left: 4px solid ${borderColor};">
+                            <div class="smart-alert-body">
+                                <div class="smart-alert-header-row">
+                                    <span class="smart-alert-icon">${ca.isUrgente ? '🚨' : '🩺'}</span>
+                                    <div class="smart-alert-title">${ca.titolo}</div>
                                 </div>
-                                <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-                                    <span style="background:${ca.tagBg}; border:1px solid ${ca.tagColor}; color:${ca.tagColor}; font-size:11px; font-weight:800; padding:3px 8px; border-radius:8px;">${ca.tagText}</span>
-                                    <button type="button" onclick="navigaVersoApp('${ca.url}')" style="background:${ca.btnBg}; border:none; color:#fff; text-decoration:none; font-size:11px; font-weight:800; padding:6px 11px; border-radius:8px; white-space:nowrap; cursor:pointer;">${ca.btnLabel}</button>
-                                </div>
+                                <div class="smart-alert-desc" style="margin-top:5px;">${ca.descrizione}</div>
                             </div>
-                        `);
-                    });
-                }
+                            <div class="smart-alert-footer-row">
+                                <span class="smart-alert-badge" style="background:${ca.tagBg}; border:1px solid ${ca.tagColor}; color:${ca.tagColor};">${ca.tagText}</span>
+                                <button type="button" class="smart-alert-btn" onclick="navigaVersoApp('${ca.url}')" style="background:${ca.btnBg};">${ca.btnLabel}</button>
+                            </div>
+                        </div>
+                    `);
+                });
 
                 // B. Veicoli Alerts
                 if (canSeeVeicoli && window.__smartVeicoliAlerts && window.__smartVeicoliAlerts.length > 0) {
@@ -3311,21 +3440,17 @@
                         const badgeColor = isUrg ? '#ef4444' : '#f59e0b';
                         const tagText = isUrg ? (a.giorni <= 0 ? 'SCADUTO' : 'URGENTE (' + a.giorni + ' gg)') : 'Tra ' + a.giorni + ' giorni';
                         alertCards.push(`
-                            <div data-category="veicoli" style="background:rgba(15,23,42,0.85); border-left:4px solid ${borderColor}; border-radius:12px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px; transition:transform 0.15s;" onmouseover="this.style.background='rgba(30,41,59,0.95)'" onmouseout="this.style.background='rgba(15,23,42,0.85)'">
-                                <div style="display:flex; align-items:center; gap:10px;">
-                                    <span style="font-size:22px;">🚗</span>
-                                    <div>
-                                        <div style="font-size:13px; font-weight:800; color:#fff;">
-                                            Scadenza ${a.tipo}: <span style="color:#38bdf8;">${a.veicolo}</span>
-                                        </div>
-                                        <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">
-                                            Prevista il <strong>${a.data}</strong>. Controlla prima dell'uso su strada.
-                                        </div>
+                            <div class="smart-alert-card" data-category="veicoli" style="border-left: 4px solid ${borderColor};">
+                                <div class="smart-alert-body">
+                                    <div class="smart-alert-header-row">
+                                        <span class="smart-alert-icon">🚗</span>
+                                        <div class="smart-alert-title">Scadenza ${a.tipo}: <span style="color:#38bdf8;">${a.veicolo}</span></div>
                                     </div>
+                                    <div class="smart-alert-desc" style="margin-top:5px;">Prevista il <strong>${a.data}</strong>. Controlla prima dell'uso su strada.</div>
                                 </div>
-                                <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-                                    <span style="background:${isUrg ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)'}; border:1px solid ${badgeColor}; color:${badgeColor}; font-size:11px; font-weight:800; padding:3px 8px; border-radius:8px;">${tagText}</span>
-                                    <button type="button" onclick="navigaVersoApp('/veicoli_mobile/')" style="background:linear-gradient(135deg, #0ea5e9, #0284c7); border:none; color:#fff; font-size:11px; font-weight:800; padding:6px 11px; border-radius:8px; white-space:nowrap; cursor:pointer;">Apri Mezzi ➔</button>
+                                <div class="smart-alert-footer-row">
+                                    <span class="smart-alert-badge" style="background:${isUrg ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)'}; border:1px solid ${badgeColor}; color:${badgeColor};">${tagText}</span>
+                                    <button type="button" class="smart-alert-btn" onclick="navigaVersoApp('/veicoli_mobile/')" style="background:linear-gradient(135deg, #0ea5e9, #0284c7);">Apri Mezzi ➔</button>
                                 </div>
                             </div>
                         `);
@@ -3337,21 +3462,17 @@
                     countAttrezzi = window.__smartAttrezziInUso.length;
                     window.__smartAttrezziInUso.forEach(att => {
                         alertCards.push(`
-                            <div data-category="attrezzi" style="background:rgba(15,23,42,0.85); border-left:4px solid #38bdf8; border-radius:12px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px; transition:transform 0.15s;" onmouseover="this.style.background='rgba(30,41,59,0.95)'" onmouseout="this.style.background='rgba(15,23,42,0.85)'">
-                                <div style="display:flex; align-items:center; gap:10px;">
-                                    <span style="font-size:22px;">🛠️</span>
-                                    <div>
-                                        <div style="font-size:13px; font-weight:800; color:#fff;">
-                                            Attrezzo in Prestito: <span style="color:#38bdf8;">${att.nome}</span>
-                                        </div>
-                                        <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">
-                                            Attualmente in uso da: <strong>${att.prestato_a}</strong>
-                                        </div>
+                            <div class="smart-alert-card" data-category="attrezzi" style="border-left: 4px solid #38bdf8;">
+                                <div class="smart-alert-body">
+                                    <div class="smart-alert-header-row">
+                                        <span class="smart-alert-icon">🛠️</span>
+                                        <div class="smart-alert-title">Attrezzo in Prestito: <span style="color:#38bdf8;">${att.nome}</span></div>
                                     </div>
+                                    <div class="smart-alert-desc" style="margin-top:5px;">Attualmente in uso da: <strong>${att.prestato_a}</strong></div>
                                 </div>
-                                <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-                                    <span style="background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#38bdf8; font-size:11px; font-weight:800; padding:3px 8px; border-radius:8px;">In Cantiere</span>
-                                    <button type="button" onclick="navigaVersoApp('/inventario.html')" style="background:linear-gradient(135deg, #3b82f6, #1d4ed8); border:none; color:#fff; font-size:11px; font-weight:800; padding:6px 11px; border-radius:8px; white-space:nowrap; cursor:pointer;">Inventario ➔</button>
+                                <div class="smart-alert-footer-row">
+                                    <span class="smart-alert-badge" style="background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#38bdf8;">In Cantiere</span>
+                                    <button type="button" class="smart-alert-btn" onclick="navigaVersoApp('/inventario.html')" style="background:linear-gradient(135deg, #3b82f6, #1d4ed8);">Inventario ➔</button>
                                 </div>
                             </div>
                         `);
@@ -3362,21 +3483,17 @@
                 if (canSeeSalute && window.__smartSaluteAlert) {
                     countSalute = 1;
                     alertCards.push(`
-                        <div data-category="salute" style="background:rgba(15,23,42,0.85); border-left:4px solid #10b981; border-radius:12px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px; transition:transform 0.15s;" onmouseover="this.style.background='rgba(30,41,59,0.95)'" onmouseout="this.style.background='rgba(15,23,42,0.85)'">
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <span style="font-size:22px;">💧</span>
-                                <div>
-                                    <div style="font-size:13px; font-weight:800; color:#fff;">
-                                        Obiettivo Benessere Personale
-                                    </div>
-                                    <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">
-                                        ${window.__smartSaluteAlert}
-                                    </div>
+                        <div class="smart-alert-card" data-category="salute" style="border-left: 4px solid #10b981;">
+                            <div class="smart-alert-body">
+                                <div class="smart-alert-header-row">
+                                    <span class="smart-alert-icon">💧</span>
+                                    <div class="smart-alert-title">Obiettivo Benessere Personale</div>
                                 </div>
+                                <div class="smart-alert-desc" style="margin-top:5px;">${window.__smartSaluteAlert}</div>
                             </div>
-                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-                                <span style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#34d399; font-size:11px; font-weight:800; padding:3px 8px; border-radius:8px;">Salute</span>
-                                <button type="button" onclick="navigaVersoApp('/salute/')" style="background:linear-gradient(135deg, #10b981, #059669); border:none; color:#fff; font-size:11px; font-weight:800; padding:6px 11px; border-radius:8px; white-space:nowrap; cursor:pointer;">Scheda ➔</button>
+                            <div class="smart-alert-footer-row">
+                                <span class="smart-alert-badge" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#34d399;">Salute</span>
+                                <button type="button" class="smart-alert-btn" onclick="navigaVersoApp('/salute/')" style="background:linear-gradient(135deg, #10b981, #059669);">Scheda ➔</button>
                             </div>
                         </div>
                     `);
@@ -3418,29 +3535,10 @@
             }
         } catch(e) {
             console.warn('Errore caricamento KPI stats:', e);
+        } finally {
+            isCaricamentoKpiInCorso = false;
         }
     }
-
-    function filtraNotificheSmart(cat, btn) {
-        document.querySelectorAll('.notif-filter-btn').forEach(b => b.classList.remove('active'));
-        if (btn) btn.classList.add('active');
-
-        const cards = document.querySelectorAll('#smartAlertsList > div');
-        cards.forEach(c => {
-            if (cat === 'all' || c.getAttribute('data-category') === cat) {
-                c.style.display = 'flex';
-            } else {
-                c.style.display = 'none';
-            }
-        });
-    }
-
-    // Inizializza ruolo all'avvio:
-    // Se c'è già una sessione attiva (es. Admin o Operatore o Operatore con PIN), sblocca subito anche dopo riavvio browser
-    const savedAdminPin = localStorage.getItem('milella_admin_pin');
-    const savedUserNome = localStorage.getItem('milella_user_nome');
-    const savedUserPin = localStorage.getItem('milella_user_pin');
-    const savedApps = JSON.parse(localStorage.getItem('milella_app_abilitate') || '[]');
 
     function aggiornaVisibilitaBiometriaGate() {
         const btnBio = document.getElementById('btnBiometriaGate');
