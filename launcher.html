@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SISTEMA C. MILELLA</title>
+    <title>SUITE AZIENDALE C. MILELLA</title>
     <!-- PWA and Fullscreen Mobile Support -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#040914">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SUITE M.C.">
+    <meta name="apple-mobile-web-app-title" content="Suite Milella">
     <link rel="icon" type="image/png" href="/icon-512.png">
     <link rel="apple-touch-icon" href="/icon-512.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -531,6 +531,14 @@
     <script src="/qrcode.min.js"></script>
 </head>
 <body>
+    <!-- FLOATING BAR AVVISO BLOCCO INATTIVITA' -->
+    <div id="kioskInactivityWarning" style="display:none; position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:99999; background:rgba(15,23,42,0.96); border:1.5px solid #eab308; box-shadow:0 10px 30px rgba(0,0,0,0.8), 0 0 25px rgba(234,179,8,0.35); border-radius:30px; padding:9px 20px; color:#fff; font-size:13px; font-weight:700; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; gap:12px; animation:pulseWarning 1.5s infinite;">
+        <span style="font-size:16px;">⏳</span>
+        <span>Inattività: blocco tra <strong id="kioskSecondsLeft" style="color:#fde047; font-size:14px;">60</strong>s</span>
+        <button type="button" onclick="resetInactivityTimer()" style="background:#eab308; color:#0b0f19; border:none; padding:5px 14px; border-radius:14px; font-size:12px; font-weight:800; cursor:pointer; box-shadow:0 2px 8px rgba(234,179,8,0.4);">Continua</button>
+        <button type="button" onclick="esciAdmin()" style="background:rgba(255,255,255,0.1); color:#cbd5e1; border:1px solid rgba(255,255,255,0.25); padding:5px 11px; border-radius:14px; font-size:11.5px; cursor:pointer;">Blocca Ora</button>
+    </div>
+  
     <div class="bg-glow"></div>
     
     <!-- Generate some CSS particles -->
@@ -700,6 +708,11 @@
                 <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
                     🛠️ MODULI
                 </button>
+                
+                <button id="btnInstallApp" onclick="installaPwaApp()" title="Installa Suite su Telefono o Desktop" style="display:none; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#7dd3fc; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; align-items:center; gap:5px; transition:all 0.2s;">
+                    <span>📲</span> <span id="installBtnText">Installa App</span>
+                </button>
+  
                 <button id="btnToggleFullscreen" onclick="toggleFullScreen()" title="Schermo Intero (F11)" style="background:rgba(255,255,255,0.06); border:1px solid rgba(212,175,55,0.35); color:#d4af37; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
                     <span id="fsIcon">⛶</span> <span id="fsText">Schermo Intero</span>
                 </button>
@@ -734,6 +747,11 @@
                     </div>
                 </div>
                 <div style="display:flex; gap:8px; align-items:center;">
+                    
+                    <button id="btnInviaWhatsAppScadenze" onclick="inviaPromemoriaWhatsApp()" title="Invia riepilogo promemoria su WhatsApp" style="background:rgba(34,197,94,0.18); border:1px solid rgba(34,197,94,0.45); color:#86efac; font-size:11.5px; font-weight:700; padding:6px 12px; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
+                        <span>📲</span> WhatsApp Promemoria
+                    </button>
+  
                     <button id="btnAttivaPushNotif" onclick="attivaNotificheBrowser()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#f3e5ab; font-size:11.5px; font-weight:700; padding:6px 12px; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
                         🔔 Notifiche Telefono
                     </button>
@@ -749,17 +767,17 @@
 
         <!-- 5. CRUSCOTTO RIEPILOGATIVO VELOCE (DASHBOARD KPI LIVE) -->
         <div id="kpiDashboardBar" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px; width:100%; max-width:960px; margin: 0 auto 2rem auto;">
-            <div class="kpi-card-interactive" onclick="window.location.href='/inventario.html'" title="Visualizza Catalogo Attrezzi Completo" style="background:rgba(15,23,42,0.7); border:1px solid rgba(212,175,55,0.3); border-radius:18px; padding:12px 10px; text-align:center; cursor:pointer; backdrop-filter:blur(10px);">
+            <div class="kpi-card-interactive" onclick="navigaVersoApp('/inventario.html')" title="Visualizza Catalogo Attrezzi Completo" style="background:rgba(15,23,42,0.7); border:1px solid rgba(212,175,55,0.3); border-radius:18px; padding:12px 10px; text-align:center; cursor:pointer; backdrop-filter:blur(10px);">
                 <div style="font-size:20px; margin-bottom:4px;">🛠️</div>
                 <div style="font-size:19px; font-weight:900; color:#f3e5ab;" id="kpiTotAttrezzi">--</div>
                 <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">Tot. Attrezzi ↗</div>
             </div>
-            <div class="kpi-card-interactive" onclick="window.location.href='/inventario.html?filtro=in_uso'" title="Visualizza Attrezzi in Uso / Prestito" style="background:rgba(15,23,42,0.7); border:1px solid rgba(239,68,68,0.35); border-radius:18px; padding:12px 10px; text-align:center; cursor:pointer; backdrop-filter:blur(10px);">
+            <div class="kpi-card-interactive" onclick="navigaVersoApp('/inventario.html?filtro=in_uso')" title="Visualizza Attrezzi in Uso / Prestito" style="background:rgba(15,23,42,0.7); border:1px solid rgba(239,68,68,0.35); border-radius:18px; padding:12px 10px; text-align:center; cursor:pointer; backdrop-filter:blur(10px);">
                 <div style="font-size:20px; margin-bottom:4px;">🚚</div>
                 <div style="font-size:19px; font-weight:900; color:#f87171;" id="kpiInUso">--</div>
                 <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">In Cantiere / Uso ↗</div>
             </div>
-            <div class="kpi-card-interactive" onclick="window.location.href='/inventario.html?filtro=disponibili'" title="Visualizza Attrezzi Pronti e Disponibili" style="background:rgba(15,23,42,0.7); border:1px solid rgba(34,197,94,0.35); border-radius:18px; padding:12px 10px; text-align:center; cursor:pointer; backdrop-filter:blur(10px);">
+            <div class="kpi-card-interactive" onclick="navigaVersoApp('/inventario.html?filtro=disponibili')" title="Visualizza Attrezzi Pronti e Disponibili" style="background:rgba(15,23,42,0.7); border:1px solid rgba(34,197,94,0.35); border-radius:18px; padding:12px 10px; text-align:center; cursor:pointer; backdrop-filter:blur(10px);">
                 <div style="font-size:20px; margin-bottom:4px;">✅</div>
                 <div style="font-size:19px; font-weight:900; color:#4ade80;" id="kpiDisponibili">--</div>
                 <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">Disponibili ↗</div>
@@ -2763,14 +2781,14 @@
                 card.className = 'card ' + (isAdminProj ? 'admin-only-card' : '');
                 card.style.display = 'flex';
                 card.style.cursor = 'pointer';
-                card.onclick = () => window.location.href = p.url;
+                card.onclick = () => navigaVersoApp(p.url);
 
                 // Genera Quick Actions rapide per modulo
                 let quickActionsHtml = '';
                 const qa = getQuickActionsPerApp(p.id, p.titolo);
                 if (qa && qa.length > 0) {
                     quickActionsHtml = `<div class="card-quick-actions">
-                        ${qa.map(a => `<button type="button" class="quick-pill-btn" onclick="event.stopPropagation(); window.location.href='${a.url}';">${a.label}</button>`).join('')}
+                        ${qa.map(a => `<button type="button" class="quick-pill-btn" onclick="event.stopPropagation(); navigaVersoApp('${a.url}');">${a.label}</button>`).join('')}
                     </div>`;
                 }
 
@@ -3249,6 +3267,151 @@
     caricaKpiStats();
 
     // ==============================================================================
+    
+    // ==============================================================================
+    // 1. SINGLE SIGN-ON (SSO) CENTRALIZZATO PER TUTTE LE 8 APP DELLA SUITE
+    // ==============================================================================
+    function navigaVersoApp(url) {
+        if (!url) return;
+        const token = localStorage.getItem('milella_session_token') || localStorage.getItem('milella_token') || sessionStorage.getItem('milella_token') || '';
+        const user = localStorage.getItem('milella_user_nome') || '';
+        const role = localStorage.getItem('milella_role') || 'operatore';
+        const pin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_user_pin') || '';
+
+        // Assicura persistenza globale di dominio
+        if (user) {
+            localStorage.setItem('milella_user_nome', user);
+            localStorage.setItem('auth_user', user);
+        }
+        if (role) {
+            localStorage.setItem('milella_role', role);
+            localStorage.setItem('auth_role', role);
+        }
+        if (pin && role === 'admin') {
+            localStorage.setItem('milella_admin_pin', pin);
+        }
+
+        try {
+            const u = new URL(url, window.location.origin);
+            if (token) u.searchParams.set('auth_token', token);
+            if (user) u.searchParams.set('auth_user', user);
+            if (role) u.searchParams.set('auth_role', role);
+            if (pin && role === 'admin') u.searchParams.set('pinAdmin', pin);
+            window.location.href = u.toString();
+        } catch(e) {
+            window.location.href = url;
+        }
+    }
+
+    // ==============================================================================
+    // 2. AUTO-LOCK KIOSK (TIMEOUT INATTIVITA' 10 MINUTI CON COUNTDOWN A 60s)
+    // ==============================================================================
+    const INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000; // 10 minuti
+    const WARNING_BEFORE_MS = 60 * 1000;          // Avviso a 60 secondi
+    let lastActivityTimestamp = Date.now();
+    let inactivityTimerInterval = null;
+
+    function resetInactivityTimer() {
+        lastActivityTimestamp = Date.now();
+        const warn = document.getElementById('kioskInactivityWarning');
+        if (warn) warn.style.display = 'none';
+    }
+
+    function avviaInactivityMonitoring() {
+        ['mousemove', 'keydown', 'touchstart', 'scroll', 'click'].forEach(evt => {
+            window.addEventListener(evt, resetInactivityTimer, { passive: true });
+        });
+
+        if (inactivityTimerInterval) clearInterval(inactivityTimerInterval);
+        inactivityTimerInterval = setInterval(() => {
+            const gate = document.getElementById('gateBloccoIngresso');
+            // Se lo schermo è già bloccato dal Gate, non fare il countdown
+            if (gate && gate.style.display !== 'none') return;
+
+            const elapsed = Date.now() - lastActivityTimestamp;
+            const remaining = INACTIVITY_TIMEOUT_MS - elapsed;
+            const warn = document.getElementById('kioskInactivityWarning');
+            const secLabel = document.getElementById('kioskSecondsLeft');
+
+            if (remaining <= 0) {
+                // Timeout scaduto: blocca la sessione
+                if (warn) warn.style.display = 'none';
+                console.log('[Kiosk] Sessione bloccata per inattività.');
+                esciAdmin();
+                const err = document.getElementById('gateErrorMsg');
+                if (err) {
+                    err.textContent = '🔒 Schermo bloccato per inattività. Reinserisci il tuo codice.';
+                    err.style.display = 'block';
+                }
+            } else if (remaining <= WARNING_BEFORE_MS) {
+                // Mostra avviso con secondi rimanenti
+                if (warn) {
+                    warn.style.display = 'flex';
+                    if (secLabel) secLabel.textContent = Math.ceil(remaining / 1000);
+                }
+            } else {
+                if (warn) warn.style.display = 'none';
+            }
+        }, 1000);
+    }
+
+    // ==============================================================================
+    // 3. PWA SERVICE WORKER & 1-CLICK APP INSTALLATION
+    // ==============================================================================
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').then(reg => {
+                console.log('[PWA] Service Worker attivo:', reg.scope);
+            }).catch(err => console.warn('[PWA] SW register notice:', err));
+        });
+    }
+
+    let deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        const btn = document.getElementById('btnInstallApp');
+        if (btn) btn.style.display = 'inline-flex';
+    });
+
+    async function installaPwaApp() {
+        if (!deferredInstallPrompt) {
+            alert('Per installare la Suite sulla schermata Home:\n\n• Su Android / Chrome: Premi i 3 puntini in alto a destra ➔ "Aggiungi a schermata Home" o "Installa app"\n• Su iPhone / Safari: Premi l\'icona Condividi (quadrato con freccia in alto) ➔ "Aggiungi alla schermata Home"');
+            return;
+        }
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        console.log('[PWA] Scelta installazione utente:', outcome);
+        deferredInstallPrompt = null;
+        const btn = document.getElementById('btnInstallApp');
+        if (btn) btn.style.display = 'none';
+    }
+
+    // ==============================================================================
+    // 4. NOTIFICHE PROMEMORIA & WHATSAPP
+    // ==============================================================================
+    function inviaPromemoriaWhatsApp() {
+        const alertCards = document.querySelectorAll('#smartAlertsList > div');
+        let testiAlert = [];
+        alertCards.forEach(c => {
+            const t = c.innerText.replace(/\s+/g, ' ').trim();
+            if (t) testiAlert.push('• ' + t);
+        });
+
+        let corpo = '';
+        if (testiAlert.length > 0) {
+            corpo = testiAlert.join('\n');
+        } else {
+            corpo = '• 🚗 Flotta Veicoli: Revisioni e tagliandi monitorati\n• 🛠️ Attrezzi: Inventario verificato e sincronizzato\n• 📦 Logistica: Consegne e ritiri operativi';
+        }
+
+        const dataStr = new Date().toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long' });
+        const msg = `👑 *SUITE AZIENDALE C. MILELLA*\n📅 *Promemoria & Scadenze (${dataStr})*\n\n${corpo}\n\n🔗 *Accedi al portale:* https://milella-suite.onrender.com/launcher.html`;
+        
+        const waUrl = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
+        window.open(waUrl, '_blank');
+    }
+  
     // HELPER NUOVE FUNZIONALITA' LAUNCHER SUITE (NUMPAD, SEARCH, PING, FULLSCREEN)
     // ==============================================================================
     
