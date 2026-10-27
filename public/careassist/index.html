@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=39">
+  <link rel="stylesheet" href="style.css?v=40">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -421,66 +421,66 @@
 
       <!-- QUICK ACTION TILES (AZIONI RAPIDE OSS & RSA) -->
       <div class="quick-tiles">
-        <div class="tile" onmouseenter="mostraLenteClinica('DIARIO EVACUAZIONE ALVO & MONITORAGGIO', 'Registra evacuazione intestinale, consistenza Bristol, orario e caratteristiche feci per prevenire stipsi da allettamento.', '💩')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-alvo')">
+        <div class="tile" onmouseenter="mostraLenteClinica('DIARIO EVACUAZIONE ALVO & MONITORAGGIO', 'Registra evacuazione intestinale, consistenza Bristol, orario e caratteristiche feci per prevenire stipsi da allettamento.', '💩', () => openModal('modal-alvo'), 'Apri Diario Alvo')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-alvo')">
           <div class="tile-icon" style="background:#fef3c7; color:#d97706;">💩</div>
           <div class="tile-title">Segna Alvo</div>
           <div class="tile-sub">Evacuazione e consistenza</div>
         </div>
 
-        <div class="tile" onmouseenter="mostraLenteClinica('PARAMETRI VITALI & MONITORAGGIO CARDIACO', 'Rileva Pressione Arteriosa (PA), Frequenza Cardiaca (FC), Saturazione (SpO2) e Temperatura Corporea.', '❤️')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-parametri')">
+        <div class="tile" onmouseenter="mostraLenteClinica('PARAMETRI VITALI & MONITORAGGIO CARDIACO', 'Rileva Pressione Arteriosa (PA), Frequenza Cardiaca (FC), Saturazione (SpO2) e Temperatura Corporea.', '❤️', () => openModal('modal-parametri'), 'Apri Parametri Vitali')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-parametri')">
           <div class="tile-icon" style="background:#fee2e2; color:#dc2626;">❤️</div>
           <div class="tile-title">Febbre & Pressione</div>
           <div class="tile-sub">PA, FC, SpO2 e Temperatura</div>
         </div>
 
-        <div class="tile" id="tile-glicemia" onmouseenter="mostraLenteClinica('MONITORAGGIO GLICEMIA & DIABETE', 'Registrazione glicemia capillare (mg/dl), momento del pasto (digiuno, post-prandiale), unita di insulina Xultophy e note cliniche.', '🩸')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-glicemia')" style="border-color:#bfdbfe; background:#eff6ff;">
+        <div class="tile" id="tile-glicemia" onmouseenter="mostraLenteClinica('MONITORAGGIO GLICEMIA & DIABETE', 'Registrazione glicemia capillare (mg/dl), momento del pasto (digiuno, post-prandiale), unita di insulina Xultophy e note cliniche.', '🩸', () => openModal('modal-glicemia'), 'Apri Registro Glicemia')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-glicemia')" style="border-color:#bfdbfe; background:#eff6ff;">
           <div class="tile-icon" style="background:#dbeafe; color:#1d4ed8;">🩸</div>
           <div class="tile-title" style="color:#1e40af;">Segna Glicemia</div>
           <div class="tile-sub" style="color:#2563eb;">mg/dl, Insulina & Pasti</div>
         </div>
 
-        <div class="tile" id="tile-ispezione-cute" onmouseenter="mostraLenteClinica('ISPEZIONE CUTE & LESIONI DA DECUBITO', 'Controllo cute nei punti di carico osseo (sacro, talloni, scapole) con verifica arrossamenti, stadiazione e applicazione crema protettiva.', '🔄')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-postura')">
+        <div class="tile" id="tile-ispezione-cute" onmouseenter="mostraLenteClinica('ISPEZIONE CUTE & LESIONI DA DECUBITO', 'Controllo cute nei punti di carico osseo (sacro, talloni, scapole) con verifica arrossamenti, stadiazione e applicazione crema protettiva.', '🔄', () => openModal('modal-postura'), 'Apri Registro Cute & Posture')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-postura')">
           <div class="tile-icon" style="background:#e0f2fe; color:#0284c7;">🔄</div>
           <div class="tile-title">Ispezione Cute</div>
           <div class="tile-sub">Rotazione 2h & Cute</div>
         </div>
 
-        <div class="tile" onmouseenter="mostraLenteClinica('MONITORAGGIO DIURESI & TERAPIA PROSTATICA', 'Registra quantita urine (ml), colore, uso panno/catetere e verifica efficacia della Silodosina 8 mg serale.', '🧪')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-diuresi')" style="border-color:#fed7aa; background:#fff7ed;">
+        <div class="tile" onmouseenter="mostraLenteClinica('MONITORAGGIO DIURESI & TERAPIA PROSTATICA', 'Registra quantita urine (ml), colore, uso panno/catetere e verifica efficacia della Silodosina 8 mg serale.', '🧪', () => openModal('modal-diuresi'), 'Apri Registro Diuresi')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-diuresi')" style="border-color:#fed7aa; background:#fff7ed;">
           <div class="tile-icon" style="background:#ffedd5; color:#c2410c;">🧪</div>
           <div class="tile-title" style="color:#9a3412;">Segna Diuresi</div>
           <div class="tile-sub" style="color:#c2410c;">Urine, Catetere & SILODYX</div>
         </div>
 
-        <div class="tile" onmouseenter="mostraLenteClinica('ALIMENTAZIONE & LIVELLO DI DEGLUTIZIONE', 'Registrazione pasti completi, appetito, consistenza alimenti e controllo rischio complicanze da disfagia o ab ingestis.', '🍲')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-pasti')" style="border-color:#bbf7d0; background:#f0fdf4;">
+        <div class="tile" onmouseenter="mostraLenteClinica('ALIMENTAZIONE & LIVELLO DI DEGLUTIZIONE', 'Registrazione pasti completi, appetito, consistenza alimenti e controllo rischio complicanze da disfagia o ab ingestis.', '🍲', () => openModal('modal-pasti'), 'Apri Diario Pasti')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-pasti')" style="border-color:#bbf7d0; background:#f0fdf4;">
           <div class="tile-icon" style="background:#dcfce7; color:#15803d;">🍲</div>
           <div class="tile-title" style="color:#166534;">Diario Pasti</div>
           <div class="tile-sub" style="color:#15803d;">Pranzo, Cena & Appetito</div>
         </div>
 
-        <div class="tile" onmouseenter="mostraLenteClinica('VALUTAZIONE RISCHIO LESIONI (SCALA BRADEN)', 'Indice di rischio piaghe da decubito basato su percezione sensoriale, umidita, mobilita, nutrizione e frizione.', '🎯')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-braden')" style="border-color:#e9d5ff; background:#faf5ff;">
+        <div class="tile" onmouseenter="mostraLenteClinica('VALUTAZIONE RISCHIO LESIONI (SCALA BRADEN)', 'Indice di rischio piaghe da decubito basato su percezione sensoriale, umidita, mobilita, nutrizione e frizione.', '🎯', () => openModal('modal-braden'), 'Apri Scala di Braden')" onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-braden')" style="border-color:#e9d5ff; background:#faf5ff;">
           <div class="tile-icon" style="background:#f3e8ff; color:#7e22ce;">🎯</div>
           <div class="tile-title" style="color:#6b21a8;">Scala di Braden</div>
           <div class="tile-sub" style="color:#7e22ce;">Rischio Lesioni da Decubito</div>
         </div>
 
-        <div class="tile" onmouseenter="mostraLenteClinica('INCIDENT REPORT & REGISTRO CADUTE/ALERT', 'Modulo emergenza: tracciamento caduta accidentale o scivolamento, verifica traumi ed allerta immediata Medico e Familiari.', '⚠️')" onmouseleave="nascondiLenteClinica()" onclick="apriModalCaduta()" style="border-color:#fecdd3; background:#fff1f2;">
+        <div class="tile" onmouseenter="mostraLenteClinica('INCIDENT REPORT & REGISTRO CADUTE/ALERT', 'Modulo emergenza: tracciamento caduta accidentale o scivolamento, verifica traumi ed allerta immediata Medico e Familiari.', '⚠️', () => apriModalCaduta(), 'Apri Segnalazione Incident')" onmouseleave="nascondiLenteClinica()" onclick="apriModalCaduta()" style="border-color:#fecdd3; background:#fff1f2;">
           <div class="tile-icon" style="background:#fee2e2; color:#b91c1c;">⚠️</div>
           <div class="tile-title" style="color:#991b1b;">Registra Caduta</div>
           <div class="tile-sub" style="color:#b91c1c;">Incident report & Alert</div>
         </div>
 
-        <div class="tile" onmouseenter="mostraLenteClinica('CONSEGNA CLINICA INTERNO OSS & FAMIGLIA', 'Riepilogo consegne del turno assistenziale, note operative per il collega subentrante e terapie regolarmente somministrate.', '📋')" onmouseleave="nascondiLenteClinica()" onclick="apriConsegnaTurno()" style="border-color:#bbf7d0; background:#f0fdf4;">
+        <div class="tile" onmouseenter="mostraLenteClinica('CONSEGNA CLINICA INTERNO OSS & FAMIGLIA', 'Riepilogo consegne del turno assistenziale, note operative per il collega subentrante e terapie regolarmente somministrate.', '📋', () => apriConsegnaTurno(), 'Apri Consegna Turno')" onmouseleave="nascondiLenteClinica()" onclick="apriConsegnaTurno()" style="border-color:#bbf7d0; background:#f0fdf4;">
           <div class="tile-icon" style="background:#dcfce7; color:#15803d;">📋</div>
           <div class="tile-title" style="color:#166534;">Consegna Turno</div>
           <div class="tile-sub" style="color:#15803d;">Passaggio OSS / Famiglia</div>
         </div>
       </div>
 
-              <div class="tile" onmouseenter="mostraLenteClinica('CARTELLA CARTACEA CLINICA A4', 'Genera e stampa 5 modelli cartacei A4 compilati per il paziente attivo: Farmaci, Emergenza, Registro Posture, Parametri e Guida OSS.', '📑')" onmouseleave="nascondiLenteClinica()" onclick="apriModalKitCartaceo()" style="border-color:#bae6fd; background:#f0f9ff;">
-          <div class="tile-icon" style="background:#e0f2fe; color:#0284c7;">📑</div>
-          <div class="tile-title" style="color:#0369a1;">Kit Cartaceo A4</div>
-          <div class="tile-sub" style="color:#0284c7;">5 Schede Cliniche Paziente</div>
-        </div>
+      <div class="tile" onmouseenter="mostraLenteClinica('CARTELLA CARTACEA CLINICA A4', 'Genera e stampa 5 modelli cartacei A4 compilati per il paziente attivo: Farmaci, Emergenza, Registro Posture, Parametri e Guida OSS.', '📑', () => apriModalKitCartaceo(), 'Apri Modelli A4')" onmouseleave="nascondiLenteClinica()" onclick="apriModalKitCartaceo()" style="border-color:#bae6fd; background:#f0f9ff;">
+        <div class="tile-icon" style="background:#e0f2fe; color:#0284c7;">📑</div>
+        <div class="tile-title" style="color:#0369a1;">Kit Cartaceo A4</div>
+        <div class="tile-sub" style="color:#0284c7;">5 Schede Cliniche Paziente</div>
+      </div>
 
       <!-- GRID INFORMATIVA PRINCIPALE -->
       <div class="grid-2">
@@ -2790,14 +2790,32 @@
       Testo Diagnosi Ingrandito
     </div>
 
-    <!-- FOOTER CON TASTO CHIUDI INFERIORE DI CONVENIENZA (IDEALE PER SMARTPHONE) -->
-    <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:flex-end; gap:8px;">
-      <button type="button" 
-              id="btn-chiudi-lente-footer"
-              onclick="nascondiLenteClinica(event, true)" 
-              title="Chiudi Scheda Dettagli">
-        <span>✕</span> Chiudi Scheda
-      </button>
+    <!-- FOOTER CON CONTROLLO APRI ELEGANTE E PROFESSIONALE + TASTO CHIUDI -->
+    <div id="lente-footer" style="margin-top:16px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+      <div id="lente-hint" style="display:flex; align-items:center; gap:6px; font-size:12px; color:#94a3b8;">
+        <span style="color:#38bdf8; font-size:14px;">💡</span>
+        <span>Tocca <strong>Apri</strong> per accedere al modulo</span>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; margin-left:auto;">
+        <!-- TASTO CHIUDI SECONDARIO -->
+        <button type="button" 
+                id="btn-chiudi-lente-footer"
+                onclick="nascondiLenteClinica(event, true)" 
+                title="Chiudi Scheda Dettagli">
+          <span>✕</span> Chiudi
+        </button>
+
+        <!-- CONTROLLO APRI ELEGANTE E PROFESSIONALE -->
+        <button type="button" 
+                id="btn-apri-lente"
+                onclick="eseguiAzioneLenteClinica(event)" 
+                title="Apri scheda operativa">
+          <span class="lente-apri-icon">⚡</span>
+          <span id="btn-apri-lente-label">Apri Scheda</span>
+          <span class="lente-apri-arrow">➔</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -2906,7 +2924,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=39"></script>
+  <script src="app.js?v=40"></script>
   <script>
     // Registrazione Service Worker per utilizzo offline al 100% da cellulare
     if ('serviceWorker' in navigator) {

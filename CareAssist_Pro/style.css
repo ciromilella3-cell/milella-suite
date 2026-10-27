@@ -3137,30 +3137,101 @@ textarea.form-control {
 }
 
 #btn-chiudi-lente-footer {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: #ffffff;
-  border: none;
-  padding: 8px 18px;
+  background: rgba(239, 68, 68, 0.16);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  padding: 8px 16px;
   border-radius: 12px;
   font-size: 13.5px;
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   white-space: nowrap;
 }
 
 #btn-chiudi-lente-footer:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.55);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.5);
 }
 
 #btn-chiudi-lente-footer:active {
   transform: scale(0.96);
+}
+
+/* ==========================================================================
+   CONTROLLO "APRI" ELEGANTE & PROFESSIONALE NELL'HUD LENTE CLINICA
+   ========================================================================== */
+#btn-apri-lente {
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #2563eb 100%);
+  color: #ffffff;
+  border: 1.5px solid rgba(56, 189, 248, 0.8);
+  padding: 8px 20px;
+  border-radius: 12px;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 18px rgba(14, 165, 233, 0.45), 0 0 12px rgba(56, 189, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+#btn-apri-lente::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: left 0.6s ease;
+}
+
+#btn-apri-lente:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #38bdf8 50%, #1d4ed8 100%);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.65), 0 0 20px rgba(56, 189, 248, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  border-color: #7dd3fc;
+}
+
+#btn-apri-lente:hover::before {
+  left: 100%;
+}
+
+#btn-apri-lente:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+}
+
+.lente-apri-icon {
+  font-size: 15px;
+  display: inline-flex;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+}
+
+.lente-apri-arrow {
+  font-size: 13px;
+  font-weight: 900;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
+}
+
+#btn-apri-lente:hover .lente-apri-arrow {
+  transform: translateX(4px);
 }
 
 @media (max-width: 600px) {
@@ -3177,7 +3248,76 @@ textarea.form-control {
     min-height: 36px;
     font-size: 18px;
   }
+  #lente-footer {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  #lente-footer > div:last-child {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+  #btn-chiudi-lente-footer,
+  #btn-apri-lente {
+    flex: 1 !important;
+    justify-content: center !important;
+    padding: 10px 14px !important;
+    font-size: 13.5px !important;
+  }
 }
+
+/* ==========================================================================
+   ANAGRAFICA & FORM MODALS RESPONSIVENESS (MOBILE OPTIMIZATION)
+   ========================================================================== */
+.anagrafica-nascita-row {
+  display: flex !important;
+  gap: 12px !important;
+  align-items: flex-end !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 680px) {
+  .modal-card {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    margin: 10px auto !important;
+    padding: 16px 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .anagrafica-nascita-row {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+  }
+
+  .anagrafica-nascita-row .form-group:first-child {
+    flex: 1 1 72% !important;
+    min-width: 0 !important;
+  }
+
+  .anagrafica-nascita-row .form-group:last-child {
+    flex: 0 0 auto !important;
+    min-width: 75px !important;
+  }
+
+  .modal-card input,
+  .modal-card select,
+  .modal-card textarea {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 14px !important;
+  }
+}
+
 
 
 
