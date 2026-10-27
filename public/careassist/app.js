@@ -6688,6 +6688,22 @@ function renderAll() {
 
 window._initialSyncDone = false;
 window.addEventListener('DOMContentLoaded', () => {
+  // Deep-link integration from Suite Launcher
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetPaz = urlParams.get('paziente');
+    if (targetPaz && AppData && AppData.pazienti && AppData.pazienti.some(p => p.id === targetPaz)) {
+      AppData.activePazienteId = targetPaz;
+      console.log('[CareAssist] Paziente selezionato da URL:', targetPaz);
+    }
+    const targetTab = urlParams.get('tab');
+    if (targetTab) {
+      setTimeout(() => {
+        const btn = document.querySelector('[data-target="tab-' + targetTab + '"]') || document.querySelector('[data-target="' + targetTab + '"]');
+        if (btn) btn.click();
+      }, 200);
+    }
+  } catch(eParam) {}
   initTabs();
   renderAll();
 
