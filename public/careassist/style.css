@@ -1790,28 +1790,43 @@ textarea.form-control {
   .anagrafica-hero {
     flex-direction: column;
     align-items: stretch;
-    padding: 14px 14px;
-    border-radius: 14px;
+    padding: 12px 14px;
+    border-radius: 16px;
     margin-bottom: 14px;
-    gap: 12px;
+    gap: 10px;
   }
+  .hero-actions-column,
   .anagrafica-hero > div:last-child {
+    order: -1 !important;
     align-items: stretch !important;
-    width: 100%;
-    margin-top: 8px;
-    border-top: 1px dashed #cbd5e1;
-    padding-top: 10px;
+    width: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+    border-top: none !important;
+    border-bottom: 1px dashed #cbd5e1 !important;
+    padding-top: 0 !important;
+    padding-bottom: 10px !important;
   }
+  .hero-actions-column > div:first-child,
   .anagrafica-hero > div:last-child > div:first-child {
     display: grid !important;
-    grid-template-columns: 1fr 1.3fr 1.3fr !important;
+    grid-template-columns: 1.25fr 1.25fr 1fr !important;
     gap: 6px !important;
     width: 100% !important;
   }
+  .hero-actions-column > div:last-child,
+  .anagrafica-hero > div:last-child > div:last-child {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+  }
+  .hero-actions-column button,
   .anagrafica-hero > div:last-child button {
     width: 100% !important;
     justify-content: center;
-    padding: 8px 4px !important;
+    padding: 8px 6px !important;
     font-size: 11.5px !important;
   }
   .paziente-name {
@@ -1823,9 +1838,13 @@ textarea.form-control {
     padding: 4px 10px !important;
   }
   .action-icon-btn {
-    width: 26px !important;
-    height: 26px !important;
-    font-size: 12.5px !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .caregiver-card {
     padding: 8px 10px !important;
@@ -2254,7 +2273,7 @@ textarea.form-control {
   background: linear-gradient(135deg, #0b1f38 0%, #173252 100%);
   color: #ffffff;
   border-bottom: 2px solid #0284c7;
-  padding: 6px 24px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2262,7 +2281,21 @@ textarea.form-control {
   top: 124px;
   z-index: 39;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
-  transition: all 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, max-height 0.25s ease, padding 0.25s ease;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateY(-8px);
+}
+
+.sticky-patient-bar.is-sticky-active {
+  padding: 6px 24px;
+  max-height: 70px;
+  opacity: 1;
+  overflow: visible;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .sticky-patient-info {
@@ -2367,20 +2400,60 @@ textarea.form-control {
 @media (max-width: 768px) {
   .sticky-patient-bar {
     top: 41px; /* Direttamente ancorato sotto i tab di navigazione mobili */
-    padding: 5px 12px;
+    padding: 0 12px;
     z-index: 39;
+  }
+  .sticky-patient-bar.is-sticky-active {
+    padding: 5px 12px;
+    max-height: 52px;
   }
   .sticky-patient-name {
     font-size: 12.5px;
-    max-width: 150px;
+    max-width: 170px;
   }
   .sticky-patient-sub {
     font-size: 9.5px;
-    max-width: 150px;
+    max-width: 170px;
   }
   .btn-sticky-cambia {
-    padding: 3px 8px;
+    padding: 4px 10px;
     font-size: 11px;
+  }
+}
+
+/* GPS NAVIGATORE BUTTON */
+.gps-nav-btn {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 11.5px;
+  font-weight: 800;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.15s ease;
+  white-space: nowrap;
+}
+.gps-nav-btn:active {
+  transform: scale(0.92);
+}
+
+.patologie-toggle-btn {
+  display: none;
+}
+@media (max-width: 640px) {
+  .patologie-container:not(.expanded) .patologia-collapsible {
+    display: none !important;
+  }
+  .patologie-toggle-btn {
+    display: inline-block !important;
+  }
+  .container {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 20px)) !important;
   }
 }
 

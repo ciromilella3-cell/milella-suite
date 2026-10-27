@@ -1315,14 +1315,16 @@ function renderPazientiSelector() {
     const mapsLink = (addr) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const mapsDirLink = (addr) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`;
 
-    // 1. INDIRIZZO RESIDENZA CON GOOGLE MAPS E NAVIGATORE
+    // 1. INDIRIZZO RESIDENZA CON GOOGLE MAPS E NAVIGATORE GPS
     const ind = activeP.indirizzo ? `
       <div class="meta-item clinica-zoom-item contact-chip address-chip" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Residenza & Domicilio Assistito', '${activeP.indirizzo.replace(/'/g, "\\'")}', '📍')" onmouseleave="nascondiLenteClinica()">
-        <span>📍</span>
-        <a href="${mapsLink(activeP.indirizzo)}" target="_blank" class="smart-link" title="Apri su Google Maps">
+        <span style="font-size:15px;">📍</span>
+        <a href="${mapsLink(activeP.indirizzo)}" target="_blank" class="smart-link address-text" title="Apri su Google Maps">
           <b>${activeP.indirizzo}</b>
         </a>
-        <a href="${mapsDirLink(activeP.indirizzo)}" target="_blank" class="action-icon-btn map" title="Avvia Navigatore GPS (Google Maps)">🗺️</a>
+        <a href="${mapsDirLink(activeP.indirizzo)}" target="_blank" class="gps-nav-btn" title="Avvia Navigatore GPS Turn-by-Turn (Google Maps)">
+          <span>🧭</span> <span>Naviga</span>
+        </a>
       </div>` : '';
 
     // 2. TELEFONO FISSO CASA (CHIAMATA & WHATSAPP)
@@ -1609,8 +1611,9 @@ function renderPazientiSelector() {
     // 8. LISTA PATOLOGIE CRONICHE CON LENTE CENTRALE AL PASSAGGIO MOUSE
     let patologieHtml = '';
     if (activeP.patologie && activeP.patologie.length > 0) {
-      const pTags = activeP.patologie.map(pat => `
-        <span class="clinica-zoom-item patologia-pill" 
+      const totale = activeP.patologie.length;
+      const pTags = activeP.patologie.map((pat, idx) => `
+        <span class="clinica-zoom-item patologia-pill ${idx >= 3 ? 'patologia-collapsible' : ''}" 
               style="background:#ffffff; border:1px solid #cbd5e1; border-radius:14px; padding:4px 10px; font-size:11.5px; font-weight:700; color:#1e293b; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all 0.15s ease;"
               onmouseenter="mostraLenteClinica('Diagnosi Clinica Assistito', '${pat.replace(/'/g, "\\'")}', '🩺')" 
               onmouseleave="nascondiLenteClinica()">
@@ -1619,9 +1622,20 @@ function renderPazientiSelector() {
       `).join('');
 
       patologieHtml = `
-        <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:8px;">
-          <span style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.3px;">Diagnosi & Quadro Clinico:</span>
-          ${pTags}
+        <div class="patologie-container" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:8px;">
+          <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+            <span style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.3px;">
+              Diagnosi & Quadro Clinico (${totale}):
+            </span>
+            ${totale > 3 ? `
+              <button type="button" class="btn btn-outline patologie-toggle-btn" onclick="toggleTuttePatologie(this)" style="font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:10px; background:#f8fafc; color:#0284c7; border-color:#cbd5e1; cursor:pointer;">
+                + Mostra tutte (${totale})
+              </button>
+            ` : ''}
+          </div>
+          <div class="patologie-tags-wrapper" style="display:flex; flex-wrap:wrap; gap:6px; width:100%;">
+            ${pTags}
+          </div>
         </div>
       `;
     }
@@ -8432,6 +8446,32 @@ function aggiornaStickyPatientBar() {
     }
   }
 }
+
+// Toggle Diagnosi Espandibili su Mobile
+window.toggleTuttePatologie = function(btn) {
+  const container = btn.closest('.patologie-container');
+  if (!container) return;
+  const isExp = container.classList.toggle('expanded');
+  const allCount = container.querySelectorAll('.patologia-pill').length;
+  btn.textContent = isExp ? '▲ Riduci' : `+ Mostra tutte (${allCount})`;
+};
+
+// Gestione Mostra/Nascondi Intelligente Barra Sticky Paziente allo Scroll (Anti-duplicazione)
+(function initStickyPatientBarScroll() {
+  if (window._stickyPatientScrollInit) return;
+  window._stickyPatientScrollInit = true;
+
+  window.addEventListener('scroll', function() {
+    const bar = document.getElementById('sticky-patient-bar');
+    if (!bar) return;
+    // Appare morbidamente solo quando si scende sotto i 140px (dopo l'intestazione hero)
+    if (window.scrollY > 140) {
+      bar.classList.add('is-sticky-active');
+    } else {
+      bar.classList.remove('is-sticky-active');
+    }
+  }, { passive: true });
+})();
 
 function apriSwitchPazienteRapido() {
   const modal = document.getElementById('modal-switch-paziente-rapido');

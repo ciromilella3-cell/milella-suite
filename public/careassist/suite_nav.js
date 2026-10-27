@@ -163,27 +163,27 @@
       100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
 
-    /* BANNER INSTALLA COME APP */
+    /* BANNER INSTALLA COME APP (POSIZIONATO IN BASSO SOPRA LA DOCK BAR) */
     #pwa-install-banner {
       position: fixed;
-      top: 12px;
-      left: 14px;
-      right: 14px;
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96) 0%, rgba(30, 41, 59, 0.96) 100%);
+      bottom: 74px;
+      left: 12px;
+      right: 12px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%);
       border: 1px solid rgba(56, 189, 248, 0.35);
       border-radius: 16px;
-      padding: 12px 14px;
+      padding: 10px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      z-index: 1000000;
-      animation: slideDownBanner 0.4s ease-out;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.65);
+      z-index: 999990;
+      animation: slideUpBanner 0.4s ease-out;
     }
 
-    @keyframes slideDownBanner {
-      from { transform: translateY(-30px); opacity: 0; }
+    @keyframes slideUpBanner {
+      from { transform: translateY(30px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
 
