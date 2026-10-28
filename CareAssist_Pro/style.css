@@ -3912,29 +3912,28 @@ textarea.form-control {
 }
 
 /* ==========================================================================
-   MODAL REPORT WHATSAPP (SUITE MEDICAL PRO)
+   MODAL REPORT WHATSAPP (SUITE MEDICAL PRO - REFINED)
    ========================================================================== */
 .modal-wa-pro {
-  max-width: 580px !important;
-  width: 94% !important;
-  max-height: 92vh !important;
+  max-width: 540px !important;
+  width: 95% !important;
+  max-height: 90vh !important;
   border-radius: 18px !important;
-  box-shadow: 0 25px 50px -12px rgba(6, 78, 59, 0.4) !important;
+  box-shadow: 0 25px 50px -12px rgba(6, 78, 59, 0.45), 0 0 0 1px rgba(16, 185, 129, 0.3) !important;
   background: #f8fafc !important;
-  border: 1px solid rgba(16, 185, 129, 0.25) !important;
   overflow: hidden !important;
   display: flex !important;
   flex-direction: column !important;
 }
 
 .header-wa-pro {
-  background: linear-gradient(135deg, #064e3b 0%, #065f46 45%, #059669 100%) !important;
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%) !important;
   color: #ffffff !important;
-  padding: 14px 18px !important;
+  padding: 12px 16px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
   flex-shrink: 0 !important;
   gap: 12px;
 }
@@ -3944,20 +3943,26 @@ textarea.form-control {
   align-items: center;
   gap: 12px;
   min-width: 0;
+  flex: 1;
 }
 
 .wa-icon-glow {
-  font-size: 22px;
-  width: 40px;
-  height: 40px;
+  font-size: 20px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.wa-header-text {
+  min-width: 0;
+  flex: 1;
 }
 
 .wa-brand-title {
@@ -3975,50 +3980,48 @@ textarea.form-control {
   font-size: 11.5px;
   color: #a7f3d0 !important;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.25;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wa-paziente-inline {
+  color: #fef08a !important;
+  font-weight: 700;
 }
 
 .header-wa-right {
   display: flex;
   align-items: center;
-  gap: 8px;
   flex-shrink: 0;
 }
 
-.wa-badge-paziente {
-  font-size: 11.5px;
-  font-weight: 700;
-  padding: 4px 9px;
-  background: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  white-space: nowrap;
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .btn-close-wa-pro {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: #ffffff;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
 }
 
 .btn-close-wa-pro:hover {
-  background: rgba(239, 68, 68, 0.8);
+  background: rgba(239, 68, 68, 0.9);
   border-color: rgba(239, 68, 68, 1);
   color: #ffffff;
+  transform: rotate(90deg);
 }
 
 .body-wa-pro {
@@ -4036,8 +4039,14 @@ textarea.form-control {
   background: #ffffff;
   border: 1.5px solid #e2e8f0;
   border-radius: 12px;
-  padding: 11px 13px;
+  padding: 10px 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.wa-preview-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 }
 
 .wa-label-pro {
@@ -4058,7 +4067,7 @@ textarea.form-control {
 
 .wa-select-pro {
   width: 100%;
-  padding: 9px 12px;
+  padding: 8px 12px;
   font-size: 13.5px;
   font-weight: 600;
   color: #0f172a;
@@ -4080,13 +4089,13 @@ textarea.form-control {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 7px;
   flex-wrap: wrap;
   gap: 6px;
 }
 
 .wa-tag-auto {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   color: #059669;
   background: #ecfdf5;
@@ -4104,6 +4113,8 @@ textarea.form-control {
   border-radius: 12px;
   padding: 10px;
   box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
 }
 
 .wa-bubble-header {
@@ -4130,18 +4141,18 @@ textarea.form-control {
 .wa-textarea-bubble {
   width: 100%;
   box-sizing: border-box;
-  padding: 11px 12px;
+  padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid #bbf7d0;
   background: #dcf8c6;
   color: #0f172a;
-  font-size: 13px;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  line-height: 1.55;
+  font-size: 13.5px;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
   font-weight: 500;
   resize: vertical;
-  min-height: 150px;
-  max-height: 280px;
+  height: 200px;
+  max-height: 380px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   outline: none;
   transition: all 0.15s ease;
@@ -4156,10 +4167,16 @@ textarea.form-control {
 .wa-bubble-footer {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  margin-top: 5px;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
   padding: 0 4px;
+}
+
+.wa-bubble-hint {
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 600;
 }
 
 .wa-checkmarks {
@@ -4167,80 +4184,106 @@ textarea.form-control {
   font-size: 13px;
   font-weight: 900;
   letter-spacing: -1px;
+  flex-shrink: 0;
 }
 
-/* Footer WhatsApp */
+/* Footer WhatsApp: Sempre affiancato e bilanciato su tutti i dispositivi */
 .footer-wa-pro {
-  padding: 10px 14px !important;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)) 14px !important;
   background: #ffffff !important;
-  border-top: 1px solid #e2e8f0 !important;
+  border-top: 1.5px solid #e2e8f0 !important;
   flex-shrink: 0 !important;
   display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
   gap: 10px !important;
   width: 100% !important;
   box-sizing: border-box !important;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05) !important;
 }
 
 .btn-wa-annulla {
-  flex: 1;
-  padding: 10px 14px;
-  border-radius: 9px;
-  font-size: 13.5px;
-  font-weight: 700;
-  border: 1.5px solid #cbd5e1;
-  background: #ffffff;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: center;
+  flex: 1 1 35% !important;
+  height: 44px !important;
+  padding: 0 12px !important;
+  border-radius: 10px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  border: 1.5px solid #cbd5e1 !important;
+  background: #f8fafc !important;
+  color: #475569 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
 }
 
 .btn-wa-annulla:hover {
-  background: #f1f5f9;
-  border-color: #94a3b8;
-  color: #1e293b;
+  background: #e2e8f0 !important;
+  border-color: #94a3b8 !important;
+  color: #1e293b !important;
 }
 
 .btn-wa-invia {
-  flex: 2.2;
-  padding: 10px 16px;
-  border-radius: 9px;
-  font-size: 14px;
-  font-weight: 800;
-  border: none;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff;
-  cursor: pointer;
-  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.35);
-  transition: all 0.15s ease;
-  text-align: center;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  letter-spacing: 0.2px;
+  flex: 1 1 65% !important;
+  height: 44px !important;
+  padding: 0 14px !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  border: none !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.35) !important;
+  transition: all 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 6px !important;
+  letter-spacing: 0.2px !important;
+  box-sizing: border-box !important;
 }
 
 .btn-wa-invia:hover {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  box-shadow: 0 5px 14px rgba(16, 185, 129, 0.45);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  box-shadow: 0 5px 14px rgba(16, 185, 129, 0.45) !important;
 }
 
 @media (max-width: 600px) {
   .modal-wa-pro {
     width: 98% !important;
-    max-height: 94vh !important;
-    border-radius: 14px !important;
+    max-height: calc(100dvh - 16px) !important;
+    border-radius: 16px !important;
   }
   .header-wa-pro {
-    padding: 11px 13px !important;
+    padding: 10px 12px !important;
+  }
+  .wa-brand-title {
+    font-size: 14px !important;
+  }
+  .wa-brand-sub {
+    font-size: 11px !important;
   }
   .body-wa-pro {
     padding: 10px !important;
     gap: 8px !important;
   }
-  .wa-badge-paziente {
-    display: none !important;
+  .wa-textarea-bubble {
+    height: 180px !important;
+    font-size: 13px !important;
+  }
+  .footer-wa-pro {
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px)) 10px !important;
+    flex-direction: row !important;
+  }
+  .btn-wa-annulla,
+  .btn-wa-invia {
+    height: 42px !important;
   }
 }
 

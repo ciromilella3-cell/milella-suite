@@ -5452,7 +5452,7 @@ function openModal(id) {
 
     // Inietta o aggiorna in automatico l'indicazione chiara del paziente attivo
     const p = getActivePaziente();
-    if (p && id !== 'modal-nuovo-paziente') {
+    if (p && id !== 'modal-nuovo-paziente' && id !== 'modal-report-whatsapp') {
       const header = el.querySelector('.modal-header');
       if (header) {
         // Cerca o crea il badge del paziente
@@ -9537,7 +9537,7 @@ _Aggiornamento inviato con il sistema CareAssist Pro C. Milella_`;
     }
 
     const badgeEl = document.getElementById('report-wa-badge-paziente');
-    if (badgeEl) badgeEl.textContent = `👤 ${pulitoNome}`;
+    if (badgeEl) badgeEl.textContent = pulitoNome;
 
     if (typeof openModal === 'function') {
       openModal('modal-report-whatsapp');

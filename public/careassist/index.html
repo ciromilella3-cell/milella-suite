@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=53">
+  <link rel="stylesheet" href="style.css?v=54">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -153,7 +153,7 @@
             sel.innerHTML = opts;
           }
           var badge = document.getElementById('report-wa-badge-paziente');
-          if (badge) badge.textContent = '👤 ' + pulitoNome;
+          if (badge) badge.textContent = pulitoNome;
         }
       } catch(e) { console.warn('Errore pre-popolamento Report WA:', e); }
 
@@ -3227,13 +3227,15 @@
           <div class="wa-icon-glow">
             <span>💬</span>
           </div>
-          <div>
+          <div class="wa-header-text">
             <div class="wa-brand-title">Report Giornaliero WhatsApp</div>
-            <div class="wa-brand-sub">Aggiornamento clinico e assistenziale ai familiari</div>
+            <div class="wa-brand-sub">
+              <span>Per l'assistito: </span>
+              <span id="report-wa-badge-paziente" class="wa-paziente-inline">Rosa Annunziata Cavalcante</span>
+            </div>
           </div>
         </div>
         <div class="header-wa-right">
-          <span id="report-wa-badge-paziente" class="wa-badge-paziente">👤 Assistito</span>
           <button type="button" class="btn-close-wa-pro" onclick="closeModal('modal-report-whatsapp')" title="Chiudi Report WhatsApp" aria-label="Chiudi">✕</button>
         </div>
       </div>
@@ -3242,7 +3244,7 @@
         <!-- SELETTORE DESTINATARIO ELEGANTE -->
         <div class="wa-card-box">
           <label class="wa-label-pro" for="report-wa-destinatario">
-            <span>📱</span> Seleziona Destinatario WhatsApp:
+            <span>📱</span> Invia al Familiare / Contatto WhatsApp:
           </label>
           <div class="wa-select-wrapper">
             <select id="report-wa-destinatario" class="form-control wa-select-pro">
@@ -3255,32 +3257,32 @@
         <div class="wa-card-box wa-preview-container">
           <div class="wa-preview-header">
             <label class="wa-label-pro" style="margin:0;">
-              <span>💬</span> Anteprima Messaggio (Modificabile):
+              <span>💬</span> Testo del Messaggio Clinico:
             </label>
             <span class="wa-tag-auto">✨ Precompilato in automatico</span>
           </div>
           
           <div class="wa-bubble-wrap">
             <div class="wa-bubble-header">
-              <span class="wa-bubble-sender">CareAssist Pro • Report Clinico</span>
+              <span class="wa-bubble-sender">🩺 CareAssist Pro • Diario Sanitario</span>
               <span class="wa-bubble-time">Oggi</span>
             </div>
-            <textarea id="report-wa-testo" rows="9" class="wa-textarea-bubble" placeholder="Testo del report..." spellcheck="false"></textarea>
+            <textarea id="report-wa-testo" class="wa-textarea-bubble" placeholder="Testo del report..." spellcheck="false"></textarea>
             <div class="wa-bubble-footer">
+              <span class="wa-bubble-hint">✍️ Puoi toccare il testo per aggiungere una nota prima dell'invio</span>
               <span class="wa-checkmarks">✓✓</span>
-              <span style="font-size:10.5px; color:#6b7280;">Tocca il testo per modificare prima dell'invio</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- FOOTER AZIONI BILANCIATO -->
+      <!-- FOOTER AZIONI BILANCIATO (AFFIANCATO) -->
       <div class="modal-footer footer-wa-pro">
         <button type="button" class="btn-wa-annulla" onclick="closeModal('modal-report-whatsapp')">
           Annulla
         </button>
         <button type="button" class="btn-wa-invia" onclick="inviaReportWhatsAppDiretto()">
-          <span>🟢</span> APRI WHATSAPP ED INVIA ➔
+          <span>🟢</span> Invia su WhatsApp ➔
         </button>
       </div>
     </div>
