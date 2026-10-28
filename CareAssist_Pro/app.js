@@ -1630,61 +1630,68 @@ function renderPazientiSelector() {
            onmouseenter="mostraLenteMedicoCurante()" 
            onmouseleave="nascondiLenteClinica(event, false)">
         
-        <!-- LIVELLO 1: MEDICO, STATO AMBULATORIO OGGI E AZIONE ORARI -->
+        <!-- HEADER MEDICO: NOME + MMG + STATO AMBULATORIO OGGI -->
         <div class="medico-header-row">
           <div class="medico-title-left">
-            <span style="font-size:17px;">🩺</span>
-            <span class="medico-nome">${medicoNome}</span>
-            <span class="medico-mmg-badge">MMG</span>
+            <span class="medico-card-icon">🩺</span>
+            <div style="display:flex; flex-direction:column; min-width:0;">
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span class="medico-nome">${medicoNome}</span>
+                <span class="medico-mmg-badge">MMG</span>
+              </div>
+              <span style="font-size:11px; color:#a16207; font-weight:600;">Medico Curante di Medicina Generale</span>
+            </div>
           </div>
-
-          <!-- BADGE DI STATO AMBULATORIO OGGI (IN PRIMO PIANO) -->
           ${infoStudio.testoOggi ? `
-            <div class="medico-status-pill ${infoStudio.isOpenNow ? 'open-now-pulse' : ''}" style="background:${infoStudio.badgeBg}; color:${infoStudio.badgeColore}; border:1.5px solid ${infoStudio.badgeBorder};">
-              <span style="font-size:13px; line-height:1;">${infoStudio.badgeIcona}</span> 
+            <div class="medico-status-pill ${infoStudio.isOpenNow ? 'open-now-pulse' : ''}" style="background:${infoStudio.badgeBg}; color:${infoStudio.badgeColore}; border:1px solid ${infoStudio.badgeBorder};" title="${infoStudio.orarioOggi || 'Orario studio medico'}">
+              <span style="font-size:11px; line-height:1;">${infoStudio.badgeIcona}</span> 
               <span>${infoStudio.testoOggi}</span>
             </div>
           ` : ''}
         </div>
 
-        <!-- LIVELLO 2: SEDI STUDI E CONTATTI COMPLETI SENZA DUPLICAZIONI -->
-        <div class="medico-contacts-row">
+        <!-- LISTA CONTATTI ORDINATA MEDICO -->
+        <div class="medico-contacts-list">
           
-          <!-- SEDI AMBULATORI CON LINK MAPPE -->
+          <!-- SEDE STUDIO -->
           ${sediStudioPulite ? `
-            <div class="medico-contact-item studio-addr" title="${sediStudioPulite}">
-              <span style="font-size:13px;">📍</span>
-              <span style="color:#64748b; font-weight:600;">Studi:</span>
-              <b style="color:#0f172a;">${sediStudioPulite}</b>
-              <a href="${mapsLink(sediStudioPulite)}" target="_blank" class="gps-nav-btn" style="margin-left:4px; font-size:10.5px; padding:2px 6px;" title="Apri posizione studio su Google Maps">
-                <span>🧭</span> Mappa
-              </a>
+            <div class="clinica-row-item">
+              <div class="clinica-row-left">
+                <span class="clinica-row-icon">📍</span>
+                <span class="clinica-row-label">Studio:</span>
+                <span class="clinica-row-val" title="${sediStudioPulite}">${sediStudioPulite}</span>
+              </div>
+              <div class="clinica-row-actions">
+                <a href="${mapsLink(sediStudioPulite)}" target="_blank" class="action-icon-btn map" title="Apri su Google Maps">🧭</a>
+              </div>
             </div>
           ` : ''}
 
-          <!-- TELEFONO FISSO STUDIO SE PRESENTE -->
+          <!-- TELEFONO FISSO STUDIO -->
           ${telFissoStudio ? `
-            <div class="medico-contact-item">
-              <div style="display:flex; align-items:center; gap:4px;">
-                <span>☎️</span>
-                <span style="color:#64748b; font-weight:600;">Studio:</span>
-                <b class="nowrap-num" style="color:#0f172a;">${telFissoStudio}</b>
+            <div class="clinica-row-item">
+              <div class="clinica-row-left">
+                <span class="clinica-row-icon">☎️</span>
+                <span class="clinica-row-label">Fisso:</span>
+                <b class="clinica-row-val nowrap-num">${telFissoStudio}</b>
               </div>
-              <a href="tel:${cleanNum(telFissoStudio)}" class="action-icon-btn call" title="Chiama Studio Medico">📞</a>
+              <div class="clinica-row-actions">
+                <a href="tel:${cleanNum(telFissoStudio)}" class="action-icon-btn call" title="Chiama Studio Medico">📞</a>
+              </div>
             </div>
           ` : ''}
 
           <!-- CELLULARE E WHATSAPP -->
           ${medCell ? `
-            <div class="medico-contact-item">
-              <div style="display:flex; align-items:center; gap:4px;">
-                <span>📱</span>
-                <span style="color:#64748b; font-weight:600;">Cell:</span>
-                <b class="nowrap-num" style="color:#0f172a;">${medCell}</b>
+            <div class="clinica-row-item">
+              <div class="clinica-row-left">
+                <span class="clinica-row-icon">📱</span>
+                <span class="clinica-row-label">Cell:</span>
+                <b class="clinica-row-val nowrap-num">${medCell}</b>
               </div>
-              <div class="cg-actions">
+              <div class="clinica-row-actions">
                 <a href="tel:${cleanNum(medCell)}" class="action-icon-btn call" title="Chiama Medico">📞</a>
-                <a href="sms:${cleanNum(medCell)}" class="action-icon-btn sms" title="Invia SMS al Medico">✉️</a>
+                <a href="sms:${cleanNum(medCell)}" class="action-icon-btn sms" title="Invia SMS">✉️</a>
                 <a href="https://api.whatsapp.com/send?phone=${waNum(medCell)}" target="_blank" class="action-icon-btn wa" title="WhatsApp col Medico">💬</a>
               </div>
             </div>
@@ -1692,33 +1699,37 @@ function renderPazientiSelector() {
 
           <!-- EMAIL ORDINARIA -->
           ${medEmail ? `
-            <div class="medico-contact-item">
-              <div style="display:flex; align-items:center; gap:4px; min-width:0;">
-                <span class="cg-tag-badge email">EMAIL</span>
-                <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link" style="color:#0284c7; font-weight:700; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Invia Email Ordinaria al Medico Curante">
-                  <b>${medEmail}</b>
+            <div class="clinica-row-item">
+              <div class="clinica-row-left">
+                <span class="cg-tag-badge email" style="padding:1px 5px; font-size:10px;">EMAIL</span>
+                <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link clinica-row-val" style="color:#0284c7; font-weight:700;" title="Invia Email al Medico">
+                  ${medEmail}
                 </a>
               </div>
-              <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="action-icon-btn mail" title="Invia Email Ordinaria">✉️</a>
+              <div class="clinica-row-actions">
+                <a href="mailto:${medEmail}?subject=Richiesta%20Farmaci%20e%20Assistenza%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="action-icon-btn mail" title="Invia Email Ordinaria">✉️</a>
+              </div>
             </div>
           ` : ''}
 
-          <!-- PEC UFFICIALE SE PRESENTE -->
+          <!-- PEC SE PRESENTE -->
           ${medPec ? `
-            <div class="medico-contact-item">
-              <div style="display:flex; align-items:center; gap:4px; min-width:0;">
-                <span class="cg-tag-badge pec">PEC</span>
-                <a href="mailto:${medPec}?subject=Comunicazione%20Ufficiale%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link" style="color:#b45309; font-weight:700; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Invia PEC Ufficiale al Medico Curante">
-                  <b>${medPec}</b>
+            <div class="clinica-row-item">
+              <div class="clinica-row-left">
+                <span class="cg-tag-badge pec" style="padding:1px 5px; font-size:10px;">PEC</span>
+                <a href="mailto:${medPec}?subject=Comunicazione%20Ufficiale%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="smart-link clinica-row-val" style="color:#b45309; font-weight:700;" title="Invia PEC Ufficiale al Medico">
+                  ${medPec}
                 </a>
               </div>
-              <a href="mailto:${medPec}?subject=Comunicazione%20Ufficiale%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="action-icon-btn pec" title="Invia PEC">🔒</a>
+              <div class="clinica-row-actions">
+                <a href="mailto:${medPec}?subject=Comunicazione%20Ufficiale%20per%20${encodeURIComponent(activeP.nome || 'Paziente')}" class="action-icon-btn pec" title="Invia PEC">🔒</a>
+              </div>
             </div>
           ` : ''}
         </div>
       </div>`;
     
-    // 6. BADGE FARMACIA TERRITORIALE PROFESSIONALE
+    // 6. BADGE FARMACIA TERRITORIALE PROFESSIONALE - CARD GEMELLA ALLINEATA
     const farmNome = activeP.farmaciaDiRiferimento || 'Farmacia Territoriale';
     const farmInd = activeP.farmaciaIndirizzo || '';
     const farmTel = activeP.farmaciaTelefono || '';
@@ -1729,43 +1740,68 @@ function renderPazientiSelector() {
            onmouseenter="mostraLenteFarmacia()" 
            onmouseleave="nascondiLenteClinica(event, false)">
         
-        <!-- LIVELLO 1: INTESTAZIONE FARMACIA -->
+        <!-- HEADER FARMACIA: NOME + TAG + BADGE STATO RITIRO -->
         <div class="farmacia-header-row">
           <div class="farmacia-title-left">
-            <span style="font-size:17px;">💊</span>
-            <span class="farmacia-nome">${farmNome}</span>
-            <span class="farmacia-tag">Ritiro Farmaci</span>
+            <span class="farmacia-card-icon">💊</span>
+            <div style="display:flex; flex-direction:column; min-width:0;">
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span class="farmacia-nome">${farmNome}</span>
+                <span class="farmacia-tag">Presidio Farmaceutico</span>
+              </div>
+              <span style="font-size:11px; color:#15803d; font-weight:600;">Punto di Ritiro Farmaci e Presidi</span>
+            </div>
           </div>
-          ${farmInd ? `
-            <a href="${mapsLink(farmInd)}" target="_blank" class="gps-nav-btn" style="font-size:11px; padding:3px 8px; background:linear-gradient(135deg, #16a34a 0%, #15803d 100%);" title="Apri navigatore Google Maps">
-              <span>🗺️</span> <span>Mappa</span>
-            </a>
-          ` : ''}
+          <div class="farmacia-status-pill" style="background:#dcfce7; color:#166534; border:1px solid #86efac;">
+            <span style="font-size:11px; line-height:1;">📦</span>
+            <span>Ritiro Rapido</span>
+          </div>
         </div>
 
-        <!-- LIVELLO 2: INDIRIZZO E CONTATTI RAPIDI -->
-        <div class="farmacia-contacts-row">
+        <!-- LISTA CONTATTI ORDINATA FARMACIA -->
+        <div class="farmacia-contacts-list">
+          
+          <!-- SEDE FARMACIA CON NAVIGATORE -->
           ${farmInd ? `
-            <div class="farmacia-contact-item">
-              <span style="font-size:13px;">📍</span>
-              <a href="${mapsLink(farmInd)}" target="_blank" class="smart-link" style="color:#15803d; font-weight:600;" title="Indicazioni Stradali">
-                <b>${farmInd}</b>
-              </a>
+            <div class="clinica-row-item farmacia-row-item">
+              <div class="clinica-row-left">
+                <span class="clinica-row-icon">📍</span>
+                <span class="clinica-row-label">Sede:</span>
+                <a href="${mapsLink(farmInd)}" target="_blank" class="smart-link clinica-row-val" style="color:#15803d; font-weight:700;" title="Indicazioni Stradali">
+                  ${farmInd}
+                </a>
+              </div>
+              <div class="clinica-row-actions">
+                <a href="${mapsLink(farmInd)}" target="_blank" class="action-icon-btn map" style="background:#15803d;" title="Apri su Google Maps">🧭</a>
+                <a href="${mapsDirLink(farmInd)}" target="_blank" class="gps-nav-btn" style="font-size:11px; padding:3px 8px; background:linear-gradient(135deg, #16a34a 0%, #15803d 100%);" title="Avvia Navigatore GPS">
+                  <span>🚗</span> Naviga
+                </a>
+              </div>
             </div>
           ` : ''}
 
+          <!-- TELEFONO FISSO & WHATSAPP FARMACIA -->
           ${farmTel ? `
-            <div class="farmacia-contact-item phone-row">
-              <div style="display:flex; align-items:center; gap:4px;">
-                <span>☎️</span>
-                <b class="nowrap-num" style="color:#15803d; font-weight:700;">${farmTel}</b>
+            <div class="clinica-row-item farmacia-row-item">
+              <div class="clinica-row-left">
+                <span class="clinica-row-icon">☎️</span>
+                <span class="clinica-row-label">Telefono:</span>
+                <b class="clinica-row-val nowrap-num" style="color:#15803d;">${farmTel}</b>
               </div>
-              <div class="cg-actions">
+              <div class="clinica-row-actions">
                 <a href="tel:${cleanNum(farmTel)}" class="action-icon-btn call" title="Chiama Farmacia">📞</a>
                 <a href="https://api.whatsapp.com/send?phone=${waNum(farmTel)}" target="_blank" class="action-icon-btn wa" title="WhatsApp Farmacia">💬</a>
               </div>
             </div>
           ` : ''}
+
+          <!-- BADGE INFORMATIVO SERVIZI FARMACIA PER BILANCIARE L'ALTEZZA -->
+          <div class="clinica-row-item farmacia-row-item farmacia-info-banner" style="background:rgba(240,253,244,0.7); border:1px dashed #86efac;">
+            <div class="clinica-row-left" style="font-size:11.5px; color:#166534; line-height:1.35;">
+              <span>ℹ️</span>
+              <span>Consegna Domiciliare & Ritiro Ricette Dematerializzate NRE</span>
+            </div>
+          </div>
         </div>
       </div>`;
 
@@ -1913,29 +1949,65 @@ function renderPazientiSelector() {
     ` : '';
 
     // LAYOUT DASHBOARD CLINICA MODERNO, PULITO & AD ALTO IMPATTO
+    const dataOggiStr = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
     badgeInfo.innerHTML = `
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <!-- RIGA 1: NOME PAZIENTE, BADGE CLINICI & CONTATTI RAPIDI DOMICILIO -->
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;">
-          <div class="paziente-name" style="margin-bottom:0; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <span class="patient-avatar-badge">👤</span>
-            <span style="font-size:24px; font-weight:800; color:#0f172a; letter-spacing:-0.5px;">${activeP.nome}</span>
-            <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h) per prevenzione lesioni da decubito.' : 'Paziente deambulante in modo autonomo o assistito.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
-              ${activeP.allettato ? '🛏️ Paziente Allettato (q2h)' : '🚶 Deambulante'}
-            </span>
-            <span class="badge badge-warning clinica-zoom-item" style="font-size:12.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px;" onclick="apriModificaAnagrafica()" title="Tocca per aprire e modificare cartella anagrafica e data di nascita" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${dataNascitaFmt} (Anno ${annoNascita || '--'}, ${eta} anni)', '🎂')" onmouseleave="nascondiLenteClinica()">
-              🎂 ${eta} anni • Anno ${annoNascita || '--'} (${dataNascitaFmt || '--'})
-            </span>
-            ${allergieBadge}
-            ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe Elevato (Braden)</span>' : ''}
-            ${activeP.id === 'paz_angela' ? '<span class="badge badge-danger" style="background:#dc2626;">🫁 Ausilio CPAP Notturna (OSAS)</span>' : ''}
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <!-- RIGA 1: TESTATA PROFILO CLINICO CON IDENTITÀ, BADGE CHIAVE E AZIONI RAPIDE SALVAVITA -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; border-bottom:1.5px solid #e2e8f0; padding-bottom:12px;">
+          
+          <!-- LATO SINISTRO: NOME, AVATAR E PILLOLE DI STATO -->
+          <div style="flex:1; min-width:280px;">
+            <div class="paziente-name" style="margin-bottom:6px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <span class="patient-avatar-badge" style="width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; display:inline-flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 3px 8px rgba(2,132,199,0.3);">👤</span>
+              <div>
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <span style="font-size:25px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; line-height:1.1;">${activeP.nome}</span>
+                  <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer; font-size:11.5px; padding:4px 9px;" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h) per prevenzione lesioni da decubito.' : 'Paziente deambulante in modo autonomo o assistito.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
+                    ${activeP.allettato ? '🛏️ Paziente Allettato (q2h)' : '🚶 Deambulante'}
+                  </span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:5px;">
+                  <span class="badge badge-warning clinica-zoom-item" style="font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:8px;" onclick="apriModificaAnagrafica()" title="Tocca per aprire e modificare cartella anagrafica e data di nascita" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${dataNascitaFmt} (Anno ${annoNascita || '--'}, ${eta} anni)', '🎂')" onmouseleave="nascondiLenteClinica()">
+                    🎂 ${eta} anni • Anno ${annoNascita || '--'} (${dataNascitaFmt || '--'})
+                  </span>
+                  ${allergieBadge}
+                  ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; font-size:11px; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe (Braden)</span>' : ''}
+                  ${activeP.id === 'paz_angela' ? '<span class="badge badge-danger" style="background:#dc2626; font-size:11px;">🫁 CPAP Notturna (OSAS)</span>' : ''}
+                </div>
+              </div>
+            </div>
+            
+            <!-- RECAPITI DOMICILIO ASSISTITO (INDIRIZZO, FISSO, CELLULARE) -->
+            <div class="patient-direct-contacts" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:8px;">
+              ${ind}
+              ${tel}
+              ${cell}
+            </div>
           </div>
 
-          <!-- RECAPITI DOMICILIO ASSISTITO (INDIRIZZO, FISSO, CELLULARE) -->
-          <div class="patient-direct-contacts" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            ${ind}
-            ${tel}
-            ${cell}
+          <!-- LATO DESTRO: PULSANTIERA AZIONI RAPIDE DEDICATE (118, REPORT WHATSAPP, MODIFICA) & STATO -->
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; z-index:2;">
+            <div class="hero-quick-actions-bar">
+              <button id="btn-scheda-118" class="btn-hero-action btn-hero-118" onclick="apriModalScheda118()" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
+                <span>🚨</span> <span>Scheda 118</span>
+              </button>
+              <button id="btn-report-whatsapp" class="btn-hero-action btn-hero-wa" onclick="apriModalReportWhatsApp()" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
+                <span>💬</span> <span>Report WA</span>
+              </button>
+              <button class="btn-hero-action btn-hero-edit" onclick="apriModificaAnagrafica()" title="Modifica dati anagrafici e clinici dell'assistito">
+                <span>✏️</span> <span>Modifica</span>
+              </button>
+            </div>
+            
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+              <span class="hero-status-pill" style="background:#eff6ff; color:#1e40af; border-color:#bfdbfe;">
+                📅 <b>${dataOggiStr}</b>
+              </span>
+              <span class="hero-status-pill" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0;">
+                <span style="color:#10b981;">●</span> Monitoraggio Attivo
+              </span>
+            </div>
           </div>
         </div>
 
