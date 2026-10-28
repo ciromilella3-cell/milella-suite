@@ -9536,6 +9536,9 @@ _Aggiornamento inviato con il sistema CareAssist Pro C. Milella_`;
       select.innerHTML = opzioni.join('');
     }
 
+    const badgeEl = document.getElementById('report-wa-badge-paziente');
+    if (badgeEl) badgeEl.textContent = `👤 ${pulitoNome}`;
+
     if (typeof openModal === 'function') {
       openModal('modal-report-whatsapp');
     }

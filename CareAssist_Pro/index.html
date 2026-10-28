@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=52">
+  <link rel="stylesheet" href="style.css?v=53">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -152,6 +152,8 @@
             opts += '<option value="custom">✏️ Inserisci Altro Numero Manuale...</option>';
             sel.innerHTML = opts;
           }
+          var badge = document.getElementById('report-wa-badge-paziente');
+          if (badge) badge.textContent = '👤 ' + pulitoNome;
         }
       } catch(e) { console.warn('Errore pre-popolamento Report WA:', e); }
 
@@ -3216,43 +3218,70 @@
     </div>
   </div>
 
-  <!-- MODAL: REPORT GIORNALIERO WHATSAPP PER I FAMILIARI -->
+  <!-- MODAL: REPORT GIORNALIERO WHATSAPP PER I FAMILIARI (SUITE PRO) -->
   <div id="modal-report-whatsapp" class="modal-overlay">
-    <div class="report-wa-card modal-card">
-      <div class="modal-header" style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:24px;">💬</span>
+    <div class="report-wa-card modal-card modal-wa-pro">
+      <!-- HEADER UFFICIALE WHATSAPP SUITE -->
+      <div class="modal-header header-wa-pro">
+        <div class="header-wa-left">
+          <div class="wa-icon-glow">
+            <span>💬</span>
+          </div>
           <div>
-            <h3 style="margin:0; font-size:16px; font-weight:800;">Report Giornaliero WhatsApp</h3>
-            <div style="font-size:11px; color:#d1fae5;">Invia l'aggiornamento clinico e assistenziale ai familiari</div>
+            <div class="wa-brand-title">Report Giornaliero WhatsApp</div>
+            <div class="wa-brand-sub">Aggiornamento clinico e assistenziale ai familiari</div>
           </div>
         </div>
-        <button type="button" class="btn-close-modal btn-close-light" onclick="closeModal('modal-report-whatsapp')" title="Chiudi Report WhatsApp" aria-label="Chiudi">✕</button>
+        <div class="header-wa-right">
+          <span id="report-wa-badge-paziente" class="wa-badge-paziente">👤 Assistito</span>
+          <button type="button" class="btn-close-wa-pro" onclick="closeModal('modal-report-whatsapp')" title="Chiudi Report WhatsApp" aria-label="Chiudi">✕</button>
+        </div>
       </div>
 
-      <div class="modal-body" style="padding:18px 20px;">
-        <div style="margin-bottom:12px;">
-          <label style="font-size:12px; font-weight:700; color:#334155; display:block; margin-bottom:5px;">Destinatario WhatsApp:</label>
-          <select id="report-wa-destinatario" class="form-control" style="font-size:13px; font-weight:700;">
-            <!-- Popolato dinamicamente -->
-          </select>
-        </div>
-
-        <div style="margin-bottom:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <label style="font-size:12px; font-weight:700; color:#334155;">Testo Messaggio (Modificabile):</label>
-            <span style="font-size:11px; color:#10b981; font-weight:700;">✨ Precompilato in automatico</span>
+      <div class="modal-body body-wa-pro">
+        <!-- SELETTORE DESTINATARIO ELEGANTE -->
+        <div class="wa-card-box">
+          <label class="wa-label-pro" for="report-wa-destinatario">
+            <span>📱</span> Seleziona Destinatario WhatsApp:
+          </label>
+          <div class="wa-select-wrapper">
+            <select id="report-wa-destinatario" class="form-control wa-select-pro">
+              <!-- Popolato dinamicamente da app.js -->
+            </select>
           </div>
-          <textarea id="report-wa-testo" rows="8" style="width:100%; box-sizing:border-box; padding:12px; border-radius:12px; border:1.5px solid #a7f3d0; background:#f0fdf4; color:#064e3b; font-size:12.5px; font-family:inherit; line-height:1.5; resize:vertical;"></textarea>
         </div>
 
-        <button type="button" class="btn" onclick="inviaReportWhatsAppDiretto()" style="width:100%; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:900; font-size:14px; padding:12px; border-radius:12px; border:none; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 15px rgba(16,185,129,0.35);">
-          <span>🟢</span> APRI SU WHATSAPP ED INVIA ➔
+        <!-- ANTEPRIMA CHAT WHATSAPP -->
+        <div class="wa-card-box wa-preview-container">
+          <div class="wa-preview-header">
+            <label class="wa-label-pro" style="margin:0;">
+              <span>💬</span> Anteprima Messaggio (Modificabile):
+            </label>
+            <span class="wa-tag-auto">✨ Precompilato in automatico</span>
+          </div>
+          
+          <div class="wa-bubble-wrap">
+            <div class="wa-bubble-header">
+              <span class="wa-bubble-sender">CareAssist Pro • Report Clinico</span>
+              <span class="wa-bubble-time">Oggi</span>
+            </div>
+            <textarea id="report-wa-testo" rows="9" class="wa-textarea-bubble" placeholder="Testo del report..." spellcheck="false"></textarea>
+            <div class="wa-bubble-footer">
+              <span class="wa-checkmarks">✓✓</span>
+              <span style="font-size:10.5px; color:#6b7280;">Tocca il testo per modificare prima dell'invio</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER AZIONI BILANCIATO -->
+      <div class="modal-footer footer-wa-pro">
+        <button type="button" class="btn-wa-annulla" onclick="closeModal('modal-report-whatsapp')">
+          Annulla
         </button>
-      </div>
-
-      <div class="modal-footer" style="padding:10px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; text-align:right;">
-        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-report-whatsapp')">Annulla</button>
+        <button type="button" class="btn-wa-invia" onclick="inviaReportWhatsAppDiretto()">
+          <span>🟢</span> APRI WHATSAPP ED INVIA ➔
+        </button>
       </div>
     </div>
   </div>
