@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=54">
+  <link rel="stylesheet" href="style.css?v=55">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -3138,81 +3138,114 @@
   
   <!-- MODAL: SCHEDA EMERGENZA CLINICA 118 / PRONTO SOCCORSO -->
   <div id="modal-scheda-118" class="modal-overlay">
-    <div class="scheda-118-card modal-card">
-      <div class="scheda-118-header">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:24px;">🚨</span>
-          <div>
-            <h3 style="margin:0; font-size:16px; font-weight:900; letter-spacing:0.5px;">SCHEDA CLINICA EMERGENZA 118</h3>
-            <div style="font-size:11px; color:#fecaca; font-weight:600;">Dati salvavita per Sanitari & Pronto Soccorso</div>
+    <div class="scheda-118-card modal-card modal-118-pro">
+      <!-- HEADER UFFICIALE 118 EMERGENZA -->
+      <div class="modal-header header-118-pro">
+        <div class="header-118-left">
+          <div class="badge-118-siren">
+            <span>🚨</span>
+          </div>
+          <div class="header-118-titles">
+            <div class="title-118-main">SCHEDA CLINICA EMERGENZA 118</div>
+            <div class="subtitle-118-sub">Dati salvavita prioritari per Sanitari & Pronto Soccorso</div>
           </div>
         </div>
-        <button type="button" class="btn-close-modal btn-close-light" onclick="closeModal('modal-scheda-118')" title="Chiudi Scheda 118" aria-label="Chiudi">✕</button>
+        <button type="button" class="btn-close-118-pro" onclick="closeModal('modal-scheda-118')" title="Chiudi Scheda 118" aria-label="Chiudi">✕</button>
       </div>
 
-      <div class="scheda-118-body" id="scheda-118-content-body">
-        <!-- 1. ANAGRAFICA & RECAPITO RAPIDO -->
-        <div class="scheda-118-box">
-          <div class="scheda-118-title" style="color:#0369a1;">👤 Anagrafica & Domicilio Assistito</div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-            <div>Paziente: <b id="s118-nome" style="font-size:14px; color:#0f172a;">--</b></div>
-            <div>Età / Nascita: <b id="s118-eta-data">--</b></div>
-            <div>Codice Fiscale: <b id="s118-cf" style="letter-spacing:0.5px; color:#1e3a8a;">--</b></div>
-            <div>Telefono Casa/Cell: <b id="s118-tel">--</b></div>
+      <div class="scheda-118-body body-118-pro" id="scheda-118-content-body">
+        <!-- 1. ANAGRAFICA & DOMICILIO ASSISTITO -->
+        <div class="card-118-box box-anagrafica-118">
+          <div class="titolo-sezione-118 color-blue-118">
+            <span>👤</span> ANAGRAFICA & DOMICILIO ASSISTITO
           </div>
-          <div style="margin-top:6px; padding-top:6px; border-top:1px dashed #cbd5e1;">
-            📍 Indirizzo Residenza: <b id="s118-indirizzo" style="color:#0369a1;">--</b>
-          </div>
-        </div>
-
-        <!-- 2. DIAGNOSI ATTIVE & ALLERGIE -->
-        <div class="scheda-118-box-alert">
-          <div class="scheda-118-title" style="color:#dc2626;">⚠️ Patologie Attive & Allergie Note</div>
-          <div style="margin-bottom:6px;">
-            Diagnosi / Patologie: <b id="s118-patologie" style="color:#991b1b;">Ipertensione arteriosa, Cardiopatia, Ictus pregresso, Diabete Tipo 2, OSAS</b>
-          </div>
-          <div id="s118-allergie-box" style="background:#fee2e2; padding:8px 12px; border-radius:8px; color:#991b1b; font-weight:700; border:1.5px solid #fca5a5; margin-top:6px; transition:all 0.2s;">
-            <div style="font-size:11.5px; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:2px;">🚫 ALLERGIE & INTOLLERANZE FARMACOLOGICHE:</div>
-            <div id="s118-allergie" style="font-size:13.5px; font-weight:800;">Nessuna allergia farmacologica nota segnalata</div>
-          </div>
-        </div>
-
-        <!-- 3. TERAPIE SALVAVITA & ANTICOAGULANTI ATTIVI OGGI -->
-        <div class="scheda-118-box">
-          <div class="scheda-118-title" style="color:#15803d;">💊 Terapie Salvavita & Farmaci del Giorno</div>
-          <div id="s118-lista-farmaci" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;">
-            <!-- Popolato dinamicamente -->
-          </div>
-        </div>
-
-        <!-- 4. CONTATTI MEDICO & FAMIGLIA -->
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-          <div class="scheda-118-box" style="border-color:#bfdbfe; background:#eff6ff;">
-            <div class="scheda-118-title" style="color:#1e40af;">👨‍⚕️ Medico Curante (MMG)</div>
-            <div id="s118-medico-nome" style="font-weight:800; color:#1e3a8a;">Dott. Roberto Scarcia</div>
-            <div id="s118-medico-tel" style="font-size:12px; margin-top:2px;">Tel: 080 557 44 90</div>
-            <div style="margin-top:6px;">
-              <a href="tel:3471265971" class="btn btn-primary" style="padding:4px 8px; font-size:11px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">📞 Chiama Medico</a>
+          <div class="grid-anagrafica-118">
+            <div class="dato-item-118">
+              <span class="label-118">Paziente:</span>
+              <strong id="s118-nome" class="val-paziente-118">--</strong>
+            </div>
+            <div class="dato-item-118">
+              <span class="label-118">Età / Nascita:</span>
+              <strong id="s118-eta-data">--</strong>
+            </div>
+            <div class="dato-item-118">
+              <span class="label-118">Codice Fiscale:</span>
+              <strong id="s118-cf" class="cf-mono-118">--</strong>
+            </div>
+            <div class="dato-item-118">
+              <span class="label-118">Telefono Assistito:</span>
+              <strong id="s118-tel">--</strong>
             </div>
           </div>
-          <div class="scheda-118-box" style="border-color:#bbf7d0; background:#f0fdf4;">
-            <div class="scheda-118-title" style="color:#166534;">👥 Contatto Famiglia / Caregiver</div>
-            <div id="s118-famiglia-nome" style="font-weight:800; color:#14532d;">Contatto di Riferimento</div>
-            <div id="s118-famiglia-tel" style="font-size:12px; margin-top:2px;">Cell: --</div>
+          <div class="riga-indirizzo-118">
+            <span class="label-118">📍 Residenza / Domicilio:</span>
+            <strong id="s118-indirizzo" class="val-indirizzo-118">--</strong>
+          </div>
+        </div>
+
+        <!-- 2. DIAGNOSI ATTIVE & ALLERGIE (ALLERTA ROSSA) -->
+        <div class="card-118-box box-diagnosi-118">
+          <div class="titolo-sezione-118 color-red-118">
+            <span>⚠️</span> PATOLOGIE ATTIVE & ANAMNESI
+          </div>
+          <div class="testo-patologie-118">
+            <span class="label-118">Diagnosi Cliniche:</span>
+            <span id="s118-patologie" class="val-patologie-118">--</span>
+          </div>
+          <div id="s118-allergie-box" class="box-allergie-evidente">
+            <div class="titolo-allergie-sub">🚫 ALLERGIE & INTOLLERANZE FARMACOLOGICHE:</div>
+            <div id="s118-allergie" class="val-allergie-118">Nessuna allergia farmacologica nota segnalata</div>
+          </div>
+        </div>
+
+        <!-- 3. TERAPIE SALVAVITA & FARMACI DEL GIORNO -->
+        <div class="card-118-box box-terapie-118">
+          <div class="titolo-sezione-118 color-green-118">
+            <span>💊</span> TERAPIE SALVAVITA & FARMACI DEL GIORNO
+          </div>
+          <div id="s118-lista-farmaci" class="lista-farmaci-118">
+            <!-- Popolato dinamicamente da app.js -->
+          </div>
+        </div>
+
+        <!-- 4. CONTATTI EMERGENZA (MEDICO & FAMIGLIA) -->
+        <div class="grid-contatti-118">
+          <div class="card-118-box contatto-box-medico">
+            <div class="titolo-sezione-118 color-blue-118">
+              <span>👨‍⚕️</span> Medico Curante (MMG)
+            </div>
+            <div id="s118-medico-nome" class="nome-referente-118">Dott. Roberto Scarcia</div>
+            <div id="s118-medico-tel" class="tel-referente-118">Tel: 080 557 44 90</div>
             <div style="margin-top:6px;">
-              <a id="s118-famiglia-link" href="#" class="btn btn-success" style="padding:4px 8px; font-size:11px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">📞 Chiama Famiglia</a>
+              <a href="tel:3471265971" class="btn-call-118-mini btn-call-blue">📞 Chiama Medico</a>
+            </div>
+          </div>
+
+          <div class="card-118-box contatto-box-famiglia">
+            <div class="titolo-sezione-118 color-green-118">
+              <span>👥</span> Famiglia / Caregiver
+            </div>
+            <div id="s118-famiglia-nome" class="nome-referente-118">Contatto di Riferimento</div>
+            <div id="s118-famiglia-tel" class="tel-referente-118">Cell: --</div>
+            <div style="margin-top:6px;">
+              <a id="s118-famiglia-link" href="#" class="btn-call-118-mini btn-call-green">📞 Chiama Famiglia</a>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="modal-footer" style="padding:12px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <a href="tel:118" class="btn" style="background:#dc2626; color:#ffffff; font-weight:900; font-size:13.5px; padding:8px 16px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(220,38,38,0.35);">
-          <span>📞</span> CHIAMA IL 118 ORA
+      <!-- FOOTER AZIONI: Tasto 118 Salva-Vita in primo piano + Bottoni di supporto -->
+      <div class="modal-footer footer-118-pro">
+        <a href="tel:118" class="btn-chiamata-118">
+          <span>🚨</span> CHIAMA IL 118 ORA
         </a>
-        <div style="display:flex; gap:8px;">
-          <button type="button" class="btn btn-outline" onclick="window.print()">🖨️ Stampa Scheda A4</button>
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-scheda-118')">Chiudi</button>
+        <div class="footer-118-sub-btns">
+          <button type="button" class="btn-118-sub btn-118-print" onclick="window.print()">
+            🖨️ Stampa A4
+          </button>
+          <button type="button" class="btn-118-sub btn-118-close" onclick="closeModal('modal-scheda-118')">
+            Chiudi
+          </button>
         </div>
       </div>
     </div>

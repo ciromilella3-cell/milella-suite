@@ -2252,8 +2252,7 @@ textarea.form-control {
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
     background: #ffffff !important;
   }
-  .modal-header,
-  .scheda-118-header {
+  .modal-header {
     flex-shrink: 0 !important;
     padding: 12px 14px !important;
     display: flex !important;
@@ -2979,127 +2978,429 @@ textarea.form-control {
   animation: pulseBeacon 2.5s infinite ease-in-out;
 }
 
-/* Modale Scheda Emergenza 118 */
-.scheda-118-card {
-  margin: auto;
-  max-width: 680px;
-  width: 95%;
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(220, 38, 38, 0.35);
-  border: 2px solid #ef4444;
-  overflow: hidden;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
+/* ==========================================================================
+   MODAL SCHEDA EMERGENZA CLINICA 118 (SUITE MEDICAL PRO)
+   ========================================================================== */
+.modal-118-pro {
+  max-width: 620px !important;
+  width: 95% !important;
+  max-height: 90vh !important;
+  border-radius: 18px !important;
+  box-shadow: 0 25px 60px -10px rgba(185, 28, 28, 0.45), 0 0 0 1.5px rgba(239, 68, 68, 0.3) !important;
+  background: #f8fafc !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border: none !important;
 }
 
-.scheda-118-header {
-  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
-  color: #ffffff;
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Pulsanti di Chiusura Modali (X) Glassmorphism Touch-Friendly */
-.btn-close-modal {
-  width: 36px !important;
-  height: 36px !important;
-  min-width: 36px !important;
-  min-height: 36px !important;
-  border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.22) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+/* Header Rosso Emergenza Vivido ad Alto Contrasto */
+.header-118-pro {
+  background: linear-gradient(135deg, #991b1b 0%, #b91c1c 45%, #dc2626 100%) !important;
   color: #ffffff !important;
-  display: inline-flex !important;
+  padding: 12px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+  flex-shrink: 0 !important;
+  gap: 12px !important;
+}
+
+.header-118-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.badge-118-siren {
+  font-size: 22px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.header-118-titles {
+  min-width: 0;
+  flex: 1;
+}
+
+.title-118-main {
+  font-size: 15px;
+  font-weight: 900;
+  color: #ffffff !important;
+  letter-spacing: 0.4px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtitle-118-sub {
+  font-size: 11.5px;
+  color: #fecaca !important;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-close-118-pro {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 18px !important;
-  font-weight: 900 !important;
-  line-height: 1 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
   cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  flex-shrink: 0 !important;
   padding: 0 !important;
-  margin: 0 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-  outline: none !important;
-  -webkit-tap-highlight-color: transparent !important;
-  user-select: none !important;
+  line-height: 1 !important;
 }
 
-.btn-close-modal:hover,
-.btn-close-modal:active {
-  background: rgba(255, 255, 255, 0.45) !important;
+.btn-close-118-pro:hover {
+  background: rgba(0, 0, 0, 0.35) !important;
   border-color: #ffffff !important;
-  color: #ffffff !important;
-  transform: scale(1.1) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  transform: rotate(90deg);
 }
 
-.btn-close-modal.btn-close-dark {
-  background: #f1f5f9 !important;
-  border: 1.5px solid #cbd5e1 !important;
-  color: #334155 !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+/* Corpo Scheda 118 */
+.body-118-pro {
+  padding: 12px 14px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  flex: 1 1 auto !important;
+  background: #f8fafc !important;
 }
 
-.btn-close-modal.btn-close-dark:hover,
-.btn-close-modal.btn-close-dark:active {
-  background: #e2e8f0 !important;
-  border-color: #94a3b8 !important;
-  color: #0f172a !important;
-  transform: scale(1.1) !important;
-}
-
-.btn-close-modal.btn-close-light {
-  background: rgba(255, 255, 255, 0.22) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
-  color: #ffffff !important;
-}
-
-.btn-close-modal.btn-close-light:hover,
-.btn-close-modal.btn-close-light:active {
-  background: rgba(255, 255, 255, 0.45) !important;
-  border-color: #ffffff !important;
-  color: #ffffff !important;
-  transform: scale(1.1) !important;
-}
-
-.scheda-118-body {
-  padding: 18px 22px;
-  overflow-y: auto;
-  font-size: 13px;
-  color: #1e293b;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.scheda-118-box {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+.card-118-box {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
   border-radius: 12px;
-  padding: 12px 14px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.scheda-118-box-alert {
+.box-anagrafica-118 {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.box-diagnosi-118 {
   background: #fff5f5;
-  border: 1.5px solid #fecaca;
-  border-radius: 12px;
-  padding: 12px 14px;
+  border-color: #fecaca;
 }
 
-.scheda-118-title {
-  font-size: 12px;
+.box-terapie-118 {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.titolo-sezione-118 {
+  font-size: 11.5px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.color-blue-118 { color: #0284c7; }
+.color-red-118 { color: #dc2626; }
+.color-green-118 { color: #16a34a; }
+
+.grid-anagrafica-118 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  font-size: 13px;
+}
+
+.dato-item-118 {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.label-118 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.val-paziente-118 {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.cf-mono-118 {
+  font-family: monospace, ui-monospace, sans-serif;
+  letter-spacing: 0.5px;
+  color: #1e3a8a;
+  font-weight: 700;
+}
+
+.riga-indirizzo-118 {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #cbd5e1;
+  font-size: 13px;
+}
+
+.val-indirizzo-118 {
+  color: #0284c7;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.testo-patologie-118 {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.val-patologie-118 {
+  color: #991b1b;
+  font-weight: 700;
+}
+
+.box-allergie-evidente {
+  background: #fef2f2;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #991b1b;
+  border: 1.5px solid #fecdd3;
+  margin-top: 6px;
+}
+
+.titolo-allergie-sub {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  margin-bottom: 3px;
+}
+
+.val-allergie-118 {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.lista-farmaci-118 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.grid-contatti-118 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.contatto-box-medico {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.contatto-box-famiglia {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.nome-referente-118 {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.tel-referente-118 {
+  font-size: 11.5px;
+  color: #475569;
+  margin-top: 2px;
+}
+
+.btn-call-118-mini {
+  padding: 5px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 7px;
+  transition: all 0.15s ease;
+}
+
+.btn-call-blue {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.btn-call-blue:hover {
+  background: #bfdbfe;
+  color: #1e40af;
+}
+
+.btn-call-green {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.btn-call-green:hover {
+  background: #bbf7d0;
+  color: #14532d;
+}
+
+/* Footer Scheda 118 Salva-Vita: Pulsante 118 prominente + comandi secondari */
+.footer-118-pro {
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)) 14px !important;
+  background: #ffffff !important;
+  border-top: 1.5px solid #e2e8f0 !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.btn-chiamata-118 {
+  flex: 1 1 auto !important;
+  height: 44px !important;
+  padding: 0 16px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.3px !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
+  border: none !important;
+  transition: all 0.15s ease !important;
+  box-sizing: border-box !important;
+}
+
+.btn-chiamata-118:hover,
+.btn-chiamata-118:active {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%) !important;
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.5) !important;
+  color: #ffffff !important;
+}
+
+.footer-118-sub-btns {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.btn-118-sub {
+  height: 44px !important;
+  padding: 0 14px !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  border: 1.5px solid #cbd5e1 !important;
+  background: #f8fafc !important;
+  color: #475569 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+.btn-118-sub:hover {
+  background: #e2e8f0 !important;
+  border-color: #94a3b8 !important;
+  color: #0f172a !important;
+}
+
+.btn-118-close {
+  min-width: 75px !important;
+}
+
+@media (max-width: 600px) {
+  .modal-118-pro {
+    width: 98% !important;
+    max-height: calc(100dvh - 16px) !important;
+    border-radius: 16px !important;
+  }
+  .header-118-pro {
+    padding: 10px 12px !important;
+  }
+  .title-118-main {
+    font-size: 14px !important;
+  }
+  .subtitle-118-sub {
+    font-size: 11px !important;
+  }
+  .body-118-pro {
+    padding: 10px !important;
+    gap: 8px !important;
+  }
+  .grid-anagrafica-118 {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 8px;
+  }
+  .grid-contatti-118 {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .footer-118-pro {
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px)) 10px !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .btn-chiamata-118 {
+    width: 100% !important;
+    height: 44px !important;
+  }
+  .footer-118-sub-btns {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
+  }
+  .btn-118-sub {
+    flex: 1 1 50% !important;
+    height: 38px !important;
+    font-size: 12.5px !important;
+  }
 }
 
 /* Bicchieri Idratazione Visuali */
