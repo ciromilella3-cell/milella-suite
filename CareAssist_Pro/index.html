@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=59">
+  <link rel="stylesheet" href="style.css?v=60">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -800,225 +800,230 @@
 
   </main>
 
-  <!-- MODAL 0: NUOVO PAZIENTE -->
-  <!-- MODAL 0: NUOVO PAZIENTE COMPLETO & DETTAGLIATO -->
+  <!-- MODAL 0: NUOVO PAZIENTE COMPLETO & DETTAGLIATO PRO -->
   <div class="modal-overlay" id="modal-nuovo-paziente">
-    <div class="modal-card" style="max-width:760px; max-height:92vh; display:flex; flex-direction:column;">
-      <div class="modal-header" style="background:linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:white;">
-        <div class="modal-title" style="display:flex; align-items:center; gap:8px;">
-          <span>👤</span> <span>Crea Nuova Cartella Clinica Assistito</span>
+    <div class="modal-card modal-anagrafica-pro" style="max-width:760px; width:95%;">
+      
+      <!-- HEADER CLINICO MODERNO -->
+      <div class="modal-header" style="background:linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:white; padding:12px 16px;">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px; font-size:15.5px; font-weight:800;">
+          <span>👤</span> <span>Crea Nuova Cartella Assistito</span>
         </div>
-        <button class="btn btn-outline" style="color:white; border-color:rgba(255,255,255,0.4);" onclick="closeModal('modal-nuovo-paziente')">✕</button>
+        <button type="button" class="btn-close-modal" onclick="closeModal('modal-nuovo-paziente')">✕</button>
       </div>
+
       <form id="form-nuovo-paziente" onsubmit="salvaNuovoPaziente(event)" style="display:flex; flex-direction:column; overflow:hidden;">
-        <div class="modal-body" style="overflow-y:auto; padding:20px;">
+        <div class="modal-body modal-body-pro">
           
-          <!-- SEZIONE 1: ANAGRAFICA BASE -->
-          <div style="font-weight:800; font-size:12.5px; color:#1e40af; text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
-            <span>📋</span> <span>1. Dati Anagrafici & Mobilità</span>
-          </div>
-          <!-- NOME E COGNOME SU RIGA DEDICATA PER NON TRONCARE IL TESTO -->
-          <div class="form-group" style="margin-bottom:12px;">
-            <label class="form-label" style="font-weight:700; color:#0f2744;">Nome e Cognome Assistito</label>
-            <input type="text" class="form-control" id="nuovo-paz-nome" placeholder="Es. Maria Rossi" required style="font-size:15px; font-weight:700;">
-          </div>
+          <!-- SEZIONE 1: ANAGRAFICA BASE & RESIDENZA -->
+          <div class="card-sezione-pro">
+            <div class="sezione-titolo-pro">
+              <span>📋</span> <span>1. Dati Anagrafici & Mobilità</span>
+            </div>
 
-          <!-- DATA DI NASCITA ED ETA SU RIGA DEDICATA CON AMPIO SPAZIO -->
-          <div class="form-row anagrafica-nascita-row" style="margin-bottom:14px; align-items:flex-end;">
-            <div class="form-group" style="flex:3.5; min-width:210px; margin-bottom:0;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                <label class="form-label" style="margin-bottom:0; font-weight:700; color:#1e3a8a;">📅 Data di Nascita (Giorno / Mese / Anno)</label>
-                <button type="button" class="btn btn-sm" id="nuovo-toggle-cal" onclick="toggleDataPickerModalita('nuovo')" style="font-size:11px; padding:2px 7px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:6px; cursor:pointer;" title="Alterna tra selezione rapida dei mesi e calendario nativo">🗓️ Calendario</button>
-              </div>
-              <div id="nuovo-paz-nascita-selects" style="display:flex; gap:6px;">
-                <select id="nuovo-paz-nascita-giorno" class="form-control" style="flex:1; min-width:50px; font-weight:700; text-align:center; padding:8px 3px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Giorno"></select>
-                <select id="nuovo-paz-nascita-mese" class="form-control" style="flex:2.2; min-width:115px; font-weight:700; padding:8px 4px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Mese"></select>
-                <select id="nuovo-paz-nascita-anno" class="form-control" style="flex:1.2; min-width:62px; font-weight:700; text-align:center; padding:8px 3px; background:#f8fafc;" onchange="sincronizzaDataDaSelects('nuovo')" title="Anno"></select>
-              </div>
-              <input type="date" class="form-control" id="nuovo-paz-nascita" min="1910-01-01" max="2026-12-31" style="display:none; margin-top:4px;" onchange="sincronizzaSelectsDaData('nuovo', this.value); calcolaEtaDinamica(this.value)">
+            <div class="form-group" style="margin-bottom:8px;">
+              <label class="form-label">Nome e Cognome Assistito *</label>
+              <input type="text" class="form-control" id="nuovo-paz-nome" placeholder="Es. Maria Rossi" required style="font-weight:700; font-size:14.5px;">
             </div>
-            <div class="form-group" style="flex:1; min-width:65px; max-width:85px; margin-bottom:0;">
-              <label class="form-label" style="font-weight:700; text-align:center; display:block;">Età Calcolata</label>
-              <input type="text" class="form-control" id="nuovo-paz-eta-preview" placeholder="-- anni" readonly style="background:#f1f5f9; font-weight:bold; color:#0369a1; text-align:center; padding:8px 2px;">
-            </div>
-          </div>
 
-          <div class="form-row">
-            <div class="form-group" style="flex:2;">
-              <label class="form-label">Indirizzo di Domicilio / Residenza (con Google Maps)</label>
-              <input type="text" class="form-control" id="nuovo-paz-indirizzo" placeholder="Es. Via Roma, 10 - Bari">
+            <div class="riga-doppia-pro" style="margin-bottom:8px;">
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                  <label class="form-label" style="margin-bottom:0;">📅 Data di Nascita</label>
+                  <button type="button" class="btn-cal-mini" id="nuovo-toggle-cal" onclick="toggleDataPickerModalita('nuovo')" title="Alterna calendario nativo">🗓️ Cal</button>
+                </div>
+                <div id="nuovo-paz-nascita-selects" style="display:flex; gap:4px;">
+                  <select id="nuovo-paz-nascita-giorno" class="form-control" style="flex:1; padding:5px 2px; text-align:center; font-weight:700;" onchange="sincronizzaDataDaSelects('nuovo')"></select>
+                  <select id="nuovo-paz-nascita-mese" class="form-control" style="flex:2; padding:5px 4px; font-weight:700;" onchange="sincronizzaDataDaSelects('nuovo')"></select>
+                  <select id="nuovo-paz-nascita-anno" class="form-control" style="flex:1.2; padding:5px 2px; text-align:center; font-weight:700;" onchange="sincronizzaDataDaSelects('nuovo')"></select>
+                </div>
+                <input type="date" class="form-control" id="nuovo-paz-nascita" min="1910-01-01" max="2026-12-31" style="display:none; margin-top:3px;" onchange="sincronizzaSelectsDaData('nuovo', this.value); calcolaEtaDinamica(this.value)">
+              </div>
+              <div class="form-group" style="flex:0 0 75px; max-width:80px; margin-bottom:0;">
+                <label class="form-label" style="text-align:center;">Età</label>
+                <input type="text" class="form-control" id="nuovo-paz-eta-preview" placeholder="-- anni" readonly style="background:#f1f5f9; font-weight:800; color:#0369a1; text-align:center;">
+              </div>
             </div>
-            <div class="form-group" style="flex:1;">
-              <label class="form-label">Stato Mobilità</label>
-              <select class="form-control" id="nuovo-paz-mobilita">
-                <option value="deambulante">🚶 Deambulante / Cammina</option>
-                <option value="assistita">🦯 Deambulazione Assistita / Sedia a rotelle</option>
-                <option value="allettato">🛌 Allettato (Attiva Orologio Rotazione 2h)</option>
-              </select>
+
+            <div class="riga-doppia-pro" style="margin-bottom:0;">
+              <div class="form-group" style="flex:1.4; margin-bottom:0;">
+                <label class="form-label">Indirizzo di Residenza</label>
+                <input type="text" class="form-control" id="nuovo-paz-indirizzo" placeholder="Es. Via Roma, 10 - Bari">
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label">Stato Mobilità</label>
+                <select class="form-control" id="nuovo-paz-mobilita" style="font-weight:700;">
+                  <option value="deambulante">🚶 Deambulante</option>
+                  <option value="assistita">🦯 Con Ausilio</option>
+                  <option value="allettato">🛌 Allettato (Orologio 2h)</option>
+                </select>
+              </div>
             </div>
           </div>
 
           <!-- SEZIONE 2: RECAPITI E FAMILIARI -->
-          <div style="font-weight:800; font-size:12.5px; color:#0284c7; text-transform:uppercase; margin:14px 0 10px; display:flex; align-items:center; gap:6px;">
-            <span>📞</span> <span>2. Recapiti Telefonici & Contatto Familiare di Riferimento</span>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Telefono Fisso di Casa</label>
-              <input type="text" class="form-control" id="nuovo-paz-telefono" placeholder="Es. 080 123 45 67">
+          <div class="card-sezione-pro box-caregiver-pro">
+            <div class="sezione-titolo-pro">
+              <span>📞</span> <span>2. Recapiti & Familiare di Riferimento</span>
             </div>
-            <div class="form-group">
-              <label class="form-label">Cellulare Assistito (o WhatsApp)</label>
-              <input type="text" class="form-control" id="nuovo-paz-cellulare" placeholder="Es. 338 000 00 00">
+
+            <div class="riga-doppia-pro" style="margin-bottom:8px;">
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label">☎️ Tel. Fisso Casa</label>
+                <input type="text" class="form-control" id="nuovo-paz-telefono" placeholder="Es. 080 123 45 67">
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label">📱 Cellulare Assistito</label>
+                <input type="text" class="form-control" id="nuovo-paz-cellulare" placeholder="Es. 338 000 00 00">
+              </div>
             </div>
-          </div>
-          <div class="form-row" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-            <div class="form-group" style="margin-bottom:0; flex:1.5;">
-              <label class="form-label">Nome Familiare di Riferimento (Figlio/a, Coniuge)</label>
-              <input type="text" class="form-control" id="nuovo-paz-parente-nome" placeholder="Es. Maria (Figlia) o Coniuge">
-            </div>
-            <div class="form-group" style="margin-bottom:0; flex:1.5;">
-              <label class="form-label">Cellulare Familiare (per WhatsApp & Chiamate rapide)</label>
-              <input type="text" class="form-control" id="nuovo-paz-parente-cell" placeholder="Es. 347 123 45 67">
+
+            <div class="riga-doppia-pro" style="margin-bottom:0;">
+              <div class="form-group" style="flex:1.2; margin-bottom:0;">
+                <label class="form-label">Caregiver / Familiare</label>
+                <input type="text" class="form-control" id="nuovo-paz-parente-nome" placeholder="Es. Maria (Figlia) o Coniuge">
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label">Cellulare WA</label>
+                <input type="text" class="form-control" id="nuovo-paz-parente-cell" placeholder="Es. 347 123 45 67">
+              </div>
             </div>
           </div>
 
-          <!-- SEZIONE 3: QUADRO CLINICO E PATOLOGIE PERSONALI CON CHIP RAPIDI & AGGIUNTA PERSONALIZZATA -->
-          <div style="font-weight:800; font-size:12.5px; color:#b45309; text-transform:uppercase; margin:14px 0 10px; display:flex; align-items:center; gap:6px;">
-            <span>🩺</span> <span>3. Quadro Clinico & Patologie (Seleziona o Inserisci Nuova)</span>
-          </div>
+          <!-- SEZIONE 3: QUADRO CLINICO E PATOLOGIE -->
+          <div class="card-sezione-pro">
+            <div class="sezione-titolo-pro" style="color:#b45309;">
+              <span>🩺</span> <span>3. Quadro Clinico & Patologie</span>
+            </div>
 
-          <!-- CHIP RAPIDI PATOLOGIE PIÙ FREQUENTI -->
-          <div style="margin-bottom:8px;">
-            <div style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:6px;">⚡ Seleziona rapidamente o clicca per aggiungere:</div>
-            <div id="container-chip-patologie" style="display:flex; flex-wrap:wrap; gap:6px;">
+            <div style="font-size:11px; font-weight:700; color:#475569; margin-bottom:6px;">⚡ Seleziona rapidamente per aggiungere alla diagnosi:</div>
+            <div id="container-chip-patologie" style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
               <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Ipertensione arteriosa sistemica')">+ Ipertensione</span>
               <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Diabete Mellito Tipo 2')">+ Diabete Tipo 2</span>
               <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Demenza Senile / Alzheimer')">+ Demenza / Alzheimer</span>
               <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Osteoporosi Severa')">+ Osteoporosi</span>
-              <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Disfagia (Difficoltà deglutizione liquidi)')">+ Disfagia</span>
-              <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Cardiopatia Ischemica / Scompenso')">+ Cardiopatia / Scompenso</span>
-              <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Broncopneumopatia Cronica Ostruttiva (BPCO)')">+ BPCO</span>
-              <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Ipercolesterolemia / Dislipidemia')">+ Colesterolo Alto</span>
-              <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Ipotiroidismo')">+ Ipotiroidismo</span>
-              <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Artrosi diffusa / Gonartrosi')">+ Artrosi</span>
+              <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Disfagia ai liquidi')">+ Disfagia</span>
+              <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Cardiopatia / Scompenso')">+ Cardiopatia</span>
+              <span class="chip-patologia" onclick="togglePatologiaChip(this, 'BPCO')">+ BPCO</span>
+              <span class="chip-patologia" onclick="togglePatologiaChip(this, 'Dislipidemia')">+ Colesterolo</span>
+            </div>
+
+            <!-- Inserimento Altra Patologia -->
+            <div style="display:flex; gap:6px; margin-bottom:8px;">
+              <input type="text" class="form-control" id="nuovo-paz-input-nuova-patologia" list="datalist-patologie" placeholder="Altra patologia (es. Parkinson, Glaucoma...)" style="font-size:12.5px;">
+              <datalist id="datalist-patologie">
+                <option value="Diabete Mellito Tipo 2">
+                <option value="Ipertensione arteriosa sistemica">
+                <option value="Demenza Senile / Declino Cognitivo">
+                <option value="Morbo di Parkinson">
+                <option value="Osteoporosi con pregresse fratture">
+                <option value="Disfagia ai liquidi (Necessita addensante)">
+                <option value="Glaucoma ad angolo aperto">
+                <option value="Insufficienza Renale Cronica">
+                <option value="Fibrillazione Atriale cronica">
+              </datalist>
+              <button type="button" class="btn btn-outline" style="white-space:nowrap; font-size:11.5px; border-color:#d97706; color:#b45309; padding:4px 10px; font-weight:700;" onclick="aggiungiPatologiaPersonalizzata()">➕ Aggiungi</button>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Riepilogo Diagnosi Cartella</label>
+              <textarea class="form-control" id="nuovo-paz-patologie-testo" rows="2" placeholder="Le patologie selezionate compariranno qui e potranno essere modificate..." style="resize:vertical;"></textarea>
             </div>
           </div>
 
-          <!-- INPUT PER AGGIUNGERE QUALSIASI NUOVA PATOLOGIA AL VOLO -->
-          <div style="display:flex; gap:8px; margin-bottom:10px;">
-            <input type="text" class="form-control" id="nuovo-paz-input-nuova-patologia" list="datalist-patologie" placeholder="Digita una nuova patologia (es. Glaucoma, Parkinson, Anemia...)" style="font-size:12.5px;">
-            <datalist id="datalist-patologie">
-              <option value="Diabete Mellito Tipo 2">
-              <option value="Ipertensione arteriosa sistemica">
-              <option value="Demenza Senile / Declino Cognitivo">
-              <option value="Morbo di Parkinson">
-              <option value="Osteoporosi con pregresse fratture">
-              <option value="Disfagia ai liquidi (Necessita addensante)">
-              <option value="Glaucoma ad angolo aperto">
-              <option value="Insufficienza Renale Cronica">
-              <option value="Fibrillazione Atriale cronica">
-              <option value="Anemia sideropenica / senile">
-              <option value="Artrite Reumatoide">
-              <option value="Stipsi ostinata / Atonia intestinale">
-            </datalist>
-            <button type="button" class="btn btn-outline" style="white-space:nowrap; font-size:12px; border-color:#d97706; color:#b45309;" onclick="aggiungiPatologiaPersonalizzata()">➕ Aggiungi</button>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Riepilogo Diagnosi & Patologie per questa cartella:</label>
-            <textarea class="form-control" id="nuovo-paz-patologie-testo" rows="3" placeholder="Le patologie selezionate o scritte compariranno qui e potranno essere modificate liberamente..."></textarea>
-            <small style="color:#64748b; font-size:11px;">Puoi anche modificare o cancellare il testo direttamente da questa casella.</small>
-          </div>
-
-          <!-- SEZIONE 4: AUSILI SANITARI, PRESIDI & RIFORNIMENTI CON SCADENZE -->
-          <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:12px; padding:14px; margin-bottom:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-              <div style="font-weight:800; font-size:12.5px; color:#1e40af; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
-                <span>🛡️</span> <span>4. Ausili Sanitari, Presidi & Rifornimenti (Scelta Multipla)</span>
+          <!-- SEZIONE 4: AUSILI SANITARI -->
+          <div class="card-sezione-pro box-ausili-pro">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div class="sezione-titolo-pro" style="margin-bottom:0; border:none; padding:0;">
+                <span>🛡️</span> <span>4. Ausili Sanitari & Presidi ASL</span>
               </div>
-              <button type="button" class="btn btn-outline" style="background:#fff; color:#0284c7; border-color:#93c5fd; font-size:11.5px; font-weight:700; padding:2px 8px;" onclick="aggiungiRigaAusilioNuovo()">➕ Aggiungi Altro Ausilio</button>
+              <button type="button" class="btn-cal-mini" onclick="aggiungiRigaAusilioNuovo()">➕ Aggiungi</button>
             </div>
             
-            <div id="container-catalogo-ausili-nuovo" style="display:flex; flex-direction:column; gap:8px;">
-              <!-- Generato dinamicamente via JavaScript con elenco standard, checkbox e date di rifornimento/scadenza -->
+            <div id="container-catalogo-ausili-nuovo" style="display:flex; flex-direction:column; gap:6px;">
+              <!-- Generato dinamicamente via JavaScript -->
             </div>
           </div>
 
-          <!-- SEZIONE 5: MEDICO CURANTE & FARMACIA CON AUTO-COMPILAZIONE RSA / STRUTTURA -->
-          <div style="background:#fefce8; border:1.5px solid #fde047; border-radius:12px; padding:14px;">
-            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
-              <div style="font-weight:800; font-size:12px; color:#854d0e; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
-                <span>🩺</span> <span>5. Riferimenti Medico Curante & Farmacia (Rubrica RSA & Domicilio)</span>
-              </div>
-              <div style="display:flex; flex-direction:column; gap:4px; width:100%;">
-                <label for="select-medico-farmacia-preset-nuovo" style="font-size:11.5px; font-weight:700; color:#b45309;">⚡ Predefiniti RSA & Rubrica:</label>
-                <select id="select-medico-farmacia-preset-nuovo" class="form-control" style="font-size:12px; padding:6px 10px; width:100%; border-color:#f59e0b; font-weight:700; background:#fff;" onchange="applicaPresetMedicoFarmacia(this.value, 'nuovo')">
-                  <option value="">-- Seleziona da Rubrica Struttura --</option>
-                  <option value="scarcia_macario">🩺 Dott. Roberto Scarcia + 🏥 Farmacia MACARIO (Bari)</option>
-                  <option value="potenza">🩺 Dr.ssa Carolina Potenza (Sarconi/Moliterno) + Farmacia Girasole Picconi (Corleto Perticara)</option>
-                  <option value="medico_rsa">🏥 Medico di Struttura RSA + Farmacia Ospedaliera</option>
-                  <option value="adi_bari">🚑 Servizio Territoriale ADI ASL Bari</option>
-                  <option value="manuale">✏️ Inserimento Manuale / Altro</option>
-                </select>
-              </div>
+          <!-- SEZIONE 5: MEDICO CURANTE & FARMACIA -->
+          <div class="card-sezione-pro box-sanita-pro">
+            <div class="sezione-titolo-pro">
+              <span>🩺</span> <span>5. Medico Curante & Farmacia</span>
             </div>
-            <!-- RIGA 1: NOME MEDICO (LARGHEZZA INTERA) -->
-            <div class="form-group" style="margin-bottom:10px;">
-              <label class="form-label" style="font-weight:700;">Nome Medico Curante</label>
-              <input type="text" class="form-control" id="nuovo-paz-medico-nome" placeholder="Es. Dott. Roberto Scarcia" style="font-weight:700; font-size:14.5px;">
+
+            <!-- Rubrica Rapida -->
+            <div class="form-group" style="margin-bottom:8px;">
+              <select id="select-medico-farmacia-preset-nuovo" class="form-control" style="font-size:12px; font-weight:700; border-color:#86efac; background:#fff;" onchange="applicaPresetMedicoFarmacia(this.value, 'nuovo')">
+                <option value="">⚡ Carica rapido da Rubrica Struttura...</option>
+                <option value="scarcia_macario">🩺 Dott. Roberto Scarcia + Farmacia MACARIO (Bari)</option>
+                <option value="potenza">🩺 Dr.ssa Carolina Potenza + Farmacia Girasole Picconi</option>
+                <option value="medico_rsa">🏥 Medico di Struttura RSA + Farmacia Ospedaliera</option>
+                <option value="adi_bari">🚑 Servizio Territoriale ADI ASL Bari</option>
+                <option value="manuale">✏️ Inserimento Manuale / Altro</option>
+              </select>
             </div>
-            <!-- RIGA 2: RECAPITI TELEFONICI E EMAIL (2 COLONNE AMPIE) -->
-            <div class="form-row" style="margin-bottom:10px;">
-              <div class="form-group" style="flex:1; min-width:130px; margin-bottom:0;">
-                <label class="form-label" style="font-weight:700;">Telefono Medico</label>
-                <input type="text" class="form-control" id="nuovo-paz-medico-tel" placeholder="Es. 080 557 44 90" style="font-weight:600;">
-              </div>
-              <div class="form-group" style="flex:1; min-width:130px; margin-bottom:0;">
-                <label class="form-label" style="font-weight:700;">Email per Richiesta Ricette</label>
-                <input type="email" class="form-control" id="nuovo-paz-medico-email" placeholder="Es. scarcia.roberto@alice.it" style="font-weight:600;">
-              </div>
+
+            <div class="form-group" style="margin-bottom:8px;">
+              <label class="form-label">Nome Medico Curante (MMG)</label>
+              <input type="text" class="form-control" id="nuovo-paz-medico-nome" placeholder="Es. Dott. Roberto Scarcia" style="font-weight:700;">
             </div>
-            <div class="form-row" style="margin-top:6px;">
-              <div class="form-group" style="flex:1.5; margin-bottom:0;">
-                <label class="form-label" style="font-size:12px;">Farmacia di Riferimento</label>
-                <input type="text" class="form-control" id="nuovo-paz-farmacia" placeholder="Es. Farmacia MACARIO (Via G. Petroni)">
+
+            <div class="riga-doppia-pro" style="margin-bottom:8px;">
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label">Tel. Studio Medico</label>
+                <input type="text" class="form-control" id="nuovo-paz-medico-tel" placeholder="Es. 080 557 44 90">
               </div>
               <div class="form-group" style="flex:1; margin-bottom:0;">
-                <label class="form-label" style="font-size:12px;">Tel. Farmacia</label>
+                <label class="form-label">Email per Ricette</label>
+                <input type="email" class="form-control" id="nuovo-paz-medico-email" placeholder="Es. dottore@email.it">
+              </div>
+            </div>
+
+            <!-- Sub-Box Farmacia -->
+            <div class="riga-doppia-pro" style="margin-bottom:0; background:rgba(255,255,255,0.7); padding:8px 10px; border-radius:8px; border:1px solid #bbf7d0;">
+              <div class="form-group" style="flex:1.4; margin-bottom:0;">
+                <label class="form-label">Farmacia di Riferimento</label>
+                <input type="text" class="form-control" id="nuovo-paz-farmacia" placeholder="Es. Farmacia MACARIO (Bari)">
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label">Tel. Farmacia</label>
                 <input type="text" class="form-control" id="nuovo-paz-farmacia-tel" placeholder="Es. 080 542 8061">
               </div>
             </div>
           </div>
 
-          <!-- SEZIONE 6: ALLERGIE, INTOLLERANZE & REAZIONI AVVERSE FARMACOLOGICHE (EMERGENZA 118) -->
-          <div style="background:#fff1f2; border:1.5px solid #fecdd3; border-radius:12px; padding:14px; margin-top:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
-              <div style="font-weight:800; font-size:12px; color:#991b1b; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
-                <span>🚫</span> <span>6. Allergie, Intolleranze & Reazioni Avverse (Dati Scheda 118)</span>
+          <!-- SEZIONE 6: ALLERGIE & EMERGENZA 118 -->
+          <div class="card-sezione-pro box-allergie-pro">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <div class="sezione-titolo-pro" style="margin-bottom:0; border:none; padding:0;">
+                <span>🚫</span> <span>6. Allergie & Note Scheda 118</span>
               </div>
-              <span style="font-size:11px; background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:700; border:1px solid #fca5a5;">⚠️ Salvavita</span>
+              <span class="badge-salvavita-mini">⚠️ Salvavita</span>
             </div>
-            <div class="form-group" style="margin-bottom:8px;">
-              <label class="form-label" style="font-size:12px; color:#7f1d1d; font-weight:700;">Specificare Allergie a Farmaci, Alimenti o Sostanze:</label>
-              <input type="text" class="form-control" id="nuovo-paz-allergie" placeholder="Es. Penicilline, FANS (Aspirina/Ibuprofene), Lattice, oppure: Nessuna nota" value="Nessuna nota" style="font-weight:700; border-color:#fca5a5; color:#991b1b; background:#fff;">
+
+            <div class="form-group" style="margin-bottom:6px;">
+              <input type="text" class="form-control" id="nuovo-paz-allergie" placeholder="Es. Penicilline, FANS, oppure: Nessuna nota" value="Nessuna nota" style="font-weight:700; border-color:#fca5a5; color:#991b1b; background:#fff;">
             </div>
-            <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
-              <span style="font-size:11px; font-weight:800; color:#991b1b;">Scelta Rapida:</span>
-              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="impostaAllergiaRapida('nuovo', 'Nessuna nota (NKDA)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#86efac; color:#166534; font-weight:700;">✅ Nessuna nota (NKDA)</button>
-              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'Penicilline / Beta-lattamici')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">💊 Penicilline</button>
-              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'FANS (Aspirina, Ibuprofene)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">💊 FANS</button>
-              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'Lattice (Latex)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">🛡️ Lattice</button>
-              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'Glutine (Celiachia)')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fed7aa; color:#9a3412; font-weight:700;">🌾 Glutine</button>
-              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'Lattosio')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fed7aa; color:#9a3412; font-weight:700;">🥛 Lattosio</button>
-              <button type="button" class="btn btn-outline allergy-quick-btn" onclick="aggiungiAllergiaRapida('nuovo', 'Mezzo di Contrasto Iodato')" style="font-size:11px; padding:2px 8px; background:#fff; border-color:#fca5a5; color:#b91c1c; font-weight:700;">🧪 Mezzo Contrasto</button>
+
+            <div class="allergy-pills-row">
+              <span style="font-size:10.5px; font-weight:800; color:#991b1b;">Rapidi:</span>
+              <button type="button" class="pill-btn-mini" onclick="impostaAllergiaRapida('nuovo', 'Nessuna nota (NKDA)')">✅ Nessuna (NKDA)</button>
+              <button type="button" class="pill-btn-mini" onclick="aggiungiAllergiaRapida('nuovo', 'Penicilline / Beta-lattamici')">💊 Penicilline</button>
+              <button type="button" class="pill-btn-mini" onclick="aggiungiAllergiaRapida('nuovo', 'FANS (Aspirina/Ibuprofene)')">💊 FANS</button>
+              <button type="button" class="pill-btn-mini" onclick="aggiungiAllergiaRapida('nuovo', 'Lattice')">🛡️ Lattice</button>
             </div>
           </div>
 
         </div>
-        <div class="modal-footer" style="background:#f8fafc; border-top:1px solid #e2e8f0;">
-          <button type="button" class="btn btn-outline" onclick="closeModal('modal-nuovo-paziente')">Annulla</button>
-          <button type="submit" id="btn-submit-nuovo-paziente" class="btn btn-primary" style="background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Crea Cartella Clinica Completa</button>
+
+        <!-- FOOTER AZIONI FISSO BILANCIATO -->
+        <div class="modal-footer modal-footer-anagrafica">
+          <div class="modal-footer-actions">
+            <button type="button" class="btn btn-outline" onclick="closeModal('modal-nuovo-paziente')">✕ Annulla</button>
+            <button type="submit" id="btn-submit-nuovo-paziente" class="btn btn-primary" style="background:linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%);">
+              ✨ Crea Cartella Clinica
+            </button>
+          </div>
         </div>
       </form>
     </div>
