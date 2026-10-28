@@ -4588,4 +4588,138 @@ textarea.form-control {
   }
 }
 
+/* ==========================================================================
+   MODAL FARMACO PRO & CAPSULA MOBILE PERFECTION
+   ========================================================================== */
+.modal-farmaco-pro {
+  max-width: 660px !important;
+  width: 95% !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.35) !important;
+}
+
+.header-farmaco-pro {
+  background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%) !important;
+  color: #ffffff !important;
+  padding: 12px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.modal-body-farmaco-pro {
+  padding: 12px 14px !important;
+  background: #f8fafc !important;
+  max-height: calc(85vh - 120px) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+/* Scanner compatto farmaco AI */
+.box-scanner-farmaco-pro {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+  border: 1.5px solid #38bdf8 !important;
+  border-radius: 12px !important;
+  padding: 10px 12px !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.18) !important;
+}
+
+.badge-scanner-ai {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.btn-scan-gallery {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #f1f5f9 !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.btn-add-dose-mini {
+  padding: 6px 12px;
+  font-size: 11.5px;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1.5px solid #86efac;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-add-dose-mini:hover {
+  background: #dcfce7;
+}
+
+.btn-voce-mini {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pill-amber { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+.pill-emerald { background: #ecfdf5; color: #065f46; border: 1px solid #10b981; }
+.pill-sky { background: #f0f9ff; color: #0369a1; border: 1px solid #0284c7; }
+
+/* Responsive Pills frequenza farmaco */
+@media (max-width: 600px) {
+  .modal-farmaco-pro {
+    width: 98% !important;
+    max-height: calc(100dvh - 12px) !important;
+    border-radius: 14px !important;
+  }
+  .header-farmaco-pro {
+    padding: 9px 12px !important;
+  }
+  .modal-body-farmaco-pro {
+    padding: 9px !important;
+    gap: 8px !important;
+    max-height: calc(100dvh - 125px) !important;
+  }
+  .capsula-freq-selector {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 5px !important;
+  }
+  .btn-freq-pill {
+    min-width: 0 !important;
+    padding: 6px 4px !important;
+    font-size: 11px !important;
+    flex: unset !important;
+  }
+  .dose-card-item {
+    padding: 9px 10px !important;
+    border-radius: 10px !important;
+  }
+  .quota-pill-group {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px !important;
+  }
+  .quota-pill {
+    padding: 6px 2px !important;
+    font-size: 10.5px !important;
+    flex: unset !important;
+  }
+}
+
+
 

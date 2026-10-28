@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=58">
+  <link rel="stylesheet" href="style.css?v=59">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -1442,130 +1442,125 @@
   <!-- MODAL 4: AGGIUNGI FARMACO -->
     <!-- MODAL: AGGIUNGI FARMACO ALLA TERAPIA CON PIANIFICAZIONE AVANZATA -->
   
-    <!-- MODAL UNIFICATO: MASCHERA TERAPIA CAPSULA & PIANO POSOLOGICO -->
+    <!-- MODAL UNIFICATO: MASCHERA TERAPIA CAPSULA & PIANO POSOLOGICO PRO -->
   <div class="modal-overlay" id="modal-modifica-farmaco">
-    <div class="modal-card" style="max-width: 680px;">
-      <div class="modal-header" style="background:linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%); color:white; padding:14px 20px;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-size:28px;">💊</span>
-          <div>
-            <div class="modal-title" id="edit-farm-modal-title" style="color:white; font-size:17px; font-weight:800; line-height:1.2;">
-              💊 Scheda Capsula: <span id="edit-farm-header-nome" style="color:#fef08a;">Farmaco</span>
+    <div class="modal-card modal-farmaco-pro" style="max-width: 650px;">
+      
+      <!-- HEADER CLINICO MODERNO -->
+      <div class="modal-header header-farmaco-pro">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+          <span style="font-size:24px; flex-shrink:0;">💊</span>
+          <div style="min-width:0;">
+            <div class="modal-title" id="edit-farm-modal-title" style="color:white; font-size:15.5px; font-weight:800; line-height:1.2; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+              Scheda Terapia: <span id="edit-farm-header-nome" style="color:#fef08a;">Farmaco</span>
             </div>
-            <div style="font-size:12px; color:#bae6fd; font-weight:700; margin-top:2px;">
-              👤 Assistito: <b id="edit-farm-header-paziente" style="color:#ffffff; text-decoration:underline;">Paziente</b>
+            <div style="font-size:11.5px; color:#bae6fd; font-weight:700; margin-top:2px;">
+              👤 Assistito: <b id="edit-farm-header-paziente" style="color:#ffffff;">Paziente</b>
             </div>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" class="modal-close" style="color:white; font-size:20px; width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="closeModal('modal-modifica-farmaco')" title="Chiudi finestra">✕</button>
-        </div>
+        <button type="button" class="modal-close btn-close-circle" onclick="closeModal('modal-modifica-farmaco')" title="Chiudi finestra">✕</button>
       </div>
 
       <form id="form-maschera-capsula" onsubmit="salvaModificaFarmaco(event)">
         <input type="hidden" id="edit-farm-id">
-        <div class="modal-body" style="padding:18px 22px; background:#f8fafc; max-height:80vh; overflow-y:auto;">
+        <div class="modal-body modal-body-farmaco-pro">
           
-          <!-- SCANNER INTELLIGENTE FARMACO CON FOTOCAMERA / GALLERIA (OCR & AI MEDICAL ENGINE) -->
-          <div class="box-scanner-farmaco-pro" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1.5px solid #38bdf8; border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; color: #ffffff; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2);">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 20px;">📸</span>
-                <div>
-                  <strong style="font-size: 13px; color: #ffffff; letter-spacing: 0.3px;">SCANNER VISIVO FARMACO AI</strong>
-                  <div style="font-size: 10.5px; color: #7dd3fc;">Fotografa la scatola: riconosce farmaco, principio attivo e indicazioni</div>
-                </div>
+          <!-- SCANNER INTELLIGENTE FARMACO AI -->
+          <div class="box-scanner-farmaco-pro">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:18px;">📸</span>
+                <span style="font-size:12px; font-weight:800; color:#ffffff; letter-spacing:0.3px;">SCANNER VISIVO FARMACO AI</span>
               </div>
-              <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 2px 7px; border-radius: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px;">SUITE AI</span>
+              <span class="badge-scanner-ai">AI VISION</span>
             </div>
+            <div style="font-size:11px; color:#7dd3fc; margin-bottom:8px;">Fotografa o carica la scatola: compila nome, dosaggio e istruzioni</div>
 
-            <!-- Pulsanti di Scatto / Caricamento Foto -->
-            <div style="display: flex; gap: 8px; margin-top: 6px;">
-              <label class="btn-scan-act" style="flex: 1; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border-radius: 10px; padding: 9px 12px; font-size: 12.5px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; text-align: center; border: 1px solid #38bdf8; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3); transition: all 0.15s ease;">
-                <span>📷</span> Scatta con Fotocamera
-                <input type="file" id="scan-farm-camera" accept="image/*" capture="environment" style="display: none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
+            <div style="display:flex; gap:8px;">
+              <label class="btn-scan-act" style="flex:1;">
+                <span>📷</span> Fotocamera
+                <input type="file" id="scan-farm-camera" accept="image/*" capture="environment" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
               </label>
 
-              <label class="btn-scan-act" style="flex: 1; background: rgba(255, 255, 255, 0.1); color: #e2e8f0; border-radius: 10px; padding: 9px 12px; font-size: 12.5px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; text-align: center; border: 1px solid rgba(255, 255, 255, 0.25); transition: all 0.15s ease;">
-                <span>🖼️</span> Scegli da Galleria
-                <input type="file" id="scan-farm-gallery" accept="image/*" style="display: none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
+              <label class="btn-scan-act btn-scan-gallery" style="flex:1;">
+                <span>🖼️</span> Galleria
+                <input type="file" id="scan-farm-gallery" accept="image/*" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
               </label>
             </div>
 
-            <!-- Box di Analisi & Risultato Rilevato (Inizialmente nascosto) -->
-            <div id="scan-result-capsula" style="display: none; margin-top: 10px; padding: 10px; background: rgba(15, 23, 42, 0.7); border: 1.5px solid #10b981; border-radius: 10px;">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                <span id="scan-status-icon" style="font-size: 16px;">⚡</span>
-                <span id="scan-status-text" style="font-size: 12px; font-weight: 800; color: #34d399;">Analisi ottica completata con successo!</span>
+            <!-- Box di Analisi & Risultato Rilevato -->
+            <div id="scan-result-capsula" style="display:none; margin-top:8px; padding:8px 10px; background:rgba(15, 23, 42, 0.75); border:1.5px solid #10b981; border-radius:10px;">
+              <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                <span id="scan-status-icon" style="font-size:14px;">⚡</span>
+                <span id="scan-status-text" style="font-size:11.5px; font-weight:800; color:#34d399;">Analisi completata!</span>
               </div>
-              <div id="scan-detected-info" style="font-size: 11.5px; color: #e2e8f0; line-height: 1.4;"></div>
+              <div id="scan-detected-info" style="font-size:11px; color:#e2e8f0; line-height:1.35;"></div>
             </div>
           </div>
 
-          <!-- SEZIONE 1: ANAGRAFICA FARMACO & FORZA CAPSULA -->
-          <div style="background:white; border-radius:14px; padding:14px 16px; margin-bottom:14px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#64748b; letter-spacing:0.5px; margin-bottom:10px;">
-              🏷️ Dati Capsula & Principio Attivo
+          <!-- SEZIONE 1: IDENTIFICATIVO & PRINCIPIO ATTIVO -->
+          <div class="card-sezione-pro">
+            <div class="sezione-titolo-pro">
+              <span>🏷️</span> Identificativo Farmaco & Formula
             </div>
-            <div class="form-row" style="margin-bottom:10px;">
-              <div class="form-group" style="flex:1.5; margin-bottom:0;">
-                <label class="form-label" style="font-weight:700;">Nome Commerciale Farmaco</label>
-                <input type="text" class="form-control" id="edit-farm-nome" required placeholder="Es. SINEMET, TRIATEC, LASIX, CONGESCOR..." oninput="if(typeof autoCompilaDatiFarmaco==='function') autoCompilaDatiFarmaco(this.value)" autocomplete="off">
-                <div id="farm-suggerimenti-box" style="margin-top:6px; display:flex; flex-wrap:wrap; gap:5px;"></div>
+            
+            <div class="form-group-compact" style="margin-bottom:8px;">
+              <label class="form-label-compact">Nome Commerciale Farmaco *</label>
+              <input type="text" class="form-control-compact" id="edit-farm-nome" required placeholder="Es. Entecavir Sandoz, Cardioaspirina, Vimpat..." oninput="if(typeof autoCompilaDatiFarmaco==='function') autoCompilaDatiFarmaco(this.value)" autocomplete="off">
+              <div id="farm-suggerimenti-box" style="margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;"></div>
+            </div>
+
+            <div class="riga-doppia-pro" style="margin-bottom:8px;">
+              <div class="form-group-compact" style="flex:1.2;">
+                <label class="form-label-compact">Dosaggio Unitario *</label>
+                <input type="text" class="form-control-compact" id="edit-farm-dosaggio" required placeholder="Es. 0,5 mg, 100 mg, 1 cpr">
               </div>
-              <div class="form-group" style="flex:1.2; margin-bottom:0;">
-                <label class="form-label" style="font-weight:700;">Dosaggio Capsula</label>
-                <input type="text" class="form-control" id="edit-farm-dosaggio" required placeholder="Es. 100+25 mg, 5 mg, 25 mg">
+              <div class="form-group-compact" style="flex:1.5;">
+                <label class="form-label-compact">Principio Attivo</label>
+                <input type="text" class="form-control-compact" id="edit-farm-principio" placeholder="Es. Entecavir, Paracetamolo...">
               </div>
             </div>
-            <div class="form-row" style="margin-bottom:0;">
-              <div class="form-group" style="flex:1.5; margin-bottom:0;">
-                <label class="form-label">Principio Attivo</label>
-                <input type="text" class="form-control" id="edit-farm-principio" placeholder="Es. Levodopa + Carbidopa, Ramipril, Furosemide...">
-              </div>
-              <div class="form-group" style="flex:1; margin-bottom:0;">
-                <label class="form-label">Regola Frequenza</label>
-                <select class="form-control" id="edit-farm-cadenza" style="font-weight:700; color:#0f172a;">
-                  <option value="giornaliera">Tutti i giorni (Quotidiana)</option>
-                  <option value="alternati">A giorni alterni (Un giorno sì / no)</option>
-                  <option value="quindicinale_15_30">Ogni 15 giorni (il 15 e 30 del mese)</option>
-                  <option value="settimanale">Una volta a settimana</option>
-                  <option value="bisogno">Al bisogno (SOS)</option>
-                </select>
-              </div>
+
+            <div class="form-group-compact">
+              <label class="form-label-compact">Regola Frequenza / Cadenza</label>
+              <select class="form-control-compact" id="edit-farm-cadenza" style="font-weight:700; color:#0f172a;">
+                <option value="giornaliera">Tutti i giorni (Quotidiana)</option>
+                <option value="alternati">A giorni alterni (Un giorno sì / no)</option>
+                <option value="quindicinale_15_30">Ogni 15 giorni (il 15 e 30 del mese)</option>
+                <option value="settimanale">Una volta a settimana</option>
+                <option value="bisogno">Al bisogno (SOS / Sintomatico)</option>
+              </select>
             </div>
           </div>
 
-          <!-- SEZIONE 2: QUANTE VOLTE AL GIORNO? (SELETTORE TOUCH REATTIVO) -->
-          <div style="background:white; border-radius:14px; padding:14px 16px; margin-bottom:14px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#1e40af; letter-spacing:0.5px;">
-                ⏰ Numero di Assunzioni al Giorno
+          <!-- SEZIONE 2: PIANO SOMMINISTRAZIONI & DOSI GIORNALIERE -->
+          <div class="card-sezione-pro box-sanita-pro">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div class="sezione-titolo-pro" style="margin-bottom:0; border:none; padding:0;">
+                <span>⏰</span> Orari & Quota Somministrazioni
               </div>
-              <span style="font-size:11px; color:#15803d; font-weight:700; background:#dcfce7; padding:2px 8px; border-radius:8px;">Tocca per impostare gli orari</span>
+              <span class="badge-mini-green">Tocca per impostare</span>
             </div>
             
             <div class="capsula-freq-selector">
               <button type="button" class="btn-freq-pill" data-freq="1" onclick="selezionaFrequenzaCapsula(1)">
-                <span>☀️</span> 1 Volta / die
+                <span>☀️</span> 1/die
               </button>
               <button type="button" class="btn-freq-pill active" data-freq="2" onclick="selezionaFrequenzaCapsula(2)">
-                <span>🌅🌙</span> 2 Volte / die
+                <span>🌅🌙</span> 2/die
               </button>
               <button type="button" class="btn-freq-pill" data-freq="3" onclick="selezionaFrequenzaCapsula(3)">
-                <span>🍽️</span> 3 Volte / die
+                <span>🍽️</span> 3/die
               </button>
               <button type="button" class="btn-freq-pill" data-freq="4" onclick="selezionaFrequenzaCapsula(4)">
-                <span>⚡</span> 4 Volte / die
+                <span>⚡</span> 4/die
               </button>
               <button type="button" class="btn-freq-pill" data-freq="5" onclick="selezionaFrequenzaCapsula(5)">
-                <span>🔄</span> 5 Volte (Frazionata)
-              </button>
-              <button type="button" class="btn-freq-pill" data-freq="6" onclick="selezionaFrequenzaCapsula(6)">
-                <span>⏱️</span> 6 Volte / die
+                <span>🔄</span> 5/die
               </button>
               <button type="button" class="btn-freq-pill" data-freq="bisogno" onclick="selezionaFrequenzaCapsula('bisogno')">
-                <span>🚨</span> Al Bisogno (SOS)
+                <span>🚨</span> Al Bisogno
               </button>
             </div>
 
@@ -1574,98 +1569,97 @@
               <!-- generato dinamicamente con le card di ogni dose -->
             </div>
 
-            <div style="margin-top:12px; display:flex; justify-content:flex-end;">
-              <button type="button" class="btn" style="padding:6px 12px; font-size:12px; background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; border-radius:8px; font-weight:800; cursor:pointer;" onclick="aggiungiDoseCardManuale()">
-                ➕ Aggiungi Altra Somministrazione
+            <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+              <button type="button" class="btn-add-dose-mini" onclick="aggiungiDoseCardManuale()">
+                ➕ Aggiungi Somministrazione
               </button>
             </div>
           </div>
 
-          <!-- SEZIONE 3: RIEPILOGO CLINICO & CALCOLO CONSUMO IN TEMPO REALE -->
+          <!-- SEZIONE 3: RIEPILOGO CLINICO CONSUMO -->
           <div id="box-capsula-riepilogo" class="capsula-summary-card">
             <!-- generato dinamicamente da ricalcolaRiepilogoCapsula() -->
           </div>
 
-          <!-- SEZIONE 4: MODALITÀ DI ASSUNZIONE & INDICAZIONE CLINICA -->
-          <div style="background:white; border-radius:14px; padding:14px 16px; margin-bottom:14px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <!-- SEZIONE 4: MODALITÀ CLINICHE & VOCALE -->
+          <div class="card-sezione-pro">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <label class="form-label" style="font-weight:800; margin-bottom:0;" for="edit-farm-modo">
-                📋 Modalità di Assunzione & Istruzioni Cliniche
-              </label>
-              <button type="button" id="btn-leggi-istruzioni-voce" class="btn" onclick="leggiIstruzioniFarmacoVoce()" style="padding:3px 10px; font-size:11.5px; font-weight:800; background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; border-radius:8px; cursor:pointer;" title="Ascolta istruzioni con sintesi vocale">
-                🔊 Ascolta Istruzioni
+              <div class="sezione-titolo-pro" style="margin-bottom:0; border:none; padding:0;">
+                <span>📋</span> Modalità di Assunzione & Note
+              </div>
+              <button type="button" id="btn-leggi-istruzioni-voce" class="btn-voce-mini" onclick="leggiIstruzioniFarmacoVoce()" title="Ascolta istruzioni vocali">
+                🔊 Ascolta
               </button>
             </div>
             
-            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
-              <button type="button" class="btn" style="padding:3px 8px; font-size:11px; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; border-radius:6px; font-weight:700;" onclick="applicaModoRapido('30 min prima dei pasti a stomaco vuoto con acqua (Parkinson)')">
-                ⚡ A stomaco vuoto (30 min prima)
+            <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
+              <button type="button" class="pill-btn-mini pill-amber" onclick="applicaModoRapido('30 min prima dei pasti a digiuno con acqua')">
+                ⚡ A digiuno (30 min prima)
               </button>
-              <button type="button" class="btn" style="padding:3px 8px; font-size:11px; background:#ecfdf5; color:#065f46; border:1px solid #10b981; border-radius:6px; font-weight:700;" onclick="applicaModoRapido('A stomaco pieno dopo il pasto con un bicchiere d\'acqua')">
-                🍽️ Dopo i pasti con acqua
+              <button type="button" class="pill-btn-mini pill-emerald" onclick="applicaModoRapido('Dopo i pasti a stomaco pieno con acqua')">
+                🍽️ Dopo i pasti
               </button>
-              <button type="button" class="btn" style="padding:3px 8px; font-size:11px; background:#f0f9ff; color:#0369a1; border:1px solid #0284c7; border-radius:6px; font-weight:700;" onclick="applicaModoRapido('La sera prima di coricarsi')">
+              <button type="button" class="pill-btn-mini pill-sky" onclick="applicaModoRapido('La sera prima di dormire')">
                 🌙 Prima di dormire
               </button>
             </div>
 
-            <textarea class="form-control" id="edit-farm-modo" required rows="2" placeholder="Es. 30 min prima di colazione (Parkinson). Assumere con abbondante acqua." style="font-size:13.5px; line-height:1.4; padding:8px 10px; resize:vertical; font-family:inherit;"></textarea>
+            <textarea class="form-control-compact" id="edit-farm-modo" required rows="2" placeholder="Es. Una compressa al mattino a digiuno con acqua..." style="resize:vertical; line-height:1.35;"></textarea>
           </div>
 
-          <!-- SEZIONE 5: FORMATO SCATOLA, SCORTA ATTUALE & ALLERTE -->
-          <div style="background:white; border-radius:14px; padding:14px 16px; margin-bottom:14px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#64748b; letter-spacing:0.5px; margin-bottom:10px;">
-              📦 Scorte & Formato Farmacia
+          <!-- SEZIONE 5: SCORTE, CONFEZIONE & PREAVVISO -->
+          <div class="card-sezione-pro box-ausili-pro">
+            <div class="sezione-titolo-pro">
+              <span>📦</span> Scorte a Casa & Confezione Farmacia
             </div>
-            <div class="form-row" style="margin-bottom:0; align-items:flex-end;">
-              <div class="form-group" style="flex:1; margin-bottom:0;">
-                <label class="form-label">Cpr per Scatola</label>
-                <input type="number" class="form-control" id="edit-farm-cpr-scatola" min="1" value="28" oninput="ricalcolaRiepilogoCapsula()">
+            <div class="riga-doppia-pro" style="align-items:flex-end;">
+              <div class="form-group-compact" style="flex:1;">
+                <label class="form-label-compact">Cpr per Scatola</label>
+                <input type="number" class="form-control-compact" id="edit-farm-cpr-scatola" min="1" value="28" oninput="ricalcolaRiepilogoCapsula()">
               </div>
-              <div class="form-group" style="flex:1; margin-bottom:0;">
-                <label class="form-label">Scorta Attuale a Casa</label>
-                <input type="number" class="form-control" id="edit-farm-scorta" min="0" value="28" oninput="ricalcolaRiepilogoCapsula()">
+              <div class="form-group-compact" style="flex:1;">
+                <label class="form-label-compact">Scorta Attuale</label>
+                <input type="number" class="form-control-compact" id="edit-farm-scorta" min="0" value="28" oninput="ricalcolaRiepilogoCapsula()">
               </div>
-              <div class="form-group" style="flex:1; margin-bottom:0;">
-                <label class="form-label">🔔 Preavviso Alert (gg)</label>
-                <input type="number" class="form-control" id="edit-farm-giorni-alert" min="1" max="30" value="7" oninput="ricalcolaRiepilogoCapsula()">
+              <div class="form-group-compact" style="flex:1;">
+                <label class="form-label-compact">🔔 Alert (gg)</label>
+                <input type="number" class="form-control-compact" id="edit-farm-giorni-alert" min="1" max="30" value="7" oninput="ricalcolaRiepilogoCapsula()">
               </div>
             </div>
           </div>
 
-          <!-- SEZIONE 6: FONTE DELLA PRESCRIZIONE -->
-          <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:14px; padding:12px 14px;">
-            <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#334155; margin-bottom:8px;">
-              🩺 Tracciabilità & Fonte Medica
+          <!-- SEZIONE 6: FONTE DELLA PRESCRIZIONE MEDICA -->
+          <div class="card-sezione-pro" style="background:#f8fafc; border-color:#cbd5e1;">
+            <div class="sezione-titolo-pro" style="color:#475569;">
+              <span>🩺</span> Fonte Prescrizione & Tracciabilità
             </div>
-            <div class="form-row" style="margin-bottom:0;">
-              <div class="form-group" style="flex:1; margin-bottom:0;">
-                <label class="form-label">Fonte Prescrizione</label>
-                <select class="form-control" id="edit-farm-fonte-tipo">
+            <div class="riga-doppia-pro" style="margin-bottom:8px;">
+              <div class="form-group-compact" style="flex:1.2;">
+                <label class="form-label-compact">Fonte</label>
+                <select class="form-control-compact" id="edit-farm-fonte-tipo">
                   <option value="visita_specialistica">Visita Specialistica</option>
                   <option value="medico_famiglia">Medico di Base (MMG)</option>
                   <option value="dimissione_ospedaliera">Dimissione Ospedaliera</option>
                   <option value="caregiver">Caregiver / Famiglia</option>
                 </select>
               </div>
-              <div class="form-group" style="flex:1.2; margin-bottom:0;">
-                <label class="form-label">Nome Medico / Specialista</label>
-                <input type="text" class="form-control" id="edit-farm-medico-nome" placeholder="Es. Dr.ssa Carolina Potenza">
+              <div class="form-group-compact" style="flex:1.5;">
+                <label class="form-label-compact">Medico Prescrittore</label>
+                <input type="text" class="form-control-compact" id="edit-farm-medico-nome" placeholder="Es. Dr.ssa Potenza">
               </div>
-              <div class="form-group" style="flex:1.2; margin-bottom:0;">
-                <label class="form-label">Motivo Variazione</label>
-                <input type="text" class="form-control" id="edit-farm-motivo-modifica" placeholder="Es. Adeguamento schema posologico">
-              </div>
+            </div>
+            <div class="form-group-compact">
+              <label class="form-label-compact">Motivo Inserimento o Variazione</label>
+              <input type="text" class="form-control-compact" id="edit-farm-motivo-modifica" placeholder="Es. Adeguamento schema posologico">
             </div>
           </div>
 
         </div>
 
-        <div class="modal-footer" style="padding:14px 20px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-          <button type="button" class="btn btn-outline" onclick="closeModal('modal-modifica-farmaco')">✕ Annulla</button>
-          <button type="submit" class="btn btn-primary" style="font-weight:800; font-size:14px; padding:10px 20px; background:linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%); border:none; box-shadow:0 4px 12px rgba(2, 132, 199, 0.3);">
-            💾 Salva Piano Terapeutico Capsula
-          </button>
+        <!-- FOOTER FISSO ELEGANTE E BILANCIATO -->
+        <div class="modal-footer-pro">
+          <button type="button" class="btn-modal-annulla" onclick="closeModal('modal-modifica-farmaco')">✕ Annulla</button>
+          <button type="submit" class="btn-modal-salva">💾 Salva Terapia Farmaco</button>
         </div>
       </form>
     </div>
@@ -3446,7 +3440,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=58"></script>
+  <script src="app.js?v=59"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
