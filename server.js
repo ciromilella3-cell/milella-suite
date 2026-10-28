@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
@@ -621,6 +621,15 @@ app.get(['/inventario', '/inventario/', '/inventario.html'], (req, res) => {
     if (fs.existsSync(p1)) return res.sendFile(p1);
     if (fs.existsSync(p2)) return res.sendFile(p2);
     res.status(404).send('Inventario non trovato');
+});
+
+app.get(['/stanza-regia', '/regia', '/STANZA_REGIA_MASTER.html'], (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    const p1 = path.join(__dirname, 'public', 'STANZA_REGIA_MASTER.html');
+    const p2 = path.join(__dirname, 'STANZA_REGIA_MASTER.html');
+    if (fs.existsSync(p1)) return res.sendFile(p1);
+    if (fs.existsSync(p2)) return res.sendFile(p2);
+    res.status(404).send('STANZA_REGIA_MASTER.html non trovato');
 });
 
 app.get('/launcher.html', (req, res) => {

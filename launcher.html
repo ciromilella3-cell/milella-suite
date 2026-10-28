@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -701,9 +701,9 @@
                 <!-- Dettaglio Luce Oro Superiore -->
                 <div style="position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg, transparent, #d4af37, #f3e5ab, #d4af37, transparent);"></div>
 
-                <!-- Logo / Corona / Brand -->
-                <div style="width:76px; height:76px; margin:0 auto 1rem auto; border-radius:22px; background:linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05)); border:1.5px solid rgba(212,175,55,0.4); display:flex; align-items:center; justify-content:center; font-size:38px; box-shadow:0 8px 24px rgba(212,175,55,0.2);">
-                    👑
+                <!-- Marchio Ufficiale C. Milella -->
+                <div style="width:84px; height:84px; margin:0 auto 1.15rem auto; border-radius:24px; background:linear-gradient(145deg, #0f172a 0%, #030712 100%); border:1.5px solid rgba(212,175,55,0.65); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(0,0,0,0.8), 0 0 35px rgba(212,175,55,0.35); overflow:hidden; position:relative; cursor:pointer; transition:all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);" onmouseover="this.style.transform='scale(1.06)'; this.style.borderColor='#fde047';" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='rgba(212,175,55,0.65)';">
+                    <img src="assets/img/cm_shield_badge.png?v=2" alt="Marchio C. Milella" style="width:100%; height:100%; object-fit:cover; filter:contrast(1.06) brightness(1.02);">
                 </div>
                 
                 <div style="font-size:11px; text-transform:uppercase; letter-spacing:3px; color:#d4af37; font-weight:700; margin-bottom:4px;">Suite Gestionale Aziendale</div>
@@ -1045,6 +1045,9 @@
 
                 <!-- Gruppo 3: Sicurezza & Spegni -->
                 <div style="display:flex; align-items:center; gap:8px;">
+                                        <button id="btnStanzaRegia" onclick="window.location.href='/STANZA_REGIA_MASTER.html'" class="dock-btn desktop-only-btn admin-only-btn" style="display:none; background:linear-gradient(135deg, #a855f7, #6366f1); color:#fff; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 14px rgba(168,85,247,0.45);">
+                        <span>ðŸŽ›ï¸</span> <span>STANZA REGIA</span>
+                    </button>
                     <button id="btnCentroSicurezza" onclick="apriCentroSicurezzaModal()" class="dock-btn desktop-only-btn admin-only-btn" style="display:none; background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 14px rgba(245,158,11,0.35);">
                         <span>🛡️</span> <span>SICUREZZA & BACKUP</span>
                     </button>
@@ -1084,7 +1087,7 @@
     <!-- MODALE SBLOCCO ADMIN (PIN MASTER) -->
     <div id="modalAdminLogin" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10000; align-items:center; justify-content:center; padding:1rem;">
         <div style="background:rgba(15,23,42,0.95); border:1px solid rgba(212,175,55,0.4); border-radius:24px; padding:2rem; max-width:400px; width:100%; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.6);">
-            <div style="font-size:2.8rem; margin-bottom:0.8rem;">👑</div>
+            <div style="width:68px; height:68px; margin:0 auto 1rem auto; border-radius:20px; background:linear-gradient(145deg, #0f172a 0%, #030712 100%); border:1.5px solid rgba(212,175,55,0.5); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 25px rgba(0,0,0,0.8), 0 0 20px rgba(212,175,55,0.25); overflow:hidden;"><img src="assets/img/cm_shield_badge.png?v=2" alt="Marchio C. Milella" style="width:100%; height:100%; object-fit:cover; object-position:center 22%; transform:scale(1.75);"></div>
             <h2 style="font-size:1.4rem; color:#fff; margin-bottom:0.5rem; letter-spacing:1px;">Area Riservata Master</h2>
             <p style="color:#94a3b8; font-size:0.88rem; margin-bottom:1.5rem;">Inserisci il PIN Master o il Codice Operatore per sbloccare le funzionalità riservate.</p>
             
@@ -1943,7 +1946,7 @@
         const adminBtns = document.querySelectorAll('.admin-only-btn');
 
         if (role === 'admin') {
-            badgeIcon.textContent = '👑';
+            badgeIcon.textContent = '💎';
             badgeText.textContent = 'Modalità: CIRO MILELLA (Master Admin)';
             badgeText.parentElement.style.background = 'rgba(212,175,55,0.25)';
             badgeText.parentElement.style.borderColor = '#d4af37';
@@ -2535,7 +2538,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap;">
                     <div>
                         <div style="font-weight:700; color:${op.attivo ? '#fff' : '#64748b'}; font-size:15px; display:flex; align-items:center; gap:6px;">
-                            ${op.ruolo === 'admin' ? '👑' : '👷'} ${op.nome} ${op.ruolo === 'admin' ? '<span style="background:rgba(212,175,55,0.25); color:#f59e0b; font-size:10.5px; padding:2px 6px; border-radius:6px; font-weight:800;">MASTER</span>' : ''}
+                            ${op.ruolo === 'admin' ? '💎' : '👷'} ${op.nome} ${op.ruolo === 'admin' ? '<span style="background:rgba(212,175,55,0.25); color:#f59e0b; font-size:10.5px; padding:2px 6px; border-radius:6px; font-weight:800;">MASTER</span>' : ''}
                         </div>
                         <div style="font-size:12px; color:#cbd5e1; margin-top:5px; display:flex; flex-direction:column; gap:4px;">
                             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -3915,4 +3918,9 @@
 </script>
 </body>
 </html>
+
+
+
+
+
 
