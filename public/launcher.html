@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -2013,22 +2013,25 @@
         if (!pin) return;
 
         try {
+            const cleanPin = pin.trim();
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ codice: pin })
+                body: JSON.stringify({ codice: cleanPin })
             });
             const data = await res.json();
             if (data.success) {
+                const effectiveAdminPin = (cleanPin.toUpperCase() === 'SOS999') ? 'SOS999' : cleanPin;
                 if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 if (data.ruolo === 'admin') {
-                    currentAdminPin = pin;
-                    localStorage.setItem('milella_admin_pin', pin);
+                    currentAdminPin = effectiveAdminPin;
+                    localStorage.setItem('milella_admin_pin', effectiveAdminPin);
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
                     localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'admin');
+                    localStorage.setItem('milella_last_authenticated_pin', effectiveAdminPin);
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                     applicaRuolo('admin', data.nome, ['all']);
@@ -2086,23 +2089,26 @@
         }
 
         try {
+            const cleanPin = pin.trim();
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ codice: pin })
+                body: JSON.stringify({ codice: cleanPin })
             });
             const data = await res.json();
             if (data.success) {
+                const effectiveAdminPin = (cleanPin.toUpperCase() === 'SOS999') ? 'SOS999' : cleanPin;
                 if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 if (data.ruolo === 'admin') {
-                    currentAdminPin = pin;
-                    localStorage.setItem('milella_admin_pin', pin);
+                    currentAdminPin = effectiveAdminPin;
+                    localStorage.setItem('milella_admin_pin', effectiveAdminPin);
                     localStorage.setItem('milella_user_nome', data.nome);
                     localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
                     localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
                     localStorage.setItem('milella_profili_salute', JSON.stringify(['all']));
                     localStorage.setItem('milella_last_authenticated_user', data.nome);
                     localStorage.setItem('milella_last_authenticated_role', 'admin');
+                    localStorage.setItem('milella_last_authenticated_pin', effectiveAdminPin);
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(['all']));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                     sessionStorage.setItem('milella_session_unlocked', 'true');
