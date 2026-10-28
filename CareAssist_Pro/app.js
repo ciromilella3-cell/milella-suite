@@ -5639,7 +5639,9 @@ const DB_FARMACI_COMUNI = [
   { nome: 'Tachipirina 500 mg', principio: 'Paracetamolo', dosaggio: '500 mg (1 cpr)', modo: 'Al bisogno per dolori lievi o febbricola', cpr: 20, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antipiretico e analgesico ad azione rapida.' },
   { nome: 'Co-Efferalgan', principio: 'Paracetamolo + Codeina', dosaggio: '500 mg + 30 mg (1 cpr)', modo: 'Dopo i pasti con acqua per dolori intensi refrattari', cpr: 16, ora: '13:00', fascia: 'Al Bisogno', indicazione: 'Analgesico combinato per dolori muscolo-scheletrici severi.' },
   { nome: 'Augmentin 1 g', principio: 'Amoxicillina + Acido clavulanico', dosaggio: '875 mg + 125 mg (1 cpr)', modo: 'Ogni 12 ore all\'inizio dei pasti con abbondante acqua', cpr: 12, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico antibatterico ad ampio spettro per infezioni respiratorie, urinarie e cutanee.' },
-  { nome: 'Ciproxin 500 mg', principio: 'Ciprofloxacina', dosaggio: '500 mg (1 cpr)', modo: 'Ogni 12 ore lontano da latte e derivati', cpr: 10, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico fluorochinolonico per infezioni urinarie complesse e batteriche.' }
+  // Antivirali, Epatite & Terapie Specialistiche
+  { nome: 'Entecavir Sandoz 0,5 mg', principio: 'Entecavir', dosaggio: '0,5 mg (1 cpr)', modo: 'Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto)', cpr: 30, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell\'infezione cronica da virus dell\'epatite B (HBV).' },
+  { nome: 'Baraclude 0,5 mg', principio: 'Entecavir', dosaggio: '0,5 mg (1 cpr)', modo: 'A digiuno con acqua', cpr: 30, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Antivirale per epatite B cronica ad elevata barriera genetica.' },
 ];
 
 function autoCompilaDatiFarmaco(testoInput) {
@@ -5852,7 +5854,15 @@ async function gestisciFotoCaricoScatola(event) {
         showToast(`Scatola identificata: ${matchTerapia.farmaco}! 📦`);
       } else {
         if (resBox) {
-          resBox.innerHTML = `💊 Riconosciuto: <b>${farmacoRiconosciuto.nome}</b>.<br><small>Non è ancora nella scheda di ${p ? p.nome : 'assistito'}: clicca "+ Non è in elenco" sopra per aggiungerlo!</small>`;
+          resBox.innerHTML = `
+            💊 Riconosciuto: <b>${farmacoRiconosciuto.nome}</b>.<br>
+            <span style="color:#fde68a;">Non è ancora presente nella terapia di ${p ? p.nome : 'assistito'}.</span>
+            <div style="margin-top:6px;">
+              <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:11px; font-weight:800; background:#0284c7; border:none; border-radius:6px; cursor:pointer;" onclick="closeModal('modal-ricarica-scorta'); apriMascheraNuovoFarmaco(); applicaFarmacoDaScanner('${farmacoRiconosciuto.nome.replace(/'/g, "\\'")}', 'capsula');">
+                ✨ Inserisci Subito "${farmacoRiconosciuto.nome}" in Terapia
+              </button>
+            </div>
+          `;
         }
       }
     } else {
@@ -5972,7 +5982,9 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
       { key: 'metforal', target: 'Metforal 500 mg' },
       { key: 'metformin', target: 'Metforal 500 mg' },
       { key: 'torvast', target: 'Torvast 20 mg' },
-      { key: 'atorvastatin', target: 'Torvast 20 mg' }
+      { key: 'atorvastatin', target: 'Torvast 20 mg' },
+      { key: 'entecavir', target: 'Entecavir Sandoz 0,5 mg' },
+      { key: 'baraclude', target: 'Entecavir Sandoz 0,5 mg' }
     ];
 
     for (const fc of farmaciChiave) {
