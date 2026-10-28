@@ -1360,11 +1360,11 @@
             <textarea class="form-control" id="edit-paz-note" rows="2"></textarea>
           </div>
         </div>
-        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
-          <button type="button" class="btn btn-outline" style="color:#dc2626; border-color:#fca5a5; background:#fef2f2;" onclick="closeModal('modal-modifica-anagrafica'); eliminaPazienteAttivo();" title="Elimina definitivamente la cartella clinica di questo assistito">
+        <div class="modal-footer modal-footer-anagrafica">
+          <button type="button" class="btn btn-outline btn-elimina-cartella" style="color:#dc2626; border-color:#fca5a5; background:#fef2f2;" onclick="closeModal('modal-modifica-anagrafica'); eliminaPazienteAttivo();" title="Elimina definitivamente la cartella clinica di questo assistito">
             🗑️ Elimina Cartella Assistito
           </button>
-          <div style="display:flex; gap:8px;">
+          <div class="modal-footer-actions">
             <button type="button" class="btn btn-outline" onclick="closeModal('modal-modifica-anagrafica')">Annulla</button>
             <button type="submit" class="btn btn-primary">Salva Modifiche Anagrafica</button>
           </div>

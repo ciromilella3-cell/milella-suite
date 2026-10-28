@@ -2314,10 +2314,26 @@ textarea.form-control {
     align-items: stretch !important;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08) !important;
   }
-  .modal-footer > div {
+  .modal-footer-anagrafica {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .modal-footer-anagrafica .modal-footer-actions {
     display: flex !important;
     gap: 8px !important;
     width: 100% !important;
+    order: 1 !important;
+  }
+  .modal-footer-anagrafica .modal-footer-actions button {
+    flex: 1 1 50% !important;
+    width: 50% !important;
+  }
+  .modal-footer-anagrafica .btn-elimina-cartella {
+    width: 100% !important;
+    order: 2 !important;
+    margin-top: 4px !important;
   }
   .modal-footer button,
   .modal-footer a {
@@ -2328,16 +2344,6 @@ textarea.form-control {
     align-items: center !important;
     justify-content: center !important;
     border-radius: 10px !important;
-  }
-  .modal-footer > button:first-child {
-    width: 100% !important;
-    order: 2 !important;
-  }
-  .modal-footer > div {
-    order: 1 !important;
-  }
-  .modal-footer > div > button {
-    flex: 1 !important;
   }
 
   /* MODALI ANAGRAFICA & FORM INPUTS SU SMARTPHONE (PREVENZIONE TRONCAMENTO DATI) */
