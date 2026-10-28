@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=56">
+  <link rel="stylesheet" href="style.css?v=57">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -2041,8 +2041,34 @@
       </div>
       <form onsubmit="salvaRicaricaScorta(event)">
         <div class="modal-body">
+          <!-- SCANNER INTELLIGENTE SCATOLA PER CARICO RAPIDO -->
+          <div class="box-scanner-farmaco-pro" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1.5px solid #10b981; border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; color: #ffffff;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 18px;">📸</span>
+                <strong style="font-size: 12px; color: #ffffff;">SCANNER SCATOLA FARMACO AI</strong>
+              </div>
+              <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 1px 6px; border-radius: 5px; font-size: 9.5px; font-weight: 800;">AUTO SELEZIONE</span>
+            </div>
+            <div style="font-size: 10.5px; color: #a7f3d0; margin-bottom: 8px;">Inquadra la scatola appena ritirata: il sistema la riconosce e la seleziona da solo!</div>
+            <div style="display: flex; gap: 6px;">
+              <label class="btn-scan-act" style="flex: 1; background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #ffffff; border-radius: 8px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; text-align: center; border: 1px solid #34d399;">
+                <span>📷</span> Fotocamera
+                <input type="file" id="scan-carico-camera" accept="image/*" capture="environment" style="display: none;" onchange="gestisciFotoCaricoScatola(event)">
+              </label>
+              <label class="btn-scan-act" style="flex: 1; background: rgba(255, 255, 255, 0.1); color: #e2e8f0; border-radius: 8px; padding: 7px 10px; font-size: 11.5px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; text-align: center; border: 1px solid rgba(255, 255, 255, 0.25);">
+                <span>🖼️</span> Galleria
+                <input type="file" id="scan-carico-gallery" accept="image/*" style="display: none;" onchange="gestisciFotoCaricoScatola(event)">
+              </label>
+            </div>
+            <div id="scan-result-carico" style="display:none; margin-top:8px; padding:6px 8px; background:rgba(6,78,59,0.7); border:1px solid #34d399; border-radius:6px; font-size:11px; color:#d1fae5;"></div>
+          </div>
+
           <div class="form-group">
-            <label class="form-label">Seleziona Farmaco</label>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <label class="form-label" style="margin-bottom:0;">Seleziona Farmaco</label>
+              <button type="button" onclick="closeModal('modal-ricarica-scorta'); apriMascheraNuovoFarmaco();" style="background:none; border:none; color:#0284c7; font-size:11px; font-weight:700; cursor:pointer; text-decoration:underline;">+ Non è in elenco? Aggiungilo con Foto</button>
+            </div>
             <select class="form-control" id="ricarica-farmaco-select" onchange="aggiornaInfoModalCarico()" required>
               <!-- popolato da app.js -->
             </select>
@@ -3420,7 +3446,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=56"></script>
+  <script src="app.js?v=57"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

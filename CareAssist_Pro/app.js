@@ -5813,6 +5813,61 @@ async function gestisciFotoFarmaco(event, targetModal) {
   event.target.value = '';
 }
 
+// Scansione e riconoscimento ottico rapido scatola nel modal "Carico Farmaci"
+async function gestisciFotoCaricoScatola(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const resBox = document.getElementById('scan-result-carico');
+  if (resBox) {
+    resBox.style.display = 'block';
+    resBox.innerHTML = '⏳ Scansione scatola in corso con AI...';
+  }
+
+  try {
+    const imageBitmap = await caricaImmagineDaFile(file);
+    let rawText = '';
+    if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
+      const ocrResult = await window.Tesseract.recognize(imageBitmap, 'ita+eng');
+      rawText = (ocrResult && ocrResult.data && ocrResult.data.text) ? ocrResult.data.text : '';
+    } else {
+      rawText = await eseguiOCRLeggeroFallback(imageBitmap, file.name);
+    }
+
+    const farmacoRiconosciuto = analizzaTestoConfermaFarmaco(rawText, file.name);
+    const select = document.getElementById('ricarica-farmaco-select');
+
+    if (farmacoRiconosciuto && select) {
+      const p = getActivePaziente();
+      const matchTerapia = (p && p.terapie) ? p.terapie.find(t => 
+        (t.farmaco || '').toLowerCase().includes(farmacoRiconosciuto.nome.toLowerCase().split(' ')[0])
+      ) : null;
+
+      if (matchTerapia) {
+        select.value = matchTerapia.id;
+        if (typeof aggiornaInfoModalCarico === 'function') aggiornaInfoModalCarico();
+        if (resBox) {
+          resBox.innerHTML = `✅ <b>Scatola Riconosciuta:</b> ${matchTerapia.farmaco}! Selezionato in automatico.`;
+        }
+        showToast(`Scatola identificata: ${matchTerapia.farmaco}! 📦`);
+      } else {
+        if (resBox) {
+          resBox.innerHTML = `💊 Riconosciuto: <b>${farmacoRiconosciuto.nome}</b>.<br><small>Non è ancora nella scheda di ${p ? p.nome : 'assistito'}: clicca "+ Non è in elenco" sopra per aggiungerlo!</small>`;
+        }
+      }
+    } else {
+      if (resBox) {
+        resBox.innerHTML = '🔍 Scatola acquisita: seleziona il farmaco dall\'elenco sottostante.';
+      }
+    }
+  } catch (err) {
+    if (resBox) resBox.innerHTML = '⚠️ Foto acquisita: procedi con la selezione manuale.';
+  }
+
+  event.target.value = '';
+}
+window.gestisciFotoCaricoScatola = gestisciFotoCaricoScatola;
+
 function caricaImmagineDaFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
