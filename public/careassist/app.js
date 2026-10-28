@@ -2386,10 +2386,24 @@ window.aggiungiAllergiaRapida = aggiungiAllergiaRapida;
 
 function salvaNuovoPaziente(e) {
   e.preventDefault();
-  const nome = document.getElementById('nuovo-paz-nome').value.trim();
-  const dataNascita = document.getElementById('nuovo-paz-nascita').value;
-  const mobilita = document.getElementById('nuovo-paz-mobilita').value;
-  const indirizzo = document.getElementById('nuovo-paz-indirizzo').value.trim();
+  const nome = (document.getElementById('nuovo-paz-nome')?.value || '').trim();
+  
+  // Sincronizza sempre la data dai select a cascata prima del salvataggio
+  sincronizzaDataDaSelects('nuovo');
+  let dataNascita = (document.getElementById('nuovo-paz-nascita')?.value || '').trim();
+  if (!dataNascita) {
+    const g = (document.getElementById('nuovo-paz-nascita-giorno')?.value || '15').padStart(2, '0');
+    const m = (document.getElementById('nuovo-paz-nascita-mese')?.value || '05').padStart(2, '0');
+    const a = document.getElementById('nuovo-paz-nascita-anno')?.value || '1938';
+    dataNascita = `${a}-${m}-${g}`;
+  }
+
+  if (!nome) {
+    alert('Attenzione: inserisci il Nome e Cognome dell\'assistito.');
+    return;
+  }
+  const mobilita = document.getElementById('nuovo-paz-mobilita')?.value || 'deambulante';
+  const indirizzo = (document.getElementById('nuovo-paz-indirizzo')?.value || '').trim();
   const telCasa = formattaNumeroTelefonico(document.getElementById('nuovo-paz-telefono').value.trim());
   const cellulare = formattaNumeroTelefonico(document.getElementById('nuovo-paz-cellulare').value.trim());
   const parenteNome = document.getElementById('nuovo-paz-parente-nome').value.trim();
@@ -2402,12 +2416,17 @@ function salvaNuovoPaziente(e) {
   const elAllergieNuovo = document.getElementById('nuovo-paz-allergie');
   const allergieNuovo = elAllergieNuovo ? elAllergieNuovo.value.trim() : 'Nessuna nota';
 
-  const patologieTesto = document.getElementById('nuovo-paz-patologie-testo').value.trim();
-  const isCpap = document.getElementById('nuovo-paz-cpap').checked;
-  const isMaterasso = document.getElementById('nuovo-paz-materasso').checked;
-  const bombolaStato = document.getElementById('nuovo-paz-bombola-attiva').value;
-  const dataBombola = document.getElementById('nuovo-paz-data-bombola').value;
-  const altriAusili = document.getElementById('nuovo-paz-altri-ausili').value.trim();
+  const patologieTesto = (document.getElementById('nuovo-paz-patologie-testo')?.value || '').trim();
+  const elCpap = document.getElementById('nuovo-paz-cpap');
+  const isCpap = elCpap ? elCpap.checked : false;
+  const elMaterasso = document.getElementById('nuovo-paz-materasso');
+  const isMaterasso = elMaterasso ? elMaterasso.checked : false;
+  const elBombola = document.getElementById('nuovo-paz-bombola-attiva');
+  const bombolaStato = elBombola ? elBombola.value : 'piena';
+  const elDataBombola = document.getElementById('nuovo-paz-data-bombola');
+  const dataBombola = elDataBombola ? elDataBombola.value : '';
+  const elAltriAusili = document.getElementById('nuovo-paz-altri-ausili');
+  const altriAusili = elAltriAusili ? elAltriAusili.value.trim() : '';
 
   const medicoNome = document.getElementById('nuovo-paz-medico-nome').value.trim();
   const medicoTel = formattaNumeroTelefonico(document.getElementById('nuovo-paz-medico-tel').value.trim());
@@ -2415,7 +2434,11 @@ function salvaNuovoPaziente(e) {
   const farmaciaNome = document.getElementById('nuovo-paz-farmacia').value.trim();
   const farmaciaTel = formattaNumeroTelefonico(document.getElementById('nuovo-paz-farmacia-tel').value.trim());
 
-  if (!nome || !dataNascita) return;
+  if (!nome) {
+    alert('Attenzione: inserisci il Nome e Cognome dell\'assistito.');
+    return;
+  }
+  console.log('[salvaNuovoPaziente] Creazione assistito:', nome, dataNascita);
 
   const newId = 'paz_' + Date.now();
   const newPaz = createPazienteTemplate(newId, nome, dataNascita, patologieTesto);
