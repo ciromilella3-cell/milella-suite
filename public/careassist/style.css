@@ -2346,12 +2346,44 @@ textarea.form-control {
     border-radius: 10px !important;
   }
 
+  /* COMPATTAZIONE CONTROLLI E MODALI SU SMARTPHONE (ZERO SPAZI VUOTI ECCESSIVI) */
+  #modal-modifica-anagrafica .form-group,
+  .modal-card .form-group {
+    margin-bottom: 8px !important;
+  }
+  #modal-modifica-anagrafica .form-label,
+  .modal-card .form-label {
+    margin-bottom: 3px !important;
+    font-size: 11px !important;
+  }
+  #modal-modifica-anagrafica .form-control,
+  .modal-card .form-control {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    min-height: 36px !important;
+    border-radius: 8px !important;
+  }
+  #modal-modifica-anagrafica div[style*="margin-bottom:14px"],
+  #modal-modifica-anagrafica div[style*="margin-bottom: 14px"] {
+    margin-bottom: 8px !important;
+    padding: 8px 10px !important;
+  }
+  #modal-modifica-anagrafica div[style*="padding:14px"],
+  #modal-modifica-anagrafica div[style*="padding: 14px"],
+  #modal-modifica-anagrafica div[style*="padding:12px"],
+  #modal-modifica-anagrafica div[style*="padding: 12px"] {
+    padding: 8px 10px !important;
+  }
+  #modal-modifica-anagrafica .anagrafica-nascita-row {
+    margin-bottom: 8px !important;
+  }
+
   /* MODALI ANAGRAFICA & FORM INPUTS SU SMARTPHONE (PREVENZIONE TRONCAMENTO DATI) */
   .anagrafica-nascita-row {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    gap: 8px !important;
+    gap: 6px !important;
     align-items: flex-end !important;
   }
   .anagrafica-nascita-row > .form-group:first-child {
@@ -2372,17 +2404,18 @@ textarea.form-control {
   #edit-paz-nascita-selects select,
   #nuovo-paz-nascita-selects select {
     font-size: 13px !important;
-    padding: 7px 3px !important;
+    padding: 5px 3px !important;
   }
 
   /* Riga contatti e recapiti responsive: va a capo se lo spazio è ridotto per evitare troncamenti */
   .modal-card .form-row:not(.anagrafica-nascita-row) {
     flex-wrap: wrap !important;
-    gap: 10px !important;
+    gap: 8px !important;
   }
   .modal-card .form-row:not(.anagrafica-nascita-row) > .form-group {
-    min-width: 140px !important;
-    flex: 1 1 140px !important;
+    min-width: 130px !important;
+    flex: 1 1 130px !important;
+    margin-bottom: 0 !important;
   }
 
   /* MODAL ALLARME TERAPIE SU SMARTPHONE (FULL RESPONSIVE TOUCH) */
