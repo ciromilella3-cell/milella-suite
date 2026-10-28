@@ -2407,14 +2407,18 @@ textarea.form-control {
     padding: 5px 3px !important;
   }
 
-  /* Riga contatti e recapiti responsive: va a capo se lo spazio è ridotto per evitare troncamenti */
+  /* Riga contatti e recapiti responsive: 2 colonne affiancate compatte */
   .modal-card .form-row:not(.anagrafica-nascita-row) {
-    flex-wrap: wrap !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     gap: 8px !important;
+    width: 100% !important;
   }
   .modal-card .form-row:not(.anagrafica-nascita-row) > .form-group {
-    min-width: 130px !important;
-    flex: 1 1 130px !important;
+    min-width: 0 !important;
+    flex: 1 1 50% !important;
+    width: 50% !important;
     margin-bottom: 0 !important;
   }
 
