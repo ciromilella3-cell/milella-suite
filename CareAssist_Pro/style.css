@@ -3602,3 +3602,312 @@ textarea.form-control {
 .container {
   padding-bottom: 95px !important;
 }
+
+/* ==========================================================================
+   MASCHERA MODIFICA ANAGRAFICA & RECAPITI (SUITE PRO - ELEGANTE & COMPATTA)
+   ========================================================================== */
+.modal-anagrafica-pro {
+  max-width: 680px !important;
+  width: 95% !important;
+  max-height: 92vh !important;
+  border-radius: 18px !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  background: #f8fafc !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+.modal-anagrafica-pro .modal-header {
+  padding: 12px 18px !important;
+  background: linear-gradient(135deg, #091e3a 0%, #0f2744 60%, #0369a1 100%) !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-shrink: 0 !important;
+}
+
+.modal-anagrafica-pro .modal-header h3 {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.2px !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  color: #ffffff !important;
+}
+
+.modal-body-pro {
+  padding: 12px 14px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  background: #f8fafc !important;
+  flex: 1 1 auto !important;
+}
+
+/* Card Sezione */
+.card-sezione-pro {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 11px 13px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-sezione-pro:focus-within {
+  border-color: #93c5fd;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06);
+}
+
+.card-sezione-pro.box-caregiver-pro {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.card-sezione-pro.box-sanita-pro {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.card-sezione-pro.box-ausili-pro {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.card-sezione-pro.box-allergie-pro {
+  background: #fff1f2;
+  border-color: #fecdd3;
+}
+
+/* Header Titolo Sezione */
+.sezione-titolo-pro {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #1e3a8a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 9px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.box-caregiver-pro .sezione-titolo-pro { color: #0369a1; }
+.box-sanita-pro .sezione-titolo-pro { color: #15803d; }
+.box-ausili-pro .sezione-titolo-pro { color: #1d4ed8; }
+.box-allergie-pro .sezione-titolo-pro { color: #b91c1c; }
+
+/* Griglia & Campi Compatte */
+.riga-doppia-pro {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.modal-body-pro .form-group {
+  margin-bottom: 8px;
+}
+
+.modal-body-pro .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.modal-body-pro label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 4px;
+  letter-spacing: 0.1px;
+}
+
+.modal-body-pro input[type="text"],
+.modal-body-pro input[type="tel"],
+.modal-body-pro input[type="email"],
+.modal-body-pro input[type="date"],
+.modal-body-pro select,
+.modal-body-pro textarea {
+  width: 100%;
+  padding: 7px 11px;
+  font-size: 13.5px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.15s ease;
+  line-height: 1.35;
+  box-sizing: border-box;
+}
+
+.modal-body-pro input:focus,
+.modal-body-pro select:focus,
+.modal-body-pro textarea:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.modal-body-pro input::placeholder,
+.modal-body-pro textarea::placeholder {
+  color: #94a3b8;
+  font-size: 12.5px;
+}
+
+/* Pulsanti & badge interni */
+.btn-cal-mini {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s ease;
+}
+
+.btn-cal-mini:hover {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-salvavita-mini {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.pill-btn-mini {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #fecdd3;
+  background: #ffffff;
+  color: #be123c;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.pill-btn-mini:hover {
+  background: #ffe4e6;
+  border-color: #fda4af;
+}
+
+/* Footer Modal Pro */
+.modal-footer-pro {
+  padding: 10px 14px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-footer-pro .footer-actions-main {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.modal-footer-pro .btn-annulla {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.modal-footer-pro .btn-annulla:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #1e293b;
+}
+
+.modal-footer-pro .btn-salva {
+  flex: 2;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  border: none;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+  transition: all 0.15s ease;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.modal-footer-pro .btn-salva:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.35);
+}
+
+.modal-footer-pro .btn-elimina-paziente {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 3px 6px;
+  align-self: center;
+  transition: color 0.15s ease;
+}
+
+.modal-footer-pro .btn-elimina-paziente:hover {
+  color: #ef4444;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .modal-anagrafica-pro {
+    width: 98% !important;
+    max-height: 94vh !important;
+    border-radius: 14px !important;
+  }
+  .modal-body-pro {
+    padding: 10px !important;
+    gap: 8px !important;
+  }
+  .card-sezione-pro {
+    padding: 9px 10px;
+  }
+}
+
