@@ -3677,7 +3677,16 @@ function renderTerapie() {
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
   const canEdit = (role === 'admin') || (localStorage.getItem('milella_can_edit_terapie') === 'true');
 
-  const html = (p.terapie || []).map(t => {
+  const activeFascia = window._activeFasciaFilter || 'tutte';
+  const terapieFiltrate = (p.terapie || []).filter(t => {
+    if (activeFascia === 'tutte') return true;
+    const f = (t.fascia || '').toLowerCase();
+    return f.includes(activeFascia.toLowerCase());
+  });
+
+  const html = (terapieFiltrate.length === 0)
+    ? '<tr><td colspan="8" style="text-align:center; padding:28px 16px; color:#64748b; font-size:13px;">Nessuna terapia programmata per la fascia <b>' + activeFascia.toUpperCase() + '</b>.<br><a href="javascript:void(0)" onclick="filtraFasciaTerapia(\'tutte\')" style="color:#0284c7; font-weight:800; display:inline-block; margin-top:8px;">Mostra tutte le terapie</a></td></tr>'
+    : terapieFiltrate.map(t => {
     // Calcolo giorni autonomia e data presunta termine scorta considerando dosi frazionate/alternate
     const giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
     const consumoGiornaliero = calcolaConsumoGiornalieroFarmaco(t);
@@ -4994,7 +5003,7 @@ function generaTestoRichiesta() {
   const farmaciSelezionati = (p.terapie || []).filter(t => checkedIds.includes(t.id));
   const noteExtra = document.getElementById('richiesta-note-extra') ? document.getElementById('richiesta-note-extra').value.trim() : '';
 
-  const medicoNome = p.medicoNome || p.medico || 'Dottore';
+  const medicoNome = p.medicoNome || p.medico || p.medicoCurante || 'Dottore';
   const farmaciaNome = p.farmaciaDiRiferimento || 'Farmacia MACARIO';
   const oggi = new Date().toLocaleDateString('it-IT');
 
@@ -5002,34 +5011,40 @@ function generaTestoRichiesta() {
   if (farmaciSelezionati.length === 0) {
     elenco = '(Nessun farmaco selezionato)';
   } else {
-    elenco = farmaciSelezionati.map(t => {
+    elenco = farmaciSelezionati.map((t, idx) => {
       const dt = new Date();
       const scorta = typeof t.scorta !== 'undefined' ? t.scorta : 0;
-      const ggAutonomia = calcolaGiorniAutonomiaFarmaco(t);
+      const ggAutonomia = (typeof calcolaGiorniAutonomiaFarmaco === 'function') ? calcolaGiorniAutonomiaFarmaco(t) : scorta;
       dt.setDate(dt.getDate() + (ggAutonomia > 0 ? ggAutonomia : 0));
       const fineScortaStr = ggAutonomia > 0 ? dt.toLocaleDateString('it-IT') : 'ESAURITO OGGI';
       const soglia = Math.min(30, Math.max(1, parseInt(t.giorniAlert) || 7));
-      const urgenza = scorta <= 0 ? '🔴 URGENTE (Scorta a zero)' : (ggAutonomia <= soglia ? `⚠️ IN SCADENZA (Autonomia: ${ggAutonomia} giorni)` : `Autonomia: ${ggAutonomia} gg`);
-      const schemaNote = t.cadenzaTipo === 'alternata_mezza_intera' ? ' [Posologia: ½ cpr / 1 cpr a giorni alterni]' : '';
-      return `• ${t.farmaco} (Dosaggio: ${t.dosaggio}${schemaNote}) -> ${urgenza} [Rimanenza: ${scorta} cpr - Fine stimata: ${fineScortaStr}]`;
-    }).join('\n');
+      const urgenza = scorta <= 0 ? '🔴 URGENTE (Scorta a zero)' : (ggAutonomia <= soglia ? '⚠️ IN SCADENZA (Autonomia: ' + ggAutonomia + ' gg)' : 'Autonomia: ' + ggAutonomia + ' gg');
+      const schemaNote = t.cadenzaTipo === 'alternata_mezza_intera' ? ' [Posologia: 1/2 cpr o 1 cpr a giorni alterni]' : '';
+      return (idx + 1) + '. *' + t.farmaco + '* (' + (t.dosaggio || '1 dose') + schemaNote + ')\n   ↳ Rimanenza: ' + scorta + ' cpr (~' + ggAutonomia + ' gg) • ' + urgenza;
+    }).join('\n\n');
   }
 
-  let testo = `Gentile ${medicoNome},\n\n`;
-  testo += `Le invio la presente richiesta di rinnovo ricette dematerializzate / prescrizioni per il paziente:\n`;
-  testo += `👤 PAZIENTE: ${p.nome} (nato il ${p.dataNascita ? new Date(p.dataNascita).toLocaleDateString('it-IT') : '18/04/1935'})\n`;
-  testo += `📍 Indirizzo: ${p.indirizzo || 'Via Giovanni Modugno, 25 - Bari'}\n`;
-  testo += `☎️ Contatti: Tel. ${p.telefonoFisso || '080 561 57 14'} | Cell. ${p.cellulare || '338 306 69 05'}\n`;
-  testo += `Caregiver / Familiare: ${p.moglieNome || 'Mazzicone Angela'} (Cell. ${p.moglieCellulare || '338 944 96 10'})\n\n`;
-  testo += `FARMACI IN ESAURIMENTO DA PRESCRIVERE:\n${elenco}\n\n`;
-  testo += `🏥 FARMACIA DI RIFERIMENTO PER IL RITIRO:\n${farmaciaNome}\n\n`;
-  
+  const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+  const dataNascitaFmt = (typeof formattaDataNascitaItaliana === 'function') ? formattaDataNascitaItaliana(p.dataNascita, false) : (p.dataNascita || '--');
+  const caregiverInfo = p.caregiverNome || p.caregiver || p.moglieNome || (p.nome && p.nome.includes('Rosa') ? 'Maria Carmela (Figlia / Caregiver)' : 'Mazzicone Angela (Caregiver)');
+  const caregiverTel = p.caregiverCellulare || p.caregiverTel || p.moglieCellulare || (p.nome && p.nome.includes('Rosa') ? '338 739 76 71' : '338 944 96 10');
+
+  let testo = 'Gentile ' + medicoNome + ',\n\n';
+  testo += 'Le invio la presente richiesta di rinnovo prescrizioni / ricette dematerializzate per:\n';
+  testo += '👤 *Paziente:* ' + pulitoNome + '\n';
+  testo += '🎂 *Data di Nascita:* ' + dataNascitaFmt + '\n';
+  if (p.cf) testo += '💳 *Codice Fiscale:* ' + p.cf + '\n';
+  testo += '📍 *Indirizzo:* ' + (p.indirizzo || 'Corleto Perticara') + '\n';
+  testo += '👥 *Caregiver / Referente:* ' + caregiverInfo + ' (Cell. ' + caregiverTel + ')\n\n';
+  testo += '📋 *FARMACI IN ESAURIMENTO DA PRESCRIVERE:*\n' + elenco + '\n\n';
+  testo += '🏥 *Farmacia per il ritiro:* ' + farmaciaNome + '\n';
+
   if (noteExtra) {
-    testo += `NOTE E INDICAZIONI AGGIUNTIVE:\n${noteExtra}\n\n`;
+    testo += '\n📝 *Note e indicazioni:* ' + noteExtra + '\n';
   }
 
-  testo += `La ringraziamo cordialmente per la consueta disponibilità e collaborazione.\n`;
-  testo += `Data richiesta: ${oggi} - Assistenza Domiciliare (CareAssist Pro)`;
+  testo += '\nLa ringraziamo sentitamente per la collaborazione.\n';
+  testo += '_Data richiesta: ' + oggi + ' • Assistenza Domiciliare CareAssist Pro_';
 
   return testo;
 }
@@ -5445,12 +5460,12 @@ function openModal(id) {
         if (!badge) {
           badge = document.createElement('div');
           badge.className = 'modal-patient-badge';
-          // Se c'è un modal-title, appendi al title o inserisci subito prima del tasto chiudi
+          badge.style.marginTop = '4px';
           const titleEl = header.querySelector('.modal-title');
-          if (titleEl) {
-            titleEl.appendChild(badge);
+          if (titleEl && titleEl.parentNode) {
+            titleEl.parentNode.insertBefore(badge, titleEl.nextSibling);
           } else {
-            header.insertBefore(badge, header.firstChild);
+            header.appendChild(badge);
           }
         }
         badge.innerHTML = `👤 Assistito: <b>${p.nome}</b>`;
@@ -7246,6 +7261,284 @@ function isTerapiaPrevistaOggi(t) {
 
   // 3. Quotidiana o default
   return true;
+}
+
+
+
+// ==========================================================================
+// MIGLIORIE CLINICHE & ERGONOMICHE: CRUSCOTTO SMART OGGI & FILTRI FASCIA
+// ==========================================================================
+window._activeFasciaFilter = window._activeFasciaFilter || 'tutte';
+
+function aggiornaCruscottoSmartOggi() {
+  const container = document.getElementById('cruscotto-smart-oggi');
+  if (!container) return;
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) { container.innerHTML = ''; return; }
+
+  const oggi = new Date();
+  const oggiStr = oggi.toISOString().slice(0, 10);
+
+  // 1. TERAPIE OGGI
+  const terapieOggi = (p.terapie || []).filter(t => !t.sospeso && (typeof isTerapiaPrevistaOggi === 'function' ? isTerapiaPrevistaOggi(t) : true));
+  const fatteOggi = terapieOggi.filter(t => t.fattoOggi).length;
+  const totaliOggi = terapieOggi.length;
+  const percTerapie = totaliOggi > 0 ? Math.round((fatteOggi / totaliOggi) * 100) : 100;
+
+  let ritardiCount = 0;
+  let prossimaTerapia = null;
+  terapieOggi.forEach(t => {
+    if (!t.fattoOggi && !t.saltatoOggi) {
+      if (typeof verificaStatoOrarioFarmaco === 'function') {
+        const chk = verificaStatoOrarioFarmaco(t.ora);
+        if (chk && chk.inRitardo) ritardiCount++;
+      }
+      if (!prossimaTerapia) prossimaTerapia = t;
+    }
+  });
+
+  let terapieSub = '';
+  if (ritardiCount > 0) {
+    terapieSub = '<span style="color:#b91c1c; font-weight:800;">⚠️ ' + ritardiCount + ' in ritardo!</span>';
+  } else if (fatteOggi === totaliOggi && totaliOggi > 0) {
+    terapieSub = '<span style="color:#16a34a; font-weight:700;">✅ Tutte assunte</span>';
+  } else if (prossimaTerapia) {
+    const nomeF = (prossimaTerapia.farmaco || '').slice(0, 14);
+    terapieSub = '<span>Prossima: ore <b>' + (prossimaTerapia.ora || '--') + '</b> (' + nomeF + ')</span>';
+  } else {
+    terapieSub = '<span>Nessuna terapia</span>';
+  }
+
+  // 2. GLICEMIA
+  const glicemieLogs = (p.registrazioni || [])
+    .filter(r => r.tipo === 'glicemia')
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  const glicemiaOggi = glicemieLogs.find(r => r.timestamp && r.timestamp.startsWith(oggiStr));
+  let glicemiaVal = '--';
+  let glicemiaSub = 'Nessuna oggi';
+
+  if (glicemiaOggi) {
+    glicemiaVal = glicemiaOggi.valore + ' <span style="font-size:12px; font-weight:600; color:#64748b;">mg/dL</span>';
+    const v = parseFloat(glicemiaOggi.valore) || 0;
+    const col = v < 70 ? '#b91c1c' : (v > 180 ? '#ea580c' : '#16a34a');
+    glicemiaSub = '<span style="color:' + col + '; font-weight:700;">' + (glicemiaOggi.momento || 'Rilevata oggi') + '</span>';
+  } else if (glicemieLogs.length > 0) {
+    const last = glicemieLogs[0];
+    const dataLast = new Date(last.timestamp).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
+    glicemiaVal = last.valore + ' <span style="font-size:12px; font-weight:600; color:#64748b;">mg/dL</span>';
+    glicemiaSub = '<span>Ultima: ' + dataLast + ' (' + (last.momento || '') + ')</span>';
+  } else {
+    glicemiaVal = '<span style="font-size:14px; color:#94a3b8;">Non rilevata</span>';
+    glicemiaSub = '<span style="color:#0284c7; font-weight:700;">+ Registra ora</span>';
+  }
+
+  // 3. ALVO / INTESTINO
+  const alvoLogs = (p.registrazioni || [])
+    .filter(r => r.tipo === 'alvo')
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  let alvoVal = 'In attesa';
+  let alvoSub = 'Nessun dato';
+  let alvoCol = '#d97706';
+
+  if (alvoLogs.length > 0) {
+    const lastA = alvoLogs[0];
+    const lastDate = new Date(lastA.timestamp);
+    const diffHours = Math.floor((oggi - lastDate) / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays === 0) {
+      alvoVal = 'Evacuato ✅';
+      alvoSub = 'Oggi ore ' + lastDate.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      alvoCol = '#16a34a';
+    } else if (diffDays === 1) {
+      alvoVal = 'Ieri';
+      alvoSub = 'Ore ' + lastDate.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      alvoCol = '#0284c7';
+    } else {
+      alvoVal = diffDays + ' gg fa';
+      alvoSub = '<span style="color:#b91c1c; font-weight:800;">⚠️ Rischio stipsi</span>';
+      alvoCol = '#b91c1c';
+    }
+  } else {
+    alvoVal = 'Da segnare';
+    alvoSub = '<span style="color:#0284c7; font-weight:700;">+ Segna Alvo</span>';
+  }
+
+  // 4. IDRATAZIONE
+  const mlAttuali = p.idratazioneOggi || 0;
+  const targetMl = p.targetIdrico || 1200;
+  const percIdrica = Math.min(100, Math.round((mlAttuali / targetMl) * 100));
+  const bicchieri = Math.floor(mlAttuali / 200);
+
+  // Check farmaci in esaurimento per eventuale alert ricette
+  const farmaciInScadenza = (p.terapie || []).filter(t => {
+    const scorta = typeof t.scorta !== 'undefined' ? t.scorta : 0;
+    const gg = (typeof calcolaGiorniAutonomiaFarmaco === 'function') ? calcolaGiorniAutonomiaFarmaco(t) : scorta;
+    return scorta <= 5 || gg <= 5;
+  });
+
+  const ricetteBadge = farmaciInScadenza.length > 0
+    ? '<div style="margin-top:10px; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center; grid-column: 1 / -1;"><div style="font-size:12px; font-weight:700; color:#991b1b; display:flex; align-items:center; gap:6px;"><span>📋</span> <span><b>' + farmaciInScadenza.length + ' ' + (farmaciInScadenza.length === 1 ? 'farmaco in esaurimento' : 'farmaci in esaurimento') + '</b> (scorta ≤ 5 cpr)</span></div><button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%);" onclick="apriRichiestaRicetteMedico()">Richiedi Ricette WhatsApp</button></div>'
+    : '';
+
+  container.innerHTML = `
+    <!-- CARD 1: TERAPIE OGGI -->
+    <div class="cruscotto-card card-terapie" onclick="vaiATab('tab-farmaci')" title="Tocca per aprire le Terapie">
+      <div class="cruscotto-header">
+        <span class="cruscotto-title">💊 Terapie Oggi</span>
+        <span class="badge ${ritardiCount > 0 ? 'badge-danger' : 'badge-primary'}" style="font-size:10px; padding:2px 6px;">
+          ${fatteOggi}/${totaliOggi}
+        </span>
+      </div>
+      <div class="cruscotto-valore">${fatteOggi} <span style="font-size:12px; font-weight:600; color:#64748b;">di ${totaliOggi}</span></div>
+      <div class="cruscotto-sub">${terapieSub}</div>
+      <div class="cruscotto-progress-bg">
+        <div class="cruscotto-progress-fill" style="width:${percTerapie}%; background:linear-gradient(90deg, #0284c7, #10b981);"></div>
+      </div>
+    </div>
+
+    <!-- CARD 2: GLICEMIA -->
+    <div class="cruscotto-card card-glicemia" onclick="vaiAGlicemiaRapida()" title="Tocca per registrare o consultare il diario glicemico">
+      <div class="cruscotto-header">
+        <span class="cruscotto-title">🩸 Glicemia</span>
+        <span class="badge" style="background:#ede9fe; color:#6b21a8; font-size:10px; padding:2px 6px;">Diario</span>
+      </div>
+      <div class="cruscotto-valore">${glicemiaVal}</div>
+      <div class="cruscotto-sub">${glicemiaSub}</div>
+      <div class="cruscotto-progress-bg">
+        <div class="cruscotto-progress-fill" style="width:${glicemiaOggi ? '100' : '20'}%; background:#8b5cf6;"></div>
+      </div>
+    </div>
+
+    <!-- CARD 3: ALVO / INTESTINO -->
+    <div class="cruscotto-card card-alvo" onclick="openModal('modal-alvo')" title="Tocca per registrare l'evacuazione">
+      <div class="cruscotto-header">
+        <span class="cruscotto-title">🧻 Alvo</span>
+        <span class="badge" style="background:#ecfdf5; color:#047857; font-size:10px; padding:2px 6px;">OSS</span>
+      </div>
+      <div class="cruscotto-valore" style="color:${alvoCol};">${alvoVal}</div>
+      <div class="cruscotto-sub">${alvoSub}</div>
+      <div class="cruscotto-progress-bg">
+        <div class="cruscotto-progress-fill" style="width:100%; background:${alvoCol};"></div>
+      </div>
+    </div>
+
+    <!-- CARD 4: IDRATAZIONE RAPIDA -->
+    <div class="cruscotto-card card-idratazione" title="Idratazione Odierna">
+      <div class="cruscotto-header">
+        <span class="cruscotto-title">💧 Idratazione</span>
+        <span class="badge" style="background:#e0f2fe; color:#0369a1; font-size:10px; padding:2px 6px;">${percIdrica}%</span>
+      </div>
+      <div class="cruscotto-valore" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>${mlAttuali} <span style="font-size:11px; font-weight:600; color:#64748b;">/ ${targetMl}ml</span></span>
+        <div style="display:inline-flex; gap:3px;" onclick="event.stopPropagation();">
+          <button type="button" class="btn" style="padding:2px 6px; font-size:11px; font-weight:800; background:#06b6d4; color:#fff; border-radius:6px; border:none; cursor:pointer;" onclick="aggiungiAcquaRapida(200)" title="Aggiungi 1 bicchiere da 200 ml">+ 💧 200ml</button>
+          <button type="button" class="btn" style="padding:2px 5px; font-size:11px; background:#f1f5f9; color:#64748b; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;" onclick="rimuoviAcquaRapida(200)" title="Rimuovi 200 ml">-</button>
+        </div>
+      </div>
+      <div class="cruscotto-sub">
+        <span>${bicchieri} bicchieri bevuti</span>
+      </div>
+      <div class="cruscotto-progress-bg">
+        <div class="cruscotto-progress-fill" style="width:${percIdrica}%; background:linear-gradient(90deg, #06b6d4, #0284c7);"></div>
+      </div>
+    </div>
+    ${ricetteBadge}
+  `;
+}
+
+function vaiATab(tabId) {
+  const btn = document.querySelector('.nav-tab[data-target="' + tabId + '"]');
+  if (btn) btn.click();
+}
+
+function vaiAGlicemiaRapida() {
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (p && p.registrazioni && p.registrazioni.some(r => r.tipo === 'glicemia')) {
+    vaiATab('tab-glicemia');
+  } else {
+    openModal('modal-glicemia');
+  }
+}
+
+function aggiungiAcquaRapida(ml) {
+  if (typeof aggiungiAcqua === 'function') {
+    aggiungiAcqua(ml, 'Acqua naturale');
+  } else {
+    const p = getActivePaziente();
+    if (p) {
+      p.idratazioneOggi = (p.idratazioneOggi || 0) + ml;
+      saveDb();
+    }
+  }
+  aggiornaCruscottoSmartOggi();
+  showToast('💧 Aggiunto bicchiere d\'acqua (+' + ml + ' ml)!');
+}
+
+function rimuoviAcquaRapida(ml) {
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+  p.idratazioneOggi = Math.max(0, (p.idratazioneOggi || 0) - ml);
+  saveDb();
+  aggiornaCruscottoSmartOggi();
+  showToast('Bicchiere d\'acqua rimosso (-' + ml + ' ml)');
+}
+
+function renderFiltroFasceTerapie() {
+  const container = document.getElementById('terapie-filtro-fasce');
+  if (!container) return;
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) { container.innerHTML = ''; return; }
+
+  const now = new Date();
+  const h = now.getHours();
+  let fasciaAttuale = 'mattina';
+  if (h >= 6 && h < 11.5) fasciaAttuale = 'mattina';
+  else if (h >= 11.5 && h < 15) fasciaAttuale = 'pranzo';
+  else if (h >= 15 && h < 18.5) fasciaAttuale = 'pomeriggio';
+  else if (h >= 18.5 && h < 22) fasciaAttuale = 'sera';
+  else fasciaAttuale = 'notte';
+
+  if (!window._activeFasciaFilter) {
+    window._activeFasciaFilter = 'tutte';
+  }
+
+  const terapie = p.terapie || [];
+  const countFascia = (key) => terapie.filter(t => (t.fascia || '').toLowerCase().includes(key)).length;
+
+  const fasceConfig = [
+    { key: 'tutte', label: 'Tutte', icon: '📋', count: terapie.length },
+    { key: 'mattina', label: 'Mattina', icon: '☀️', count: countFascia('mattina'), isNow: fasciaAttuale === 'mattina' },
+    { key: 'pranzo', label: 'Pranzo', icon: '🍽️', count: countFascia('pranzo'), isNow: fasciaAttuale === 'pranzo' },
+    { key: 'pomeriggio', label: 'Pomeriggio', icon: '☕', count: countFascia('pomeriggio'), isNow: fasciaAttuale === 'pomeriggio' },
+    { key: 'sera', label: 'Sera', icon: '🌙', count: countFascia('sera'), isNow: fasciaAttuale === 'sera' },
+    { key: 'notte', label: 'Notte', icon: '😴', count: countFascia('notte'), isNow: fasciaAttuale === 'notte' }
+  ];
+
+  container.innerHTML = `
+    <div style="font-size:12px; font-weight:800; color:#334155; margin-right:4px; display:inline-flex; align-items:center; gap:4px; white-space:nowrap;">
+      <span>Filtro Fascia:</span>
+    </div>
+    ${fasceConfig.map(f => {
+      const isActive = window._activeFasciaFilter === f.key;
+      const nowBadge = f.isNow ? '<span style="background:#fef08a; color:#854d0e; font-size:9px; font-weight:800; padding:1px 5px; border-radius:6px; margin-left:3px; border:1px solid #facc15;">ORA</span>' : '';
+      return `
+        <button type="button" class="fascia-filter-pill ${isActive ? 'active' : ''}" onclick="filtraFasciaTerapia('${f.key}')" title="Mostra farmaci ${f.label}">
+          <span>${f.icon} ${f.label}</span>
+          <span class="pill-badge">${f.count}</span>
+          ${nowBadge}
+        </button>
+      `;
+    }).join('')}
+  `;
+}
+
+function filtraFasciaTerapia(fascia) {
+  window._activeFasciaFilter = fascia;
+  renderFiltroFasceTerapie();
+  renderTerapie();
 }
 
 

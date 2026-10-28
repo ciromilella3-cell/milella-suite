@@ -5460,12 +5460,12 @@ function openModal(id) {
         if (!badge) {
           badge = document.createElement('div');
           badge.className = 'modal-patient-badge';
-          // Se c'è un modal-title, appendi al title o inserisci subito prima del tasto chiudi
+          badge.style.marginTop = '4px';
           const titleEl = header.querySelector('.modal-title');
-          if (titleEl) {
-            titleEl.appendChild(badge);
+          if (titleEl && titleEl.parentNode) {
+            titleEl.parentNode.insertBefore(badge, titleEl.nextSibling);
           } else {
-            header.insertBefore(badge, header.firstChild);
+            header.appendChild(badge);
           }
         }
         badge.innerHTML = `👤 Assistito: <b>${p.nome}</b>`;
