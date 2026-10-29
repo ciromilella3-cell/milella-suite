@@ -641,6 +641,14 @@ app.get('/launcher.html', (req, res) => {
     res.status(404).send('launcher.html non trovato');
 });
 
+// LINK BREVI PER ACCESSO ISTANTANEO DA QUALSIASI DISPOSITIVO ESTERNO (FACILI DA RICORDARE)
+app.get(['/turni', '/roster', '/turnario'], (req, res) => {
+    res.redirect('/careassist/turni.html');
+});
+app.get(['/suite', '/portale', '/launcher'], (req, res) => {
+    res.redirect('/launcher.html');
+});
+
 // ==============================================================================
 // GESTIONE ACCESSO: PIN MASTER (SOS999) & REGISTRO OPERATORI ABILITATI
 // ==============================================================================
