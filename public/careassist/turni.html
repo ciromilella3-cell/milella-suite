@@ -1458,6 +1458,9 @@
         <button class="btn btn-ghost" onclick="apriModalNuovoOperatore()">
           + Collaboratore
         </button>
+        <button class="btn btn-ghost" onclick="apriModalGuidaTurni()" style="border:1.5px solid rgba(56,189,248,0.4); color:#38bdf8; display:inline-flex; align-items:center; gap:6px; font-weight:800;" title="Spiegazione su come sviluppare e assegnare i turni">
+          ℹ️ Info Turni
+        </button>
       </div>
     </div>
 
@@ -1513,7 +1516,8 @@
           <span class="leg-item chip-n">🌙 N = Notte 21:00-07:00 (10h)</span>
           <span class="leg-item chip-s">🛌 S = Smonto (Recupero)</span>
           <span class="leg-item chip-r">☕ R = Riposo di Legge</span>
-          <span class="leg-item chip-d">🦺 D = Reperibilità / Jolly</span>
+          <span class="leg-item chip-d" onclick="apriModalGuidaReperibilita()" style="cursor:pointer;" title="Clicca per visualizzare la guida alla Reperibilità">🦺 D = Reperibilità / Jolly ℹ️</span>
+          <span class="leg-item" onclick="apriModalGuidaTurni()" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; cursor:pointer; font-weight:800;" title="Clicca per visualizzare la guida allo sviluppo dei turni">ℹ️ Guida Turni</span>
         </div>
         <div id="hint-click-edit" style="font-size:11.5px; color:#94a3b8; font-weight:600;">
           💡 Tocca qualsiasi cella per assegnare o modificare il turno
@@ -1533,8 +1537,13 @@
 
     <!-- SEZIONE PIANO REPERIBILITÀ & COPERTURE DI EMERGENZA -->
     <div class="rep-card">
-      <div class="rep-title">
-        <span>🦺</span> <b>PIANO REPERIBILITÀ & COPERTURE DI EMERGENZA (DISPONIBILITÀ ATTIVA)</b>
+      <div class="rep-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>🦺</span> <b>PIANO REPERIBILITÀ & COPERTURE DI EMERGENZA (DISPONIBILITÀ ATTIVA)</b>
+        </div>
+        <button onclick="apriModalGuidaReperibilita()" style="background:linear-gradient(135deg, rgba(168,85,247,0.25) 0%, rgba(126,34,206,0.3) 100%); border:1.5px solid rgba(168,85,247,0.5); color:#f3e8ff; border-radius:10px; padding:6px 14px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 0 12px rgba(168,85,247,0.2);" onmouseover="this.style.background='rgba(168,85,247,0.45)'" onmouseout="this.style.background='linear-gradient(135deg, rgba(168,85,247,0.25) 0%, rgba(126,34,206,0.3) 100%)'">
+          ℹ️ Info Reperibilità
+        </button>
       </div>
       <div class="rep-content" id="rep-giornaliera-testo">
         <!-- Generato dinamicamente -->
@@ -1893,6 +1902,154 @@
       </div>
     </div>
   </div>
+
+  <!-- MODAL GUIDA OPERATIVA: COME SVILUPPARE UN TURNO -->
+  <div id="modal-guida-turni" class="modal-backdrop">
+    <div class="modal-box" style="max-width:660px; width:95%; max-height:90vh; overflow-y:auto; background:linear-gradient(180deg, #131d33 0%, #0c1424 100%); border:1.5px solid rgba(56,189,248,0.3); border-radius:18px; padding:24px 26px; box-shadow:0 25px 60px rgba(0,0,0,0.85), 0 0 35px rgba(56,189,248,0.18);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; position:sticky; top:0; background:rgba(12,20,36,0.96); backdrop-filter:blur(10px); padding-bottom:12px; z-index:2; border-bottom:1px solid rgba(255,255,255,0.1);">
+        <div>
+          <div style="font-weight:900; font-size:20px; display:flex; align-items:center; gap:9px; color:#ffffff;">
+            <span style="font-size:24px;">ℹ️</span>
+            <span>Come Sviluppare un Turno (Guida Rapida)</span>
+          </div>
+          <div style="font-size:12.5px; color:#94a3b8; margin-top:3px; font-weight:500;">
+            Istruzioni passo-passo per pianificare l'assistenza senza errori né buchi di orario.
+          </div>
+        </div>
+        <button onclick="chiudiModalGuidaTurni()" title="Chiudi" style="background:rgba(255,255,255,0.08); border:none; border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; color:#cbd5e1; transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.2)'; this.style.color='#fca5a5';" onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.color='#cbd5e1';">✕</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px; font-size:13.5px; color:#cbd5e1; line-height:1.55;">
+        
+        <!-- CARD METODO 1: AUTOMATICO IN 1 CLIC CON IA -->
+        <div style="background:rgba(14,165,233,0.08); border:1.5px solid rgba(56,189,248,0.3); border-radius:14px; padding:16px;">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:900; font-size:16px; color:#38bdf8; margin-bottom:8px;">
+            <span>✨</span> <span>Metodo 1: Generazione Automatica in 1 Clic (Consigliato)</span>
+          </div>
+          <p style="margin:0 0 10px 0;">Ideale per generare l'intera settimana all'istante rispettando i modelli ospedalieri e le ore contrattuali:</p>
+          <ol style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px;">
+            <li>Clicca sul pulsante azzurro in alto <b>"⚡ Sviluppa Combinazione AI"</b>.</li>
+            <li>Scegli la rotazione desiderata (es. <b>Ciclo Ospedaliero SSN P-M-N-S-R</b>, <b>Ciclo Tradizionale</b> o <b>Misto CareAssist</b>).</li>
+            <li>Clicca su <b>"Applica Combinazione"</b>: l'algoritmo distribuisce e sfalsa automaticamente i turni coprendo Mattine, Pomeriggi e Notti senza buchi di assistenza e rispettando le 11h di riposo consecutivo.</li>
+          </ol>
+        </div>
+
+        <!-- CARD METODO 2: MANUALE CELLA PER CELLA -->
+        <div style="background:rgba(255,255,255,0.03); border:1.5px solid rgba(255,255,255,0.12); border-radius:14px; padding:16px;">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:900; font-size:16px; color:#f8fafc; margin-bottom:8px;">
+            <span>👆</span> <span>Metodo 2: Assegnazione o Modifica Manuale (Cella per Cella)</span>
+          </div>
+          <p style="margin:0 0 10px 0;">Per modificare un singolo turno o fare sostituzioni personalizzate:</p>
+          <ol style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px;">
+            <li><b>Tocca o clicca direttamente sulla cella</b> del giorno e dell'operatore desiderato nella tabella.</li>
+            <li>Dal menu a comparsa, seleziona il turno con un tocco:
+              <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+                <span style="background:rgba(16,185,129,0.15); color:#6ee7b7; border:1px solid rgba(16,185,129,0.3); border-radius:6px; padding:3px 8px; font-weight:700; font-size:12px;">☀️ M = Mattina (07-14 • 7h)</span>
+                <span style="background:rgba(245,158,11,0.15); color:#fcd34d; border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:3px 8px; font-weight:700; font-size:12px;">🌤️ P = Pomeriggio (14-21 • 7h)</span>
+                <span style="background:rgba(99,102,241,0.15); color:#c7d2fe; border:1px solid rgba(99,102,241,0.3); border-radius:6px; padding:3px 8px; font-weight:700; font-size:12px;">🌙 N = Notte (21-07 • 10h)</span>
+                <span style="background:rgba(254,243,199,0.15); color:#fde68a; border:1px solid rgba(254,243,199,0.3); border-radius:6px; padding:3px 8px; font-weight:700; font-size:12px;">🛌 S = Smonto Notte (0h)</span>
+                <span style="background:rgba(148,163,184,0.15); color:#e2e8f0; border:1px solid rgba(148,163,184,0.3); border-radius:6px; padding:3px 8px; font-weight:700; font-size:12px;">☕ R = Riposo Legge (0h)</span>
+                <span style="background:rgba(168,85,247,0.15); color:#f3e8ff; border:1px solid rgba(168,85,247,0.3); border-radius:6px; padding:3px 8px; font-weight:700; font-size:12px;">🦺 D = Reperibilità (0h)</span>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- REGOLE DI CONFORMITÀ SANITARIA -->
+        <div style="background:rgba(16,185,129,0.06); border:1.5px solid rgba(16,185,129,0.3); border-radius:14px; padding:16px;">
+          <div style="font-weight:900; font-size:15px; color:#34d399; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+            <span>⚖️</span> <span>Regole di Conformità Sanitaria (D.Lgs. 66/2003 & CCNL)</span>
+          </div>
+          <ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:5px;">
+            <li><b>Smonto post-notte obbligatorio:</b> chi conclude una notte (21–07) il giorno seguente deve fare <b>Smonto (S)</b> per recupero biologico.</li>
+            <li><b>Totale Ore in Tempo Reale:</b> l'ultima colonna a destra calcola in tempo reale le ore svolte, segnalando se l'operatore è allineato al suo contratto (es. 36h o 38h).</li>
+            <li><b>Condivisione Immediata:</b> completati i turni, clicca su <b>"🖨️ Stampa A4"</b> per il prospetto cartaceo o <b>"📲 Invia WhatsApp"</b> per trasmetterlo all'équipe.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.1);">
+        <button class="btn btn-sky" onclick="chiudiModalGuidaTurni()" style="font-size:14px; font-weight:800; padding:10px 22px; border-radius:10px;">
+          Ho Capito, Chiudi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL GUIDA OPERATIVA: COME SI SVILUPPA E COME INSERIRE LA REPERIBILITÀ -->
+  <div id="modal-guida-reperibilita" class="modal-backdrop">
+    <div class="modal-box" style="max-width:660px; width:95%; max-height:90vh; overflow-y:auto; background:linear-gradient(180deg, #18152e 0%, #0d0f1e 100%); border:1.5px solid rgba(168,85,247,0.35); border-radius:18px; padding:24px 26px; box-shadow:0 25px 60px rgba(0,0,0,0.85), 0 0 35px rgba(168,85,247,0.18);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; position:sticky; top:0; background:rgba(18,16,34,0.96); backdrop-filter:blur(10px); padding-bottom:12px; z-index:2; border-bottom:1px solid rgba(255,255,255,0.1);">
+        <div>
+          <div style="font-weight:900; font-size:20px; display:flex; align-items:center; gap:9px; color:#ffffff;">
+            <span style="font-size:24px;">🦺</span>
+            <span>Come Funziona & Come Inserire la Reperibilità</span>
+          </div>
+          <div style="font-size:12.5px; color:#cbd5e1; margin-top:3px; font-weight:500;">
+            Come si calcola la disponibilità, come inserirla e come funzionano le coperture di emergenza.
+          </div>
+        </div>
+        <button onclick="chiudiModalGuidaReperibilita()" title="Chiudi" style="background:rgba(255,255,255,0.08); border:none; border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; color:#cbd5e1; transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.2)'; this.style.color='#fca5a5';" onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.color='#cbd5e1';">✕</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px; font-size:13.5px; color:#cbd5e1; line-height:1.55;">
+        
+        <!-- COS'È LA REPERIBILITÀ -->
+        <div style="background:rgba(168,85,247,0.1); border:1.5px solid rgba(168,85,247,0.3); border-radius:14px; padding:16px;">
+          <div style="font-weight:900; font-size:16px; color:#e9d5ff; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+            <span>💡</span> <span>Cos'è la Reperibilità (Sigla D)?</span>
+          </div>
+          <p style="margin:0 0 8px 0;">
+            La <b>Reperibilità (D)</b> indica la <i>pronta disponibilità telefonica fiduciaria</i>: l'operatore non è fisicamente in turno programmato, ma è reperibile per intervenire d'urgenza in caso di improvvisa assenza di un collega o emergenza dell'assistito.
+          </p>
+          <div style="font-size:12.5px; color:#c084fc; font-weight:700;">
+            ⏱️ Nel monte ore settimanale vale <b>0 ore fisse</b> (da CCNL è remunerata con indennità forfettaria di disponibilità; solo in caso di chiamata attiva le ore prestate si trasformano in lavoro effettivo).
+          </div>
+        </div>
+
+        <!-- COME INSERIRLA: 2 METODI SEMPLICI -->
+        <div style="background:rgba(255,255,255,0.03); border:1.5px solid rgba(255,255,255,0.12); border-radius:14px; padding:16px;">
+          <div style="font-weight:900; font-size:16px; color:#ffffff; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+            <span>🛠️</span> <span>Come Inserire la Reperibilità (2 Modi):</span>
+          </div>
+          
+          <div style="margin-bottom:12px;">
+            <div style="font-weight:800; color:#38bdf8; margin-bottom:4px;">1. Inserimento Manuale Diretto (Cella per Cella):</div>
+            <div style="padding-left:14px;">
+              Tocca qualsiasi cella del giorno libero dell'operatore nella tabella e seleziona <b>🦺 D = Reperibilità / Jolly</b>. La casella si colorerà di lilla e l'operatore comparirà all'istante nel piano reperibilità giornaliero.
+            </div>
+          </div>
+
+          <div>
+            <div style="font-weight:800; color:#a855f7; margin-bottom:4px;">2. Assegnazione Automatica con IA:</div>
+            <div style="padding-left:14px;">
+              Nella scheda del collaboratore (tasto ✏️), lascia attiva la spunta <b>"🚨 Disponibile per Reperibilità & Emergenze"</b>. Quando premi <b>"⚡ Sviluppa Combinazione AI"</b>, l'algoritmo distribuisce automaticamente la sigla <b>D</b> nei giorni cuscinetto compatibili con il riposo di legge.
+            </div>
+          </div>
+        </div>
+
+        <!-- REPERIBILITÀ DI EMERGENZA DEL COORDINATORE -->
+        <div style="background:rgba(217,119,6,0.08); border:1.5px solid rgba(245,158,11,0.3); border-radius:14px; padding:16px;">
+          <div style="font-weight:900; font-size:15px; color:#fbbf24; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+            <span>🛡️</span> <span>Copertura di Emergenza Sempre Garantita</span>
+          </div>
+          <p style="margin:0 0 6px 0;">
+            Se in un determinato giorno nessun collaboratore è assegnato alla sigla <b>D</b>, il sistema attiva automaticamente come referente di emergenza l'<b>Admin Coordinatore Ciro Milella (📞 366 460 7396)</b>.
+          </p>
+          <div style="font-size:12px; color:#fde68a;">
+            📞 <b>Chiamata con 1 tocco:</b> Sia nell'agenda che nel box inferiore, basta cliccare sul numero telefonico dell'operatore reperibile per chiamarlo o scrivergli via WhatsApp.
+          </div>
+        </div>
+
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.1);">
+        <button class="btn btn-sky" onclick="chiudiModalGuidaReperibilita()" style="background:#7e22ce; border-color:#9333ea; font-size:14px; font-weight:800; padding:10px 22px; border-radius:10px;">
+          Ho Capito, Chiudi
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL ELEGANTE SBLOCCO PIN ADMIN (ZERO PROMPT DEL BROWSER) -->
@@ -2778,6 +2935,25 @@
       chiudiModalTurno();
       renderViste();
       mostraToast(`Turno ${turno} assegnato con successo!`, '✅');
+    }
+
+    // GESTIONE MODAL GUIDA TURNI & REPERIBILITÀ
+    function apriModalGuidaTurni() {
+      const modal = document.getElementById('modal-guida-turni');
+      if (modal) modal.style.display = 'flex';
+    }
+    function chiudiModalGuidaTurni() {
+      const modal = document.getElementById('modal-guida-turni');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function apriModalGuidaReperibilita() {
+      const modal = document.getElementById('modal-guida-reperibilita');
+      if (modal) modal.style.display = 'flex';
+    }
+    function chiudiModalGuidaReperibilita() {
+      const modal = document.getElementById('modal-guida-reperibilita');
+      if (modal) modal.style.display = 'none';
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
