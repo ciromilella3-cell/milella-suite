@@ -1451,7 +1451,7 @@
       const data = window.caricaDatiTurnario ? window.caricaDatiTurnario() : null;
       if (!data) return;
 
-      const lun = new Date(data.settimanaInizio + 'T00:00:00');
+      const lun = window.parseDateYMD ? window.parseDateYMD(data.settimanaInizio) : new Date(data.settimanaInizio + 'T00:00:00');
       const dom = new Date(lun);
       dom.setDate(lun.getDate() + 6);
 
@@ -1692,13 +1692,19 @@
     }
 
     function navigaSettimanaOffset(offset) {
-      if (window.navigaSettimana) window.navigaSettimana(offset);
+      if (window.navigaSettimana) {
+        window.navigaSettimana(offset);
+      }
       renderViste();
+      mostraToast(offset > 0 ? 'Settimana successiva ▶' : '◀ Settimana precedente', '📅');
     }
 
     function selezionaDataInizio(val) {
-      if (window.cambiaSettimanaTurnario) window.cambiaSettimanaTurnario(val);
+      if (window.cambiaSettimanaTurnario) {
+        window.cambiaSettimanaTurnario(val);
+      }
       renderViste();
+      mostraToast('Data settimana aggiornata', '📅');
     }
 
     function apriModalConfiguratoreAI() {

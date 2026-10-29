@@ -50,12 +50,33 @@ function sbloccaModalitaAdminManuale() {
   }
 }
 
-// Ottieni la data del lunedì della settimana corrente
+function formatDateYMD(d) {
+  if (!d) return '';
+  const date = (d instanceof Date) ? d : new Date(d);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateYMD(str) {
+  if (!str) return new Date();
+  if (str instanceof Date) return str;
+  const parts = String(str).slice(0, 10).split('-').map(Number);
+  if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1]) && !isNaN(parts[2])) {
+    return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0, 0);
+  }
+  return new Date(str);
+}
+
+// Ottieni la data del lunedì della settimana corrente (senza bug di fuso orario UTC)
 function getLunediSettimana(d) {
-  const date = d ? new Date(d) : new Date();
-  const day = date.getDay();
-  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-  const lunedi = new Date(date.setDate(diff));
+  const date = d ? (d instanceof Date ? new Date(d.getTime()) : parseDateYMD(d)) : new Date();
+  date.setHours(0, 0, 0, 0);
+  const day = date.getDay(); // 0 = Domenica, 1 = Lunedì ... 6 = Sabato
+  const diff = (day === 0 ? -6 : 1) - day;
+  const lunedi = new Date(date);
+  lunedi.setDate(date.getDate() + diff);
   lunedi.setHours(0, 0, 0, 0);
   return lunedi;
 }
@@ -99,6 +120,10 @@ function caricaDatiTurnario() {
     try {
       turnarioCorrente = JSON.parse(salvato);
       if (turnarioCorrente && turnarioCorrente.operatori && turnarioCorrente.griglia) {
+        if (turnarioCorrente.settimanaInizio) {
+          const lun = getLunediSettimana(parseDateYMD(turnarioCorrente.settimanaInizio));
+          turnarioCorrente.settimanaInizio = formatDateYMD(lun);
+        }
         return turnarioCorrente;
       }
     } catch (e) {
@@ -109,7 +134,7 @@ function caricaDatiTurnario() {
   // Creazione iniziale
   const lunedi = getLunediSettimana();
   turnarioCorrente = {
-    settimanaInizio: lunedi.toISOString().slice(0, 10),
+    settimanaInizio: formatDateYMD(lunedi),
     fabbisogno: { M: 1, P: 1, N: 1 },
     operatori: JSON.parse(JSON.stringify(DEFAULT_OPERATORI_TURNI)),
     griglia: {}
@@ -487,28 +512,34 @@ function aggiornaVistaTurnarioModal() {
   }
 }
 
-// Cambio data della settimana dall'input
+// Cambio data della settimana dall'input (accessibile a tutti gli utenti per consultazione)
 function cambiaSettimanaTurnario(nuovaDataStr) {
-  if (!isUtenteAdmin()) return;
   if (!nuovaDataStr) return;
-  const lunedi = getLunediSettimana(new Date(nuovaDataStr));
-  turnarioCorrente.settimanaInizio = lunedi.toISOString().slice(0, 10);
-  sviluppaCombinazioneAutomatica();
-  aggiornaVistaTurnarioModal();
+  if (!turnarioCorrente) caricaDatiTurnario();
+  const selDate = parseDateYMD(nuovaDataStr);
+  const lunedi = getLunediSettimana(selDate);
+  const nuovaStr = formatDateYMD(lunedi);
+  turnarioCorrente.settimanaInizio = nuovaStr;
+  salvaTurnarioSuStorage();
+  if (typeof aggiornaVistaTurnarioModal === 'function') {
+    try { aggiornaVistaTurnarioModal(); } catch(e) {}
+  }
+  return nuovaStr;
 }
 
-// Navigazione rapida settimana precedente / successiva
+// Navigazione rapida settimana precedente (-1) o successiva (+1)
 function navigaSettimana(offset) {
   if (!turnarioCorrente) caricaDatiTurnario();
-  const d = new Date(turnarioCorrente.settimanaInizio + 'T00:00:00');
-  d.setDate(d.getDate() + (offset * 7));
-  const nuovaStr = d.toISOString().slice(0, 10);
-  const lunedi = getLunediSettimana(new Date(nuovaStr));
-  turnarioCorrente.settimanaInizio = lunedi.toISOString().slice(0, 10);
-  if (isUtenteAdmin()) {
-    sviluppaCombinazioneAutomatica();
+  const baseDate = parseDateYMD(turnarioCorrente.settimanaInizio);
+  baseDate.setDate(baseDate.getDate() + (offset * 7));
+  const lunedi = getLunediSettimana(baseDate);
+  const nuovaStr = formatDateYMD(lunedi);
+  turnarioCorrente.settimanaInizio = nuovaStr;
+  salvaTurnarioSuStorage();
+  if (typeof aggiornaVistaTurnarioModal === 'function') {
+    try { aggiornaVistaTurnarioModal(); } catch(e) {}
   }
-  aggiornaVistaTurnarioModal();
+  return nuovaStr;
 }
 
 // Aggiungi nuovo operatore al volo (SOLO ADMIN)
@@ -610,3 +641,6 @@ window.aggiungiOperatoreTurnario = aggiungiOperatoreTurnario;
 window.rimuoviOperatoreTurnario = rimuoviOperatoreTurnario;
 window.stampaTurnarioCartaceoA4 = stampaTurnarioCartaceoA4;
 window.condividiTurnarioWhatsApp = condividiTurnarioWhatsApp;
+window.formatDateYMD = formatDateYMD;
+window.parseDateYMD = parseDateYMD;
+window.getLunediSettimana = getLunediSettimana;
