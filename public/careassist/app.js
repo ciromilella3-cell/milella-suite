@@ -5750,43 +5750,152 @@ function salvaPostura(e) {
   saveDb();
 }
 
-// DATABASE DI RIFERIMENTO FARMACI ANZIANI & CARDIOLOGICI / NEUROLOGICI (AUTOSUGGERIMENTI ED OCR AI MEDICAL ENGINE)
+// DATABASE DI RIFERIMENTO FARMACI COMPLETO AIFA / FARMACIA ITALIANA (AUTOSUGGERIMENTI ED OCR AI MEDICAL ENGINE)
 const DB_FARMACI_COMUNI = [
-  // Cardiovascolari & Antiipertensivi
-  { nome: 'Cardioaspirina 100 mg', principio: 'Acido acetilsalicilico', dosaggio: '100 mg (1 cpr)', modo: 'A pranzo a stomaco pieno (Antiaggregante piastrinico / Prevenzione ictus e infarto)', cpr: 30, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antiaggregante piastrinico salvavita: previene la formazione di coaguli, ictus e reinfarti.' },
-  { nome: 'Lasix 25 mg', principio: 'Furosemide', dosaggio: '25 mg (1 cpr)', modo: 'Al mattino a colazione (Diuretico dell\'ansa / Riduzione edemi e pressione arteriosa)', cpr: 30, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Diuretico potente dell\'ansa: elimina i liquidi in eccesso e contrasta lo scompenso cardiaco e gli edemi alle gambe.' },
-  { nome: 'Triatec 2,5 mg', principio: 'Ramipril', dosaggio: '2,5 mg (1 cpr)', modo: 'Al mattino a colazione (ACE-inibitore / Protezione cardiaca e pressione)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'ACE-inibitore: abbassa la pressione arteriosa e protegge cuore e reni.' },
+  // Cardiovascolari, Antiipertensivi & Antiaggreganti
+  { nome: 'Cardioaspirina 100 mg', principio: 'Acido acetilsalicilico', dosaggio: '100 mg (1 cpr)', modo: 'A pranzo a stomaco pieno (Antiaggregante piastrinico / Prevenzione ictus e infarto)', cpr: 30, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antiaggregante piastrinico salvavita: fluidifica il sangue e previene la formazione di trombi, ictus cerebrali e reinfarti.' },
+  { nome: 'Cardirene 75 mg', principio: 'Acido acetilsalicilico di lisina', dosaggio: '75 mg (1 bustina)', modo: 'A pranzo dopo il pasto sciolto in acqua', cpr: 30, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antiaggregante piastrinico solubile per la prevenzione cardiovascolare secondaria.' },
+  { nome: 'Plavix 75 mg', principio: 'Clopidogrel', dosaggio: '75 mg (1 cpr)', modo: 'Una volta al giorno durante o lontano dai pasti', cpr: 28, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antiaggregante piastrinico per la prevenzione di eventi aterotrombotici post-stent, infarto o ictus.' },
+  { nome: 'Clopidogrel 75 mg', principio: 'Clopidogrel', dosaggio: '75 mg (1 cpr)', modo: 'Una compressa al giorno a pranzo', cpr: 28, ora: '13:00', fascia: 'Pranzo', indicazione: 'Inibitore dell\'aggregazione piastrinica per la protezione coronarica e cerebrovascolare.' },
+  { nome: 'Brilique 90 mg', principio: 'Ticagrelor', dosaggio: '90 mg (1 cpr)', modo: 'Ogni 12 ore (mattina e sera)', cpr: 56, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antiaggregante piastrinico ad alta efficacia per sindromi coronariche acute.' },
+  { nome: 'Lasix 25 mg', principio: 'Furosemide', dosaggio: '25 mg (1 cpr)', modo: 'Al mattino a colazione (Diuretico dell\'ansa / Riduzione edemi e pressione arteriosa)', cpr: 30, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Diuretico potente dell\'ansa: elimina i liquidi in eccesso e contrasta lo scompenso cardiaco e gli edemi agli arti inferiori.' },
+  { nome: 'Furosemide 25 mg', principio: 'Furosemide', dosaggio: '25 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 30, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Diuretico dell\'ansa per il trattamento di edemi cardiaci, renali e ipertensione.' },
+  { nome: 'Luvion 50 mg', principio: 'Canrenone', dosaggio: '50 mg (1 cpr)', modo: 'A colazione o pranzo', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Diuretico risparmiatore di potassio antagonista dell\'aldosterone.' },
+  { nome: 'Kanrenol 100 mg', principio: 'Potassio canrenoato', dosaggio: '100 mg (1 cpr)', modo: 'Una volta al giorno al mattino', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Diuretico risparmiatore di potassio contro ritenzione idrica e scompenso.' },
+  { nome: 'Triatec 2,5 mg', principio: 'Ramipril', dosaggio: '2,5 mg (1 cpr)', modo: 'Al mattino a colazione (ACE-inibitore / Protezione cardiaca e pressione)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'ACE-inibitore: abbassa la pressione arteriosa e protegge cuore, vasi e reni.' },
   { nome: 'Triatec 5 mg', principio: 'Ramipril', dosaggio: '5 mg (1 cpr)', modo: 'Al mattino a colazione (ACE-inibitore / Pressione e insufficienza cardiaca)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'ACE-inibitore: controllo ottimale dell\'ipertensione e rimodellamento miocardico.' },
+  { nome: 'Triatec 10 mg', principio: 'Ramipril', dosaggio: '10 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'ACE-inibitore ad alto dosaggio per ipertensione arteriosa e cardioprotezione.' },
+  { nome: 'Ramipril 5 mg', principio: 'Ramipril', dosaggio: '5 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'ACE-inibitore antiipertensivo e nefroprotettivo.' },
+  { nome: 'Enapren 20 mg', principio: 'Enalapril maleato', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino con acqua', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'ACE-inibitore vasodilatatore per il trattamento dell\'ipertensione arteriosa.' },
+  { nome: 'Zopranol 30 mg', principio: 'Zofenopril calcio', dosaggio: '30 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'ACE-inibitore cardioprotettivo con elevata affinità tissutale cardiaca.' },
+  { nome: 'Coversyl 5 mg', principio: 'Perindopril', dosaggio: '5 mg (1 cpr)', modo: 'Al mattino prima di colazione', cpr: 30, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'ACE-inibitore per ipertensione arteriosa e coronaropatia stabile.' },
   { nome: 'Norvasc 5 mg', principio: 'Amlodipina', dosaggio: '5 mg (1 cpr)', modo: 'A colazione (Calcio-antagonista / Controllo pressione arteriosa)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Calcio-antagonista: vasodilatatore periferico per il controllo stabile dell\'ipertensione e angina.' },
   { nome: 'Norvasc 10 mg', principio: 'Amlodipina', dosaggio: '10 mg (1 cpr)', modo: 'A colazione (Calcio-antagonista / Vasodilatatore)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Calcio-antagonista: vasodilatatore arterioso per ipertensione arteriosa severa.' },
+  { nome: 'Amlodipina 5 mg', principio: 'Amlodipina', dosaggio: '5 mg (1 cpr)', modo: 'Una volta al giorno al mattino', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Calcio-antagonista antiipertensivo a lunga durata d\'azione.' },
+  { nome: 'Zanidip 10 mg', principio: 'Lercanidipina cloridrato', dosaggio: '10 mg (1 cpr)', modo: '15 min prima di colazione', cpr: 28, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Calcio-antagonista selettivo ad alta tollerabilità contro l\'ipertensione.' },
   { nome: 'Bisoprololo 1,25 mg', principio: 'Bisoprololo fumarato', dosaggio: '1,25 mg (1 cpr)', modo: 'A colazione (Beta-bloccante / Controllo frequenza cardiaca e pressione)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Beta-bloccante cardioselettivo: rallenta la frequenza cardiaca e regolarizza il battito cardiaco.' },
   { nome: 'Bisoprololo 2,5 mg', principio: 'Bisoprololo fumarato', dosaggio: '2,5 mg (1 cpr)', modo: 'A colazione (Beta-bloccante / Controllo battiti e ipertensione)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Beta-bloccante: riduce lo sforzo cardiaco e stabilizza la pressione arteriosa.' },
   { nome: 'Congescor 2,5 mg', principio: 'Bisoprololo fumarato', dosaggio: '2,5 mg (1 cpr)', modo: 'A colazione (Beta-bloccante per scompenso cardiaco)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Beta-bloccante per il trattamento dello scompenso cardiaco cronico stabile.' },
+  { nome: 'Sequacor 2,5 mg', principio: 'Bisoprololo fumarato', dosaggio: '2,5 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Beta-bloccante cardioselettivo per controllo frequenza cardiaca e scompenso.' },
+  { nome: 'Lobivon 5 mg', principio: 'Nebivololo', dosaggio: '5 mg (1 cpr)', modo: 'Al mattino durante o fuori pasto', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Beta-bloccante di terza generazione con azione vasodilatatrice mediata da ossido nitrico.' },
+  { nome: 'Nebivololo 5 mg', principio: 'Nebivololo', dosaggio: '5 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Beta-bloccante cardioselettivo vasodilatatore per ipertensione e insufficienza cardiaca.' },
+  { nome: 'Tenormin 100 mg', principio: 'Atenololo', dosaggio: '100 mg (1 cpr)', modo: 'Al mattino con acqua', cpr: 42, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Beta-bloccante per ipertensione arteriosa, angina pectoris e aritmie.' },
   { nome: 'Dilatrend 6,25 mg', principio: 'Carvedilolo', dosaggio: '6,25 mg (1 cpr)', modo: 'Con i pasti (Beta-bloccante vasodilatatore)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Beta-bloccante e alfa-1 bloccante: riduce la resistenza vascolare periferica.' },
   { nome: 'Dilatrend 25 mg', principio: 'Carvedilolo', dosaggio: '25 mg (1 cpr)', modo: 'Con i pasti (Vasodilatatore e cardioprotettore)', cpr: 30, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Protezione cardiaca post-infarto e insufficienza cardiaca congestizia.' },
+  { nome: 'Tareg 80 mg', principio: 'Valsartan', dosaggio: '80 mg (1 cpr)', modo: 'Al mattino con acqua', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Sartano (antagonista recettori angiotensina II) per il controllo della pressione e protezione cardiaca.' },
+  { nome: 'Tareg 160 mg', principio: 'Valsartan', dosaggio: '160 mg (1 cpr)', modo: 'Al mattino con acqua', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Sartano antiipertensivo ad alto dosaggio.' },
+  { nome: 'Valsartan 80 mg', principio: 'Valsartan', dosaggio: '80 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antiipertensivo sartano per pressione alta e post-infarto.' },
+  { nome: 'Olpress 20 mg', principio: 'Olmesartan medoxomil', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Sartano ad azione prolungata sulle 24 ore per l\'ipertensione arteriosa.' },
+  { nome: 'Plaunac 20 mg', principio: 'Olmesartan medoxomil', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antiipertensivo antagonista dell\'angiotensina II.' },
+  { nome: 'Aprovel 150 mg', principio: 'Irbesartan', dosaggio: '150 mg (1 cpr)', modo: 'Al mattino durante o lontano dai pasti', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Sartano antiipertensivo con azione nefroprotettiva nei pazienti diabetici.' },
+  { nome: 'Micardis 80 mg', principio: 'Telmisartan', dosaggio: '80 mg (1 cpr)', modo: 'Una volta al giorno con acqua', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Sartano a lunga emivita per ipertensione e prevenzione cardiovascolare.' },
+  { nome: 'Lortaan 50 mg', principio: 'Losartan potassico', dosaggio: '50 mg (1 cpr)', modo: 'Al mattino con acqua', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Sartano antiipertensivo e protettore della funzione renale.' },
+  { nome: 'Blopress 16 mg', principio: 'Candesartan cilexetil', dosaggio: '16 mg (1 cpr)', modo: 'Al mattino con o senza cibo', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Sartano per il trattamento dell\'ipertensione essenziale e scompenso cardiaco.' },
+  { nome: 'Cardura 2 mg', principio: 'Doxazosina', dosaggio: '2 mg (1 cpr)', modo: 'La sera o al mattino secondo prescrizione', cpr: 30, ora: '20:00', fascia: 'Sera (Cena)', indicazione: 'Alfa-litico vasodilatatore per l\'ipertensione arteriosa e l\'ipertrofia prostatica.' },
   { nome: 'Lanoxin 0,250 mg', principio: 'Digossina', dosaggio: '0,250 mg (1 cpr)', modo: 'Al mattino a digiuno (Inotropo positivo / Controllo ritmo e fibrillazione)', cpr: 30, ora: '08:00', fascia: 'Mattina (Colazione)', indicazione: 'Glicoside cardioattivo: aumenta la forza di contrazione del cuore e controlla la fibrillazione atriale.' },
-  
+  { nome: 'Cordarone 200 mg', principio: 'Amiodarone cloridrato', dosaggio: '200 mg (1 cpr)', modo: 'Durante o subito dopo il pasto', cpr: 20, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antiaritmico per la prevenzione e il trattamento di fibrillazione atriale e aritmie ventricolari.' },
+  { nome: 'Almarytm 100 mg', principio: 'Flecainide acetato', dosaggio: '100 mg (1 cpr)', modo: 'Lontano dai pasti ogni 12 ore', cpr: 20, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Antiaritmico di classe IC per il mantenimento del ritmo sinusale.' },
+
   // Anticoagulanti Orali (NAO/DOAC & AVK)
   { nome: 'Eliquis 5 mg', principio: 'Apixaban', dosaggio: '5 mg (1 cpr)', modo: 'Ogni 12 ore con acqua (Anticoagulante orale / Prevenzione ictus fibrillazione)', cpr: 56, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Anticoagulante inibitore diretto del fattore Xa: previene ictus e trombosi venosa profonda.' },
   { nome: 'Eliquis 2,5 mg', principio: 'Apixaban', dosaggio: '2,5 mg (1 cpr)', modo: 'Ogni 12 ore con acqua (Anticoagulante dosaggio ridotto insufficienza renale / anziani)', cpr: 56, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Anticoagulante orale a dosaggio ridotto per pazienti anziani o con insufficienza renale.' },
   { nome: 'Xarelto 20 mg', principio: 'Rivaroxaban', dosaggio: '20 mg (1 cpr)', modo: 'A cena a stomaco pieno (Anticoagulante orale / Prevenzione tromboembolica)', cpr: 28, ora: '20:00', fascia: 'Sera (Cena)', indicazione: 'Anticoagulante orale per fibrillazione atriale non valvolare ed embolia polmonare.' },
   { nome: 'Xarelto 15 mg', principio: 'Rivaroxaban', dosaggio: '15 mg (1 cpr)', modo: 'A cena con il pasto (Anticoagulante con funzione renale ridotta)', cpr: 28, ora: '20:00', fascia: 'Sera (Cena)', indicazione: 'Anticoagulante orale indicato con clearance della creatinina moderatamente ridotta.' },
   { nome: 'Lixiana 60 mg', principio: 'Edoxaban', dosaggio: '60 mg (1 cpr)', modo: 'Una volta al giorno a pranzo o colazione (Anticoagulante orale)', cpr: 28, ora: '13:00', fascia: 'Pranzo', indicazione: 'Anticoagulante orale ad assunzione singola giornaliera contro tromboembolia ed ictus.' },
+  { nome: 'Lixiana 30 mg', principio: 'Edoxaban', dosaggio: '30 mg (1 cpr)', modo: 'Una volta al giorno con o senza cibo', cpr: 28, ora: '13:00', fascia: 'Pranzo', indicazione: 'Anticoagulante orale inibitore del fattore Xa a dosaggio calibrato.' },
   { nome: 'Pradaxa 110 mg', principio: 'Dabigatran etexilato', dosaggio: '110 mg (1 cps)', modo: 'Ogni 12 ore con acqua senza aprire la capsula (Inibitore diretto della trombina)', cpr: 60, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Inibitore diretto della trombina per la profilassi del tromboembolismo venoso e ictus.' },
   { nome: 'Coumadin 5 mg', principio: 'Warfarin sodico', dosaggio: '5 mg (secondo INR)', modo: 'Ore 17:30 - 18:00 lontano dai pasti secondo schema INR del centro TAO', cpr: 30, ora: '18:00', fascia: 'Pomeriggio', indicazione: 'Anticoagulante antagonista della Vitamina K: dosaggio guidato rigorosamente dal valore INR.' },
   { nome: 'Sintrom 4 mg', principio: 'Acenocumarolo', dosaggio: '4 mg (secondo INR)', modo: 'Pomeriggio secondo schema terapeutico TAO', cpr: 20, ora: '18:00', fascia: 'Pomeriggio', indicazione: 'Anticoagulante cumarinico a breve emivita: monitoraggio periodico INR.' },
 
-  // Gastroprotettori & Apparato Digerente
+  // Gastroprotettori, Antiacidi, Digestivi & Intestino
   { nome: 'Pantoprazolo Aurobindo 20 mg', principio: 'Pantoprazolo sodico sesquidrato', dosaggio: '20 mg (1 cpr)', modo: 'A digiuno 30 min prima di colazione con acqua (Compressa gastroresistente)', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore di pompa protonica (IPP - Gastroprotettore equivalente Aurobindo): riduce la secrezione acida dello stomaco, protegge da gastriti, ulcere e reflusso gastroesofageo.' },
   { nome: 'Pantoprazolo Aurobindo 40 mg', principio: 'Pantoprazolo sodico sesquidrato', dosaggio: '40 mg (1 cpr)', modo: 'A digiuno 30 min prima di colazione con acqua (Compressa gastroresistente)', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore ad alto dosaggio per esofagite da reflusso, ulcere gastriche e protezione da terapie farmacologiche.' },
   { nome: 'Pantoprazolo 20 mg', principio: 'Pantoprazolo', dosaggio: '20 mg (1 cpr)', modo: 'A digiuno 30 min prima di colazione (Gastroprotettore gastrico)', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore di pompa protonica (IPP): protegge lo stomaco da ulcere, gastriti e reflusso gastroesofageo.' },
   { nome: 'Pantoprazolo 40 mg', principio: 'Pantoprazolo', dosaggio: '40 mg (1 cpr)', modo: 'A DIGIUNO, 30 min prima di colazione (Protezione gastrica reflusso e ulcere)', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore ad alto dosaggio per esofagite da reflusso e protezione da farmaci FANS/aspirina.' },
+  { nome: 'Pantorc 20 mg', principio: 'Pantoprazolo', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore inibitore della pompa protonica per reflusso e protezione gastrica.' },
+  { nome: 'Pantorc 40 mg', principio: 'Pantoprazolo', dosaggio: '40 mg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore di pompa protonica ad alto dosaggio per ulcera gastrica, duodenale ed esofagite.' },
+  { nome: 'Peptazol 20 mg', principio: 'Pantoprazolo', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a digiuno prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore IPP contro iperacidità, gastrite e malattia da reflusso.' },
+  { nome: 'Pantopan 20 mg', principio: 'Pantoprazolo', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a digiuno prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore di pompa protonica gastroprotettivo.' },
+  { nome: 'Nolpaza 20 mg', principio: 'Pantoprazolo', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore IPP per la protezione della mucosa gastrica.' },
   { nome: 'Omeprazolo 20 mg', principio: 'Omeprazolo', dosaggio: '20 mg (1 cps)', modo: 'Al mattino a digiuno prima di colazione con un bicchiere d\'acqua', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore della secrezione acida gastrica per ulcere duodenali e pirosi.' },
+  { nome: 'Mepral 20 mg', principio: 'Omeprazolo', dosaggio: '20 mg (1 cps)', modo: 'Al mattino a digiuno prima di colazione', cpr: 14, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore inibitore di pompa protonica per reflusso e ulcere.' },
+  { nome: 'Antra 20 mg', principio: 'Omeprazolo', dosaggio: '20 mg (1 cps)', modo: 'Al mattino a digiuno', cpr: 14, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore di pompa protonica contro acidità e lesioni gastriche.' },
   { nome: 'Lansoprazolo 30 mg', principio: 'Lansoprazolo', dosaggio: '30 mg (1 cpr)', modo: 'Al mattino a digiuno prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'IPP protettivo per stomaco ed esofago.' },
+  { nome: 'Lansox 30 mg', principio: 'Lansoprazolo', dosaggio: '30 mg (1 cpr orodispersibile)', modo: 'Al mattino a digiuno sciolta in bocca o con acqua', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore orodispersibile indicato anche in pazienti con difficoltà di deglutizione.' },
   { nome: 'Esomeprazolo 20 mg', principio: 'Esomeprazolo', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore di pompa protonica per malattia da reflusso gastroesofageo e gastroprotezione.' },
+  { nome: 'Esomeprazolo 40 mg', principio: 'Esomeprazolo', dosaggio: '40 mg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore ad alta potenza per esofagite erosiva da reflusso.' },
   { nome: 'Lucen 20 mg', principio: 'Esomeprazolo', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a digiuno prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore inibitore di pompa protonica contro reflusso e iperacidità.' },
+  { nome: 'Nexium 20 mg', principio: 'Esomeprazolo', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a digiuno con acqua', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore di pompa protonica per pirosi, reflusso e protezione gastrica.' },
+  { nome: 'Gaviscon Bruciore e Indigestione', principio: 'Sodio alginato + Sodio bicarbonato + Calcio carbonato', dosaggio: '1 bustina o 2 cpr masticabili', modo: 'Dopo i pasti principali e la sera prima di coricarsi', cpr: 24, ora: '14:00', fascia: 'Pranzo', indicazione: 'Antiacido e antireflusso meccanico: forma una barriera protettiva galleggiante che blocca la risalita acida nell\'esofago.' },
+  { nome: 'Maalox 400 mg + 400 mg', principio: 'Magnesio idrossido + Alluminio idrossido', dosaggio: '1-2 compresse masticabili', modo: '20-60 minuti dopo i pasti e prima di coricarsi', cpr: 40, ora: '14:00', fascia: 'Pranzo', indicazione: 'Antiacido tamponante per bruciore di stomaco, iperacidità e dispepsia.' },
+  { nome: 'Biochetasi Digestione e Acidità', principio: 'Citrati + Vitamine B1, B2, B6', dosaggio: '2 compresse o 1 bustina', modo: 'Al bisogno dopo i pasti sciolto in acqua', cpr: 20, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antiacido, digestivo e antinausea utile in caso di pesantezza gastrica e difficoltà digestiva.' },
+  { nome: 'Geffer', principio: 'Metoclopramide + Dimeticone + Citrati', dosaggio: '1 bustina effervescente', modo: 'Prima dei pasti sciolta in acqua', cpr: 24, ora: '12:30', fascia: 'Pranzo', indicazione: 'Procinetico, antinausea e antimeteorico contro acidità, gonfiore e rallentamento digestivo.' },
+  { nome: 'Enterogermina 4 Miliardi', principio: 'Spore di Bacillus clausii poliantibiotico-resistente', dosaggio: '1 flaconcino (4 miliardi)', modo: '1 flaconcino al giorno per via orale', cpr: 20, ora: '10:00', fascia: 'Mattina (Colazione)', indicazione: 'Probiotico riequilibratore della flora batterica intestinale alterata da diarrea o terapie antibiotiche.' },
+  { nome: 'Codex 5 Miliardi', principio: 'Saccharomyces boulardii', dosaggio: '250 mg (1 cps o bustina)', modo: '1-2 volte al giorno con acqua', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Probiotico antidiarroico per la profilassi e il trattamento del dismicrobismo intestinale.' },
+  { nome: 'Yovis 1 g', principio: 'Fermenti lattici vivi liofilizzati ad alta concentrazione', dosaggio: '1 bustina al giorno', modo: 'Lontano dai pasti sciolta in acqua', cpr: 10, ora: '10:00', fascia: 'Mattina (Colazione)', indicazione: 'Batterioterapia lattica ad alta concentrazione per coliti ed enteriti.' },
+  { nome: 'Imodium 2 mg', principio: 'Loperamide cloridrato', dosaggio: '2 mg (1 cps)', modo: 'Al bisogno in caso di diarrea acuta', cpr: 12, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antidiarroico sintomatico: rallenta la motilità intestinale riducendo le scariche.' },
+  { nome: 'Dissenten 2 mg', principio: 'Loperamide cloridrato', dosaggio: '2 mg (1 cpr)', modo: 'Al bisogno per diarrea acuta', cpr: 15, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Controllo sintomatico degli episodi di diarrea acuta e cronica.' },
+  { nome: 'Buscopan 10 mg', principio: 'N-butilbromuro di joscina', dosaggio: '10 mg (1 cpr rivestita)', modo: 'Al bisogno con acqua per spasmi addominali', cpr: 30, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antispastico specifico per coliche e dolori crampiformi del tratto gastrointestinale e genito-urinario.' },
+  { nome: 'Normix 200 mg', principio: 'Rifaximina', dosaggio: '200 mg (1-2 cpr)', modo: 'Ogni 8-12 ore con acqua', cpr: 12, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico intestinale non assorbibile per infezioni intestinali, diarrea e malattia diverticolare.' },
+  { nome: 'Plasil 10 mg', principio: 'Metoclopramide cloridrato', dosaggio: '10 mg (1 cpr)', modo: 'Prima dei pasti per nausea o vomito', cpr: 24, ora: '12:30', fascia: 'Pranzo', indicazione: 'Antiemetico e procinetico contro nausea, vomito e stasi gastrica.' },
 
-  // Neurologici, Parkinson, Epilessia & Psichiatria
+  // Antidolorifici, Antinfiammatori (FANS), Febbre & Mal di Testa (Molto comuni in borsa/tasca!)
+  { nome: 'Tachipirina 1000 mg', principio: 'Paracetamolo', dosaggio: '1000 mg (1 cpr)', modo: 'Al bisogno per dolore o febbre > 37.5°C a stomaco pieno (Antipiretico / Antidolorifico)', cpr: 16, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antidolorifico e antipiretico di prima scelta, sicuro per lo stomaco e la funzione cardiaca.' },
+  { nome: 'Tachipirina 500 mg', principio: 'Paracetamolo', dosaggio: '500 mg (1 cpr)', modo: 'Al bisogno per dolori lievi, cefalea o febbricola', cpr: 20, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antipiretico e analgesico ad azione rapida contro stati febbrili e dolori.' },
+  { nome: 'Efferalgan 1000 mg', principio: 'Paracetamolo', dosaggio: '1000 mg (1 cpr effervescente)', modo: 'Sciolta in un bicchiere d\'acqua al bisogno', cpr: 16, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Analgesico e antipiretico effervescente a rapido assorbimento.' },
+  { nome: 'Co-Efferalgan', principio: 'Paracetamolo + Codeina', dosaggio: '500 mg + 30 mg (1 cpr)', modo: 'Dopo i pasti con acqua per dolori intensi refrattari', cpr: 16, ora: '13:00', fascia: 'Al Bisogno', indicazione: 'Analgesico combinato oppioide-paracetamolo per dolori muscolo-scheletrici severi.' },
+  { nome: 'Oki 80 mg', principio: 'Ketoprofene sale di lisina', dosaggio: '80 mg (1 bustina bipartita)', modo: 'A stomaco pieno dopo i pasti sciolta in acqua', cpr: 30, ora: '13:30', fascia: 'Al Bisogno', indicazione: 'Antinfiammatorio non steroideo (FANS) ad azione rapida contro mal di testa, mal di denti, dolori articolari e infiammazioni.' },
+  { nome: 'OkiTask 40 mg', principio: 'Ketoprofene sale di lisina', dosaggio: '40 mg (1 bustina orodispersibile)', modo: 'Direttamente sulla lingua senza acqua, dopo i pasti', cpr: 20, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antinfiammatorio e antidolorifico tascabile rapido per cefalea e dolori acuti.' },
+  { nome: 'Moment 200 mg', principio: 'Ibuprofene', dosaggio: '200 mg (1 cpr rivestita)', modo: 'A stomaco pieno con acqua in caso di cefalea o dolore', cpr: 24, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Analgesico e antinfiammatorio rapido per mal di testa, mal di denti, dolori muscolari e mestruali.' },
+  { nome: 'Moment Act 400 mg', principio: 'Ibuprofene', dosaggio: '400 mg (1 capsula molle)', modo: 'Dopo i pasti con acqua', cpr: 12, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antinfiammatorio FANS ad assorbimento liquido rapido per emicrania e dolori intensi.' },
+  { nome: 'Brufen 600 mg', principio: 'Ibuprofene', dosaggio: '600 mg (1 cpr o bustina)', modo: 'Rigorosamente a stomaco pieno dopo i pasti', cpr: 30, ora: '13:30', fascia: 'Pranzo', indicazione: 'Potente antinfiammatorio, antireumatico e analgesico per artriti, lombosciatalgie e traumi.' },
+  { nome: 'Brufen 400 mg', principio: 'Ibuprofene', dosaggio: '400 mg (1 cpr)', modo: 'Dopo i pasti a stomaco pieno', cpr: 24, ora: '13:30', fascia: 'Al Bisogno', indicazione: 'Antinfiammatorio e antidolorifico per dolori osteoarticolari, cefalea e stati infiammatori.' },
+  { nome: 'Nurofen 400 mg', principio: 'Ibuprofene', dosaggio: '400 mg (1 cpr)', modo: 'A stomaco pieno con acqua', cpr: 12, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antidolorifico, antinfiammatorio e antipiretico contro febbre, mal di testa e nevralgie.' },
+  { nome: 'Spidifen 600 mg', principio: 'Ibuprofene sale di arginina', dosaggio: '600 mg (1 bustina)', modo: 'Dopo i pasti sciolta in acqua', cpr: 30, ora: '13:30', fascia: 'Al Bisogno', indicazione: 'Antinfiammatorio ad assorbimento ultrarapido grazie alla salificazione con arginina.' },
+  { nome: 'Aulin 100 mg', principio: 'Nimesulide', dosaggio: '100 mg (1 cpr o bustina)', modo: 'Dopo i pasti a stomaco pieno', cpr: 30, ora: '13:30', fascia: 'Al Bisogno', indicazione: 'Antinfiammatorio non steroideo (FANS) per il trattamento del dolore acuto intenso.' },
+  { nome: 'Nimesulide 100 mg', principio: 'Nimesulide', dosaggio: '100 mg (1 bustina)', modo: 'Dopo i pasti a stomaco pieno', cpr: 30, ora: '13:30', fascia: 'Al Bisogno', indicazione: 'FANS analgesico e antinfiammatorio per dolori acuti.' },
+  { nome: 'Voltaren 50 mg', principio: 'Diclofenac sodico', dosaggio: '50 mg (1 cpr gastroresistente)', modo: 'Dopo i pasti con acqua', cpr: 30, ora: '13:30', fascia: 'Pranzo', indicazione: 'Antinfiammatorio e antireumatico mirato per dolori articolari, mal di schiena e stati flogistici.' },
+  { nome: 'Dicloreum 50 mg', principio: 'Diclofenac', dosaggio: '50 mg (1 cpr)', modo: 'Dopo i pasti principali', cpr: 30, ora: '13:30', fascia: 'Pranzo', indicazione: 'FANS antinfiammatorio per patologie reumatiche e osteoarticolari.' },
+  { nome: 'Synflex 550 mg', principio: 'Naprossene sodico', dosaggio: '550 mg (1 cpr)', modo: 'Dopo i pasti a stomaco pieno', cpr: 30, ora: '13:30', fascia: 'Pranzo', indicazione: 'Antinfiammatorio e analgesico a lunga durata per dolori muscolo-scheletrici e articolari.' },
+  { nome: 'Momendol 220 mg', principio: 'Naprossene sodico', dosaggio: '220 mg (1 cpr)', modo: 'Dopo il pasto con acqua', cpr: 12, ora: '13:30', fascia: 'Al Bisogno', indicazione: 'Analgesico antinfiammatorio per mal di schiena, dolori cervicali e articolari.' },
+  { nome: 'Toradol 10 mg', principio: 'Ketorolac trometamina', dosaggio: '10 mg (1 cpr o gocce)', modo: 'Al bisogno per dolori acuti severi (uso breve)', cpr: 10, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Potente analgesico FANS per coliche renali e dolori acuti post-operatori o traumatici.' },
+  { nome: 'Aspirina C 400 mg + 240 mg', principio: 'Acido acetilsalicilico + Acido ascorbico (Vitamina C)', dosaggio: '1 cpr effervescente', modo: 'Dopo i pasti sciolta in acqua', cpr: 20, ora: '13:30', fascia: 'Al Bisogno', indicazione: 'Antipiretico, antinfiammatorio e antidolorifico per sindromi influenzali e da raffreddamento.' },
+  { nome: 'Vivin C', principio: 'Acido acetilsalicilico + Vitamina C', dosaggio: '1 cpr effervescente', modo: 'Dopo i pasti in un bicchiere d\'acqua', cpr: 20, ora: '13:30', fascia: 'Al Bisogno', indicazione: 'Trattamento sintomatico di stati febbrili, raffreddore e dolori influenzali.' },
+  { nome: 'Tachifludec', principio: 'Paracetamolo + Vitamina C + Fenilefrina', dosaggio: '1 bustina', modo: 'Sciolta in acqua calda dopo i pasti', cpr: 16, ora: '20:30', fascia: 'Sera (Cena)', indicazione: 'Decongestionante nasale, antipiretico e analgesico per raffreddore e influenza.' },
+
+  // Cortisonici, Antistaminici, Tosse, Gola & Respiratorio
+  { nome: 'Bentelan 1 mg', principio: 'Betametasone', dosaggio: '1 mg (1 cpr effervescente)', modo: 'Al mattino dopo colazione sciolta in acqua', cpr: 10, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Corticosteroide ad alta potenza antinfiammatoria e antiallergica per asma, laringiti, allergie e flogosi acute.' },
+  { nome: 'Bentelan 0,5 mg', principio: 'Betametasone', dosaggio: '0,5 mg (1 cpr effervescente)', modo: 'Al mattino dopo colazione sciolta in acqua', cpr: 10, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Cortisonico antinfiammatorio e antiallergico sistemico.' },
+  { nome: 'Deltacortene 25 mg', principio: 'Prednisone', dosaggio: '25 mg (1 cpr)', modo: 'Al mattino a colazione a stomaco pieno', cpr: 10, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Corticosteroide sistemico per patologie infiammatorie, reumatiche, respiratorie e autoimmuni.' },
+  { nome: 'Deltacortene 5 mg', principio: 'Prednisone', dosaggio: '5 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Cortisonico orale a dosaggio di mantenimento.' },
+  { nome: 'Medrol 16 mg', principio: 'Metilprednisolone', dosaggio: '16 mg (1 cpr)', modo: 'Al mattino dopo colazione', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Glucocorticoide antinfiammatorio e immunosoppressivo.' },
+  { nome: 'Zirtec 10 mg', principio: 'Cetirizina dicloridrato', dosaggio: '10 mg (1 cpr)', modo: 'La sera con un bicchiere d\'acqua', cpr: 20, ora: '21:30', fascia: 'Notte (Prima di dormire)', indicazione: 'Antistaminico antiallergico per rinite allergica stagionale, congiuntivite e orticaria.' },
+  { nome: 'Cetirizina 10 mg', principio: 'Cetirizina dicloridrato', dosaggio: '10 mg (1 cpr)', modo: 'La sera prima di coricarsi', cpr: 20, ora: '21:30', fascia: 'Notte (Prima di dormire)', indicazione: 'Antistaminico H1 selettivo contro allergie respiratorie e cutanee.' },
+  { nome: 'Aerius 5 mg', principio: 'Desloratadina', dosaggio: '5 mg (1 cpr)', modo: 'Una volta al giorno senza sonnolenza', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antistaminico di nuova generazione non sedativo per rinite allergica e orticaria.' },
+  { nome: 'Kestine 10 mg', principio: 'Ebastina', dosaggio: '10 mg (1 cpr o liofilizzato)', modo: 'Una volta al giorno', cpr: 30, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antistaminico a lunga durata d\'azione per manifestazioni allergiche.' },
+  { nome: 'Robilas 20 mg', principio: 'Bilastina', dosaggio: '20 mg (1 cpr)', modo: 'A digiuno 1 ora prima o 2 ore dopo il pasto', cpr: 20, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Antistaminico moderno privo di effetti sedativi per rinocongiuntivite e orticaria.' },
+  { nome: 'Fluimucil 600 mg', principio: 'N-acetilcisteina', dosaggio: '600 mg (1 cpr effervescente o bustina)', modo: 'Sciolta in acqua, preferibilmente dopo i pasti', cpr: 10, ora: '13:30', fascia: 'Pranzo', indicazione: 'Mucolitico e antiossidante: fluidifica il catarro denso nelle vie respiratorie facilitandone l\'espettorazione.' },
+  { nome: 'Bisolvon 8 mg', principio: 'Bromexina cloridrato', dosaggio: '8 mg (1 cpr o sciroppo)', modo: 'Dopo i pasti', cpr: 20, ora: '13:30', fascia: 'Pranzo', indicazione: 'Mucolitico secretolitico per affezioni bronchiali acute e croniche.' },
+  { nome: 'Levotuss 60 mg', principio: 'Levodropropizina', dosaggio: '1 misurino o gocce', modo: 'Lontano dai pasti fino a 3 volte al dì', cpr: 1, ora: '21:30', fascia: 'Notte (Prima di dormire)', indicazione: 'Sedativo periferico della tosse secca e stizzosa.' },
+  { nome: 'Ventolin 100 mcg', principio: 'Salbutamolo', dosaggio: '1-2 puff inalatori', modo: 'Al bisogno in caso di broncospasmo o dispnea', cpr: 200, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Broncodilatatore beta-2 agonista a rapida azione per crisi d\'asma e BPCO.' },
+
+  // Antibiotici & Antivirali
+  { nome: 'Augmentin 1 g', principio: 'Amoxicillina + Acido clavulanico', dosaggio: '875 mg + 125 mg (1 cpr o bustina)', modo: 'Ogni 12 ore all\'inizio dei pasti con abbondante acqua', cpr: 12, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico antibatterico ad ampio spettro per infezioni respiratorie, odontoiatriche, urinarie e cutanee.' },
+  { nome: 'Clavulin 1 g', principio: 'Amoxicillina + Acido clavulanico', dosaggio: '875 mg + 125 mg (1 bustina o cpr)', modo: 'Ogni 12 ore all\'inizio dei pasti', cpr: 12, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico penicillina protetta ad ampio spettro battericida.' },
+  { nome: 'Zimox 1 g', principio: 'Amoxicillina triidrato', dosaggio: '1000 mg (1 cpr)', modo: 'Ogni 8-12 ore con acqua', cpr: 12, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico beta-lattamico per infezioni delle alte e basse vie respiratorie.' },
+  { nome: 'Amoxicillina 1 g', principio: 'Amoxicillina', dosaggio: '1000 mg (1 cpr)', modo: 'Ogni 12 ore', cpr: 12, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico battericida ad ampio spettro.' },
+  { nome: 'Zitromax 500 mg', principio: 'Azitromicina', dosaggio: '500 mg (1 cpr)', modo: '1 compressa al giorno per 3 giorni consecutivi', cpr: 3, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antibiotico macrolide a lunga emivita tissutale per bronchiti, faringotonsilliti e polmoniti.' },
+  { nome: 'Azitromicina 500 mg', principio: 'Azitromicina', dosaggio: '500 mg (1 cpr)', modo: 'Una volta al giorno per 3 giorni', cpr: 3, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antibiotico macrolide per infezioni delle vie respiratorie e dei tessuti molli.' },
+  { nome: 'Klacid 500 mg', principio: 'Claritromicina', dosaggio: '500 mg (1 cpr)', modo: 'Ogni 12 ore durante i pasti', cpr: 14, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico macrolide per infezioni respiratorie, cutanee ed eradicazione Helicobacter.' },
+  { nome: 'Ciproxin 500 mg', principio: 'Ciprofloxacina', dosaggio: '500 mg (1 cpr)', modo: 'Ogni 12 ore lontano da latte e latticini', cpr: 10, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico fluorochinolonico per infezioni urinarie complesse e batteriche.' },
+  { nome: 'Levoxacin 500 mg', principio: 'Levofloxacina', dosaggio: '500 mg (1 cpr)', modo: 'Una o due volte al giorno con acqua', cpr: 5, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico chinolonico per polmoniti, sinusiti acute e infezioni urinarie.' },
+  { nome: 'Cefixoral 400 mg', principio: 'Cefixima', dosaggio: '400 mg (1 cpr rivestita)', modo: 'Una compressa al giorno', cpr: 5, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antibiotico cefalosporina orale di terza generazione.' },
+  { nome: 'Monuril 3 g', principio: 'Fosfomicina trometamolo', dosaggio: '3 g (1 bustina)', modo: 'La sera prima di dormire a vescica vuota sciolta in acqua', cpr: 2, ora: '22:00', fascia: 'Notte (Prima di dormire)', indicazione: 'Antibiotico urinario specifico ad alta concentrazione vescicale per cistiti acute.' },
+  { nome: 'Aciclovir 800 mg', principio: 'Aciclovir', dosaggio: '800 mg (1 cpr)', modo: 'Più volte al giorno secondo schema', cpr: 35, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antivirale specifico contro infezioni da virus Herpes Simplex e Herpes Zoster (Fuoco di Sant\'Antonio).' },
+  { nome: 'Entecavir Sandoz 0,5 mg', principio: 'Entecavir', dosaggio: '0,5 mg (1 cpr)', modo: 'Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto)', cpr: 30, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell\'infezione cronica da virus dell\'epatite B (HBV).' },
+  { nome: 'Baraclude 0,5 mg', principio: 'Entecavir', dosaggio: '0,5 mg (1 cpr)', modo: 'A digiuno con acqua', cpr: 30, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Antivirale per epatite B cronica ad elevata barriera genetica.' },
+
+  // Neurologici, Parkinson, Epilessia, Umore & Sonno
   { nome: 'Sinemet 100+25 mg', principio: 'Levodopa + Carbidopa', dosaggio: '100+25 mg (1 cpr)', modo: '30 min prima dei pasti a digiuno con abbondante acqua (Morbo di Parkinson)', cpr: 50, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Terapia fondamentale del Morbo di Parkinson: ripristina la dopamina cerebrale riducendo tremori e rigidità.' },
   { nome: 'Sinemet 200+50 mg RP', principio: 'Levodopa + Carbidopa (Rilascio Prolungato)', dosaggio: '200+50 mg (1 cpr)', modo: 'La sera prima di dormire (Parkinson copertura notturna)', cpr: 30, ora: '22:00', fascia: 'Notte (Prima di dormire)', indicazione: 'Levodopa a rilascio prolungato per prevenire il blocco motorio notturno e mattutino nel Parkinson.' },
   { nome: 'Madopar 200+50 mg', principio: 'Levodopa + Benserazide', dosaggio: '200+50 mg (1 cpr)', modo: 'Lontano dai pasti con acqua (Parkinson)', cpr: 30, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Dopaminergico per il controllo della bradicinesia e rigidità parkinsoniana.' },
@@ -5794,33 +5903,53 @@ const DB_FARMACI_COMUNI = [
   { nome: 'Vimpat 50 mg', principio: 'Lacosamide', dosaggio: '50 mg (1 cpr)', modo: 'Ogni 12 ore con acqua (Antiepilettico)', cpr: 56, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Terapia neuromodulatrice antiepilettica a dosaggio iniziale.' },
   { nome: 'Keppra 500 mg', principio: 'Levetiracetam', dosaggio: '500 mg (1 cpr)', modo: 'Ogni 12 ore dopo i pasti con acqua', cpr: 60, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antiepilettico ad ampio spettro: previene le crisi convulsive parziali o generalizzate.' },
   { nome: 'Keppra 1000 mg', principio: 'Levetiracetam', dosaggio: '1000 mg (1 cpr)', modo: 'Ogni 12 ore dopo colazione e cena', cpr: 30, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Controllo delle crisi epilettiche post-ictus o idiopatiche.' },
+  { nome: 'Depakin Chrono 500 mg', principio: 'Valproato di sodio + Acido valproico', dosaggio: '500 mg (1 cpr RP)', modo: 'Durante i pasti 1-2 volte al dì', cpr: 30, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antiepilettico e stabilizzatore dell\'umore a rilascio prolungato.' },
+  { nome: 'Lyrica 75 mg', principio: 'Pregabalin', dosaggio: '75 mg (1 cps)', modo: 'Mattina e sera con acqua', cpr: 56, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Neuromodulatore specifico per il dolore neuropatico periferico e centrale.' },
+  { nome: 'Gabapentin 300 mg', principio: 'Gabapentin', dosaggio: '300 mg (1 cps)', modo: 'Secondo schema posologico per nevralgie', cpr: 50, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Trattamento del dolore neuropatico, sciatalgie neuropatiche ed epilessia.' },
   { nome: 'Quetiapina 25 mg', principio: 'Quetiapina', dosaggio: '25 mg (1 cpr)', modo: 'Prima di dormire con acqua (Antipsicotico atipico / Regolatore sonno e agitazione)', cpr: 30, ora: '21:30', fascia: 'Notte (Prima di dormire)', indicazione: 'Neurolettico atipico: riduce l\'agitazione notturna, allucinazioni e stabilizza il sonno negli anziani.' },
   { nome: 'Seroquel 25 mg', principio: 'Quetiapina', dosaggio: '25 mg (1 cpr)', modo: 'La sera prima di coricarsi (Sedativo / Ansiolitico centrale)', cpr: 30, ora: '21:30', fascia: 'Notte (Prima di dormire)', indicazione: 'Sedativo dell\'umore e ansiolitico senza effetti extrapiramidali marcati.' },
   { nome: 'Tavor 1 mg', principio: 'Lorazepam', dosaggio: '1 mg (1 cpr)', modo: 'La sera o al bisogno sotto la lingua / con acqua (Ansiolitico / Ipnoinducente)', cpr: 20, ora: '22:00', fascia: 'Notte (Prima di dormire)', indicazione: 'Benzodiazepina ad azione ansiolitica rapida, miorilassante e facilitante il sonno.' },
   { nome: 'Tavor 2,5 mg', principio: 'Lorazepam', dosaggio: '2,5 mg (1 cpr)', modo: 'La sera prima di coricarsi (Ansiolitico)', cpr: 20, ora: '22:00', fascia: 'Notte (Prima di dormire)', indicazione: 'Trattamento a breve termine di stati di ansia grave, tensione e insonnia refrattaria.' },
-  { nome: 'Xanax 0,50 mg', principio: 'Alprazolam', dosaggio: '0,50 mg (1 cpr)', modo: 'Secondo prescrizione (Ansiolitico)', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Benzodiazepina per stati d\'ansia e attacchi di panico.' },
+  { nome: 'Xanax 0,50 mg', principio: 'Alprazolam', dosaggio: '0,50 mg (1 cpr)', modo: 'Secondo prescrizione (Ansiolitico)', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Benzodiazepina per stati d\'ansia, tensione emotiva e attacchi di panico.' },
+  { nome: 'Lexotan 1,5 mg', principio: 'Bromazepam', dosaggio: '1,5 mg (1 cpr o gocce)', modo: 'La sera o al bisogno', cpr: 20, ora: '21:30', fascia: 'Notte (Prima di dormire)', indicazione: 'Ansiolitico benzodiazepinico per ansia, tensione nervosa e somatizzazioni viscerali.' },
+  { nome: 'En 1 mg', principio: 'Delorazepam', dosaggio: '1 mg (1 cpr o gocce)', modo: 'La sera prima di dormire', cpr: 20, ora: '22:00', fascia: 'Notte (Prima di dormire)', indicazione: 'Benzodiazepina ansiolitica e ipnoinducente contro ansia e insonnia.' },
+  { nome: 'Stilnox 10 mg', principio: 'Zolpidem tartrato', dosaggio: '10 mg (1 cpr)', modo: 'Subito prima di coricarsi', cpr: 30, ora: '22:30', fascia: 'Notte (Prima di dormire)', indicazione: 'Ipnotico non benzodiazepinico specifico per l\'induzione rapida del sonno.' },
+  { nome: 'Zoloft 50 mg', principio: 'Sertralina', dosaggio: '50 mg (1 cpr)', modo: 'Al mattino a colazione', cpr: 30, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antidepressivo SSRI inibitore selettivo della ricaptazione della serotonina per tono dell\'umore e ansia.' },
+  { nome: 'Cipralex 10 mg', principio: 'Escitalopram', dosaggio: '10 mg (1 cpr)', modo: 'Una volta al giorno al mattino', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Modulatore serotoninergico SSRI ad alta selettività per depressione e disturbi d\'ansia.' },
 
-  // Diabete & Metabolismo
-  { nome: 'Metforal 500 mg', principio: 'Metformina cloridrato', dosaggio: '500 mg (1 cpr)', modo: 'Durante o subito dopo i pasti principali per ridurre disturbi gastrici', cpr: 30, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antidiabetico orale: riduce la produzione epatica di glucosio nel diabete di tipo 2.' },
+  // Diabete, Colesterolo, Tiroide, Gotta & Vitamine
+  { nome: 'Metforal 500 mg', principio: 'Metformina cloridrato', dosaggio: '500 mg (1 cpr)', modo: 'Durante o subito dopo i pasti principali per ridurre disturbi gastrici', cpr: 50, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antidiabetico orale: riduce la produzione epatica di glucosio e migliora la sensibilità insulinica nel diabete di tipo 2.' },
+  { nome: 'Metforal 850 mg', principio: 'Metformina cloridrato', dosaggio: '850 mg (1 cpr)', modo: 'Durante o dopo i pasti', cpr: 40, ora: '13:00', fascia: 'Pranzo', indicazione: 'Ipoglicemizzante orale biguanidico per il controllo del diabete mellito.' },
   { nome: 'Metforal 1000 mg', principio: 'Metformina cloridrato', dosaggio: '1000 mg (1 cpr)', modo: 'A pranzo e cena con cibo (Diabete Mellito Tipo 2)', cpr: 60, ora: '13:00', fascia: 'Pranzo', indicazione: 'Controllo glicemico fondamentale nel paziente diabetico non insulino-dipendente.' },
-  { nome: 'Forxiga 10 mg', principio: 'Dapagliflozin', dosaggio: '10 mg (1 cpr)', modo: 'Al mattino a colazione con acqua (SGLT2 inibitore / Cuore e Reni)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Inibitore SGLT2: elimina il glucosio con le urine e protegge cuore e reni dallo scompenso.' },
-  { nome: 'Jardiance 10 mg', principio: 'Empagliflozin', dosaggio: '10 mg (1 cpr)', modo: 'Al mattino con o senza cibo (Cardioprotettore e glicemia)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Cardioprotettore ed ipoglicemizzante per scompenso cardiaco e diabete tipo 2.' },
+  { nome: 'Glucophage 1000 mg', principio: 'Metformina cloridrato', dosaggio: '1000 mg (1 cpr)', modo: 'Durante o dopo i pasti principali', cpr: 60, ora: '13:00', fascia: 'Pranzo', indicazione: 'Farmaco di prima scelta per la gestione della glicemia nel diabete di tipo 2.' },
+  { nome: 'Forxiga 10 mg', principio: 'Dapagliflozin', dosaggio: '10 mg (1 cpr)', modo: 'Al mattino a colazione con acqua (SGLT2 inibitore / Cuore e Reni)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Inibitore SGLT2: elimina il glucosio in eccesso e protegge cuore e reni dallo scompenso.' },
+  { nome: 'Jardiance 10 mg', principio: 'Empagliflozin', dosaggio: '10 mg (1 cpr)', modo: 'Al mattino con o senza cibo (Cardioprotettore e glicemia)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Cardioprotettore ed ipoglicemizzante per scompenso cardiaco, reni e diabete tipo 2.' },
+  { nome: 'Januvia 100 mg', principio: 'Sitagliptin', dosaggio: '100 mg (1 cpr)', modo: 'Una volta al giorno con o senza cibo', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Inibitore DPP-4 incretino-mimetico per la regolazione fisiologica della glicemia.' },
+  { nome: 'Diamicron 30 mg', principio: 'Gliclazide', dosaggio: '30 mg (1 cpr RM)', modo: 'Al mattino durante la colazione', cpr: 60, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Ipoglicemizzante orale che stimola la secrezione pancreatica di insulina.' },
   { nome: 'Torvast 20 mg', principio: 'Atorvastatina', dosaggio: '20 mg (1 cpr)', modo: 'La sera dopo cena (Statina / Controllo Colesterolo e placche aterosclerotiche)', cpr: 30, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina ipolipemizzante: abbassa il colesterolo LDL e stabilizza le placche aterosclerotiche.' },
+  { nome: 'Torvast 40 mg', principio: 'Atorvastatina', dosaggio: '40 mg (1 cpr)', modo: 'La sera dopo cena', cpr: 30, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina ad alta intensità per la riduzione intensiva del rischio cardiovascolare e colesterolo.' },
+  { nome: 'Atorvastatina 20 mg', principio: 'Atorvastatina', dosaggio: '20 mg (1 cpr)', modo: 'La sera dopo cena', cpr: 30, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina per il controllo dell\'ipercolesterolemia e prevenzione cardiovascolare.' },
+  { nome: 'Totalip 20 mg', principio: 'Atorvastatina', dosaggio: '20 mg (1 cpr)', modo: 'La sera dopo cena', cpr: 30, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Ipolipemizzante statinico contro colesterolo alto e trigliceridi.' },
   { nome: 'Crestor 10 mg', principio: 'Rosuvastatina', dosaggio: '10 mg (1 cpr)', modo: 'La sera dopo cena', cpr: 28, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina potente per il controllo dell\'ipercolesterolemia primaria e mista.' },
+  { nome: 'Rosuvastatina 10 mg', principio: 'Rosuvastatina', dosaggio: '10 mg (1 cpr)', modo: 'La sera dopo cena', cpr: 28, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina ad alta efficacia per ridurre il colesterolo LDL e proteggere le arterie.' },
+  { nome: 'Zetia 10 mg', principio: 'Ezetimibe', dosaggio: '10 mg (1 cpr)', modo: 'Una volta al giorno la sera', cpr: 30, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Inibitore selettivo dell\'assorbimento intestinale del colesterolo.' },
+  { nome: 'Esapent 1000 mg', principio: 'Esteri etilici di acidi grassi polinsaturi Omega-3', dosaggio: '1000 mg (1 cps molle)', modo: 'Durante i pasti principali', cpr: 20, ora: '13:00', fascia: 'Pranzo', indicazione: 'Riduzione dei livelli elevati di trigliceridi e protezione cardiovascolare.' },
+  { nome: 'Zyloric 300 mg', principio: 'Allopurinolo', dosaggio: '300 mg (1 cpr)', modo: 'Dopo il pasto con acqua', cpr: 30, ora: '13:00', fascia: 'Pranzo', indicazione: 'Ipouricemizzante: riduce i livelli di acido urico nel sangue prevenendo gotta e calcoli renali.' },
+  { nome: 'Adenuric 80 mg', principio: 'Febuxostat', dosaggio: '80 mg (1 cpr)', modo: 'Una volta al giorno indipendentemente dai pasti', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Trattamento dell\'iperuricemia cronica con deposito di cristalli di urato e gotta.' },
+  { nome: 'Eutirox 50 mcg', principio: 'Levotiroxina sodica', dosaggio: '50 mcg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima della colazione', cpr: 50, ora: '07:00', fascia: 'Mattina (Digiuno)', indicazione: 'Ormone tiroideo sostitutivo per il trattamento dell\'ipotiroidismo.' },
+  { nome: 'Eutirox 75 mcg', principio: 'Levotiroxina sodica', dosaggio: '75 mcg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima della colazione', cpr: 50, ora: '07:00', fascia: 'Mattina (Digiuno)', indicazione: 'Terapia ormonale sostitutiva della funzionalità tiroidea.' },
+  { nome: 'Eutirox 100 mcg', principio: 'Levotiroxina sodica', dosaggio: '100 mcg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima della colazione', cpr: 50, ora: '07:00', fascia: 'Mattina (Digiuno)', indicazione: 'Ormone tiroideo sintetico per ipotiroidismo e soppressione TSH.' },
+  { nome: 'Dibase 25.000 UI', principio: 'Colecalciferolo (Vitamina D3)', dosaggio: '25.000 UI (1 flaconcino)', modo: 'Durante il pasto (1 o 2 volte al mese secondo prescrizione)', cpr: 2, ora: '13:00', fascia: 'Pranzo', indicazione: 'Prevenzione e trattamento della carenza di Vitamina D, osteoporosi e salute ossea.' },
+  { nome: 'Folina 5 mg', principio: 'Acido folico', dosaggio: '5 mg (1 cps)', modo: 'Al mattino prima dei pasti', cpr: 20, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Vitamina B9 essenziale per la sintesi dei globuli rossi e il trattamento delle anemie megaloblastiche.' },
+  { nome: 'Sideral Forte', principio: 'Ferro Sucrosomiale + Vitamina C', dosaggio: '1 capsula al giorno', modo: 'In qualsiasi momento della giornata con acqua', cpr: 20, ora: '13:00', fascia: 'Pranzo', indicazione: 'Integrazione ad alta tollerabilità gastrica per carenza di ferro e sideropenia.' },
 
   // Urologia, Prostata & Diuresi
   { nome: 'Silodyx 8 mg', principio: 'Silodosina', dosaggio: '8 mg (1 capsula)', modo: 'A CENA a stomaco pieno (Controllo ipertrofia prostatica e facilitazione diuresi)', cpr: 30, ora: '20:00', fascia: 'Sera (Cena)', indicazione: 'Uroselettivo alfa-bloccante: rilassa la muscolatura della prostata facilitando lo svuotamento vescicale.' },
   { nome: 'Omnic 0,4 mg', principio: 'Tamsulosina cloridrato', dosaggio: '0,4 mg (1 cpr RP)', modo: 'Dopo colazione a stomaco pieno (Prostata)', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Migliora il flusso urinario riducendo i sintomi dell\'ipertrofia prostatica benigna.' },
+  { nome: 'Tamsulosina 0,4 mg', principio: 'Tamsulosina cloridrato', dosaggio: '0,4 mg (1 cps)', modo: 'Dopo colazione con un bicchiere d\'acqua', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Alfa-1 bloccante specifico per i disturbi minzionali da ipertrofia prostatica.' },
   { nome: 'Avodart 0,5 mg', principio: 'Dutasteride', dosaggio: '0,5 mg (1 cps molle)', modo: 'Una capsula al giorno con acqua (Inibitore 5-alfa reduttasi)', cpr: 30, ora: '13:00', fascia: 'Pranzo', indicazione: 'Riduce il volume della prostata e previene la ritenzione acuta d\'urina.' },
-
-  // Antidolorifici, Antipiretici & Antibiotici Comuni
-  { nome: 'Tachipirina 1000 mg', principio: 'Paracetamolo', dosaggio: '1000 mg (1 cpr)', modo: 'Al bisogno per dolore o febbre > 37.5°C a stomaco pieno (Antipiretico / Antidolorifico)', cpr: 16, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antidolorifico e antipiretico di prima scelta, sicuro per lo stomaco e la funzione cardiaca.' },
-  { nome: 'Tachipirina 500 mg', principio: 'Paracetamolo', dosaggio: '500 mg (1 cpr)', modo: 'Al bisogno per dolori lievi o febbricola', cpr: 20, ora: '14:00', fascia: 'Al Bisogno', indicazione: 'Antipiretico e analgesico ad azione rapida.' },
-  { nome: 'Co-Efferalgan', principio: 'Paracetamolo + Codeina', dosaggio: '500 mg + 30 mg (1 cpr)', modo: 'Dopo i pasti con acqua per dolori intensi refrattari', cpr: 16, ora: '13:00', fascia: 'Al Bisogno', indicazione: 'Analgesico combinato per dolori muscolo-scheletrici severi.' },
-  { nome: 'Augmentin 1 g', principio: 'Amoxicillina + Acido clavulanico', dosaggio: '875 mg + 125 mg (1 cpr)', modo: 'Ogni 12 ore all\'inizio dei pasti con abbondante acqua', cpr: 12, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico antibatterico ad ampio spettro per infezioni respiratorie, urinarie e cutanee.' },
-  // Antivirali, Epatite & Terapie Specialistiche
-  { nome: 'Entecavir Sandoz 0,5 mg', principio: 'Entecavir', dosaggio: '0,5 mg (1 cpr)', modo: 'Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto)', cpr: 30, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell\'infezione cronica da virus dell\'epatite B (HBV).' },
-  { nome: 'Baraclude 0,5 mg', principio: 'Entecavir', dosaggio: '0,5 mg (1 cpr)', modo: 'A digiuno con acqua', cpr: 30, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Antivirale per epatite B cronica ad elevata barriera genetica.' },
+  { nome: 'Xatral 10 mg', principio: 'Alfuzosina cloridrato', dosaggio: '10 mg (1 cpr RP)', modo: 'Subito dopo cena', cpr: 30, ora: '20:30', fascia: 'Sera (Cena)', indicazione: 'Alfa-litico uroselettivo per il trattamento funzionale dell\'ipertrofia prostatica.' },
+  { nome: 'Permixon 320 mg', principio: 'Serenoa repens estratto lipidosterolico', dosaggio: '320 mg (1 cps)', modo: 'Ai pasti principali', cpr: 30, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antinfiammatorio e antiandrogeno prostatico naturale contro i disturbi urinari maschili.' }
 ];
 
 function autoCompilaDatiFarmaco(testoInput) {
@@ -5840,9 +5969,9 @@ function autoCompilaDatiFarmaco(testoInput) {
     return;
   }
 
-  box.innerHTML = match.slice(0, 3).map(f => `
-    <button type="button" class="btn btn-outline" style="padding:2px 8px; font-size:11px; background:#eff6ff; color:#1e40af; border-color:#bfdbfe; border-radius:12px;" onclick="applicaSuggerimentoFarmaco('${f.nome.replace(/'/g, "\\'")}')">
-      ✨ Suggerisci: <b>${f.nome}</b>
+  box.innerHTML = match.slice(0, 4).map(f => `
+    <button type="button" class="btn btn-outline" style="padding:3px 9px; font-size:11px; background:#eff6ff; color:#1e40af; border-color:#bfdbfe; border-radius:12px; font-weight:700;" onclick="applicaSuggerimentoFarmaco('${f.nome.replace(/'/g, "\\'")}')">
+      ✨ ${f.nome}
     </button>
   `).join('');
 }
@@ -5851,17 +5980,13 @@ function applicaSuggerimentoFarmaco(nomeEsatto) {
   const f = DB_FARMACI_COMUNI.find(item => item.nome === nomeEsatto);
   if (!f) return;
 
-  document.getElementById('farm-nome').value = f.nome;
-  document.getElementById('farm-principio').value = f.principio;
-  document.getElementById('farm-dosaggio').value = f.dosaggio;
-  document.getElementById('farm-modo').value = f.modo;
-  document.getElementById('farm-cpr-scatola').value = f.cpr;
-  document.getElementById('farm-scorta').value = f.cpr;
-  if (f.ora) document.getElementById('farm-ora').value = f.ora;
-  if (f.fascia) document.getElementById('farm-fascia').value = f.fascia;
+  // Aggiorna sia la nuova maschera capsula che il box visuale dello scanner + sintesi vocale!
+  applicaFarmacoDaScanner(f.nome, 'capsula', f);
+  mostraCardRiconoscimentoScanner(f, 'capsula');
+  pronunciaCaratteristicheFarmaco(f);
 
-  document.getElementById('farm-suggerimenti-box').innerHTML = '';
-  showToast(`Dati e descrizione clinica compilati per "${f.nome}"! ✨`);
+  const box = document.getElementById('farm-suggerimenti-box');
+  if (box) box.innerHTML = '';
 }
 
 function apriCercaBugiardinoWeb() {
@@ -6038,8 +6163,123 @@ async function eseguiScansioneCompletaImmagineFarmaco(file) {
     }
   }
 
-  return { rawText: testoTotale, farmacoRiconosciuto };
+  // Genera miniatura della scatola per l'anteprima nella card AI
+  let previewDataUrl = '';
+  try {
+    const thumbCanvas = document.createElement('canvas');
+    thumbCanvas.width = 96;
+    thumbCanvas.height = 96;
+    const tCtx = thumbCanvas.getContext('2d');
+    tCtx.drawImage(imageBitmap, 0, 0, 96, 96);
+    previewDataUrl = thumbCanvas.toDataURL('image/jpeg', 0.85);
+  } catch (e) {}
+
+  return { rawText: testoTotale, farmacoRiconosciuto, previewDataUrl };
 }
+
+function mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previewDataUrl) {
+  if (!farmacoRiconosciuto) return;
+  _ultimoFarmacoRiconosciutoScanner = farmacoRiconosciuto;
+
+  const isCapsula = (targetModal !== 'standard');
+  const boxResult = document.getElementById(isCapsula ? 'scan-result-capsula' : 'scan-result-nuovo');
+  const statusIcon = document.getElementById(isCapsula ? 'scan-status-icon' : 'scan-status-icon-alt');
+  const statusText = document.getElementById(isCapsula ? 'scan-status-text' : 'scan-status-text-alt');
+  const infoContainer = document.getElementById(isCapsula ? 'scan-detected-info' : 'scan-detected-info-alt');
+
+  const nomeVisualizzato = farmacoRiconosciuto.nomePersonalizzato || farmacoRiconosciuto.nome;
+  const cprVisualizzate = farmacoRiconosciuto.cprRilevate || farmacoRiconosciuto.cpr || 28;
+
+  if (boxResult) {
+    boxResult.style.display = 'block';
+    boxResult.style.borderColor = '#10b981';
+    boxResult.style.background = 'rgba(6, 78, 59, 0.25)';
+  }
+  if (statusIcon) statusIcon.textContent = '✅';
+  if (statusText) {
+    statusText.style.color = '#34d399';
+    statusText.textContent = 'Farmaco identificato con precisione clinica!';
+  }
+
+  if (infoContainer) {
+    const thumbHtml = previewDataUrl
+      ? `<img src="${previewDataUrl}" alt="Scatola" style="width:52px; height:52px; object-fit:cover; border-radius:8px; border:1.5px solid #34d399; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.4);">`
+      : '';
+    infoContainer.innerHTML = `
+      <div style="background:#0f172a; border:1px solid #10b981; border-radius:8px; padding:8px 10px; margin-top:6px;">
+        <div style="display:flex; align-items:flex-start; gap:10px;">
+          ${thumbHtml}
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:13px; font-weight:800; color:#fef08a; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
+              <span>💊 ${nomeVisualizzato}</span>
+              <span style="font-size:10.5px; background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:1px 6px; border-radius:6px;">📦 ${cprVisualizzate} unità</span>
+            </div>
+            <div style="font-size:11.5px; color:#bae6fd; margin-top:3px;">
+              🔬 <b>Principio Attivo:</b> ${farmacoRiconosciuto.principio}
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11.5px; color:#e2e8f0; margin-top:5px; line-height:1.35;">
+          🩺 <b>A cosa serve:</b> <span style="color:#6ee7b7;">${farmacoRiconosciuto.indicazione || farmacoRiconosciuto.modo}</span>
+        </div>
+        <div style="font-size:11px; color:#cbd5e1; margin-top:3px;">
+          ⏰ <b>Somministrazione tipica:</b> ${farmacoRiconosciuto.ora || '08:00'} (${farmacoRiconosciuto.fascia || 'Mattina'}) • ${farmacoRiconosciuto.modo}
+        </div>
+        <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:#059669; border:none; border-radius:6px; cursor:pointer;" onclick="applicaFarmacoDaScanner('${(farmacoRiconosciuto.nome || '').replace(/'/g, "\\'")}', '${targetModal}', _ultimoFarmacoRiconosciutoScanner)">
+            ✨ Applica Dati alla Scheda Terapia
+          </button>
+          <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(56,189,248,0.15); color:#7dd3fc; border:1px solid #38bdf8; border-radius:6px; cursor:pointer;" onclick="pronunciaCaratteristicheFarmaco()">
+            🔊 Ascolta Caratteristiche
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+window.mostraCardRiconoscimentoScanner = mostraCardRiconoscimentoScanner;
+
+// Riconoscimento vocale o testuale istantaneo per la Demo Live (se l'ambiente è buio o per stupire a voce!)
+function avviaDettaturaVocaleFarmacoScanner(targetModal) {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRec) {
+    try {
+      const rec = new SpeechRec();
+      rec.lang = 'it-IT';
+      rec.interimResults = false;
+      rec.maxAlternatives = 3;
+      showToast('🎤 Pronuncia ora il nome del farmaco sulla scatola...');
+      rec.onresult = function(ev) {
+        const trascritto = Array.from(ev.results[0]).map(r => r.transcript).join(' ');
+        const match = analizzaTestoConfermaFarmaco(trascritto, '');
+        if (match) {
+          mostraCardRiconoscimentoScanner(match, targetModal || 'capsula');
+          applicaFarmacoDaScanner(match.nome, targetModal || 'capsula', match);
+          pronunciaCaratteristicheFarmaco(match);
+        } else {
+          showToast(`Letto: "${trascritto}" — scrivi o seleziona sotto.`);
+        }
+      };
+      rec.start();
+      return;
+    } catch (e) {}
+  }
+  const elInput = document.getElementById('edit-farm-nome');
+  if (elInput) elInput.focus();
+}
+window.avviaDettaturaVocaleFarmacoScanner = avviaDettaturaVocaleFarmacoScanner;
+
+function eseguiRicercaRapidaScannerInput(valore, targetModal) {
+  const q = (valore || '').trim();
+  if (q.length < 3) return;
+  const match = analizzaTestoConfermaFarmaco(q, '');
+  if (match) {
+    mostraCardRiconoscimentoScanner(match, targetModal || 'capsula');
+    applicaFarmacoDaScanner(match.nome, targetModal || 'capsula', match);
+    pronunciaCaratteristicheFarmaco(match);
+  }
+}
+window.eseguiRicercaRapidaScannerInput = eseguiRicercaRapidaScannerInput;
 
 async function gestisciFotoFarmaco(event, targetModal) {
   const file = event.target.files && event.target.files[0];
@@ -6066,78 +6306,44 @@ async function gestisciFotoFarmaco(event, targetModal) {
   }
 
   try {
-    const { rawText, farmacoRiconosciuto } = await eseguiScansioneCompletaImmagineFarmaco(file);
+    const { rawText, farmacoRiconosciuto, previewDataUrl } = await eseguiScansioneCompletaImmagineFarmaco(file);
     console.log('[AI Drug Scanner] Testo rilevato da OCR:', rawText);
 
     if (farmacoRiconosciuto) {
-      _ultimoFarmacoRiconosciutoScanner = farmacoRiconosciuto;
-      const nomeVisualizzato = farmacoRiconosciuto.nomePersonalizzato || farmacoRiconosciuto.nome;
-      const cprVisualizzate = farmacoRiconosciuto.cprRilevate || farmacoRiconosciuto.cpr || 28;
-
-      if (boxResult) {
-        boxResult.style.borderColor = '#10b981';
-        boxResult.style.background = 'rgba(6, 78, 59, 0.25)';
-      }
-      if (statusIcon) statusIcon.textContent = '✅';
-      if (statusText) {
-        statusText.style.color = '#34d399';
-        statusText.textContent = 'Farmaco identificato con precisione clinica!';
-      }
-
-      if (infoContainer) {
-        infoContainer.innerHTML = `
-          <div style="background:#0f172a; border:1px solid #10b981; border-radius:8px; padding:8px 10px; margin-top:6px;">
-            <div style="font-size:13px; font-weight:800; color:#fef08a; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
-              <span>💊 ${nomeVisualizzato}</span>
-              <span style="font-size:10.5px; background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:1px 6px; border-radius:6px;">📦 ${cprVisualizzate} cpr</span>
-            </div>
-            <div style="font-size:11.5px; color:#bae6fd; margin-top:3px;">
-              🔬 <b>Principio Attivo:</b> ${farmacoRiconosciuto.principio}
-            </div>
-            <div style="font-size:11.5px; color:#e2e8f0; margin-top:3px; line-height:1.35;">
-              🩺 <b>A cosa serve:</b> <span style="color:#6ee7b7;">${farmacoRiconosciuto.indicazione || farmacoRiconosciuto.modo}</span>
-            </div>
-            <div style="font-size:11px; color:#cbd5e1; margin-top:3px;">
-              ⏰ <b>Somministrazione tipica:</b> ${farmacoRiconosciuto.ora || '08:00'} (${farmacoRiconosciuto.fascia || 'Mattina'}) • ${farmacoRiconosciuto.modo}
-            </div>
-            <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
-              <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:#059669; border:none; border-radius:6px; cursor:pointer;" onclick="applicaFarmacoDaScanner('${farmacoRiconosciuto.nome.replace(/'/g, "\\'")}', '${targetModal}')">
-                ✨ Applica Dati alla Scheda Terapia
-              </button>
-              <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(56,189,248,0.15); color:#7dd3fc; border:1px solid #38bdf8; border-radius:6px; cursor:pointer;" onclick="pronunciaCaratteristicheFarmaco()">
-                🔊 Ascolta Caratteristiche
-              </button>
-            </div>
-          </div>
-        `;
-      }
-
-      // Autocompila istantaneamente i campi della maschera e pronuncia a voce le caratteristiche
+      mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previewDataUrl);
       applicaFarmacoDaScanner(farmacoRiconosciuto.nome, targetModal, farmacoRiconosciuto);
       pronunciaCaratteristicheFarmaco(farmacoRiconosciuto);
+      const nomeVisualizzato = farmacoRiconosciuto.nomePersonalizzato || farmacoRiconosciuto.nome;
       showToast(`Riconosciuto: ${nomeVisualizzato} (${farmacoRiconosciuto.principio})! 💊`);
     } else {
-      // Fallback: se la foto è mossa o sfocata
+      // Fallback: se la foto è molto mossa o in controluce, offre anche l'input/dettatura AI istantanea
       if (boxResult) {
-        boxResult.style.borderColor = '#f59e0b';
-        boxResult.style.background = 'rgba(120, 53, 15, 0.25)';
+        boxResult.style.borderColor = '#38bdf8';
+        boxResult.style.background = 'rgba(15, 23, 42, 0.9)';
       }
       if (statusIcon) statusIcon.textContent = '🔍';
       if (statusText) {
-        statusText.style.color = '#fde68a';
-        statusText.textContent = 'Foto acquisita - Seleziona o affina il farmaco rilevato';
+        statusText.style.color = '#7dd3fc';
+        statusText.textContent = 'Foto acquisita — Tocca o digita le prime 3 lettere sulla scatola per analisi AI + Voce:';
       }
       if (infoContainer) {
         const suggeriti = [
-          DB_FARMACI_COMUNI.find(f => f.nome.includes('Pantoprazolo Aurobindo 20')) || DB_FARMACI_COMUNI[0],
-          ...DB_FARMACI_COMUNI.slice(0, 5)
-        ].filter((v, i, a) => v && a.indexOf(v) === i);
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Pantoprazolo Aurobindo 20')),
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Tachipirina 1000')),
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Oki 80')),
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Moment 200')),
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Augmentin')),
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Bentelan 1'))
+        ].filter(Boolean);
         infoContainer.innerHTML = `
-          <div style="margin-top:4px;">
-            Tocca un farmaco rapido o scatta una foto frontale ben illuminata:
-            <div id="scan-quick-suggestions" style="margin-top:6px; display:flex; flex-wrap:wrap; gap:5px;">
+          <div style="margin-top:6px;">
+            <div style="display:flex; gap:6px; margin-bottom:8px;">
+              <input type="text" placeholder="Digita 3 lettere lette sulla scatola (es. Oki, Mom, Bru, Zir...)" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:#1e293b; color:#ffffff; font-size:12px; font-weight:700;" onkeydown="if(event.key==='Enter'){event.preventDefault(); eseguiRicercaRapidaScannerInput(this.value, '${targetModal}');}" oninput="if(this.value.length>=4) eseguiRicercaRapidaScannerInput(this.value, '${targetModal}')">
+              <button type="button" onclick="avviaDettaturaVocaleFarmacoScanner('${targetModal}')" style="padding:6px 10px; border-radius:7px; border:1px solid #34d399; background:rgba(16,185,129,0.2); color:#6ee7b7; font-size:12px; font-weight:800; cursor:pointer;" title="Detta il nome a voce">🎤 Voce</button>
+            </div>
+            <div id="scan-quick-suggestions" style="display:flex; flex-wrap:wrap; gap:5px;">
               ${suggeriti.map(f => `
-                <button type="button" class="btn btn-outline" style="padding:3px 8px; font-size:11px; background:rgba(255,255,255,0.1); color:#38bdf8; border-color:#38bdf8; border-radius:6px;" onclick="applicaFarmacoDaScanner('${f.nome.replace(/'/g, "\\'")}', '${targetModal}')">
+                <button type="button" class="btn btn-outline" style="padding:3px 8px; font-size:11px; background:rgba(255,255,255,0.1); color:#38bdf8; border-color:#38bdf8; border-radius:6px;" onclick="applicaSuggerimentoFarmaco('${f.nome.replace(/'/g, "\\'")}')">
                   💊 ${f.nome}
                 </button>
               `).join('')}
@@ -6285,19 +6491,24 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
   // Tokenizza tutte le parole alfabetiche lette dall'OCR (minimo 4 lettere) per il confronto fuzzy anti-Braille
   const tokensOcr = haystack.split(/[^a-zàèéìòù]+/i).filter(t => t.length >= 4);
 
-  // Funzione helper: verifica se una parola chiave medica è presente esattamente o con tolleranza Braille (1-2 lettere)
+  // Funzione helper: verifica se una parola chiave medica è presente come parola distinta o con tolleranza Braille (1-2 lettere)
+  function contieneParolaEsatta(parolaTarget) {
+    if (!parolaTarget) return false;
+    return tokensOcr.includes(parolaTarget) || new RegExp('(?:^|[^a-zàèéìòù])' + parolaTarget.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(haystack);
+  }
+
   function contieneParolaMedicaFuzzy(parolaTarget) {
-    if (!parolaTarget || parolaTarget.length < 4) return false;
-    if (haystack.includes(parolaTarget)) return true;
-    // Sottostringhe diagnostiche di almeno 5 caratteri (es. "prazol", "bindo", "furosem")
-    if (parolaTarget.length >= 7) {
-      const suffisso = parolaTarget.slice(-6);
+    if (!parolaTarget || parolaTarget.length < 5) return false;
+    if (contieneParolaEsatta(parolaTarget)) return true;
+    // Prefisso distintivo di almeno 6 caratteri all'inizio di una parola (es. "pantop", "omepra", "esomep", "aurobi")
+    if (parolaTarget.length >= 8) {
       const prefisso = parolaTarget.slice(0, 6);
-      if (haystack.includes(suffisso) || haystack.includes(prefisso)) return true;
+      if (tokensOcr.some(t => t.startsWith(prefisso))) return true;
     }
     const maxDist = parolaTarget.length >= 9 ? 2 : 1;
     for (const tok of tokensOcr) {
-      if (Math.abs(tok.length - parolaTarget.length) <= maxDist) {
+      // Richiede stessa iniziale (o stessa desinenza su parole lunghe con Braille iniziale come "ntoprazolo" -> "pantoprazolo")
+      if (Math.abs(tok.length - parolaTarget.length) <= maxDist && (tok[0] === parolaTarget[0] || parolaTarget.endsWith(tok))) {
         if (calcolaDistanzaLevenshtein(tok, parolaTarget) <= maxDist) return true;
       }
     }
@@ -6308,8 +6519,8 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
   const caseFarmaceutiche = ['aurobindo', 'sandoz', 'teva', 'mylan', 'zentiva', 'doc', 'eg', 'krka', 'hexal', 'ratiopharm', 'angelini', 'bayer', 'pfizer', 'menarini'];
   let brandRilevato = '';
   for (const brand of caseFarmaceutiche) {
-    if (brand.length >= 4 && contieneParolaMedicaFuzzy(brand)) {
-      brandRilevato = brand.charAt(0).toUpperCase() + brand.slice(1);
+    if (contieneParolaEsatta(brand) || (brand.length >= 5 && contieneParolaMedicaFuzzy(brand))) {
+      brandRilevato = brand.length <= 3 ? brand.toUpperCase() : (brand.charAt(0).toUpperCase() + brand.slice(1));
       break;
     }
   }
@@ -6326,13 +6537,19 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
   let bestMatch = null;
   let maxScore = 0;
 
-  const stopWords = new Set(['mg', 'mcg', 'ml', 'cpr', 'cps', 'rp', 'acido', 'sodico', 'fumarato', 'cloridrato', 'etexilato', 'sesquidrato', 'compresse', 'gastroresistenti']);
+  const stopWords = new Set([
+    'mg', 'mcg', 'ml', 'cpr', 'cps', 'rp', 'rm', 'ui',
+    'acido', 'sodico', 'sodica', 'sodio', 'potassio', 'potassico', 'potassica', 'calcio', 'calcica', 'magnesio', 'alluminio',
+    'fumarato', 'cloridrato', 'dicloridrato', 'etexilato', 'sesquidrato', 'maleato', 'tartrato', 'acetato', 'cilexetil', 'medoxomil', 'trometamina', 'trometamolo', 'triidrato',
+    'sale', 'lisina', 'arginina', 'idrossido', 'carbonato', 'bicarbonato', 'esteri', 'etilici', 'acidi', 'grassi', 'polinsaturi',
+    'compresse', 'gastroresistenti', 'rivestite', 'capsule', 'bustine', 'gocce', 'sciroppo', 'miliardi', 'forte', 'chrono', 'bruciore', 'indigestione', 'digestione', 'acidità', 'spore', 'fermenti', 'lattici', 'vivi', 'liofilizzati', 'alta', 'concentrazione', 'estratto', 'lipidosterolico'
+  ]);
 
   for (const f of DB_FARMACI_COMUNI) {
     // Filtra solo vere parole alfabetiche (mai numeri come "100" o "20"!)
     const paroleNome = f.nome.toLowerCase()
       .split(/[\s+()\/,-]+/)
-      .filter(p => p.length >= 4 && /[a-z]/i.test(p) && !/^\d/.test(p) && !stopWords.has(p));
+      .filter(p => p.length >= 3 && /[a-z]/i.test(p) && !/^\d/.test(p) && !stopWords.has(p));
 
     const parolePrincipio = f.principio.toLowerCase()
       .split(/[\s+,()\/-]+/)
@@ -6341,10 +6558,11 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
     let score = 0;
     let haMatchAlfabetico = false;
 
-    // Punti per nome commerciale / equivalente
+    // Punti per nome commerciale / equivalente (bonus se è un nome commerciale distinto dal principio attivo)
+    const isBrandDistinto = paroleNome[0] && parolePrincipio[0] && paroleNome[0] !== parolePrincipio[0];
     for (const p of paroleNome) {
-      if (haystack.includes(p)) {
-        score += 14;
+      if (contieneParolaEsatta(p)) {
+        score += (isBrandDistinto ? 18 : 14);
         haMatchAlfabetico = true;
       } else if (contieneParolaMedicaFuzzy(p)) {
         score += 10;
@@ -6354,7 +6572,7 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
 
     // Punti per principio attivo
     for (const p of parolePrincipio) {
-      if (haystack.includes(p)) {
+      if (contieneParolaEsatta(p)) {
         score += 12;
         haMatchAlfabetico = true;
       } else if (contieneParolaMedicaFuzzy(p)) {
@@ -6390,31 +6608,112 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
   // 2. Fallback su radici morfologiche (anche se il Braille copre metà parola)
   if (!bestMatch) {
     const radiciChiave = [
-      { keys: ['pantopraz', 'prazolo', 'aurobind', 'bindo', 'gastroresistent'], target: rawOcr.includes('40') ? 'Pantoprazolo Aurobindo 40 mg' : 'Pantoprazolo Aurobindo 20 mg' },
-      { keys: ['omepraz'], target: 'Omeprazolo 20 mg' },
-      { keys: ['lansopraz'], target: 'Lansoprazolo 30 mg' },
-      { keys: ['esomepraz', 'lucen'], target: 'Esomeprazolo 20 mg' },
-      { keys: ['cardioaspirin', 'aspirin', 'acetilsalicil'], target: 'Cardioaspirina 100 mg' },
+      { keys: ['pantopraz', 'ntopraz', 'aurobind', 'robindo'], target: rawOcr.includes('40') ? 'Pantoprazolo Aurobindo 40 mg' : 'Pantoprazolo Aurobindo 20 mg' },
+      { keys: ['pantorc'], target: rawOcr.includes('40') ? 'Pantorc 40 mg' : 'Pantorc 20 mg' },
+      { keys: ['peptazol'], target: 'Peptazol 20 mg' },
+      { keys: ['nolpaza'], target: 'Nolpaza 20 mg' },
+      { keys: ['omepraz', 'mepral', 'antra'], target: 'Omeprazolo 20 mg' },
+      { keys: ['lansopraz', 'lansox'], target: 'Lansoprazolo 30 mg' },
+      { keys: ['esomepraz', 'lucen', 'nexium'], target: 'Esomeprazolo 20 mg' },
+      { keys: ['gaviscon', 'alginat'], target: 'Gaviscon Bruciore e Indigestione' },
+      { keys: ['maalox'], target: 'Maalox 400 mg + 400 mg' },
+      { keys: ['biochetas'], target: 'Biochetasi Digestione e Acidità' },
+      { keys: ['geffer'], target: 'Geffer' },
+      { keys: ['enterogerm', 'clausii'], target: 'Enterogermina 4 Miliardi' },
+      { keys: ['codex', 'boulard'], target: 'Codex 5 Miliardi' },
+      { keys: ['yovis'], target: 'Yovis 1 g' },
+      { keys: ['imodium', 'loperamid'], target: 'Imodium 2 mg' },
+      { keys: ['dissenten'], target: 'Dissenten 2 mg' },
+      { keys: ['buscopan', 'joscina'], target: 'Buscopan 10 mg' },
+      { keys: ['normix', 'rifaxim'], target: 'Normix 200 mg' },
+      { keys: ['plasil', 'metoclopram'], target: 'Plasil 10 mg' },
+      { keys: ['cardioaspirin', 'acetilsalicil'], target: 'Cardioaspirina 100 mg' },
+      { keys: ['aspirina', 'vivin'], target: 'Aspirina C 400 mg + 240 mg' },
+      { keys: ['plavix', 'clopidogr'], target: 'Plavix 75 mg' },
       { keys: ['lasix', 'furosemid'], target: 'Lasix 25 mg' },
       { keys: ['bisoprolol'], target: rawOcr.includes('2,5') || rawOcr.includes('2.5') ? 'Bisoprololo 2,5 mg' : 'Bisoprololo 1,25 mg' },
-      { keys: ['congescor'], target: 'Congescor 2,5 mg' },
+      { keys: ['congescor', 'sequacor'], target: 'Congescor 2,5 mg' },
+      { keys: ['lobivon', 'nebivol'], target: 'Lobivon 5 mg' },
+      { keys: ['tenormin', 'atenol'], target: 'Tenormin 100 mg' },
       { keys: ['triatec', 'ramipril'], target: rawOcr.includes('5') && !rawOcr.includes('2,5') ? 'Triatec 5 mg' : 'Triatec 2,5 mg' },
       { keys: ['norvasc', 'amlodipin'], target: rawOcr.includes('10') ? 'Norvasc 10 mg' : 'Norvasc 5 mg' },
+      { keys: ['tareg', 'valsart'], target: rawOcr.includes('160') ? 'Tareg 160 mg' : 'Tareg 80 mg' },
+      { keys: ['olpress', 'plaunac', 'olmesart'], target: 'Olpress 20 mg' },
+      { keys: ['aprovel', 'irbesart'], target: 'Aprovel 150 mg' },
+      { keys: ['micardis', 'telmisart'], target: 'Micardis 80 mg' },
+      { keys: ['lortaan', 'losart'], target: 'Lortaan 50 mg' },
+      { keys: ['blopress', 'candesart'], target: 'Blopress 16 mg' },
+      { keys: ['cardura', 'doxazos'], target: 'Cardura 2 mg' },
       { keys: ['sinemet', 'levodopa', 'carbidopa'], target: 'Sinemet 100+25 mg' },
       { keys: ['madopar', 'benserazid'], target: 'Madopar 200+50 mg' },
       { keys: ['vimpat', 'lacosamid'], target: 'Vimpat 100 mg' },
       { keys: ['keppra', 'levetiracet'], target: rawOcr.includes('1000') ? 'Keppra 1000 mg' : 'Keppra 500 mg' },
+      { keys: ['depakin', 'valproat'], target: 'Depakin Chrono 500 mg' },
+      { keys: ['lyrica', 'pregabalin'], target: 'Lyrica 75 mg' },
+      { keys: ['gabapent'], target: 'Gabapentin 300 mg' },
       { keys: ['eliquis', 'apixaban'], target: rawOcr.includes('2,5') || rawOcr.includes('2.5') ? 'Eliquis 2,5 mg' : 'Eliquis 5 mg' },
       { keys: ['xarelto', 'rivaroxaban'], target: rawOcr.includes('15') ? 'Xarelto 15 mg' : 'Xarelto 20 mg' },
+      { keys: ['lixiana', 'edoxaban'], target: 'Lixiana 60 mg' },
+      { keys: ['pradaxa', 'dabigatr'], target: 'Pradaxa 110 mg' },
       { keys: ['tavor', 'lorazepam'], target: rawOcr.includes('2,5') ? 'Tavor 2,5 mg' : 'Tavor 1 mg' },
+      { keys: ['xanax', 'alprazol'], target: 'Xanax 0,50 mg' },
+      { keys: ['lexotan', 'bromazep'], target: 'Lexotan 1,5 mg' },
+      { keys: ['stilnox', 'zolpidem'], target: 'Stilnox 10 mg' },
+      { keys: ['zoloft', 'sertralin'], target: 'Zoloft 50 mg' },
+      { keys: ['cipralex', 'escitalop'], target: 'Cipralex 10 mg' },
       { keys: ['quetiapin'], target: 'Quetiapina 25 mg' },
       { keys: ['seroquel'], target: 'Seroquel 25 mg' },
       { keys: ['silodyx', 'silodosin'], target: 'Silodyx 8 mg' },
       { keys: ['omnic', 'tamsulosin'], target: 'Omnic 0,4 mg' },
+      { keys: ['avodart', 'dutasterid'], target: 'Avodart 0,5 mg' },
+      { keys: ['xatral', 'alfuzos'], target: 'Xatral 10 mg' },
+      { keys: ['permixon', 'serenoa'], target: 'Permixon 320 mg' },
       { keys: ['tachipirin', 'paracetamol'], target: rawOcr.includes('500') ? 'Tachipirina 500 mg' : 'Tachipirina 1000 mg' },
-      { keys: ['augmentin', 'amoxicill', 'clavulan'], target: 'Augmentin 1 g' },
-      { keys: ['metforal', 'metformin'], target: rawOcr.includes('1000') ? 'Metforal 1000 mg' : 'Metforal 500 mg' },
-      { keys: ['torvast', 'atorvastat'], target: 'Torvast 20 mg' },
+      { keys: ['efferalg'], target: 'Efferalgan 1000 mg' },
+      { keys: ['okitask'], target: 'OkiTask 40 mg' },
+      { keys: ['oki', 'ketoprof'], target: 'Oki 80 mg' },
+      { keys: ['moment'], target: rawOcr.includes('400') || rawOcr.includes('act') ? 'Moment Act 400 mg' : 'Moment 200 mg' },
+      { keys: ['brufen'], target: rawOcr.includes('400') ? 'Brufen 400 mg' : 'Brufen 600 mg' },
+      { keys: ['nurofen', 'ibuprof'], target: 'Nurofen 400 mg' },
+      { keys: ['spidifen'], target: 'Spidifen 600 mg' },
+      { keys: ['aulin', 'nimesul'], target: 'Aulin 100 mg' },
+      { keys: ['voltaren', 'dicloreum', 'diclofen'], target: 'Voltaren 50 mg' },
+      { keys: ['synflex', 'momendol', 'napross'], target: 'Synflex 550 mg' },
+      { keys: ['toradol', 'ketorol'], target: 'Toradol 10 mg' },
+      { keys: ['bentelan', 'betametas'], target: rawOcr.includes('0,5') || rawOcr.includes('0.5') ? 'Bentelan 0,5 mg' : 'Bentelan 1 mg' },
+      { keys: ['deltacort', 'prednis'], target: rawOcr.includes('5') && !rawOcr.includes('25') ? 'Deltacortene 5 mg' : 'Deltacortene 25 mg' },
+      { keys: ['medrol', 'metilprednis'], target: 'Medrol 16 mg' },
+      { keys: ['zirtec', 'cetiriz'], target: 'Zirtec 10 mg' },
+      { keys: ['aerius', 'deslorat'], target: 'Aerius 5 mg' },
+      { keys: ['kestine', 'ebastin'], target: 'Kestine 10 mg' },
+      { keys: ['robilas', 'bilastin'], target: 'Robilas 20 mg' },
+      { keys: ['fluimuc', 'acetilcist'], target: 'Fluimucil 600 mg' },
+      { keys: ['bisolvon', 'bromexin'], target: 'Bisolvon 8 mg' },
+      { keys: ['ventolin', 'salbutam'], target: 'Ventolin 100 mcg' },
+      { keys: ['augmentin', 'clavulin', 'clavulan'], target: 'Augmentin 1 g' },
+      { keys: ['zimox', 'amoxicill'], target: 'Zimox 1 g' },
+      { keys: ['zitromax', 'azitromic'], target: 'Zitromax 500 mg' },
+      { keys: ['klacid', 'claritromic'], target: 'Klacid 500 mg' },
+      { keys: ['ciproxin', 'ciproflox'], target: 'Ciproxin 500 mg' },
+      { keys: ['levoxac', 'levoflox'], target: 'Levoxacin 500 mg' },
+      { keys: ['cefixor', 'cefixim'], target: 'Cefixoral 400 mg' },
+      { keys: ['monuril', 'fosfomic'], target: 'Monuril 3 g' },
+      { keys: ['aciclov', 'zovirax'], target: 'Aciclovir 800 mg' },
+      { keys: ['metforal', 'glucophag', 'metformin'], target: rawOcr.includes('1000') ? 'Metforal 1000 mg' : 'Metforal 500 mg' },
+      { keys: ['forxiga', 'dapaglifl'], target: 'Forxiga 10 mg' },
+      { keys: ['jardiance', 'empaglifl'], target: 'Jardiance 10 mg' },
+      { keys: ['januvia', 'sitaglipt'], target: 'Januvia 100 mg' },
+      { keys: ['diamicron', 'gliclaz'], target: 'Diamicron 30 mg' },
+      { keys: ['torvast', 'totalip', 'atorvastat'], target: 'Torvast 20 mg' },
+      { keys: ['crestor', 'rosuvastat'], target: 'Crestor 10 mg' },
+      { keys: ['zetia', 'ezetimib'], target: 'Zetia 10 mg' },
+      { keys: ['esapent', 'omega'], target: 'Esapent 1000 mg' },
+      { keys: ['zyloric', 'allopurin'], target: 'Zyloric 300 mg' },
+      { keys: ['adenuric', 'febuxost'], target: 'Adenuric 80 mg' },
+      { keys: ['eutirox', 'levotirox'], target: rawOcr.includes('75') ? 'Eutirox 75 mcg' : (rawOcr.includes('100') ? 'Eutirox 100 mcg' : 'Eutirox 50 mcg') },
+      { keys: ['dibase', 'colecalcif'], target: 'Dibase 25.000 UI' },
+      { keys: ['folina', 'folico'], target: 'Folina 5 mg' },
+      { keys: ['sideral', 'ferro'], target: 'Sideral Forte' },
       { keys: ['entecavir', 'baraclude'], target: 'Entecavir Sandoz 0,5 mg' }
     ];
 
@@ -6437,7 +6736,111 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
     return risultato;
   }
 
+  // 3. ESTRATTORE CLINICO UNIVERSALE AIFA: se il collega mostra una scatola di un farmaco nuovo/raro
+  // non presente nel database ma l'OCR legge il nome e il dosaggio sulla confezione, costruisce la scheda in tempo reale!
+  const farmacoUniversale = estraiFarmacoUniversaleDaTestoOCR(testoRiconosciuto, cprRilevate, brandRilevato);
+  if (farmacoUniversale) return farmacoUniversale;
+
   return null;
+}
+
+function estraiFarmacoUniversaleDaTestoOCR(testoOriginale, cprRilevate, brandRilevato) {
+  if (!testoOriginale) return null;
+  const righe = String(testoOriginale)
+    .split(/[\r\n]+/)
+    .map(r => r.replace(/[^a-zA-Z0-9àèéìòùÀÈÉÌÒÙ\s\.,+\-\/%]/g, ' ').replace(/\s+/g, ' ').trim())
+    .filter(r => r.length >= 4);
+  if (!righe.length) return null;
+
+  const tuttoTesto = righe.join(' ');
+  const tuttoLower = tuttoTesto.toLowerCase();
+
+  // Cerca un dosaggio esplicito (es. "20 mg", "400 mg", "50 mcg", "1 g", "25000 UI")
+  const matchDose = tuttoTesto.match(/\b(\d{1,5}(?:[\.,]\d{1,2})?\s*(?:mg|mcg|g|ui|ml|miliardi))\b/i);
+  const haParoleFarmaceutiche = /\b(compresse|capsule|bustine|gocce|sciroppo|fiale|orosolubil|gastroresistent|rivestit|medicinale|equivalente|uso orale)\b/i.test(tuttoTesto);
+
+  if (!matchDose && !haParoleFarmaceutiche) return null;
+
+  const dosaggioEstratto = matchDose ? `${matchDose[1]} (1 unità)` : '1 compressa / dose';
+  const paroleIgnorate = new Set(['compresse', 'capsule', 'bustine', 'rivestite', 'gastroresistenti', 'medicinale', 'equivalente', 'orale', 'rigide', 'molli', 'soluzione', 'granulato', 'sospensione', 'film', 'prezzo', 'scadenza', 'lotto', 'aifa']);
+
+  // Trova le parole alfabetiche principali (possibile Nome Commerciale e Principio Attivo)
+  const candidati = [];
+  for (const r of righe) {
+    const tokens = r.split(/\s+/).filter(w => w.length >= 4 && /^[a-zA-ZàèéìòùÀÈÉÌÒÙ]+$/.test(w) && !paroleIgnorate.has(w.toLowerCase()));
+    for (const t of tokens) {
+      if (candidati.length < 4 && !candidati.some(c => c.toLowerCase() === t.toLowerCase())) {
+        candidati.push(t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
+      }
+    }
+  }
+
+  if (!candidati.length) return null;
+
+  const nomeBase = candidati[0] + (brandRilevato && candidati[0].toLowerCase() !== brandRilevato.toLowerCase() ? ' ' + brandRilevato : '');
+  const nomeCompleto = matchDose ? `${nomeBase} ${matchDose[1]}` : nomeBase;
+  const principioStimato = candidati[1] || candidati[0];
+
+  // Classificatore farmacologico intelligente in base ai suffissi chimici o indicazioni sulla scatola
+  let indicazione = 'Specialità medicinale rilevata tramite scansione ottica della confezione originale.';
+  let modo = 'Assumere secondo prescrizione medica con un bicchiere d\'acqua';
+  let ora = '08:30';
+  let fascia = 'Mattina (Colazione)';
+
+  if (/prazol|gastroresistent|acidit|refluss/i.test(tuttoLower)) {
+    indicazione = 'Gastroprotettore (Inibitore di Pompa Protonica): protegge la mucosa dello stomaco da acidità, gastrite e reflusso.';
+    modo = 'Al mattino a digiuno 30 minuti prima di colazione';
+    ora = '07:30';
+    fascia = 'Mattina (Digiuno)';
+  } else if (/profen|ketoprof|diclofen|napross|nimesul|antinfiammator|dolor|febb/i.test(tuttoLower)) {
+    indicazione = 'Antinfiammatorio e antidolorifico (FANS) per il trattamento di dolori articolari, muscolari, cefalea e stati febbrili.';
+    modo = 'A stomaco pieno dopo i pasti principali';
+    ora = '13:30';
+    fascia = 'Al Bisogno';
+  } else if (/pril|sartan|amlodipin|dipina|bisoprol|olol|pression/i.test(tuttoLower)) {
+    indicazione = 'Farmaco cardiovascolare e antiipertensivo per la regolazione della pressione arteriosa e la protezione cardiaca.';
+    modo = 'Al mattino a colazione con acqua';
+    ora = '08:30';
+    fascia = 'Mattina (Colazione)';
+  } else if (/statin|colesterol/i.test(tuttoLower)) {
+    indicazione = 'Ipolipemizzante (Statina) per la riduzione del colesterolo LDL e la prevenzione cardiovascolare.';
+    modo = 'La sera dopo cena';
+    ora = '21:00';
+    fascia = 'Sera (Cena)';
+  } else if (/cillin|micin|floxac|cefix|antibiotic/i.test(tuttoLower)) {
+    indicazione = 'Antibiotico antibatterico sistemico per l\'eradicazione delle infezioni batteriche.';
+    modo = 'Ad orari regolari secondo ciclo terapeutico prescritto';
+    ora = '08:30';
+    fascia = 'Mattina (Colazione)';
+  } else if (/zepam|zolam|ansia|sonno/i.test(tuttoLower)) {
+    indicazione = 'Modulatore del sistema nervoso centrale ad azione ansiolitica, rilassante e ipnoinducente.';
+    modo = 'La sera prima di coricarsi o al bisogno';
+    ora = '22:00';
+    fascia = 'Notte (Prima di dormire)';
+  } else if (/cetiriz|loratad|ebastin|bilastin|antistamin|allerg/i.test(tuttoLower)) {
+    indicazione = 'Antistaminico antiallergico per il controllo di rinite allergica, congiuntivite e orticaria.';
+    modo = 'Una volta al giorno con acqua';
+    ora = '21:00';
+    fascia = 'Sera (Cena)';
+  } else if (/ferment|bacill|lactobac|probiot|intestin/i.test(tuttoLower)) {
+    indicazione = 'Probiotico riequilibratore della flora batterica intestinale.';
+    modo = 'Per via orale lontano dai pasti';
+    ora = '10:00';
+    fascia = 'Mattina (Colazione)';
+  }
+
+  return {
+    nome: nomeCompleto,
+    nomePersonalizzato: nomeCompleto,
+    principio: principioStimato,
+    dosaggio: dosaggioEstratto,
+    modo: modo,
+    cpr: cprRilevate || 28,
+    cprRilevate: cprRilevate || 28,
+    ora: ora,
+    fascia: fascia,
+    indicazione: indicazione
+  };
 }
 
 function applicaFarmacoDaScanner(nomeEsatto, targetModal, datiArricchiti) {

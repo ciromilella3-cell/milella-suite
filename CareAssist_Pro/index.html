@@ -1477,6 +1477,10 @@
                 <span>🖼️</span> Galleria
                 <input type="file" id="scan-farm-gallery" accept="image/*" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
               </label>
+
+              <button type="button" class="btn-scan-act btn-scan-gallery" style="flex:0.85; border-color:rgba(52,211,153,0.5); color:#6ee7b7;" onclick="avviaDettaturaVocaleFarmacoScanner('capsula')" title="Pronuncia il nome sulla scatola e l'AI compila e spiega tutto a voce">
+                <span>🎤</span> Voce AI
+              </button>
             </div>
 
             <!-- Box di Analisi & Risultato Rilevato -->
@@ -3414,7 +3418,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=63"></script>
+  <script src="app.js?v=64"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
