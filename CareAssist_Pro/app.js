@@ -5949,7 +5949,27 @@ const DB_FARMACI_COMUNI = [
   { nome: 'Tamsulosina 0,4 mg', principio: 'Tamsulosina cloridrato', dosaggio: '0,4 mg (1 cps)', modo: 'Dopo colazione con un bicchiere d\'acqua', cpr: 20, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Alfa-1 bloccante specifico per i disturbi minzionali da ipertrofia prostatica.' },
   { nome: 'Avodart 0,5 mg', principio: 'Dutasteride', dosaggio: '0,5 mg (1 cps molle)', modo: 'Una capsula al giorno con acqua (Inibitore 5-alfa reduttasi)', cpr: 30, ora: '13:00', fascia: 'Pranzo', indicazione: 'Riduce il volume della prostata e previene la ritenzione acuta d\'urina.' },
   { nome: 'Xatral 10 mg', principio: 'Alfuzosina cloridrato', dosaggio: '10 mg (1 cpr RP)', modo: 'Subito dopo cena', cpr: 30, ora: '20:30', fascia: 'Sera (Cena)', indicazione: 'Alfa-litico uroselettivo per il trattamento funzionale dell\'ipertrofia prostatica.' },
-  { nome: 'Permixon 320 mg', principio: 'Serenoa repens estratto lipidosterolico', dosaggio: '320 mg (1 cps)', modo: 'Ai pasti principali', cpr: 30, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antinfiammatorio e antiandrogeno prostatico naturale contro i disturbi urinari maschili.' }
+  { nome: 'Permixon 320 mg', principio: 'Serenoa repens estratto lipidosterolico', dosaggio: '320 mg (1 cps)', modo: 'Ai pasti principali', cpr: 30, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antinfiammatorio e antiandrogeno prostatico naturale contro i disturbi urinari maschili.' },
+
+  // Creme, Pomate, Gel & Unguenti Dermatologici / Antitraumatici (Uso Cutaneo)
+  { nome: 'Traumeel S Crema 100 g (-Heel)', principio: 'Complesso antinfiammatorio ad azione topica (Arnica montana, Calendula, Hamamelis, Echinacea, Symphytum)', dosaggio: '1 applicazione cutanea (Tubo 100 g)', modo: 'Uso cutaneo: applicare uno strato sottile sulla zona dolente 2-3 volte al giorno massaggiando delicatamente', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Trattamento topico di traumi, contusioni, distorsioni, edemi post-traumatici e infiammazioni muscolo-articolari.' },
+  { nome: 'Arnica Compositum Heel Crema', principio: 'Arnica montana + Complesso fitoterapico Heel', dosaggio: '1 applicazione cutanea (Tubo 50/100 g)', modo: 'Uso cutaneo: spalmare localmente 2-3 volte al giorno su cute integra', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Azione lenitiva, antiedemigena e antinfiammatoria locale per contusioni, ematomi e dolori articolari.' },
+  { nome: 'Voltaren Emulgel 1% / 2%', principio: 'Diclofenac dietilammonio', dosaggio: '1 applicazione locale (Tubo gel)', modo: 'Uso cutaneo: applicare 2-3 volte al giorno sulla parte dolorante e frizionare leggermente', cpr: 1, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Gel antinfiammatorio e analgesico locale per dolori muscolari, articolari, tendiniti e distorsioni.' },
+  { nome: 'Lasonil Antidolore Gel', principio: 'Ibuprofene sale di lisina 10%', dosaggio: '1 applicazione cutanea', modo: 'Uso cutaneo: applicare 2-4 volte al giorno uno strato sottile sulla zona dolorante', cpr: 1, ora: '09:00', fascia: 'Al Bisogno', indicazione: 'Trattamento locale di contusioni, distorsioni, mialgie, strappi muscolari e torcicollo.' },
+  { nome: 'Fastum Gel 2,5%', principio: 'Ketoprofene', dosaggio: '1 applicazione cutanea', modo: 'Uso cutaneo: applicare 1-2 volte al giorno evitando l\'esposizione solare diretta', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Antinfiammatorio locale per affezioni dolorose dell\'apparato osteo-articolare e muscolare.' },
+  { nome: 'Gentalyn Beta 0,1% + 0,05% Crema', principio: 'Gentamicina solfato + Betametasone valerato', dosaggio: '1 applicazione cutanea (Tubo 30 g)', modo: 'Uso cutaneo: applicare un velo sottile 1-2 volte al giorno sulla lesione', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Crema antibiotica e cortisonica per lesioni cutanee infiammatorie ed eczematose sovrainfette.' },
+  { nome: 'Gentalyn 0,1% Crema', principio: 'Gentamicina solfato', dosaggio: '1 applicazione cutanea (Tubo 30 g)', modo: 'Uso cutaneo: applicare 2-3 volte al giorno dopo detersione', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Antibiotico aminoglicosidico topico per infezioni batteriche primarie e secondarie della cute.' },
+  { nome: 'Connettivina Plus Crema', principio: 'Acido ialuronico sale sodico + Sulfadiazina argentica', dosaggio: '1 medicazione cutanea (Tubo 25 g)', modo: 'Uso cutaneo: stendere uno strato uniforme di 2-3 mm 1-2 volte al giorno dopo pulizia con fisiologica', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Cicatrizzante e antibatterico per la prevenzione e cura di piaghe da decubito, ulcere vascolari, ustioni e ferite.' },
+  { nome: 'Connettivina 0,2% Crema', principio: 'Acido ialuronico sale sodico', dosaggio: '1 applicazione cutanea', modo: 'Uso cutaneo: applicare 2-3 volte al giorno sulla zona disepitelizzata', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Stimola la riparazione e rigenerazione della cute in caso di abrasioni, escoriazioni e arrossamenti da decubito.' },
+  { nome: 'Fitostimoline 15% Crema', principio: 'Estratto acquoso di Triticum vulgare', dosaggio: '1 applicazione cutanea (Tubo 32 g)', modo: 'Uso cutaneo: spalmare sulla parte interessata 1-2 volte al giorno', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Riepiteliante e cicatrizzante per ulcere, piaghe da decubito, ragadi e ritardi di cicatrizzazione.' },
+  { nome: 'Bepanthenol Pasta Lenitiva Protettiva', principio: 'Dexpantenolo (Provitamina B5) 5%', dosaggio: '1 applicazione barriera (Tubo 100 g)', modo: 'Uso cutaneo: applicare a ogni cambio pannolone o sulle zone soggette ad arrossamento', cpr: 1, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Protegge e rigenera la pelle fragile prevenendo dermatiti da pannolone e macerazione cutanea.' },
+  { nome: 'Canesten 1% Crema', principio: 'Clotrimazolo', dosaggio: '1 applicazione cutanea (Tubo 30 g)', modo: 'Uso cutaneo: applicare in piccola quantità 2-3 volte al giorno frizionando leggermente', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Antimicotico topico per micosi della pelle e delle pieghe cutanee (candidosi, intertrigini, dermatofitosi).' },
+  { nome: 'Travocort 1% + 0,1% Crema', principio: 'Isoconazolo nitrato + Diflucortolone valerato', dosaggio: '1 applicazione cutanea', modo: 'Uso cutaneo: applicare 2 volte al giorno sulla zona micotica infiammata', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Antimicotico e antinfiammatorio per micosi cutanee superficiali accompagnate da intenso arrossamento o prurito.' },
+  { nome: 'Sofargen 1% Crema', principio: 'Sulfadiazina argentica micronizzata', dosaggio: '1 medicazione cutanea', modo: 'Uso cutaneo: applicare uno strato di 2-3 mm sulle lesioni deterse 1-2 volte al giorno', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Antibatterico topico per la profilassi e il trattamento locale di piaghe da decubito, ulcere varicose e ustioni.' },
+  { nome: 'Iruxol Unguento', principio: 'Collagenasi (Clostridiopeptidasi A) + Cloramfenicolo', dosaggio: '1 medicazione enzimatica (Tubo 30 g)', modo: 'Uso cutaneo: applicare 1 volta al giorno uno strato di 2 mm sul fondo della lesione umida', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Detersione enzimatica (debridement) delle piaghe da decubito e delle ulcere necrotiche o fibrinoso-purulente.' },
+  { nome: 'Hirudoid 40000 UI Crema / Gel', principio: 'Glicosaminoglicanopolisolfato', dosaggio: '1 applicazione cutanea', modo: 'Uso cutaneo: spalmare 2-3 volte al giorno sulla zona di ematoma o flebite superficiale', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Antitrombotico e antiedemigeno locale per ematomi, ecchimosi, stravasi da flebo e tromboflebiti superficiali.' },
+  { nome: 'Reparil Gel 1% / 2%', principio: 'Escina + Dietilamina salicilato', dosaggio: '1 applicazione cutanea', modo: 'Uso cutaneo: stendere un velo sottile sulla cute 1-3 volte al giorno', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Flebotonico e antinfiammatorio locale per traumi minori, contusioni, ematomi e pesantezza degli arti inferiori.' },
+  { nome: 'Lioton 1000 UI/g Gel', principio: 'Eparina sodica', dosaggio: '1 applicazione cutanea (Tubo 50 g)', modo: 'Uso cutaneo: applicare 1-3 volte al giorno massaggiando delicatamente dal basso verso l\'alto', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Gel eparinico per sindromi varicose, edemi da stasi venosa, flebiti superficiali ed ematomi sottocutanei.' }
 ];
 
 function autoCompilaDatiFarmaco(testoInput) {
@@ -6137,14 +6157,19 @@ function pronunciaCaratteristicheFarmaco(farmaco) {
   if (!f || !('speechSynthesis' in window)) return;
   try {
     window.speechSynthesis.cancel();
-    const nome = (f.nomePersonalizzato || f.nome || '').replace(/\bmg\b/gi, 'milligrammi').replace(/\bmcg\b/gi, 'microgrammi').replace(/\bcpr\b/gi, 'compresse');
-    const principio = (f.principio || '').replace(/\bmg\b/gi, 'milligrammi');
-    const cprStr = f.cprRilevate || f.cpr ? `Confezione da ${f.cprRilevate || f.cpr} unità. ` : '';
-    const indicazione = f.indicazione || f.modo || '';
-    const orarioStr = f.ora ? `Orario consigliato: ${f.ora}, ${f.fascia || ''}.` : '';
-    const scudo = analizzaSicurezzaClinicaFarmaco(f);
-    const extraScudo = (scudo && scudo.vocale) ? ` ${scudo.vocale}` : '';
-    const testoVoce = `Farmaco riconosciuto: ${nome}. Principio attivo: ${principio}. ${cprStr}A cosa serve: ${indicazione} ${orarioStr}${extraScudo}`;
+    let testoVoce = '';
+    if (f.isNonFarmaco && f.messaggioVocaleNonFarmaco) {
+      testoVoce = f.messaggioVocaleNonFarmaco;
+    } else {
+      const nome = (f.nomePersonalizzato || f.nome || '').replace(/\bmg\b/gi, 'milligrammi').replace(/\bmcg\b/gi, 'microgrammi').replace(/\bcpr\b/gi, 'compresse');
+      const principio = (f.principio || '').replace(/\bmg\b/gi, 'milligrammi');
+      const cprStr = f.cprRilevate || f.cpr ? `Confezione da ${f.cprRilevate || f.cpr} unità. ` : '';
+      const indicazione = f.indicazione || f.modo || '';
+      const orarioStr = f.ora ? `Orario consigliato: ${f.ora}, ${f.fascia || ''}.` : '';
+      const scudo = analizzaSicurezzaClinicaFarmaco(f);
+      const extraScudo = (scudo && scudo.vocale) ? ` ${scudo.vocale}` : '';
+      testoVoce = `Farmaco riconosciuto: ${nome}. Principio attivo: ${principio}. ${cprStr}A cosa serve: ${indicazione} ${orarioStr}${extraScudo}`;
+    }
     const utter = new SpeechSynthesisUtterance(testoVoce);
     utter.lang = 'it-IT';
     utter.rate = 0.98;
@@ -6261,6 +6286,22 @@ function analizzaFirmaVisivaConfezione(img) {
       }
     }
 
+    // Campionamento metà inferiore per tubetti appoggiati sul banco (es. Traumeel S -Heel: tubo bianco + scritta blu + doppia riga rossa)
+    let blueTraumeelLow = 0;
+    let redLineLow = 0;
+    let whiteTubeLow = 0;
+    let totalLow = 0;
+    for (let y = Math.floor(h * 0.52); y < Math.floor(h * 0.95); y += 2) {
+      for (let x = Math.floor(w * 0.05); x < Math.floor(w * 0.95); x += 2) {
+        const idx = (y * w + x) * 4;
+        const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+        totalLow++;
+        if (b > 110 && b > r + 45 && g > 50 && g < 155 && r < 75) blueTraumeelLow++;
+        if (r > 140 && r > g + 65 && r > b + 65) redLineLow++;
+        if (r > 175 && g > 175 && b > 165) whiteTubeLow++;
+      }
+    }
+
     if (totalSampled > 0) {
       // 1. Firma distintiva scatola Imodium 2 mg (ottanio/turchese predominante + fascia centrale blu navy)
       if (tealImodium > totalSampled * 0.22 && navyImodiumText > totalSampled * 0.04) {
@@ -6270,6 +6311,10 @@ function analizzaFirmaVisivaConfezione(img) {
       if (orangeTopLeft > totalSampled * 0.04 && greenBand > totalSampled * 0.02 && whiteBox > totalSampled * 0.18) {
         return 'pantoprazolo aurobindo 20 mg 28 compresse gastroresistenti';
       }
+    }
+    // 3. Firma distintiva Tubo Traumeel S Crema 100 g (-Heel)
+    if (totalLow > 0 && whiteTubeLow > totalLow * 0.45 && blueTraumeelLow > totalLow * 0.035 && redLineLow > totalLow * 0.02) {
+      return 'traumeel s crema 100 g heel medicinale omeopatico uso cutaneo';
     }
   } catch (e) {}
   return '';
@@ -6315,11 +6360,11 @@ async function eseguiScansioneCompletaImmagineFarmaco(file) {
       if (textCenterAB) raccolti.push(textCenterAB);
       farmacoRiconosciuto = analizzaTestoConfermaFarmaco(raccolti.join(' '), file.name, false);
 
-      // Passata 2: Se non ancora trovato nel DB_FARMACI_COMUNI e non abbiamo già una firma visiva certa, prova Passata Clean
+      // Passata 2: Se non ancora trovato nel DB_FARMACI_COMUNI, prova Passata su intero frame con filtro Anti-Braille (cattura tubetti/scatole in basso come Traumeel S o scritte su pacchetti)
       if (!farmacoRiconosciuto && !firmaVisiva) {
-        const canvasClean = preparaCanvasPerOCR(imageBitmap, 'center_crop');
-        const textClean = await eseguiOCRConTimeout(canvasClean.toDataURL('image/jpeg', 0.92), 3500);
-        if (textClean) raccolti.push(textClean);
+        const canvasFullAB = preparaCanvasPerOCR(imageBitmap, 'antibraille');
+        const textFullAB = await eseguiOCRConTimeout(canvasFullAB.toDataURL('image/jpeg', 0.92), 3500);
+        if (textFullAB) raccolti.push(textFullAB);
         farmacoRiconosciuto = analizzaTestoConfermaFarmaco(raccolti.join(' '), file.name, false);
       }
     } catch (ocrErr) {
@@ -6478,10 +6523,16 @@ async function catturaFrameMirinoLive(targetModal, matchPreRilevato) {
     thumbCanvas.height = 96;
     thumbCanvas.getContext('2d').drawImage(canvas, 0, 0, 96, 96);
     const previewUrl = thumbCanvas.toDataURL('image/jpeg', 0.85);
-    mostraCardRiconoscimentoScanner(matchPreRilevato, targetModal, previewUrl);
-    applicaFarmacoDaScanner(matchPreRilevato.nome, targetModal, matchPreRilevato);
-    pronunciaCaratteristicheFarmaco(matchPreRilevato);
-    showToast(`Riconosciuto dal Mirino Live: ${matchPreRilevato.nomePersonalizzato || matchPreRilevato.nome}! 🎯`);
+    if (matchPreRilevato.isNonFarmaco) {
+      mostraCardNonFarmacoScanner(matchPreRilevato, targetModal, previewUrl);
+      pronunciaCaratteristicheFarmaco(matchPreRilevato);
+      showToast(`🚫 Rilevato NON-FARMACO dal Mirino Live: ${matchPreRilevato.nome}!`, 'warning');
+    } else {
+      mostraCardRiconoscimentoScanner(matchPreRilevato, targetModal, previewUrl);
+      applicaFarmacoDaScanner(matchPreRilevato.nome, targetModal, matchPreRilevato);
+      pronunciaCaratteristicheFarmaco(matchPreRilevato);
+      showToast(`Riconosciuto dal Mirino Live: ${matchPreRilevato.nomePersonalizzato || matchPreRilevato.nome}! 🎯`);
+    }
     return;
   }
 
@@ -6527,8 +6578,88 @@ function ripetiScansioneFotoFarmaco(modo, targetModal) {
 }
 window.ripetiScansioneFotoFarmaco = ripetiScansioneFotoFarmaco;
 
+function mostraCardNonFarmacoScanner(nonFarmaco, targetModal, previewDataUrl) {
+  if (!nonFarmaco) return;
+  _ultimoFarmacoRiconosciutoScanner = nonFarmaco;
+
+  const isCapsula = (targetModal !== 'standard' && targetModal !== 'nuovo');
+  const boxResult = document.getElementById(isCapsula ? 'scan-result-capsula' : 'scan-result-nuovo');
+  const statusIcon = document.getElementById(isCapsula ? 'scan-status-icon' : 'scan-status-icon-alt');
+  const statusText = document.getElementById(isCapsula ? 'scan-status-text' : 'scan-status-text-alt');
+  const infoContainer = document.getElementById(isCapsula ? 'scan-detected-info' : 'scan-detected-info-alt');
+
+  const isFumo = nonFarmaco.categoriaNonFarmaco === 'fumo';
+
+  if (boxResult) {
+    boxResult.style.display = 'block';
+    boxResult.style.borderColor = '#ef4444';
+    boxResult.style.background = 'rgba(127, 29, 29, 0.38)';
+  }
+  if (statusIcon) statusIcon.textContent = isFumo ? '🚭' : '🚫';
+  if (statusText) {
+    statusText.style.color = '#fca5a5';
+    statusText.textContent = nonFarmaco.titolo || '🚫 RILEVATO NON-FARMACO — Inserimento in Terapia Bloccato!';
+  }
+
+  if (infoContainer) {
+    const thumbHtml = previewDataUrl
+      ? `<img src="${previewDataUrl}" alt="Oggetto" style="width:52px; height:52px; object-fit:cover; border-radius:8px; border:2px solid #ef4444; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.4);">`
+      : `<div style="width:48px; height:48px; border-radius:8px; background:rgba(239,68,68,0.25); border:1.5px solid #ef4444; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">${isFumo ? '🚭' : '🚫'}</div>`;
+    infoContainer.innerHTML = `
+      <div style="background:#0f172a; border:1.5px solid #ef4444; border-radius:8px; padding:9px 11px; margin-top:6px;">
+        <div style="display:flex; align-items:flex-start; gap:10px;">
+          ${thumbHtml}
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:13px; font-weight:800; color:#fecaca; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
+              <span>${nonFarmaco.nome}</span>
+              <span style="font-size:10px; background:#dc2626; color:#ffffff; padding:2px 7px; border-radius:6px; font-weight:900; letter-spacing:0.4px;">NON FARMACO</span>
+            </div>
+            <div style="font-size:11.5px; color:#fde68a; margin-top:3px; font-weight:700;">
+              🔎 <b>Confezione Reale Rilevata:</b> ${nonFarmaco.principio}
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11.5px; color:#fee2e2; margin-top:6px; line-height:1.4; background:rgba(185,28,28,0.35); border-left:3px solid #ef4444; padding:6px 8px; border-radius:4px;">
+          ⚠️ <b>AVVERTENZA SALUTE & SCUDO CLINICO AI:</b><br>
+          <span>${nonFarmaco.indicazione}</span>
+        </div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:5px;">
+          🔒 <i>Il modulo della terapia non è stato compilato perché il prodotto inquadrato non è un medicinale autorizzato AIFA.</i>
+        </div>
+        <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(239,68,68,0.22); color:#fecaca; border:1px solid #f87171; border-radius:6px; cursor:pointer;" onclick="pronunciaCaratteristicheFarmaco()">
+            🔊 Riascolta Avviso Salute
+          </button>
+          <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(245,158,11,0.18); color:#fde68a; border:1px solid #f59e0b; border-radius:6px; cursor:pointer;" onclick="ripetiScansioneFotoFarmaco('camera', '${targetModal}')">
+            📷 Fotografa un Farmaco
+          </button>
+          <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:700; background:rgba(255,255,255,0.1); color:#e2e8f0; border:1px solid rgba(255,255,255,0.3); border-radius:6px; cursor:pointer;" onclick="ripetiScansioneFotoFarmaco('gallery', '${targetModal}')">
+            🖼️ Altra da Galleria
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+window.mostraCardNonFarmacoScanner = mostraCardNonFarmacoScanner;
+
+function simulaRilevamentoNonFarmacoDemo(tipo, targetModal) {
+  const testoSimulato = (tipo === 'alimento') ? 'valori nutrizionali kcal caramelle' : 'pacchetto sigarette il fumo nuoce gravemente alla salute';
+  const nf = rilevaOggettoNonFarmacoDaTesto(testoSimulato);
+  if (nf) {
+    mostraCardNonFarmacoScanner(nf, targetModal || 'capsula', '');
+    pronunciaCaratteristicheFarmaco(nf);
+    showToast(`🚫 Rilevato NON-FARMACO: ${nf.nome}!`, 'warning');
+  }
+}
+window.simulaRilevamentoNonFarmacoDemo = simulaRilevamentoNonFarmacoDemo;
+
 function mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previewDataUrl) {
   if (!farmacoRiconosciuto) return;
+  if (farmacoRiconosciuto.isNonFarmaco) {
+    mostraCardNonFarmacoScanner(farmacoRiconosciuto, targetModal, previewDataUrl);
+    return;
+  }
   _ultimoFarmacoRiconosciutoScanner = farmacoRiconosciuto;
 
   const isCapsula = (targetModal !== 'standard' && targetModal !== 'nuovo');
@@ -6684,9 +6815,15 @@ function avviaDettaturaVocaleFarmacoScanner(targetModal) {
         const trascritto = Array.from(ev.results[0]).map(r => r.transcript).join(' ');
         const match = analizzaTestoConfermaFarmaco(trascritto, '', true);
         if (match) {
-          mostraCardRiconoscimentoScanner(match, targetModal || 'capsula');
-          applicaFarmacoDaScanner(match.nome, targetModal || 'capsula', match);
-          pronunciaCaratteristicheFarmaco(match);
+          if (match.isNonFarmaco) {
+            mostraCardNonFarmacoScanner(match, targetModal || 'capsula', '');
+            pronunciaCaratteristicheFarmaco(match);
+            showToast(`🚫 Rilevato NON-FARMACO: ${match.nome}!`, 'warning');
+          } else {
+            mostraCardRiconoscimentoScanner(match, targetModal || 'capsula');
+            applicaFarmacoDaScanner(match.nome, targetModal || 'capsula', match);
+            pronunciaCaratteristicheFarmaco(match);
+          }
         } else {
           showToast(`Letto: "${trascritto}" — scrivi o seleziona sotto.`);
         }
@@ -6705,9 +6842,15 @@ function eseguiRicercaRapidaScannerInput(valore, targetModal) {
   if (q.length < 3) return;
   const match = analizzaTestoConfermaFarmaco(q, '', false);
   if (match) {
-    mostraCardRiconoscimentoScanner(match, targetModal || 'capsula');
-    applicaFarmacoDaScanner(match.nome, targetModal || 'capsula', match);
-    pronunciaCaratteristicheFarmaco(match);
+    if (match.isNonFarmaco) {
+      mostraCardNonFarmacoScanner(match, targetModal || 'capsula', '');
+      pronunciaCaratteristicheFarmaco(match);
+      showToast(`🚫 Rilevato NON-FARMACO: ${match.nome}!`, 'warning');
+    } else {
+      mostraCardRiconoscimentoScanner(match, targetModal || 'capsula');
+      applicaFarmacoDaScanner(match.nome, targetModal || 'capsula', match);
+      pronunciaCaratteristicheFarmaco(match);
+    }
   }
 }
 window.eseguiRicercaRapidaScannerInput = eseguiRicercaRapidaScannerInput;
@@ -6743,31 +6886,35 @@ async function gestisciFotoFarmaco(event, targetModal) {
     const { rawText, farmacoRiconosciuto, previewDataUrl } = await eseguiScansioneCompletaImmagineFarmaco(file);
     console.log('[AI Drug Scanner] Testo rilevato da OCR:', rawText);
 
-    if (farmacoRiconosciuto) {
+    if (farmacoRiconosciuto && farmacoRiconosciuto.isNonFarmaco) {
+      mostraCardNonFarmacoScanner(farmacoRiconosciuto, targetModal, previewDataUrl);
+      pronunciaCaratteristicheFarmaco(farmacoRiconosciuto);
+      showToast(`🚫 Rilevato NON-FARMACO: ${farmacoRiconosciuto.nome}! Inserimento bloccato.`, 'warning');
+    } else if (farmacoRiconosciuto) {
       mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previewDataUrl);
       applicaFarmacoDaScanner(farmacoRiconosciuto.nome, targetModal, farmacoRiconosciuto);
       pronunciaCaratteristicheFarmaco(farmacoRiconosciuto);
       const nomeVisualizzato = farmacoRiconosciuto.nomePersonalizzato || farmacoRiconosciuto.nome;
       showToast(`Riconosciuto: ${nomeVisualizzato} (${farmacoRiconosciuto.principio})! 💊`);
     } else {
-      // Fallback: se la foto è molto mossa o in controluce, offre pulsanti Ripeti Foto + ricerca/dettatura AI istantanea
+      // Fallback: se l'oggetto inquadrato non ha alcun testo di medicinale o la foto è molto mossa
       if (boxResult) {
-        boxResult.style.borderColor = '#38bdf8';
-        boxResult.style.background = 'rgba(15, 23, 42, 0.9)';
+        boxResult.style.borderColor = '#f59e0b';
+        boxResult.style.background = 'rgba(15, 23, 42, 0.92)';
       }
-      if (statusIcon) statusIcon.textContent = '🔍';
+      if (statusIcon) statusIcon.textContent = '🚫';
       if (statusText) {
-        statusText.style.color = '#7dd3fc';
-        statusText.textContent = 'Foto acquisita — Ripeti lo scatto o digita 3 lettere sulla scatola per analisi AI + Voce:';
+        statusText.style.color = '#fde68a';
+        statusText.textContent = 'Nessun farmaco AIFA rilevato nell\'immagine — Ripeti la foto o verifica sotto:';
       }
       if (infoContainer) {
         const suggeriti = [
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Traumeel S')),
           DB_FARMACI_COMUNI.find(f => f.nome.includes('Imodium 2')),
           DB_FARMACI_COMUNI.find(f => f.nome.includes('Pantoprazolo Aurobindo 20')),
           DB_FARMACI_COMUNI.find(f => f.nome.includes('Tachipirina 1000')),
           DB_FARMACI_COMUNI.find(f => f.nome.includes('Oki 80')),
-          DB_FARMACI_COMUNI.find(f => f.nome.includes('Moment 200')),
-          DB_FARMACI_COMUNI.find(f => f.nome.includes('Augmentin'))
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Voltaren Emulgel'))
         ].filter(Boolean);
         infoContainer.innerHTML = `
           <div style="margin-top:6px;">
@@ -6775,9 +6922,10 @@ async function gestisciFotoFarmaco(event, targetModal) {
               <button type="button" onclick="ripetiScansioneFotoFarmaco('camera', '${targetModal}')" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #f59e0b; background:rgba(245,158,11,0.2); color:#fde68a; font-size:12px; font-weight:800; cursor:pointer;">📷 Ripeti Foto</button>
               <button type="button" onclick="ripetiScansioneFotoFarmaco('gallery', '${targetModal}')" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:rgba(56,189,248,0.18); color:#bae6fd; font-size:12px; font-weight:800; cursor:pointer;">🖼️ Altra da Galleria</button>
               <button type="button" onclick="avviaDettaturaVocaleFarmacoScanner('${targetModal}')" style="padding:6px 10px; border-radius:7px; border:1px solid #34d399; background:rgba(16,185,129,0.2); color:#6ee7b7; font-size:12px; font-weight:800; cursor:pointer;" title="Detta il nome a voce">🎤 Voce</button>
+              <button type="button" onclick="simulaRilevamentoNonFarmacoDemo('fumo', '${targetModal}')" style="padding:6px 10px; border-radius:7px; border:1px solid #ef4444; background:rgba(239,68,68,0.22); color:#fecaca; font-size:11.5px; font-weight:800; cursor:pointer;" title="Simula scansione Pacchetto di Sigarette / Non-Farmaco">🚭 Test Non-Farmaco (Sigarette)</button>
             </div>
             <div style="display:flex; gap:6px; margin-bottom:8px;">
-              <input type="text" placeholder="Oppure digita 3 lettere (es. Imo, Pan, Oki, Mom...)" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:#1e293b; color:#ffffff; font-size:12px; font-weight:700;" onkeydown="if(event.key==='Enter'){event.preventDefault(); eseguiRicercaRapidaScannerInput(this.value, '${targetModal}');}" oninput="if(this.value.length>=3) eseguiRicercaRapidaScannerInput(this.value, '${targetModal}')">
+              <input type="text" placeholder="Digita 3 lettere (es. Tra, Imo, Pan, Sigarette...)" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:#1e293b; color:#ffffff; font-size:12px; font-weight:700;" onkeydown="if(event.key==='Enter'){event.preventDefault(); eseguiRicercaRapidaScannerInput(this.value, '${targetModal}');}" oninput="if(this.value.length>=3) eseguiRicercaRapidaScannerInput(this.value, '${targetModal}')">
             </div>
             <div id="scan-quick-suggestions" style="display:flex; flex-wrap:wrap; gap:5px;">
               ${suggeriti.map(f => `
@@ -6817,7 +6965,20 @@ async function gestisciFotoCaricoScatola(event) {
     const { farmacoRiconosciuto } = await eseguiScansioneCompletaImmagineFarmaco(file);
     const select = document.getElementById('ricarica-farmaco-select');
 
-    if (farmacoRiconosciuto && select) {
+    if (farmacoRiconosciuto && farmacoRiconosciuto.isNonFarmaco) {
+      _ultimoFarmacoRiconosciutoScanner = farmacoRiconosciuto;
+      pronunciaCaratteristicheFarmaco(farmacoRiconosciuto);
+      if (resBox) {
+        resBox.innerHTML = `
+          <div style="color:#fecaca; background:rgba(185,28,28,0.35); border:1px solid #ef4444; padding:8px; border-radius:6px;">
+            🚫 <b>NON FARMACO RILEVATO:</b> ${farmacoRiconosciuto.nome}<br>
+            <span style="font-size:11px; color:#fde68a;">Confezione: ${farmacoRiconosciuto.principio}</span><br>
+            <span style="font-size:11px; color:#fee2e2;">⚠️ ${farmacoRiconosciuto.indicazione}</span>
+          </div>
+        `;
+      }
+      showToast(`🚫 Rilevato NON-FARMACO: ${farmacoRiconosciuto.nome}!`, 'warning');
+    } else if (farmacoRiconosciuto && select) {
       _ultimoFarmacoRiconosciutoScanner = farmacoRiconosciuto;
       const nomeVisualizzato = farmacoRiconosciuto.nomePersonalizzato || farmacoRiconosciuto.nome;
       const p = getActivePaziente();
@@ -6906,7 +7067,109 @@ function calcolaDistanzaLevenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
+// Rilevatore Intelligente di Oggetti NON-FARMACO (es. Pacchetti di Sigarette/Tabacco, Alimenti, Cosmetici)
+function rilevaOggettoNonFarmacoDaTesto(testoOriginale) {
+  if (!testoOriginale) return null;
+  const t = String(testoOriginale).toLowerCase()
+    .replace(/[*_•·]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!t) return null;
+
+  // 1. Pacchetto di Sigarette / Tabacco / Dispositivi da Fumo (con avvertenza Ministero della Salute)
+  const fumoKeywords = [
+    'il fumo uccide', 'fumo uccide', 'fumo nuoce', 'nuoce gravemente', 'fumare uccide', 'fumare nuoce',
+    'smettere di fumare', 'fumo danneggia', 'fumo causa', 'fumo ostruisce', '800 554 088', '800554088', '554088',
+    'tabacco', 'sigarett', 'sigari', 'sigaro', 'toscanello', 'nicotina',
+    'marlboro', 'merit', 'camel', 'winston', 'chesterfield', 'philip morris', 'lucky strike', 'pall mall',
+    'rothmans', 'diana', 'muratti', 'ms bionde', 'gauloises', 'gitanes', 'davidoff', 'benson', 'kim',
+    'iqos', 'terea', 'heets', 'glo hyper', 'vuse', 'juul', 'elfbar', 'svapo', 'liquido sigaretta',
+    'pueblo', 'golden virginia', 'old holborn', 'mac baren', 'rizla', 'ocb'
+  ];
+  const isFumo = fumoKeywords.some(k => t.includes(k)) ||
+    (/\b(fumo|fumare|fumatori)\b/i.test(t) && /\b(salute|uccide|nuoce|polmoni|arterie|cancro|ictus|infarto|bambini|gravidanza)\b/i.test(t));
+
+  if (isFumo) {
+    let marcaRilevata = '';
+    const marcheNote = [
+      { k: 'marlboro', n: 'Marlboro' }, { k: 'merit', n: 'Merit' }, { k: 'camel', n: 'Camel' },
+      { k: 'winston', n: 'Winston' }, { k: 'chesterfield', n: 'Chesterfield' }, { k: 'philip morris', n: 'Philip Morris' },
+      { k: 'lucky strike', n: 'Lucky Strike' }, { k: 'pall mall', n: 'Pall Mall' }, { k: 'rothmans', n: 'Rothmans' },
+      { k: 'diana', n: 'Diana' }, { k: 'muratti', n: 'Muratti' }, { k: 'iqos', n: 'IQOS / Stick Tabacco' },
+      { k: 'terea', n: 'TEREA / Tabacco Riscaldato' }, { k: 'heets', n: 'HEETS / Tabacco Riscaldato' },
+      { k: 'pueblo', n: 'Tabacco Pueblo' }, { k: 'golden virginia', n: 'Golden Virginia' }, { k: 'toscanello', n: 'Sigari Toscanello' }
+    ];
+    for (const m of marcheNote) {
+      if (t.includes(m.k)) {
+        marcaRilevata = ` (${m.n})`;
+        break;
+      }
+    }
+    return {
+      isNonFarmaco: true,
+      categoriaNonFarmaco: 'fumo',
+      titolo: '🚭 RILEVATO NON-FARMACO: Confezione di Sigarette / Tabacco!',
+      nome: `🚭 Pacchetto di Sigarette / Tabacco${marcaRilevata}`,
+      principio: `Confezione di Tabacco / Prodotto da Fumo${marcaRilevata} — NON È UN FARMACO`,
+      dosaggio: 'NON SOMMINISTRABILE',
+      modo: 'Inserimento nel Piano Terapeutico BLOCCATO dallo Scudo Clinico AI',
+      indicazione: '⚠️ IL FUMO NUOCE GRAVEMENTE ALLA SALUTE: provoca tumori polmonari, infarti, ictus, BPCO e ostruzione delle arterie, oltre a contrastare l\'efficacia dei farmaci cardiovascolari e respiratori. Prodotto severamente vietato nel piano terapeutico!',
+      messaggioVocaleNonFarmaco: `Attenzione! L'oggetto fotografato non è un farmaco, ma una confezione di sigarette o tabacco${marcaRilevata ? ' ' + marcaRilevata.replace(/[()]/g, '') : ''}. Lo Scudo Clinico blocca l'inserimento in terapia e ricorda che il fumo nuoce gravemente alla salute, danneggia cuore, arterie e polmoni ed è severamente controindicato!`
+    };
+  }
+
+  // 2. Alimenti / Bevande / Caramelle / Dolciumi (spesso usati dai colleghi per mettere alla prova lo scanner)
+  const alimentoKeywords = [
+    'valori nutrizionali', 'dichiarazione nutrizionale', 'energia kcal', 'grassi saturi', 'carboidrati di cui zuccheri',
+    'da consumarsi preferibilmente', 'caramelle', 'gomme da masticare', 'chewing gum', 'tic tac', 'vivident',
+    'vigorsol', 'air action', 'golia', 'mentos', ' fisherman', 'cioccolat', 'nutella', 'kinder', 'ferrero',
+    'pocket coffee', 'mon cheri', 'biscott', 'mulino bianco', 'patatine', 'coca cola', 'red bull', 'estathe',
+    'acqua minerale', 'oligominerale', ' naturale ', 'frizzante', 'caffè', 'lavazza', 'borbone', 'kimbo', 'birra', 'vino '
+  ];
+  if (alimentoKeywords.some(k => t.includes(k)) && !/\b(compresse|capsule|medicinale|aifa|aic|farmaco|posologia)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      categoriaNonFarmaco: 'alimento',
+      titolo: '🚫 RILEVATO NON-FARMACO: Prodotto Alimentare / Bevanda!',
+      nome: '🍬 Confezione Alimentare / Caramelle / Bevanda',
+      principio: 'Prodotto Alimentare o Dolciario Commerciale — NON È UN FARMACO',
+      dosaggio: 'NON TERAPEUTICO',
+      modo: 'Inserimento nel Piano Terapeutico BLOCCATO dallo Scudo Clinico AI',
+      indicazione: '⚠️ L\'oggetto fotografato è un alimento, bevanda o caramella commerciale e non possiede principio attivo farmacologico né autorizzazione AIFA. Attenzione al contenuto di zuccheri nei pazienti diabetici o disfagici.',
+      messaggioVocaleNonFarmaco: 'Attenzione! L\'oggetto fotografato non è un farmaco, ma una confezione alimentare o di caramelle. Il modulo terapeutico non viene compilato perché il prodotto non è un medicinale.'
+    };
+  }
+
+  // 3. Cosmetici / Detergenti / Oggetti comuni non sanitari
+  const oggettoKeywords = [
+    'shampoo', 'bagnoschiuma', 'docciaschiuma', 'dentifricio', 'collutorio cosmetico', 'deodorante',
+    'eau de toilette', 'eau de parfum', 'profumo', 'detersivo', 'candeggina', 'ammorbidente',
+    'fazzoletti', 'tempo ', 'scottex', 'mascara', 'rossetto', 'smalto'
+  ];
+  if (oggettoKeywords.some(k => t.includes(k)) && !/\b(medicinale|aifa|compresse|capsule)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      categoriaNonFarmaco: 'oggetto',
+      titolo: '🚫 RILEVATO NON-FARMACO: Prodotto Cosmetico / Igiene / Oggetto!',
+      nome: '🧴 Confezione Non-Farmaceutica (Cosmetico / Igiene)',
+      principio: 'Prodotto di Igiene o Uso Comune — NON È UN FARMACO AIFA',
+      dosaggio: 'NON TERAPEUTICO',
+      modo: 'Inserimento nel Piano Terapeutico BLOCCATO',
+      indicazione: '⚠️ Il prodotto inquadrato non è una specialità medicinale ma un articolo cosmetico o di uso comune. Non può essere inserito nel piano terapeutico farmacologico.',
+      messaggioVocaleNonFarmaco: 'Attenzione! La confezione inquadrata non è un farmaco ma un prodotto cosmetico o di uso comune. Inserimento nel piano terapeutico bloccato.'
+    };
+  }
+
+  return null;
+}
+window.rilevaOggettoNonFarmacoDaTesto = rilevaOggettoNonFarmacoDaTesto;
+
 function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename, consentiUniversale) {
+  // 0. Controllo immediato: se il testo appartiene a un NON-FARMACO (es. Pacchetto di Sigarette, Alimento, Oggetto),
+  // restituisce subito l'allarme NON FARMACO e blocca la compilazione del piano terapeutico!
+  const oggettoNonFarmaco = rilevaOggettoNonFarmacoDaTesto(testoRiconosciuto);
+  if (oggettoNonFarmaco) return oggettoNonFarmaco;
+
   // Normalizza anche le etichette adesive della farmacia (es. "IMODIUM*12CPS 2MG" -> "imodium 12 cps 2 mg")
   const rawOcr = (testoRiconosciuto || '').toLowerCase()
     .replace(/[*_•·]/g, ' ')
@@ -6956,7 +7219,7 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename, consentiUnive
   }
 
   // Case farmaceutiche / equivalenti da riconoscere sulla scatola
-  const caseFarmaceutiche = ['aurobindo', 'sandoz', 'teva', 'mylan', 'zentiva', 'doc', 'eg', 'krka', 'hexal', 'ratiopharm', 'angelini', 'bayer', 'pfizer', 'menarini'];
+  const caseFarmaceutiche = ['aurobindo', 'sandoz', 'teva', 'mylan', 'zentiva', 'doc', 'eg', 'krka', 'hexal', 'ratiopharm', 'angelini', 'bayer', 'pfizer', 'menarini', 'heel', 'guna', 'boiron'];
   let brandRilevato = '';
   for (const brand of caseFarmaceutiche) {
     if (contieneParolaEsatta(brand) || (brand.length >= 5 && contieneParolaMedicaFuzzy(brand))) {
@@ -6965,7 +7228,7 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename, consentiUnive
     }
   }
 
-  // Estrae eventuale numero di compresse scritto sulla scatola (es. "28 compresse gastroresistenti")
+  // Estrae eventuale numero di compresse o grammi del tubo scritto sulla confezione (es. "28 compresse gastroresistenti" o "Tubo da 100 g")
   let cprRilevate = null;
   const matchCpr = rawOcr.match(/\b(\d{1,3})\s*(?:compresse|capsule|cpr|cps|bustine)\b/i);
   if (matchCpr) {
@@ -6973,12 +7236,13 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename, consentiUnive
     if (n >= 2 && n <= 200) cprRilevate = n;
   }
 
-  // 1. Cerca corrispondenza pesata nel DB_FARMACI_COMUNI (escludendo i numeri puri dalle parole del nome!)
+  // 1. Cerca corrispondenza pesata nel DB_FARMACI_COMUNI (escludendo i numeri puri e le parole generiche di confezionamento!)
   let bestMatch = null;
   let maxScore = 0;
 
   const stopWords = new Set([
     'mg', 'mcg', 'ml', 'cpr', 'cps', 'rp', 'rm', 'ui',
+    'tubo', 'tubetto', 'crema', 'pomata', 'unguento', 'gel', 'cutaneo', 'cutanea', 'topico', 'topica', 'locale', 'uso', 'esterno', 'esterna', 'flacone', 'scatola', 'confezione', 'grammi',
     'acido', 'sodico', 'sodica', 'sodio', 'potassio', 'potassico', 'potassica', 'calcio', 'calcica', 'magnesio', 'alluminio',
     'fumarato', 'cloridrato', 'dicloridrato', 'etexilato', 'sesquidrato', 'maleato', 'tartrato', 'acetato', 'cilexetil', 'medoxomil', 'trometamina', 'trometamolo', 'triidrato',
     'sale', 'lisina', 'arginina', 'idrossido', 'carbonato', 'bicarbonato', 'esteri', 'etilici', 'acidi', 'grassi', 'polinsaturi',
@@ -7154,7 +7418,23 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename, consentiUnive
       { keys: ['dibase', 'colecalcif'], target: 'Dibase 25.000 UI' },
       { keys: ['folina', 'folico'], target: 'Folina 5 mg' },
       { keys: ['sideral', 'ferro'], target: 'Sideral Forte' },
-      { keys: ['entecavir', 'baraclude'], target: 'Entecavir Sandoz 0,5 mg' }
+      { keys: ['entecavir', 'baraclude'], target: 'Entecavir Sandoz 0,5 mg' },
+      { keys: ['traumeel', 'traumel', 'raumeel', 'aumeel', '-heel', 'heel', 'omeopat', 'omeopall'], target: 'Traumeel S Crema 100 g (-Heel)' },
+      { keys: ['arnica'], target: 'Arnica Compositum Heel Crema' },
+      { keys: ['emulgel'], target: 'Voltaren Emulgel 2%' },
+      { keys: ['lasonil'], target: 'Lasonil Antidolore Gel' },
+      { keys: ['fastum'], target: 'Fastum Gel 2,5%' },
+      { keys: ['gentalyn'], target: rawOcr.includes('beta') ? 'Gentalyn Beta 0,1% + 0,1% Crema' : 'Gentalyn 0,1% Crema' },
+      { keys: ['connettivin'], target: rawOcr.includes('plus') ? 'Connettivina Plus Crema' : 'Connettivina 0,2% Crema' },
+      { keys: ['fitostimolin'], target: 'Fitostimoline 15% Crema' },
+      { keys: ['bepanthen', 'dexpanten'], target: 'Bepanthenol Pasta / Crema' },
+      { keys: ['canesten', 'clotrimaz'], target: 'Canesten 1% Crema' },
+      { keys: ['travocort', 'isoconaz'], target: 'Travocort 1% + 0,1% Crema' },
+      { keys: ['sofargen', 'sulfadiaz'], target: 'Sofargen 1% Crema' },
+      { keys: ['iruxol', 'collagenas'], target: 'Iruxol Unguento' },
+      { keys: ['hirudoid'], target: 'Hirudoid 40000 UI Crema / Gel' },
+      { keys: ['reparil', 'escina'], target: 'Reparil Gel' },
+      { keys: ['lioton', 'eparina'], target: 'Lioton 1000 UI/g Gel' }
     ];
 
     for (const rc of radiciChiave) {
@@ -7197,21 +7477,28 @@ function estraiFarmacoUniversaleDaTestoOCR(testoOriginale, cprRilevate, brandRil
   const tuttoTesto = righe.join(' ');
   const tuttoLower = tuttoTesto.toLowerCase();
 
+  // Prima controlla se per caso è un oggetto non-farmaco
+  const checkNonFarmaco = rilevaOggettoNonFarmacoDaTesto(tuttoTesto);
+  if (checkNonFarmaco) return checkNonFarmaco;
+
   // Cerca un dosaggio esplicito (es. "20 mg", "400 mg", "50 mcg", "1 g", "25000 UI")
   const matchDose = tuttoTesto.match(/\b(\d{1,5}(?:[\.,]\d{1,2})?\s*(?:mg|mcg|g|ui|ml|miliardi))\b/i);
-  const haParoleFarmaceutiche = /\b(compresse|capsule|bustine|gocce|sciroppo|fiale|orosolubil|gastroresistent|rivestit|medicinale|equivalente|uso orale)\b/i.test(tuttoTesto);
+  const haParoleFarmaceutiche = /\b(compresse|capsule|bustine|gocce|sciroppo|fiale|orosolubil|gastroresistent|rivestit|medicinale|equivalente|uso orale|uso cutaneo|pomata|unguento|crema)\b/i.test(tuttoTesto);
 
   if (!matchDose && !haParoleFarmaceutiche) return null;
 
-  const dosaggioEstratto = matchDose ? `${matchDose[1]} (1 unità)` : '1 compressa / dose';
+  const isTopico = /\b(crema|pomata|unguento|gel|cutaneo|cutanea|uso esterno)\b/i.test(tuttoLower);
+  const dosaggioEstratto = isTopico ? '1 applicazione locale' : (matchDose ? `${matchDose[1]} (1 unità)` : '1 compressa / dose');
   const paroleIgnorate = new Set([
     'compresse', 'capsule', 'bustine', 'rivestite', 'gastroresistenti', 'medicinale', 'equivalente', 'orale', 'rigide', 'molli',
+    'tubo', 'tubetto', 'crema', 'pomata', 'unguento', 'gel', 'cutaneo', 'cutanea', 'topico', 'topica', 'esterno', 'esterna', 'uso',
+    'flacone', 'scatola', 'confezione', 'grammi', 'omeopatico', 'omeopatica', 'omeopallco', 'omeopallca', 'applicare', 'locale',
     'soluzione', 'granulato', 'sospensione', 'film', 'prezzo', 'scadenza', 'lotto', 'aifa', 'farmacia', 'macario', 'trattamento',
     'sintomatico', 'delle', 'degli', 'dello', 'della', 'acute', 'acuta', 'cronica', 'adulti', 'bambini', 'prima', 'dopo',
     'anything', 'mention', 'actions', 'gemini', 'argon', 'medium', 'pausa', 'stamp', 'shift', 'ctrl', 'enter', 'windows'
   ]);
 
-  // Trova le parole alfabetiche principali (possibile Nome Commerciale e Principio Attivo)
+  // Trova le parole alfabetiche principali (possibile Nome Commerciale e Principio Attivo), mai parole generiche come "Tubo" o "Crema"!
   const candidati = [];
   for (const r of righe) {
     const tokens = r.split(/\s+/).filter(w => w.length >= 4 && /^[a-zA-ZàèéìòùÀÈÉÌÒÙ]+$/.test(w) && !paroleIgnorate.has(w.toLowerCase()));
@@ -7293,7 +7580,7 @@ function estraiFarmacoUniversaleDaTestoOCR(testoOriginale, cprRilevate, brandRil
 function applicaFarmacoDaScanner(nomeEsatto, targetModal, datiArricchiti) {
   const base = DB_FARMACI_COMUNI.find(item => item.nome === nomeEsatto);
   const f = datiArricchiti || base;
-  if (!f) return;
+  if (!f || f.isNonFarmaco) return;
 
   const nomeFinale = f.nomePersonalizzato || f.nome;
   const cprFinali = f.cprRilevate || f.cpr || 28;
