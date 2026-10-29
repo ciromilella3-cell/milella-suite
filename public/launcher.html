@@ -1010,6 +1010,11 @@
         <div class="card-icon">🩺</div>
         <div class="card-title">CareAssist Pro</div>
         <div class="card-desc">Diario socio-sanitario, terapie farmacologiche e gestione assistenza domiciliare.</div>
+        <div class="card-quick-actions">
+            <button type="button" class="quick-pill-btn" onclick="event.stopPropagation(); navigaVersoApp('/careassist/turni.html');">🗓️ Turnario H24</button>
+            <button type="button" class="quick-pill-btn" onclick="event.stopPropagation(); navigaVersoApp('/careassist/PROSPETTO_FARMACI_ROSA.html');">💊 Terapie</button>
+            <button type="button" class="quick-pill-btn" onclick="event.stopPropagation(); navigaVersoApp('/careassist/');">🩺 Diario</button>
+        </div>
     </a>
 </div>
 
@@ -2936,8 +2941,9 @@
         }
         if (id.includes('careassist') || tit.includes('careassist')) {
             return [
+                { label: '🗓️ Turnario H24', url: '/careassist/turni.html' },
                 { label: '💊 Terapie', url: '/careassist/PROSPETTO_FARMACI_ROSA.html' },
-                { label: '🩺 Diario', url: '/careassist/' }
+                { label: '🩺 Diario Clinico', url: '/careassist/' }
             ];
         }
         return [];

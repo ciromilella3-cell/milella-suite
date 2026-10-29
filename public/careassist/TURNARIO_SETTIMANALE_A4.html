@@ -237,9 +237,12 @@
       <button class="btn-wa" onclick="condividiSuWhatsAppDaStampa()">
         📲 Invia Turni WhatsApp
       </button>
-      <button class="btn-outline" onclick="window.close()">
-        ✕ Chiudi
+      <button class="btn-outline" onclick="if(window.history.length > 1){window.history.back();}else{window.location.href='/careassist/turni.html';}">
+        ⬅️ Turnario
       </button>
+      <a href="/launcher.html" class="btn-outline" style="text-decoration:none; display:inline-flex; align-items:center; color:#334155;">
+        🏢 Suite
+      </a>
     </div>
   </div>
 
