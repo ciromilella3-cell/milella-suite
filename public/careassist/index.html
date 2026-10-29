@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=71">
+  <link rel="stylesheet" href="style.css?v=72">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -224,7 +224,7 @@
           <!-- popolato dinamicamente -->
         </select>
         <button class="btn btn-new-patient" onclick="openModal('modal-nuovo-paziente')" title="Aggiungi una nuova cartella assistito">
-          ➕ Nuovo Assistito
+          ➕ <span class="btn-new-patient-full-label">Nuovo Assistito</span><span class="btn-new-patient-mobile-label" style="display:none;">Nuovo</span>
         </button>
       </div>
     </div>
@@ -3466,7 +3466,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=71"></script>
+  <script src="app.js?v=72"></script>
   <script>
     if ('serviceWorker' in navigator) {
       var _reloadingSw = false;

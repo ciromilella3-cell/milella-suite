@@ -1618,28 +1618,34 @@ function renderPazientiSelector() {
     const mapsLink = (addr) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const mapsDirLink = (addr) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`;
 
-    // 1. INDIRIZZO RESIDENZA CON GOOGLE MAPS E NAVIGATORE GPS
+    // 1. INDIRIZZO RESIDENZA CON GOOGLE MAPS E NAVIGATORE GPS (STILE GROUPED CONTACT ROW)
     const ind = activeP.indirizzo ? `
-      <div class="meta-item clinica-zoom-item contact-chip address-chip" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Residenza & Domicilio Assistito', '${activeP.indirizzo.replace(/'/g, "\\'")}', '📍')" onmouseleave="nascondiLenteClinica()">
-        <div style="display:flex; align-items:center; gap:8px; min-width:0; overflow:hidden; text-overflow:ellipsis;">
-          <span style="font-size:16px;">📍</span>
-          <a href="${mapsLink(activeP.indirizzo)}" target="_blank" class="smart-link address-text" style="font-size:13.5px; font-weight:700; color:#0f172a;" title="Apri su Google Maps">
-            ${activeP.indirizzo}
-          </a>
+      <div class="patient-contact-row" onmouseenter="mostraLenteClinica('Residenza & Domicilio Assistito', '${activeP.indirizzo.replace(/'/g, "\\'")}', '📍')" onmouseleave="nascondiLenteClinica()">
+        <div class="patient-contact-info">
+          <span class="contact-icon">📍</span>
+          <div class="contact-text-group">
+            <span class="contact-label">Residenza & Domicilio</span>
+            <a href="${mapsLink(activeP.indirizzo)}" target="_blank" class="contact-value-link" title="Apri su Google Maps">
+              ${activeP.indirizzo}
+            </a>
+          </div>
         </div>
-        <a href="${mapsDirLink(activeP.indirizzo)}" target="_blank" class="gps-nav-btn" title="Avvia Navigatore GPS Turn-by-Turn (Google Maps)">
+        <a href="${mapsDirLink(activeP.indirizzo)}" target="_blank" class="btn-contact-action btn-naviga" title="Avvia Navigatore GPS Turn-by-Turn (Google Maps)">
           <span>🧭</span> <span>Naviga</span>
         </a>
       </div>` : '';
 
     // 2. TELEFONO FISSO CASA (CHIAMATA & WHATSAPP)
     const tel = activeP.telefonoFisso ? `
-      <div class="meta-item clinica-zoom-item contact-chip phone-chip" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Telefono Abitazione / Fisso', '${activeP.telefonoFisso}', '☎️')" onmouseleave="nascondiLenteClinica()">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:16px;">☎️</span>
-          <span style="font-size:13px; color:#334155;">Casa: <b class="nowrap-num" style="color:#0f172a; font-weight:800;">${activeP.telefonoFisso}</b></span>
+      <div class="patient-contact-row" onmouseenter="mostraLenteClinica('Telefono Abitazione / Fisso', '${activeP.telefonoFisso}', '☎️')" onmouseleave="nascondiLenteClinica()">
+        <div class="patient-contact-info">
+          <span class="contact-icon">☎️</span>
+          <div class="contact-text-group">
+            <span class="contact-label">Abitazione / Fisso</span>
+            <span class="contact-value nowrap-num">${activeP.telefonoFisso}</span>
+          </div>
         </div>
-        <div class="chip-actions">
+        <div class="contact-actions-cluster">
           <a href="tel:${cleanNum(activeP.telefonoFisso)}" class="action-icon-btn call" title="Chiama Casa">📞</a>
           <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.telefonoFisso)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con Telefono Casa">💬</a>
         </div>
@@ -1647,12 +1653,15 @@ function renderPazientiSelector() {
 
     // 3. CELLULARE ASSISTITO (CHIAMATA, SMS, WHATSAPP)
     const cell = activeP.cellulare ? `
-      <div class="meta-item clinica-zoom-item contact-chip phone-chip" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Cellulare Assistito (${activeP.nome})', '${activeP.cellulare}', '📱')" onmouseleave="nascondiLenteClinica()">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:16px;">📱</span>
-          <span style="font-size:13px; color:#334155;">Cell: <b class="nowrap-num" style="color:#0f172a; font-weight:800;">${activeP.cellulare}</b></span>
+      <div class="patient-contact-row" onmouseenter="mostraLenteClinica('Cellulare Assistito (${activeP.nome})', '${activeP.cellulare}', '📱')" onmouseleave="nascondiLenteClinica()">
+        <div class="patient-contact-info">
+          <span class="contact-icon">📱</span>
+          <div class="contact-text-group">
+            <span class="contact-label">Cellulare Assistito</span>
+            <span class="contact-value nowrap-num">${activeP.cellulare}</span>
+          </div>
         </div>
-        <div class="chip-actions">
+        <div class="contact-actions-cluster">
           <a href="tel:${cleanNum(activeP.cellulare)}" class="action-icon-btn call" title="Chiama ${activeP.nome}">📞</a>
           <a href="sms:${cleanNum(activeP.cellulare)}" class="action-icon-btn sms" title="Invia SMS a ${activeP.nome}">✉️</a>
           <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.cellulare)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con ${activeP.nome}">💬</a>
@@ -2064,29 +2073,29 @@ function renderPazientiSelector() {
         <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; border-bottom:1.5px solid #e2e8f0; padding-bottom:12px;">
           
           <!-- LATO SINISTRO: NOME, AVATAR E PILLOLE DI STATO -->
-          <div style="flex:1; min-width:280px;">
-            <div class="paziente-name" style="margin-bottom:6px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-              <span class="patient-avatar-badge" style="width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; display:inline-flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 3px 8px rgba(2,132,199,0.3);">👤</span>
-              <div>
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                  <span style="font-size:25px; font-weight:800; color:#0f172a; letter-spacing:-0.5px; line-height:1.1;">${activeP.nome}</span>
-                  <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer; font-size:11.5px; padding:4px 9px;" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h) per prevenzione lesioni da decubito.' : 'Paziente deambulante in modo autonomo o assistito.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
-                    ${activeP.allettato ? '🛏️ Paziente Allettato (q2h)' : '🚶 Deambulante'}
-                  </span>
+          <div style="flex:1; min-width:0; width:100%;">
+            <div class="patient-hero-identity">
+              <span class="patient-avatar-badge-modern" onclick="apriModificaAnagrafica()" title="Tocca per cartella anagrafica assistito">👤</span>
+              <div class="patient-hero-text">
+                <div class="patient-hero-title-row">
+                  <h2 class="patient-hero-fullname" title="${activeP.nome}">${activeP.nome}</h2>
                 </div>
-                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:5px;">
-                  <span class="badge badge-warning clinica-zoom-item" style="font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:8px;" onclick="apriModificaAnagrafica()" title="Tocca per aprire e modificare cartella anagrafica e data di nascita" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${dataNascitaFmt} (Anno ${annoNascita || '--'}, ${eta} anni)', '🎂')" onmouseleave="nascondiLenteClinica()">
-                    🎂 ${eta} anni • Anno ${annoNascita || '--'} (${dataNascitaFmt || '--'})
+                <div class="patient-hero-chips-row">
+                  <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer; font-size:11.5px; padding:3px 9px; border-radius:8px;" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h) per prevenzione lesioni da decubito.' : 'Paziente deambulante in modo autonomo o assistito.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
+                    ${activeP.allettato ? '🛏️ Allettato (q2h)' : '🚶 Deambulante'}
+                  </span>
+                  <span class="badge badge-warning clinica-zoom-item" style="font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px; padding:3px 9px; border-radius:8px;" onclick="apriModificaAnagrafica()" title="Tocca per aprire e modificare cartella anagrafica e data di nascita" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${dataNascitaFmt} (Anno ${annoNascita || '--'}, ${eta} anni)', '🎂')" onmouseleave="nascondiLenteClinica()">
+                    🎂 ${eta} anni • ${annoNascita || '--'} (${dataNascitaFmt || '--'})
                   </span>
                   ${allergieBadge}
-                  ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; font-size:11px; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe (Braden)</span>' : ''}
-                  ${activeP.id === 'paz_angela' ? '<span class="badge badge-danger" style="background:#dc2626; font-size:11px;">🫁 CPAP Notturna (OSAS)</span>' : ''}
+                  ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; font-size:11px; padding:3px 9px; border-radius:8px; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe</span>' : ''}
+                  ${activeP.id === 'paz_angela' ? '<span class="badge badge-danger" style="background:#dc2626; font-size:11px; padding:3px 9px; border-radius:8px;">🫁 CPAP (OSAS)</span>' : ''}
                 </div>
               </div>
             </div>
             
-            <!-- RECAPITI DOMICILIO ASSISTITO (INDIRIZZO, FISSO, CELLULARE) -->
-            <div class="patient-direct-contacts" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:8px;">
+            <!-- RECAPITI DOMICILIO ASSISTITO (INDIRIZZO, FISSO, CELLULARE) RAGGRUPPATI STILE APPLE HEALTH -->
+            <div class="patient-contacts-card">
               ${ind}
               ${tel}
               ${cell}
