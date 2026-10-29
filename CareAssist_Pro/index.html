@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=60">
+  <link rel="stylesheet" href="style.css?v=62">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -317,23 +317,8 @@
 
     <!-- HERO CARD ANAGRAFICA COMPLETA & RECAPITI -->
     <div class="anagrafica-hero">
-      <div id="paziente-badge-info" style="flex:1;">
+      <div id="paziente-badge-info" style="width:100%;">
         Caricamento cartella clinica...
-      </div>
-      <div class="hero-actions-column" style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; z-index:2;">
-        <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
-          <button id="btn-scheda-118" class="btn btn-scheda-118" onclick="apriModalScheda118()" style="background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.4); box-shadow:0 3px 10px rgba(220,38,38,0.4); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
-            <span>🚨</span> Scheda 118
-          </button>
-          <button id="btn-report-whatsapp" class="btn" onclick="apriModalReportWhatsApp()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:800; border-radius:10px; padding:6px 12px; font-size:12px; border:1.5px solid rgba(255,255,255,0.3); box-shadow:0 3px 10px rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
-            <span>💬</span> Report WA
-          </button>
-          <button class="btn btn-primary" onclick="apriModificaAnagrafica()" style="font-size:12px; padding:6px 12px; border-radius:10px; font-weight:700;">✏️ Modifica</button>
-        </div>
-        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
-          <span id="hero-badge-data-oggi" class="badge" style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-size:12px; font-weight:700;">📅 Oggi: --/--/----</span>
-          <span class="badge badge-success">● Monitoraggio Attivo</span>
-        </div>
       </div>
     </div>
 
@@ -3445,7 +3430,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=59"></script>
+  <script src="app.js?v=62"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

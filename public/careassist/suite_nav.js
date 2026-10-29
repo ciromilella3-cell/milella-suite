@@ -511,12 +511,38 @@
       localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
       sessionStorage.removeItem(LOCK_FLAG);
 
+      if (isMaster) {
+        localStorage.setItem('milella_role', 'admin');
+        localStorage.setItem('milella_last_authenticated_role', 'admin');
+        localStorage.setItem('milella_admin_pin', 'SOS999');
+        localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+        localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
+        localStorage.setItem('milella_profili_salute', JSON.stringify(['all']));
+        localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
+      }
       if (authData) {
         if (authData.nome) localStorage.setItem('milella_user_nome', authData.nome);
-        if (authData.ruolo) localStorage.setItem('milella_last_authenticated_role', authData.ruolo);
+        if (authData.ruolo) {
+          localStorage.setItem('milella_role', authData.ruolo);
+          localStorage.setItem('milella_last_authenticated_role', authData.ruolo);
+        }
+        if (authData.ruolo === 'admin') {
+          localStorage.setItem('milella_admin_pin', pin);
+          localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+          localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
+          localStorage.setItem('milella_profili_salute', JSON.stringify(['all']));
+          localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
+        } else {
+          localStorage.removeItem('milella_admin_pin');
+          localStorage.setItem('milella_user_pin', pin);
+          if (authData.appAbilitate) localStorage.setItem('milella_app_abilitate', JSON.stringify(authData.appAbilitate));
+          if (authData.pazAbilitati) localStorage.setItem('milella_paz_abilitati', JSON.stringify(authData.pazAbilitati));
+          if (authData.profiliSalute) localStorage.setItem('milella_profili_salute', JSON.stringify(authData.profiliSalute));
+        }
         if (authData.token) localStorage.setItem('milella_token', authData.token);
       }
       localStorage.setItem('milella_last_authenticated_pin', pin);
+      if (typeof window.renderAll === 'function') window.renderAll();
 
       const overlay = document.getElementById('suiteSecurityGateOverlay');
       if (overlay) {

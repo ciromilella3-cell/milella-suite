@@ -1192,7 +1192,7 @@
                                 🌐 Tutti i Pazienti
                             </button>
                         </div>
-                        <div style="display:flex; flex-direction:column; gap:5px;">
+                        <div id="listPazientiNewOp" style="display:flex; flex-direction:column; gap:5px;">
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-new-paz" value="paz_aldo" style="width:16px; height:16px; accent-color:#38bdf8;">
                                 <span>👴 Aldo Zamparino (91 anni)</span>
@@ -1204,6 +1204,10 @@
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-new-paz" value="paz_rosa" style="width:16px; height:16px; accent-color:#38bdf8;">
                                 <span>👵 Rosa Annunziata Cavalcante</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-new-paz" value="paz_1793216119572" style="width:16px; height:16px; accent-color:#38bdf8;">
+                                <span>👨 Ciro Milella</span>
                             </label>
                         </div>
                     </div>
@@ -1308,7 +1312,7 @@
                                 🌐 Tutti i Pazienti
                             </button>
                         </div>
-                        <div style="display:flex; flex-direction:column; gap:5px;">
+                        <div id="listPazientiEditOp" style="display:flex; flex-direction:column; gap:5px;">
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-edit-paz" value="paz_aldo" style="width:16px; height:16px; accent-color:#38bdf8;">
                                 <span>👴 Aldo Zamparino (91 anni)</span>
@@ -1320,6 +1324,10 @@
                             <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
                                 <input type="checkbox" class="chk-edit-paz" value="paz_rosa" style="width:16px; height:16px; accent-color:#38bdf8;">
                                 <span>👵 Rosa Annunziata Cavalcante</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;">
+                                <input type="checkbox" class="chk-edit-paz" value="paz_1793216119572" style="width:16px; height:16px; accent-color:#38bdf8;">
+                                <span>👨 Ciro Milella</span>
                             </label>
                         </div>
                     </div>
@@ -1946,6 +1954,8 @@
         const adminBtns = document.querySelectorAll('.admin-only-btn');
 
         if (role === 'admin') {
+            localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
+            localStorage.setItem('milella_profili_salute', JSON.stringify(['all']));
             badgeIcon.textContent = '💎';
             badgeText.textContent = 'Modalità: CIRO MILELLA (Master Admin)';
             badgeText.parentElement.style.background = 'rgba(212,175,55,0.25)';
@@ -2457,8 +2467,37 @@
     const NOMI_PAZIENTI_MAP = {
         'paz_aldo': 'Aldo Zamparino',
         'paz_angela': 'Angela Mazzicone',
-        'paz_rosa': 'Rosa Annunziata Cavalcante'
+        'paz_rosa': 'Rosa Annunziata Cavalcante',
+        'paz_1793216119572': 'Ciro Milella'
     };
+
+    async function sincronizzaPazientiDinamiciPerOperatori() {
+        try {
+            const r = await fetch('/api/get-db');
+            const db = await r.json();
+            if (db && Array.isArray(db.pazienti)) {
+                const listNew = document.getElementById('listPazientiNewOp');
+                const listEdit = document.getElementById('listPazientiEditOp');
+                db.pazienti.forEach(p => {
+                    if (!p || !p.id || !p.nome) return;
+                    NOMI_PAZIENTI_MAP[p.id] = p.nome;
+                    if (listNew && !listNew.querySelector(`input[value="${p.id}"]`)) {
+                        const lbl = document.createElement('label');
+                        lbl.style.cssText = 'display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;';
+                        lbl.innerHTML = `<input type="checkbox" class="chk-new-paz" value="${p.id}" style="width:16px; height:16px; accent-color:#38bdf8;"><span>👤 ${p.nome}</span>`;
+                        listNew.appendChild(lbl);
+                    }
+                    if (listEdit && !listEdit.querySelector(`input[value="${p.id}"]`)) {
+                        const lbl = document.createElement('label');
+                        lbl.style.cssText = 'display:flex; align-items:center; gap:8px; font-size:12px; color:#fff; cursor:pointer;';
+                        lbl.innerHTML = `<input type="checkbox" class="chk-edit-paz" value="${p.id}" style="width:16px; height:16px; accent-color:#38bdf8;"><span>👤 ${p.nome}</span>`;
+                        listEdit.appendChild(lbl);
+                    }
+                });
+            }
+        } catch(e) {}
+    }
+    sincronizzaPazientiDinamiciPerOperatori();
 
     const NOMI_SALUTE_MAP = {
         'moglie': 'Maria Carmela',

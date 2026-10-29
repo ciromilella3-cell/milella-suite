@@ -140,17 +140,27 @@
                 localStorage.setItem('milella_user_nome', data.nome || 'Operatore');
                 localStorage.setItem('milella_last_authenticated_pin', pin);
                 localStorage.setItem('milella_last_authenticated_role', data.ruolo || 'operatore');
+                localStorage.setItem('milella_role', data.ruolo || 'operatore');
                 localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                 if (data.ruolo === 'admin') {
                     localStorage.setItem('milella_admin_pin', pin);
+                    localStorage.setItem('milella_app_abilitate', JSON.stringify(['all']));
+                    localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
+                    localStorage.setItem('milella_profili_salute', JSON.stringify(['all']));
+                    localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                 } else {
                     localStorage.removeItem('milella_admin_pin');
                     localStorage.setItem('milella_user_pin', pin);
+                    localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
+                    localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
+                    localStorage.setItem('milella_profili_salute', JSON.stringify(data.profiliSalute || []));
+                    localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
                 }
                 if (data.token) localStorage.setItem('milella_token', data.token);
 
                 const overlay = document.getElementById('suiteSecurityGateOverlay');
                 if (overlay) overlay.style.display = 'none';
+                if (typeof window.renderAll === 'function') window.renderAll();
             } else {
                 if (err) {
                     err.textContent = data.message || 'PIN non valido.';
@@ -159,7 +169,7 @@
             }
         } catch(e) {
             // Fallback offline con ultimo PIN salvato localmente
-            const isMaster = (pin.toUpperCase() === 'SOS999'); if (isMaster) { sessionStorage.setItem(SESSION_KEY, 'true'); localStorage.setItem(SESSION_KEY, 'true'); const overlay = document.getElementById('suiteSecurityGateOverlay'); if (overlay) overlay.style.display = 'none'; return; } const savedPin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_user_pin') || localStorage.getItem('milella_last_authenticated_pin');
+            const isMaster = (pin.toUpperCase() === 'SOS999'); if (isMaster) { sessionStorage.setItem(SESSION_KEY, 'true'); localStorage.setItem(SESSION_KEY, 'true'); localStorage.setItem('milella_role', 'admin'); localStorage.setItem('milella_last_authenticated_role', 'admin'); localStorage.setItem('milella_admin_pin', 'SOS999'); localStorage.setItem('milella_app_abilitate', JSON.stringify(['all'])); localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all'])); localStorage.setItem('milella_profili_salute', JSON.stringify(['all'])); const overlay = document.getElementById('suiteSecurityGateOverlay'); if (overlay) overlay.style.display = 'none'; if (typeof window.renderAll === 'function') window.renderAll(); return; } const savedPin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_user_pin') || localStorage.getItem('milella_last_authenticated_pin');
             if (savedPin && pin.toLowerCase() === savedPin.toLowerCase()) {
                 sessionStorage.setItem(SESSION_KEY, 'true');
                 localStorage.setItem(SESSION_KEY, 'true');
