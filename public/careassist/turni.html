@@ -1248,23 +1248,37 @@
 
     <!-- RUOLO E STATO ATTUALE (ADMIN O COLLABORATORE) -->
     <div id="user-role-container">
-      <!-- Dinamico: 👑 Admin Coordinatore vs 🔒 Collaboratore Sola Lettura -->
+      <div class="role-badge role-admin" style="display:inline-flex; align-items:center; gap:8px; border:1.5px solid #d4af37; background:linear-gradient(135deg, rgba(245,158,11,0.2) 0%, rgba(217,119,6,0.3) 100%); color:#fde047; box-shadow:0 0 14px rgba(212,175,55,0.25); font-size:13px; font-weight:800; border-radius:999px; padding:6px 16px;">
+        <span>👑</span> <span>Admin Coordinatore (Ciro Milella)</span>
+      </div>
     </div>
 
     <!-- AZIONI RAPIDE IN HEADER -->
-    <div class="top-actions">
-      <button class="btn btn-emerald" onclick="apriStampaA4()">
-        🖨️ Stampa A4
-      </button>
-      <button class="btn btn-wa" onclick="condividiWhatsApp()">
-        📲 Invia WhatsApp
-      </button>
-      <a href="/careassist/" class="btn btn-ghost" title="Apri il Diario Clinico & Terapie di CareAssist">
-        🩺 CareAssist Hub
-      </a>
-      <button type="button" onclick="vaiAlPannelloSuite()" class="btn btn-ghost" style="border: 1px solid rgba(212,175,55,0.4); color: #fde68a; cursor:pointer;" title="Torna al Portale Aziendale Suite Milella">
+    <div class="top-actions" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <button type="button" onclick="vaiAlPannelloSuite()" class="btn btn-suite-gold" style="border: 1.5px solid #d4af37; background: rgba(212,175,55,0.18); color: #fef08a; font-weight: 800; border-radius: 999px; padding: 7px 18px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; box-shadow: 0 0 14px rgba(212,175,55,0.25); transition: all 0.2s;" onmouseover="this.style.background='rgba(212,175,55,0.3)';" onmouseout="this.style.background='rgba(212,175,55,0.18)';" title="Torna al Portale Aziendale Suite Milella">
         🏢 Suite Milella
       </button>
+      <button type="button" onclick="apriModalSincroUSB()" class="btn btn-ghost" style="border: 1.5px solid rgba(56,189,248,0.5); color: #7dd3fc; background: rgba(56,189,248,0.14); font-weight: 800; border-radius: 999px; padding: 7px 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; box-shadow: 0 0 12px rgba(56,189,248,0.2);" title="Copia di sicurezza e sincronizzazione diretta con chiavetta USB">
+        💾 Backup USB & Sincro
+      </button>
+      <button type="button" onclick="apriModalBilancioMensile()" class="btn btn-ghost" style="border: 1.5px solid rgba(168,85,247,0.5); color: #d8b4fe; background: rgba(168,85,247,0.14); font-weight: 800; border-radius: 999px; padding: 7px 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px;" title="Bilancio mensile ore, riepilogo CCNL e banca ore">
+        📊 Bilancio Ore
+      </button>
+      <button type="button" onclick="apriModalConsegneCliniche()" class="btn btn-ghost" style="border: 1.5px solid rgba(16,185,129,0.5); color: #6ee7b7; background: rgba(16,185,129,0.14); font-weight: 800; border-radius: 999px; padding: 7px 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px;" title="Registro consegne cliniche tra turnisti H24">
+        📝 Consegne H24
+      </button>
+      <button type="button" onclick="apriModalEsportaICal()" class="btn btn-ghost" style="border: 1.5px solid rgba(245,158,11,0.5); color: #fde047; background: rgba(245,158,11,0.14); font-weight: 800; border-radius: 999px; padding: 7px 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px;" title="Esporta turni su Google Calendar, iPhone, Android e Outlook">
+        📅 Esporta iCal
+      </button>
+      <button class="btn btn-emerald" onclick="apriStampaA4()" style="padding: 7px 14px; font-size: 13px; font-weight:700;">
+        🖨️ Stampa A4
+      </button>
+      <button class="btn btn-wa" onclick="condividiWhatsApp()" style="padding: 7px 14px; font-size: 13px; font-weight:700;">
+        📲 Invia WhatsApp
+      </button>
+      <a href="/careassist/" class="btn btn-ghost" title="Apri il Diario Clinico & Terapie di CareAssist" style="padding: 7px 14px; font-size: 13px; font-weight:700;">
+        🩺 CareAssist Hub
+      </a>
     </div>
   </header>
 
@@ -1282,7 +1296,7 @@
             <span class="patient-badge-h24">Assistenza Continua H24</span>
           </h2>
           <div class="patient-coord-text">
-            Coordinatore Turni: <b>Ciro Milella (Coordinatore)</b> &bull; Sede Bari (BA)
+            Coordinatore Turni: <b>Ciro Milella (Admin Coordinatore)</b> &bull; Sede Bari (BA)
           </div>
         </div>
       </div>
@@ -2078,6 +2092,195 @@
   </div>
 
   <!-- ELEGANT TOAST NOTIFIER -->
+  
+  <!-- MODAL 1: BACKUP E SINCRONIZZAZIONE USB (WEB <-> USB) -->
+  <div id="modal-sincro-usb" class="modal-backdrop">
+    <div class="modal-box" style="max-width:720px; width:95%;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:26px;">💾</div>
+          <div>
+            <div style="font-size:19px; font-weight:900; color:#f8fafc;">Backup & Sincronizzazione Chiavetta USB</div>
+            <div style="font-size:12.5px; color:#94a3b8;">Proteggi i tuoi dati e sincronizza il Turnario e l'intera Suite Milella con la tua chiavetta USB</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="chiudiModalSincroUSB()" style="font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:20px;">
+        <!-- CARD 1: SALVA COPIA SU USB -->
+        <div style="background:rgba(56,189,248,0.06); border:1.5px solid rgba(56,189,248,0.3); border-radius:14px; padding:18px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+              <span style="font-size:22px;">💾</span>
+              <span style="font-size:15px; font-weight:800; color:#38bdf8;">1. Salva Copia di Sicurezza su USB</span>
+            </div>
+            <p style="font-size:13px; color:#cbd5e1; line-height:1.5; margin-bottom:14px;">
+              Genera una copia di backup completa (Turnario, Collaboratori, Progetti, Inventario, Parametri e Note CareAssist). Puoi salvarla direttamente sulla tua chiavetta USB collegata al PC.
+            </p>
+          </div>
+          <div>
+            <button class="btn btn-sky" onclick="avviaBackupSicurezzaUSB()" style="width:100%; font-weight:800; font-size:13.5px; padding:12px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <span>💾</span> Salva su Chiavetta USB
+            </button>
+          </div>
+        </div>
+
+        <!-- CARD 2: SINCRONIZZA DA USB -->
+        <div style="background:rgba(16,185,129,0.06); border:1.5px solid rgba(16,185,129,0.3); border-radius:14px; padding:18px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+              <span style="font-size:22px;">🔄</span>
+              <span style="font-size:15px; font-weight:800; color:#34d399;">2. Sincronizza Dati da USB al Web</span>
+            </div>
+            <p style="font-size:13px; color:#cbd5e1; line-height:1.5; margin-bottom:14px;">
+              Hai apportato modifiche offline o salvato un backup su chiavetta? Seleziona il file dalla chiavetta per aggiornare istantaneamente il turnario e il database cloud.
+            </p>
+          </div>
+          <div>
+            <input type="file" id="input-file-backup-usb" accept=".json" style="display:none;" onchange="gestisciFileCaricatoUSB(this)">
+            <button class="btn btn-emerald" onclick="document.getElementById('input-file-backup-usb').click()" style="width:100%; font-weight:800; font-size:13.5px; padding:12px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <span>📂</span> Scegli File da USB & Sincronizza
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:10px; padding:12px 16px; font-size:12.5px; color:#fde68a; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:18px;">💡</span>
+        <span><b>Consiglio di sicurezza:</b> Tieni sempre inserita la tua chiavetta USB ed esegui un salvataggio prima e dopo ogni modifica settimanale ai turni.</span>
+      </div>
+
+      <div style="text-align:right; margin-top:16px;">
+        <button class="btn btn-ghost" onclick="chiudiModalSincroUSB()" style="padding:9px 20px; font-weight:700;">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: BILANCIO ORE MENSILE & BANCA ORE -->
+  <div id="modal-bilancio-mensile" class="modal-backdrop">
+    <div class="modal-box" style="max-width:850px; width:95%;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:26px;">📊</div>
+          <div>
+            <div style="font-size:19px; font-weight:900; color:#f8fafc;">Bilancio Ore & Statistiche Operatori</div>
+            <div style="font-size:12.5px; color:#94a3b8;">Verifica straordinari, banca ore, notti e rispetto CCNL 36h/38h</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="chiudiModalBilancioMensile()" style="font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+
+      <div id="contenitore-tabella-bilancio" style="overflow-x:auto; margin-bottom:16px;">
+        <!-- Tabella generata dinamicamente via JS -->
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="font-size:12px; color:#94a3b8;">
+          * CCNL Sanità: turno M/P = 7h &bull; Notte N = 10h &bull; S = Smonto &bull; R = Riposo &bull; D = Reperibilità
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-ghost" onclick="chiudiModalBilancioMensile()">Chiudi</button>
+          <button class="btn btn-emerald" onclick="window.print()">🖨️ Stampa Riepilogo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: CONSEGNE CLINICHE H24 (HANDOVER) -->
+  <div id="modal-consegne-cliniche" class="modal-backdrop">
+    <div class="modal-box" style="max-width:760px; width:95%;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:26px;">📝</div>
+          <div>
+            <div style="font-size:19px; font-weight:900; color:#f8fafc;">Diario Consegne Cliniche di Turno (H24)</div>
+            <div style="font-size:12.5px; color:#94a3b8;">Passaggio consegne tra operatori smontanti e montanti &bull; Paziente Sig. Ciro Milella</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="chiudiModalConsegneCliniche()" style="font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+
+      <!-- FORM NUOVA CONSEGNA -->
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:16px; margin-bottom:20px;">
+        <div style="font-size:14px; font-weight:800; color:#38bdf8; margin-bottom:10px;">✍️ Registra Nuova Consegna di Turno</div>
+        
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Fascia di Turno</label>
+            <select id="consegna-fascia" style="width:100%; background:#0b1324; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 10px; color:#fff; font-size:13px;">
+              <option value="M">☀️ Mattina (07:00 - 14:00)</option>
+              <option value="P" selected>🌤️ Pomeriggio (14:00 - 21:00)</option>
+              <option value="N">🌙 Notte (21:00 - 07:00)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Operatore Smontante</label>
+            <input type="text" id="consegna-operatore" placeholder="Nome Operatore" value="M.C. Stoppelli" style="width:100%; background:#0b1324; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 10px; color:#fff; font-size:13px;">
+          </div>
+          <div>
+            <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Parametri Rilevati (PA / SpO2 / FC)</label>
+            <input type="text" id="consegna-parametri" placeholder="es. PA 120/80, SpO2 98%" style="width:100%; background:#0b1324; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 10px; color:#fff; font-size:13px;">
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Note Cliniche, Terapie Somministrate e Raccomandazioni</label>
+          <textarea id="consegna-note" rows="3" placeholder="Scrivi gli eventi importanti, la condizione dell'assistito, orari pasti e terapie somministrate..." style="width:100%; background:#0b1324; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:10px; color:#fff; font-size:13px; resize:vertical; outline:none;"></textarea>
+        </div>
+
+        <div style="text-align:right;">
+          <button class="btn btn-emerald" onclick="salvaNuovaConsegnaDaModal()" style="font-size:13px; padding:8px 18px; font-weight:800;">
+            💾 Salva Consegna
+          </button>
+        </div>
+      </div>
+
+      <!-- STORICO RECENTE CONSEGNE -->
+      <div style="font-size:14px; font-weight:800; color:#f8fafc; margin-bottom:10px;">📋 Ultime Consegne Registrate:</div>
+      <div id="storico-consegne-cliniche" style="max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
+        <!-- Elementi inseriti via JS -->
+      </div>
+
+      <div style="text-align:right; margin-top:16px;">
+        <button class="btn btn-ghost" onclick="chiudiModalConsegneCliniche()">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: ESPORTAZIONE ICAL (.ICS) -->
+  <div id="modal-esporta-ical" class="modal-backdrop">
+    <div class="modal-box" style="max-width:540px; width:95%; text-align:center;">
+      <div style="font-size:38px; margin-bottom:8px;">📅</div>
+      <div style="font-size:19px; font-weight:900; color:#f8fafc; margin-bottom:6px;">Esporta Calendario Turni (.ics)</div>
+      <div style="font-size:13px; color:#94a3b8; margin-bottom:20px; line-height:1.45;">
+        Scarica il file standard iCalendar compatibile con Google Calendar, Apple Calendar (iPhone/iPad/Mac) e Microsoft Outlook con promemoria automatici.
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+        <button class="btn btn-sky" onclick="window.esportaCalendarioICS(); chiudiModalEsportaICal();" style="font-weight:800; font-size:14px; padding:12px; border-radius:10px;">
+          📅 Scarica Calendario Completo (Tutti i Turni)
+        </button>
+        
+        <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px; text-align:left;">
+          <label style="font-size:12px; font-weight:700; color:#cbd5e1; display:block; margin-bottom:6px;">Oppure scarica solo per un collaboratore:</label>
+          <div style="display:flex; gap:8px;">
+            <select id="select-op-ical" style="flex:1; background:#0b1324; border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:8px 10px; color:#fff; font-size:13px;">
+              <!-- Popolato via JS -->
+            </select>
+            <button class="btn btn-emerald" onclick="esportaICalSingoloOperatore()" style="font-size:13px; padding:8px 14px; font-weight:700;">
+              Scarica
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button class="btn btn-ghost" onclick="chiudiModalEsportaICal()">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
   <div id="elegant-toast">
     <span id="elegant-toast-icon">✨</span>
     <span id="elegant-toast-msg">Notifica</span>
@@ -2379,8 +2582,9 @@
                 </div>
                 <div class="op-card-actions">
                   ${isAdmin ? `<button class="btn-icon-action" onclick="apriModalModificaOperatore('${op.id}')" title="Modifica dati collaboratore">✏️</button>` : ''}
-                  <button class="btn-icon-action btn-icon-wa" onclick="apriChatWhatsApp('${op.tel}', '${op.nome}')" title="Invia WhatsApp">💬</button>
-                  <button class="btn-icon-action btn-icon-tel" onclick="gestisciChiamata('${op.tel}', '${op.nome}')" title="Contatta">📞</button>
+                  <button class="btn-icon-action btn-icon-wa" onclick="window.notificaTurnoWhatsApp ? window.notificaTurnoWhatsApp('${op.id}') : apriChatWhatsApp('${op.tel}', '${op.nome}')" title="Invia Prospetto Turni su WhatsApp">📲</button>
+                  <button class="btn-icon-action" onclick="window.esportaCalendarioICS && window.esportaCalendarioICS('${op.id}')" title="Scarica Calendario iCal (.ics)">📅</button>
+                  <button class="btn-icon-action btn-icon-tel" onclick="gestisciChiamata('${op.tel}', '${op.nome}')" title="Chiama">📞</button>
                 </div>
               </div>
 
@@ -2958,6 +3162,163 @@
     function chiudiModalGuidaReperibilita() {
       const modal = document.getElementById('modal-guida-reperibilita');
       if (modal) modal.style.display = 'none';
+    }
+
+    
+    // FUNZIONI MODAL BACKUP USB & SINCRONIZZAZIONE
+    function apriModalSincroUSB() {
+      const m = document.getElementById('modal-sincro-usb');
+      if (m) m.style.display = 'flex';
+    }
+    function chiudiModalSincroUSB() {
+      const m = document.getElementById('modal-sincro-usb');
+      if (m) m.style.display = 'none';
+    }
+    async function avviaBackupSicurezzaUSB() {
+      if (window.eseguiBackupSicurezzaUSB) {
+        await window.eseguiBackupSicurezzaUSB();
+      }
+    }
+    async function gestisciFileCaricatoUSB(input) {
+      if (window.eseguiSincronizzazioneUSB) {
+        await window.eseguiSincronizzazioneUSB(input);
+      }
+      chiudiModalSincroUSB();
+    }
+
+    // FUNZIONI BILANCIO MENSILE
+    function apriModalBilancioMensile() {
+      const m = document.getElementById('modal-bilancio-mensile');
+      if (!m) return;
+      const box = document.getElementById('contenitore-tabella-bilancio');
+      if (box && window.calcolaBilancioMensile) {
+        const stats = window.calcolaBilancioMensile();
+        let thtml = `
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:13px; color:#e2e8f0;">
+            <thead>
+              <tr style="border-bottom:2px solid rgba(255,255,255,0.12); color:#94a3b8; font-size:12px;">
+                <th style="padding:10px 8px;">COLLABORATORE</th>
+                <th style="padding:10px 8px;">RUOLO</th>
+                <th style="padding:10px 8px; text-align:center;">ORE SETT.</th>
+                <th style="padding:10px 8px; text-align:center;">CCNL BASE</th>
+                <th style="padding:10px 8px; text-align:center;">SALDO BANCA</th>
+                <th style="padding:10px 8px; text-align:center;">☀️ M</th>
+                <th style="padding:10px 8px; text-align:center;">🌤️ P</th>
+                <th style="padding:10px 8px; text-align:center;">🌙 N</th>
+                <th style="padding:10px 8px; text-align:center;">🦺 D</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        stats.forEach(st => {
+          const saldoColor = st.saldo > 0 ? '#34d399' : (st.saldo < 0 ? '#f87171' : '#38bdf8');
+          const saldoSign = st.saldo > 0 ? '+' : '';
+          thtml += `
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td style="padding:10px 8px; font-weight:800; color:#fff;">${st.nome}</td>
+              <td style="padding:10px 8px; color:#94a3b8; font-size:12px;">${st.ruolo}</td>
+              <td style="padding:10px 8px; text-align:center; font-weight:800; color:#38bdf8;">${st.oreLav}h</td>
+              <td style="padding:10px 8px; text-align:center; color:#cbd5e1;">${st.oreContrattuali}h</td>
+              <td style="padding:10px 8px; text-align:center; font-weight:900; color:${saldoColor};">${saldoSign}${st.saldo}h</td>
+              <td style="padding:10px 8px; text-align:center; color:#fde047;">${st.mattine}</td>
+              <td style="padding:10px 8px; text-align:center; color:#fb923c;">${st.pomeriggi}</td>
+              <td style="padding:10px 8px; text-align:center; color:#818cf8;">${st.notti}</td>
+              <td style="padding:10px 8px; text-align:center; color:#c084fc;">${st.disp}</td>
+            </tr>
+          `;
+        });
+        thtml += `</tbody></table>`;
+        box.innerHTML = thtml;
+      }
+      m.style.display = 'flex';
+    }
+    function chiudiModalBilancioMensile() {
+      const m = document.getElementById('modal-bilancio-mensile');
+      if (m) m.style.display = 'none';
+    }
+
+    // FUNZIONI CONSEGNE CLINICHE
+    function apriModalConsegneCliniche() {
+      const m = document.getElementById('modal-consegne-cliniche');
+      if (!m) return;
+      caricaStoricoConsegne();
+      m.style.display = 'flex';
+    }
+    function chiudiModalConsegneCliniche() {
+      const m = document.getElementById('modal-consegne-cliniche');
+      if (m) m.style.display = 'none';
+    }
+    function caricaStoricoConsegne() {
+      const box = document.getElementById('storico-consegne-cliniche');
+      if (!box || !window.getConsegneCliniche) return;
+      const consegne = window.getConsegneCliniche();
+      if (!consegne || consegne.length === 0) {
+        box.innerHTML = '<div style="font-size:12.5px; color:#64748b; font-style:italic; padding:8px;">Nessuna consegna registrata di recente.</div>';
+        return;
+      }
+      let cHtml = '';
+      consegne.slice(0, 10).forEach(c => {
+        const fasciaIcon = c.fascia === 'M' ? '☀️ Mattina' : (c.fascia === 'P' ? '🌤️ Pomeriggio' : '🌙 Notte');
+        const dataStr = c.timestamp ? new Date(c.timestamp).toLocaleString('it-IT') : '';
+        cHtml += `
+          <div style="background:rgba(255,255,255,0.04); border-left:3px solid #38bdf8; border-radius:8px; padding:10px 14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-weight:800; font-size:13px; color:#f8fafc;">${fasciaIcon} &bull; ${c.operatore || 'Operatore'}</span>
+              <span style="font-size:11px; color:#94a3b8;">${dataStr}</span>
+            </div>
+            ${c.parametri ? '<div style="font-size:12px; color:#34d399; font-weight:700; margin-bottom:4px;">📊 ' + c.parametri + '</div>' : ''}
+            <div style="font-size:12.5px; color:#cbd5e1; line-height:1.4;">${c.note || 'Nessuna nota particolare'}</div>
+          </div>
+        `;
+      });
+      box.innerHTML = cHtml;
+    }
+    function salvaNuovaConsegnaDaModal() {
+      const fascia = document.getElementById('consegna-fascia').value;
+      const op = document.getElementById('consegna-operatore').value.trim();
+      const param = document.getElementById('consegna-parametri').value.trim();
+      const note = document.getElementById('consegna-note').value.trim();
+      if (!note) {
+        mostraToast('Inserisci le note della consegna prima di salvare.', '⚠️');
+        return;
+      }
+      if (window.aggiungiConsegnaClinica) {
+        window.aggiungiConsegnaClinica({
+          fascia,
+          operatore: op,
+          parametri: param,
+          note
+        });
+        document.getElementById('consegna-note').value = '';
+        document.getElementById('consegna-parametri').value = '';
+        caricaStoricoConsegne();
+        mostraToast('Consegna clinica registrata con successo!', '📝');
+      }
+    }
+
+    // FUNZIONI ICAL
+    function apriModalEsportaICal() {
+      const m = document.getElementById('modal-esporta-ical');
+      const sel = document.getElementById('select-op-ical');
+      if (sel && window.turnarioCorrente && window.turnarioCorrente.operatori) {
+        let optHtml = '';
+        window.turnarioCorrente.operatori.forEach(op => {
+          optHtml += `<option value="${op.id}">${op.nome} (${op.ruolo})</option>`;
+        });
+        sel.innerHTML = optHtml;
+      }
+      if (m) m.style.display = 'flex';
+    }
+    function chiudiModalEsportaICal() {
+      const m = document.getElementById('modal-esporta-ical');
+      if (m) m.style.display = 'none';
+    }
+    function esportaICalSingoloOperatore() {
+      const sel = document.getElementById('select-op-ical');
+      if (sel && sel.value && window.esportaCalendarioICS) {
+        window.esportaCalendarioICS(sel.value);
+        chiudiModalEsportaICal();
+      }
     }
 
     function vaiAlPannelloSuite() {

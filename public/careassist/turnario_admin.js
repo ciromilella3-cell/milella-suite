@@ -898,6 +898,367 @@ function condividiTurnarioWhatsApp() {
   window.open(url, '_blank');
 }
 
+
+// ==============================================================================
+// MODULO BACKUP & SINCRONIZZAZIONE USB (WEB <-> USB)
+// ==============================================================================
+
+async function eseguiBackupSicurezzaUSB() {
+  try {
+    let backupData = null;
+    try {
+      const res = await fetch('/api/suite/backup-completo');
+      if (res.ok) {
+        backupData = await res.json();
+      }
+    } catch(e) {
+      console.warn('Fallback backup offline locale:', e);
+    }
+
+    if (!backupData) {
+      backupData = {
+        suite: 'Suite Milella Aziendale',
+        versione: '2.5.0',
+        timestamp: new Date().toISOString(),
+        autore: 'Ciro Milella (Admin)',
+        dati: {
+          turnario: turnarioCorrente,
+          operatori: turnarioCorrente ? turnarioCorrente.operatori : [],
+          careassist: JSON.parse(localStorage.getItem('careassist_pazienti_db') || '{}'),
+          consegne: JSON.parse(localStorage.getItem('careassist_consegne_cliniche') || '[]')
+        }
+      };
+    }
+
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const fileName = 'BACKUP_SUITE_MILELLA_' + dateStr + '.json';
+    const jsonString = JSON.stringify(backupData, null, 2);
+
+    // 1. Tentativo con File System Access API per salvare direttamente sulla chiavetta USB
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{
+            description: 'Backup Suite Milella (.json)',
+            accept: { 'application/json': ['.json'] }
+          }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(jsonString);
+        await writable.close();
+        if (typeof mostraToast === 'function') {
+          mostraToast('Copia di sicurezza USB salvata con successo!', '💾');
+        }
+        return true;
+      } catch (pickerErr) {
+        if (pickerErr.name === 'AbortError') return false;
+      }
+    }
+
+    // 2. Fallback download browser standard
+    const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    if (typeof mostraToast === 'function') {
+      mostraToast('File di backup scaricato. Salvalo sulla tua chiavetta USB!', '💾');
+    }
+    return true;
+  } catch(err) {
+    console.error('Errore backup USB:', err);
+    if (typeof mostraToast === 'function') {
+      mostraToast('Errore durante la creazione del backup: ' + err.message, '❌');
+    }
+    return false;
+  }
+}
+
+async function eseguiSincronizzazioneUSB(fileInput) {
+  try {
+    let fileObj = null;
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      fileObj = fileInput.files[0];
+    } else if (window.showOpenFilePicker) {
+      try {
+        const [handle] = await window.showOpenFilePicker({
+          types: [{
+            description: 'File JSON di Backup Suite Milella',
+            accept: { 'application/json': ['.json'] }
+          }],
+          multiple: false
+        });
+        fileObj = await handle.getFile();
+      } catch (pickerErr) {
+        if (pickerErr.name === 'AbortError') return;
+      }
+    }
+
+    if (!fileObj) {
+      if (typeof mostraToast === 'function') mostraToast('Nessun file selezionato.', '⚠️');
+      return;
+    }
+
+    const text = await fileObj.text();
+    const payload = JSON.parse(text);
+
+    if (!payload || (!payload.dati && !payload.turnario && !payload.griglia)) {
+      if (typeof mostraToast === 'function') mostraToast('Formato backup non valido.', '❌');
+      return;
+    }
+
+    const dati = payload.dati || payload;
+
+    // 1. Ripristina Turnario locale
+    if (dati.turnario) {
+      turnarioCorrente = dati.turnario;
+      salvaTurnarioSuStorage();
+    } else if (dati.griglia && dati.operatori) {
+      turnarioCorrente = dati;
+      salvaTurnarioSuStorage();
+    }
+
+    // 2. Ripristina consegne se presenti
+    if (dati.consegne) {
+      localStorage.setItem('careassist_consegne_cliniche', JSON.stringify(dati.consegne));
+    }
+
+    // 3. Invia al server per sincronizzazione cloud
+    try {
+      await fetch('/api/suite/ripristina-backup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch(srvErr) {
+      console.warn('Sincronizzazione server:', srvErr);
+    }
+
+    if (typeof renderViste === 'function') renderViste();
+    if (typeof mostraToast === 'function') {
+      mostraToast('Sincronizzazione USB completata con successo!', '🔄');
+    }
+  } catch(err) {
+    console.error('Errore sincronizzazione USB:', err);
+    if (typeof mostraToast === 'function') {
+      mostraToast('Errore durante la sincronizzazione: ' + err.message, '❌');
+    }
+  }
+}
+
+// ==============================================================================
+// ESPORTAZIONE CALENDARIO STANDARD ICAL (.ICS)
+// ==============================================================================
+
+function esportaCalendarioICS(opId = null) {
+  if (!turnarioCorrente || !turnarioCorrente.giorni) {
+    if (typeof mostraToast === 'function') mostraToast('Nessun turnario attivo da esportare.', '⚠️');
+    return;
+  }
+
+  const giorni = turnarioCorrente.giorni;
+  const operatori = opId 
+    ? turnarioCorrente.operatori.filter(o => o.id === opId)
+    : turnarioCorrente.operatori;
+
+  let ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//CareAssist Pro//Turnario Sanitario H24//IT',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:Roster CareAssist Pro - ' + (opId ? (operatori[0]?.nome || 'Operatore') : 'Tutti i Collaboratori'),
+    'X-WR-TIMEZONE:Europe/Rome'
+  ];
+
+  const nowStamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+  giorni.forEach(gStr => {
+    const parts = gStr.split('-');
+    if (parts.length !== 3) return;
+    const y = parts[0];
+    const m = parts[1];
+    const d = parts[2];
+    const nextDay = new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10) + 1);
+    const ny = String(nextDay.getFullYear());
+    const nm = String(nextDay.getMonth() + 1).padStart(2, '0');
+    const nd = String(nextDay.getDate()).padStart(2, '0');
+
+    operatori.forEach(op => {
+      const t = turnarioCorrente.griglia[op.id] ? turnarioCorrente.griglia[op.id][gStr] : 'R';
+      if (!t || t === 'R' || t === 'S') return;
+
+      let start = '', end = '', summary = '', desc = '';
+      if (t === 'M') {
+        start = y + m + d + 'T070000';
+        end = y + m + d + 'T140000';
+        summary = '☀️ Turno Mattina (07-14) - ' + op.nome;
+        desc = 'Assistenza Sanitaria Continua Sig. Ciro Milella - Sede Bari';
+      } else if (t === 'P') {
+        start = y + m + d + 'T140000';
+        end = y + m + d + 'T210000';
+        summary = '🌤️ Turno Pomeriggio (14-21) - ' + op.nome;
+        desc = 'Assistenza Sanitaria Continua Sig. Ciro Milella - Sede Bari';
+      } else if (t === 'N') {
+        start = y + m + d + 'T210000';
+        end = ny + nm + nd + 'T070000';
+        summary = '🌙 Turno Notte (21-07) - ' + op.nome;
+        desc = 'Sorveglianza Notturna Sanitaria Sig. Ciro Milella - Sede Bari';
+      } else if (t === 'D') {
+        start = y + m + d + 'T080000';
+        end = y + m + d + 'T200000';
+        summary = '🦺 Reperibilità Attiva Emergenze - ' + op.nome;
+        desc = 'Disponibilità telefonica e pronto intervento per Sig. Ciro Milella';
+      }
+
+      const uid = 'turnario-' + op.id + '-' + gStr + '-' + t + '@milella-suite.com';
+      ics.push('BEGIN:VEVENT');
+      ics.push('UID:' + uid);
+      ics.push('DTSTAMP:' + nowStamp);
+      ics.push('DTSTART:' + start);
+      ics.push('DTEND:' + end);
+      ics.push('SUMMARY:' + summary);
+      ics.push('DESCRIPTION:' + desc);
+      ics.push('LOCATION:Bari (BA)');
+      ics.push('STATUS:CONFIRMED');
+      ics.push('END:VEVENT');
+    });
+  });
+
+  ics.push('END:VCALENDAR');
+
+  const icsContent = ics.join('\r\n');
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = opId ? ('TURNO_' + (operatori[0]?.nome || 'OP').replace(/\s+/g, '_') + '.ics') : 'ROSTER_TURNI_CAREASSIST.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  if (typeof mostraToast === 'function') {
+    mostraToast('Calendario iCal (.ics) pronto per Google Calendar, iPhone e Outlook!', '📅');
+  }
+}
+
+// ==============================================================================
+// NOTIFICA TURNI PERSONALIZZATA WHATSAPP PER OPERATORE
+// ==============================================================================
+
+function notificaTurnoWhatsApp(opId) {
+  if (!turnarioCorrente) return;
+  const op = turnarioCorrente.operatori.find(o => o.id === opId);
+  if (!op) {
+    if (typeof mostraToast === 'function') mostraToast('Collaboratore non trovato.', '⚠️');
+    return;
+  }
+
+  const giorni = turnarioCorrente.giorni;
+  const giorniNomi = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+  const dataInizio = giorni[0].split('-').reverse().join('/');
+  const dataFine = giorni[6].split('-').reverse().join('/');
+
+  let msg = '*🏥 CAREASSIST PRO — PIANO TURNI INDIVIDUALE*\n';
+  msg += '*Assistito:* Sig. Ciro Milella (Bari)\n';
+  msg += '*Collaboratore:* ' + op.nome + ' (' + op.ruolo + ')\n';
+  msg += '*Periodo:* dal ' + dataInizio + ' al ' + dataFine + '\n\n';
+  msg += '*PROSPETTO SETTIMANALE:*\n';
+
+  let oreTotali = 0;
+  let notti = 0;
+  let rep = 0;
+
+  giorni.forEach((g, idx) => {
+    const t = turnarioCorrente.griglia[op.id] ? turnarioCorrente.griglia[op.id][g] : 'R';
+    const info = TURNI_INFO[t] || TURNI_INFO['R'];
+    if (TURNI_INFO[t]) oreTotali += TURNI_INFO[t].ore;
+    if (t === 'N') notti++;
+    if (t === 'D') rep++;
+
+    const gData = g.split('-').slice(1).reverse().join('/');
+    msg += '• *' + giorniNomi[idx] + ' ' + gData + ':* ' + info.icon + ' ' + info.nome + ' (' + info.orario + ')\n';
+  });
+
+  msg += '\n*RIEPILOGO CONTRATTUALE:*\n';
+  msg += '⏱️ Ore Programmate: *' + oreTotali + 'h* / Contratto: ' + (op.oreContrattuali || 36) + 'h\n';
+  if (notti > 0) msg += '🌙 Notti di turno: *' + notti + '*\n';
+  if (rep > 0) msg += '🦺 Giorni di reperibilità: *' + rep + '*\n';
+  msg += '\n_Coordinatore Turni: Ciro Milella (Admin)_';
+
+  const telLindo = (op.tel || '').replace(/\D/g, '');
+  const targetNumber = telLindo.length > 8 ? (telLindo.startsWith('39') ? telLindo : '39' + telLindo) : '';
+  const url = targetNumber ? ('https://wa.me/' + targetNumber + '?text=' + encodeURIComponent(msg)) : ('https://wa.me/?text=' + encodeURIComponent(msg));
+  window.open(url, '_blank');
+}
+
+// ==============================================================================
+// BILANCIO MENSILE COLLABORATORI (BANCA ORE & STATISTICHE)
+// ==============================================================================
+
+function calcolaBilancioMensile() {
+  if (!turnarioCorrente || !turnarioCorrente.operatori) return [];
+  const res = [];
+  turnarioCorrente.operatori.forEach(op => {
+    let oreLav = 0, mattine = 0, pomeriggi = 0, notti = 0, smonti = 0, riposi = 0, disp = 0;
+    const riga = turnarioCorrente.griglia[op.id] || {};
+    Object.values(riga).forEach(t => {
+      if (t === 'M') { oreLav += 7; mattine++; }
+      else if (t === 'P') { oreLav += 7; pomeriggi++; }
+      else if (t === 'N') { oreLav += 10; notti++; }
+      else if (t === 'S') smonti++;
+      else if (t === 'R') riposi++;
+      else if (t === 'D') disp++;
+    });
+
+    const oreContrattuali = op.oreContrattuali || 36;
+    const saldo = oreLav - oreContrattuali;
+
+    res.push({
+      id: op.id,
+      nome: op.nome,
+      ruolo: op.ruolo,
+      profilo: op.profilo,
+      oreLav: oreLav,
+      oreContrattuali: oreContrattuali,
+      saldo: saldo,
+      mattine: mattine,
+      pomeriggi: pomeriggi,
+      notti: notti,
+      smonti: smonti,
+      riposi: riposi,
+      disp: disp
+    });
+  });
+  return res;
+}
+
+// ==============================================================================
+// GESTIONE CONSEGNE CLINICHE H24
+// ==============================================================================
+
+function getConsegneCliniche() {
+  try {
+    return JSON.parse(localStorage.getItem('careassist_consegne_cliniche') || '[]');
+  } catch(e) {
+    return [];
+  }
+}
+
+function aggiungiConsegnaClinica(consegna) {
+  const lista = getConsegneCliniche();
+  consegna.id = 'cons_' + Date.now();
+  consegna.timestamp = new Date().toISOString();
+  lista.unshift(consegna);
+  localStorage.setItem('careassist_consegne_cliniche', JSON.stringify(lista));
+  return consegna;
+}
+
 // Esporta globalmente
 window.isUtenteAdmin = isUtenteAdmin;
 window.sbloccaModalitaAdminManuale = sbloccaModalitaAdminManuale;
@@ -919,3 +1280,11 @@ window.condividiTurnarioWhatsApp = condividiTurnarioWhatsApp;
 window.formatDateYMD = formatDateYMD;
 window.parseDateYMD = parseDateYMD;
 window.getLunediSettimana = getLunediSettimana;
+
+window.eseguiBackupSicurezzaUSB = eseguiBackupSicurezzaUSB;
+window.eseguiSincronizzazioneUSB = eseguiSincronizzazioneUSB;
+window.esportaCalendarioICS = esportaCalendarioICS;
+window.notificaTurnoWhatsApp = notificaTurnoWhatsApp;
+window.calcolaBilancioMensile = calcolaBilancioMensile;
+window.getConsegneCliniche = getConsegneCliniche;
+window.aggiungiConsegnaClinica = aggiungiConsegnaClinica;

@@ -941,6 +941,64 @@ app.post('/api/careassist/turnario', (req, res) => {
     }
 });
 
+// API BACKUP & SINCRONIZZAZIONE USB / SUITE COMPLETA
+app.get('/api/suite/backup-completo', async (req, res) => {
+    try {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const backupPayload = {
+            suite: "Suite Milella Aziendale",
+            versione: "2.5.0",
+            timestamp: new Date().toISOString(),
+            autore: "Ciro Milella (Admin)",
+            dati: {
+                turnario: memoryCache.get("turnario_settimanale") || (fs.existsSync(turnarioPath) ? JSON.parse(fs.readFileSync(turnarioPath, 'utf8') || '{}') : {}),
+                operatori: (fs.existsSync(path.join(__dirname, 'operatori.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'operatori.json'), 'utf8') || '[]') : []),
+                progetti: (fs.existsSync(progettiConfigPath) ? JSON.parse(fs.readFileSync(progettiConfigPath, 'utf8') || '[]') : []),
+                inventario: (fs.existsSync(path.join(__dirname, 'data', 'inventario.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'inventario.json'), 'utf8') || '[]') : []),
+                careassist: (fs.existsSync(careAssistDbFile) ? JSON.parse(fs.readFileSync(careAssistDbFile, 'utf8') || '{}') : {}),
+                salute: (fs.existsSync(path.join(__dirname, 'data', 'salute_db.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'salute_db.json'), 'utf8') || '{}') : {}),
+                veicoli: (fs.existsSync(path.join(__dirname, 'data', 'veicoli_db.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'veicoli_db.json'), 'utf8') || '{}') : {})
+            }
+        };
+
+        const jsonStr = JSON.stringify(backupPayload, null, 2);
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="BACKUP_SUITE_MILELLA_${timestamp}.json"`);
+        return res.send(jsonStr);
+    } catch(err) {
+        console.error('[BACKUP COMPLETO ERROR]', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.post('/api/suite/ripristina-backup', express.json({ limit: '50mb' }), async (req, res) => {
+    try {
+        const payload = req.body;
+        if (!payload || !payload.dati) {
+            return res.status(400).json({ success: false, message: "File di backup non valido o privo di dati." });
+        }
+        const dati = payload.dati;
+        if (dati.turnario) {
+            await cloudSet("turnario_settimanale", dati.turnario, turnarioPath);
+        }
+        if (dati.careassist && fs.existsSync(path.dirname(careAssistDbFile))) {
+            await cloudSet("careassist", dati.careassist, careAssistDbFile);
+        }
+        if (dati.inventario) {
+            await cloudSet("inventario", dati.inventario, path.join(__dirname, 'data', 'inventario.json'));
+        }
+        if (dati.salute) {
+            await cloudSet("salute", dati.salute, path.join(__dirname, 'data', 'salute_db.json'));
+        }
+        if (dati.veicoli) {
+            await cloudSet("veicoli", dati.veicoli, path.join(__dirname, 'data', 'veicoli_db.json'));
+        }
+        res.json({ success: true, message: "Ripristino completato con successo su tutti i moduli!" });
+    } catch(err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 // ==============================================================================
 // GESTIONE PROGETTI DINAMICI NEL LAUNCHER (AGGIUNGI / ELIMINA / MODIFICA)
 // ==============================================================================
