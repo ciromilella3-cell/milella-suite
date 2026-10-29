@@ -238,13 +238,14 @@ window.sincronizzaSelectsDaData = sincronizzaSelectsDaData;
 window.toggleDataPickerModalita = toggleDataPickerModalita;
 
 // Template per un nuovo paziente
-function createPazienteTemplate(id, nome, dataNascita, note = '') {
+function createPazienteTemplate(id, nome, dataNascita, note = '', sesso = '') {
   const eta = calcolaAnniDaData(dataNascita);
   return {
     id: id,
     nome: nome,
     dataNascita: dataNascita || '1935-05-10',
     eta: eta,
+    sesso: sesso || (getGenerePaziente({ nome })),
     medico: 'Dott. Curante',
     telMedico: '',
     allergie: 'Nessuna nota',
@@ -254,6 +255,47 @@ function createPazienteTemplate(id, nome, dataNascita, note = '') {
     terapie: [],
     registrazioni: [],
     visite: []
+  };
+}
+
+// HELPER DETERMINAZIONE GENERE & AVATAR CLINICO (MASCHILE / FEMMINILE)
+function getGenerePaziente(p) {
+  if (!p) return 'M';
+  if (p.sesso && (p.sesso.toUpperCase() === 'F' || p.sesso.toUpperCase() === 'FEMMINILE')) return 'F';
+  if (p.sesso && (p.sesso.toUpperCase() === 'M' || p.sesso.toUpperCase() === 'MASCHILE')) return 'M';
+  const nome = (p.nome || '').trim().toLowerCase();
+  const nomiFemminiliNoti = ['rosa', 'angela', 'maria', 'anna', 'carmela', 'giovanna', 'lucia', 'francesca', 'antonietta', 'concetta', 'teresa', 'elena', 'chiara', 'giuseppina', 'luisa', 'rita', 'paola', 'laura', 'silvia', 'daniela', 'simona', 'patrizia'];
+  if (nomiFemminiliNoti.some(nf => nome.startsWith(nf))) {
+    return 'F';
+  }
+  const primo = nome.split(' ')[0] || '';
+  if (primo.endsWith('a') && primo !== 'luca' && primo !== 'andrea' && primo !== 'mattia' && primo !== 'nicola' && primo !== 'elias') {
+    return 'F';
+  }
+  return 'M';
+}
+
+function getDettagliAvatarPaziente(p) {
+  const genere = getGenerePaziente(p);
+  const eta = calcolaAnniDaData(p ? p.dataNascita : null) || 70;
+  const isFemmina = (genere === 'F');
+
+  let emoji = isFemmina ? (eta >= 65 ? '👵' : '👩') : (eta >= 65 ? '👴' : '👨');
+  let labelGenere = isFemmina ? 'Donna (Femminile)' : 'Uomo (Maschile)';
+  let simboloGenere = isFemmina ? '♀️' : '♂️';
+  let badgeColore = isFemmina ? 'background:#fdf2f8; color:#9d174d; border:1px solid #f472b6;' : 'background:#eff6ff; color:#1e40af; border:1px solid #93c5fd;';
+  let avatarGradiente = isFemmina 
+    ? 'background:linear-gradient(135deg, #ec4899 0%, #be185d 100%) !important; border:2.5px solid #fbcfe8 !important; box-shadow:0 4px 14px rgba(236,72,153,0.35) !important;'
+    : 'background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; border:2.5px solid #bae6fd !important; box-shadow:0 4px 14px rgba(2,132,199,0.35) !important;';
+
+  return {
+    genere,
+    isFemmina,
+    emoji,
+    labelGenere,
+    simboloGenere,
+    badgeColore,
+    avatarGradiente
   };
 }
 
@@ -1581,9 +1623,10 @@ function renderPazientiSelector() {
   select.innerHTML = lista.map(p => {
     const eta = calcolaAnniDaData(p.dataNascita);
     const pulito = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+    const av = getDettagliAvatarPaziente(p);
     return `
-      <option value="${p.id}" ${p.id === AppData.activePazienteId ? 'selected' : ''} title="${pulito} (${eta} anni)">
-        👤 ${pulito} (${eta} anni)
+      <option value="${p.id}" ${p.id === AppData.activePazienteId ? 'selected' : ''} title="${pulito} (${eta} anni - ${av.labelGenere})">
+        ${av.emoji} ${pulito} (${eta} anni)
       </option>
     `;
   }).join('');
@@ -2066,20 +2109,29 @@ function renderPazientiSelector() {
 
     // LAYOUT DASHBOARD CLINICA MODERNO, PULITO & AD ALTO IMPATTO
     const dataOggiStr = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const avatarInfo = getDettagliAvatarPaziente(activeP);
 
     badgeInfo.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
         <!-- RIGA 1: TESTATA PROFILO CLINICO CON IDENTITÀ, BADGE CHIAVE E AZIONI RAPIDE SALVAVITA -->
         <div class="patient-hero-top-wrapper" style="display:flex; flex-direction:column; gap:12px; border-bottom:1.5px solid #e2e8f0; padding-bottom:12px; width:100%;">
           
-          <!-- BLOCCO A: IDENTITÀ (AVATAR 52px + NOME ORIZZONTALE + BADGE) -->
+          <!-- BLOCCO A: IDENTITÀ (AVATAR GENERE UOMO/DONNA + NOME ORIZZONTALE + BADGE) -->
           <div class="patient-hero-identity" style="display:flex; align-items:center; gap:14px; width:100%;">
-            <span class="patient-avatar-badge-modern" onclick="apriModificaAnagrafica()" title="Tocca per cartella anagrafica assistito">👤</span>
+            <span class="patient-avatar-badge-modern ${avatarInfo.isFemmina ? 'avatar-femmina' : 'avatar-maschio'}" style="position:relative; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="apriModificaAnagrafica()" title="Cartella Assistito • ${avatarInfo.labelGenere}">
+              <span style="font-size:28px; line-height:1; display:inline-block; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.25));">${avatarInfo.emoji}</span>
+              <span style="position:absolute; bottom:-4px; right:-4px; width:20px; height:20px; border-radius:50%; background:#ffffff; border:1.5px solid ${avatarInfo.isFemmina ? '#ec4899' : '#0284c7'}; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; box-shadow:0 2px 5px rgba(0,0,0,0.25);" title="${avatarInfo.labelGenere}">
+                ${avatarInfo.simboloGenere}
+              </span>
+            </span>
             <div class="patient-hero-text" style="flex:1; min-width:0;">
               <div class="patient-hero-title-row" style="margin-bottom:4px;">
                 <h2 class="patient-hero-fullname" title="${activeP.nome}">${activeP.nome}</h2>
               </div>
               <div class="patient-hero-chips-row" style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span class="badge clinica-zoom-item" style="${avatarInfo.badgeColore} font-size:11.5px; font-weight:800; padding:3px 9px; border-radius:8px; cursor:pointer;" title="Genere assistito: ${avatarInfo.labelGenere}">
+                  ${avatarInfo.simboloGenere} ${avatarInfo.isFemmina ? 'Donna' : 'Uomo'}
+                </span>
                 <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer; font-size:11.5px; padding:3px 9px; border-radius:8px;" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h) per prevenzione lesioni da decubito.' : 'Paziente deambulante in modo autonomo o assistito.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
                   ${activeP.allettato ? '🛏️ Allettato (q2h)' : '🚶 Deambulante'}
                 </span>
@@ -12038,10 +12090,14 @@ function apriAllarmiTerapieManuale() {
 function aggiornaStickyPatientBar() {
   const p = getActivePaziente();
   if (!p) return;
+  const elAvatar = document.querySelector('.sticky-patient-avatar');
   const elName = document.getElementById('sticky-patient-name');
   const elSub = document.getElementById('sticky-patient-sub');
   const elAlertPill = document.getElementById('sticky-patient-alert-pill');
   const elAlertCount = document.getElementById('sticky-patient-alert-count');
+
+  const avInfo = getDettagliAvatarPaziente(p);
+  if (elAvatar) elAvatar.textContent = avInfo.emoji;
 
   const eta = calcolaAnniDaData(p.dataNascita);
   const dataNascitaFmt = (typeof formattaDataNascitaItaliana === 'function') ? formattaDataNascitaItaliana(p.dataNascita) : '';
@@ -12052,7 +12108,7 @@ function aggiornaStickyPatientBar() {
   if (elSub) {
     const stanza = p.stanza ? `Stanza ${p.stanza} • ` : 'Domiciliare • ';
     const annoStr = annoNascita ? ` • Anno ${annoNascita}` : '';
-    elSub.textContent = `${eta} anni${annoStr} (${dataNascitaFmt}) • ${stanza}Cartella Attiva`;
+    elSub.textContent = `${eta} anni${annoStr} (${dataNascitaFmt}) • ${avInfo.simboloGenere} ${stanza}Cartella Attiva`;
   }
 
   if (elAlertPill && elAlertCount) {
