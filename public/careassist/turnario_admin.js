@@ -487,10 +487,6 @@ function sviluppaCombinazioneAutomatica(preset = 'ssn_pmnsr') {
   return true;
 }
 
-  salvaTurnarioSuStorage();
-  return true;
-}
-
 // Salva stato locale e invia al server cloud
 function salvaTurnarioSuStorage() {
   if (turnarioCorrente) {
