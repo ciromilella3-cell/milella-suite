@@ -120,7 +120,11 @@ function caricaDatiTurnario() {
 }
 
 // ALGORITMO DI SVILUPPO COMBINAZIONE INTELLIGENTE (SOLO ADMIN)
-function sviluppaCombinazioneAutomatica() {
+function sviluppaCombinazioneAutomatica(preset = 'misto_pn') {
+  if (!isUtenteAdmin()) {
+    alert("🔒 Solo l'Admin Coordinatore può sviluppare o modificare le combinazioni di turno.");
+    return false;
+  }
   if (!turnarioCorrente) caricaDatiTurnario();
 
   const ops = turnarioCorrente.operatori;
@@ -133,8 +137,8 @@ function sviluppaCombinazioneAutomatica() {
     turnarioCorrente.griglia[op.id] = { lun: 'R', mar: 'R', mer: 'R', gio: 'R', ven: 'R', sab: 'R', dom: 'R' };
   });
 
-  // Ordina per rotazione bilanciata
-  // 1. Assegnazione Notte (priorità chi fa misto_pn o full_h24)
+  // PRESET 1: 'misto_pn' (Pomeriggio & Notte con Smonto e Reperibilità nei giorni liberi)
+  // Specificamente richiesto per garantire rotazione tra pomeriggi, notti, smonto e reperibilità per emergenze
   const opsNotte = ops.filter(o => o.profilo === 'misto_pn' || o.profilo === 'full_h24' || o.profilo === 'notte');
   let idxNotte = 0;
 
@@ -142,7 +146,7 @@ function sviluppaCombinazioneAutomatica() {
     const g = giorni[gIdx];
     const gPrec = gIdx > 0 ? giorni[gIdx - 1] : null;
 
-    // Regola 1: Chi ha fatto la Notte ieri DEVE fare Smonto (S) oggi (D.Lgs. 66/2003)
+    // Regola di Legge 1 (D.Lgs. 66/2003): Smonto (S) obbligatorio dopo la Notte
     if (gPrec) {
       ops.forEach(op => {
         if (turnarioCorrente.griglia[op.id][gPrec] === 'N') {
@@ -151,7 +155,7 @@ function sviluppaCombinazioneAutomatica() {
       });
     }
 
-    // Se la notte è richiesta nel fabbisogno
+    // Assegnazione Notte (N)
     if (fabb.N > 0 && opsNotte.length > 0) {
       let tentativi = 0;
       let assegnato = false;
@@ -214,18 +218,19 @@ function sviluppaCombinazioneAutomatica() {
     }
   }
 
-  // 3. Imposta Disponibilità (D) per chi ha il flag "disponibileCoperture" e oggi è a riposo (non smonto)
+  // 3. Imposta Reperibilità / Jolly (D) per chi ha disponibilità e oggi è a riposo (non smonto)
   for (let gIdx = 0; gIdx < giorni.length; gIdx++) {
     const g = giorni[gIdx];
     ops.forEach(op => {
       const stato = turnarioCorrente.griglia[op.id][g];
-      if (stato === 'R' && op.disponibileCoperture) {
+      if (stato === 'R' && (op.disponibileCoperture || op.profilo === 'misto_pn')) {
         turnarioCorrente.griglia[op.id][g] = 'D';
       }
     });
   }
 
   salvaTurnarioSuStorage();
+  return true;
 }
 
 // Salva stato locale e invia al server cloud
@@ -275,6 +280,22 @@ function ciclaTurnoCella(opId, giorno) {
   turnarioCorrente.griglia[opId][giorno] = nuovo;
   salvaTurnarioSuStorage();
   aggiornaVistaTurnarioModal();
+}
+
+// Impostazione diretta del turno scelto da popover/modale (SOLO ADMIN!)
+function impostaTurnoCella(opId, giorno, nuovoTurno) {
+  if (!isUtenteAdmin()) {
+    alert("🔒 Solo l'Admin Coordinatore può modificare l'assegnazione dei turni.\n\nIl collaboratore ha accesso in sola visualizzazione e stampa.");
+    return false;
+  }
+  if (!turnarioCorrente) caricaDatiTurnario();
+  if (!turnarioCorrente.griglia[opId]) {
+    turnarioCorrente.griglia[opId] = { lun: 'R', mar: 'R', mer: 'R', gio: 'R', ven: 'R', sab: 'R', dom: 'R' };
+  }
+  turnarioCorrente.griglia[opId][giorno] = nuovoTurno;
+  salvaTurnarioSuStorage();
+  aggiornaVistaTurnarioModal();
+  return true;
 }
 
 // APERTURA MODALE TURNARIO (ADMIN O COLLABORATORE)
@@ -579,6 +600,10 @@ window.apriModalTurnarioAdmin = apriModalTurnarioAdmin;
 window.chiudiModalTurnarioAdmin = chiudiModalTurnarioAdmin;
 window.sviluppaCombinazioneAutomatica = sviluppaCombinazioneAutomatica;
 window.ciclaTurnoCella = ciclaTurnoCella;
+window.impostaTurnoCella = impostaTurnoCella;
+window.TURNI_INFO = TURNI_INFO;
+window.caricaDatiTurnario = caricaDatiTurnario;
+window.sincronizzaOperatoriCareAssist = sincronizzaOperatoriCareAssist;
 window.cambiaSettimanaTurnario = cambiaSettimanaTurnario;
 window.navigaSettimana = navigaSettimana;
 window.aggiungiOperatoreTurnario = aggiungiOperatoreTurnario;
