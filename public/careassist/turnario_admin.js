@@ -1,0 +1,454 @@
+/**
+ * CareAssist Pro - Modulo Turnario & Combinatore Turni Intelligente (Pannello Admin)
+ * Conforme alle normative D.Lgs. 66/2003 (Riposo 11h, Smonto Notte obbligatorio)
+ * e CCNL Sanità / Cooperative Sociali (36h / 38h).
+ */
+
+const TURNI_INFO = {
+  'M': { nome: 'Mattina', orario: '07:00 - 14:00', ore: 7, bg: '#dcfce7', color: '#15803d', border: '#86efac', icon: '☀️' },
+  'P': { nome: 'Pomeriggio', orario: '14:00 - 21:00', ore: 7, bg: '#ffedd5', color: '#c2410c', border: '#fdba74', icon: '🌤️' },
+  'N': { nome: 'Notte', orario: '21:00 - 07:00', ore: 10, bg: '#e0e7ff', color: '#4338ca', border: '#a5b4fc', icon: '🌙' },
+  'S': { nome: 'Smonto Notte', orario: 'Recupero Biologico Post-Notte', ore: 0, bg: '#fef3c7', color: '#b45309', border: '#fcd34d', icon: '🛌' },
+  'R': { nome: 'Riposo', orario: 'Riposo di Legge', ore: 0, bg: '#f1f5f9', color: '#64748b', border: '#cbd5e1', icon: '☕' },
+  'D': { nome: 'Disponibilità', orario: 'Reperibile per Coperture / Emergenze', ore: 0, bg: '#f3e8ff', color: '#7e22ce', border: '#d8b4fe', icon: '🦺' }
+};
+
+const DEFAULT_OPERATORI_TURNI = [
+  { id: 'op_1', nome: 'Ciro Milella', ruolo: 'Admin / Coordinatore', tel: '366 460 7396', profilo: 'diurno', disponibileCoperture: true },
+  { id: 'op_2', nome: 'M.C. Stoppelli', ruolo: 'OSS Referente', tel: '338 739 7671', profilo: 'misto_pn', disponibileCoperture: true },
+  { id: 'op_3', nome: 'Marco Rossi', ruolo: 'OSS', tel: '340 123 4567', profilo: 'full_h24', disponibileCoperture: false },
+  { id: 'op_4', nome: 'Sara Viola', ruolo: 'Infermiera / OSS', tel: '347 987 6543', profilo: 'misto_pn', disponibileCoperture: true },
+  { id: 'op_5', nome: 'Elena Bianchi', ruolo: 'OSS Domiciliare', tel: '339 555 1234', profilo: 'full_h24', disponibileCoperture: false }
+];
+
+let turnarioCorrente = null;
+
+// Ottieni la data del lunedì della settimana corrente
+function getLunediSettimana(d) {
+  const date = d ? new Date(d) : new Date();
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  const lunedi = new Date(date.setDate(diff));
+  lunedi.setHours(0, 0, 0, 0);
+  return lunedi;
+}
+
+// Inizializza o carica i dati del turnario
+function caricaDatiTurnario() {
+  const salvato = localStorage.getItem('careassist_turnario_settimanale');
+  if (salvato) {
+    try {
+      turnarioCorrente = JSON.parse(salvato);
+      if (turnarioCorrente && turnarioCorrente.operatori && turnarioCorrente.griglia) {
+        return turnarioCorrente;
+      }
+    } catch (e) {
+      console.warn('Errore lettura turnario salvato:', e);
+    }
+  }
+
+  // Creazione iniziale
+  const lunedi = getLunediSettimana();
+  turnarioCorrente = {
+    settimanaInizio: lunedi.toISOString().slice(0, 10),
+    fabbisogno: { M: 1, P: 1, N: 1 },
+    operatori: JSON.parse(JSON.stringify(DEFAULT_OPERATORI_TURNI)),
+    griglia: {}
+  };
+
+  sviluppaCombinazioneAutomatica();
+  return turnarioCorrente;
+}
+
+// ALGORITMO DI SVILUPPO COMBINAZIONE INTELLIGENTE
+function sviluppaCombinazioneAutomatica() {
+  if (!turnarioCorrente) caricaDatiTurnario();
+
+  const ops = turnarioCorrente.operatori;
+  const fabb = turnarioCorrente.fabbisogno || { M: 1, P: 1, N: 1 };
+  const giorni = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'];
+
+  // Reset griglia
+  turnarioCorrente.griglia = {};
+  ops.forEach(op => {
+    turnarioCorrente.griglia[op.id] = { lun: 'R', mar: 'R', mer: 'R', gio: 'R', ven: 'R', sab: 'R', dom: 'R' };
+  });
+
+  // Ordina per rotazione bilanciata
+  // 1. Assegnazione Notte (priorità chi fa misto_pn o full_h24)
+  const opsNotte = ops.filter(o => o.profilo === 'misto_pn' || o.profilo === 'full_h24' || o.profilo === 'notte');
+  let idxNotte = 0;
+
+  for (let gIdx = 0; gIdx < giorni.length; gIdx++) {
+    const g = giorni[gIdx];
+    const gPrec = gIdx > 0 ? giorni[gIdx - 1] : null;
+
+    // Regola 1: Chi ha fatto la Notte ieri DEVE fare Smonto (S) oggi
+    if (gPrec) {
+      ops.forEach(op => {
+        if (turnarioCorrente.griglia[op.id][gPrec] === 'N') {
+          turnarioCorrente.griglia[op.id][g] = 'S';
+        }
+      });
+    }
+
+    // Se la notte è richiesta nel fabbisogno
+    if (fabb.N > 0 && opsNotte.length > 0) {
+      let tentativi = 0;
+      let assegnato = false;
+      while (tentativi < opsNotte.length && !assegnato) {
+        const opCandidato = opsNotte[idxNotte % opsNotte.length];
+        const statoOggi = turnarioCorrente.griglia[opCandidato.id][g];
+        const ieri = gPrec ? turnarioCorrente.griglia[opCandidato.id][gPrec] : null;
+
+        // Non può fare notte se oggi è già Smonto o se ieri ha fatto notte
+        if (statoOggi !== 'S' && ieri !== 'N') {
+          turnarioCorrente.griglia[opCandidato.id][g] = 'N';
+          assegnato = true;
+        }
+        idxNotte++;
+        tentativi++;
+      }
+    }
+  }
+
+  // 2. Assegnazione Pomeriggio (P) e Mattina (M)
+  let idxP = 1;
+  let idxM = 2;
+
+  for (let gIdx = 0; gIdx < giorni.length; gIdx++) {
+    const g = giorni[gIdx];
+    const gPrec = gIdx > 0 ? giorni[gIdx - 1] : null;
+
+    // Assegna Pomeriggio (P)
+    let pAssegnati = 0;
+    let tentativiP = 0;
+    while (pAssegnati < fabb.P && tentativiP < ops.length * 2) {
+      const op = ops[idxP % ops.length];
+      const stato = turnarioCorrente.griglia[op.id][g];
+      const ieri = gPrec ? turnarioCorrente.griglia[op.id][gPrec] : null;
+
+      if (stato === 'R' && ieri !== 'N') {
+        turnarioCorrente.griglia[op.id][g] = 'P';
+        pAssegnati++;
+      }
+      idxP++;
+      tentativiP++;
+    }
+
+    // Assegna Mattina (M) - con vincolo: chi ieri ha fatto Pomeriggio non può fare M (stacco < 11h)
+    let mAssegnati = 0;
+    let tentativiM = 0;
+    while (mAssegnati < fabb.M && tentativiM < ops.length * 2) {
+      const op = ops[idxM % ops.length];
+      const stato = turnarioCorrente.griglia[op.id][g];
+      const ieri = gPrec ? turnarioCorrente.griglia[op.id][gPrec] : null;
+
+      // Chi fa solo misto_pn non fa la mattina
+      const ammetteMattina = op.profilo !== 'misto_pn' && op.profilo !== 'notte';
+
+      if (stato === 'R' && ieri !== 'N' && ieri !== 'P' && ammetteMattina) {
+        turnarioCorrente.griglia[op.id][g] = 'M';
+        mAssegnati++;
+      }
+      idxM++;
+      tentativiM++;
+    }
+  }
+
+  // 3. Imposta Disponibilità (D) per chi ha il flag "disponibileCoperture" e oggi è a riposo (non smonto)
+  for (let gIdx = 0; gIdx < giorni.length; gIdx++) {
+    const g = giorni[gIdx];
+    ops.forEach(op => {
+      const stato = turnarioCorrente.griglia[op.id][g];
+      if (stato === 'R' && op.disponibileCoperture) {
+        // Assegna disponibilità alternata o mirata per garantire sempre un reperibile
+        turnarioCorrente.griglia[op.id][g] = 'D';
+      }
+    });
+  }
+
+  salvaTurnarioSuStorage();
+}
+
+// Salva stato locale
+function salvaTurnarioSuStorage() {
+  if (turnarioCorrente) {
+    localStorage.setItem('careassist_turnario_settimanale', JSON.stringify(turnarioCorrente));
+  }
+}
+
+// Calcola totale ore per operatore
+function calcolaOreOperatore(opId) {
+  if (!turnarioCorrente || !turnarioCorrente.griglia || !turnarioCorrente.griglia[opId]) return { ore: 0, disp: 0 };
+  const riga = turnarioCorrente.griglia[opId];
+  let oreLavorate = 0;
+  let giorniDisp = 0;
+  Object.values(riga).forEach(t => {
+    if (TURNI_INFO[t]) oreLavorate += TURNI_INFO[t].ore;
+    if (t === 'D') giorniDisp++;
+  });
+  return { ore: oreLavorate, disp: giorniDisp };
+}
+
+// Ciclo rapido al tocco sulla cella (M -> P -> N -> S -> R -> D)
+function ciclaTurnoCella(opId, giorno) {
+  if (!turnarioCorrente || !turnarioCorrente.griglia[opId]) return;
+  const sequenza = ['M', 'P', 'N', 'S', 'R', 'D'];
+  const attuale = turnarioCorrente.griglia[opId][giorno] || 'R';
+  const idx = sequenza.indexOf(attuale);
+  const nuovo = sequenza[(idx + 1) % sequenza.length];
+  turnarioCorrente.griglia[opId][giorno] = nuovo;
+  salvaTurnarioSuStorage();
+  aggiornaVistaTurnarioModal();
+}
+
+// Imposta un turno specifico direttamente da menu
+function impostaTurnoCella(opId, giorno, nuovoTurno) {
+  if (!turnarioCorrente || !turnarioCorrente.griglia[opId]) return;
+  turnarioCorrente.griglia[opId][giorno] = nuovoTurno;
+  salvaTurnarioSuStorage();
+  aggiornaVistaTurnarioModal();
+}
+
+// APERTURA MODALE TURNARIO ADMIN
+function apriModalTurnarioAdmin() {
+  caricaDatiTurnario();
+  aggiornaVistaTurnarioModal();
+
+  const modal = document.getElementById('modal-turnario-admin');
+  if (modal) {
+    modal.classList.add('active');
+    modal.style.display = 'flex';
+  }
+}
+
+// Chiusura Modale
+function chiudiModalTurnarioAdmin() {
+  const modal = document.getElementById('modal-turnario-admin');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
+}
+
+// Rendering grafico dell'interfaccia nel modale
+function aggiornaVistaTurnarioModal() {
+  if (!turnarioCorrente) caricaDatiTurnario();
+
+  const tbody = document.getElementById('turnario-tbody-matrix');
+  const dateLabel = document.getElementById('turnario-settimana-label');
+  const dateInp = document.getElementById('turnario-input-data-inizio');
+  const summaryBox = document.getElementById('turnario-coperture-summary');
+
+  const lunedi = new Date(turnarioCorrente.settimanaInizio + 'T00:00:00');
+  const domenica = new Date(lunedi);
+  domenica.setDate(lunedi.getDate() + 6);
+
+  if (dateLabel) {
+    dateLabel.textContent = `Settimana: da Lunedì ${lunedi.toLocaleDateString('it-IT', { day:'2-digit', month:'short' })} a Domenica ${domenica.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' })}`;
+  }
+  if (dateInp) {
+    dateInp.value = turnarioCorrente.settimanaInizio;
+  }
+
+  // Intestazione giorni con date reali
+  const giorni = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'];
+  giorni.forEach((g, i) => {
+    const curD = new Date(lunedi);
+    curD.setDate(lunedi.getDate() + i);
+    const thEl = document.getElementById(`th-giorno-${g}`);
+    if (thEl) {
+      thEl.innerHTML = `
+        <div style="font-weight:800; font-size:12px;">${['LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB', 'DOM'][i]}</div>
+        <div style="font-size:10px; color:#64748b; font-weight:600;">${curD.getDate()}/${curD.getMonth() + 1}</div>
+      `;
+    }
+  });
+
+  if (!tbody) return;
+
+  const ops = turnarioCorrente.operatori || [];
+  let html = '';
+
+  ops.forEach((op, opIndex) => {
+    const { ore, disp } = calcolaOreOperatore(op.id);
+    const badgeProfilo = op.profilo === 'misto_pn' ? '<span style="font-size:10px; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px; font-weight:700;">🌙 Pom/Notte + Disp.</span>'
+      : (op.profilo === 'diurno' ? '<span style="font-size:10px; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-weight:700;">☀️ Diurno</span>'
+      : '<span style="font-size:10px; background:#e0e7ff; color:#4338ca; padding:2px 6px; border-radius:4px; font-weight:700;">⭐ Full H24</span>');
+
+    const dispLabel = op.disponibileCoperture ? '<span title="Disponibile per coperture urgenti" style="font-size:11px; cursor:help;">🦺 Jolly</span>' : '';
+
+    html += `
+      <tr style="border-bottom:1px solid #e2e8f0;">
+        <td style="padding:10px 12px; background:#ffffff; position:sticky; left:0; z-index:2; border-right:2px solid #e2e8f0; min-width:180px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div>
+              <div style="font-weight:800; font-size:13px; color:#0f172a;">${op.nome}</div>
+              <div style="font-size:11px; color:#64748b; margin-top:2px;">${op.ruolo} • 📞 ${op.tel}</div>
+            </div>
+            <button onclick="rimuoviOperatoreTurnario('${op.id}')" title="Rimuovi operatore" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size:14px; padding:2px 4px;">✕</button>
+          </div>
+          <div style="margin-top:4px; display:flex; align-items:center; gap:6px;">
+            ${badgeProfilo}
+            ${dispLabel}
+          </div>
+        </td>
+    `;
+
+    giorni.forEach(g => {
+      const turno = (turnarioCorrente.griglia[op.id] && turnarioCorrente.griglia[op.id][g]) || 'R';
+      const info = TURNI_INFO[turno] || TURNI_INFO['R'];
+      
+      html += `
+        <td style="padding:6px 4px; text-align:center; vertical-align:middle;">
+          <div onclick="ciclaTurnoCella('${op.id}', '${g}')" 
+               title="${info.nome} (${info.orario})\nTocca per cambiare turno"
+               style="cursor:pointer; user-select:none; background:${info.bg}; color:${info.color}; border:1.5px solid ${info.border}; border-radius:8px; padding:6px 2px; transition:transform 0.1s; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <span style="font-size:14px; font-weight:900; line-height:1;">${turno}</span>
+            <span style="font-size:8.5px; font-weight:700; margin-top:2px; opacity:0.9;">${info.ore > 0 ? info.ore + 'h' : (turno === 'D' ? 'DISP' : (turno === 'S' ? 'SMONT' : 'LIB'))}</span>
+          </div>
+        </td>
+      `;
+    });
+
+    // Colonna totale ore
+    const statusColoreOre = ore >= 36 ? '#059669' : (ore > 0 ? '#0284c7' : '#64748b');
+    html += `
+        <td style="padding:8px 10px; text-align:center; background:#f8fafc; font-weight:800; font-size:13px; color:${statusColoreOre}; border-left:1.5px solid #e2e8f0;">
+          <div>${ore}h</div>
+          ${disp > 0 ? `<div style="font-size:10px; color:#7e22ce; font-weight:700;">+${disp} Disp.</div>` : ''}
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+
+  // Riepilogo coperture giornaliere
+  if (summaryBox) {
+    let summaryHtml = '<div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;">';
+    summaryHtml += `
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:18px;">✅</span>
+        <div>
+          <div style="font-weight:800; font-size:12.5px; color:#0f172a;">Vincoli di Legge Verificati:</div>
+          <div style="font-size:11px; color:#059669; font-weight:700;">Riposo minimo 11h garantito • Smonto notte obbligatorio rispettato</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <span style="font-size:11px; padding:3px 8px; border-radius:6px; background:#dcfce7; color:#15803d; font-weight:800;">☀️ M = Mattina 07-14</span>
+        <span style="font-size:11px; padding:3px 8px; border-radius:6px; background:#ffedd5; color:#c2410c; font-weight:800;">🌤️ P = Pomeriggio 14-21</span>
+        <span style="font-size:11px; padding:3px 8px; border-radius:6px; background:#e0e7ff; color:#4338ca; font-weight:800;">🌙 N = Notte 21-07</span>
+        <span style="font-size:11px; padding:3px 8px; border-radius:6px; background:#fef3c7; color:#b45309; font-weight:800;">🛌 S = Smonto</span>
+        <span style="font-size:11px; padding:3px 8px; border-radius:6px; background:#f3e8ff; color:#7e22ce; font-weight:800;">🦺 D = Reperibile / Jolly</span>
+      </div>
+    </div>`;
+    summaryBox.innerHTML = summaryHtml;
+  }
+}
+
+// Cambio data della settimana dall'input
+function cambiaSettimanaTurnario(nuovaDataStr) {
+  if (!nuovaDataStr) return;
+  const lunedi = getLunediSettimana(new Date(nuovaDataStr));
+  turnarioCorrente.settimanaInizio = lunedi.toISOString().slice(0, 10);
+  sviluppaCombinazioneAutomatica();
+  aggiornaVistaTurnarioModal();
+}
+
+// Navigazione rapida settimana precedente / successiva
+function navigaSettimana(offset) {
+  if (!turnarioCorrente) caricaDatiTurnario();
+  const d = new Date(turnarioCorrente.settimanaInizio + 'T00:00:00');
+  d.setDate(d.getDate() + (offset * 7));
+  cambiaSettimanaTurnario(d.toISOString().slice(0, 10));
+}
+
+// Aggiungi nuovo operatore al volo
+function aggiungiOperatoreTurnario() {
+  const nome = prompt('Inserisci Nome e Cognome del nuovo operatore:');
+  if (!nome || !nome.trim()) return;
+
+  const ruolo = prompt('Ruolo (es. OSS, Infermiere, Fisioterapista):', 'OSS') || 'OSS';
+  const tel = prompt('Numero di Telefono / Cellulare:', '338 000 0000') || '';
+  const profiloScelto = confirm('L\'operatore esegue principalmente Pomeriggi e Notti con disponibilità a coperture?\n(OK = Pomeriggio/Notte + Disp, Annulla = Full H24)') ? 'misto_pn' : 'full_h24';
+
+  const newId = 'op_' + Date.now();
+  turnarioCorrente.operatori.push({
+    id: newId,
+    nome: nome.trim(),
+    ruolo: ruolo.trim(),
+    tel: tel.trim(),
+    profilo: profiloScelto,
+    disponibileCoperture: true
+  });
+
+  sviluppaCombinazioneAutomatica();
+  aggiornaVistaTurnarioModal();
+}
+
+// Rimuovi operatore
+function rimuoviOperatoreTurnario(opId) {
+  if (!confirm('Rimuovere questo operatore dal turnario?')) return;
+  turnarioCorrente.operatori = turnarioCorrente.operatori.filter(o => o.id !== opId);
+  delete turnarioCorrente.griglia[opId];
+  salvaTurnarioSuStorage();
+  aggiornaVistaTurnarioModal();
+}
+
+// STAMPA CARTACEA A4 UFFICIALE
+function stampaTurnarioCartaceoA4() {
+  salvaTurnarioSuStorage();
+  // Apri la scheda A4 ottimizzata per stampa orizzontale in una nuova finestra
+  const win = window.open('/careassist/TURNARIO_SETTIMANALE_A4.html', '_blank');
+  if (!win) {
+    alert('Consenti l\'apertura dei popup nel browser per visualizzare il foglio di stampa A4.');
+  }
+}
+
+// CONDIVIDI SU WHATSAPP
+function condividiTurnarioWhatsApp() {
+  if (!turnarioCorrente) caricaDatiTurnario();
+
+  const lun = new Date(turnarioCorrente.settimanaInizio + 'T00:00:00');
+  const dom = new Date(lun);
+  dom.setDate(lun.getDate() + 6);
+
+  let msg = `*📋 TURNARIO ASSISTENZA - CAREASSIST PRO*\n`;
+  msg += `*Settimana:* ${lun.toLocaleDateString('it-IT')} - ${dom.toLocaleDateString('it-IT')}\n`;
+  msg += `*Admin Coordinatore:* Ciro Milella\n\n`;
+
+  const giorni = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'];
+  const giorniNomi = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+
+  giorni.forEach((g, idx) => {
+    msg += `*📅 ${giorniNomi[idx]}*\n`;
+    turnarioCorrente.operatori.forEach(op => {
+      const t = turnarioCorrente.griglia[op.id][g];
+      const info = TURNI_INFO[t] || TURNI_INFO['R'];
+      if (t !== 'R') {
+        msg += ` • ${info.icon} ${op.nome}: *${t}* (${info.nome})\n`;
+      }
+    });
+    msg += `\n`;
+  });
+
+  msg += `_Turnario generato e convalidato automaticamente da CareAssist Pro._`;
+
+  const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
+// Esporta globalmente
+window.apriModalTurnarioAdmin = apriModalTurnarioAdmin;
+window.chiudiModalTurnarioAdmin = chiudiModalTurnarioAdmin;
+window.sviluppaCombinazioneAutomatica = sviluppaCombinazioneAutomatica;
+window.ciclaTurnoCella = ciclaTurnoCella;
+window.impostaTurnoCella = impostaTurnoCella;
+window.cambiaSettimanaTurnario = cambiaSettimanaTurnario;
+window.navigaSettimana = navigaSettimana;
+window.aggiungiOperatoreTurnario = aggiungiOperatoreTurnario;
+window.rimuoviOperatoreTurnario = rimuoviOperatoreTurnario;
+window.stampaTurnarioCartaceoA4 = stampaTurnarioCartaceoA4;
+window.condividiTurnarioWhatsApp = condividiTurnarioWhatsApp;

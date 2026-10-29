@@ -1,12 +1,15 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare
-const CACHE_NAME = 'careassist-pro-v75';
+const CACHE_NAME = 'careassist-pro-v76';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
-  './style.css?v=75',
-  './app.js?v=75',
+  './style.css?v=76',
+  './app.js?v=76',
   './app.js',
+  './turnario_admin.js',
+  './turnario_admin.js?v=1',
+  './TURNARIO_SETTIMANALE_A4.html',
   './qrcode_data_uri.js',
   './suite_nav.js',
   './suite_security_gate.js',
