@@ -1621,10 +1621,12 @@ function renderPazientiSelector() {
     // 1. INDIRIZZO RESIDENZA CON GOOGLE MAPS E NAVIGATORE GPS
     const ind = activeP.indirizzo ? `
       <div class="meta-item clinica-zoom-item contact-chip address-chip" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Residenza & Domicilio Assistito', '${activeP.indirizzo.replace(/'/g, "\\'")}', '📍')" onmouseleave="nascondiLenteClinica()">
-        <span style="font-size:15px;">📍</span>
-        <a href="${mapsLink(activeP.indirizzo)}" target="_blank" class="smart-link address-text" title="Apri su Google Maps">
-          <b>${activeP.indirizzo}</b>
-        </a>
+        <div style="display:flex; align-items:center; gap:8px; min-width:0; overflow:hidden; text-overflow:ellipsis;">
+          <span style="font-size:16px;">📍</span>
+          <a href="${mapsLink(activeP.indirizzo)}" target="_blank" class="smart-link address-text" style="font-size:13.5px; font-weight:700; color:#0f172a;" title="Apri su Google Maps">
+            ${activeP.indirizzo}
+          </a>
+        </div>
         <a href="${mapsDirLink(activeP.indirizzo)}" target="_blank" class="gps-nav-btn" title="Avvia Navigatore GPS Turn-by-Turn (Google Maps)">
           <span>🧭</span> <span>Naviga</span>
         </a>
@@ -1633,8 +1635,10 @@ function renderPazientiSelector() {
     // 2. TELEFONO FISSO CASA (CHIAMATA & WHATSAPP)
     const tel = activeP.telefonoFisso ? `
       <div class="meta-item clinica-zoom-item contact-chip phone-chip" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Telefono Abitazione / Fisso', '${activeP.telefonoFisso}', '☎️')" onmouseleave="nascondiLenteClinica()">
-        <span>☎️</span>
-        <span>Casa: <b class="nowrap-num">${activeP.telefonoFisso}</b></span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:16px;">☎️</span>
+          <span style="font-size:13px; color:#334155;">Casa: <b class="nowrap-num" style="color:#0f172a; font-weight:800;">${activeP.telefonoFisso}</b></span>
+        </div>
         <div class="chip-actions">
           <a href="tel:${cleanNum(activeP.telefonoFisso)}" class="action-icon-btn call" title="Chiama Casa">📞</a>
           <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.telefonoFisso)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con Telefono Casa">💬</a>
@@ -1644,8 +1648,10 @@ function renderPazientiSelector() {
     // 3. CELLULARE ASSISTITO (CHIAMATA, SMS, WHATSAPP)
     const cell = activeP.cellulare ? `
       <div class="meta-item clinica-zoom-item contact-chip phone-chip" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Cellulare Assistito (${activeP.nome})', '${activeP.cellulare}', '📱')" onmouseleave="nascondiLenteClinica()">
-        <span>📱</span>
-        <span>Cell: <b class="nowrap-num">${activeP.cellulare}</b></span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:16px;">📱</span>
+          <span style="font-size:13px; color:#334155;">Cell: <b class="nowrap-num" style="color:#0f172a; font-weight:800;">${activeP.cellulare}</b></span>
+        </div>
         <div class="chip-actions">
           <a href="tel:${cleanNum(activeP.cellulare)}" class="action-icon-btn call" title="Chiama ${activeP.nome}">📞</a>
           <a href="sms:${cleanNum(activeP.cellulare)}" class="action-icon-btn sms" title="Invia SMS a ${activeP.nome}">✉️</a>
@@ -4365,7 +4371,7 @@ function controllaTerapieGlobaliTuttiPazienti() {
       }
     }
 
-    // Popola lista pazienti e terapie scadute
+    // Popola lista pazienti e terapie scadute con design clinico moderno
     if (listaContainer) {
       listaContainer.innerHTML = pazientiConRitardi.map(item => {
         const p = item.paziente;
@@ -4375,17 +4381,24 @@ function controllaTerapieGlobaliTuttiPazienti() {
           const rMin = check.minutiRitardo % 60;
           const ritardoStr = rOre > 0 ? `+${rOre}h ${rMin}m` : `+${rMin} min`;
           return `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid #fecaca; border-radius:8px; padding:8px 12px; margin-top:6px; flex-wrap:wrap; gap:8px;">
-              <div>
-                <div style="font-weight:800; color:#0f172a; font-size:15px;">🕒 <span style="color:#dc2626; font-weight:900;">Ore ${f.ora}</span>: <b>${f.farmaco}</b></div>
-                <div style="font-size:12px; color:#334155; font-weight:500; margin-top:2px;">${f.modo} &bull; Dosaggio: <b style="color:#0f172a;">${f.dosaggio}</b></div>
+            <div class="card-allarme-farmaco-item" style="background:linear-gradient(135deg, #ffffff 0%, #fffbfb 100%); border:1.5px solid #fee2e2; border-left:4.5px solid #e11d48; border-radius:14px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+              <div style="flex:1; min-width:200px;">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:3px;">
+                  <span style="background:#fee2e2; color:#991b1b; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; letter-spacing:0.3px;">🕒 ORE ${f.ora}</span>
+                  <span style="font-size:15.5px; font-weight:800; color:#0f172a; letter-spacing:-0.2px;">${f.farmaco}</span>
+                </div>
+                <div style="font-size:12px; color:#475569; font-weight:500;">
+                  ${f.modo ? `<span style="color:#0284c7; font-weight:700;">${f.modo}</span> &bull; ` : ''}Dosaggio: <b style="color:#0f172a;">${f.dosaggio}</b>
+                </div>
               </div>
               <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                <span class="badge" style="background:#dc2626; color:#ffffff !important; font-weight:800; font-size:12px; padding:6px 14px; border-radius:20px; box-shadow:0 2px 6px rgba(220,38,38,0.3); letter-spacing:0.3px;">⏰ Scaduto da ${ritardoStr}</span>
-                <button type="button" class="btn btn-primary" style="padding:6px 14px; font-size:12px; font-weight:800; background:#2563eb; color:#ffffff; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(37,99,235,0.3);" onclick="vaiADirettoFarmacoDaAllarme('${p.id}', ${f.id})">
-                  <span>👉</span> Vai a questo farmaco ➔
+                <span style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:#ffffff !important; font-weight:800; font-size:11.5px; padding:5px 12px; border-radius:20px; box-shadow:0 2px 6px rgba(220,38,38,0.3); letter-spacing:0.3px; display:inline-flex; align-items:center; gap:4px;">
+                  <span>⏰</span> ${ritardoStr}
+                </span>
+                <button type="button" class="btn btn-primary" style="padding:7px 14px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color:#ffffff; border:none; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(37,99,235,0.3); transition:all 0.15s ease;" onclick="vaiADirettoFarmacoDaAllarme('${p.id}', ${f.id})">
+                  <span>👉</span> Somministra Ora ➔
                 </button>
-                <button type="button" class="btn" style="padding:6px 10px; font-size:11.5px; font-weight:800; border:1.5px solid #dc2626; color:#991b1b; background:#ffffff; border-radius:8px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.06);" onclick="azioneRapidaMancanzaDaAllarme('${p.id}', ${f.id})">
+                <button type="button" class="btn" style="padding:6px 12px; font-size:11.5px; font-weight:800; border:1.5px solid #cbd5e1; color:#64748b; background:#ffffff; border-radius:10px; cursor:pointer; transition:all 0.15s ease;" onclick="azioneRapidaMancanzaDaAllarme('${p.id}', ${f.id})">
                   ❌ Salta
                 </button>
               </div>
@@ -4394,20 +4407,29 @@ function controllaTerapieGlobaliTuttiPazienti() {
         }).join('');
 
         return `
-          <div style="background:#fff5f5; border:2px solid #fca5a5; border-radius:14px; padding:14px; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #fee2e2; padding-bottom:8px; cursor:pointer;" onclick="vaiACartellaPazienteDaAllarme('${p.id}', ${item.farmaci[0] ? item.farmaci[0].id : null})">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:22px;">👤</span>
+          <div class="card-allarme-paziente" style="background:#ffffff; border:1.5px solid #fca5a5; border-radius:16px; padding:14px; box-shadow:0 4px 14px rgba(225,29,72,0.08);">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #fee2e2; padding-bottom:10px; cursor:pointer; flex-wrap:wrap; gap:8px;" onclick="vaiACartellaPazienteDaAllarme('${p.id}', ${item.farmaci[0] ? item.farmaci[0].id : null})">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:18px; box-shadow:0 3px 8px rgba(220,38,38,0.25);">
+                  👤
+                </div>
                 <div>
-                  <div style="font-size:15px; font-weight:800; color:#1e293b; text-decoration:underline;" title="Tocca per andare direttamente alla cartella farmaci">${p.nome} (${calcolaAnniDaData(p.dataNascita)} anni) ➔</div>
-                  <div style="font-size:11px; color:#ef4444; font-weight:700;">⚠️ ${item.farmaci.length} Terapia/e in ritardo! (Tocca per vedere)</div>
+                  <div style="font-size:16px; font-weight:800; color:#0f172a; letter-spacing:-0.2px;">
+                    ${p.nome}
+                    <span style="font-size:12px; font-weight:700; color:#64748b; background:#f1f5f9; padding:2px 8px; border-radius:10px; margin-left:6px;">${calcolaAnniDaData(p.dataNascita)} anni</span>
+                  </div>
+                  <div style="font-size:11.5px; color:#dc2626; font-weight:700; display:flex; align-items:center; gap:4px; margin-top:2px;">
+                    <span>⚠️</span> ${item.farmaci.length} ${item.farmaci.length === 1 ? 'Terapia in ritardo da assumere' : 'Terapie in ritardo da assumere'}
+                  </div>
                 </div>
               </div>
-              <button class="btn btn-primary" style="padding:6px 14px; font-size:12px; font-weight:800;" onclick="vaiACartellaPazienteDaAllarme('${p.id}', ${item.farmaci[0] ? item.farmaci[0].id : null})">
+              <button class="btn btn-primary" style="padding:7px 14px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color:#ffffff; border:none; border-radius:10px; box-shadow:0 2px 8px rgba(37,99,235,0.25); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" onclick="vaiACartellaPazienteDaAllarme('${p.id}', ${item.farmaci[0] ? item.farmaci[0].id : null})">
                 Vai alla Cartella di ${p.nome.split(' ')[0]} ➔
               </button>
             </div>
-            ${righeFarmaci}
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+              ${righeFarmaci}
+            </div>
           </div>
         `;
       }).join('');

@@ -634,21 +634,21 @@ body {
 
 /* CAREGIVER CARD */
 .caregiver-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
   border: 1.5px solid #bfdbfe;
-  border-radius: 14px;
-  padding: 10px 14px;
+  border-radius: 16px;
+  padding: 12px 16px;
   color: #1e3a8a;
-  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.06);
+  box-shadow: 0 4px 14px rgba(30, 64, 175, 0.06);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   transition: all 0.2s ease;
 }
 
 .caregiver-card:hover {
   border-color: #93c5fd;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
 }
 
 .caregiver-header {
@@ -666,7 +666,7 @@ body {
 }
 
 .cg-icon {
-  font-size: 17px;
+  font-size: 18px;
 }
 
 .cg-badge {
@@ -675,16 +675,17 @@ body {
   color: #1d4ed8;
   background: #dbeafe;
   border: 1px solid #bfdbfe;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 6px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
 
 .cg-name {
-  font-size: 13.5px;
-  color: #1e3a8a;
+  font-size: 15px;
+  color: #0f172a;
   font-weight: 800;
+  letter-spacing: -0.2px;
 }
 
 .cg-details {
@@ -1414,6 +1415,123 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
 }
 .modal-body::-webkit-scrollbar-thumb:hover {
   background: #64748b;
+}
+
+/* ==========================================================================
+   MODAL POPUP EMERGENZA TERAPIE IN RITARDO - DESIGN CLINICO AD ALTO IMPATTO
+   ========================================================================== */
+#modal-allarme-terapie .modal-card {
+  max-width: 760px;
+  border: 2.5px solid #ef4444 !important;
+  box-shadow: 0 25px 70px rgba(225, 29, 72, 0.45) !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+#modal-allarme-terapie .modal-header {
+  background: linear-gradient(135deg, #881337 0%, #be123c 45%, #e11d48 100%) !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.25) !important;
+  padding: 16px 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  box-shadow: 0 4px 15px rgba(190, 18, 60, 0.25) !important;
+}
+
+#modal-allarme-terapie .modal-header h3 {
+  color: #ffffff !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.3px !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+}
+
+#modal-allarme-terapie .modal-header p {
+  color: #ffe4e6 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  margin: 3px 0 0 0 !important;
+  letter-spacing: 0.2px !important;
+}
+
+#modal-allarme-terapie .modal-header button {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 2px solid rgba(255, 255, 255, 0.75) !important;
+  color: #ffffff !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#modal-allarme-terapie .modal-header button:hover {
+  background: #ffffff !important;
+  color: #be123c !important;
+  transform: scale(1.08) !important;
+}
+
+#modal-allarme-terapie .modal-body {
+  padding: 18px 20px !important;
+  background: #f8fafc !important;
+}
+
+#modal-allarme-terapie .modal-footer {
+  background: #ffffff !important;
+  border-top: 1.5px solid #fee2e2 !important;
+  padding: 14px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+/* CARDS PAZIENTE ED EMERGENZA ALLARME TERAPIE */
+.card-allarme-paziente {
+  background: #ffffff;
+  border: 1.5px solid #fca5a5;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.08);
+  transition: all 0.2s ease;
+}
+
+.card-allarme-paziente:hover {
+  border-color: #f87171;
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.12);
+}
+
+.card-allarme-farmaco-item {
+  background: linear-gradient(135deg, #ffffff 0%, #fffbfb 100%);
+  border: 1.5px solid #fee2e2;
+  border-left: 4.5px solid #e11d48;
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.card-allarme-farmaco-item:hover {
+  border-color: #fca5a5;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.1);
+  transform: translateY(-1px);
 }
 
 /* ==========================================================================
@@ -2263,9 +2381,23 @@ textarea.form-control {
   }
   .meta-item,
   .contact-chip {
-    font-size: 12.5px !important;
-    padding: 6px 12px !important;
-    border-radius: 12px !important;
+    font-size: 13px !important;
+    padding: 8px 14px !important;
+    border-radius: 14px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    background: #ffffff !important;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05) !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+  }
+  .patient-avatar-badge {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 16px !important;
+    font-size: 24px !important;
   }
   .action-icon-btn {
     width: 34px !important;
@@ -2572,29 +2704,66 @@ textarea.form-control {
     margin-bottom: 0 !important;
   }
 
-  /* MODAL ALLARME TERAPIE SU SMARTPHONE (FULL RESPONSIVE TOUCH) */
+  /* MODAL ALLARME TERAPIE SU SMARTPHONE (FULL RESPONSIVE TOUCH & HIGH-CONTRAST HEADER) */
   #modal-allarme-terapie .modal-card {
-    border-width: 2px !important;
-    border-radius: 16px !important;
+    border: 2.5px solid #ef4444 !important;
+    border-radius: 18px !important;
     max-height: 92vh !important;
     display: flex !important;
     flex-direction: column !important;
+    box-shadow: 0 20px 60px rgba(225, 29, 72, 0.45) !important;
   }
   #modal-allarme-terapie .modal-header {
-    padding: 12px 14px !important;
+    background: linear-gradient(135deg, #881337 0%, #be123c 45%, #e11d48 100%) !important;
+    color: #ffffff !important;
+    padding: 14px 16px !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.25) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
   }
   #modal-allarme-terapie .modal-header h3 {
-    font-size: 15px !important;
+    color: #ffffff !important;
+    font-size: 15.5px !important;
+    font-weight: 800 !important;
     line-height: 1.25 !important;
+    margin: 0 !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
   }
   #modal-allarme-terapie .modal-header p {
-    font-size: 10.5px !important;
+    color: #ffe4e6 !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    margin: 2px 0 0 0 !important;
+  }
+  #modal-allarme-terapie .modal-header button {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    border: 2px solid rgba(255, 255, 255, 0.85) !important;
+    color: #ffffff !important;
+    font-size: 17px !important;
+    font-weight: 900 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
   }
   #modal-allarme-terapie .modal-body {
-    padding: 10px 8px !important;
+    padding: 12px 10px !important;
     flex: 1 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
+    background: #f8fafc !important;
+  }
+  #modal-allarme-terapie .modal-footer {
+    background: #ffffff !important;
+    border-top: 1.5px solid #fee2e2 !important;
+    padding: 12px 14px !important;
   }
 
   /* BARRA INFERIORE DI CONTROLLO FISSA SU SMARTPHONE */
