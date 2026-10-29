@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -1748,116 +1749,150 @@
     </div>
   </div>
 
-  <!-- MODAL ELEGANTE AGGIUNGI / MODIFICA COLLABORATORE (ZERO PROMPT DEL BROWSER) -->
+  <!-- MODAL ELEGANTE AGGIUNGI / MODIFICA COLLABORATORE (MASSIMA LEGGIBILITÀ E ACCESSIBILITÀ) -->
   <div id="modal-nuovo-operatore" class="modal-backdrop">
-    <div class="modal-box" style="max-width:540px; max-height:92vh; overflow-y:auto;">
+    <div class="modal-box" style="max-width:640px; width:95%; max-height:92vh; overflow-y:auto; background:linear-gradient(180deg, #131c31 0%, #0c1424 100%); border:1.5px solid rgba(56,189,248,0.3); border-radius:18px; padding:24px 26px; box-shadow:0 25px 60px rgba(0,0,0,0.85), 0 0 35px rgba(56,189,248,0.18);">
       <input type="hidden" id="editing-op-id" value="">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; position:sticky; top:0; background:rgba(10,15,28,0.95); backdrop-filter:blur(8px); padding-bottom:8px; z-index:2; border-bottom:1px solid rgba(255,255,255,0.08);">
-        <div style="font-weight:900; font-size:17px; display:flex; align-items:center; gap:8px;">
-          <span id="icona-modal-op">👤</span> <span id="titolo-modal-op">Nuovo Collaboratore Roster</span>
+      
+      <!-- INTESTAZIONE MODALE -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; position:sticky; top:0; background:rgba(12,20,36,0.96); backdrop-filter:blur(10px); padding-bottom:12px; z-index:2; border-bottom:1px solid rgba(255,255,255,0.1);">
+        <div>
+          <div style="font-weight:900; font-size:20px; display:flex; align-items:center; gap:9px; color:#ffffff;">
+            <span id="icona-modal-op" style="font-size:22px;">✏️</span>
+            <span id="titolo-modal-op">Modifica Dati Collaboratore</span>
+          </div>
+          <div style="font-size:12.5px; color:#94a3b8; margin-top:3px; font-weight:500;">
+            Impostazione rapida di orari, mansione e recapiti per il Roster Assistenziale.
+          </div>
         </div>
-        <button onclick="chiudiModalNuovoOperatore()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#94a3b8;">✕</button>
+        <button onclick="chiudiModalNuovoOperatore()" title="Chiudi" style="background:rgba(255,255,255,0.08); border:none; border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; color:#cbd5e1; transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.2)'; this.style.color='#fca5a5';" onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.color='#cbd5e1';">✕</button>
       </div>
 
-      <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:20px;">
+      <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:20px;">
+        
+        <!-- CAMPO: NOME E COGNOME -->
         <div>
-          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Nome & Cognome</label>
-          <input type="text" id="nuovo-op-nome" placeholder="Es. Maria Cristina Stoppelli" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13.5px; font-weight:700; outline:none;">
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-          <div>
-            <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Ruolo / Specializzazione</label>
-            <input type="text" id="nuovo-op-ruolo" placeholder="Es. Infermiere SSN, OSS..." value="OSS Referente" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13px; font-weight:700; outline:none;">
-          </div>
-          <div>
-            <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Cellulare / WhatsApp</label>
-            <input type="tel" id="nuovo-op-tel" placeholder="Es. 338 739 7671" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13px; font-weight:700; outline:none;">
-          </div>
-        </div>
-
-        <!-- SEZIONE REGIME ORARIO: FULL TIME vs PART TIME -->
-        <div>
-          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:8px;">
-            Regime Contrattuale di Lavoro
+          <label style="display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:800; color:#f8fafc; margin-bottom:7px;">
+            <span style="color:#38bdf8; font-size:16px;">👤</span> Nome & Cognome Collaboratore
           </label>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
-            <label id="label-regime-ft" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; border-radius:10px; border:1.5px solid #0284c7; background:rgba(2,132,199,0.18); cursor:pointer; font-weight:800; font-size:13px; color:#ffffff; transition:all 0.2s;">
-              <input type="radio" name="nuovo_op_regime" value="full_time" checked onchange="aggiornaCampiRegimeOrarioModal('full_time')" style="display:none;">
-              <span>💼 Full Time (Tempo Pieno)</span>
+          <input type="text" id="nuovo-op-nome" placeholder="Es. Maria Cristina Stoppelli" style="width:100%; background:rgba(15,23,42,0.85); border:1.5px solid rgba(255,255,255,0.18); border-radius:11px; padding:12px 14px; color:#ffffff; font-size:15px; font-weight:700; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='#38bdf8'" onblur="this.style.borderColor='rgba(255,255,255,0.18)'">
+        </div>
+
+        <!-- CAMPI: RUOLO E CELLULARE (2 COLONNE CHIARE) -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:800; color:#f8fafc; margin-bottom:7px;">
+              <span style="color:#38bdf8; font-size:16px;">💼</span> Ruolo / Specializzazione
             </label>
-            <label id="label-regime-pt" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); cursor:pointer; font-weight:800; font-size:13px; color:#94a3b8; transition:all 0.2s;">
+            <input type="text" id="nuovo-op-ruolo" placeholder="Es. OSS, Infermiere SSN..." value="OSS Referente" style="width:100%; background:rgba(15,23,42,0.85); border:1.5px solid rgba(255,255,255,0.18); border-radius:11px; padding:12px 14px; color:#ffffff; font-size:14.5px; font-weight:700; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='#38bdf8'" onblur="this.style.borderColor='rgba(255,255,255,0.18)'">
+          </div>
+          <div>
+            <label style="display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:800; color:#f8fafc; margin-bottom:7px;">
+              <span style="color:#22c55e; font-size:16px;">📱</span> Cellulare / WhatsApp
+            </label>
+            <input type="tel" id="nuovo-op-tel" placeholder="Es. 338 739 7671" style="width:100%; background:rgba(15,23,42,0.85); border:1.5px solid rgba(255,255,255,0.18); border-radius:11px; padding:12px 14px; color:#ffffff; font-size:14.5px; font-weight:700; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='#22c55e'" onblur="this.style.borderColor='rgba(255,255,255,0.18)'">
+          </div>
+        </div>
+
+        <!-- SEZIONE REGIME CONTRATTUALE: FULL TIME vs PART TIME -->
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:15px;">
+          <label style="display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:800; color:#f8fafc; margin-bottom:10px;">
+            <span style="color:#f59e0b; font-size:16px;">⚖️</span> Regime di Lavoro Contrattuale
+          </label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+            <label id="label-regime-ft" style="display:flex; align-items:center; gap:12px; padding:13px 15px; border-radius:12px; border:2px solid #38bdf8; background:linear-gradient(135deg, rgba(14,165,233,0.25) 0%, rgba(2,132,199,0.15) 100%); cursor:pointer; font-weight:800; color:#ffffff; transition:all 0.2s; user-select:none; box-shadow:0 0 16px rgba(56,189,248,0.2);">
+              <input type="radio" name="nuovo_op_regime" value="full_time" checked onchange="aggiornaCampiRegimeOrarioModal('full_time')" style="display:none;">
+              <span style="font-size:26px;">☀️</span>
+              <div style="text-align:left;">
+                <div style="font-size:15px; font-weight:800; line-height:1.2;">Full Time</div>
+                <div style="font-size:12px; opacity:0.85; font-weight:500;">Tempo Pieno (36h – 40h)</div>
+              </div>
+            </label>
+            <label id="label-regime-pt" style="display:flex; align-items:center; gap:12px; padding:13px 15px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); cursor:pointer; font-weight:800; color:#94a3b8; transition:all 0.2s; user-select:none;">
               <input type="radio" name="nuovo_op_regime" value="part_time" onchange="aggiornaCampiRegimeOrarioModal('part_time')" style="display:none;">
-              <span>⏱️ Part Time (Tempo Parziale)</span>
+              <span style="font-size:26px;">⏳</span>
+              <div style="text-align:left;">
+                <div style="font-size:15px; font-weight:800; line-height:1.2;">Part Time</div>
+                <div style="font-size:12px; opacity:0.85; font-weight:500;">Tempo Parziale (18h – 30h)</div>
+              </div>
             </label>
           </div>
 
           <!-- BOX OPZIONI CONDIZIONI FULL TIME -->
           <div id="box-condizioni-ft" style="display:block;">
-            <label style="display:block; font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:5px;">
-              Condizioni Full Time (CCNL & Distribuzione Oraria):
+            <label style="display:block; font-size:12.5px; font-weight:800; color:#38bdf8; margin-bottom:6px;">
+              📋 Contratto Full Time & Modello Orario:
             </label>
-            <select id="nuovo-op-condizione-ft" onchange="aggiornaDettaglioInfoContratto()" style="width:100%; background:#0f172a; border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:10px 12px; color:#fff; font-size:12.5px; font-weight:700; outline:none;">
-              <option value="ft_ssn_turnista_36h" selected>🩺 SSN Turnista H24 Continuo — 36h medie (CCNL Sanità • P-M-N-S-R)</option>
-              <option value="ft_ssn_36h_5gg">🏛️ SSN Settimana Corta (5 giorni) — 36h (7h 12m/gg, Sab-Dom liberi)</option>
-              <option value="ft_ssn_36h_6gg">📅 SSN Standard (6 giorni) — 36h (6h al giorno lunedì-sabato)</option>
-              <option value="ft_coop_turnista_38h">🤝 Cooperative Sociali Turnista H24 — 38h (CCNL Coop Sociali • RSA)</option>
-              <option value="ft_coop_38h_5gg">🏢 Cooperative Sociali Diurno / ADI — 38h (7,6h al giorno o a scorrimento)</option>
-              <option value="ft_privata_36h">🏥 Sanità Privata AIOP / ARIS — 36h (Cliniche e degenze convenzionate)</option>
-              <option value="ft_standard_40h">⏱️ Full Time 40h Standard / CCNL UNEBA (8h al giorno su 5 giorni)</option>
+            <select id="nuovo-op-condizione-ft" onchange="aggiornaDettaglioInfoContratto()" style="width:100%; background:#0b1324; border:1.5px solid rgba(56,189,248,0.4); border-radius:11px; padding:12px 14px; color:#ffffff; font-size:14px; font-weight:700; outline:none; cursor:pointer;">
+              <option value="ft_ssn_turnista_36h" selected>🏥 SSN Ospedaliero Turnista H24 — 36 ore (CCNL Sanità • Turni P-M-N-S-R)</option>
+              <option value="ft_ssn_36h_5gg">📅 SSN Settimana Corta (5 Giorni) — 36 ore (Lun - Ven, weekend liberi)</option>
+              <option value="ft_ssn_36h_6gg">⏱️ SSN Standard (6 Giorni) — 36 ore (6h al giorno Lun-Sab)</option>
+              <option value="ft_privata_36h">🏢 Sanità Privata AIOP / ARIS — 36 ore (Cliniche e degenze convenzionate)</option>
+              <option value="ft_coop_turnista_38h">🤝 Cooperative Sociali Turnista H24 — 38 ore (CCNL Coop Sociali • RSA)</option>
+              <option value="ft_coop_38h_5gg">🚗 Cooperative Sociali Diurno / ADI — 38 ore (Assistenza domiciliare)</option>
+              <option value="ft_standard_40h">💼 Full Time Standard UNEBA — 40 ore (8h al giorno Lun-Ven)</option>
             </select>
           </div>
 
           <!-- BOX OPZIONI CONDIZIONI PART TIME -->
           <div id="box-condizioni-pt" style="display:none;">
-            <label style="display:block; font-size:11px; font-weight:800; color:#fb923c; text-transform:uppercase; margin-bottom:5px;">
-              Condizioni Part Time (CCNL & Percentuale / Articolazione):
+            <label style="display:block; font-size:12.5px; font-weight:800; color:#fb923c; margin-bottom:6px;">
+              📋 Contratto Part Time & Articolazione:
             </label>
-            <select id="nuovo-op-condizione-pt" onchange="aggiornaDettaglioInfoContratto()" style="width:100%; background:#0f172a; border:1px solid rgba(251,146,60,0.3); border-radius:10px; padding:10px 12px; color:#fff; font-size:12.5px; font-weight:700; outline:none;">
-              <option value="pt_orizzontale_18h">⏱️ Part Time 50% Orizzontale — 18h settimanali (3h 36m/gg o mezze giornate)</option>
-              <option value="pt_orizzontale_20h" selected>⏱️ Part Time 20h Orizzontale — 20h settimanali (4h al giorno per 5 giorni)</option>
-              <option value="pt_orizzontale_24h">⏱️ Part Time ~66% Orizzontale — 24h settimanali (CCNL Sanità / Coop Sociali)</option>
-              <option value="pt_orizzontale_30h">⏱️ Part Time ~80% Orizzontale — 30h settimanali (6h al giorno per 5 giorni)</option>
-              <option value="pt_verticale_3gg">📅 Part Time Verticale (3 Giorni) — 21h/sett (3 giorni lavorativi a tempo pieno)</option>
-              <option value="pt_verticale_4gg">📅 Part Time Verticale (4 Giorni) — 28h/sett (4 giorni lavorativi a tempo pieno)</option>
-              <option value="pt_ciclico_turnista">🔄 Part Time Ciclico Turnista — 20h medie (Turni rotanti a settimane alterne)</option>
+            <select id="nuovo-op-condizione-pt" onchange="aggiornaDettaglioInfoContratto()" style="width:100%; background:#0b1324; border:1.5px solid rgba(251,146,60,0.4); border-radius:11px; padding:12px 14px; color:#ffffff; font-size:14px; font-weight:700; outline:none; cursor:pointer;">
+              <option value="pt_orizzontale_20h" selected>⏱️ Part Time 20 ore (4h al giorno da Lunedì a Venerdì)</option>
+              <option value="pt_orizzontale_18h">⏱️ Part Time 18 ore / 50% (3h 36m/gg o mezze giornate)</option>
+              <option value="pt_orizzontale_24h">⏱️ Part Time 24 ore / ~66% (CCNL Sanità / Coop Sociali)</option>
+              <option value="pt_orizzontale_30h">⏱️ Part Time 30 ore / ~80% (6h al giorno Lun-Ven)</option>
+              <option value="pt_verticale_3gg">📆 Part Time Verticale (3 Giorni interi a settimana — 21h)</option>
+              <option value="pt_verticale_4gg">📆 Part Time Verticale (4 Giorni interi a settimana — 28h)</option>
+              <option value="pt_ciclico_turnista">🔄 Part Time Ciclico Turnista (20 ore medie a settimane rotanti)</option>
             </select>
           </div>
 
           <!-- INFO DESCRITTIVA CONTRATTUALE -->
-          <div id="info-regime-dettaglio" style="margin-top:8px; background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.2); border-radius:10px; padding:9px 12px; font-size:11.5px; color:#cbd5e1; line-height:1.45;">
+          <div id="info-regime-dettaglio" style="margin-top:10px; background:rgba(56,189,248,0.08); border:1.5px solid rgba(56,189,248,0.25); border-radius:11px; padding:11px 14px; font-size:12.5px; color:#e2e8f0; line-height:1.45;">
             <!-- Aggiornato via JS -->
           </div>
         </div>
 
+        <!-- CAMPO: PROFILO TURNAZIONE PREDEFINITO -->
         <div>
-          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Profilo Turnazione Predefinito</label>
-          <select id="nuovo-op-profilo" style="width:100%; background:#0f172a; border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13px; font-weight:700; outline:none;">
-            <option value="infermiere_ssn">🩺 Infermiere Reparto / SSN (Ciclo P - M - N - S - R)</option>
-            <option value="misto_pn" selected>🌙 Misto: Pomeriggio / Notte + Reperibilità (Consigliato)</option>
-            <option value="diurno">☀️ Diurno: Mattina & Pomeriggio</option>
-            <option value="full_h24">⭐ Full H24: Tutte le fasce orarie</option>
+          <label style="display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:800; color:#f8fafc; margin-bottom:7px;">
+            <span style="color:#a855f7; font-size:16px;">🔄</span> Profilo Turnazione Predefinito
+          </label>
+          <select id="nuovo-op-profilo" style="width:100%; background:#0b1324; border:1.5px solid rgba(255,255,255,0.18); border-radius:11px; padding:12px 14px; color:#ffffff; font-size:14.5px; font-weight:700; outline:none; cursor:pointer;">
+            <option value="infermiere_ssn">🏥 Infermiere Reparto / SSN (Ciclo Continuo P - M - N - S - R)</option>
+            <option value="misto_pn" selected>🌗 Misto Pomeriggio / Notte + Reperibilità (Consigliato)</option>
+            <option value="diurno">☀️ Solo Diurno: Mattina & Pomeriggio (No notti)</option>
+            <option value="full_h24">🌐 Full H24: Tutte le fasce orarie disponibili</option>
           </select>
         </div>
 
-        <label style="display:flex; align-items:center; gap:10px; background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); border-radius:10px; padding:10px 14px; cursor:pointer;">
-          <input type="checkbox" id="nuovo-op-disp" checked style="width:18px; height:18px; accent-color:#a855f7;">
-          <span style="font-size:12.5px; color:#e9d5ff; font-weight:700;">🦺 Disponibile per coperture ed emergenze nei giorni liberi</span>
+        <!-- CHECKBOX: DISPONIBILITÀ EMERGENZE -->
+        <label style="display:flex; align-items:center; gap:12px; background:rgba(168,85,247,0.12); border:1.5px solid rgba(168,85,247,0.35); border-radius:12px; padding:12px 16px; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='rgba(168,85,247,0.18)'" onmouseout="this.style.background='rgba(168,85,247,0.12)'">
+          <input type="checkbox" id="nuovo-op-disp" checked style="width:20px; height:20px; accent-color:#a855f7; cursor:pointer; flex-shrink:0;">
+          <div>
+            <div style="font-size:14px; color:#ffffff; font-weight:800;">🚨 Disponibile per Reperibilità & Sostituzioni di Emergenza</div>
+            <div style="font-size:12px; color:#d8b4fe; font-weight:500;">Attiva la presenza nella lista reperibilità rapida in caso di imprevisti o cambi turno.</div>
+          </div>
         </label>
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; position:sticky; bottom:0; background:rgba(10,15,28,0.95); backdrop-filter:blur(8px); padding-top:10px; border-top:1px solid rgba(255,255,255,0.08);">
-        <button type="button" class="btn" id="btn-elimina-op" style="background:rgba(239,68,68,0.15); border:1px solid #ef4444; color:#fca5a5; display:none;" onclick="confermaEliminaOperatore()">
+      <!-- PULSANTI AZIONE (GRANDI, IMPOSSIBILE SBAGLIARE) -->
+      <div style="display:flex; justify-content:space-between; align-items:center; position:sticky; bottom:0; background:rgba(12,20,36,0.96); backdrop-filter:blur(10px); padding-top:14px; margin-top:10px; border-top:1px solid rgba(255,255,255,0.1);">
+        <button type="button" class="btn" id="btn-elimina-op" style="background:rgba(239,68,68,0.15); border:1.5px solid #ef4444; color:#fca5a5; font-weight:800; font-size:14px; padding:11px 18px; border-radius:11px; display:none; cursor:pointer;" onclick="confermaEliminaOperatore()">
           🗑️ Rimuovi
         </button>
-        <div style="display:flex; gap:10px; margin-left:auto;">
-          <button class="btn btn-ghost" onclick="chiudiModalNuovoOperatore()">Annulla</button>
-          <button class="btn btn-emerald" id="btn-salva-op" onclick="salvaNuovoOperatoreDaModal()">
-            💾 Salva nel Roster
+        <div style="display:flex; gap:12px; margin-left:auto;">
+          <button class="btn btn-ghost" onclick="chiudiModalNuovoOperatore()" style="font-size:14px; font-weight:700; padding:11px 18px; border-radius:11px; cursor:pointer; color:#cbd5e1; border:1px solid rgba(255,255,255,0.15);">Annulla</button>
+          <button class="btn btn-emerald" id="btn-salva-op" onclick="salvaNuovoOperatoreDaModal()" style="font-size:15px; font-weight:800; padding:12px 24px; border-radius:11px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; box-shadow:0 4px 14px rgba(16,185,129,0.35); cursor:pointer;">
+            💾 Salva Modifiche
           </button>
         </div>
       </div>
     </div>
+  </div>
   </div>
 
   <!-- MODAL ELEGANTE SBLOCCO PIN ADMIN (ZERO PROMPT DEL BROWSER) -->
@@ -2487,13 +2522,15 @@
       if (boxPt) boxPt.style.display = isFt ? 'none' : 'block';
       
       if (lblFt) {
-        lblFt.style.border = isFt ? '1.5px solid #0284c7' : '1px solid rgba(255,255,255,0.15)';
-        lblFt.style.background = isFt ? 'rgba(2,132,199,0.2)' : 'rgba(255,255,255,0.04)';
+        lblFt.style.border = isFt ? '2px solid #38bdf8' : '1.5px solid rgba(255,255,255,0.12)';
+        lblFt.style.background = isFt ? 'linear-gradient(135deg, rgba(14,165,233,0.25) 0%, rgba(2,132,199,0.15) 100%)' : 'rgba(255,255,255,0.03)';
+        lblFt.style.boxShadow = isFt ? '0 0 16px rgba(56,189,248,0.25)' : 'none';
         lblFt.style.color = isFt ? '#ffffff' : '#94a3b8';
       }
       if (lblPt) {
-        lblPt.style.border = !isFt ? '1.5px solid #f97316' : '1px solid rgba(255,255,255,0.15)';
-        lblPt.style.background = !isFt ? 'rgba(249,115,22,0.2)' : 'rgba(255,255,255,0.04)';
+        lblPt.style.border = !isFt ? '2px solid #f97316' : '1.5px solid rgba(255,255,255,0.12)';
+        lblPt.style.background = !isFt ? 'linear-gradient(135deg, rgba(249,115,22,0.25) 0%, rgba(234,88,12,0.15) 100%)' : 'rgba(255,255,255,0.03)';
+        lblPt.style.boxShadow = !isFt ? '0 0 16px rgba(249,115,22,0.25)' : 'none';
         lblPt.style.color = !isFt ? '#ffffff' : '#94a3b8';
       }
       aggiornaDettaglioInfoContratto();
@@ -2511,24 +2548,24 @@
         : (document.getElementById('nuovo-op-condizione-pt')?.value || 'pt_orizzontale_20h');
       
       const info = (window.REGIMI_ORARI_INFO && window.REGIMI_ORARI_INFO[cond]) || {
-        nome: isFt ? 'Full Time Standard' : 'Part Time',
+        nome: isFt ? 'Full Time SSN Turnista H24' : 'Part Time 20h Orizzontale',
         ore: isFt ? 36 : 20,
-        ccnl: 'CCNL Sanità / Assistenza',
-        desc: 'Orario settimanale ordinario conforme alle normative vigenti.'
+        ccnl: isFt ? 'CCNL Sanità Pubblica' : 'CCNL Sanità / Cooperative',
+        desc: isFt ? '36 ore medie settimanali con rotazione continua H24 (P-M-N-S-R).' : '20 ore settimanali ordinarie distribuite su 5 giorni.'
       };
 
       const box = document.getElementById('info-regime-dettaglio');
       if (box) {
         box.innerHTML = `
-          <div style="font-weight:800; color:#ffffff; display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-            <span>📋 ${info.nome}</span>
-            <span style="color:${isFt ? '#38bdf8' : '#fb923c'}; font-size:12px; font-weight:900;">${info.ore}h / settimana</span>
+          <div style="font-weight:800; color:#ffffff; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:8px;">
+            <span style="font-size:14px; font-weight:800; color:#ffffff;">📋 ${info.nome}</span>
+            <span style="background:${isFt ? 'rgba(56,189,248,0.2)' : 'rgba(251,146,60,0.2)'}; color:${isFt ? '#38bdf8' : '#fb923c'}; font-size:12.5px; font-weight:900; padding:4px 10px; border-radius:20px; border:1px solid ${isFt ? 'rgba(56,189,248,0.4)' : 'rgba(251,146,60,0.4)'};">⚡ ${info.ore} ore / settimana</span>
           </div>
-          <div style="font-size:11px; color:#94a3b8; font-weight:700;">${info.ccnl}</div>
-          <div style="font-size:11px; color:#cbd5e1; margin-top:3px; line-height:1.4;">${info.desc}</div>
+          <div style="font-size:12.5px; color:#cbd5e1; font-weight:700; margin-bottom:4px;">Inquadramento: <span style="color:#ffffff;">${info.ccnl}</span></div>
+          <div style="font-size:12.5px; color:#94a3b8; line-height:1.45;">${info.desc}</div>
         `;
-        box.style.borderColor = isFt ? 'rgba(56,189,248,0.3)' : 'rgba(251,146,60,0.3)';
-        box.style.background = isFt ? 'rgba(56,189,248,0.06)' : 'rgba(251,146,60,0.06)';
+        box.style.borderColor = isFt ? 'rgba(56,189,248,0.35)' : 'rgba(251,146,60,0.35)';
+        box.style.background = isFt ? 'rgba(56,189,248,0.08)' : 'rgba(251,146,60,0.08)';
       }
     }
 
