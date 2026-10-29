@@ -6578,6 +6578,70 @@ function ripetiScansioneFotoFarmaco(modo, targetModal) {
 }
 window.ripetiScansioneFotoFarmaco = ripetiScansioneFotoFarmaco;
 
+function apriSchedaWebProdottoNonFarmaco(query) {
+  const q = query || (_ultimoFarmacoRiconosciutoScanner ? (_ultimoFarmacoRiconosciutoScanner.queryWeb || _ultimoFarmacoRiconosciutoScanner.nome) : 'collutorio indicazioni');
+  const cleanQ = String(q).replace(/[🚭🚫🩵🫧🍬🧴]/g, '').trim();
+  window.open(`https://www.google.com/search?q=${encodeURIComponent(cleanQ + ' a cosa serve modalità d\'uso indicazioni')}`, '_blank');
+}
+window.apriSchedaWebProdottoNonFarmaco = apriSchedaWebProdottoNonFarmaco;
+
+function inserisciComunqueParafarmacoInPiano(targetModal) {
+  const nf = _ultimoFarmacoRiconosciutoScanner;
+  if (!nf) return;
+  const nomePulito = String(nf.nome || 'Presidio').replace(/[🚭🚫🩵🫧🍬🧴]/g, '').trim();
+  const fSupporto = {
+    nome: `${nomePulito} [Presidio/Parafarmaco]`,
+    nomePersonalizzato: `${nomePulito} [Presidio/Parafarmaco]`,
+    principio: nf.principio || 'Presidio Medico / Parafarmaco (Non Farmaco)',
+    dosaggio: nf.dosaggioConsigliato || '1 applicazione / utilizzo',
+    modo: nf.modalitaUso || nf.modo || 'Secondo indicazione medica',
+    indicazione: nf.indicazione || '',
+    cpr: 1,
+    cprRilevate: 1,
+    ora: nf.oraConsigliata || '09:00',
+    fascia: nf.fasciaConsigliata || 'Mattina (Colazione)',
+    isNonFarmaco: false
+  };
+  applicaFarmacoDaScanner(fSupporto.nome, targetModal || 'capsula', fSupporto);
+  if (typeof showToast === 'function') {
+    showToast(`🩵 "${nomePulito}" inserito come Promemoria Presidio/Supporto per il Caregiver!`);
+  }
+}
+window.inserisciComunqueParafarmacoInPiano = inserisciComunqueParafarmacoInPiano;
+
+async function eseguiRicercaWebLiveNonFarmaco(queryRicerca, boxDomId) {
+  const elBox = document.getElementById(boxDomId);
+  if (!elBox || !queryRicerca) return;
+  try {
+    const q = String(queryRicerca).replace(/[🚭🚫🩵🫧🍬🧴]/g, '').trim();
+    const searchUrl = `https://it.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&utf8=&format=json&origin=*&srlimit=1`;
+    const res = await fetch(searchUrl);
+    if (!res.ok) return;
+    const data = await res.json();
+    const firstHit = data && data.query && data.query.search && data.query.search[0];
+    if (!firstHit || !firstHit.title) return;
+
+    const summaryUrl = `https://it.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(firstHit.title)}`;
+    const sumRes = await fetch(summaryUrl);
+    if (!sumRes.ok) return;
+    const sumData = await sumRes.json();
+    if (sumData && sumData.extract) {
+      const estrattoBreve = sumData.extract.length > 260
+        ? sumData.extract.slice(0, 257).trim() + '...'
+        : sumData.extract;
+      elBox.style.display = 'block';
+      elBox.innerHTML = `
+        <div style="font-size:10.5px; font-weight:800; color:#38bdf8; margin-bottom:2px; display:flex; align-items:center; justify-content:space-between;">
+          <span>🌐 RICERCA LIVE IN RETE (${sumData.title}):</span>
+          <span style="font-size:9.5px; background:rgba(56,189,248,0.2); color:#bae6fd; padding:1px 5px; border-radius:4px;">ONLINE</span>
+        </div>
+        <div style="font-size:11px; color:#e2e8f0; line-height:1.35;">${estrattoBreve}</div>
+      `;
+    }
+  } catch (e) {}
+}
+window.eseguiRicercaWebLiveNonFarmaco = eseguiRicercaWebLiveNonFarmaco;
+
 function mostraCardNonFarmacoScanner(nonFarmaco, targetModal, previewDataUrl) {
   if (!nonFarmaco) return;
   _ultimoFarmacoRiconosciutoScanner = nonFarmaco;
@@ -6588,50 +6652,77 @@ function mostraCardNonFarmacoScanner(nonFarmaco, targetModal, previewDataUrl) {
   const statusText = document.getElementById(isCapsula ? 'scan-status-text' : 'scan-status-text-alt');
   const infoContainer = document.getElementById(isCapsula ? 'scan-detected-info' : 'scan-detected-info-alt');
 
+  const isParafarmaco = Boolean(nonFarmaco.isParafarmaco);
   const isFumo = nonFarmaco.categoriaNonFarmaco === 'fumo';
+  const liveWebBoxId = isCapsula ? 'nonfarmaco-web-live-capsula' : 'nonfarmaco-web-live-nuovo';
 
   if (boxResult) {
     boxResult.style.display = 'block';
-    boxResult.style.borderColor = '#ef4444';
-    boxResult.style.background = 'rgba(127, 29, 29, 0.38)';
+    boxResult.style.borderColor = isParafarmaco ? '#38bdf8' : '#ef4444';
+    boxResult.style.background = isParafarmaco ? 'rgba(12, 74, 110, 0.38)' : 'rgba(127, 29, 29, 0.38)';
   }
-  if (statusIcon) statusIcon.textContent = isFumo ? '🚭' : '🚫';
+  if (statusIcon) statusIcon.textContent = isParafarmaco ? '🩵' : (isFumo ? '🚭' : '🚫');
   if (statusText) {
-    statusText.style.color = '#fca5a5';
-    statusText.textContent = nonFarmaco.titolo || '🚫 RILEVATO NON-FARMACO — Inserimento in Terapia Bloccato!';
+    statusText.style.color = isParafarmaco ? '#7dd3fc' : '#fca5a5';
+    statusText.textContent = nonFarmaco.titolo || (isParafarmaco
+      ? '🩵 RILEVATO PARAFARMACO / PRESIDIO MEDICO (NON È UN FARMACO SISTEMICO)'
+      : '🚫 RILEVATO NON-FARMACO — Inserimento in Terapia Bloccato!');
   }
 
   if (infoContainer) {
+    const borderCol = isParafarmaco ? '#38bdf8' : '#ef4444';
+    const badgeBg = isParafarmaco ? '#0284c7' : '#dc2626';
+    const badgeLabel = isParafarmaco ? 'NON È UN FARMACO • PRESIDIO / PARAFARMACO' : 'NON FARMACO';
     const thumbHtml = previewDataUrl
-      ? `<img src="${previewDataUrl}" alt="Oggetto" style="width:52px; height:52px; object-fit:cover; border-radius:8px; border:2px solid #ef4444; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.4);">`
-      : `<div style="width:48px; height:48px; border-radius:8px; background:rgba(239,68,68,0.25); border:1.5px solid #ef4444; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">${isFumo ? '🚭' : '🚫'}</div>`;
+      ? `<img src="${previewDataUrl}" alt="Oggetto" style="width:52px; height:52px; object-fit:cover; border-radius:8px; border:2px solid ${borderCol}; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.4);">`
+      : `<div style="width:48px; height:48px; border-radius:8px; background:${isParafarmaco ? 'rgba(56,189,248,0.2)' : 'rgba(239,68,68,0.25)'}; border:1.5px solid ${borderCol}; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">${isParafarmaco ? '🫧' : (isFumo ? '🚭' : '🚫')}</div>`;
+
+    const usoCaregiverHtml = nonFarmaco.modalitaUso ? `
+      <div style="font-size:11.5px; color:#e0f2fe; margin-top:5px; line-height:1.38; background:rgba(2,132,199,0.22); border-left:3px solid #38bdf8; padding:6px 8px; border-radius:4px;">
+        📋 <b>COME SI USA (GUIDA PER CAREGIVER & OPERATORE):</b><br>
+        <span>${nonFarmaco.modalitaUso}</span>
+      </div>
+    ` : '';
+
+    const btnInserisciPresidio = isParafarmaco ? `
+      <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; border-radius:6px; cursor:pointer;" onclick="inserisciComunqueParafarmacoInPiano('${targetModal}')">
+        ➕ Inserisci come Promemoria Igiene/Presidio
+      </button>
+    ` : '';
+
     infoContainer.innerHTML = `
-      <div style="background:#0f172a; border:1.5px solid #ef4444; border-radius:8px; padding:9px 11px; margin-top:6px;">
+      <div style="background:#0f172a; border:1.5px solid ${borderCol}; border-radius:8px; padding:9px 11px; margin-top:6px;">
         <div style="display:flex; align-items:flex-start; gap:10px;">
           ${thumbHtml}
           <div style="flex:1; min-width:0;">
-            <div style="font-size:13px; font-weight:800; color:#fecaca; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
+            <div style="font-size:13px; font-weight:800; color:${isParafarmaco ? '#bae6fd' : '#fecaca'}; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
               <span>${nonFarmaco.nome}</span>
-              <span style="font-size:10px; background:#dc2626; color:#ffffff; padding:2px 7px; border-radius:6px; font-weight:900; letter-spacing:0.4px;">NON FARMACO</span>
+              <span style="font-size:9.5px; background:${badgeBg}; color:#ffffff; padding:2px 7px; border-radius:6px; font-weight:900; letter-spacing:0.4px;">${badgeLabel}</span>
             </div>
             <div style="font-size:11.5px; color:#fde68a; margin-top:3px; font-weight:700;">
               🔎 <b>Confezione Reale Rilevata:</b> ${nonFarmaco.principio}
             </div>
           </div>
         </div>
-        <div style="font-size:11.5px; color:#fee2e2; margin-top:6px; line-height:1.4; background:rgba(185,28,28,0.35); border-left:3px solid #ef4444; padding:6px 8px; border-radius:4px;">
-          ⚠️ <b>AVVERTENZA SALUTE & SCUDO CLINICO AI:</b><br>
+        <div style="font-size:11.5px; color:${isParafarmaco ? '#ecfdf5' : '#fee2e2'}; margin-top:6px; line-height:1.4; background:${isParafarmaco ? 'rgba(6,95,70,0.35)' : 'rgba(185,28,28,0.35)'}; border-left:3px solid ${isParafarmaco ? '#10b981' : '#ef4444'}; padding:6px 8px; border-radius:4px;">
+          ${isParafarmaco ? '🩺 <b>A COSA SERVE (SPIEGAZIONE AL FAMILIARE / OPERATORE):</b>' : '⚠️ <b>AVVERTENZA SALUTE & SCUDO CLINICO AI:</b>'}<br>
           <span>${nonFarmaco.indicazione}</span>
         </div>
-        <div style="font-size:11px; color:#94a3b8; margin-top:5px;">
-          🔒 <i>Il modulo della terapia non è stato compilato perché il prodotto inquadrato non è un medicinale autorizzato AIFA.</i>
+        ${usoCaregiverHtml}
+        <div id="${liveWebBoxId}" style="display:none; margin-top:6px; padding:6px 8px; background:rgba(15,23,42,0.9); border:1px dashed #38bdf8; border-radius:6px;"></div>
+        <div style="font-size:10.5px; color:#94a3b8; margin-top:5px;">
+          ℹ️ <i>${isParafarmaco ? 'Non essendo un farmaco sistemico AIFA, il modulo non viene compilato in automatico; puoi ascoltare la guida d\'uso o aggiungerlo come promemoria assistenziale.' : 'Il modulo della terapia non è stato compilato perché il prodotto inquadrato non è un medicinale autorizzato AIFA.'}</i>
         </div>
         <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
-          <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(239,68,68,0.22); color:#fecaca; border:1px solid #f87171; border-radius:6px; cursor:pointer;" onclick="pronunciaCaratteristicheFarmaco()">
-            🔊 Riascolta Avviso Salute
+          <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:${isParafarmaco ? 'rgba(56,189,248,0.22)' : 'rgba(239,68,68,0.22)'}; color:${isParafarmaco ? '#7dd3fc' : '#fecaca'}; border:1px solid ${isParafarmaco ? '#38bdf8' : '#f87171'}; border-radius:6px; cursor:pointer;" onclick="pronunciaCaratteristicheFarmaco()">
+            🔊 ${isParafarmaco ? 'Ascolta Spiegazione & Uso' : 'Riascolta Avviso Salute'}
           </button>
+          <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(139,92,246,0.22); color:#ddd6fe; border:1px solid #a78bfa; border-radius:6px; cursor:pointer;" onclick="apriSchedaWebProdottoNonFarmaco()">
+            🌐 Ricerca Scheda in Rete
+          </button>
+          ${btnInserisciPresidio}
           <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(245,158,11,0.18); color:#fde68a; border:1px solid #f59e0b; border-radius:6px; cursor:pointer;" onclick="ripetiScansioneFotoFarmaco('camera', '${targetModal}')">
-            📷 Fotografa un Farmaco
+            📷 Ripeti Foto
           </button>
           <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:700; background:rgba(255,255,255,0.1); color:#e2e8f0; border:1px solid rgba(255,255,255,0.3); border-radius:6px; cursor:pointer;" onclick="ripetiScansioneFotoFarmaco('gallery', '${targetModal}')">
             🖼️ Altra da Galleria
@@ -6639,17 +6730,27 @@ function mostraCardNonFarmacoScanner(nonFarmaco, targetModal, previewDataUrl) {
         </div>
       </div>
     `;
+
+    // Avvia la ricerca veloce live in rete per arricchire la scheda con informazioni enciclopediche/mediche aggiornate
+    if (nonFarmaco.queryWeb) {
+      eseguiRicercaWebLiveNonFarmaco(nonFarmaco.queryWeb, liveWebBoxId);
+    }
   }
 }
 window.mostraCardNonFarmacoScanner = mostraCardNonFarmacoScanner;
 
 function simulaRilevamentoNonFarmacoDemo(tipo, targetModal) {
-  const testoSimulato = (tipo === 'alimento') ? 'valori nutrizionali kcal caramelle' : 'pacchetto sigarette il fumo nuoce gravemente alla salute';
+  let testoSimulato = 'pacchetto sigarette il fumo nuoce gravemente alla salute';
+  if (tipo === 'collutorio') {
+    testoSimulato = 'curasept collutorio clorexidina 0,20 sciacqui cavo orale gengive antiplacca';
+  } else if (tipo === 'alimento') {
+    testoSimulato = 'valori nutrizionali kcal caramelle';
+  }
   const nf = rilevaOggettoNonFarmacoDaTesto(testoSimulato);
   if (nf) {
     mostraCardNonFarmacoScanner(nf, targetModal || 'capsula', '');
     pronunciaCaratteristicheFarmaco(nf);
-    showToast(`🚫 Rilevato NON-FARMACO: ${nf.nome}!`, 'warning');
+    showToast(`${nf.isParafarmaco ? '🩵 Rilevato Presidio/Parafarmaco' : '🚫 Rilevato NON-FARMACO'}: ${nf.nome}!`, nf.isParafarmaco ? 'info' : 'warning');
   }
 }
 window.simulaRilevamentoNonFarmacoDemo = simulaRilevamentoNonFarmacoDemo;
@@ -6889,7 +6990,12 @@ async function gestisciFotoFarmaco(event, targetModal) {
     if (farmacoRiconosciuto && farmacoRiconosciuto.isNonFarmaco) {
       mostraCardNonFarmacoScanner(farmacoRiconosciuto, targetModal, previewDataUrl);
       pronunciaCaratteristicheFarmaco(farmacoRiconosciuto);
-      showToast(`🚫 Rilevato NON-FARMACO: ${farmacoRiconosciuto.nome}! Inserimento bloccato.`, 'warning');
+      showToast(
+        farmacoRiconosciuto.isParafarmaco
+          ? `🩵 Rilevato Presidio/Parafarmaco (Non Farmaco): ${farmacoRiconosciuto.nome}!`
+          : `🚫 Rilevato NON-FARMACO: ${farmacoRiconosciuto.nome}! Inserimento bloccato.`,
+        farmacoRiconosciuto.isParafarmaco ? 'info' : 'warning'
+      );
     } else if (farmacoRiconosciuto) {
       mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previewDataUrl);
       applicaFarmacoDaScanner(farmacoRiconosciuto.nome, targetModal, farmacoRiconosciuto);
@@ -6922,10 +7028,11 @@ async function gestisciFotoFarmaco(event, targetModal) {
               <button type="button" onclick="ripetiScansioneFotoFarmaco('camera', '${targetModal}')" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #f59e0b; background:rgba(245,158,11,0.2); color:#fde68a; font-size:12px; font-weight:800; cursor:pointer;">📷 Ripeti Foto</button>
               <button type="button" onclick="ripetiScansioneFotoFarmaco('gallery', '${targetModal}')" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:rgba(56,189,248,0.18); color:#bae6fd; font-size:12px; font-weight:800; cursor:pointer;">🖼️ Altra da Galleria</button>
               <button type="button" onclick="avviaDettaturaVocaleFarmacoScanner('${targetModal}')" style="padding:6px 10px; border-radius:7px; border:1px solid #34d399; background:rgba(16,185,129,0.2); color:#6ee7b7; font-size:12px; font-weight:800; cursor:pointer;" title="Detta il nome a voce">🎤 Voce</button>
-              <button type="button" onclick="simulaRilevamentoNonFarmacoDemo('fumo', '${targetModal}')" style="padding:6px 10px; border-radius:7px; border:1px solid #ef4444; background:rgba(239,68,68,0.22); color:#fecaca; font-size:11.5px; font-weight:800; cursor:pointer;" title="Simula scansione Pacchetto di Sigarette / Non-Farmaco">🚭 Test Non-Farmaco (Sigarette)</button>
+              <button type="button" onclick="simulaRilevamentoNonFarmacoDemo('collutorio', '${targetModal}')" style="padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:rgba(56,189,248,0.22); color:#bae6fd; font-size:11.5px; font-weight:800; cursor:pointer;" title="Simula scansione Collutorio / Presidio Medico con ricerca live">🫧 Test Collutorio</button>
+              <button type="button" onclick="simulaRilevamentoNonFarmacoDemo('fumo', '${targetModal}')" style="padding:6px 10px; border-radius:7px; border:1px solid #ef4444; background:rgba(239,68,68,0.22); color:#fecaca; font-size:11.5px; font-weight:800; cursor:pointer;" title="Simula scansione Pacchetto di Sigarette / Non-Farmaco">🚭 Test Sigarette</button>
             </div>
             <div style="display:flex; gap:6px; margin-bottom:8px;">
-              <input type="text" placeholder="Digita 3 lettere (es. Tra, Imo, Pan, Sigarette...)" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:#1e293b; color:#ffffff; font-size:12px; font-weight:700;" onkeydown="if(event.key==='Enter'){event.preventDefault(); eseguiRicercaRapidaScannerInput(this.value, '${targetModal}');}" oninput="if(this.value.length>=3) eseguiRicercaRapidaScannerInput(this.value, '${targetModal}')">
+              <input type="text" placeholder="Digita 3 lettere (es. Collutorio, Curasept, Traumeel, Imodium...)" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:#1e293b; color:#ffffff; font-size:12px; font-weight:700;" onkeydown="if(event.key==='Enter'){event.preventDefault(); eseguiRicercaRapidaScannerInput(this.value, '${targetModal}');}" oninput="if(this.value.length>=3) eseguiRicercaRapidaScannerInput(this.value, '${targetModal}')">
             </div>
             <div id="scan-quick-suggestions" style="display:flex; flex-wrap:wrap; gap:5px;">
               ${suggeriti.map(f => `
@@ -7118,7 +7225,163 @@ function rilevaOggettoNonFarmacoDaTesto(testoOriginale) {
     };
   }
 
-  // 2. Alimenti / Bevande / Caramelle / Dolciumi (spesso usati dai colleghi per mettere alla prova lo scanner)
+  // 2. Collutori / Presidi Medico-Chirurgici per il Cavo Orale (spesso prescritti dal medico/dentista ma NON sono farmaci sistemici da ingerire!)
+  const collutorioKeywords = [
+    'collutor', 'colluttor', 'sciacqu', 'gargarism', 'cavo orale', 'igiene orale', 'antiplacca', 'alito fresco',
+    'curasept', 'clorexidin', 'meridol', 'elmex', 'listerine', 'tantum verde', 'froben', 'iodosan',
+    'corsodyl', 'dentosan', 'plakkontrol', 'alovex', 'aftamed', 'buccagel', 'biotene', 'parodontax'
+  ];
+  if (collutorioKeywords.some(k => t.includes(k)) && !/\b(compresse|capsule|bustine|granulato)\b/i.test(t)) {
+    let dettaglioCollutorio = '';
+    let querySpecifica = 'Collutorio';
+    const marcheCollutorio = [
+      { k: 'curasept', n: 'Curasept ADS (Clorexidina)', q: 'Clorexidina' },
+      { k: 'clorexidin', n: 'alla Clorexidina Antisettica', q: 'Clorexidina' },
+      { k: 'meridol', n: 'Meridol Protezione Gengive', q: 'Collutorio' },
+      { k: 'elmex', n: 'Elmex Protezione Carie/Smalti', q: 'Collutorio' },
+      { k: 'listerine', n: 'Listerine Antisettico Orale', q: 'Listerine' },
+      { k: 'tantum verde', n: 'Tantum Verde (Benzidamina)', q: 'Benzidamina' },
+      { k: 'froben', n: 'Froben Cavo Orale (Flurbiprofene)', q: 'Flurbiprofene' },
+      { k: 'corsodyl', n: 'Corsodyl (Clorexidina)', q: 'Clorexidina' },
+      { k: 'dentosan', n: 'Dentosan Trattamento Gengive', q: 'Clorexidina' },
+      { k: 'iodosan', n: 'Iodosan Cavo Orale', q: 'Collutorio' },
+      { k: 'alovex', n: 'Alovex Protezione Afte e Mucose', q: 'Stomatite aftosa' },
+      { k: 'aftamed', n: 'Aftamed Acido Ialuronico Orale', q: 'Acido ialuronico' },
+      { k: 'parodontax', n: 'Parodontax Gengive', q: 'Gengivite' }
+    ];
+    for (const m of marcheCollutorio) {
+      if (t.includes(m.k)) {
+        dettaglioCollutorio = ` — ${m.n}`;
+        querySpecifica = m.q;
+        break;
+      }
+    }
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'collutorio',
+      titolo: '🩵 NON È UN FARMACO SISTEMICO — Presidio / Collutorio Prescritto per il Cavo Orale',
+      nome: `🫧 Collutorio / Presidio Cavo Orale${dettaglioCollutorio}`,
+      principio: `Soluzione Topica per Cavo Orale${dettaglioCollutorio} (NON È UN FARMACO DA INGERIRE)`,
+      dosaggio: '10-15 ml per sciacquo (NON INGERIRE)',
+      dosaggioConsigliato: '10-15 ml per sciacqui (Uso Locale)',
+      oraConsigliata: '09:00',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Sciacqui del cavo orale per 30-60 secondi senza ingerire',
+      indicazione: 'Prescritto dal medico o dall\'odontoiatra per disinfettare la mucosa orale, ridurre la carica batterica e la placca, proteggere le gengive infiammate o sanguinanti (gengiviti/parodontiti), lenire afte, stomatiti, mal di gola o favorire la guarigione dopo interventi dentali.',
+      modalitaUso: 'Effettuare uno sciacquo o gargarismo con 10-15 ml di soluzione pura (nel tappo dosatore) per 30-60 secondi dopo l\'igiene dentale, 2-3 volte al giorno, quindi sputare il liquido. ⚠️ NON INGERIRE MAI! Evitare di bere o mangiare per 30 minuti dopo lo sciacquo. Nell\'assistito anziano allettato o con disfagia (rischio soffocamento), applicare tamponando delicatamente gengive e denti con una garza sterile imbevuta.',
+      queryWeb: querySpecifica,
+      messaggioVocaleNonFarmaco: `Informazione per il Caregiver e l'Operatore: il prodotto fotografato non è un farmaco sistemico da ingerire, ma un collutorio o presidio per il cavo orale${dettaglioCollutorio ? ' ' + dettaglioCollutorio.replace('—', '') : ''}. È stato prescritto per disinfettare la bocca, proteggere le gengive e curare infiammazioni, afte o infezioni del cavo orale. Come si usa: eseguire sciacqui per trenta o sessanta secondi con dieci o quindici millilitri di prodotto dopo la pulizia dei denti e poi espellere senza ingerire. Nei pazienti con difficoltà di deglutizione, applicare tamponando con una garza sterile imbevuta.`
+    };
+  }
+
+  // 3. Spray Nasali / Soluzioni Fisiologiche & Ipertoniche / Lavaggi Nasali
+  const nasaleKeywords = [
+    'spray nasale', 'lavaggio nasale', 'soluzione fisiologica', 'soluzione ipertonica', 'acqua di mare',
+    'tonimer', 'physiomer', 'isomar', 'libenar', 'argotone', 'rinowash', 'rinazina', 'acqua di sirmione', 'narhimed'
+  ];
+  if (nasaleKeywords.some(k => t.includes(k)) && !/\b(compresse|capsule)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'nasale',
+      titolo: '🩵 NON È UN FARMACO SISTEMICO — Presidio / Dispositivo per Igiene e Decongestione Nasale',
+      nome: '🌬️ Spray / Soluzione Nasale (Dispositivo Medico)',
+      principio: 'Soluzione Nasale / Decongestionante Locale — NON È UN FARMACO ORALE',
+      dosaggio: '1-2 nebulizzazioni per narice',
+      dosaggioConsigliato: '1-2 spruzzi per narice',
+      oraConsigliata: '08:30',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Applicazione locale nelle cavità nasali',
+      indicazione: 'Prescritto dal medico per liberare, idratare e detergere le fosse nasali da muco, croste o congestione (raffreddore, rinite, sinusite o secchezza delle mucose da ossigenoterapia), facilitando la respirazione dell\'assistito.',
+      modalitaUso: 'Con l\'assistito seduto o col busto sollevato, inclinare leggermente il capo di lato ed effettuare 1-2 erogazioni in ciascuna narice o utilizzare nell\'ampolla per doccia nasale/aerosol secondo prescrizione. Pulire il beccuccio dopo ogni utilizzo.',
+      queryWeb: 'Soluzione fisiologica lavaggio nasale',
+      messaggioVocaleNonFarmaco: 'Informazione per il Caregiver: il prodotto fotografato non è un farmaco sistemico in compresse, ma uno spray o soluzione per le cavità nasali. Serve per liberare, lavare e idratare il naso chiuso o secco, migliorando la respirazione dell\'assistito. Si applica con uno o due spruzzi per narice mantenendo l\'assistito seduto.'
+    };
+  }
+
+  // 4. Colliri / Lacrime Artificiali / Gocce Oculari (Uso Oftalmico)
+  const oculareKeywords = [
+    'collirio', 'gocce oculari', 'lacrime artificiali', 'uso oftalmico', 'bagno oculare',
+    'hyalistil', 'systane', 'thealoz', 'optive', 'iridina', 'eumill', 'octilia', 'xiloial', 'artelac'
+  ];
+  if (oculareKeywords.some(k => t.includes(k)) && !/\b(compresse|capsule)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'oculare',
+      titolo: '🩵 NON È UN FARMACO SISTEMICO — Presidio Oftalmico / Gocce Oculari',
+      nome: '👁️ Collirio / Gocce Oculari Lubrificanti o Lenitive',
+      principio: 'Soluzione Oftalmica Sterile — USO ESCLUSIVAMENTE OCULARE',
+      dosaggio: '1-2 gocce per occhio',
+      dosaggioConsigliato: '1-2 gocce per occhio',
+      oraConsigliata: '09:00',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Instillazione nel sacco congiuntivale',
+      indicazione: 'Prescritto per lubrificare, idratare, proteggere la cornea e calmare bruciore, secchezza oculare, arrossamento o affaticamento visivo nell\'assistito.',
+      modalitaUso: 'Lavare accuratamente le mani, abbassare delicatamente la palpebra inferiore dell\'assistito e instillare 1-2 gocce nell\'occhio evitando che la punta del flaconcino tocchi le ciglia o l\'occhio per non contaminare il prodotto. Rispettare la scadenza post-apertura (solitamente 28-30 giorni).',
+      queryWeb: 'Collirio lacrime artificiali',
+      messaggioVocaleNonFarmaco: 'Informazione per il Caregiver: il prodotto fotografato non è un farmaco da assumere per bocca, ma un collirio o soluzione oftalmica per gli occhi. Serve a idratare, lubrificare e proteggere la superficie oculare. Instillare una o due gocce abbassando delicatamente la palpebra inferiore, senza toccare l\'occhio con il contagocce.'
+    };
+  }
+
+  // 5. Integratori Alimentari / Vitamine / Sali Minerali / Supporti Nutrizionali
+  const integratoreKeywords = [
+    'integratore alimentare', 'senza glutine', 'fermenti lattici', 'sali minerali',
+    'polase', 'supradyn', 'multicentrum', 'carnidyn', 'sustenium', 'massigen', 'magnesio supremo',
+    'melatonina', 'armolipid', 'enterolactis', 'swisse', 'meritene', 'fortimel', 'ensure', 'betotal'
+  ];
+  if (integratoreKeywords.some(k => t.includes(k)) && !/\b(medicinale soggetto a prescrizione|aifa|aic)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'integratore',
+      titolo: '🩵 RILEVATO PARAFARMACO / INTEGRATORE ALIMENTARE (NON È UN FARMACO)',
+      nome: '🍊 Integratore Alimentare / Supporto Nutrizionale Prescritto',
+      principio: 'Complesso Vitaminico / Sali Minerali / Nutrizionale — NON È UN FARMACO AIFA',
+      dosaggio: '1 dose / bustina / unità al giorno',
+      dosaggioConsigliato: '1 dose giornaliera',
+      oraConsigliata: '09:00',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Assunzione orale di supporto nutrizionale',
+      indicazione: 'Consigliato dal medico per sostenere il recupero fisico dell\'assistito, contrastare stanchezza, astenia, carenze vitaminiche o idrosaline, supportare il tono muscolare, la flora intestinale o il riposo notturno.',
+      modalitaUso: 'Somministrare 1 dose al giorno (sciogliendo la bustina in un bicchiere d\'acqua o assumendo la capsula/flaconcino preferibilmente al mattino, o la sera se contiene melatonina). Gli integratori affiancano ma non sostituiscono i farmaci salvavita.',
+      queryWeb: 'Integratore alimentare vitamine sali minerali',
+      messaggioVocaleNonFarmaco: 'Informazione per il Caregiver: il prodotto fotografato non è un farmaco, ma un integratore alimentare o supporto nutrizionale consigliato dal medico. Serve a integrare vitamine, sali minerali o fermenti per contrastare stanchezza e debolezza. Puoi ascoltare le modalità d\'uso o aggiungerlo come promemoria nel piano giornaliero.'
+    };
+  }
+
+  // 6. Disinfettanti Cutanei / Antisettici per Medicazioni
+  const disinfettanteKeywords = [
+    'disinfettante', 'antisettico', 'cute lesa', 'cute integra', 'acqua ossigenata', 'perossido di idrogeno',
+    'betadine', 'iodopovidone', 'amuchina', 'citrosil', 'bialcol', 'euclorina', 'clorexidina cutanea', 'uso esterno'
+  ];
+  if (disinfettanteKeywords.some(k => t.includes(k)) && !/\b(compresse|capsule|uso orale)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'disinfettante',
+      titolo: '🩵 NON È UN FARMACO ORALE — Presidio Disinfettante / Antisettico per Medicazioni',
+      nome: '🩹 Presidio Disinfettante / Antisettico Cutaneo',
+      principio: 'Soluzione Antisettica per Uso Esterno — NON INGERIRE MAI',
+      dosaggio: 'Applicazione locale su cute / medicazione',
+      dosaggioConsigliato: '1 medicazione locale',
+      oraConsigliata: '09:00',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Uso esclusivamente esterno su cute e ferite',
+      indicazione: 'Utilizzato nell\'assistenza domiciliare per la pulizia, disinfezione e antisepsi di piccole ferite, abrasioni, ulcere da pressione (piaghe da decubito) o preparazione della cute prima di iniezioni e medicazioni.',
+      modalitaUso: 'Applicare una piccola quantità su una garza sterile e tamponare delicatamente la zona da disinfettare procedendo dal centro verso l\'esterno. ⚠️ SOLO PER USO ESTERNO: non ingerire e non portare a contatto con gli occhi.',
+      queryWeb: 'Disinfettante antisettico medicazione',
+      messaggioVocaleNonFarmaco: 'Informazione per il Caregiver e l\'Operatore: il prodotto fotografato non è un farmaco da assumere per bocca, ma un presidio disinfettante e antisettico per uso esterno. Serve per disinfettare la cute, le ferite o le medicazioni domiciliari. Applicare con una garza sterile senza mai ingerire.'
+    };
+  }
+
+  // 7. Alimenti / Bevande / Caramelle / Dolciumi (spesso usati dai colleghi per mettere alla prova lo scanner)
   const alimentoKeywords = [
     'valori nutrizionali', 'dichiarazione nutrizionale', 'energia kcal', 'grassi saturi', 'carboidrati di cui zuccheri',
     'da consumarsi preferibilmente', 'caramelle', 'gomme da masticare', 'chewing gum', 'tic tac', 'vivident',
@@ -7136,27 +7399,32 @@ function rilevaOggettoNonFarmacoDaTesto(testoOriginale) {
       dosaggio: 'NON TERAPEUTICO',
       modo: 'Inserimento nel Piano Terapeutico BLOCCATO dallo Scudo Clinico AI',
       indicazione: '⚠️ L\'oggetto fotografato è un alimento, bevanda o caramella commerciale e non possiede principio attivo farmacologico né autorizzazione AIFA. Attenzione al contenuto di zuccheri nei pazienti diabetici o disfagici.',
+      queryWeb: 'Alimento nutrizione',
       messaggioVocaleNonFarmaco: 'Attenzione! L\'oggetto fotografato non è un farmaco, ma una confezione alimentare o di caramelle. Il modulo terapeutico non viene compilato perché il prodotto non è un medicinale.'
     };
   }
 
-  // 3. Cosmetici / Detergenti / Oggetti comuni non sanitari
+  // 8. Cosmetici / Detergenti / Igiene Personale (con spiegazione utile al Caregiver)
   const oggettoKeywords = [
-    'shampoo', 'bagnoschiuma', 'docciaschiuma', 'dentifricio', 'collutorio cosmetico', 'deodorante',
+    'shampoo', 'bagnoschiuma', 'docciaschiuma', 'dentifricio', 'deodorante',
     'eau de toilette', 'eau de parfum', 'profumo', 'detersivo', 'candeggina', 'ammorbidente',
-    'fazzoletti', 'tempo ', 'scottex', 'mascara', 'rossetto', 'smalto'
+    'fazzoletti', 'tempo ', 'scottex', 'mascara', 'rossetto', 'smalto', 'sapone liquido', 'detergente intimo'
   ];
   if (oggettoKeywords.some(k => t.includes(k)) && !/\b(medicinale|aifa|compresse|capsule)\b/i.test(t)) {
     return {
       isNonFarmaco: true,
-      categoriaNonFarmaco: 'oggetto',
-      titolo: '🚫 RILEVATO NON-FARMACO: Prodotto Cosmetico / Igiene / Oggetto!',
-      nome: '🧴 Confezione Non-Farmaceutica (Cosmetico / Igiene)',
-      principio: 'Prodotto di Igiene o Uso Comune — NON È UN FARMACO AIFA',
-      dosaggio: 'NON TERAPEUTICO',
-      modo: 'Inserimento nel Piano Terapeutico BLOCCATO',
-      indicazione: '⚠️ Il prodotto inquadrato non è una specialità medicinale ma un articolo cosmetico o di uso comune. Non può essere inserito nel piano terapeutico farmacologico.',
-      messaggioVocaleNonFarmaco: 'Attenzione! La confezione inquadrata non è un farmaco ma un prodotto cosmetico o di uso comune. Inserimento nel piano terapeutico bloccato.'
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'igiene',
+      titolo: '🩵 NON È UN FARMACO — Prodotto per l\'Igiene Personale / Cura della Persona',
+      nome: '🧴 Prodotto Igiene Personale / Cosmetico (Non Farmaco)',
+      principio: 'Articolo per Detersione / Igiene Quotidiana — NON È UN FARMACO AIFA',
+      dosaggio: 'Uso esterno igienico',
+      modo: 'Utilizzo per igiene esterna',
+      indicazione: 'Il prodotto inquadrato non è un farmaco, ma un articolo per l\'igiene personale e la detersione quotidiana dell\'assistito (dentifricio, detergente o bagnoschiuma).',
+      modalitaUso: 'Utilizzare esclusivamente per l\'igiene esterna dell\'assistito risciacquando con acqua tiepida e asciugando delicatamente la cute per prevenire macerazioni.',
+      queryWeb: 'Igiene personale assistenza',
+      messaggioVocaleNonFarmaco: 'Informazione per il Caregiver: la confezione inquadrata non è un farmaco, ma un prodotto per l\'igiene personale e la detersione quotidiana. Non va inserito tra i farmaci sistemici.'
     };
   }
 
@@ -7483,9 +7751,11 @@ function estraiFarmacoUniversaleDaTestoOCR(testoOriginale, cprRilevate, brandRil
 
   // Cerca un dosaggio esplicito (es. "20 mg", "400 mg", "50 mcg", "1 g", "25000 UI")
   const matchDose = tuttoTesto.match(/\b(\d{1,5}(?:[\.,]\d{1,2})?\s*(?:mg|mcg|g|ui|ml|miliardi))\b/i);
+  const haDoseSistemica = /\b(\d{1,5}(?:[\.,]\d{1,2})?\s*(?:mg|mcg|ui|miliardi))\b/i.test(tuttoTesto);
   const haParoleFarmaceutiche = /\b(compresse|capsule|bustine|gocce|sciroppo|fiale|orosolubil|gastroresistent|rivestit|medicinale|equivalente|uso orale|uso cutaneo|pomata|unguento|crema)\b/i.test(tuttoTesto);
+  const haParoleParafarmaco = /\b(dispositivo medico|parafarmaco|uso esterno|non ingerire|flacone|lozione|emulsione|igiene|benessere|naturale|erborist|estratt)\b/i.test(tuttoTesto) || (/\b\d+\s*ml\b/i.test(tuttoTesto) && !haDoseSistemica && !haParoleFarmaceutiche);
 
-  if (!matchDose && !haParoleFarmaceutiche) return null;
+  if (!matchDose && !haParoleFarmaceutiche && !haParoleParafarmaco) return null;
 
   const isTopico = /\b(crema|pomata|unguento|gel|cutaneo|cutanea|uso esterno)\b/i.test(tuttoLower);
   const dosaggioEstratto = isTopico ? '1 applicazione locale' : (matchDose ? `${matchDose[1]} (1 unità)` : '1 compressa / dose');
@@ -7493,6 +7763,7 @@ function estraiFarmacoUniversaleDaTestoOCR(testoOriginale, cprRilevate, brandRil
     'compresse', 'capsule', 'bustine', 'rivestite', 'gastroresistenti', 'medicinale', 'equivalente', 'orale', 'rigide', 'molli',
     'tubo', 'tubetto', 'crema', 'pomata', 'unguento', 'gel', 'cutaneo', 'cutanea', 'topico', 'topica', 'esterno', 'esterna', 'uso',
     'flacone', 'scatola', 'confezione', 'grammi', 'omeopatico', 'omeopatica', 'omeopallco', 'omeopallca', 'applicare', 'locale',
+    'dispositivo', 'medico', 'parafarmaco', 'ingerire', 'lozione', 'emulsione', 'igiene', 'benessere', 'naturale',
     'soluzione', 'granulato', 'sospensione', 'film', 'prezzo', 'scadenza', 'lotto', 'aifa', 'farmacia', 'macario', 'trattamento',
     'sintomatico', 'delle', 'degli', 'dello', 'della', 'acute', 'acuta', 'cronica', 'adulti', 'bambini', 'prima', 'dopo',
     'anything', 'mention', 'actions', 'gemini', 'argon', 'medium', 'pausa', 'stamp', 'shift', 'ctrl', 'enter', 'windows'
@@ -7514,6 +7785,28 @@ function estraiFarmacoUniversaleDaTestoOCR(testoOriginale, cprRilevate, brandRil
   const nomeBase = candidati[0] + (brandRilevato && candidati[0].toLowerCase() !== brandRilevato.toLowerCase() ? ' ' + brandRilevato : '');
   const nomeCompleto = matchDose ? `${nomeBase} ${matchDose[1]}` : nomeBase;
   const principioStimato = candidati[1] || candidati[0];
+
+  // Se è un flacone in ml o un dispositivo/parafarmaco senza indicatori di farmaco sistemico AIFA,
+  // restituisce la scheda Parafarmaco/Presidio con Ricerca Veloce in Rete per il Caregiver!
+  if (haParoleParafarmaco && !haDoseSistemica && !haParoleFarmaceutiche) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      titolo: '🩵 NON È UN FARMACO SISTEMICO — Presidio / Parafarmaco Rilevato con Ricerca in Rete',
+      nome: `🩵 ${nomeCompleto}`,
+      principio: `${principioStimato} — Presidio / Parafarmaco (NON È UN FARMACO AIFA)`,
+      dosaggio: matchDose ? matchDose[1] : 'Uso secondo indicazione medica',
+      dosaggioConsigliato: '1 applicazione / utilizzo',
+      oraConsigliata: '09:00',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Seguire le indicazioni riportate sulla confezione o prescritte dal medico',
+      indicazione: `Il prodotto "${nomeCompleto}" non è classificato come farmaco sistemico AIFA, ma come Parafarmaco, Dispositivo Medico o Presidio prescritto/consigliato per la cura dell'assistito. Consulta il riquadro di Ricerca Live in Rete qui sotto per tutti i dettagli.`,
+      modalitaUso: 'Verificare l\'etichetta: se si tratta di soluzione per sciacqui, lavaggi o uso topico, non ingerire e seguire attentamente le modalità indicate dal medico curante.',
+      queryWeb: candidati[0],
+      messaggioVocaleNonFarmaco: `Informazione per il Caregiver e l'Operatore: la confezione rilevata, ${nomeBase}, non è un farmaco sistemico, ma un parafarmaco o presidio medico. L'applicazione ha eseguito una ricerca veloce in rete per spiegarti a cosa serve e come utilizzarlo.`
+    };
+  }
 
   // Classificatore farmacologico intelligente in base ai suffissi chimici o indicazioni sulla scatola
   let indicazione = 'Specialità medicinale rilevata tramite scansione ottica della confezione originale.';
