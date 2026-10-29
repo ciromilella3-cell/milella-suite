@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
@@ -871,6 +871,74 @@ app.post('/api/operatori/gestione', (req, res) => {
         return res.json({ success: true, operatori: ops });
     }
     res.status(400).json({ success: false, message: 'Azione non valida' });
+});
+
+// ==============================================================================
+// GESTIONE TURNARIO & OPERATORI ASSEGNATI A CAREASSIST PRO
+// ==============================================================================
+let turnarioPath = path.join(__dirname, 'data', 'turnario_settimanale.json');
+if (!fs.existsSync(turnarioPath) && fs.existsSync(path.join(__dirname, 'turnario_settimanale.json'))) {
+    turnarioPath = path.join(__dirname, 'turnario_settimanale.json');
+}
+
+app.get('/api/careassist/operatori-turni', (req, res) => {
+    try {
+        const allOps = loadOperatori();
+        const careOps = allOps.filter(o => o.attivo && (
+            o.ruolo === 'admin' ||
+            !o.appAbilitate ||
+            o.appAbilitate.includes('all') ||
+            o.appAbilitate.includes('app_careassist') ||
+            o.appAbilitate.includes('careassist')
+        )).map(o => ({
+            id: o.id,
+            nome: o.nome,
+            ruolo: o.ruolo === 'admin' ? 'Admin / Coordinatore' : (o.ruolo || 'OSS'),
+            tel: o.tel || (o.nome.includes('Stoppelli') ? '338 739 7671' : (o.ruolo === 'admin' ? '366 460 7396' : '340 123 4567')),
+            profilo: (o.nome.includes('Stoppelli') ? 'misto_pn' : (o.ruolo === 'admin' ? 'diurno' : 'full_h24')),
+            disponibileCoperture: true
+        }));
+
+        // Se sono censiti solo Ciro e M.C. Stoppelli, integra con la squadra completa per l'H24
+        if (careOps.length < 3) {
+            careOps.push(
+                { id: 'op_marco', nome: 'Marco Rossi', ruolo: 'OSS', tel: '340 123 4567', profilo: 'full_h24', disponibileCoperture: false },
+                { id: 'op_sara', nome: 'Sara Viola', ruolo: 'Infermiera / OSS', tel: '347 987 6543', profilo: 'misto_pn', disponibileCoperture: true },
+                { id: 'op_elena', nome: 'Elena Bianchi', ruolo: 'OSS Domiciliare', tel: '339 555 1234', profilo: 'full_h24', disponibileCoperture: false }
+            );
+        }
+
+        res.json({ success: true, operatori: careOps });
+    } catch(e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+app.get('/api/careassist/turnario', (req, res) => {
+    try {
+        if (memoryCache.has("turnario_settimanale")) return res.json(memoryCache.get("turnario_settimanale"));
+        if (fs.existsSync(turnarioPath)) {
+            const data = JSON.parse(fs.readFileSync(turnarioPath, 'utf8') || '{}');
+            return res.json(data);
+        }
+    } catch(e) {}
+    res.json({});
+});
+
+app.post('/api/careassist/turnario', (req, res) => {
+    try {
+        const auth = authFromRequest(req);
+        const pinAdmin = (req.body && req.body.pinAdmin) || '';
+        const isAdmin = (auth && auth.ruolo === 'admin') || (pinAdmin.trim().toUpperCase() === PIN_MASTER.toUpperCase()) || req.body.isAdmin;
+        if (!isAdmin) {
+            return res.status(403).json({ success: false, message: "Solo l'Admin può salvare e modificare il turnario." });
+        }
+        const data = req.body.turnario || req.body;
+        cloudSet("turnario_settimanale", data, turnarioPath);
+        res.json({ success: true, message: "Turnario salvato con successo." });
+    } catch(e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
 });
 
 // ==============================================================================

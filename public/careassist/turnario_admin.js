@@ -2,6 +2,10 @@
  * CareAssist Pro - Modulo Turnario & Combinatore Turni Intelligente (Pannello Admin)
  * Conforme alle normative D.Lgs. 66/2003 (Riposo 11h, Smonto Notte obbligatorio)
  * e CCNL Sanità / Cooperative Sociali (36h / 38h).
+ * 
+ * SICUREZZA & RUOLI:
+ * - ADMIN (Ciro Milella - PIN SOS999): Assegna, modifica, sviluppa automaticamente e gestisce i collaboratori.
+ * - COLLABORATORI (con app CareAssist abilitata): Stessa interfaccia ma in SOLA LETTURA (Read-Only).
  */
 
 const TURNI_INFO = {
@@ -15,13 +19,36 @@ const TURNI_INFO = {
 
 const DEFAULT_OPERATORI_TURNI = [
   { id: 'op_1', nome: 'Ciro Milella', ruolo: 'Admin / Coordinatore', tel: '366 460 7396', profilo: 'diurno', disponibileCoperture: true },
-  { id: 'op_2', nome: 'M.C. Stoppelli', ruolo: 'OSS Referente', tel: '338 739 7671', profilo: 'misto_pn', disponibileCoperture: true },
+  { id: 'op_2', nome: 'M.C. Stoppelli', ruolo: 'OSS Referente (CareAssist)', tel: '338 739 7671', profilo: 'misto_pn', disponibileCoperture: true },
   { id: 'op_3', nome: 'Marco Rossi', ruolo: 'OSS', tel: '340 123 4567', profilo: 'full_h24', disponibileCoperture: false },
   { id: 'op_4', nome: 'Sara Viola', ruolo: 'Infermiera / OSS', tel: '347 987 6543', profilo: 'misto_pn', disponibileCoperture: true },
   { id: 'op_5', nome: 'Elena Bianchi', ruolo: 'OSS Domiciliare', tel: '339 555 1234', profilo: 'full_h24', disponibileCoperture: false }
 ];
 
 let turnarioCorrente = null;
+
+// Verifica se l'utente corrente ha i privilegi di Admin
+function isUtenteAdmin() {
+  const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
+  const adminPin = localStorage.getItem('milella_admin_pin');
+  if (role === 'admin' || adminPin === 'SOS999') return true;
+  if (sessionStorage.getItem('turnario_admin_unlocked') === 'true') return true;
+  return false;
+}
+
+// Sblocco manuale Admin tramite PIN Master
+function sbloccaModalitaAdminManuale() {
+  const pin = prompt('Inserisci il PIN Master Admin (SOS999) per sbloccare la modifica dei turni:');
+  if (!pin) return;
+  if (pin.trim().toUpperCase() === 'SOS999') {
+    sessionStorage.setItem('turnario_admin_unlocked', 'true');
+    localStorage.setItem('milella_role', 'admin');
+    alert('Accesso Admin autorizzato! Modalità di modifica turni sbloccata con successo.');
+    aggiornaVistaTurnarioModal();
+  } else {
+    alert('PIN Master errato. Accesso di sola lettura mantenuto.');
+  }
+}
 
 // Ottieni la data del lunedì della settimana corrente
 function getLunediSettimana(d) {
@@ -31,6 +58,38 @@ function getLunediSettimana(d) {
   const lunedi = new Date(date.setDate(diff));
   lunedi.setHours(0, 0, 0, 0);
   return lunedi;
+}
+
+// Sincronizza operatori censiti nel sistema che hanno CareAssist abilitata
+async function sincronizzaOperatoriCareAssist() {
+  try {
+    const res = await fetch('/api/careassist/operatori-turni?_t=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.operatori) && data.operatori.length > 0) {
+        if (!turnarioCorrente) caricaDatiTurnario();
+        
+        // Unisci mantenendo i profili e aggiungendo nuovi operatori abilitati a CareAssist
+        const esistentiIds = new Set(turnarioCorrente.operatori.map(o => o.id));
+        data.operatori.forEach(serverOp => {
+          if (!esistentiIds.has(serverOp.id)) {
+            turnarioCorrente.operatori.push(serverOp);
+          } else {
+            // Aggiorna ruoli e telefoni
+            const localOp = turnarioCorrente.operatori.find(o => o.id === serverOp.id);
+            if (localOp) {
+              localOp.nome = serverOp.nome;
+              localOp.ruolo = serverOp.ruolo;
+              if (serverOp.tel) localOp.tel = serverOp.tel;
+            }
+          }
+        });
+        salvaTurnarioSuStorage();
+      }
+    }
+  } catch(e) {
+    console.log('Sync operatori server offline/fallback');
+  }
 }
 
 // Inizializza o carica i dati del turnario
@@ -60,7 +119,7 @@ function caricaDatiTurnario() {
   return turnarioCorrente;
 }
 
-// ALGORITMO DI SVILUPPO COMBINAZIONE INTELLIGENTE
+// ALGORITMO DI SVILUPPO COMBINAZIONE INTELLIGENTE (SOLO ADMIN)
 function sviluppaCombinazioneAutomatica() {
   if (!turnarioCorrente) caricaDatiTurnario();
 
@@ -83,7 +142,7 @@ function sviluppaCombinazioneAutomatica() {
     const g = giorni[gIdx];
     const gPrec = gIdx > 0 ? giorni[gIdx - 1] : null;
 
-    // Regola 1: Chi ha fatto la Notte ieri DEVE fare Smonto (S) oggi
+    // Regola 1: Chi ha fatto la Notte ieri DEVE fare Smonto (S) oggi (D.Lgs. 66/2003)
     if (gPrec) {
       ops.forEach(op => {
         if (turnarioCorrente.griglia[op.id][gPrec] === 'N') {
@@ -101,7 +160,6 @@ function sviluppaCombinazioneAutomatica() {
         const statoOggi = turnarioCorrente.griglia[opCandidato.id][g];
         const ieri = gPrec ? turnarioCorrente.griglia[opCandidato.id][gPrec] : null;
 
-        // Non può fare notte se oggi è già Smonto o se ieri ha fatto notte
         if (statoOggi !== 'S' && ieri !== 'N') {
           turnarioCorrente.griglia[opCandidato.id][g] = 'N';
           assegnato = true;
@@ -162,7 +220,6 @@ function sviluppaCombinazioneAutomatica() {
     ops.forEach(op => {
       const stato = turnarioCorrente.griglia[op.id][g];
       if (stato === 'R' && op.disponibileCoperture) {
-        // Assegna disponibilità alternata o mirata per garantire sempre un reperibile
         turnarioCorrente.griglia[op.id][g] = 'D';
       }
     });
@@ -171,10 +228,23 @@ function sviluppaCombinazioneAutomatica() {
   salvaTurnarioSuStorage();
 }
 
-// Salva stato locale
+// Salva stato locale e invia al server cloud
 function salvaTurnarioSuStorage() {
   if (turnarioCorrente) {
     localStorage.setItem('careassist_turnario_settimanale', JSON.stringify(turnarioCorrente));
+    
+    // Invia al server se Admin
+    if (isUtenteAdmin()) {
+      fetch('/api/careassist/turnario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          turnario: turnarioCorrente,
+          pinAdmin: 'SOS999',
+          isAdmin: true
+        })
+      }).catch(() => {});
+    }
   }
 }
 
@@ -191,8 +261,12 @@ function calcolaOreOperatore(opId) {
   return { ore: oreLavorate, disp: giorniDisp };
 }
 
-// Ciclo rapido al tocco sulla cella (M -> P -> N -> S -> R -> D)
+// Ciclo rapido al tocco sulla cella (M -> P -> N -> S -> R -> D) - SOLO ADMIN!
 function ciclaTurnoCella(opId, giorno) {
+  if (!isUtenteAdmin()) {
+    alert("🔒 Solo l'Admin Coordinatore può modificare l'assegnazione dei turni.\n\nIl collaboratore ha accesso in sola visualizzazione e stampa.");
+    return;
+  }
   if (!turnarioCorrente || !turnarioCorrente.griglia[opId]) return;
   const sequenza = ['M', 'P', 'N', 'S', 'R', 'D'];
   const attuale = turnarioCorrente.griglia[opId][giorno] || 'R';
@@ -203,17 +277,10 @@ function ciclaTurnoCella(opId, giorno) {
   aggiornaVistaTurnarioModal();
 }
 
-// Imposta un turno specifico direttamente da menu
-function impostaTurnoCella(opId, giorno, nuovoTurno) {
-  if (!turnarioCorrente || !turnarioCorrente.griglia[opId]) return;
-  turnarioCorrente.griglia[opId][giorno] = nuovoTurno;
-  salvaTurnarioSuStorage();
-  aggiornaVistaTurnarioModal();
-}
-
-// APERTURA MODALE TURNARIO ADMIN
-function apriModalTurnarioAdmin() {
+// APERTURA MODALE TURNARIO (ADMIN O COLLABORATORE)
+async function apriModalTurnarioAdmin() {
   caricaDatiTurnario();
+  await sincronizzaOperatoriCareAssist();
   aggiornaVistaTurnarioModal();
 
   const modal = document.getElementById('modal-turnario-admin');
@@ -236,20 +303,51 @@ function chiudiModalTurnarioAdmin() {
 function aggiornaVistaTurnarioModal() {
   if (!turnarioCorrente) caricaDatiTurnario();
 
+  const isAdmin = isUtenteAdmin();
   const tbody = document.getElementById('turnario-tbody-matrix');
   const dateLabel = document.getElementById('turnario-settimana-label');
   const dateInp = document.getElementById('turnario-input-data-inizio');
   const summaryBox = document.getElementById('turnario-coperture-summary');
+  const modalTitolo = document.getElementById('turnario-modal-titolo-testo');
+  const adminControlsBox = document.getElementById('turnario-admin-action-controls');
 
   const lunedi = new Date(turnarioCorrente.settimanaInizio + 'T00:00:00');
   const domenica = new Date(lunedi);
   domenica.setDate(lunedi.getDate() + 6);
+
+  if (modalTitolo) {
+    modalTitolo.innerHTML = isAdmin 
+      ? 'Turnario & Combinatore Turni (Pannello Admin)' 
+      : 'Turnario Assistenza (Collaboratore • Sola Lettura)';
+  }
 
   if (dateLabel) {
     dateLabel.textContent = `Settimana: da Lunedì ${lunedi.toLocaleDateString('it-IT', { day:'2-digit', month:'short' })} a Domenica ${domenica.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' })}`;
   }
   if (dateInp) {
     dateInp.value = turnarioCorrente.settimanaInizio;
+    dateInp.disabled = !isAdmin;
+  }
+
+  // Se collaboratore, nascondi o disabilita controlli di generazione
+  if (adminControlsBox) {
+    adminControlsBox.innerHTML = isAdmin ? `
+      <button type="button" class="btn" onclick="sviluppaCombinazioneAutomatica(); aggiornaVistaTurnarioModal();" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; font-weight: 800; border-radius: 10px; padding: 8px 14px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);">
+        ⚡ Sviluppa Combinazione Automatica
+      </button>
+      <button type="button" class="btn btn-outline" onclick="aggiungiOperatoreTurnario()" style="font-weight: 700; border-radius: 10px; padding: 8px 12px;">
+        + Aggiungi Operatore
+      </button>
+    ` : `
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="background:#f1f5f9; color:#475569; font-weight:700; font-size:12px; padding:6px 10px; border-radius:8px; border:1px solid #cbd5e1;">
+          🔒 Sola Visualizzazione
+        </span>
+        <button type="button" class="btn btn-outline" onclick="sbloccaModalitaAdminManuale()" style="font-size:11.5px; font-weight:700; padding:6px 10px; color:#0369a1;">
+          🔑 Sblocca con PIN Admin
+        </button>
+      </div>
+    `;
   }
 
   // Intestazione giorni con date reali
@@ -271,13 +369,14 @@ function aggiornaVistaTurnarioModal() {
   const ops = turnarioCorrente.operatori || [];
   let html = '';
 
-  ops.forEach((op, opIndex) => {
+  ops.forEach((op) => {
     const { ore, disp } = calcolaOreOperatore(op.id);
     const badgeProfilo = op.profilo === 'misto_pn' ? '<span style="font-size:10px; background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px; font-weight:700;">🌙 Pom/Notte + Disp.</span>'
       : (op.profilo === 'diurno' ? '<span style="font-size:10px; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-weight:700;">☀️ Diurno</span>'
       : '<span style="font-size:10px; background:#e0e7ff; color:#4338ca; padding:2px 6px; border-radius:4px; font-weight:700;">⭐ Full H24</span>');
 
     const dispLabel = op.disponibileCoperture ? '<span title="Disponibile per coperture urgenti" style="font-size:11px; cursor:help;">🦺 Jolly</span>' : '';
+    const eliminaBtn = isAdmin ? `<button onclick="rimuoviOperatoreTurnario('${op.id}')" title="Rimuovi operatore" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size:14px; padding:2px 4px;">✕</button>` : '';
 
     html += `
       <tr style="border-bottom:1px solid #e2e8f0;">
@@ -287,7 +386,7 @@ function aggiornaVistaTurnarioModal() {
               <div style="font-weight:800; font-size:13px; color:#0f172a;">${op.nome}</div>
               <div style="font-size:11px; color:#64748b; margin-top:2px;">${op.ruolo} • 📞 ${op.tel}</div>
             </div>
-            <button onclick="rimuoviOperatoreTurnario('${op.id}')" title="Rimuovi operatore" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size:14px; padding:2px 4px;">✕</button>
+            ${eliminaBtn}
           </div>
           <div style="margin-top:4px; display:flex; align-items:center; gap:6px;">
             ${badgeProfilo}
@@ -300,11 +399,14 @@ function aggiornaVistaTurnarioModal() {
       const turno = (turnarioCorrente.griglia[op.id] && turnarioCorrente.griglia[op.id][g]) || 'R';
       const info = TURNI_INFO[turno] || TURNI_INFO['R'];
       
+      const cursorStyle = isAdmin ? 'cursor:pointer;' : 'cursor:default;';
+      const tooltip = isAdmin ? `${info.nome} (${info.orario})\nTocca per cambiare turno` : `${info.nome} (${info.orario})\nTurno assegnato dall'Admin`;
+
       html += `
         <td style="padding:6px 4px; text-align:center; vertical-align:middle;">
-          <div onclick="ciclaTurnoCella('${op.id}', '${g}')" 
-               title="${info.nome} (${info.orario})\nTocca per cambiare turno"
-               style="cursor:pointer; user-select:none; background:${info.bg}; color:${info.color}; border:1.5px solid ${info.border}; border-radius:8px; padding:6px 2px; transition:transform 0.1s; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <div onclick="${isAdmin ? `ciclaTurnoCella('${op.id}', '${g}')` : ''}" 
+               title="${tooltip}"
+               style="${cursorStyle} user-select:none; background:${info.bg}; color:${info.color}; border:1.5px solid ${info.border}; border-radius:8px; padding:6px 2px; transition:transform 0.1s; display:flex; flex-direction:column; align-items:center; justify-content:center;">
             <span style="font-size:14px; font-weight:900; line-height:1;">${turno}</span>
             <span style="font-size:8.5px; font-weight:700; margin-top:2px; opacity:0.9;">${info.ore > 0 ? info.ore + 'h' : (turno === 'D' ? 'DISP' : (turno === 'S' ? 'SMONT' : 'LIB'))}</span>
           </div>
@@ -328,14 +430,30 @@ function aggiornaVistaTurnarioModal() {
   // Riepilogo coperture giornaliere
   if (summaryBox) {
     let summaryHtml = '<div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;">';
-    summaryHtml += `
-      <div style="display:flex; align-items:center; gap:8px;">
-        <span style="font-size:18px;">✅</span>
-        <div>
-          <div style="font-weight:800; font-size:12.5px; color:#0f172a;">Vincoli di Legge Verificati:</div>
-          <div style="font-size:11px; color:#059669; font-weight:700;">Riposo minimo 11h garantito • Smonto notte obbligatorio rispettato</div>
+    
+    if (isAdmin) {
+      summaryHtml += `
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:18px;">👑</span>
+          <div>
+            <div style="font-weight:800; font-size:12.5px; color:#0f172a;">Pannello Admin: Assegnazione Piena</div>
+            <div style="font-size:11px; color:#059669; font-weight:700;">Tocca qualsiasi casella per modificare • Vincoli D.Lgs. 66/2003 verificati</div>
+          </div>
         </div>
-      </div>
+      `;
+    } else {
+      summaryHtml += `
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:18px;">🔒</span>
+          <div>
+            <div style="font-weight:800; font-size:12.5px; color:#0369a1;">Vista Collaboratore (Sola Lettura)</div>
+            <div style="font-size:11px; color:#64748b; font-weight:600;">I turni sono stabiliti esclusivamente dall'Admin Coordinatore</div>
+          </div>
+        </div>
+      `;
+    }
+
+    summaryHtml += `
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
         <span style="font-size:11px; padding:3px 8px; border-radius:6px; background:#dcfce7; color:#15803d; font-weight:800;">☀️ M = Mattina 07-14</span>
         <span style="font-size:11px; padding:3px 8px; border-radius:6px; background:#ffedd5; color:#c2410c; font-weight:800;">🌤️ P = Pomeriggio 14-21</span>
@@ -350,6 +468,7 @@ function aggiornaVistaTurnarioModal() {
 
 // Cambio data della settimana dall'input
 function cambiaSettimanaTurnario(nuovaDataStr) {
+  if (!isUtenteAdmin()) return;
   if (!nuovaDataStr) return;
   const lunedi = getLunediSettimana(new Date(nuovaDataStr));
   turnarioCorrente.settimanaInizio = lunedi.toISOString().slice(0, 10);
@@ -362,17 +481,27 @@ function navigaSettimana(offset) {
   if (!turnarioCorrente) caricaDatiTurnario();
   const d = new Date(turnarioCorrente.settimanaInizio + 'T00:00:00');
   d.setDate(d.getDate() + (offset * 7));
-  cambiaSettimanaTurnario(d.toISOString().slice(0, 10));
+  const nuovaStr = d.toISOString().slice(0, 10);
+  const lunedi = getLunediSettimana(new Date(nuovaStr));
+  turnarioCorrente.settimanaInizio = lunedi.toISOString().slice(0, 10);
+  if (isUtenteAdmin()) {
+    sviluppaCombinazioneAutomatica();
+  }
+  aggiornaVistaTurnarioModal();
 }
 
-// Aggiungi nuovo operatore al volo
+// Aggiungi nuovo operatore al volo (SOLO ADMIN)
 function aggiungiOperatoreTurnario() {
-  const nome = prompt('Inserisci Nome e Cognome del nuovo operatore:');
+  if (!isUtenteAdmin()) {
+    alert("🔒 Solo l'Admin può aggiungere nuovi operatori.");
+    return;
+  }
+  const nome = prompt('Inserisci Nome e Cognome del collaboratore abilitato:');
   if (!nome || !nome.trim()) return;
 
   const ruolo = prompt('Ruolo (es. OSS, Infermiere, Fisioterapista):', 'OSS') || 'OSS';
   const tel = prompt('Numero di Telefono / Cellulare:', '338 000 0000') || '';
-  const profiloScelto = confirm('L\'operatore esegue principalmente Pomeriggi e Notti con disponibilità a coperture?\n(OK = Pomeriggio/Notte + Disp, Annulla = Full H24)') ? 'misto_pn' : 'full_h24';
+  const profiloScelto = confirm('Il collaboratore esegue principalmente Pomeriggi e Notti con disponibilità a coperture?\n(OK = Pomeriggio/Notte + Disp, Annulla = Full H24)') ? 'misto_pn' : 'full_h24';
 
   const newId = 'op_' + Date.now();
   turnarioCorrente.operatori.push({
@@ -388,8 +517,12 @@ function aggiungiOperatoreTurnario() {
   aggiornaVistaTurnarioModal();
 }
 
-// Rimuovi operatore
+// Rimuovi operatore (SOLO ADMIN)
 function rimuoviOperatoreTurnario(opId) {
+  if (!isUtenteAdmin()) {
+    alert("🔒 Solo l'Admin può rimuovere operatori.");
+    return;
+  }
   if (!confirm('Rimuovere questo operatore dal turnario?')) return;
   turnarioCorrente.operatori = turnarioCorrente.operatori.filter(o => o.id !== opId);
   delete turnarioCorrente.griglia[opId];
@@ -397,17 +530,16 @@ function rimuoviOperatoreTurnario(opId) {
   aggiornaVistaTurnarioModal();
 }
 
-// STAMPA CARTACEA A4 UFFICIALE
+// STAMPA CARTACEA A4 UFFICIALE (Accessibile sia ad Admin che a Collaboratore)
 function stampaTurnarioCartaceoA4() {
   salvaTurnarioSuStorage();
-  // Apri la scheda A4 ottimizzata per stampa orizzontale in una nuova finestra
   const win = window.open('/careassist/TURNARIO_SETTIMANALE_A4.html', '_blank');
   if (!win) {
     alert('Consenti l\'apertura dei popup nel browser per visualizzare il foglio di stampa A4.');
   }
 }
 
-// CONDIVIDI SU WHATSAPP
+// CONDIVIDI SU WHATSAPP (Accessibile sia ad Admin che a Collaboratore)
 function condividiTurnarioWhatsApp() {
   if (!turnarioCorrente) caricaDatiTurnario();
 
@@ -434,18 +566,19 @@ function condividiTurnarioWhatsApp() {
     msg += `\n`;
   });
 
-  msg += `_Turnario generato e convalidato automaticamente da CareAssist Pro._`;
+  msg += `_Turnario ufficiale assegnato dall'Admin Coordinatore CareAssist Pro._`;
 
   const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
 }
 
 // Esporta globalmente
+window.isUtenteAdmin = isUtenteAdmin;
+window.sbloccaModalitaAdminManuale = sbloccaModalitaAdminManuale;
 window.apriModalTurnarioAdmin = apriModalTurnarioAdmin;
 window.chiudiModalTurnarioAdmin = chiudiModalTurnarioAdmin;
 window.sviluppaCombinazioneAutomatica = sviluppaCombinazioneAutomatica;
 window.ciclaTurnoCella = ciclaTurnoCella;
-window.impostaTurnoCella = impostaTurnoCella;
 window.cambiaSettimanaTurnario = cambiaSettimanaTurnario;
 window.navigaSettimana = navigaSettimana;
 window.aggiungiOperatoreTurnario = aggiungiOperatoreTurnario;
