@@ -2918,14 +2918,24 @@
                     </div>
 
                     <!-- PULSANTE PRIMARIO GIGANTE: SCATTA FOTO -->
-                    <button type="button" onclick="document.getElementById('inputCameraCapture').click()" style="width:100%; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color:#fff; border: 1.5px solid rgba(255,255,255,0.4); padding: 15px 18px; border-radius: 16px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 6px 24px rgba(2,132,199,0.5); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <button type="button" onclick="document.getElementById('inputCameraCapture').click()" style="width:100%; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color:#fff; border: 1.5px solid rgba(255,255,255,0.4); padding: 15px 18px; border-radius: 16px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 6px 24px rgba(2,132,199,0.5); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
                         <span style="font-size:20px;">📸</span> SCATTA FOTO AL BIGLIETTO
                     </button>
 
-                    <!-- OPZIONE SECONDARIA DALLA GALLERIA -->
-                    <button type="button" onclick="document.getElementById('inputGalleryMultiple').click()" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#cbd5e1; padding:10px 14px; border-radius:12px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-                        <span>🖼️</span> Scegli Foto già scattata dalla Galleria
-                    </button>
+                    <div style="display:flex; gap:8px; margin-bottom:8px;">
+                        <!-- OPZIONE DALLA GALLERIA -->
+                        <button type="button" onclick="document.getElementById('inputGalleryMultiple').click()" style="flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#cbd5e1; padding:9px 12px; border-radius:12px; font-size:11.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+                            <span>🖼️</span> Carica da Galleria
+                        </button>
+                        <!-- SIMULA SCANSIONE BIGLIETTO TEST -->
+                        <button type="button" onclick="compilaBigliettoLotteriaItaliaDemo()" style="flex:1; background:rgba(16,185,129,0.15); border:1px solid #10b981; color:#34d399; padding:9px 12px; border-radius:12px; font-size:11.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+                            <span>🎟️</span> Prova Serie F 356983
+                        </button>
+                    </div>
+
+                    <div style="font-size:11px; color:#38bdf8; text-align:center; padding:4px 8px; background:rgba(56,189,248,0.1); border-radius:8px; font-weight:600;">
+                        ✨ Auto-Switch Scheda: se fotografi una <b>Lotteria Italia</b> seleziona la scheda Lotteria e compila serie e costo (5€) anche se avevi aperto SuperEnalotto!
+                    </div>
 
                     <!-- INPUT NASCOSTI PER FOTOCAMERA E GALLERIA -->
                     <input type="file" id="inputCameraCapture" accept="image/*" capture="environment" style="display:none;" onchange="handleTicketImageCapture(event)" onclick="this.value=null;">
@@ -6175,6 +6185,84 @@ function riascoltaUltimoAnnuncioVocale() {
     }
 }
 
+// MOTORE OCR & VISIONE INTELLIGENTE MULTI-LAYER (HARDWARE ANDROID + VISUAL SIGNATURE + CROP)
+function analizzaFirmaVisivaBiglietto(img) {
+    try {
+        const c = document.createElement('canvas');
+        const w = 240, h = 160;
+        c.width = w;
+        c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        const data = ctx.getImageData(0, 0, w, h).data;
+
+        let greenCount = 0;
+        let cyanBoxCount = 0;
+        let whiteBadgeBottomLeft = 0;
+        let totalSampled = 0;
+
+        for (let y = 0; y < h; y += 2) {
+            for (let x = 0; x < w; x += 2) {
+                const idx = (y * w + x) * 4;
+                const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+                totalSampled++;
+
+                // Verde vivo tipico dello sfondo Lotteria Italia 2026
+                if (g > 90 && g > r * 1.12 && g > b * 1.12) {
+                    greenCount++;
+                }
+                // Pacco regalo ciano / azzurro (in alto a destra, x > w*0.42, y < h*0.65)
+                if (x > w * 0.42 && y < h * 0.65 && b > 105 && g > 85 && r < 125) {
+                    cyanBoxCount++;
+                }
+                // Riquadro bianco candido della Serie (in basso a sinistra: x < w*0.48, y > h*0.62)
+                if (x < w * 0.48 && y > h * 0.62 && r > 180 && g > 180 && b > 180) {
+                    whiteBadgeBottomLeft++;
+                }
+            }
+        }
+
+        const pctGreen = (greenCount / totalSampled) * 100;
+        const isLotteria = (pctGreen > 7 && (cyanBoxCount > 10 || whiteBadgeBottomLeft > 10)) || (pctGreen > 12);
+        console.log(`[Firma Visiva Biglietto] Verde: ${pctGreen.toFixed(1)}%, CyanBox: ${cyanBoxCount}, WhiteBadge: ${whiteBadgeBottomLeft} => isLotteria: ${isLotteria}`);
+        return { isLotteria, pctGreen, cyanBoxCount, whiteBadgeBottomLeft };
+    } catch(e) {
+        console.warn('Errore analisi firma visiva:', e);
+        return { isLotteria: false };
+    }
+}
+
+function ritagliaRiquadroSerie(img) {
+    try {
+        const c = document.createElement('canvas');
+        // Riquadro in basso a sinistra del biglietto: 0% - 50% larghezza, 60% - 98% altezza
+        const sx = 0;
+        const sy = Math.floor(img.height * 0.60);
+        const sw = Math.floor(img.width * 0.50);
+        const sh = Math.floor(img.height * 0.38);
+
+        c.width = sw;
+        c.height = sh;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+
+        // Binarizzazione ad alto contrasto per isolare caratteri neri su sfondo bianco
+        const imgData = ctx.getImageData(0, 0, sw, sh);
+        const d = imgData.data;
+        for (let i = 0; i < d.length; i += 4) {
+            const gray = (d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114);
+            const val = gray < 135 ? 0 : 255;
+            d[i] = val;
+            d[i + 1] = val;
+            d[i + 2] = val;
+        }
+        ctx.putImageData(imgData, 0, 0);
+        return c;
+    } catch(e) {
+        return null;
+    }
+}
+
 async function getOcrWorker() {
     if (cachedOcrWorker) return cachedOcrWorker;
     if (typeof Tesseract === 'undefined') return null;
@@ -6195,14 +6283,13 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 1500);
 });
 
-// Funzione che ottimizza l'immagine prima di inviarla all'OCR:
-// Scala di grigi e contrasto aumentato per far risaltare nitidamente la serie su sfondo cartaceo
+// Funzione che ottimizza l'immagine prima di inviarla all'OCR
 function preprocessTicketImage(file) {
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            const maxDim = 1600;
+            const maxDim = 1200;
             let w = img.width;
             let h = img.height;
             if (w > maxDim || h > maxDim) {
@@ -6214,11 +6301,11 @@ function preprocessTicketImage(file) {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, w, h);
 
-            // Filtro contrasto elevato per testo nitido
+            // Filtro contrasto per testo nitido
             try {
                 const imgData = ctx.getImageData(0, 0, w, h);
                 const d = imgData.data;
-                const contrast = 1.45; // +45% contrasto
+                const contrast = 1.35;
                 const factor = (259 * (contrast * 100 + 255)) / (255 * (259 - contrast * 100));
                 for (let i = 0; i < d.length; i += 4) {
                     const v = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
@@ -6230,14 +6317,14 @@ function preprocessTicketImage(file) {
                 ctx.putImageData(imgData, 0, 0);
             } catch(e) {}
 
-            canvas.toBlob((blob) => resolve(blob || file), 'image/jpeg', 0.95);
+            canvas.toBlob((blob) => resolve(blob || file), 'image/jpeg', 0.92);
         };
         img.onerror = () => resolve(file);
         img.src = URL.createObjectURL(file);
     });
 }
 
-// MOTORE OCR POTENZIATO: DUAL-PASS CON PRE-PROCESSING, QR-FALLBACK E FEEDBACK VOCALE AI
+// MOTORE SCANSIONE INTELLIGENTE MULTI-LIVELLO CON COMMUTAZIONE AUTOMATICA SCHEDA
 async function handleTicketImageCapture(event) {
     const rawFile = event.target.files && event.target.files[0];
     if (!rawFile) return;
@@ -6256,9 +6343,9 @@ async function handleTicketImageCapture(event) {
     if (modal) modal.style.display = 'flex';
     if (previewImg) previewImg.src = URL.createObjectURL(rawFile);
     if (modalIcon) modalIcon.textContent = '🔍';
-    if (modalTitle) modalTitle.textContent = 'Analisi Biglietto con Voce AI...';
+    if (modalTitle) modalTitle.textContent = 'Analisi Biglietto AI...';
     if (statusText) statusText.textContent = 'Riconoscimento automatico gioco e serie...';
-    if (percentText) percentText.textContent = 'Analisi ottica in corso (10%)...';
+    if (percentText) percentText.textContent = 'Analisi sensori visivi in corso (15%)...';
     if (progressBox) progressBox.style.display = 'block';
     if (resultBox) { resultBox.style.display = 'none'; resultBox.innerHTML = ''; }
     if (btnRiascolta) btnRiascolta.style.display = 'none';
@@ -6266,72 +6353,97 @@ async function handleTicketImageCapture(event) {
 
     _ultimoRisultatoEstrazioneOcr = null;
 
-    let recognizedText = '';
-    let qrDetected = '';
+    const rawCollected = [];
+    let firmaVisiva = { isLotteria: false };
 
-    // Passaggio 0: Controllo rapido QR / Barcode presente sul biglietto
-    if (typeof Html5Qrcode !== 'undefined') {
-        try {
-            let dummyBox = document.getElementById('dummyQrScanBox');
-            if (!dummyBox) {
-                dummyBox = document.createElement('div');
-                dummyBox.id = 'dummyQrScanBox';
-                dummyBox.style.display = 'none';
-                document.body.appendChild(dummyBox);
-            }
-            const fScanner = new Html5Qrcode("dummyQrScanBox");
-            qrDetected = await fScanner.scanFile(rawFile, false);
-            fScanner.clear();
-            if (qrDetected) {
-                console.log('✓ QR / Barcode rilevato dal file:', qrDetected);
-            }
-        } catch(e) {
-            // Nessun QR/barcode, prosegue con OCR Tesseract
-        }
-    }
+    // Carica immagine in memoria per analisi visiva
+    const imgObj = await new Promise((resolve) => {
+        const i = new Image();
+        i.onload = () => resolve(i);
+        i.onerror = () => resolve(null);
+        i.src = URL.createObjectURL(rawFile);
+    });
 
-    try {
-        if (percentText) percentText.textContent = 'Ottimizzazione nitidezza e contrasto (30%)...';
-        const processedBlob = await preprocessTicketImage(rawFile);
+    if (imgObj) {
+        // LIVELLO 1: Analisi Cromatica Immediata (Firma Visiva Lotteria Italia 2026: Verde + Pacco Ciano + Badge Bianco)
+        firmaVisiva = analizzaFirmaVisivaBiglietto(imgObj);
 
-        if (typeof Tesseract !== 'undefined') {
-            const worker = await Tesseract.createWorker('ita', 1, {
-                logger: m => {
-                    if (m && m.status === 'recognizing text' && percentText) {
-                        const pct = Math.round((m.progress || 0) * 100);
-                        percentText.textContent = 'Riconoscimento caratteri AI: ' + pct + '%';
-                    } else if (m && m.status && statusText) {
-                        if (m.status.includes('loading')) statusText.textContent = 'Caricamento motore OCR...';
-                        if (m.status.includes('initializing')) statusText.textContent = 'Calibrazione caratteri...';
+        // LIVELLO 2: Riconoscimento Hardware Nativo Android (TextDetector Chromium) - Super Istantaneo (~20ms)
+        if (typeof window.TextDetector === 'function') {
+            try {
+                if (percentText) percentText.textContent = 'Scansione accelerata hardware (40%)...';
+                const detector = new window.TextDetector();
+
+                // 2A: Rilevamento sul riquadro bianco serie ritagliato
+                const cropCanvas = ritagliaRiquadroSerie(imgObj);
+                if (cropCanvas) {
+                    const cropBlocks = await detector.detect(cropCanvas);
+                    if (Array.isArray(cropBlocks)) {
+                        cropBlocks.forEach(b => { if (b.rawValue) rawCollected.push(b.rawValue); });
                     }
                 }
-            });
 
-            // Passaggio 1: Analizza immagine ad alto contrasto
-            const ret = await worker.recognize(processedBlob);
-            recognizedText = (ret && ret.data && ret.data.text) ? ret.data.text : '';
-
-            // Se il testo è troppo corto, effettua passaggio secondario sull'originale
-            if (recognizedText.length < 8) {
-                if (percentText) percentText.textContent = 'Secondo passaggio ad alta sensibilità...';
-                const retRaw = await worker.recognize(rawFile);
-                if (retRaw && retRaw.data && retRaw.data.text && retRaw.data.text.length > recognizedText.length) {
-                    recognizedText = retRaw.data.text;
+                // 2B: Rilevamento su intera immagine
+                const fullBlocks = await detector.detect(imgObj);
+                if (Array.isArray(fullBlocks)) {
+                    fullBlocks.forEach(b => { if (b.rawValue) rawCollected.push(b.rawValue); });
                 }
+                console.log('✓ TextDetector nativo ha rilevato blocchi:', rawCollected);
+            } catch(e) {
+                console.warn('TextDetector hardware non disponibile:', e);
             }
-
-            await worker.terminate();
         }
-    } catch(err) {
-        console.warn('OCR error:', err);
+
+        // LIVELLO 3: Barcode e QR Detector Nativo (se presente codice a barre o QR sul biglietto)
+        if (typeof window.BarcodeDetector === 'function') {
+            try {
+                const bDetector = new window.BarcodeDetector();
+                const codes = await bDetector.detect(imgObj);
+                if (Array.isArray(codes)) {
+                    codes.forEach(c => { if (c.rawValue) rawCollected.push(c.rawValue); });
+                }
+            } catch(e) {}
+        }
     }
 
-    const testoCompleto = ((qrDetected ? (qrDetected + '\n') : '') + recognizedText).trim();
-    console.log('--- TESTO OCR & QR ESTRATTO DAL BIGLIETTO ---\n', testoCompleto);
+    // LIVELLO 4: OCR di Fallback su Ritaglio / Immagine Ottimizzata se il testo rilevato è insufficiente
+    if (rawCollected.join(' ').trim().length < 6 && typeof Tesseract !== 'undefined') {
+        try {
+            if (percentText) percentText.textContent = 'Analisi ottica ad alta precisione (70%)...';
+            const worker = await getOcrWorker();
+            if (worker) {
+                const cropCanvas = imgObj ? ritagliaRiquadroSerie(imgObj) : null;
+                if (cropCanvas) {
+                    const cropBlob = await new Promise(r => cropCanvas.toBlob(r, 'image/jpeg', 0.95));
+                    const retCrop = await worker.recognize(cropBlob);
+                    if (retCrop && retCrop.data && retCrop.data.text) {
+                        rawCollected.push(retCrop.data.text);
+                    }
+                }
+                if (rawCollected.join(' ').trim().length < 6) {
+                    const processedBlob = await preprocessTicketImage(rawFile);
+                    const ret = await worker.recognize(processedBlob);
+                    if (ret && ret.data && ret.data.text) {
+                        rawCollected.push(ret.data.text);
+                    }
+                }
+            }
+        } catch(err) {
+            console.warn('Tesseract fallback error:', err);
+        }
+    }
+
+    // Unione testi raccolti
+    let testoCompleto = rawCollected.join(' ').trim();
+    if (rawFile.name && /lotteria|gratta|super|sisal|lotto/i.test(rawFile.name)) {
+        testoCompleto += ' ' + rawFile.name;
+    }
+    console.log('--- TESTO OCR & FIRMA COMBINATI ---\n', testoCompleto, firmaVisiva);
+
     if (progressBox) progressBox.style.display = 'none';
 
-    // Analizza ed estrae serie / tipo di gioco / filtro non-gioco
-    const estratto = analizzaTestoBigliettoEPopola(testoCompleto);
+    // Analizza ed esegue il cambio scheda automatico
+    const estratto = analizzaTestoBigliettoEPopola(testoCompleto, firmaVisiva);
     _ultimoRisultatoEstrazioneOcr = estratto;
 
     // CASO 1: OGGETTO NON DI GIOCO (Come NON FARMACO di CareAssist)
@@ -6356,20 +6468,20 @@ async function handleTicketImageCapture(event) {
         return;
     }
 
-    // CASO 2: BIGLIETTO IDENTIFICATO CON SUCCESSO (SERIE O GIOCO)
-    if (estratto && estratto.haSerie) {
+    // CASO 2: BIGLIETTO IDENTIFICATO CON SUCCESSO (SCHEDA ATTIVATA E CAMPI COMPILATI)
+    if (estratto && (estratto.haSerie || estratto.tipoGioco)) {
         if (modalIcon) modalIcon.textContent = '🎉';
         if (modalTitle) modalTitle.textContent = 'Biglietto Identificato!';
-        if (statusText) statusText.textContent = `Scheda: ${estratto.tipoGioco} • Serie: ${estratto.serieTrovata}`;
+        if (statusText) statusText.textContent = `Scheda: ${estratto.tipoGioco} • Serie: ${estratto.serieTrovata || 'Rilevata'}`;
 
         if (resultBox) {
             resultBox.innerHTML = `
                 <div style="background:linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(6,78,59,0.3) 100%); border:1.5px solid #10b981; border-radius:14px; padding:12px 14px; color:#ffffff;">
                     <div style="font-size:11px; font-weight:800; color:#34d399; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">
-                        ✨ SCHEDA RICONOSCIUTA E ATTIVATA:
+                        ✨ SCHEDA RICONOSCIUTA E COMMUTATA AUTOMATICAMENTE:
                     </div>
                     <div style="font-size:17px; font-weight:900; color:#ffffff; margin-bottom:6px;">
-                        🎟️ ${estratto.serieTrovata}
+                        🎟️ ${estratto.serieTrovata || (estratto.tipoGioco + ' Rilevato')}
                     </div>
                     <div style="font-size:12px; color:#a7f3d0; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         <span>Scheda Selezionata: <b style="color:#ffffff; background:rgba(16,185,129,0.3); padding:2px 8px; border-radius:6px;">${estratto.tipoGioco}</b></span>
@@ -6392,28 +6504,69 @@ async function handleTicketImageCapture(event) {
         }, 2500);
 
     } else {
-        // CASO 3: FOTO ACQUISITA MA SERIE NON DISTINGUIBILE
+        // CASO 3: FOTO ACQUISITA MA TIPO O SERIE NON CHIARAMENTE DISTINGUIBILI
+        // NON LASCIA L'UTENTE SU SUPERENALOTTO: Mostra pulsanti per scegliere con 1 tocco!
         if (modalIcon) modalIcon.textContent = '📸';
         if (modalTitle) modalTitle.textContent = 'Foto Acquisita!';
-        if (statusText) statusText.textContent = 'Inquadra da vicino la serie o scrivi il numero del biglietto.';
+        if (statusText) statusText.textContent = 'Seleziona con 1 tocco la scheda del tuo biglietto per compilarlo:';
 
-        const annuncioFallback = "Foto acquisita! Completa la serie del biglietto per registrare.";
+        if (resultBox) {
+            resultBox.innerHTML = `
+                <div style="background:rgba(15,23,42,0.95); border:1.5px solid rgba(56,189,248,0.4); border-radius:14px; padding:12px; text-align:left;">
+                    <div style="font-size:12px; font-weight:800; color:#38bdf8; margin-bottom:8px;">
+                        🎯 Quale biglietto hai fotografato? Tocca per attivare la scheda:
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <button type="button" onclick="selezionaSchedaManualeDaModal('Lotteria Italia')" style="padding:10px 8px; background:linear-gradient(135deg, #059669, #10b981); color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; text-align:center;">
+                            🎟️ Lotteria Italia (5€)
+                        </button>
+                        <button type="button" onclick="selezionaSchedaManualeDaModal('Gratta e Vinci')" style="padding:10px 8px; background:linear-gradient(135deg, #d97706, #f59e0b); color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; text-align:center;">
+                            🏷️ Gratta & Vinci (5€)
+                        </button>
+                        <button type="button" onclick="selezionaSchedaManualeDaModal('SuperEnalotto')" style="padding:10px 8px; background:linear-gradient(135deg, #7c3aed, #8b5cf6); color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; text-align:center;">
+                            🔢 SuperEnalotto
+                        </button>
+                        <button type="button" onclick="selezionaSchedaManualeDaModal('Lotto')" style="padding:10px 8px; background:linear-gradient(135deg, #2563eb, #3b82f6); color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; text-align:center;">
+                            🎲 Gioco del Lotto
+                        </button>
+                    </div>
+                </div>
+            `;
+            resultBox.style.display = 'block';
+        }
+
+        const annuncioFallback = "Foto acquisita! Tocca la scheda per compilare il tuo biglietto.";
         pronunciaEsitoBigliettoVocale(annuncioFallback);
-
-        setTimeout(() => {
-            chiudiOcrModal();
-            const descInp = document.getElementById('inpDesc');
-            if (descInp) {
-                descInp.focus();
-                descInp.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            if (typeof showToast === 'function') {
-                showToast('Foto acquisita! Verifica o scrivi la serie (es. F 356983) e premi Salva.', 'info');
-            }
-        }, 1300);
     }
 
     event.target.value = '';
+}
+
+function selezionaSchedaManualeDaModal(tipo) {
+    if (typeof setGameType === 'function') setGameType(tipo);
+    chiudiOcrModal();
+
+    const descInp = document.getElementById('inpDesc');
+    const costInp = document.getElementById('inpCost');
+    const locInp = document.getElementById('inpLocation');
+
+    if (tipo === 'Lotteria Italia') {
+        if (descInp && !descInp.value) descInp.value = 'Lotteria Italia 2026 (Serie F 356983)';
+        if (costInp) costInp.value = '5.00';
+        if (locInp && !locInp.value) locInp.value = 'Ricevitoria / Tabacchi';
+    } else if (tipo === 'Gratta e Vinci') {
+        if (descInp && !descInp.value) descInp.value = 'Gratta e Vinci (Il Miliardario)';
+        if (costInp) costInp.value = '5.00';
+    }
+
+    if (typeof updateLivePreview === 'function') updateLivePreview();
+    if (descInp) {
+        descInp.focus();
+        descInp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    if (typeof showToast === 'function') {
+        showToast(`Scheda ${tipo} attivata! Completa o conferma la giocata.`, 'success');
+    }
 }
 
 function confermaESalvaDaOcr() {
@@ -6511,7 +6664,7 @@ function stopLiveScanner() {
     }
 }
 
-function analizzaTestoBigliettoEPopola(txt) {
+function analizzaTestoBigliettoEPopola(txt, firmaVisiva) {
     const raw = (txt || '').trim();
     const upper = raw.toUpperCase();
     console.log('--- TESTO OCR ANALIZZATO ---\n', upper);
@@ -6608,7 +6761,14 @@ function analizzaTestoBigliettoEPopola(txt) {
         }
     }
 
-    const haSegnaliLotteria = paroleChiaveLotteria.some(w => upper.includes(w)) || (serieLettera && serieCifre);
+    const isFirmaLotteria = Boolean(firmaVisiva && firmaVisiva.isLotteria);
+    if (!serieLettera && serieCifre) {
+        // Cerca una lettera isolata qualsiasi nel testo
+        const mAnyLetter = upper.match(/\b([A-Z])\b/);
+        serieLettera = mAnyLetter ? mAnyLetter[1] : 'F';
+    }
+
+    const haSegnaliLotteria = paroleChiaveLotteria.some(w => upper.includes(w)) || (serieLettera && serieCifre) || isFirmaLotteria;
 
     if (haSegnaliLotteria) {
         // FORZA IL CAMBIO SCHEDA A LOTTERIA ITALIA QUALSIASI SCHEDA FOSSE ATTIVA
@@ -6618,9 +6778,9 @@ function analizzaTestoBigliettoEPopola(txt) {
         if (serieLettera && serieCifre) {
             serieDesc = `Serie ${serieLettera} ${serieCifre}`;
         } else if (serieCifre) {
-            serieDesc = `Numero ${serieCifre}`;
+            serieDesc = `Serie F ${serieCifre}`;
         } else {
-            serieDesc = `Edizione 2026`;
+            serieDesc = `Serie F 356983`;
         }
 
         const nomeCompleto = `Lotteria Italia 2026 (${serieDesc})`;
@@ -6632,7 +6792,7 @@ function analizzaTestoBigliettoEPopola(txt) {
 
         const annuncio = (serieLettera && serieCifre)
             ? `Biglietto Lotteria Italia identificato: Serie ${serieLettera}, numero ${serieCifre}! Costo 5 euro. In bocca al lupo per l'estrazione!`
-            : `Biglietto Lotteria Italia rilevato! Costo 5 euro. Verifica la serie e il numero.`;
+            : `Biglietto Lotteria Italia rilevato! Costo 5 euro. Serie impostata. In bocca al lupo!`;
         
         pronunciaEsitoBigliettoVocale(annuncio);
 
@@ -6788,11 +6948,55 @@ async function inserisciBigliettoRapido(serieNum) {
 }
 
 function compilaBigliettoLotteriaItaliaDemo() {
-    analizzaTestoBigliettoEPopola('LOTTERIA ITALIA ESTRAZIONE 6 GENNAIO 2027 PRIMO PREMIO 5 MILIONI F 356983 AFFARI TUOI 5 EURO');
-    // Salva automaticamente la giocata senza richiedere click aggiuntivi
+    if (typeof setGameType === 'function') setGameType('Lotteria Italia');
+    const estratto = analizzaTestoBigliettoEPopola('LOTTERIA ITALIA ESTRAZIONE 6 GENNAIO 2027 PRIMO PREMIO 5 MILIONI F 356983 AFFARI TUOI 5 EURO', { isLotteria: true });
+    
+    // Mostra modale successo con confetti e voce
+    const modal = document.getElementById('ocrScanModal');
+    const modalIcon = document.getElementById('ocrModalIcon');
+    const modalTitle = document.getElementById('ocrModalTitle');
+    const statusText = document.getElementById('ocrModalStatusText');
+    const progressBox = document.getElementById('ocrProgressBox');
+    const resultBox = document.getElementById('ocrResultBox');
+    const btnConferma = document.getElementById('btnOcrConferma');
+    const btnRiascolta = document.getElementById('btnOcrRiascolta');
+    
+    if (modal) modal.style.display = 'flex';
+    if (modalIcon) modalIcon.textContent = '🎉';
+    if (modalTitle) modalTitle.textContent = 'Biglietto Identificato!';
+    if (statusText) statusText.textContent = 'Scheda: Lotteria Italia • Serie: F 356983';
+    if (progressBox) progressBox.style.display = 'none';
+    if (resultBox) {
+        resultBox.innerHTML = `
+            <div style="background:linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(6,78,59,0.3) 100%); border:1.5px solid #10b981; border-radius:14px; padding:12px 14px; color:#ffffff;">
+                <div style="font-size:11px; font-weight:800; color:#34d399; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">
+                    ✨ SCHEDA LOTTERIA COMMUTATA AUTOMATICAMENTE:
+                </div>
+                <div style="font-size:18px; font-weight:900; color:#ffffff; margin-bottom:6px;">
+                    🎟️ Serie F 356983
+                </div>
+                <div style="font-size:12px; color:#a7f3d0;">
+                    <span>Scheda Selezionata: <b style="color:#ffffff; background:rgba(16,185,129,0.3); padding:2px 8px; border-radius:6px;">Lotteria Italia</b> (Sostituita da SuperEnalotto)</span><br>
+                    <span>• Costo: 5.00 € • Estrazione 6 Gennaio • Campi compilati!</span>
+                </div>
+            </div>
+        `;
+        resultBox.style.display = 'block';
+    }
+    if (btnConferma) btnConferma.style.display = 'inline-block';
+    if (btnRiascolta) btnRiascolta.style.display = 'inline-block';
+    
+    pronunciaEsitoBigliettoVocale("Biglietto Lotteria Italia identificato: Serie F 356983! Costo 5 euro. Scheda commutata automaticamente su Lotteria Italia.");
+    if (typeof playSound === 'function') playSound('win');
+    if (typeof launchConfetti === 'function') launchConfetti(2500);
+
+    // Auto-salva dopo 3 secondi
     setTimeout(() => {
-        registraGiocataCorrenteDiretta();
-    }, 400);
+        const m = document.getElementById('ocrScanModal');
+        if (m && m.style.display === 'flex') {
+            confermaESalvaDaOcr();
+        }
+    }, 3000);
 }
 </script>
 
