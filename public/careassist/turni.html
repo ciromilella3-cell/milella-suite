@@ -1269,7 +1269,9 @@
     <!-- PATIENT & COORDINATOR STRIP -->
     <section class="patient-banner">
       <div class="patient-meta-group">
-        <div class="patient-avatar-box">CM</div>
+        <div class="patient-avatar-box" style="padding:0; overflow:hidden; border:2px solid #d4af37; box-shadow:0 0 12px rgba(212,175,55,0.35);">
+          <img src="/assets/img/cm_shield_badge.png" alt="Sig. Ciro Milella" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='/careassist/assets/img/cm_shield_badge.png';">
+        </div>
         <div>
           <h2 class="patient-title-h2">
             <span>Paziente: Sig. Ciro Milella</span>
@@ -1952,8 +1954,9 @@
 
       if (roleCont) {
         roleCont.innerHTML = isAdmin ? `
-          <div class="role-badge role-admin">
-            <span>👑</span> <span>Admin Coordinatore (Ciro Milella)</span>
+          <div class="role-badge role-admin" style="display:inline-flex; align-items:center; gap:8px;">
+            <img src="/assets/img/cm_shield_badge.png" alt="Ciro Milella" style="width:20px; height:20px; border-radius:50%; object-fit:cover; border:1px solid #d4af37; box-shadow:0 0 6px rgba(212,175,55,0.4);" onerror="this.onerror=null; this.src='/careassist/assets/img/cm_shield_badge.png';">
+            <span>Admin Coordinatore (Ciro Milella)</span>
           </div>
         ` : `
           <div class="role-badge role-collaboratore">
@@ -2088,11 +2091,16 @@
           }
           const oreColor = (delta >= 0) ? '#34d399' : (oreTot > 0 ? '#38bdf8' : '#94a3b8');
 
+          const isCiro = op.nome && op.nome.toLowerCase().includes('ciro');
+          const avatarMarkup = isCiro
+            ? `<div class="op-avatar" style="padding:0; overflow:hidden; border:1.5px solid #d4af37; background:#0b1120;"><img src="/assets/img/cm_shield_badge.png" alt="${op.nome}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='/careassist/assets/img/cm_shield_badge.png';"></div>`
+            : `<div class="op-avatar">${opIniziali}</div>`;
+
           htmlMatrice += `
             <tr>
               <td class="td-op">
                 <div class="op-meta-box">
-                  <div class="op-avatar">${opIniziali}</div>
+                  ${avatarMarkup}
                   <div style="flex:1; min-width:0;">
                     <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
                       <div class="op-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${op.nome}</div>
@@ -2158,11 +2166,16 @@
           const oreTarget = regInfo.ore || 36;
           const delta = oreTot - oreTarget;
 
+          const isCiroCard = op.nome && op.nome.toLowerCase().includes('ciro');
+          const cardAvatarMarkup = isCiroCard
+            ? `<div class="op-avatar" style="padding:0; overflow:hidden; border:1.5px solid #d4af37; background:#0b1120;"><img src="/assets/img/cm_shield_badge.png" alt="${op.nome}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='/careassist/assets/img/cm_shield_badge.png';"></div>`
+            : `<div class="op-avatar">${opIniziali}</div>`;
+
           htmlCards += `
             <div class="op-card">
               <div class="op-card-header">
                 <div class="op-card-profile">
-                  <div class="op-avatar">${opIniziali}</div>
+                  ${cardAvatarMarkup}
                   <div>
                     <div style="font-weight:800; font-size:15px; color:#ffffff;">${op.nome}</div>
                     <div style="font-size:12px; color:var(--text-muted);">${op.ruolo} &bull; <span style="color:${regInfo.color}; font-weight:700;">${regInfo.badge}</span></div>
