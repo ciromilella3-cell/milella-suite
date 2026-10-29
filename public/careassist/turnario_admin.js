@@ -13,9 +13,21 @@ const TURNI_INFO = {
   'P': { nome: 'Pomeriggio', orario: '14:00 - 21:00', ore: 7, bg: '#ffedd5', color: '#c2410c', border: '#fdba74', icon: '🌤️' },
   'N': { nome: 'Notte', orario: '21:00 - 07:00', ore: 10, bg: '#e0e7ff', color: '#4338ca', border: '#a5b4fc', icon: '🌙' },
   'S': { nome: 'Smonto Notte', orario: 'Recupero Biologico Post-Notte', ore: 0, bg: '#fef3c7', color: '#b45309', border: '#fcd34d', icon: '🛌' },
+  'SN': { nome: 'Smonto Notte', orario: 'Recupero Biologico Post-Notte', ore: 0, bg: '#fef3c7', color: '#b45309', border: '#fcd34d', icon: '🛌' },
   'R': { nome: 'Riposo', orario: 'Riposo di Legge', ore: 0, bg: '#f1f5f9', color: '#64748b', border: '#cbd5e1', icon: '☕' },
   'D': { nome: 'Disponibilità', orario: 'Reperibile per Coperture / Emergenze', ore: 0, bg: '#f3e8ff', color: '#7e22ce', border: '#d8b4fe', icon: '🦺' }
 };
+
+// Notificatore elegante senza prompt invasivi del browser
+function notificaUtente(msg, icon = 'ℹ️') {
+  if (typeof window.mostraToast === 'function') {
+    window.mostraToast(msg, icon);
+  } else if (typeof mostraToast === 'function') {
+    mostraToast(msg, icon);
+  } else {
+    console.log(icon, msg);
+  }
+}
 
 const DEFAULT_OPERATORI_TURNI = [
   { id: 'op_1', nome: 'Ciro Milella', ruolo: 'Admin / Coordinatore', tel: '366 460 7396', profilo: 'diurno', disponibileCoperture: true },
@@ -145,115 +157,174 @@ function caricaDatiTurnario() {
   return turnarioCorrente;
 }
 
-// ALGORITMO DI SVILUPPO COMBINAZIONE INTELLIGENTE (SOLO ADMIN)
-function sviluppaCombinazioneAutomatica(preset = 'misto_pn') {
+// ALGORITMO DI SVILUPPO COMBINAZIONI TURNI SANITARI & SSN (SOLO ADMIN)
+function sviluppaCombinazioneAutomatica(preset = 'ssn_pmnsr') {
   if (!isUtenteAdmin()) {
-    alert("🔒 Solo l'Admin Coordinatore può sviluppare o modificare le combinazioni di turno.");
+    notificaUtente("🔒 Solo l'Admin Coordinatore può sviluppare o modificare le combinazioni di turno.", "🔒");
     return false;
   }
   if (!turnarioCorrente) caricaDatiTurnario();
 
-  const ops = turnarioCorrente.operatori;
+  const ops = turnarioCorrente.operatori || [];
+  if (ops.length === 0) return false;
+
   const fabb = turnarioCorrente.fabbisogno || { M: 1, P: 1, N: 1 };
   const giorni = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'];
 
-  // Reset griglia
+  // Reset griglia turni
   turnarioCorrente.griglia = {};
   ops.forEach(op => {
     turnarioCorrente.griglia[op.id] = { lun: 'R', mar: 'R', mer: 'R', gio: 'R', ven: 'R', sab: 'R', dom: 'R' };
   });
 
-  // PRESET 1: 'misto_pn' (Pomeriggio & Notte con Smonto e Reperibilità nei giorni liberi)
-  // Specificamente richiesto per garantire rotazione tra pomeriggi, notti, smonto e reperibilità per emergenze
-  const opsNotte = ops.filter(o => o.profilo === 'misto_pn' || o.profilo === 'full_h24' || o.profilo === 'notte');
-  let idxNotte = 0;
+  if (preset === 'ssn_pmnsr') {
+    // 1. CICLO IN 5ª SSN VARIANTE POMERIGGIO: P -> M -> N -> S -> R
+    // Modello adottato nelle strutture convenzionate SSN (es. reparto degenza / infermieri)
+    // Sequenza su 5 giorni con 55 ore consecutive libere tra smonto notte e successivo pomeriggio.
+    const schema = ['P', 'M', 'N', 'S', 'R'];
+    ops.forEach((op, opIdx) => {
+      giorni.forEach((g, gIdx) => {
+        const turno = schema[(opIdx + gIdx) % schema.length];
+        turnarioCorrente.griglia[op.id][g] = turno;
+      });
+    });
+  } else if (preset === 'ssn_mpnsr') {
+    // 2. CICLO IN 5ª TRADIZIONALE SSN: M -> P -> N -> S -> R
+    // Modello classico di degenza con stacco 24h tra i turni diurni e la notte
+    const schema = ['M', 'P', 'N', 'S', 'R'];
+    ops.forEach((op, opIdx) => {
+      giorni.forEach((g, gIdx) => {
+        const turno = schema[(opIdx + gIdx) % schema.length];
+        turnarioCorrente.griglia[op.id][g] = turno;
+      });
+    });
+  } else if (preset === 'ssn_h12') {
+    // 3. CICLO IN 4ª EMERGENZA H12: Giorno 12h -> Notte 12h -> Smonto -> Riposo
+    // Pronto Soccorso, Rianimazione, 118 SUEM a 4 squadre
+    const schema = ['M', 'N', 'S', 'R'];
+    ops.forEach((op, opIdx) => {
+      giorni.forEach((g, gIdx) => {
+        const turno = schema[(opIdx + gIdx) % schema.length];
+        turnarioCorrente.griglia[op.id][g] = turno;
+      });
+    });
+  } else if (preset === 'ssn_sesta') {
+    // 4. CICLO IN 6ª CON DOPPIO RIPOSO: M -> P -> N -> S -> R -> R
+    // 48h continuative di riposo post-notte e conformità contrattuale CCNL 36h
+    const schema = ['M', 'P', 'N', 'S', 'R', 'R'];
+    ops.forEach((op, opIdx) => {
+      giorni.forEach((g, gIdx) => {
+        const turno = schema[(opIdx + gIdx) % schema.length];
+        turnarioCorrente.griglia[op.id][g] = turno;
+      });
+    });
+  } else if (preset === 'diurno_adi') {
+    // 5. SERVIZIO DIURNO CONTINUO ADI / AMBULATORIO (M / P alternati, domenica Riposo)
+    ops.forEach((op, opIdx) => {
+      const riposoInfrasettimanale = (opIdx * 2) % 6; // indice da 0 a 5 (lun-sab)
+      giorni.forEach((g, gIdx) => {
+        if (g === 'dom') {
+          turnarioCorrente.griglia[op.id][g] = 'R';
+        } else if (gIdx === riposoInfrasettimanale && ops.length > 2) {
+          turnarioCorrente.griglia[op.id][g] = 'R';
+        } else {
+          const isMattina = (opIdx + gIdx) % 2 === 0;
+          turnarioCorrente.griglia[op.id][g] = isMattina ? 'M' : 'P';
+        }
+      });
+    });
+  } else {
+    // 6. TURNO MISTO CAREASSIST (Pomeriggio & Notte + Smonto + Reperibilità D)
+    const opsNotte = ops.filter(o => o.profilo === 'misto_pn' || o.profilo === 'full_h24' || o.profilo === 'notte');
+    let idxNotte = 0;
 
-  for (let gIdx = 0; gIdx < giorni.length; gIdx++) {
-    const g = giorni[gIdx];
-    const gPrec = gIdx > 0 ? giorni[gIdx - 1] : null;
+    for (let gIdx = 0; gIdx < giorni.length; gIdx++) {
+      const g = giorni[gIdx];
+      const gPrec = gIdx > 0 ? giorni[gIdx - 1] : null;
 
-    // Regola di Legge 1 (D.Lgs. 66/2003): Smonto (S) obbligatorio dopo la Notte
-    if (gPrec) {
+      // Smonto obbligatorio post-notte
+      if (gPrec) {
+        ops.forEach(op => {
+          if (turnarioCorrente.griglia[op.id][gPrec] === 'N') {
+            turnarioCorrente.griglia[op.id][g] = 'S';
+          }
+        });
+      }
+
+      // Assegna Notte
+      if (fabb.N > 0 && opsNotte.length > 0) {
+        let tentativi = 0;
+        let assegnato = false;
+        while (tentativi < opsNotte.length && !assegnato) {
+          const opCandidato = opsNotte[idxNotte % opsNotte.length];
+          const statoOggi = turnarioCorrente.griglia[opCandidato.id][g];
+          const ieri = gPrec ? turnarioCorrente.griglia[opCandidato.id][gPrec] : null;
+
+          if (statoOggi !== 'S' && ieri !== 'N') {
+            turnarioCorrente.griglia[opCandidato.id][g] = 'N';
+            assegnato = true;
+          }
+          idxNotte++;
+          tentativi++;
+        }
+      }
+    }
+
+    // Assegna Pomeriggi e Mattine
+    let idxP = 1;
+    let idxM = 2;
+    for (let gIdx = 0; gIdx < giorni.length; gIdx++) {
+      const g = giorni[gIdx];
+      const gPrec = gIdx > 0 ? giorni[gIdx - 1] : null;
+
+      let pAssegnati = 0;
+      let tentativiP = 0;
+      while (pAssegnati < fabb.P && tentativiP < ops.length * 2) {
+        const op = ops[idxP % ops.length];
+        const stato = turnarioCorrente.griglia[op.id][g];
+        const ieri = gPrec ? turnarioCorrente.griglia[op.id][gPrec] : null;
+
+        if (stato === 'R' && ieri !== 'N') {
+          turnarioCorrente.griglia[op.id][g] = 'P';
+          pAssegnati++;
+        }
+        idxP++;
+        tentativiP++;
+      }
+
+      let mAssegnati = 0;
+      let tentativiM = 0;
+      while (mAssegnati < fabb.M && tentativiM < ops.length * 2) {
+        const op = ops[idxM % ops.length];
+        const stato = turnarioCorrente.griglia[op.id][g];
+        const ieri = gPrec ? turnarioCorrente.griglia[op.id][gPrec] : null;
+        const ammetteMattina = op.profilo !== 'misto_pn' && op.profilo !== 'notte';
+
+        if (stato === 'R' && ieri !== 'N' && ieri !== 'P' && ammetteMattina) {
+          turnarioCorrente.griglia[op.id][g] = 'M';
+          mAssegnati++;
+        }
+        idxM++;
+        tentativiM++;
+      }
+    }
+
+    // Disponibilità / Reperibilità D per coperture emergenze nei giorni liberi
+    for (let gIdx = 0; gIdx < giorni.length; gIdx++) {
+      const g = giorni[gIdx];
       ops.forEach(op => {
-        if (turnarioCorrente.griglia[op.id][gPrec] === 'N') {
-          turnarioCorrente.griglia[op.id][g] = 'S';
+        const stato = turnarioCorrente.griglia[op.id][g];
+        if (stato === 'R' && (op.disponibileCoperture || op.profilo === 'misto_pn')) {
+          turnarioCorrente.griglia[op.id][g] = 'D';
         }
       });
     }
-
-    // Assegnazione Notte (N)
-    if (fabb.N > 0 && opsNotte.length > 0) {
-      let tentativi = 0;
-      let assegnato = false;
-      while (tentativi < opsNotte.length && !assegnato) {
-        const opCandidato = opsNotte[idxNotte % opsNotte.length];
-        const statoOggi = turnarioCorrente.griglia[opCandidato.id][g];
-        const ieri = gPrec ? turnarioCorrente.griglia[opCandidato.id][gPrec] : null;
-
-        if (statoOggi !== 'S' && ieri !== 'N') {
-          turnarioCorrente.griglia[opCandidato.id][g] = 'N';
-          assegnato = true;
-        }
-        idxNotte++;
-        tentativi++;
-      }
-    }
   }
 
-  // 2. Assegnazione Pomeriggio (P) e Mattina (M)
-  let idxP = 1;
-  let idxM = 2;
-
-  for (let gIdx = 0; gIdx < giorni.length; gIdx++) {
-    const g = giorni[gIdx];
-    const gPrec = gIdx > 0 ? giorni[gIdx - 1] : null;
-
-    // Assegna Pomeriggio (P)
-    let pAssegnati = 0;
-    let tentativiP = 0;
-    while (pAssegnati < fabb.P && tentativiP < ops.length * 2) {
-      const op = ops[idxP % ops.length];
-      const stato = turnarioCorrente.griglia[op.id][g];
-      const ieri = gPrec ? turnarioCorrente.griglia[op.id][gPrec] : null;
-
-      if (stato === 'R' && ieri !== 'N') {
-        turnarioCorrente.griglia[op.id][g] = 'P';
-        pAssegnati++;
-      }
-      idxP++;
-      tentativiP++;
-    }
-
-    // Assegna Mattina (M) - con vincolo: chi ieri ha fatto Pomeriggio non può fare M (stacco < 11h)
-    let mAssegnati = 0;
-    let tentativiM = 0;
-    while (mAssegnati < fabb.M && tentativiM < ops.length * 2) {
-      const op = ops[idxM % ops.length];
-      const stato = turnarioCorrente.griglia[op.id][g];
-      const ieri = gPrec ? turnarioCorrente.griglia[op.id][gPrec] : null;
-
-      // Chi fa solo misto_pn non fa la mattina
-      const ammetteMattina = op.profilo !== 'misto_pn' && op.profilo !== 'notte';
-
-      if (stato === 'R' && ieri !== 'N' && ieri !== 'P' && ammetteMattina) {
-        turnarioCorrente.griglia[op.id][g] = 'M';
-        mAssegnati++;
-      }
-      idxM++;
-      tentativiM++;
-    }
-  }
-
-  // 3. Imposta Reperibilità / Jolly (D) per chi ha disponibilità e oggi è a riposo (non smonto)
-  for (let gIdx = 0; gIdx < giorni.length; gIdx++) {
-    const g = giorni[gIdx];
-    ops.forEach(op => {
-      const stato = turnarioCorrente.griglia[op.id][g];
-      if (stato === 'R' && (op.disponibileCoperture || op.profilo === 'misto_pn')) {
-        turnarioCorrente.griglia[op.id][g] = 'D';
-      }
-    });
-  }
+  turnarioCorrente.ultimoPreset = preset;
+  salvaTurnarioSuStorage();
+  return true;
+}
 
   salvaTurnarioSuStorage();
   return true;
@@ -295,7 +366,7 @@ function calcolaOreOperatore(opId) {
 // Ciclo rapido al tocco sulla cella (M -> P -> N -> S -> R -> D) - SOLO ADMIN!
 function ciclaTurnoCella(opId, giorno) {
   if (!isUtenteAdmin()) {
-    alert("🔒 Solo l'Admin Coordinatore può modificare l'assegnazione dei turni.\n\nIl collaboratore ha accesso in sola visualizzazione e stampa.");
+    notificaUtente("Solo l'Admin Coordinatore può modificare i turni.", "🔒");
     return;
   }
   if (!turnarioCorrente || !turnarioCorrente.griglia[opId]) return;
@@ -311,7 +382,7 @@ function ciclaTurnoCella(opId, giorno) {
 // Impostazione diretta del turno scelto da popover/modale (SOLO ADMIN!)
 function impostaTurnoCella(opId, giorno, nuovoTurno) {
   if (!isUtenteAdmin()) {
-    alert("🔒 Solo l'Admin Coordinatore può modificare l'assegnazione dei turni.\n\nIl collaboratore ha accesso in sola visualizzazione e stampa.");
+    notificaUtente("Solo l'Admin Coordinatore può modificare i turni.", "🔒");
     return false;
   }
   if (!turnarioCorrente) caricaDatiTurnario();
@@ -615,7 +686,7 @@ function stampaTurnarioCartaceoA4() {
   salvaTurnarioSuStorage();
   const win = window.open('/careassist/TURNARIO_SETTIMANALE_A4.html', '_blank');
   if (!win) {
-    alert('Consenti l\'apertura dei popup nel browser per visualizzare il foglio di stampa A4.');
+    notificaUtente('Consenti l\'apertura dei popup nel browser per visualizzare il foglio di stampa A4.', '⚠️');
   }
 }
 
