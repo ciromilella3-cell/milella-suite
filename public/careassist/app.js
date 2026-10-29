@@ -5972,9 +5972,79 @@ const DB_FARMACI_COMUNI = [
   { nome: 'Lioton 1000 UI/g Gel', principio: 'Eparina sodica', dosaggio: '1 applicazione cutanea (Tubo 50 g)', modo: 'Uso cutaneo: applicare 1-3 volte al giorno massaggiando delicatamente dal basso verso l\'alto', cpr: 1, ora: '09:00', fascia: 'Mattina (Colazione)', indicazione: 'Gel eparinico per sindromi varicose, edemi da stasi venosa, flebiti superficiali ed ematomi sottocutanei.' }
 ];
 
-function autoCompilaDatiFarmaco(testoInput) {
-  const query = (testoInput || '').trim().toLowerCase();
-  const box = document.getElementById('farm-suggerimenti-box');
+let _ultimaSintesiVocaleInApp = '';
+
+function recitaTestoSintesiInApp(testo) {
+  const t = (testo || _ultimaSintesiVocaleInApp || '').trim();
+  if (!t || !('speechSynthesis' in window)) return;
+  _ultimaSintesiVocaleInApp = t;
+  try {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(
+      t.replace(/\bmg\b/gi, 'milligrammi')
+       .replace(/\bmcg\b/gi, 'microgrammi')
+       .replace(/\bcpr\b/gi, 'compresse')
+       .replace(/\bml\b/gi, 'millilitri')
+    );
+    utter.lang = 'it-IT';
+    utter.rate = 0.98;
+    utter.pitch = 1.0;
+    window.speechSynthesis.speak(utter);
+  } catch (e) {}
+}
+window.recitaTestoSintesiInApp = recitaTestoSintesiInApp;
+
+function fermaVoceSintesiInApp() {
+  if ('speechSynthesis' in window) {
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+  }
+}
+window.fermaVoceSintesiInApp = fermaVoceSintesiInApp;
+
+async function cercaSintesiMedicaLiveInApp(queryRicerca) {
+  if (!queryRicerca) return null;
+  const pulita = String(queryRicerca)
+    .replace(/[🚭🚫🩵🫧🍬🧴💊🌬️👁️🍊🩹]/g, ' ')
+    .replace(/\b\d+([\.,]\d+)?\s*(mg|mcg|g|ml|ui|%|compresse|capsule|bustine|tubo|crema|gel)\b/gi, ' ')
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!pulita) return null;
+
+  const tentativi = [pulita, `${pulita} farmaco`, pulita.split(/\s+/)[0]].filter((v, i, a) => v && v.length >= 3 && a.indexOf(v) === i);
+
+  for (const q of tentativi) {
+    try {
+      const searchUrl = `https://it.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&utf8=&format=json&origin=*&srlimit=2`;
+      const res = await fetch(searchUrl);
+      if (!res.ok) continue;
+      const data = await res.json();
+      const hits = (data && data.query && data.query.search) ? data.query.search : [];
+      if (!hits.length) continue;
+
+      const bestHit = hits[0];
+      const summaryUrl = `https://it.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(bestHit.title)}`;
+      const sumRes = await fetch(summaryUrl);
+      if (!sumRes.ok) continue;
+      const sumData = await sumRes.json();
+      if (sumData && sumData.extract && sumData.extract.length > 25) {
+        return {
+          titolo: sumData.title || bestHit.title,
+          estratto: sumData.extract
+        };
+      }
+    } catch (e) {}
+  }
+  return null;
+}
+window.cercaSintesiMedicaLiveInApp = cercaSintesiMedicaLiveInApp;
+
+function autoCompilaDatiFarmaco(testoInput, targetModal) {
+  const modalMode = targetModal || 'capsula';
+  const isCapsula = (modalMode !== 'nuovo' && modalMode !== 'standard');
+  const raw = (testoInput || '').trim();
+  const query = raw.toLowerCase();
+  const box = document.getElementById(isCapsula ? 'farm-suggerimenti-box' : 'farm-suggerimenti-box-alt') || document.getElementById('farm-suggerimenti-box');
   if (!box) return;
 
   if (query.length < 2) {
@@ -5982,38 +6052,223 @@ function autoCompilaDatiFarmaco(testoInput) {
     return;
   }
 
-  const match = DB_FARMACI_COMUNI.filter(f => f.nome.toLowerCase().includes(query) || f.principio.toLowerCase().includes(query));
+  const matchFarmaci = DB_FARMACI_COMUNI.filter(f =>
+    f.nome.toLowerCase().includes(query) || f.principio.toLowerCase().includes(query)
+  ).slice(0, 4);
 
-  if (!match.length) {
-    box.innerHTML = '';
-    return;
+  const matchNonFarmaco = (typeof rilevaOggettoNonFarmacoDaTesto === 'function')
+    ? rilevaOggettoNonFarmacoDaTesto(raw)
+    : null;
+
+  const safeRaw = raw.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  let htmlPills = '';
+
+  if (matchNonFarmaco) {
+    const isPara = Boolean(matchNonFarmaco.isParafarmaco);
+    htmlPills += `
+      <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11px; background:${isPara ? '#e0f2fe' : '#fee2e2'}; color:${isPara ? '#0369a1' : '#b91c1c'}; border:1.5px solid ${isPara ? '#38bdf8' : '#ef4444'}; border-radius:12px; font-weight:800; cursor:pointer;" onclick="eseguiRicercaManualeInAppERecita('${modalMode}', '${safeRaw}')">
+        ${isPara ? '🩵 Presidio/Parafarmaco:' : '🚫 Non-Farmaco:'} ${matchNonFarmaco.nome} (Analizza & Recita 🔊)
+      </button>
+    `;
   }
 
-  box.innerHTML = match.slice(0, 4).map(f => `
-    <button type="button" class="btn btn-outline" style="padding:3px 9px; font-size:11px; background:#eff6ff; color:#1e40af; border-color:#bfdbfe; border-radius:12px; font-weight:700;" onclick="applicaSuggerimentoFarmaco('${f.nome.replace(/'/g, "\\'")}')">
-      ✨ ${f.nome}
+  htmlPills += matchFarmaci.map(f => `
+    <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11px; background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; border-radius:12px; font-weight:800; cursor:pointer;" onclick="applicaSuggerimentoFarmaco('${f.nome.replace(/'/g, "\\'")}', '${modalMode}')">
+      💊 ${f.nome} <span style="font-weight:600; color:#0284c7;">• Compila & Recita 🔊</span>
     </button>
   `).join('');
+
+  if (query.length >= 3) {
+    htmlPills += `
+      <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11px; background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#38bdf8; border:1px solid #38bdf8; border-radius:12px; font-weight:800; cursor:pointer;" onclick="eseguiRicercaManualeInAppERecita('${modalMode}', '${safeRaw}')">
+        🌐🔍 Cerca "${raw}" in Rete (In-App) & Recita Sintesi 🔊
+      </button>
+    `;
+  }
+
+  box.innerHTML = htmlPills;
 }
 
-function applicaSuggerimentoFarmaco(nomeEsatto) {
+function applicaSuggerimentoFarmaco(nomeEsatto, targetModal) {
+  const modalMode = targetModal || 'capsula';
   const f = DB_FARMACI_COMUNI.find(item => item.nome === nomeEsatto);
   if (!f) return;
 
-  // Aggiorna sia la nuova maschera capsula che il box visuale dello scanner + sintesi vocale!
-  applicaFarmacoDaScanner(f.nome, 'capsula', f);
-  mostraCardRiconoscimentoScanner(f, 'capsula');
-  pronunciaCaratteristicheFarmaco(f);
+  applicaFarmacoDaScanner(f.nome, modalMode, f);
+  mostraCardRiconoscimentoScanner(f, modalMode);
+  eseguiRicercaManualeInAppERecita(modalMode, f.nome);
 
-  const box = document.getElementById('farm-suggerimenti-box');
-  if (box) box.innerHTML = '';
+  ['farm-suggerimenti-box', 'farm-suggerimenti-box-alt'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.innerHTML = '';
+  });
 }
 
+async function eseguiRicercaManualeInAppERecita(targetModal, queryForzata) {
+  const modalMode = targetModal || 'capsula';
+  const isCapsula = (modalMode !== 'nuovo' && modalMode !== 'standard');
+  const inputEl = document.getElementById(isCapsula ? 'edit-farm-nome' : 'farm-nome');
+  const query = (queryForzata || (inputEl ? inputEl.value : '') || '').trim();
+
+  if (!query || query.length < 2) {
+    if (typeof showToast === 'function') showToast('Scrivi il nome di un farmaco o presidio da analizzare e ascoltare.');
+    if (inputEl) inputEl.focus();
+    return;
+  }
+
+  const boxManuale = document.getElementById(isCapsula ? 'manual-ai-sintesi-box-capsula' : 'manual-ai-sintesi-box-nuovo');
+  if (boxManuale) {
+    boxManuale.style.display = 'block';
+    boxManuale.innerHTML = `
+      <div style="background:#0f172a; border:1.5px solid #38bdf8; border-radius:10px; padding:10px 12px; color:#e2e8f0; font-size:11.5px;">
+        ⏳ <b>Analisi Clinica & Ricerca Medica In-App in corso per "${query}"...</b>
+      </div>
+    `;
+  }
+
+  ['farm-suggerimenti-box', 'farm-suggerimenti-box-alt'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.innerHTML = '';
+  });
+
+  // 1. Verifica nel motore clinico locale + parafarmaci + non-farmaci
+  let riconosciuto = analizzaTestoConfermaFarmaco(query, '', true);
+
+  // 2. Interroga in tempo reale la rete medica/enciclopedica (senza uscire dall'app!)
+  const termineWeb = riconosciuto
+    ? (riconosciuto.queryWeb || riconosciuto.principio.split(/[+(,—]/)[0].trim() || riconosciuto.nome)
+    : query;
+  const webInfo = await cercaSintesiMedicaLiveInApp(termineWeb);
+
+  // 3. Se il termine inserito manualmente non era nel DB ma la rete ha restituito la scheda medica, costruisce il profilo in-app!
+  if (!riconosciuto && webInfo && webInfo.estratto) {
+    const estrLower = webInfo.estratto.toLowerCase();
+    const checkNf = rilevaOggettoNonFarmacoDaTesto(query + ' ' + webInfo.estratto);
+    if (checkNf) {
+      riconosciuto = checkNf;
+    } else if (/\b(farmaco|medicinale|principio attivo|compresse|terapia|antibiotico|antinfiammatorio|antiipertensivo|analgesico|anticoagulante|diuretico)\b/i.test(estrLower)) {
+      riconosciuto = {
+        nome: query.charAt(0).toUpperCase() + query.slice(1),
+        nomePersonalizzato: query.charAt(0).toUpperCase() + query.slice(1),
+        principio: webInfo.titolo || query,
+        dosaggio: '1 unità / secondo prescrizione',
+        modo: 'Assumere secondo prescrizione medica',
+        indicazione: webInfo.estratto.split('.').slice(0, 2).join('.').trim() + '.',
+        cpr: 28,
+        cprRilevate: 28,
+        ora: '08:00',
+        fascia: 'Mattina (Colazione)',
+        isNonFarmaco: false
+      };
+    } else {
+      riconosciuto = {
+        isNonFarmaco: true,
+        isParafarmaco: true,
+        categoriaNonFarmaco: 'parafarmaco',
+        titolo: `🩵 RILEVATO PRODOTTO / PRESIDIO NON-FARMACO: ${webInfo.titolo}`,
+        nome: `🩵 ${webInfo.titolo}`,
+        principio: `${webInfo.titolo} — Prodotto / Presidio (NON È UN FARMACO SISTEMICO AIFA)`,
+        dosaggio: 'Uso secondo indicazioni',
+        dosaggioConsigliato: '1 applicazione / utilizzo',
+        oraConsigliata: '09:00',
+        fasciaConsigliata: 'Mattina (Colazione)',
+        modo: 'Consultare la sintesi informativa qui sotto',
+        indicazione: webInfo.estratto.split('.').slice(0, 2).join('.').trim() + '.',
+        modalitaUso: 'Il prodotto cercato non risulta essere un farmaco sistemico AIFA. Seguire le istruzioni riportate nella scheda per il corretto utilizzo assistenziale.',
+        queryWeb: webInfo.titolo
+      };
+    }
+  }
+
+  // Fallback se siamo offline e il nome è completamente sconosciuto
+  if (!riconosciuto) {
+    riconosciuto = {
+      nome: query.charAt(0).toUpperCase() + query.slice(1),
+      nomePersonalizzato: query.charAt(0).toUpperCase() + query.slice(1),
+      principio: query.charAt(0).toUpperCase() + query.slice(1),
+      dosaggio: '1 cpr / dose',
+      modo: 'Assumere secondo prescrizione medica',
+      indicazione: `Specialità inserita manualmente ("${query}"). Verificare posologia e orari di somministrazione prescritti dal medico curante.`,
+      cpr: 28,
+      cprRilevate: 28,
+      ora: '08:00',
+      fascia: 'Mattina (Colazione)',
+      isNonFarmaco: false
+    };
+  }
+
+  _ultimoFarmacoRiconosciutoScanner = riconosciuto;
+
+  // Aggiorna la card principale dello scanner e compila i campi (solo se è un farmaco!)
+  if (riconosciuto.isNonFarmaco) {
+    mostraCardNonFarmacoScanner(riconosciuto, modalMode, '');
+  } else {
+    applicaFarmacoDaScanner(riconosciuto.nome, modalMode, riconosciuto);
+    mostraCardRiconoscimentoScanner(riconosciuto, modalMode, '');
+  }
+
+  // Costruisce la Sintesi Completa In-App (senza mai uscire dall'applicazione!) e la recita a voce
+  const estrattoRete = (webInfo && webInfo.estratto)
+    ? (webInfo.estratto.length > 340 ? webInfo.estratto.slice(0, 337).trim() + '...' : webInfo.estratto)
+    : '';
+  const fraseWebVocale = (webInfo && webInfo.estratto)
+    ? ' Approfondimento dalla rete medica: ' + webInfo.estratto.split('.').slice(0, 2).join('.').trim() + '.'
+    : '';
+
+  let testoVocaleCompleto = '';
+  if (riconosciuto.isNonFarmaco) {
+    testoVocaleCompleto = (riconosciuto.messaggioVocaleNonFarmaco || `Prodotto rilevato: ${riconosciuto.nome}. ${riconosciuto.indicazione}`) + fraseWebVocale;
+  } else {
+    const nomeVoce = riconosciuto.nomePersonalizzato || riconosciuto.nome;
+    const scudo = analizzaSicurezzaClinicaFarmaco(riconosciuto);
+    const mon = ottieniMonitoraggioAssistenzialeFarmaco(riconosciuto);
+    testoVocaleCompleto = `Sintesi clinica per ${nomeVoce}. Principio attivo: ${riconosciuto.principio}. A cosa serve: ${riconosciuto.indicazione || riconosciuto.modo}. Somministrazione consigliata: ${riconosciuto.ora || '08:00'}, ${riconosciuto.modo}. Monitoraggio assistenziale: ${mon}.${fraseWebVocale}${scudo && scudo.vocale ? ' ' + scudo.vocale : ''}`;
+  }
+
+  if (boxManuale) {
+    const isNonFarm = Boolean(riconosciuto.isNonFarmaco);
+    const isPara = Boolean(riconosciuto.isParafarmaco);
+    const borderCol = isNonFarm ? (isPara ? '#38bdf8' : '#ef4444') : '#10b981';
+    const badgeBg = isNonFarm ? (isPara ? '#0284c7' : '#dc2626') : '#059669';
+    const badgeTxt = isNonFarm ? (isPara ? 'NON È UN FARMACO • PRESIDIO / PARAFARMACO' : 'NON FARMACO • BLOCCATO') : 'FARMACO RICONOSCIUTO • COMPILATO';
+
+    boxManuale.style.display = 'block';
+    boxManuale.innerHTML = `
+      <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border:1.5px solid ${borderCol}; border-radius:10px; padding:10px 12px; color:#f8fafc; box-shadow:0 4px 12px rgba(15,23,42,0.25);">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
+          <strong style="font-size:12.5px; color:#fef08a;">🔊 Sintesi Medica In-App: ${riconosciuto.nomePersonalizzato || riconosciuto.nome}</strong>
+          <span style="font-size:9.5px; background:${badgeBg}; color:#fff; padding:2px 7px; border-radius:6px; font-weight:900;">${badgeTxt}</span>
+        </div>
+        <div style="font-size:11.5px; color:#bae6fd; margin-bottom:4px;">
+          🔬 <b>Principio / Categoria:</b> ${riconosciuto.principio}
+        </div>
+        <div style="font-size:11.5px; color:#ecfdf5; line-height:1.38; background:rgba(255,255,255,0.06); padding:6px 8px; border-radius:6px; border-left:3px solid ${borderCol};">
+          🩺 <b>A cosa serve & Indicazioni:</b> ${riconosciuto.indicazione || riconosciuto.modo}
+          ${riconosciuto.modalitaUso ? `<div style="margin-top:4px; color:#bae6fd;">📋 <b>Come si usa:</b> ${riconosciuto.modalitaUso}</div>` : ''}
+        </div>
+        ${estrattoRete ? `
+          <div style="margin-top:6px; font-size:11px; color:#e2e8f0; background:rgba(2,132,199,0.18); border:1px dashed #38bdf8; padding:6px 8px; border-radius:6px; line-height:1.35;">
+            <b style="color:#7dd3fc;">🌐 Scheda Medica Live dalla Rete (${webInfo.titolo}):</b><br>
+            ${estrattoRete}
+          </div>
+        ` : ''}
+        <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <button type="button" onclick="recitaTestoSintesiInApp()" style="padding:4px 10px; border-radius:6px; border:1px solid #38bdf8; background:rgba(56,189,248,0.2); color:#7dd3fc; font-size:11px; font-weight:800; cursor:pointer;">🔊 Riascolta Sintesi</button>
+          <button type="button" onclick="fermaVoceSintesiInApp()" style="padding:4px 10px; border-radius:6px; border:1px solid #94a3b8; background:rgba(255,255,255,0.08); color:#cbd5e1; font-size:11px; font-weight:700; cursor:pointer;">⏹️ Ferma Voce</button>
+          ${isPara ? `<button type="button" onclick="inserisciComunqueParafarmacoInPiano('${modalMode}')" style="padding:4px 10px; border-radius:6px; border:1px solid #10b981; background:rgba(16,185,129,0.2); color:#6ee7b7; font-size:11px; font-weight:800; cursor:pointer;">➕ Inserisci come Promemoria Presidio</button>` : ''}
+          <button type="button" onclick="this.closest('#manual-ai-sintesi-box-capsula, #manual-ai-sintesi-box-nuovo').style.display='none'; fermaVoceSintesiInApp();" style="margin-left:auto; padding:3px 8px; border-radius:6px; border:none; background:transparent; color:#94a3b8; font-size:11px; cursor:pointer;">✕ Chiudi</button>
+        </div>
+      </div>
+    `;
+  }
+
+  recitaTestoSintesiInApp(testoVocaleCompleto);
+}
+window.eseguiRicercaManualeInAppERecita = eseguiRicercaManualeInAppERecita;
+
 function apriCercaBugiardinoWeb() {
-  const nomeFarm = (document.getElementById('farm-nome').value || '').trim();
-  const query = nomeFarm ? `${nomeFarm} indicazioni terapeutiche bugiardino AIFA` : 'farmaci indicazioni terapeutiche AIFA';
-  const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-  window.open(url, '_blank');
+  // Rimane 100% dentro l'applicazione: esegue la ricerca medica in-app e recita la sintesi!
+  eseguiRicercaManualeInAppERecita('nuovo');
 }
 
 // ==========================================================================
@@ -6147,8 +6402,8 @@ window.analizzaSicurezzaClinicaFarmaco = analizzaSicurezzaClinicaFarmaco;
 
 function apriBugiardinoAIFADaScanner(nomeFarmaco) {
   const f = nomeFarmaco || (_ultimoFarmacoRiconosciutoScanner ? (_ultimoFarmacoRiconosciutoScanner.nomePersonalizzato || _ultimoFarmacoRiconosciutoScanner.nome) : '');
-  const query = `${f || 'farmaco'} foglietto illustrativo AIFA bugiardino posologia`;
-  window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+  // Rimane 100% dentro l'applicazione: mostra la sintesi clinica + scheda live e la recita a voce!
+  eseguiRicercaManualeInAppERecita('capsula', f || 'farmaco');
 }
 window.apriBugiardinoAIFADaScanner = apriBugiardinoAIFADaScanner;
 
@@ -6550,11 +6805,23 @@ function matchPreRiconosciutoValido(m) {
 
 function resetScannerFarmacoUI(targetModal) {
   fermaMirinoLiveScanner();
+  fermaVoceSintesiInApp();
   const isCapsula = (targetModal !== 'standard' && targetModal !== 'nuovo');
   const boxResult = document.getElementById(isCapsula ? 'scan-result-capsula' : 'scan-result-nuovo');
   const infoContainer = document.getElementById(isCapsula ? 'scan-detected-info' : 'scan-detected-info-alt');
   if (boxResult) boxResult.style.display = 'none';
   if (infoContainer) infoContainer.innerHTML = '';
+  ['manual-ai-sintesi-box-capsula', 'manual-ai-sintesi-box-nuovo'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) {
+      b.style.display = 'none';
+      b.innerHTML = '';
+    }
+  });
+  ['farm-suggerimenti-box', 'farm-suggerimenti-box-alt'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.innerHTML = '';
+  });
   ['scan-farm-camera', 'scan-farm-gallery', 'scan-farm-camera-alt', 'scan-farm-gallery-alt'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
@@ -6578,10 +6845,32 @@ function ripetiScansioneFotoFarmaco(modo, targetModal) {
 }
 window.ripetiScansioneFotoFarmaco = ripetiScansioneFotoFarmaco;
 
-function apriSchedaWebProdottoNonFarmaco(query) {
-  const q = query || (_ultimoFarmacoRiconosciutoScanner ? (_ultimoFarmacoRiconosciutoScanner.queryWeb || _ultimoFarmacoRiconosciutoScanner.nome) : 'collutorio indicazioni');
+async function apriSchedaWebProdottoNonFarmaco(query) {
+  // Rimane 100% dentro l'applicazione: cerca l'approfondimento in rete, lo mostra nella scheda e lo recita a voce!
+  const q = query || (_ultimoFarmacoRiconosciutoScanner ? (_ultimoFarmacoRiconosciutoScanner.queryWeb || _ultimoFarmacoRiconosciutoScanner.nome) : 'collutorio');
   const cleanQ = String(q).replace(/[🚭🚫🩵🫧🍬🧴]/g, '').trim();
-  window.open(`https://www.google.com/search?q=${encodeURIComponent(cleanQ + ' a cosa serve modalità d\'uso indicazioni')}`, '_blank');
+  const webInfo = await cercaSintesiMedicaLiveInApp(cleanQ);
+  if (webInfo && webInfo.estratto) {
+    ['nonfarmaco-web-live-capsula', 'nonfarmaco-web-live-nuovo'].forEach(id => {
+      const elBox = document.getElementById(id);
+      if (elBox) {
+        elBox.style.display = 'block';
+        elBox.innerHTML = `
+          <div style="font-size:10.5px; font-weight:800; color:#38bdf8; margin-bottom:2px; display:flex; align-items:center; justify-content:space-between;">
+            <span>🌐 SCHEDA MEDICA IN-APP (${webInfo.titolo}):</span>
+            <span style="font-size:9.5px; background:rgba(56,189,248,0.2); color:#bae6fd; padding:1px 5px; border-radius:4px;">IN-APP VOICE</span>
+          </div>
+          <div style="font-size:11px; color:#e2e8f0; line-height:1.35;">${webInfo.estratto}</div>
+        `;
+      }
+    });
+    const baseVoce = (_ultimoFarmacoRiconosciutoScanner && _ultimoFarmacoRiconosciutoScanner.messaggioVocaleNonFarmaco)
+      ? _ultimoFarmacoRiconosciutoScanner.messaggioVocaleNonFarmaco + ' '
+      : '';
+    recitaTestoSintesiInApp(`${baseVoce}Approfondimento dalla scheda informativa per ${webInfo.titolo}: ${webInfo.estratto}`);
+  } else {
+    pronunciaCaratteristicheFarmaco();
+  }
 }
 window.apriSchedaWebProdottoNonFarmaco = apriSchedaWebProdottoNonFarmaco;
 
@@ -6718,7 +7007,7 @@ function mostraCardNonFarmacoScanner(nonFarmaco, targetModal, previewDataUrl) {
             🔊 ${isParafarmaco ? 'Ascolta Spiegazione & Uso' : 'Riascolta Avviso Salute'}
           </button>
           <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(139,92,246,0.22); color:#ddd6fe; border:1px solid #a78bfa; border-radius:6px; cursor:pointer;" onclick="apriSchedaWebProdottoNonFarmaco()">
-            🌐 Ricerca Scheda in Rete
+            🌐🔊 Cerca in Rete & Recita (In-App)
           </button>
           ${btnInserisciPresidio}
           <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(245,158,11,0.18); color:#fde68a; border:1px solid #f59e0b; border-radius:6px; cursor:pointer;" onclick="ripetiScansioneFotoFarmaco('camera', '${targetModal}')">
@@ -6834,7 +7123,7 @@ function mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previ
             🔊 Ascolta Voce
           </button>
           <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(139,92,246,0.2); color:#ddd6fe; border:1px solid #a78bfa; border-radius:6px; cursor:pointer;" onclick="apriBugiardinoAIFADaScanner('${nomeVisualizzato.replace(/'/g, "\\'")}')">
-            📖 Bugiardino AIFA
+            📖🔊 Sintesi Bugiardino (In-App)
           </button>
           <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(245,158,11,0.18); color:#fde68a; border:1px solid #f59e0b; border-radius:6px; cursor:pointer;" onclick="ripetiScansioneFotoFarmaco('camera', '${targetModal}')">
             📷 Ripeti Foto
