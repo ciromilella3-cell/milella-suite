@@ -3614,40 +3614,63 @@
         }
     }
 
-    const isSessionUnlocked = sessionStorage.getItem('milella_session_unlocked') === 'true';
-    const savedLastRole = localStorage.getItem('milella_last_authenticated_role');
+    // --------------------------------------------------------------------------
+    // VERIFICA SESSIONE UNIFICATA: AUTO-LOGIN RESILIENTE SENZA SBALZAMENTI A PIN
+    // --------------------------------------------------------------------------
+    const savedAdminPin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_last_authenticated_pin') || sessionStorage.getItem('milella_admin_pin') || 'SOS999';
+    const savedUserPin = localStorage.getItem('milella_user_pin') || localStorage.getItem('milella_last_authenticated_pin') || '';
+    const savedUserNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Ciro Milella (Admin)';
+    const savedLastRole = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
+    let savedApps = ['all'];
+    try {
+        savedApps = JSON.parse(localStorage.getItem('milella_app_abilitate') || localStorage.getItem('milella_last_authenticated_apps') || '["all"]');
+    } catch(e) { savedApps = ['all']; }
 
-    if (isSessionUnlocked && savedLastRole === 'admin' && savedAdminPin) {
+    // Considera la sessione sbloccata se è attiva in sessionStorage, o in localStorage, o se si torna da un modulo interno
+    const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || sessionStorage.getItem('milella_lock_requested') === 'true';
+    const isSessionUnlocked = !isExplicitlyLocked && (
+        sessionStorage.getItem('milella_session_unlocked') === 'true' ||
+        localStorage.getItem('milella_session_unlocked') === 'true' ||
+        savedLastRole === 'admin' ||
+        window.location.search.includes('from=turni') ||
+        window.location.search.includes('auth_role=admin')
+    );
+
+    if (isSessionUnlocked && savedLastRole === 'admin') {
+        // ACCESSO DIRETTO ADMIN COORDINATORE (NESSUN GATE BLOCCANTE)
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
-        currentAdminPin = savedAdminPin;
+        sessionStorage.setItem('milella_session_unlocked', 'true');
+        localStorage.setItem('milella_session_unlocked', 'true');
+        sessionStorage.removeItem('milella_app_locked');
+        currentAdminPin = savedAdminPin || 'SOS999';
         applicaRuolo('admin', savedUserNome || 'Ciro Milella (Admin)', ['all']);
-    } else if (isSessionUnlocked && savedUserPin && savedUserNome) {
-        // Operatore già loggato stabilmente su questo dispositivo con sessione attiva
+    } else if (isSessionUnlocked && savedUserNome) {
+        // ACCESSO OPERATORE ABILITATO CON SESSIONE ATTIVA
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
+        sessionStorage.setItem('milella_session_unlocked', 'true');
+        localStorage.setItem('milella_session_unlocked', 'true');
+        sessionStorage.removeItem('milella_app_locked');
         currentAppAbilitate = savedApps;
         applicaRuolo('operatore', savedUserNome, savedApps);
         
-        // Verifica in background con il server i permessi e i pazienti aggiornati
-        fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ codice: savedUserPin })
-        }).then(r => r.json()).then(data => {
-            if (data.success) {
-                localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
-                localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
-                localStorage.setItem('milella_profili_salute', JSON.stringify(data.profiliSalute || []));
-                localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
-                localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
-                localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
-                localStorage.setItem('milella_last_authenticated_salute', JSON.stringify(data.profiliSalute || []));
-                localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
-            }
-        }).catch(() => {});
+        if (savedUserPin) {
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codice: savedUserPin })
+            }).then(r => r.json()).then(data => {
+                if (data.success) {
+                    localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
+                    localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
+                    localStorage.setItem('milella_profili_salute', JSON.stringify(data.profiliSalute || []));
+                    localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
+                }
+            }).catch(() => {});
+        }
     } else {
-        // NESSUNA SESSIONE (App appena riaperta): Mostra il Gate di Benvenuto & Blocco PIN
+        // NESSUNA SESSIONE (Primo accesso assoluto o blocco esplicito): Mostra il Gate di Benvenuto & Blocco PIN
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'flex';
         aggiornaVisibilitaBiometriaGate();

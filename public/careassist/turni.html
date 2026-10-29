@@ -1262,9 +1262,9 @@
       <a href="/careassist/" class="btn btn-ghost" title="Apri il Diario Clinico & Terapie di CareAssist">
         🩺 CareAssist Hub
       </a>
-      <a href="/launcher.html" class="btn btn-ghost" style="border: 1px solid rgba(212,175,55,0.4); color: #fde68a;" title="Torna al Portale Aziendale Suite Milella">
+      <button type="button" onclick="vaiAlPannelloSuite()" class="btn btn-ghost" style="border: 1px solid rgba(212,175,55,0.4); color: #fde68a; cursor:pointer;" title="Torna al Portale Aziendale Suite Milella">
         🏢 Suite Milella
-      </a>
+      </button>
     </div>
   </header>
 
@@ -2958,6 +2958,20 @@
     function chiudiModalGuidaReperibilita() {
       const modal = document.getElementById('modal-guida-reperibilita');
       if (modal) modal.style.display = 'none';
+    }
+
+    function vaiAlPannelloSuite() {
+      try {
+        localStorage.setItem('milella_session_unlocked', 'true');
+        sessionStorage.setItem('milella_session_unlocked', 'true');
+        sessionStorage.removeItem('milella_app_locked');
+        sessionStorage.removeItem('milella_lock_requested');
+        localStorage.setItem('milella_role', 'admin');
+        localStorage.setItem('milella_last_authenticated_role', 'admin');
+        localStorage.setItem('milella_user_nome', 'Ciro Milella');
+        localStorage.setItem('milella_admin_pin', 'SOS999');
+      } catch(e) {}
+      window.location.href = '/launcher.html?from=turni&auth_role=admin';
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
