@@ -1276,7 +1276,7 @@
             <span class="patient-badge-h24">Assistenza Continua H24</span>
           </h2>
           <div class="patient-coord-text">
-            Coordinatore Turni: <b>Ciro Milella (Admin Master PIN SOS999)</b> &bull; Sede Bari (BA)
+            Coordinatore Turni: <b>Ciro Milella (Coordinatore)</b> &bull; Sede Bari (BA)
           </div>
         </div>
       </div>
@@ -1868,7 +1868,7 @@
       </div>
 
       <div style="margin-bottom:20px;">
-        <input type="password" id="input-pin-master-admin" placeholder="PIN (es. SOS999)" style="width:100%; text-align:center; letter-spacing:4px; font-size:18px; font-weight:900; background:rgba(255,255,255,0.06); border:1.5px solid rgba(56,189,248,0.4); border-radius:12px; padding:12px; color:#fff; outline:none;" onkeyup="if(event.key==='Enter') confermaSbloccoPinAdmin()">
+        <input type="password" id="input-pin-master-admin" placeholder="PIN di Sicurezza" style="width:100%; text-align:center; letter-spacing:4px; font-size:18px; font-weight:900; background:rgba(255,255,255,0.06); border:1.5px solid rgba(56,189,248,0.4); border-radius:12px; padding:12px; color:#fff; outline:none;" onkeyup="if(event.key==='Enter') confermaSbloccoPinAdmin()">
       </div>
 
       <div style="display:flex; justify-content:center; gap:10px;">
@@ -2683,7 +2683,7 @@
       const inp = document.getElementById('input-pin-master-admin');
       const pin = inp ? inp.value.trim() : '';
       if (!pin) {
-        mostraToast('Inserisci il PIN Master (SOS999)', '⚠️');
+        mostraToast('Inserisci il PIN di Sicurezza', '⚠️');
         return;
       }
       if (window.sbloccaModalitaAdminManuale) {
@@ -2693,7 +2693,7 @@
           renderViste();
           mostraToast('Modalità Admin Coordinatore Sbloccata!', '👑');
         } else {
-          mostraToast('PIN Errato. Riprova con SOS999', '❌');
+          mostraToast('PIN Errato. Riprova', '❌');
           if (inp) inp.select();
         }
       }

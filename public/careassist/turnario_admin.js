@@ -190,10 +190,12 @@ let turnarioCorrente = null;
 // Verifica se l'utente corrente ha i privilegi di Admin
 function isUtenteAdmin() {
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
-  const adminPin = localStorage.getItem('milella_admin_pin');
-  if (role === 'admin' || adminPin === 'SOS999') return true;
-  if (sessionStorage.getItem('turnario_admin_unlocked') === 'true') return true;
-  return false;
+  if (role === 'collaboratore') {
+    if (sessionStorage.getItem('turnario_admin_unlocked') === 'true') return true;
+    return false;
+  }
+  // Default: Ciro Milella Coordinatore con pieni privilegi senza richiesta di PIN
+  return true;
 }
 
 // Sblocco manuale Admin tramite PIN Master
