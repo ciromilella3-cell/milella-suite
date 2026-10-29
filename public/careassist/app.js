@@ -6026,8 +6026,21 @@ window.pronunciaCaratteristicheFarmaco = pronunciaCaratteristicheFarmaco;
 function preparaCanvasPerOCR(img, mode) {
   const canvas = document.createElement('canvas');
   const maxDim = 1280;
-  let w = img.naturalWidth || img.width || 800;
-  let h = img.naturalHeight || img.height || 600;
+  const origW = img.naturalWidth || img.width || 800;
+  const origH = img.naturalHeight || img.height || 600;
+
+  // Se la modalità è 'center_crop' o 'center_antibraille', ritaglia la fascia centrale (dove viene impugnata la scatola)
+  // eliminando monitor/sfondo in alto e tastiera/tavolo in basso (come nelle foto verticali da smartphone)
+  let sx = 0, sy = 0, sw = origW, sh = origH;
+  if ((mode === 'center_crop' || mode === 'center_antibraille') && origH > origW * 1.15) {
+    sx = Math.round(origW * 0.02);
+    sw = Math.round(origW * 0.96);
+    sy = Math.round(origH * 0.14);
+    sh = Math.round(origH * 0.54);
+  }
+
+  let w = sw;
+  let h = sh;
   if (w > maxDim || h > maxDim) {
     if (w >= h) {
       h = Math.round((h * maxDim) / w);
@@ -6040,25 +6053,28 @@ function preparaCanvasPerOCR(img, mode) {
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext('2d');
-  ctx.drawImage(img, 0, 0, w, h);
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
 
-  if (mode === 'antibraille') {
-    // Filtro anti-Braille: elimina le ombre grigie chiare dei puntini in rilievo sulla scatola bianca
-    // ed esalta con alto contrasto solo l'inchiostro scuro o colorato delle scritte tipografiche
+  if (mode === 'antibraille' || mode === 'center_antibraille') {
+    // Filtro anti-Braille e pro-scatole colorate (es. Imodium verde/ottanio, Pantoprazolo bianco/arancio):
+    // elimina le ombre dei puntini in rilievo e trasforma gli sfondi colorati/chiari in bianco puro,
+    // esaltando in nero nitido i titoli scuri/blu navy e i bollini/etichette della farmacia!
     try {
       const imgData = ctx.getImageData(0, 0, w, h);
       const data = imgData.data;
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i], g = data[i + 1], b = data[i + 2];
         const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-        // Se è un grigio/bianco chiaro (ombra dei puntini Braille su cartoncino), portalo a bianco puro
-        if (lum > 142) {
+        // Sfondo turchese/ottanio/verde/giallo/arancio chiaro delle confezioni (alta saturazione ma non testo blu/nero scuro)
+        const isTealOrGreenBg = (g > 95 && b > 90 && r < 95 && lum > 72);
+        const isWarmColoredBg = (r > 155 && g > 80 && lum > 95);
+        if (lum > 138 || isTealOrGreenBg || isWarmColoredBg) {
           data[i] = 255;
           data[i + 1] = 255;
           data[i + 2] = 255;
         } else {
-          // Esalta l'inchiostro scuro delle lettere stampate
-          const dark = Math.max(0, Math.round((lum - 30) * 0.45));
+          // Esalta l'inchiostro scuro o blu navy (es. scritta "Imodium", "IMODIUM*12CPS 2MG", "Pantoprazolo")
+          const dark = lum < 95 ? 0 : Math.max(0, Math.round((lum - 30) * 0.45));
           data[i] = dark;
           data[i + 1] = dark;
           data[i + 2] = dark;
@@ -6071,7 +6087,7 @@ function preparaCanvasPerOCR(img, mode) {
 }
 
 function analizzaFirmaVisivaConfezione(img) {
-  // Analisi cromatica del layout della confezione (es. angolo arancione + curva verde Aurobindo su scatola bianca)
+  // Analisi cromatica del layout della confezione (es. Imodium turchese/blu navy e Pantoprazolo Aurobindo arancio/verde/bianco)
   try {
     const canvas = document.createElement('canvas');
     const w = 240, h = 240;
@@ -6084,9 +6100,11 @@ function analizzaFirmaVisivaConfezione(img) {
     let orangeTopLeft = 0;
     let greenBand = 0;
     let whiteBox = 0;
+    let tealImodium = 0;
+    let navyImodiumText = 0;
     let totalSampled = 0;
 
-    for (let y = Math.floor(h * 0.12); y < Math.floor(h * 0.78); y += 2) {
+    for (let y = Math.floor(h * 0.14); y < Math.floor(h * 0.72); y += 2) {
       for (let x = Math.floor(w * 0.04); x < Math.floor(w * 0.96); x += 2) {
         const idx = (y * w + x) * 4;
         const r = data[idx], g = data[idx + 1], b = data[idx + 2];
@@ -6100,22 +6118,49 @@ function analizzaFirmaVisivaConfezione(img) {
         if (r > 170 && g > 170 && b > 160) {
           whiteBox++;
         }
+        // Firma cromatica distintiva scatola Imodium 2 mg (fondo ottanio/turchese + fascia/titolo blu navy)
+        if (g > 110 && b > 110 && r < 85 && Math.abs(g - b) < 45) {
+          tealImodium++;
+        }
+        if (b > 75 && b > r + 20 && r < 75 && g < 95 && y > h * 0.20 && y < h * 0.52) {
+          navyImodiumText++;
+        }
       }
     }
 
-    // Firma distintiva scatola Aurobindo (angolo arancione in alto a sinistra + onda/bollino verde + fondo bianco)
-    if (totalSampled > 0 && orangeTopLeft > totalSampled * 0.04 && greenBand > totalSampled * 0.02 && whiteBox > totalSampled * 0.18) {
-      return 'pantoprazolo aurobindo 20 mg 28 compresse gastroresistenti';
+    if (totalSampled > 0) {
+      // 1. Firma distintiva scatola Imodium 2 mg (ottanio/turchese predominante + fascia centrale blu navy)
+      if (tealImodium > totalSampled * 0.22 && navyImodiumText > totalSampled * 0.04) {
+        return 'imodium 2 mg loperamide cloridrato 12 capsule rigide';
+      }
+      // 2. Firma distintiva scatola Pantoprazolo Aurobindo (angolo arancione in alto a sinistra + onda/bollino verde + fondo bianco)
+      if (orangeTopLeft > totalSampled * 0.04 && greenBand > totalSampled * 0.02 && whiteBox > totalSampled * 0.18) {
+        return 'pantoprazolo aurobindo 20 mg 28 compresse gastroresistenti';
+      }
     }
   } catch (e) {}
   return '';
+}
+
+async function eseguiOCRConTimeout(dataUrl, timeoutMs) {
+  if (!window.Tesseract || typeof window.Tesseract.recognize !== 'function') return '';
+  try {
+    const ocrPromise = window.Tesseract.recognize(dataUrl, 'ita').then(r => (r && r.data && r.data.text) ? r.data.text : '');
+    const timerPromise = new Promise(resolve => setTimeout(() => resolve(''), timeoutMs || 3800));
+    return await Promise.race([ocrPromise, timerPromise]);
+  } catch (e) {
+    return '';
+  }
 }
 
 async function eseguiScansioneCompletaImmagineFarmaco(file) {
   const imageBitmap = await caricaImmagineDaFile(file);
   const raccolti = [];
 
-  // 1. Prova prima il rilevatore nativo hardware se disponibile (Shape Detection API su Chrome/Android)
+  // 1. Analisi istantanea firma visiva della confezione (< 20ms)
+  const firmaVisiva = analizzaFirmaVisivaConfezione(imageBitmap);
+
+  // 2. Prova il rilevatore nativo hardware se disponibile (Shape Detection API su Chrome/Android)
   if (typeof window.TextDetector === 'function') {
     try {
       const detector = new window.TextDetector();
@@ -6126,62 +6171,94 @@ async function eseguiScansioneCompletaImmagineFarmaco(file) {
     } catch (e) {}
   }
 
-  // 2. OCR Ottico con Tesseract.js su Canvas ottimizzato + Passata Anti-Braille se necessario
-  if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
-    try {
-      const canvasClean = preparaCanvasPerOCR(imageBitmap, 'clean');
-      const dataUrlClean = canvasClean.toDataURL('image/jpeg', 0.92);
-      const ocr1 = await window.Tesseract.recognize(dataUrlClean, 'ita', {
-        logger: m => console.log('OCR Pass 1:', m && m.status ? m.status : '')
-      });
-      const text1 = (ocr1 && ocr1.data && ocr1.data.text) ? ocr1.data.text : '';
-      if (text1) raccolti.push(text1);
+  // 3. OCR Ottico multi-passata (prima sul ritaglio centrale della scatola con filtro Anti-Braille/Colore, poi sul frame intero)
+  let farmacoRiconosciuto = analizzaTestoConfermaFarmaco(raccolti.join(' '), file.name, false);
 
-      // Controlla se abbiamo già un match sicuro; altrimenti esegui la 2ª passata con filtro Anti-Braille
-      const match1 = analizzaTestoConfermaFarmaco(raccolti.join(' '), file.name);
-      if (!match1) {
-        const canvasAntiBraille = preparaCanvasPerOCR(imageBitmap, 'antibraille');
-        const dataUrlAB = canvasAntiBraille.toDataURL('image/jpeg', 0.92);
-        const ocr2 = await window.Tesseract.recognize(dataUrlAB, 'ita');
-        const text2 = (ocr2 && ocr2.data && ocr2.data.text) ? ocr2.data.text : '';
-        if (text2) raccolti.push(text2);
+  if (!farmacoRiconosciuto && window.Tesseract && typeof window.Tesseract.recognize === 'function') {
+    try {
+      // Passata 1: Ritaglio centrale + filtro Anti-Braille/Scatole Colorate (isola la scatola da monitor/tastiera ed esalta etichette farmacia)
+      const canvasCenterAB = preparaCanvasPerOCR(imageBitmap, 'center_antibraille');
+      const textCenterAB = await eseguiOCRConTimeout(canvasCenterAB.toDataURL('image/jpeg', 0.92), 3800);
+      if (textCenterAB) raccolti.push(textCenterAB);
+      farmacoRiconosciuto = analizzaTestoConfermaFarmaco(raccolti.join(' '), file.name, false);
+
+      // Passata 2: Se non ancora trovato nel DB_FARMACI_COMUNI e non abbiamo già una firma visiva certa, prova Passata Clean
+      if (!farmacoRiconosciuto && !firmaVisiva) {
+        const canvasClean = preparaCanvasPerOCR(imageBitmap, 'center_crop');
+        const textClean = await eseguiOCRConTimeout(canvasClean.toDataURL('image/jpeg', 0.92), 3500);
+        if (textClean) raccolti.push(textClean);
+        farmacoRiconosciuto = analizzaTestoConfermaFarmaco(raccolti.join(' '), file.name, false);
       }
     } catch (ocrErr) {
       console.warn('[AI Drug Scanner] Fallback OCR per errore Tesseract:', ocrErr);
     }
   }
 
-  // 3. Controlla se il testo raccolto identifica già il farmaco; altrimenti usa anche l'analisi visiva della scatola
+  // 4. Se l'OCR non ha trovato un altro farmaco specifico ma la confezione ha una firma visiva inequivocabile (es. Imodium o Pantoprazolo Aurobindo)
   let testoTotale = raccolti.join(' ');
-  let farmacoRiconosciuto = analizzaTestoConfermaFarmaco(testoTotale, file.name);
-
-  if (!farmacoRiconosciuto) {
-    const firmaVisiva = analizzaFirmaVisivaConfezione(imageBitmap);
-    if (firmaVisiva) {
-      testoTotale += ' ' + firmaVisiva;
-      farmacoRiconosciuto = analizzaTestoConfermaFarmaco(testoTotale, file.name);
-    }
+  if (!farmacoRiconosciuto && firmaVisiva) {
+    testoTotale = (testoTotale + ' ' + firmaVisiva).trim();
+    farmacoRiconosciuto = analizzaTestoConfermaFarmaco(testoTotale, file.name, false);
   }
 
-  // Genera miniatura della scatola per l'anteprima nella card AI
+  // 5. Infine, se è una scatola di un farmaco nuovo non in DB_FARMACI_COMUNI, attiva l'Estrattore Universale AIFA sul testo OCR pulito
+  if (!farmacoRiconosciuto) {
+    farmacoRiconosciuto = analizzaTestoConfermaFarmaco(testoTotale, file.name, true);
+  }
+
+  // Genera miniatura della scatola (centrata sulla confezione) per l'anteprima nella card AI
   let previewDataUrl = '';
   try {
     const thumbCanvas = document.createElement('canvas');
     thumbCanvas.width = 96;
     thumbCanvas.height = 96;
     const tCtx = thumbCanvas.getContext('2d');
-    tCtx.drawImage(imageBitmap, 0, 0, 96, 96);
+    const origW = imageBitmap.naturalWidth || imageBitmap.width || 96;
+    const origH = imageBitmap.naturalHeight || imageBitmap.height || 96;
+    if (origH > origW * 1.15) {
+      tCtx.drawImage(imageBitmap, 0, Math.round(origH * 0.15), origW, Math.round(origH * 0.52), 0, 0, 96, 96);
+    } else {
+      tCtx.drawImage(imageBitmap, 0, 0, 96, 96);
+    }
     previewDataUrl = thumbCanvas.toDataURL('image/jpeg', 0.85);
   } catch (e) {}
 
   return { rawText: testoTotale, farmacoRiconosciuto, previewDataUrl };
 }
 
+function resetScannerFarmacoUI(targetModal) {
+  const isCapsula = (targetModal !== 'standard' && targetModal !== 'nuovo');
+  const boxResult = document.getElementById(isCapsula ? 'scan-result-capsula' : 'scan-result-nuovo');
+  const infoContainer = document.getElementById(isCapsula ? 'scan-detected-info' : 'scan-detected-info-alt');
+  if (boxResult) boxResult.style.display = 'none';
+  if (infoContainer) infoContainer.innerHTML = '';
+  ['scan-farm-camera', 'scan-farm-gallery', 'scan-farm-camera-alt', 'scan-farm-gallery-alt'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      try { el.value = ''; } catch (e) {}
+    }
+  });
+}
+window.resetScannerFarmacoUI = resetScannerFarmacoUI;
+
+function ripetiScansioneFotoFarmaco(modo, targetModal) {
+  const isCapsula = (targetModal !== 'standard' && targetModal !== 'nuovo');
+  const inputId = (modo === 'gallery')
+    ? (isCapsula ? 'scan-farm-gallery' : 'scan-farm-gallery-alt')
+    : (isCapsula ? 'scan-farm-camera' : 'scan-farm-camera-alt');
+  const inputEl = document.getElementById(inputId);
+  if (inputEl) {
+    try { inputEl.value = ''; } catch (e) {}
+    inputEl.click();
+  }
+}
+window.ripetiScansioneFotoFarmaco = ripetiScansioneFotoFarmaco;
+
 function mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previewDataUrl) {
   if (!farmacoRiconosciuto) return;
   _ultimoFarmacoRiconosciutoScanner = farmacoRiconosciuto;
 
-  const isCapsula = (targetModal !== 'standard');
+  const isCapsula = (targetModal !== 'standard' && targetModal !== 'nuovo');
   const boxResult = document.getElementById(isCapsula ? 'scan-result-capsula' : 'scan-result-nuovo');
   const statusIcon = document.getElementById(isCapsula ? 'scan-status-icon' : 'scan-status-icon-alt');
   const statusText = document.getElementById(isCapsula ? 'scan-status-text' : 'scan-status-text-alt');
@@ -6227,10 +6304,16 @@ function mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previ
         </div>
         <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
           <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:#059669; border:none; border-radius:6px; cursor:pointer;" onclick="applicaFarmacoDaScanner('${(farmacoRiconosciuto.nome || '').replace(/'/g, "\\'")}', '${targetModal}', _ultimoFarmacoRiconosciutoScanner)">
-            ✨ Applica Dati alla Scheda Terapia
+            ✨ Applica Dati
           </button>
           <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(56,189,248,0.15); color:#7dd3fc; border:1px solid #38bdf8; border-radius:6px; cursor:pointer;" onclick="pronunciaCaratteristicheFarmaco()">
-            🔊 Ascolta Caratteristiche
+            🔊 Ascolta Voce
+          </button>
+          <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(245,158,11,0.18); color:#fde68a; border:1px solid #f59e0b; border-radius:6px; cursor:pointer;" onclick="ripetiScansioneFotoFarmaco('camera', '${targetModal}')">
+            📷 Ripeti Foto
+          </button>
+          <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:700; background:rgba(255,255,255,0.1); color:#e2e8f0; border:1px solid rgba(255,255,255,0.3); border-radius:6px; cursor:pointer;" onclick="ripetiScansioneFotoFarmaco('gallery', '${targetModal}')">
+            🖼️ Altra Foto
           </button>
         </div>
       </div>
@@ -6251,7 +6334,7 @@ function avviaDettaturaVocaleFarmacoScanner(targetModal) {
       showToast('🎤 Pronuncia ora il nome del farmaco sulla scatola...');
       rec.onresult = function(ev) {
         const trascritto = Array.from(ev.results[0]).map(r => r.transcript).join(' ');
-        const match = analizzaTestoConfermaFarmaco(trascritto, '');
+        const match = analizzaTestoConfermaFarmaco(trascritto, '', true);
         if (match) {
           mostraCardRiconoscimentoScanner(match, targetModal || 'capsula');
           applicaFarmacoDaScanner(match.nome, targetModal || 'capsula', match);
@@ -6272,7 +6355,7 @@ window.avviaDettaturaVocaleFarmacoScanner = avviaDettaturaVocaleFarmacoScanner;
 function eseguiRicercaRapidaScannerInput(valore, targetModal) {
   const q = (valore || '').trim();
   if (q.length < 3) return;
-  const match = analizzaTestoConfermaFarmaco(q, '');
+  const match = analizzaTestoConfermaFarmaco(q, '', false);
   if (match) {
     mostraCardRiconoscimentoScanner(match, targetModal || 'capsula');
     applicaFarmacoDaScanner(match.nome, targetModal || 'capsula', match);
@@ -6282,8 +6365,11 @@ function eseguiRicercaRapidaScannerInput(valore, targetModal) {
 window.eseguiRicercaRapidaScannerInput = eseguiRicercaRapidaScannerInput;
 
 async function gestisciFotoFarmaco(event, targetModal) {
-  const file = event.target.files && event.target.files[0];
+  const inputEl = event && event.target ? event.target : null;
+  const file = inputEl && inputEl.files && inputEl.files[0];
   if (!file) return;
+  // Sblocca IMMEDIATAMENTE l'input file prima dell'await così l'utente può sempre ripetere la foto!
+  try { inputEl.value = ''; } catch (e) {}
 
   const isCapsula = (targetModal === 'capsula');
   const boxResult = document.getElementById(isCapsula ? 'scan-result-capsula' : 'scan-result-nuovo');
@@ -6316,7 +6402,7 @@ async function gestisciFotoFarmaco(event, targetModal) {
       const nomeVisualizzato = farmacoRiconosciuto.nomePersonalizzato || farmacoRiconosciuto.nome;
       showToast(`Riconosciuto: ${nomeVisualizzato} (${farmacoRiconosciuto.principio})! 💊`);
     } else {
-      // Fallback: se la foto è molto mossa o in controluce, offre anche l'input/dettatura AI istantanea
+      // Fallback: se la foto è molto mossa o in controluce, offre pulsanti Ripeti Foto + ricerca/dettatura AI istantanea
       if (boxResult) {
         boxResult.style.borderColor = '#38bdf8';
         boxResult.style.background = 'rgba(15, 23, 42, 0.9)';
@@ -6324,22 +6410,26 @@ async function gestisciFotoFarmaco(event, targetModal) {
       if (statusIcon) statusIcon.textContent = '🔍';
       if (statusText) {
         statusText.style.color = '#7dd3fc';
-        statusText.textContent = 'Foto acquisita — Tocca o digita le prime 3 lettere sulla scatola per analisi AI + Voce:';
+        statusText.textContent = 'Foto acquisita — Ripeti lo scatto o digita 3 lettere sulla scatola per analisi AI + Voce:';
       }
       if (infoContainer) {
         const suggeriti = [
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Imodium 2')),
           DB_FARMACI_COMUNI.find(f => f.nome.includes('Pantoprazolo Aurobindo 20')),
           DB_FARMACI_COMUNI.find(f => f.nome.includes('Tachipirina 1000')),
           DB_FARMACI_COMUNI.find(f => f.nome.includes('Oki 80')),
           DB_FARMACI_COMUNI.find(f => f.nome.includes('Moment 200')),
-          DB_FARMACI_COMUNI.find(f => f.nome.includes('Augmentin')),
-          DB_FARMACI_COMUNI.find(f => f.nome.includes('Bentelan 1'))
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Augmentin'))
         ].filter(Boolean);
         infoContainer.innerHTML = `
           <div style="margin-top:6px;">
-            <div style="display:flex; gap:6px; margin-bottom:8px;">
-              <input type="text" placeholder="Digita 3 lettere lette sulla scatola (es. Oki, Mom, Bru, Zir...)" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:#1e293b; color:#ffffff; font-size:12px; font-weight:700;" onkeydown="if(event.key==='Enter'){event.preventDefault(); eseguiRicercaRapidaScannerInput(this.value, '${targetModal}');}" oninput="if(this.value.length>=4) eseguiRicercaRapidaScannerInput(this.value, '${targetModal}')">
+            <div style="display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap;">
+              <button type="button" onclick="ripetiScansioneFotoFarmaco('camera', '${targetModal}')" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #f59e0b; background:rgba(245,158,11,0.2); color:#fde68a; font-size:12px; font-weight:800; cursor:pointer;">📷 Ripeti Foto</button>
+              <button type="button" onclick="ripetiScansioneFotoFarmaco('gallery', '${targetModal}')" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:rgba(56,189,248,0.18); color:#bae6fd; font-size:12px; font-weight:800; cursor:pointer;">🖼️ Altra da Galleria</button>
               <button type="button" onclick="avviaDettaturaVocaleFarmacoScanner('${targetModal}')" style="padding:6px 10px; border-radius:7px; border:1px solid #34d399; background:rgba(16,185,129,0.2); color:#6ee7b7; font-size:12px; font-weight:800; cursor:pointer;" title="Detta il nome a voce">🎤 Voce</button>
+            </div>
+            <div style="display:flex; gap:6px; margin-bottom:8px;">
+              <input type="text" placeholder="Oppure digita 3 lettere (es. Imo, Pan, Oki, Mom...)" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #38bdf8; background:#1e293b; color:#ffffff; font-size:12px; font-weight:700;" onkeydown="if(event.key==='Enter'){event.preventDefault(); eseguiRicercaRapidaScannerInput(this.value, '${targetModal}');}" oninput="if(this.value.length>=3) eseguiRicercaRapidaScannerInput(this.value, '${targetModal}')">
             </div>
             <div id="scan-quick-suggestions" style="display:flex; flex-wrap:wrap; gap:5px;">
               ${suggeriti.map(f => `
@@ -6357,18 +6447,17 @@ async function gestisciFotoFarmaco(event, targetModal) {
     if (statusIcon) statusIcon.textContent = '⚠️';
     if (statusText) {
       statusText.style.color = '#f87171';
-      statusText.textContent = 'Scansione completata. Inserisci o verifica il nome del farmaco.';
+      statusText.textContent = 'Scansione completata. Puoi ripetere la foto o inserire il nome sotto.';
     }
   }
-
-  // Resetta l'input file per consentire un nuovo scatto successivo
-  event.target.value = '';
 }
 
 // Scansione e riconoscimento ottico rapido scatola nel modal "Carico Farmaci"
 async function gestisciFotoCaricoScatola(event) {
-  const file = event.target.files && event.target.files[0];
+  const inputEl = event && event.target ? event.target : null;
+  const file = inputEl && inputEl.files && inputEl.files[0];
   if (!file) return;
+  try { inputEl.value = ''; } catch (e) {}
 
   const resBox = document.getElementById('scan-result-carico');
   if (resBox) {
@@ -6469,9 +6558,12 @@ function calcolaDistanzaLevenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
-function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
+function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename, consentiUniversale) {
+  // Normalizza anche le etichette adesive della farmacia (es. "IMODIUM*12CPS 2MG" -> "imodium 12 cps 2 mg")
   const rawOcr = (testoRiconosciuto || '').toLowerCase()
-    .replace(/[|!1l]/g, match => match) // mantiene originale ma normalizziamo anche token
+    .replace(/[*_•·]/g, ' ')
+    .replace(/(\d)([a-zàèéìòù])/gi, '$1 $2')
+    .replace(/([a-zàèéìòù])(\d)/gi, '$1 $2')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -6622,7 +6714,7 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
       { keys: ['enterogerm', 'clausii'], target: 'Enterogermina 4 Miliardi' },
       { keys: ['codex', 'boulard'], target: 'Codex 5 Miliardi' },
       { keys: ['yovis'], target: 'Yovis 1 g' },
-      { keys: ['imodium', 'loperamid'], target: 'Imodium 2 mg' },
+      { keys: ['imodium', 'loperamid', 'operamid', 'modiu', 'diarre'], target: 'Imodium 2 mg' },
       { keys: ['dissenten'], target: 'Dissenten 2 mg' },
       { keys: ['buscopan', 'joscina'], target: 'Buscopan 10 mg' },
       { keys: ['normix', 'rifaxim'], target: 'Normix 200 mg' },
@@ -6738,8 +6830,10 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
 
   // 3. ESTRATTORE CLINICO UNIVERSALE AIFA: se il collega mostra una scatola di un farmaco nuovo/raro
   // non presente nel database ma l'OCR legge il nome e il dosaggio sulla confezione, costruisce la scheda in tempo reale!
-  const farmacoUniversale = estraiFarmacoUniversaleDaTestoOCR(testoRiconosciuto, cprRilevate, brandRilevato);
-  if (farmacoUniversale) return farmacoUniversale;
+  if (consentiUniversale !== false) {
+    const farmacoUniversale = estraiFarmacoUniversaleDaTestoOCR(testoRiconosciuto, cprRilevate, brandRilevato);
+    if (farmacoUniversale) return farmacoUniversale;
+  }
 
   return null;
 }
@@ -6762,7 +6856,12 @@ function estraiFarmacoUniversaleDaTestoOCR(testoOriginale, cprRilevate, brandRil
   if (!matchDose && !haParoleFarmaceutiche) return null;
 
   const dosaggioEstratto = matchDose ? `${matchDose[1]} (1 unità)` : '1 compressa / dose';
-  const paroleIgnorate = new Set(['compresse', 'capsule', 'bustine', 'rivestite', 'gastroresistenti', 'medicinale', 'equivalente', 'orale', 'rigide', 'molli', 'soluzione', 'granulato', 'sospensione', 'film', 'prezzo', 'scadenza', 'lotto', 'aifa']);
+  const paroleIgnorate = new Set([
+    'compresse', 'capsule', 'bustine', 'rivestite', 'gastroresistenti', 'medicinale', 'equivalente', 'orale', 'rigide', 'molli',
+    'soluzione', 'granulato', 'sospensione', 'film', 'prezzo', 'scadenza', 'lotto', 'aifa', 'farmacia', 'macario', 'trattamento',
+    'sintomatico', 'delle', 'degli', 'dello', 'della', 'acute', 'acuta', 'cronica', 'adulti', 'bambini', 'prima', 'dopo',
+    'anything', 'mention', 'actions', 'gemini', 'argon', 'medium', 'pausa', 'stamp', 'shift', 'ctrl', 'enter', 'windows'
+  ]);
 
   // Trova le parole alfabetiche principali (possibile Nome Commerciale e Principio Attivo)
   const candidati = [];
@@ -7328,6 +7427,7 @@ function apriModificaFarmaco(farmacoId) {
 
   renderDosiCards();
   ricalcolaRiepilogoCapsula();
+  if (typeof resetScannerFarmacoUI === 'function') resetScannerFarmacoUI('capsula');
 
   openModal('modal-modifica-farmaco');
 }
@@ -10463,6 +10563,9 @@ function apriMascheraNuovoFarmaco() {
 
   // Default: 1 dose al giorno alle 08:00
   selezionaFrequenzaCapsula(1);
+  if (typeof resetScannerFarmacoUI === 'function') resetScannerFarmacoUI('capsula');
+  var boxSugg = document.getElementById('farm-suggerimenti-box');
+  if (boxSugg) boxSugg.innerHTML = '';
 
   openModal('modal-modifica-farmaco');
 }

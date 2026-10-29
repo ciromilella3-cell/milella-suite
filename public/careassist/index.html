@@ -1468,12 +1468,12 @@
             <div style="font-size:11px; color:#7dd3fc; margin-bottom:8px;">Fotografa o carica la scatola: compila nome, dosaggio e istruzioni</div>
 
             <div style="display:flex; gap:8px;">
-              <label class="btn-scan-act" style="flex:1;">
+              <label class="btn-scan-act" style="flex:1;" onclick="var inp=this.querySelector('input'); if(inp) inp.value='';">
                 <span>📷</span> Fotocamera
                 <input type="file" id="scan-farm-camera" accept="image/*" capture="environment" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
               </label>
 
-              <label class="btn-scan-act btn-scan-gallery" style="flex:1;">
+              <label class="btn-scan-act btn-scan-gallery" style="flex:1;" onclick="var inp=this.querySelector('input'); if(inp) inp.value='';">
                 <span>🖼️</span> Galleria
                 <input type="file" id="scan-farm-gallery" accept="image/*" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
               </label>
@@ -1682,12 +1682,12 @@
 
             <!-- Pulsanti di Scatto / Caricamento Foto -->
             <div style="display: flex; gap: 8px; margin-top: 6px;">
-              <label class="btn-scan-act" style="flex: 1; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border-radius: 10px; padding: 9px 12px; font-size: 12.5px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; text-align: center; border: 1px solid #38bdf8; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3); transition: all 0.15s ease;">
+              <label class="btn-scan-act" style="flex: 1; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border-radius: 10px; padding: 9px 12px; font-size: 12.5px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; text-align: center; border: 1px solid #38bdf8; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3); transition: all 0.15s ease;" onclick="var inp=this.querySelector('input'); if(inp) inp.value='';">
                 <span>📷</span> Scatta con Fotocamera
                 <input type="file" id="scan-farm-camera-alt" accept="image/*" capture="environment" style="display: none;" onchange="gestisciFotoFarmaco(event, 'nuovo')">
               </label>
 
-              <label class="btn-scan-act" style="flex: 1; background: rgba(255, 255, 255, 0.1); color: #e2e8f0; border-radius: 10px; padding: 9px 12px; font-size: 12.5px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; text-align: center; border: 1px solid rgba(255, 255, 255, 0.25); transition: all 0.15s ease;">
+              <label class="btn-scan-act" style="flex: 1; background: rgba(255, 255, 255, 0.1); color: #e2e8f0; border-radius: 10px; padding: 9px 12px; font-size: 12.5px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; text-align: center; border: 1px solid rgba(255, 255, 255, 0.25); transition: all 0.15s ease;" onclick="var inp=this.querySelector('input'); if(inp) inp.value='';">
                 <span>🖼️</span> Scegli da Galleria
                 <input type="file" id="scan-farm-gallery-alt" accept="image/*" style="display: none;" onchange="gestisciFotoFarmaco(event, 'nuovo')">
               </label>
@@ -3418,12 +3418,19 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=64"></script>
+  <script src="app.js?v=65"></script>
   <script>
     if ('serviceWorker' in navigator) {
+      var _reloadingSw = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+        if (_reloadingSw) return;
+        _reloadingSw = true;
+        window.location.reload();
+      });
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js').then(function(reg) {
+        navigator.serviceWorker.register('./sw.js?v=65', { updateViaCache: 'none' }).then(function(reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
+          try { reg.update(); } catch (e) {}
         }).catch(function(err) {
           console.warn('Avviso Service Worker:', err);
         });

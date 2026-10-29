@@ -1,9 +1,10 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare
-const CACHE_NAME = 'careassist-pro-v64';
+const CACHE_NAME = 'careassist-pro-v65';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
+  './app.js?v=65',
   './app.js',
   './qrcode_data_uri.js',
   './suite_nav.js',
@@ -36,7 +37,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Strategia: Network First con fallback immediato su Cache offline
+// Strategia: Network First (no-cache) con fallback immediato su Cache offline
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
@@ -44,7 +45,7 @@ self.addEventListener('fetch', (event) => {
   if (event.request.url.includes('/api/')) return;
 
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: 'no-cache' })
       .then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
@@ -55,7 +56,7 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       })
       .catch(() => {
-        return caches.match(event.request);
+        return caches.match(event.request, { ignoreSearch: true });
       })
   );
 });
