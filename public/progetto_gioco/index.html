@@ -6109,33 +6109,62 @@
   <!-- Universal Suite Mobile Bottom Navigation -->
   <script src="/suite_nav.js"></script>
 
-    <!-- MODALE FEEDBACK OCR FOTOCAMERA -->
+    <!-- MODALE FEEDBACK OCR FOTOCAMERA & VOCE AI -->
     <div id="ocrScanModal">
         <div class="ocr-modal-card">
-            <div style="font-size:2.2rem; margin-bottom:8px;">🔍</div>
-            <h3 style="color:#ffffff; font-size:1.2rem; font-weight:700; margin-bottom:6px;">Analisi Biglietto in Corso...</h3>
-            <p style="color:#94a3b8; font-size:0.82rem; margin-bottom:14px;" id="ocrModalStatusText">Riconoscimento ottico del testo e dei dati di gioco...</p>
+            <div id="ocrModalIcon" style="font-size:2.5rem; margin-bottom:8px;">🔍</div>
+            <h3 style="color:#ffffff; font-size:1.25rem; font-weight:800; margin-bottom:6px;" id="ocrModalTitle">Scansione Biglietto & Voce AI...</h3>
+            <p style="color:#94a3b8; font-size:0.84rem; margin-bottom:12px;" id="ocrModalStatusText">Riconoscimento ottico della serie e verifica dati di gioco...</p>
             
-            <div id="ocrPreviewImageWrapper" style="margin-bottom:14px; max-height:220px; overflow:hidden; border-radius:14px; border:1px solid rgba(255,255,255,0.15);">
-                <img id="ocrPreviewImg" style="width:100%; height:auto; object-fit:contain;" src="" alt="Anteprima">
+            <div id="ocrPreviewImageWrapper" style="margin-bottom:12px; max-height:200px; overflow:hidden; border-radius:14px; border:1px solid rgba(255,255,255,0.15); background:#020617;">
+                <img id="ocrPreviewImg" style="width:100%; height:auto; object-fit:contain; max-height:200px;" src="" alt="Anteprima">
             </div>
 
-            <div class="ocr-progress-box" id="ocrProgressBox" style="display:block;">
+            <div class="ocr-progress-box" id="ocrProgressBox" style="display:block; margin:12px 0;">
                 <div class="ocr-spinner"></div>
-                <div style="font-size:0.8rem; font-weight:700; color:#38bdf8;" id="ocrProgressPercent">Lettura caratteri in corso...</div>
+                <div style="font-size:0.84rem; font-weight:700; color:#38bdf8;" id="ocrProgressPercent">Elaborazione contrasto e caratteri ottici...</div>
             </div>
 
-            <button type="button" onclick="chiudiOcrModal()" style="background:rgba(255,255,255,0.1); border:none; color:#cbd5e1; padding:8px 20px; border-radius:10px; font-size:0.82rem; cursor:pointer;">Annulla</button>
+            <!-- BOX RISULTATO RICONOSCIMENTO (SERIE O ALLERTA NON-GIOCO) -->
+            <div id="ocrResultBox" style="display:none; margin:12px 0; text-align:left;"></div>
+
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:10px;" id="ocrActionsRow">
+                <button type="button" id="btnOcrRiascolta" onclick="riascoltaUltimoAnnuncioVocale()" style="display:none; background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border:none; color:#fff; padding:9px 16px; border-radius:12px; font-size:0.82rem; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(124,58,237,0.35);">🔊 Riascolta</button>
+                <button type="button" id="btnOcrConferma" onclick="confermaESalvaDaOcr()" style="display:none; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:none; color:#fff; padding:9px 20px; border-radius:12px; font-size:0.85rem; font-weight:900; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.4);">✅ Salva Giocata</button>
+                <button type="button" onclick="chiudiOcrModal()" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; padding:9px 18px; border-radius:12px; font-size:0.82rem; cursor:pointer;">Chiudi</button>
+            </div>
         </div>
     </div>
 
 
 <script>
-// INTELLIGENZA OTTICA: RICONOSCIMENTO AUTOMATICO BIGLIETTI E SCONTRINI
+// INTELLIGENZA OTTICA & VOCE AI: RICONOSCIMENTO AUTOMATICO BIGLIETTI E SCONTRINI
 
-
-// MOTORE OCR INTELLIGENTE POTENZIATO CON PRE-ELABORAZIONE IMMAGINE (BIANCO E NERO AD ALTO CONTRASTO)
 let cachedOcrWorker = null;
+let _ultimoMessaggioVocaleGioco = '';
+let _ultimoRisultatoEstrazioneOcr = null;
+
+function pronunciaEsitoBigliettoVocale(testo, rate = 0.95) {
+    if (!('speechSynthesis' in window)) return;
+    try {
+        window.speechSynthesis.cancel();
+        _ultimoMessaggioVocaleGioco = testo;
+        const utt = new SpeechSynthesisUtterance(testo);
+        utt.lang = 'it-IT';
+        utt.rate = rate;
+        utt.pitch = 1.0;
+        window.speechSynthesis.speak(utt);
+    } catch (e) {
+        console.warn('Errore sintesi vocale:', e);
+    }
+}
+
+function riascoltaUltimoAnnuncioVocale() {
+    if (_ultimoMessaggioVocaleGioco) {
+        pronunciaEsitoBigliettoVocale(_ultimoMessaggioVocaleGioco);
+        if (typeof showToast === 'function') showToast('🔊 Riascolto annuncio vocale...', 'info');
+    }
+}
 
 async function getOcrWorker() {
     if (cachedOcrWorker) return cachedOcrWorker;
@@ -6158,13 +6187,13 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // Funzione che ottimizza l'immagine prima di inviarla all'OCR:
-// Ridimensiona e applica un forte contrasto per far risaltare nitidamente le cifre nere su sfondo bianco
+// Scala di grigi e contrasto aumentato per far risaltare nitidamente la serie su sfondo cartaceo
 function preprocessTicketImage(file) {
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            const maxDim = 1200;
+            const maxDim = 1600;
             let w = img.width;
             let h = img.height;
             if (w > maxDim || h > maxDim) {
@@ -6180,10 +6209,9 @@ function preprocessTicketImage(file) {
             try {
                 const imgData = ctx.getImageData(0, 0, w, h);
                 const d = imgData.data;
-                const contrast = 1.35; // +35% contrasto
+                const contrast = 1.45; // +45% contrasto
                 const factor = (259 * (contrast * 100 + 255)) / (255 * (259 - contrast * 100));
                 for (let i = 0; i < d.length; i += 4) {
-                    // Scala di grigi
                     const v = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
                     const nv = factor * (v - 128) + 128;
                     d[i] = nv;
@@ -6193,38 +6221,54 @@ function preprocessTicketImage(file) {
                 ctx.putImageData(imgData, 0, 0);
             } catch(e) {}
 
-            canvas.toBlob((blob) => resolve(blob || file), 'image/jpeg', 0.92);
+            canvas.toBlob((blob) => resolve(blob || file), 'image/jpeg', 0.95);
         };
         img.onerror = () => resolve(file);
         img.src = URL.createObjectURL(file);
     });
 }
 
-
-// MOTORE OCR CON PRE-SCANSIONE RAPIDA E FEEDBACK CHIARO
+// MOTORE OCR POTENZIATO: DUAL-PASS CON PRE-PROCESSING E FEEDBACK VOCALE AI
 async function handleTicketImageCapture(event) {
     const rawFile = event.target.files && event.target.files[0];
     if (!rawFile) return;
 
     const modal = document.getElementById('ocrScanModal');
+    const modalIcon = document.getElementById('ocrModalIcon');
+    const modalTitle = document.getElementById('ocrModalTitle');
     const statusText = document.getElementById('ocrModalStatusText');
     const percentText = document.getElementById('ocrProgressPercent');
     const previewImg = document.getElementById('ocrPreviewImg');
+    const progressBox = document.getElementById('ocrProgressBox');
+    const resultBox = document.getElementById('ocrResultBox');
+    const btnRiascolta = document.getElementById('btnOcrRiascolta');
+    const btnConferma = document.getElementById('btnOcrConferma');
 
     if (modal) modal.style.display = 'flex';
     if (previewImg) previewImg.src = URL.createObjectURL(rawFile);
-    if (statusText) statusText.textContent = 'Lettura caratteri ad alta risoluzione...';
-    if (percentText) percentText.textContent = 'Inizializzazione AI (0%)...';
+    if (modalIcon) modalIcon.textContent = '🔍';
+    if (modalTitle) modalTitle.textContent = 'Analisi Biglietto con Voce AI...';
+    if (statusText) statusText.textContent = 'Pre-elaborazione ottica e scansione della serie...';
+    if (percentText) percentText.textContent = 'Ottimizzazione contrasto (0%)...';
+    if (progressBox) progressBox.style.display = 'block';
+    if (resultBox) { resultBox.style.display = 'none'; resultBox.innerHTML = ''; }
+    if (btnRiascolta) btnRiascolta.style.display = 'none';
+    if (btnConferma) btnConferma.style.display = 'none';
+
+    _ultimoRisultatoEstrazioneOcr = null;
 
     let recognizedText = '';
 
     try {
+        if (percentText) percentText.textContent = 'Miglioramento nitidezza ottica (15%)...';
+        const processedBlob = await preprocessTicketImage(rawFile);
+
         if (typeof Tesseract !== 'undefined') {
             const worker = await Tesseract.createWorker('ita', 1, {
                 logger: m => {
                     if (m && m.status === 'recognizing text' && percentText) {
                         const pct = Math.round((m.progress || 0) * 100);
-                        percentText.textContent = 'Lettura testo in corso: ' + pct + '%';
+                        percentText.textContent = 'Riconoscimento caratteri AI: ' + pct + '%';
                     } else if (m && m.status && statusText) {
                         if (m.status.includes('loading')) statusText.textContent = 'Caricamento motore OCR...';
                         if (m.status.includes('initializing')) statusText.textContent = 'Calibrazione caratteri...';
@@ -6232,41 +6276,104 @@ async function handleTicketImageCapture(event) {
                 }
             });
 
-            // Analizza direttamente l'immagine
-            const ret = await worker.recognize(rawFile);
-            await worker.terminate();
+            // Passaggio 1: Analizza immagine pre-elaborata
+            const ret = await worker.recognize(processedBlob);
+            recognizedText = (ret && ret.data && ret.data.text) ? ret.data.text : '';
 
-            if (ret && ret.data && ret.data.text) {
-                recognizedText = ret.data.text;
+            // Se il testo è troppo corto, prova un rapido passaggio sull'originale
+            if (recognizedText.length < 8) {
+                if (percentText) percentText.textContent = 'Secondo passaggio ad alta sensibilità...';
+                const retRaw = await worker.recognize(rawFile);
+                if (retRaw && retRaw.data && retRaw.data.text && retRaw.data.text.length > recognizedText.length) {
+                    recognizedText = retRaw.data.text;
+                }
             }
+
+            await worker.terminate();
         }
     } catch(err) {
         console.warn('OCR error:', err);
     }
 
     console.log('--- TESTO OCR ESTRATTO DAL BIGLIETTO ---\n', recognizedText);
+    if (progressBox) progressBox.style.display = 'none';
 
-    // Controlla se ha estratto la Serie e il Numero
+    // Analizza ed estrae serie / tipo di gioco / filtro non-gioco
     const estratto = analizzaTestoBigliettoEPopola(recognizedText);
+    _ultimoRisultatoEstrazioneOcr = estratto;
 
+    // CASO 1: OGGETTO NON DI GIOCO (Come NON FARMACO di CareAssist)
+    if (estratto && estratto.isNonGioco) {
+        if (modalIcon) modalIcon.textContent = '⚠️';
+        if (modalTitle) modalTitle.textContent = 'Non è un Biglietto di Gioco';
+        if (statusText) statusText.textContent = 'Rilevato oggetto commerciale o farmaceutico diverso da un biglietto.';
+        
+        if (resultBox) {
+            resultBox.innerHTML = `
+                <div style="background:rgba(239,68,68,0.15); border:1.5px solid #ef4444; border-radius:14px; padding:12px 14px; color:#fca5a5; font-size:12.5px; line-height:1.45;">
+                    <div style="font-weight:800; font-size:13.5px; color:#f87171; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                        <span>🚫</span> <span>Rilevato: Prodotto Commerciale / Non Gioco</span>
+                    </div>
+                    <div>L'immagine fotografata contiene diciture commerciali o sanitarie (es. crema, farmaco o articolo vario).</div>
+                    <div style="margin-top:6px; font-weight:700; color:#ffffff;">👉 Per registrare la giocata, inquadra la <b>Serie</b> del biglietto (es. <i>Serie D 425073</i>) o lo scontrino di gioco.</div>
+                </div>
+            `;
+            resultBox.style.display = 'block';
+        }
+        if (btnRiascolta) btnRiascolta.style.display = 'inline-block';
+        return;
+    }
+
+    // CASO 2: BIGLIETTO IDENTIFICATO CON SUCCESSO (SERIE O GIOCO)
     if (estratto && estratto.haSerie) {
-        if (statusText) statusText.textContent = '✓ Biglietto identificato!';
-        if (percentText) percentText.textContent = 'Rilevato: ' + estratto.serieTrovata;
+        if (modalIcon) modalIcon.textContent = '🎉';
+        if (modalTitle) modalTitle.textContent = 'Biglietto Identificato!';
+        if (statusText) statusText.textContent = `Rilevato con successo: ${estratto.serieTrovata}`;
+
+        if (resultBox) {
+            resultBox.innerHTML = `
+                <div style="background:linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(6,78,59,0.3) 100%); border:1.5px solid #10b981; border-radius:14px; padding:12px 14px; color:#ffffff;">
+                    <div style="font-size:11px; font-weight:800; color:#34d399; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">
+                        ✨ RISULTATO OTTICO ACQUISITO:
+                    </div>
+                    <div style="font-size:16px; font-weight:900; color:#ffffff; margin-bottom:4px;">
+                        🎟️ ${estratto.serieTrovata}
+                    </div>
+                    <div style="font-size:12px; color:#a7f3d0;">
+                        Tipo: <b>${estratto.tipoGioco}</b> • Giocata pronta per il salvataggio immediato!
+                    </div>
+                </div>
+            `;
+            resultBox.style.display = 'block';
+        }
+
+        if (btnRiascolta) btnRiascolta.style.display = 'inline-block';
+        if (btnConferma) btnConferma.style.display = 'inline-block';
+
+        // Auto-conferma e salva dopo 2.5 secondi
         setTimeout(() => {
-            chiudiOcrModal();
-            if (typeof registraGiocataCorrenteDiretta === 'function') {
-                registraGiocataCorrenteDiretta();
+            const m = document.getElementById('ocrScanModal');
+            if (m && m.style.display === 'flex') {
+                confermaESalvaDaOcr();
             }
-        }, 800);
+        }, 2500);
+
     } else {
-        // Se la fotocamera del cellulare ha scattato con riflesso o inclinazione
-        if (statusText) statusText.textContent = '✓ Foto acquisita!';
-        if (percentText) percentText.textContent = 'Completa la serie (cursore già pronto)';
+        // CASO 3: FOTO ACQUISITA MA SERIE NON CHIARA (PREDISPONE CURSORE)
+        if (modalIcon) modalIcon.textContent = '📸';
+        if (modalTitle) modalTitle.textContent = 'Foto Acquisita!';
+        if (statusText) statusText.textContent = 'Completa o verifica la serie prima di salvare.';
+
+        const annuncioFallback = "Foto acquisita! Completa la serie del biglietto.";
+        pronunciaEsitoBigliettoVocale(annuncioFallback);
+
         setTimeout(() => {
             chiudiOcrModal();
             const descInp = document.getElementById('inpDesc');
             if (descInp) {
-                descInp.value = 'Lotteria Italia 2026 (Serie ';
+                if (!descInp.value || descInp.value.trim() === '') {
+                    descInp.value = 'Lotteria Italia 2026 (Serie ';
+                }
                 descInp.focus();
                 if (descInp.setSelectionRange) {
                     const l = descInp.value.length;
@@ -6274,11 +6381,22 @@ async function handleTicketImageCapture(event) {
                 }
                 descInp.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-            showToast('Foto acquisita! Scrivi la serie (es. D 425073) e salva.', 'info');
-        }, 700);
+            if (typeof showToast === 'function') {
+                showToast('Foto acquisita! Verifica o scrivi la serie (es. D 425073) e salva.', 'info');
+            }
+        }, 1200);
     }
 
     event.target.value = '';
+}
+
+function confermaESalvaDaOcr() {
+    chiudiOcrModal();
+    if (typeof playSound === 'function') playSound('win');
+    if (typeof launchConfetti === 'function') launchConfetti(2500);
+    if (typeof registraGiocataCorrenteDiretta === 'function') {
+        registraGiocataCorrenteDiretta();
+    }
 }
 
 function chiudiOcrModal() {
@@ -6364,121 +6482,175 @@ function stopLiveScanner() {
 }
 
 function analizzaTestoBigliettoEPopola(txt) {
-    const upper = (txt || '').toUpperCase();
+    const raw = (txt || '').trim();
+    const upper = raw.toUpperCase();
     console.log('--- TESTO OCR ANALIZZATO ---\n', upper);
 
     const descInp = document.getElementById('inpDesc');
     const costInp = document.getElementById('inpCost');
     const winInp = document.getElementById('inpWin');
     const locInp = document.getElementById('inpLocation');
-    let haSerieReale = false;
-    let serieRilevata = '';
 
-    // 1. SE L'UTENTE HA GIÀ SELEZIONATO LA SCHEDA "LOTTERIA ITALIA"
-    if (currentGame === 'Lotteria Italia' || upper.includes('LOTTERIA') || upper.includes('GENNAIO') || upper.includes('PREMIO') || upper.includes('AFFARI')) {
-        let serieNumero = '';
+    // FILTRO ANTI "NON GIOCO" (Come il NON FARMACO di CareAssist)
+    const paroleFarmaceuticheNonGioco = [
+        'CREMA', 'TUBO', 'COMPRESS', 'MEDICINALE', 'SCADENZA', 'POSOLOGIA', 'FARMACO',
+        'USO CUTANEO', 'USO ORALE', 'TRAUMEEL', 'TACHIPIRINA', 'PARACETAMOLO', 'LASIX',
+        'FUROSEMIDE', 'MOMENT', 'IBUPROFENE', 'ASPIRINA', 'POMATA', 'GEL CUTANEO',
+        'COLLIRIO', 'SOLUZIONE', 'FISIOLOGICA', 'DISPOSITIVO MEDICO', 'SIGARETTE',
+        'NUOCE GRAVEMENTE', 'FUMO', 'NICOTINA', 'MONOUSO', 'SHAMPOO', 'DETERGENTE'
+    ];
+    const paroleGioco = [
+        'LOTTERIA', 'SERIE', 'BIGLIETTO', 'GRATTA', 'VINCI', 'MILIARDARIO',
+        'SUPERENALOTTO', 'LOTTO', 'SCONTRINO', 'SISAL', 'LOTTOMATICA', 'MONOPOLI',
+        'ADM', 'AGENZIA DELLE DOGANE', 'PREMIO', 'ESTRAZIONE', 'AFFARI TUOI'
+    ];
 
-        // Modello 1: Rilevamento esplicito SERIE X ... NUMERO 123456
-        const explicitMatch = upper.match(/SERIE\s*:?\s*([A-Z])(?:[\s\S]{0,25}?(?:N\.?|NUMERO|NUM\.?|\b))\s*:?\s*([0-9]{5,6})/i);
-        // Modello 2: Lettera singola isolata seguita da 5 o 6 cifre (es: F 356983 o F356983)
-        const codeMatch = upper.match(/\b([A-Z])\s*([0-9]{5,6})\b/);
-        // Modello 3: Lettera generica con cifre
-        const looseMatch = upper.match(/([A-Z])\s*([0-9]{5,6})/);
+    const haTerminiGioco = paroleGioco.some(w => upper.includes(w));
+    const haTerminiNonGioco = paroleFarmaceuticheNonGioco.some(w => upper.includes(w));
 
-        if (explicitMatch) {
-            serieNumero = ' (Serie ' + explicitMatch[1].toUpperCase() + ' ' + explicitMatch[2] + ')';
-            haSerieReale = true;
-            serieRilevata = 'Serie ' + explicitMatch[1].toUpperCase() + ' ' + explicitMatch[2];
-        } else if (codeMatch) {
-            serieNumero = ' (Serie ' + codeMatch[1].toUpperCase() + ' ' + codeMatch[2] + ')';
-            haSerieReale = true;
-            serieRilevata = 'Serie ' + codeMatch[1].toUpperCase() + ' ' + codeMatch[2];
-        } else if (looseMatch) {
-            serieNumero = ' (Serie ' + looseMatch[1].toUpperCase() + ' ' + looseMatch[2] + ')';
-            haSerieReale = true;
-            serieRilevata = 'Serie ' + looseMatch[1].toUpperCase() + ' ' + looseMatch[2];
-        } else {
-            // Se l'OCR non legge la lettera, cerca sequenza di 6 cifre
-            const numMatch = upper.match(/\b([0-9]{6})\b/);
-            if (numMatch) {
-                serieNumero = ' (Numero ' + numMatch[1] + ')';
-                haSerieReale = true;
-                serieRilevata = 'Numero ' + numMatch[1];
-            } else {
-                // Se l'OCR non ha letto nitidamente, predisponi il prefisso e lascia spazio alla serie
-                serieNumero = ' (Serie: )';
-                haSerieReale = false;
-            }
-        }
+    if (haTerminiNonGioco && !haTerminiGioco) {
+        // RILEVATO NON GIOCO (es. Crema o Pacchetto di sigarette)
+        const msgVoce = "Attenzione: l'oggetto fotografato non è un biglietto di gioco. Inquadra chiaramente la serie e il numero della Lotteria o del Gratta e Vinci.";
+        pronunciaEsitoBigliettoVocale(msgVoce);
+        return {
+            haSerie: false,
+            isNonGioco: true,
+            messaggio: "Attenzione: rilevato oggetto commerciale o medicinale (non è un biglietto di gioco). Inquadra la serie della Lotteria o il Gratta e Vinci.",
+            msgVoce: msgVoce
+        };
+    }
 
+    // 1. RICONOSCIMENTO LOTTERIA ITALIA
+    // Cerchiamo la Serie (Lettera A-Z) e il Numero (5-6 cifre)
+    let serieLettera = '';
+    let serieCifre = '';
+
+    const matchExplicit = upper.match(/SERIE\s*[:\-\s]?\s*([A-Z])[\s\S]{0,35}?(?:N\.?|NUMERO|NUM\.?|\b)\s*[:\-\s]?\s*([0-9]{5,6})/i);
+    const matchSerieDirect = upper.match(/SERIE\s*[:\-\s]?\s*([A-Z])\s*([0-9]{5,6})/i);
+    const matchLetterDigits = upper.match(/\b([A-Z])\s*([0-9]{6})\b/);
+    const matchLetter5Digits = upper.match(/\b([A-Z])\s*([0-9]{5})\b/);
+    const matchDigitsLetter = upper.match(/\b([0-9]{6})\s*([A-Z])\b/);
+    const matchSolo6Cifre = upper.match(/\b([0-9]{6})\b/);
+
+    if (matchExplicit) {
+        serieLettera = matchExplicit[1].toUpperCase();
+        serieCifre = matchExplicit[2];
+    } else if (matchSerieDirect) {
+        serieLettera = matchSerieDirect[1].toUpperCase();
+        serieCifre = matchSerieDirect[2];
+    } else if (matchLetterDigits) {
+        serieLettera = matchLetterDigits[1].toUpperCase();
+        serieCifre = matchLetterDigits[2];
+    } else if (matchLetter5Digits) {
+        serieLettera = matchLetter5Digits[1].toUpperCase();
+        serieCifre = matchLetter5Digits[2];
+    } else if (matchDigitsLetter) {
+        serieLettera = matchDigitsLetter[2].toUpperCase();
+        serieCifre = matchDigitsLetter[1];
+    }
+
+    if (serieLettera && serieCifre) {
+        const serieCompleta = `Serie ${serieLettera} ${serieCifre}`;
         if (typeof setGameType === 'function') setGameType('Lotteria Italia');
-        
-        if (descInp) descInp.value = 'Lotteria Italia 2026' + serieNumero;
+        if (descInp) descInp.value = `Lotteria Italia 2026 (${serieCompleta})`;
         if (costInp) costInp.value = '5.00';
         if (winInp && (!winInp.value || winInp.value === '0')) winInp.value = '0.00';
         if (locInp && !locInp.value) locInp.value = 'Ricevitoria / Tabacchi';
-
         if (typeof updateLivePreview === 'function') updateLivePreview();
-        return { haSerie: haSerieReale, serieTrovata: serieRilevata };
+
+        const annuncio = `Biglietto Lotteria Italia identificato: Serie ${serieLettera}, numero ${serieCifre}! In bocca al lupo per l'estrazione!`;
+        pronunciaEsitoBigliettoVocale(annuncio);
+
+        return {
+            haSerie: true,
+            isNonGioco: false,
+            tipoGioco: 'Lotteria Italia',
+            serieTrovata: serieCompleta,
+            lettera: serieLettera,
+            numero: serieCifre,
+            annuncioVoce: annuncio
+        };
+    } else if (matchSolo6Cifre && (currentGame === 'Lotteria Italia' || upper.includes('LOTTERIA'))) {
+        const serieCompleta = `Numero ${matchSolo6Cifre[1]}`;
+        if (typeof setGameType === 'function') setGameType('Lotteria Italia');
+        if (descInp) descInp.value = `Lotteria Italia 2026 (${serieCompleta})`;
+        if (costInp) costInp.value = '5.00';
+        if (typeof updateLivePreview === 'function') updateLivePreview();
+
+        const annuncio = `Numero ${matchSolo6Cifre[1]} rilevato! Verifica la lettera della serie.`;
+        pronunciaEsitoBigliettoVocale(annuncio);
+
+        return {
+            haSerie: true,
+            isNonGioco: false,
+            tipoGioco: 'Lotteria Italia',
+            serieTrovata: serieCompleta,
+            annuncioVoce: annuncio
+        };
     }
 
-    // 2. SE L'UTENTE HA SELEZIONATO "GRATTA & VINCI"
-    if (currentGame === 'Gratta e Vinci') {
-        let nomeGratta = 'Gratta e Vinci';
-        let costoGratta = '5.00';
+    // 2. RICONOSCIMENTO GRATTA E VINCI
+    const catalogGratta = [
+        { key: 'MILIARDARIO MAXI', name: 'Il Miliardario Maxi', cost: '20.00' },
+        { key: 'MILIARDARIO MEGA', name: 'Il Miliardario Mega', cost: '10.00' },
+        { key: 'MILIARDARIO', name: 'Il Miliardario', cost: '5.00' },
+        { key: '100X', name: 'Nuovo 100X', cost: '20.00' },
+        { key: '50X', name: 'Nuovo 50X', cost: '10.00' },
+        { key: '20X', name: 'Nuovo 20X', cost: '5.00' },
+        { key: '10X', name: 'Nuovo 10X', cost: '2.00' },
+        { key: 'TURISTA PER SEMPRE', name: 'Turista per Sempre', cost: '5.00' },
+        { key: 'TURISTA PER 10 ANNI', name: 'Turista per 10 Anni', cost: '2.00' },
+        { key: 'DOPPIA SFIDA', name: 'Doppia Sfida', cost: '5.00' },
+        { key: 'TUTTO PER TUTTO', name: 'Tutto per Tutto', cost: '5.00' },
+        { key: '7 E MEZZO', name: '7 e Mezzo', cost: '1.00' },
+        { key: 'SUPER NUMERONE', name: 'Super Numerone', cost: '10.00' }
+    ];
 
-        const catalogGratta = [
-            { key: 'MILIARDARIO MAXI', name: 'Il Miliardario Maxi', cost: '20.00' },
-            { key: 'MILIARDARIO MEGA', name: 'Il Miliardario Mega', cost: '10.00' },
-            { key: 'MILIARDARIO', name: 'Il Miliardario', cost: '5.00' },
-            { key: '100X', name: 'Nuovo 100X', cost: '20.00' },
-            { key: '50X', name: 'Nuovo 50X', cost: '10.00' },
-            { key: '20X', name: 'Nuovo 20X', cost: '5.00' },
-            { key: '10X', name: 'Nuovo 10X', cost: '2.00' },
-            { key: 'TURISTA PER SEMPRE', name: 'Turista per Sempre', cost: '5.00' },
-            { key: 'TURISTA PER 10 ANNI', name: 'Turista per 10 Anni', cost: '2.00' },
-            { key: 'DOPPIA SFIDA', name: 'Doppia Sfida', cost: '5.00' },
-            { key: 'TUTTO PER TUTTO', name: 'Tutto per Tutto', cost: '5.00' },
-            { key: '7 E MEZZO', name: '7 e Mezzo', cost: '1.00' }
-        ];
+    for (const g of catalogGratta) {
+        if (upper.includes(g.key)) {
+            if (typeof setGameType === 'function') setGameType('Gratta e Vinci');
+            if (descInp) descInp.value = g.name;
+            if (costInp) costInp.value = g.cost;
+            if (winInp && (!winInp.value || winInp.value === '0')) winInp.value = '0.00';
+            if (locInp && !locInp.value) locInp.value = 'Tabacchi / Bar';
+            if (typeof updateLivePreview === 'function') updateLivePreview();
 
-        for (const g of catalogGratta) {
-            if (upper.includes(g.key)) {
-                nomeGratta = g.name;
-                costoGratta = g.cost;
-                break;
-            }
+            const annuncio = `Riconosciuto Gratta e Vinci ${g.name}, costo ${parseInt(g.cost)} euro! Buona fortuna!`;
+            pronunciaEsitoBigliettoVocale(annuncio);
+
+            return {
+                haSerie: true,
+                isNonGioco: false,
+                tipoGioco: 'Gratta e Vinci',
+                serieTrovata: g.name,
+                annuncioVoce: annuncio
+            };
         }
-
-        if (descInp) descInp.value = nomeGratta;
-        if (costInp) costInp.value = costoGratta;
-        if (winInp && (!winInp.value || winInp.value === '0')) winInp.value = '0.00';
-        if (locInp && !locInp.value) locInp.value = 'Tabacchi / Bar';
-
-        if (typeof updateLivePreview === 'function') updateLivePreview();
-        return;
     }
 
-    // 3. SE L'UTENTE HA SELEZIONATO "SUPERENALOTTO"
-    if (currentGame === 'SuperEnalotto') {
+    // 3. SUPERENALOTTO & LOTTO
+    if (upper.includes('SUPERENALOTTO') || upper.includes('SUPERSTAR') || currentGame === 'SuperEnalotto') {
+        if (typeof setGameType === 'function') setGameType('SuperEnalotto');
         if (descInp) descInp.value = 'Schedina SuperEnalotto';
         if (costInp && (!costInp.value || costInp.value === '0.00' || costInp.value === '0')) costInp.value = '1.50';
-        if (winInp) winInp.value = '0.00';
-        if (locInp && !locInp.value) locInp.value = 'Ricevitoria Sisal';
         if (typeof updateLivePreview === 'function') updateLivePreview();
-        return;
+        const annuncio = "Schedina SuperEnalotto registrata! In bocca al lupo!";
+        pronunciaEsitoBigliettoVocale(annuncio);
+        return { haSerie: true, isNonGioco: false, tipoGioco: 'SuperEnalotto', serieTrovata: 'SuperEnalotto', annuncioVoce: annuncio };
     }
 
-    // 4. SE L'UTENTE HA SELEZIONATO "LOTTO"
-    if (currentGame === 'Lotto') {
+    if (upper.includes('LOTTO') || currentGame === 'Lotto') {
+        if (typeof setGameType === 'function') setGameType('Lotto');
         if (descInp) descInp.value = 'Scontrino Gioco del Lotto';
         if (costInp && (!costInp.value || costInp.value === '0.00' || costInp.value === '0')) costInp.value = '2.00';
-        if (winInp) winInp.value = '0.00';
-        if (locInp && !locInp.value) locInp.value = 'Ricevitoria Lottomatica';
         if (typeof updateLivePreview === 'function') updateLivePreview();
-        return;
+        const annuncio = "Scontrino Gioco del Lotto registrato! Buona fortuna!";
+        pronunciaEsitoBigliettoVocale(annuncio);
+        return { haSerie: true, isNonGioco: false, tipoGioco: 'Lotto', serieTrovata: 'Gioco del Lotto', annuncioVoce: annuncio };
     }
 
+    // Default se non trova nulla di specifico
+    return { haSerie: false, isNonGioco: false };
 }
 
 function analizzaNomeFileEFallback(filename) {
