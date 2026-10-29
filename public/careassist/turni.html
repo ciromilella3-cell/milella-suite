@@ -1332,7 +1332,7 @@
           <b>Accesso Collaboratore (Sola Lettura):</b> I turni e le disponibilità sono stabiliti ed assegnati esclusivamente dall'Admin Coordinatore. Puoi consultare i turni e stampare il prospetto A4.
         </div>
       </div>
-      <button class="btn" onclick="richiediSbloccoAdmin()" style="background:#ffffff; color:#0369a1; border:1px solid #bae6fd; font-size:12px; padding:6px 14px;">
+      <button class="btn" onclick="apriModalPinAdmin()" style="background:#ffffff; color:#0369a1; border:1px solid #bae6fd; font-size:12px; padding:6px 14px;">
         🔑 Sblocca con PIN Admin
       </button>
     </div>
@@ -1430,7 +1430,7 @@
         <button class="btn btn-sky" onclick="apriModalConfiguratoreAI()">
           ⚡ Sviluppa Combinazione AI
         </button>
-        <button class="btn btn-ghost" onclick="aggiungiNuovoOperatore()">
+        <button class="btn btn-ghost" onclick="apriModalNuovoOperatore()">
           + Collaboratore
         </button>
       </div>
@@ -1647,6 +1647,78 @@
         </button>
         <button class="btn btn-ghost" onclick="chiudiModalDial()">
           Chiudi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ELEGANTE AGGIUNGI NUOVO COLLABORATORE (ZERO PROMPT DEL BROWSER) -->
+  <div id="modal-nuovo-operatore" class="modal-backdrop">
+    <div class="modal-box" style="max-width:480px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <div style="font-weight:900; font-size:17px; display:flex; align-items:center; gap:8px;">
+          <span>👤</span> <span>Nuovo Collaboratore Roster</span>
+        </div>
+        <button onclick="chiudiModalNuovoOperatore()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#94a3b8;">✕</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:20px;">
+        <div>
+          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Nome & Cognome</label>
+          <input type="text" id="nuovo-op-nome" placeholder="Es. Maria Cristina Stoppelli" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13.5px; font-weight:700; outline:none;">
+        </div>
+
+        <div>
+          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Ruolo / Specializzazione</label>
+          <input type="text" id="nuovo-op-ruolo" placeholder="Es. OSS Referente, Infermiera, Caregiver..." value="OSS Referente" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13.5px; font-weight:700; outline:none;">
+        </div>
+
+        <div>
+          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Cellulare / WhatsApp</label>
+          <input type="tel" id="nuovo-op-tel" placeholder="Es. 338 739 7671" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13.5px; font-weight:700; outline:none;">
+        </div>
+
+        <div>
+          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Profilo Turnazione</label>
+          <select id="nuovo-op-profilo" style="width:100%; background:#0f172a; border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13px; font-weight:700; outline:none;">
+            <option value="misto_pn" selected>🌙 Misto: Pomeriggio / Notte + Reperibilità (Consigliato)</option>
+            <option value="diurno">☀️ Diurno: Mattina & Pomeriggio</option>
+            <option value="full_h24">⭐ Full H24: Tutte le fasce orarie</option>
+          </select>
+        </div>
+
+        <label style="display:flex; align-items:center; gap:10px; background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); border-radius:10px; padding:10px 14px; cursor:pointer;">
+          <input type="checkbox" id="nuovo-op-disp" checked style="width:18px; height:18px; accent-color:#a855f7;">
+          <span style="font-size:12.5px; color:#e9d5ff; font-weight:700;">🦺 Disponibile per coperture ed emergenze nei giorni liberi</span>
+        </label>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-ghost" onclick="chiudiModalNuovoOperatore()">Annulla</button>
+        <button class="btn btn-emerald" onclick="salvaNuovoOperatoreDaModal()">
+          💾 Salva nel Roster
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ELEGANTE SBLOCCO PIN ADMIN (ZERO PROMPT DEL BROWSER) -->
+  <div id="modal-pin-admin" class="modal-backdrop">
+    <div class="modal-box" style="max-width:400px; text-align:center;">
+      <div style="font-size:38px; margin-bottom:8px;">👑</div>
+      <div style="font-size:18px; font-weight:900; margin-bottom:6px;">Accesso Coordinatore Admin</div>
+      <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:18px; line-height:1.45;">
+        Inserisci il PIN Master di sicurezza per sbloccare i privilegi di modifica e assegnazione turni:
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <input type="password" id="input-pin-master-admin" placeholder="PIN (es. SOS999)" style="width:100%; text-align:center; letter-spacing:4px; font-size:18px; font-weight:900; background:rgba(255,255,255,0.06); border:1.5px solid rgba(56,189,248,0.4); border-radius:12px; padding:12px; color:#fff; outline:none;" onkeyup="if(event.key==='Enter') confermaSbloccoPinAdmin()">
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:10px;">
+        <button class="btn btn-ghost" onclick="chiudiModalPinAdmin()">Annulla</button>
+        <button class="btn btn-sky" onclick="confermaSbloccoPinAdmin()">
+          🔑 Sblocca Accesso
         </button>
       </div>
     </div>
@@ -2174,9 +2246,81 @@
       mostraToast('Combinazione turni sviluppata con successo!', '⚡');
     }
 
-    function aggiungiNuovoOperatore() {
-      if (window.aggiungiOperatoreTurnario) window.aggiungiOperatoreTurnario();
+    // MODAL NUOVO COLLABORATORE (ELEGANTE, ZERO PROMPT BROWSER)
+    function apriModalNuovoOperatore() {
+      const modal = document.getElementById('modal-nuovo-operatore');
+      if (modal) {
+        const inpNome = document.getElementById('nuovo-op-nome');
+        const inpTel = document.getElementById('nuovo-op-tel');
+        if (inpNome) inpNome.value = '';
+        if (inpTel) inpTel.value = '';
+        modal.style.display = 'flex';
+        setTimeout(() => inpNome?.focus(), 100);
+      }
+    }
+
+    function chiudiModalNuovoOperatore() {
+      const modal = document.getElementById('modal-nuovo-operatore');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function salvaNuovoOperatoreDaModal() {
+      const nome = document.getElementById('nuovo-op-nome')?.value.trim();
+      if (!nome) {
+        mostraToast('Inserisci il Nome e Cognome del collaboratore', '⚠️');
+        return;
+      }
+      const ruolo = document.getElementById('nuovo-op-ruolo')?.value.trim() || 'OSS Referente';
+      const tel = document.getElementById('nuovo-op-tel')?.value.trim() || '';
+      const profilo = document.getElementById('nuovo-op-profilo')?.value || 'misto_pn';
+      const disp = document.getElementById('nuovo-op-disp')?.checked ?? true;
+
+      if (window.aggiungiOperatoreTurnario) {
+        window.aggiungiOperatoreTurnario({
+          nome: nome,
+          ruolo: ruolo,
+          tel: tel,
+          profilo: profilo,
+          disponibileCoperture: disp
+        });
+      }
+      chiudiModalNuovoOperatore();
       renderViste();
+      mostraToast(`Collaboratore ${nome} aggiunto al roster!`, '👤');
+    }
+
+    // MODAL SBLOCCO PIN ADMIN (ELEGANTE, ZERO PROMPT BROWSER)
+    function apriModalPinAdmin() {
+      const modal = document.getElementById('modal-pin-admin');
+      const inp = document.getElementById('input-pin-master-admin');
+      if (inp) inp.value = '';
+      if (modal) modal.style.display = 'flex';
+      setTimeout(() => inp?.focus(), 100);
+    }
+
+    function chiudiModalPinAdmin() {
+      const modal = document.getElementById('modal-pin-admin');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function confermaSbloccoPinAdmin() {
+      const inp = document.getElementById('input-pin-master-admin');
+      const pin = inp ? inp.value.trim() : '';
+      if (!pin) {
+        mostraToast('Inserisci il PIN Master (SOS999)', '⚠️');
+        return;
+      }
+      if (window.sbloccaModalitaAdminManuale) {
+        const ok = window.sbloccaModalitaAdminManuale(pin);
+        if (ok) {
+          chiudiModalPinAdmin();
+          renderViste();
+          mostraToast('Modalità Admin Coordinatore Sbloccata!', '👑');
+        } else {
+          mostraToast('PIN Errato. Riprova con SOS999', '❌');
+          if (inp) inp.select();
+        }
+      }
     }
 
     function apriStampaA4() {
@@ -2185,11 +2329,6 @@
 
     function condividiWhatsApp() {
       if (window.condividiTurnarioWhatsApp) window.condividiTurnarioWhatsApp();
-    }
-
-    function richiediSbloccoAdmin() {
-      if (window.sbloccaModalitaAdminManuale) window.sbloccaModalitaAdminManuale();
-      renderViste();
     }
 
     function apriSelettoreTurnoCella(opId, opNome, giorno) {

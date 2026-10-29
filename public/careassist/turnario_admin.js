@@ -37,17 +37,18 @@ function isUtenteAdmin() {
 }
 
 // Sblocco manuale Admin tramite PIN Master
-function sbloccaModalitaAdminManuale() {
-  const pin = prompt('Inserisci il PIN Master Admin (SOS999) per sbloccare la modifica dei turni:');
-  if (!pin) return;
+function sbloccaModalitaAdminManuale(pinInserito) {
+  const pin = pinInserito || '';
   if (pin.trim().toUpperCase() === 'SOS999') {
     sessionStorage.setItem('turnario_admin_unlocked', 'true');
     localStorage.setItem('milella_role', 'admin');
-    alert('Accesso Admin autorizzato! Modalità di modifica turni sbloccata con successo.');
-    aggiornaVistaTurnarioModal();
-  } else {
-    alert('PIN Master errato. Accesso di sola lettura mantenuto.');
+    localStorage.setItem('milella_last_authenticated_role', 'admin');
+    if (typeof aggiornaVistaTurnarioModal === 'function') {
+      try { aggiornaVistaTurnarioModal(); } catch(e) {}
+    }
+    return true;
   }
+  return false;
 }
 
 function formatDateYMD(d) {
@@ -542,44 +543,49 @@ function navigaSettimana(offset) {
   return nuovaStr;
 }
 
-// Aggiungi nuovo operatore al volo (SOLO ADMIN)
-function aggiungiOperatoreTurnario() {
-  if (!isUtenteAdmin()) {
-    alert("🔒 Solo l'Admin può aggiungere nuovi operatori.");
-    return;
-  }
-  const nome = prompt('Inserisci Nome e Cognome del collaboratore abilitato:');
-  if (!nome || !nome.trim()) return;
+// Aggiungi nuovo operatore da oggetto dati (senza prompt nativo del browser)
+function aggiungiOperatoreTurnario(datiOp) {
+  if (!isUtenteAdmin()) return false;
+  if (!turnarioCorrente) caricaDatiTurnario();
 
-  const ruolo = prompt('Ruolo (es. OSS, Infermiere, Fisioterapista):', 'OSS') || 'OSS';
-  const tel = prompt('Numero di Telefono / Cellulare:', '338 000 0000') || '';
-  const profiloScelto = confirm('Il collaboratore esegue principalmente Pomeriggi e Notti con disponibilità a coperture?\n(OK = Pomeriggio/Notte + Disp, Annulla = Full H24)') ? 'misto_pn' : 'full_h24';
+  const nome = (datiOp && datiOp.nome) ? datiOp.nome.trim() : 'Nuovo Collaboratore';
+  const ruolo = (datiOp && datiOp.ruolo) ? datiOp.ruolo.trim() : 'OSS';
+  const tel = (datiOp && datiOp.tel) ? datiOp.tel.trim() : '';
+  const profilo = (datiOp && datiOp.profilo) ? datiOp.profilo : 'misto_pn';
+  const disp = (datiOp && typeof datiOp.disponibileCoperture !== 'undefined') ? Boolean(datiOp.disponibileCoperture) : true;
 
   const newId = 'op_' + Date.now();
   turnarioCorrente.operatori.push({
     id: newId,
-    nome: nome.trim(),
-    ruolo: ruolo.trim(),
-    tel: tel.trim(),
-    profilo: profiloScelto,
-    disponibileCoperture: true
+    nome: nome,
+    ruolo: ruolo,
+    tel: tel,
+    profilo: profilo,
+    disponibileCoperture: disp
   });
 
-  sviluppaCombinazioneAutomatica();
-  aggiornaVistaTurnarioModal();
+  if (!turnarioCorrente.griglia[newId]) {
+    turnarioCorrente.griglia[newId] = { lun: 'R', mar: 'R', mer: 'R', gio: 'R', ven: 'R', sab: 'R', dom: 'R' };
+  }
+
+  salvaTurnarioSuStorage();
+  if (typeof aggiornaVistaTurnarioModal === 'function') {
+    try { aggiornaVistaTurnarioModal(); } catch(e) {}
+  }
+  return true;
 }
 
-// Rimuovi operatore (SOLO ADMIN)
+// Rimuovi operatore (SOLO ADMIN, senza confirm nativo)
 function rimuoviOperatoreTurnario(opId) {
-  if (!isUtenteAdmin()) {
-    alert("🔒 Solo l'Admin può rimuovere operatori.");
-    return;
-  }
-  if (!confirm('Rimuovere questo operatore dal turnario?')) return;
+  if (!isUtenteAdmin()) return false;
+  if (!turnarioCorrente) caricaDatiTurnario();
   turnarioCorrente.operatori = turnarioCorrente.operatori.filter(o => o.id !== opId);
   delete turnarioCorrente.griglia[opId];
   salvaTurnarioSuStorage();
-  aggiornaVistaTurnarioModal();
+  if (typeof aggiornaVistaTurnarioModal === 'function') {
+    try { aggiornaVistaTurnarioModal(); } catch(e) {}
+  }
+  return true;
 }
 
 // STAMPA CARTACEA A4 UFFICIALE (Accessibile sia ad Admin che a Collaboratore)
