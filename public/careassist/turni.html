@@ -435,30 +435,282 @@
       box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
     }
 
-    .nav-week-group {
+    /* MODERN EXECUTIVE CALENDAR BAR */
+    .calendar-nav-bar {
       display: flex;
       align-items: center;
       gap: 8px;
+      position: relative;
       flex-wrap: wrap;
     }
 
-    .date-input-styled {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #ffffff;
-      padding: 8px 14px;
+    .nav-arrow-btn {
+      width: 38px;
+      height: 38px;
       border-radius: var(--radius-md);
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      outline: none;
       transition: var(--transition-smooth);
     }
 
-    .date-input-styled:focus {
+    .nav-arrow-btn:hover {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--cyan-light);
+      transform: translateY(-1px);
+    }
+
+    .calendar-display-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(21, 34, 56, 0.85) 100%);
+      border: 1.5px solid rgba(56, 189, 248, 0.35);
+      padding: 7px 18px;
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+      transition: var(--transition-smooth);
+      user-select: none;
+    }
+
+    .calendar-display-pill:hover {
       border-color: var(--cyan-light);
-      box-shadow: 0 0 10px var(--cyan-glow);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .cal-icon-glow {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-md);
+      background: rgba(2, 132, 199, 0.22);
+      border: 1.5px solid rgba(56, 189, 248, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+      flex-shrink: 0;
+    }
+
+    .cal-text-block {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+
+    .cal-week-interval {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.2px;
+    }
+
+    .cal-week-sub {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--cyan-light);
+    }
+
+    .cal-chevron {
+      color: var(--text-muted);
+      margin-left: 4px;
+      transition: transform 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .calendar-display-pill:hover .cal-chevron {
+      color: var(--cyan-light);
+      transform: translateY(1.5px);
+    }
+
+    .btn-today-pill {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--cyan-light);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-today-pill:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: var(--cyan-light);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+      transform: translateY(-1px);
+    }
+
+    /* MODERN CALENDAR POPOVER */
+    .modern-calendar-popover {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 45px;
+      z-index: 90;
+      background: rgba(10, 16, 30, 0.96);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1.5px solid rgba(56, 189, 248, 0.38);
+      border-radius: var(--radius-xl);
+      padding: 18px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(2, 132, 199, 0.25);
+      width: 320px;
+      display: none;
+      color: #ffffff;
+      animation: popoverFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes popoverFadeIn {
+      from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .cal-pop-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .cal-pop-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: capitalize;
+    }
+
+    .cal-pop-nav-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 11px;
+      transition: var(--transition-smooth);
+    }
+
+    .cal-pop-nav-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--cyan-light);
+      color: var(--cyan-light);
+    }
+
+    .cal-weekdays-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .cal-weekday-th {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      padding: 4px 0;
+    }
+
+    .cal-days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+    }
+
+    .cal-day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #ffffff;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .cal-day-cell:hover {
+      background: rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+    }
+
+    .cal-day-cell.other-month {
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .cal-day-cell.active-week {
+      background: rgba(2, 132, 199, 0.35);
+      color: #ffffff;
+      border-radius: 0;
+    }
+
+    .cal-day-cell.active-week-start {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    .cal-day-cell.active-week-end {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+
+    .cal-day-cell.today-dot::after {
+      content: '';
+      position: absolute;
+      bottom: 3px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--cyan-light);
+      box-shadow: 0 0 6px var(--cyan-light);
+    }
+
+    .cal-pop-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 11px;
+    }
+
+    .cal-pop-btn-quick {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      transition: var(--transition-smooth);
+    }
+
+    .cal-pop-btn-quick:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--cyan-light);
+      color: #ffffff;
     }
 
     /* ROSTER MATRIX TABLE */
@@ -1100,18 +1352,77 @@
         </button>
       </div>
 
-      <!-- NAVIGATORE SETTIMANA -->
-      <div class="nav-week-group">
-        <button class="btn btn-ghost" onclick="navigaSettimanaOffset(-1)" title="Settimana precedente">
-          ◀ Prec
+      <!-- MODERN EXECUTIVE CALENDAR BAR -->
+      <div class="calendar-nav-bar" id="calendarNavBarWrap">
+        <!-- PULSANTE SETTIMANA PRECEDENTE -->
+        <button class="nav-arrow-btn" onclick="navigaSettimanaOffset(-1)" title="Settimana Precedente">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
-        <input type="date" id="input-week-picker" class="date-input-styled" onchange="selezionaDataInizio(this.value)">
-        <button class="btn btn-ghost" onclick="navigaSettimanaOffset(1)" title="Settimana successiva">
-          Succ ▶
+
+        <!-- PILLOLA DISPLAY CALENDARIO MODERNO (CLICCABILE PER APRIRE IL CALENDARIO) -->
+        <div class="calendar-display-pill" onclick="toggleMiniCalendarPopover(event)" title="Tocca per scegliere qualsiasi data dal calendario">
+          <div class="cal-icon-glow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <circle cx="8" cy="14" r="1.3" fill="#38bdf8"></circle>
+              <circle cx="12" cy="14" r="1.3" fill="#38bdf8"></circle>
+              <circle cx="16" cy="14" r="1.3" fill="#38bdf8"></circle>
+              <circle cx="8" cy="18" r="1.3" fill="#38bdf8"></circle>
+              <circle cx="12" cy="18" r="1.3" fill="#38bdf8"></circle>
+            </svg>
+          </div>
+          
+          <div class="cal-text-block">
+            <div class="cal-week-interval" id="label-settimana-estesa">Caricamento settimana...</div>
+            <div class="cal-week-sub" id="label-settimana-numero">Settimana &bull; Assistenza Continua H24</div>
+          </div>
+
+          <div class="cal-chevron">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+
+        <!-- PULSANTE SETTIMANA SUCCESSIVA -->
+        <button class="nav-arrow-btn" onclick="navigaSettimanaOffset(1)" title="Settimana Successiva">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
-        <span id="label-settimana-estesa" style="font-size:13px; font-weight:800; color:var(--cyan-light); margin-left:8px;">
-          Settimana dal Lunedì al Domenica
-        </span>
+
+        <!-- PULSANTE OGGI -->
+        <button class="btn-today-pill" onclick="vaiASettimanaCorrenteOggi()" title="Torna alla settimana corrente">
+          <span>⚡</span> Oggi
+        </button>
+
+        <!-- POPOVER CALENDARIO MODERNO FLUTTUANTE -->
+        <div class="modern-calendar-popover" id="popover-mini-calendar" onclick="event.stopPropagation()">
+          <div class="cal-pop-header">
+            <button class="cal-pop-nav-btn" onclick="navigaMesePopover(-1)">◀</button>
+            <div class="cal-pop-title" id="cal-popover-month-title">Ottobre 2026</div>
+            <button class="cal-pop-nav-btn" onclick="navigaMesePopover(1)">▶</button>
+          </div>
+
+          <div class="cal-weekdays-grid">
+            <div class="cal-weekday-th">L</div>
+            <div class="cal-weekday-th">M</div>
+            <div class="cal-weekday-th">M</div>
+            <div class="cal-weekday-th">G</div>
+            <div class="cal-weekday-th">V</div>
+            <div class="cal-weekday-th">S</div>
+            <div class="cal-weekday-th">D</div>
+          </div>
+
+          <div class="cal-days-grid" id="cal-popover-days-body">
+            <!-- Giorni popolati dinamicamente -->
+          </div>
+
+          <div class="cal-pop-footer">
+            <button class="cal-pop-btn-quick" onclick="navigaSettimanaOffset(-1); chiudiMiniCalendarPopover();">◀ Scorsa</button>
+            <button class="cal-pop-btn-quick" style="color:var(--cyan-light); border-color:rgba(56,189,248,0.4);" onclick="vaiASettimanaCorrenteOggi(); chiudiMiniCalendarPopover();">⚡ Questa</button>
+            <button class="cal-pop-btn-quick" onclick="navigaSettimanaOffset(1); chiudiMiniCalendarPopover();">Prossima ▶</button>
+          </div>
+        </div>
       </div>
 
       <!-- AZIONI ADMIN -->
@@ -1455,12 +1766,17 @@
       const dom = new Date(lun);
       dom.setDate(lun.getDate() + 6);
 
-      const picker = document.getElementById('input-week-picker');
-      if (picker) picker.value = data.settimanaInizio;
-
       const lblExt = document.getElementById('label-settimana-estesa');
+      const lblNum = document.getElementById('label-settimana-numero');
       if (lblExt) {
-        lblExt.textContent = `Settimana: ${lun.toLocaleDateString('it-IT', { day:'2-digit', month:'short' })} – ${dom.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' })}`;
+        lblExt.textContent = `${lun.toLocaleDateString('it-IT', { day:'2-digit', month:'short' })} – ${dom.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' })}`;
+      }
+      if (lblNum) {
+        const dForWeek = new Date(Date.UTC(lun.getFullYear(), lun.getMonth(), lun.getDate()));
+        dForWeek.setUTCDate(dForWeek.getUTCDate() + 4 - (dForWeek.getUTCDay() || 7));
+        const yearStart = new Date(Date.UTC(dForWeek.getUTCFullYear(), 0, 1));
+        const weekNo = Math.ceil((((dForWeek - yearStart) / 86400000) + 1) / 7);
+        lblNum.textContent = `Settimana ${weekNo} • Copertura H24`;
       }
 
       const giorni = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'];
@@ -1698,6 +2014,133 @@
       renderViste();
       mostraToast(offset > 0 ? 'Settimana successiva ▶' : '◀ Settimana precedente', '📅');
     }
+
+    // GESTIONE CALENDARIO MODERNO INTERATTIVO FLUTTUANTE
+    let calPopoverTargetMonth = new Date();
+
+    function toggleMiniCalendarPopover(event) {
+      if (event) event.stopPropagation();
+      const popover = document.getElementById('popover-mini-calendar');
+      if (!popover) return;
+      const isOpen = popover.style.display === 'block';
+      if (isOpen) {
+        popover.style.display = 'none';
+      } else {
+        const data = window.caricaDatiTurnario ? window.caricaDatiTurnario() : null;
+        if (data && data.settimanaInizio && window.parseDateYMD) {
+          calPopoverTargetMonth = window.parseDateYMD(data.settimanaInizio);
+        } else {
+          calPopoverTargetMonth = new Date();
+        }
+        renderMiniCalendarPopover();
+        popover.style.display = 'block';
+      }
+    }
+
+    function chiudiMiniCalendarPopover() {
+      const popover = document.getElementById('popover-mini-calendar');
+      if (popover) popover.style.display = 'none';
+    }
+
+    function navigaMesePopover(offset) {
+      calPopoverTargetMonth.setMonth(calPopoverTargetMonth.getMonth() + offset);
+      renderMiniCalendarPopover();
+    }
+
+    function vaiASettimanaCorrenteOggi() {
+      const oggi = new Date();
+      if (window.getLunediSettimana && window.cambiaSettimanaTurnario && window.formatDateYMD) {
+        const lun = window.getLunediSettimana(oggi);
+        const ymd = window.formatDateYMD(lun);
+        window.cambiaSettimanaTurnario(ymd);
+      }
+      renderViste();
+      mostraToast('Allineato alla settimana corrente di Oggi!', '⚡');
+    }
+
+    function selezionaDataDaPopover(ymd) {
+      if (window.cambiaSettimanaTurnario) {
+        window.cambiaSettimanaTurnario(ymd);
+      }
+      chiudiMiniCalendarPopover();
+      renderViste();
+      mostraToast('Settimana impostata con successo', '🗓️');
+    }
+
+    function renderMiniCalendarPopover() {
+      const monthTitle = document.getElementById('cal-popover-month-title');
+      const daysBody = document.getElementById('cal-popover-days-body');
+      if (!monthTitle || !daysBody) return;
+
+      const year = calPopoverTargetMonth.getFullYear();
+      const month = calPopoverTargetMonth.getMonth();
+
+      const mesiNomi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+      monthTitle.textContent = `${mesiNomi[month]} ${year}`;
+
+      const dataTurnario = window.caricaDatiTurnario ? window.caricaDatiTurnario() : null;
+      let activeLunStr = dataTurnario ? dataTurnario.settimanaInizio : '';
+      let activeDomDate = null;
+      if (activeLunStr && window.parseDateYMD) {
+        const lDate = window.parseDateYMD(activeLunStr);
+        activeDomDate = new Date(lDate);
+        activeDomDate.setDate(lDate.getDate() + 6);
+      }
+
+      // Calcola primo giorno del mese
+      const primoDelMese = new Date(year, month, 1);
+      let dayOfWeek = primoDelMese.getDay(); // 0 Dom, 1 Lun...
+      let startOffset = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
+
+      const today = new Date();
+      const todayStr = window.formatDateYMD ? window.formatDateYMD(today) : '';
+
+      let html = '';
+      const startDate = new Date(year, month, 1 + startOffset);
+
+      for (let i = 0; i < 42; i++) {
+        const cur = new Date(startDate);
+        cur.setDate(startDate.getDate() + i);
+        const curYmd = window.formatDateYMD ? window.formatDateYMD(cur) : '';
+        const isOtherMonth = cur.getMonth() !== month;
+        const isToday = curYmd === todayStr;
+
+        let inActiveWeek = false;
+        let isWeekStart = false;
+        let isWeekEnd = false;
+        if (activeLunStr && window.parseDateYMD) {
+          const lDate = window.parseDateYMD(activeLunStr);
+          if (cur >= lDate && cur <= activeDomDate) {
+            inActiveWeek = true;
+            if (cur.getTime() === lDate.getTime()) isWeekStart = true;
+            if (cur.getTime() === activeDomDate.getTime()) isWeekEnd = true;
+          }
+        }
+
+        let cls = 'cal-day-cell';
+        if (isOtherMonth) cls += ' other-month';
+        if (inActiveWeek) cls += ' active-week';
+        if (isWeekStart) cls += ' active-week-start';
+        if (isWeekEnd) cls += ' active-week-end';
+        if (isToday) cls += ' today-dot';
+
+        html += `
+          <div class="${cls}" onclick="selezionaDataDaPopover('${curYmd}')" title="${cur.toLocaleDateString('it-IT')}">
+            ${cur.getDate()}
+          </div>
+        `;
+      }
+
+      daysBody.innerHTML = html;
+    }
+
+    // Chiudi popover al click fuori dal box
+    document.addEventListener('click', (e) => {
+      const wrap = document.getElementById('calendarNavBarWrap');
+      if (wrap && !wrap.contains(e.target)) {
+        chiudiMiniCalendarPopover();
+      }
+    });
 
     function selezionaDataInizio(val) {
       if (window.cambiaSettimanaTurnario) {
