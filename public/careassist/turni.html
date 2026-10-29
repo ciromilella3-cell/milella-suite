@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CareAssist Pro &bull; Maschera Turnario & Roster Operatori</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-dark: #047857;
+      --primary-light: #d1fae5;
+      --secondary: #0284c7;
+      --accent: #7c3aed;
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(circle at top right, #1e293b 0%, #0f172a 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-bottom: 70px;
+    }
+
+    /* TOP HEADER CLINICO */
+    .app-header {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #059669 0%, #0284c7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4);
+    }
+    .brand-text h1 {
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -0.3px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .brand-text p {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 9px 15px;
+      border-radius: 11px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 2px 10px rgba(5, 150, 105, 0.35);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+    .btn-wa {
+      background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+      color: #ffffff;
+    }
+    .btn-magic {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      box-shadow: 0 3px 12px rgba(2, 132, 199, 0.4);
+    }
+
+    /* CONTENITORE PRINCIPALE */
+    .main-container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+
+    /* KPI METRICS STRIP */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    .kpi-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .kpi-val {
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 3px;
+    }
+
+    /* ROLE BADGE BANNER */
+    .role-banner {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(3, 105, 161, 0.25) 100%);
+      border: 1.5px solid #0284c7;
+      border-radius: 14px;
+      padding: 12px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .role-banner-admin {
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.15) 0%, rgba(4, 120, 87, 0.25) 100%);
+      border-color: #059669;
+    }
+
+    /* CONTROLLI SETTIMANA E PRESET */
+    .controls-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .week-navigator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .week-input {
+      background: #0f172a;
+      border: 1.5px solid var(--border-color);
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    /* LA MATRICE DEI TURNI */
+    .roster-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      margin-bottom: 24px;
+    }
+    .roster-header {
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.7);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .roster-table-wrapper {
+      overflow-x: auto;
+    }
+    .roster-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 860px;
+    }
+    .roster-table th {
+      background: #111827;
+      color: #cbd5e1;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 12px 8px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: center;
+    }
+    .roster-table th.col-op {
+      text-align: left;
+      padding-left: 18px;
+      width: 260px;
+      position: sticky;
+      left: 0;
+      background: #111827;
+      z-index: 10;
+    }
+    .roster-table th.col-today {
+      background: #1e3a5f !important;
+      color: #38bdf8 !important;
+      border-bottom: 2px solid #0284c7;
+    }
+
+    .roster-table td {
+      padding: 10px 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      vertical-align: middle;
+      text-align: center;
+    }
+    .roster-table td.cell-op {
+      text-align: left;
+      padding-left: 18px;
+      background: var(--bg-card);
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      border-right: 1.5px solid var(--border-color);
+    }
+
+    /* BADGE TURNO CLINICO */
+    .shift-pill {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 68px;
+      padding: 7px 4px;
+      border-radius: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+    .shift-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .shift-pill.disabled {
+      cursor: default;
+    }
+    .shift-pill.disabled:hover {
+      transform: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .shift-m { background: #dcfce7; color: #15803d; border: 1.5px solid #86efac; }
+    .shift-p { background: #ffedd5; color: #c2410c; border: 1.5px solid #fdba74; }
+    .shift-n { background: #e0e7ff; color: #4338ca; border: 1.5px solid #a5b4fc; }
+    .shift-s { background: #fef3c7; color: #b45309; border: 1.5px solid #fcd34d; }
+    .shift-r { background: #1e293b; color: #64748b; border: 1.5px solid #334155; }
+    .shift-d { background: #f3e8ff; color: #7e22ce; border: 1.5px solid #d8b4fe; }
+
+    .shift-letter { font-size: 15px; line-height: 1; }
+    .shift-hours { font-size: 9px; font-weight: 700; margin-top: 3px; opacity: 0.9; }
+
+    /* OPERATORE INFO */
+    .op-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .op-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+    .op-name {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .op-role {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* REPERIBILITÀ BANNER */
+    .oncall-panel {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(91, 33, 182, 0.2) 100%);
+      border: 1.5px solid #7c3aed;
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    /* LEGENDA ORARI */
+    .legend-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+    }
+
+    /* MODALE DI CAMBIO TURNO MANUALE */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-card {
+      background: #1e293b;
+      border: 1px solid #475569;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 440px;
+      padding: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    .shift-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 18px 0;
+    }
+    .shift-choice-btn {
+      padding: 12px 6px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .shift-choice-btn:hover {
+      transform: scale(1.03);
+    }
+
+    @media (max-width: 768px) {
+      .app-header { padding: 10px 14px; }
+      .brand-text h1 { font-size: 15px; }
+      .btn { font-size: 11.5px; padding: 7px 11px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .kpi-card { padding: 12px; }
+      .kpi-val { font-size: 17px; }
+      .roster-table th.col-op { width: 170px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- GLOBAL HEALTHCARE HEADER -->
+  <header class="app-header">
+    <div class="brand-group">
+      <div class="brand-icon">🗓️</div>
+      <div class="brand-text">
+        <h1>CareAssist Pro &bull; Maschera Turnario</h1>
+        <p id="lbl-settimana-sub">Roster Ufficiale Settimanale &bull; Conforme D.Lgs. 66/2003</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="window.location.href='/careassist/'" title="Torna alla Cartella Clinica">
+        🩺 Cartella Assistito
+      </button>
+      <button class="btn btn-primary" onclick="apriStampaA4()">
+        🖨️ Stampa A4 Cartaceo
+      </button>
+      <button class="btn btn-wa" onclick="condividiWhatsAppRoster()">
+        📲 Invia WhatsApp
+      </button>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <!-- KPI PULSE (MONTE ORE E STATO COPERTURE IN TEMPO REALE) -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:rgba(5, 150, 105, 0.2); color:#34d399;">✅</div>
+        <div>
+          <div class="kpi-val" id="kpi-copertura">100%</div>
+          <div class="kpi-label">Copertura Fabbisogno</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:rgba(2, 132, 199, 0.2); color:#38bdf8;">👥</div>
+        <div>
+          <div class="kpi-val" id="kpi-operatori">5</div>
+          <div class="kpi-label">Operatori Assegnati</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:rgba(224, 231, 255, 0.15); color:#818cf8;">🌙</div>
+        <div>
+          <div class="kpi-val" id="kpi-notti">7 Notti</div>
+          <div class="kpi-label">H24 Con Smonto A Norma</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:rgba(124, 58, 237, 0.2); color:#c084fc;">🦺</div>
+        <div>
+          <div class="kpi-val" id="kpi-reperibili">Attiva</div>
+          <div class="kpi-label">Reperibilità Coperture (D)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BANNER RUOLO E PERMESSI (ADMIN VS COLLABORATORE) -->
+    <div id="banner-permessi-ruolo" class="role-banner">
+      <!-- Generato dinamicamente in base a Admin o Collaboratore -->
+    </div>
+
+    <!-- CONTROLLI SETTIMANA E PRESET AUTOMATICI -->
+    <div class="controls-panel">
+      <div class="week-navigator">
+        <button class="btn btn-secondary" onclick="navigaSettimanaVisual(-1)">◀ Prec</button>
+        <button class="btn btn-secondary" onclick="vaiAOggi()">Oggi</button>
+        <input type="date" id="date-picker-week" class="week-input" onchange="cambiaDataSettimana(this.value)">
+        <button class="btn btn-secondary" onclick="navigaSettimanaVisual(1)">Succ ▶</button>
+      </div>
+
+      <div id="admin-actions-bar" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <!-- Controlli attivi solo se Admin -->
+      </div>
+    </div>
+
+    <!-- LA MATRICE DEI TURNI INTERATTIVA -->
+    <div class="roster-card">
+      <div class="roster-header">
+        <div>
+          <span style="font-weight:900; font-size:15px; color:#ffffff;">📅 Griglia Settimanale Operatori</span>
+          <span style="font-size:12px; color:var(--text-muted); margin-left:8px;" id="lbl-range-date">--</span>
+        </div>
+        <div style="font-size:11.5px; color:#38bdf8; font-weight:700;">
+          Riposo minimo 11 ore verificato &bull; Smonto notte obbligatorio attivo
+        </div>
+      </div>
+
+      <div class="roster-table-wrapper">
+        <table class="roster-table">
+          <thead>
+            <tr>
+              <th class="col-op">Operatore / Profilo</th>
+              <th id="th-col-lun">LUN<br><span style="font-size:9.5px; opacity:0.8;" id="dt-lun">--</span></th>
+              <th id="th-col-mar">MAR<br><span style="font-size:9.5px; opacity:0.8;" id="dt-mar">--</span></th>
+              <th id="th-col-mer">MER<br><span style="font-size:9.5px; opacity:0.8;" id="dt-mer">--</span></th>
+              <th id="th-col-gio">GIO<br><span style="font-size:9.5px; opacity:0.8;" id="dt-gio">--</span></th>
+              <th id="th-col-ven">VEN<br><span style="font-size:9.5px; opacity:0.8;" id="dt-ven">--</span></th>
+              <th id="th-col-sab">SAB<br><span style="font-size:9.5px; opacity:0.8;" id="dt-sab">--</span></th>
+              <th id="th-col-dom">DOM<br><span style="font-size:9.5px; opacity:0.8;" id="dt-dom">--</span></th>
+              <th style="width:90px;">Tot. Ore</th>
+            </tr>
+          </thead>
+          <tbody id="roster-tbody">
+            <!-- Righe popolate dinamicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REPERIBILITÀ GIORNALIERA SPECIALIZZATA (D) -->
+    <div class="oncall-panel">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:26px;">🦺</span>
+        <div>
+          <div style="font-size:14px; font-weight:900; color:#ffffff;">Disponibilità & Reperibilità per Coperture Urgenze (D)</div>
+          <div style="font-size:12px; color:#ddd6fe;" id="oncall-summary-text">
+            Elenco degli operatori pronti a subentrare per cambi turno o emergenze cliniche del paziente.
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="apriStampaA4()" style="background:rgba(255,255,255,0.15); font-weight:800;">
+        📄 Vedi Prospetto Cartaceo
+      </button>
+    </div>
+
+    <!-- LEGENDA ORARI CONTRATTUALI -->
+    <div class="legend-box">
+      <div class="legend-item"><div class="legend-dot" style="background:#86efac;"></div> <span>☀️ Mattina (07:00 – 14:00 • 7h)</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fdba74;"></div> <span>🌤️ Pomeriggio (14:00 – 21:00 • 7h)</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a5b4fc;"></div> <span>🌙 Notte (21:00 – 07:00 • 10h)</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fcd34d;"></div> <span>🛌 Smonto (Recupero)</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#64748b;"></div> <span>☕ Riposo (Libero)</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#d8b4fe;"></div> <span>🦺 Disponibilità (Reperibile)</span></div>
+    </div>
+
+  </main>
+
+  <!-- MODALE PER CAMBIARE TURNO IN 1 TOCCO (SOLO ADMIN) -->
+  <div class="modal-backdrop" id="modal-turn-editor">
+    <div class="modal-card">
+      <div class="modal-title" id="editor-title">Assegna Turno</div>
+      <div style="font-size:12px; color:var(--text-muted);" id="editor-subtitle">Seleziona il turno da assegnare all'operatore</div>
+      
+      <div class="shift-selector-grid">
+        <button type="button" class="shift-choice-btn shift-m" onclick="selezionaNuovoTurno('M')">
+          <span style="font-size:16px;">☀️</span>
+          <span>M</span>
+          <span style="font-size:9px;">Mattina (7h)</span>
+        </button>
+        <button type="button" class="shift-choice-btn shift-p" onclick="selezionaNuovoTurno('P')">
+          <span style="font-size:16px;">🌤️</span>
+          <span>P</span>
+          <span style="font-size:9px;">Pomeriggio (7h)</span>
+        </button>
+        <button type="button" class="shift-choice-btn shift-n" onclick="selezionaNuovoTurno('N')">
+          <span style="font-size:16px;">🌙</span>
+          <span>N</span>
+          <span style="font-size:9px;">Notte (10h)</span>
+        </button>
+        <button type="button" class="shift-choice-btn shift-s" onclick="selezionaNuovoTurno('S')">
+          <span style="font-size:16px;">🛌</span>
+          <span>S</span>
+          <span style="font-size:9px;">Smonto Notte</span>
+        </button>
+        <button type="button" class="shift-choice-btn shift-r" onclick="selezionaNuovoTurno('R')">
+          <span style="font-size:16px;">☕</span>
+          <span>R</span>
+          <span style="font-size:9px;">Riposo Libero</span>
+        </button>
+        <button type="button" class="shift-choice-btn shift-d" onclick="selezionaNuovoTurno('D')">
+          <span style="font-size:16px;">🦺</span>
+          <span>D</span>
+          <span style="font-size:9px;">Disponibilità</span>
+        </button>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn btn-secondary" onclick="chiudiEditorTurno()">Annulla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT DI LOGICA MASCHERA TURNI -->
+  <script src="/careassist/turnario_admin.js?v=2"></script>
+  <script>
+    let opInModifica = null;
+    let giornoInModifica = null;
+
+    function renderMascheraDedicata() {
+      const data = caricaDatiTurnario();
+      const isAdmin = isUtenteAdmin();
+
+      // Banner Ruolo
+      const banner = document.getElementById('banner-permessi-ruolo');
+      if (banner) {
+        if (isAdmin) {
+          banner.className = 'role-banner role-banner-admin';
+          banner.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:22px;">👑</span>
+              <div>
+                <div style="font-size:13.5px; font-weight:900; color:#ffffff;">Pannello Admin Attivo &bull; Ciro Milella</div>
+                <div style="font-size:11.5px; color:#a7f3d0;">Hai il controllo completo: puoi modificare le caselle, aggiungere collaboratori o lanciare l'algoritmo automatico.</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button class="btn btn-secondary" onclick="simulaVistaCollaboratore()" style="font-size:11px; padding:6px 10px;">
+                👁️ Prova Vista Collaboratore
+              </button>
+            </div>
+          `;
+        } else {
+          banner.className = 'role-banner';
+          banner.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:22px;">🔒</span>
+              <div>
+                <div style="font-size:13.5px; font-weight:900; color:#ffffff;">Vista Collaboratore (Sola Lettura)</div>
+                <div style="font-size:11.5px; color:#bae6fd;">I turni ufficiali sono assegnati esclusivamente dall'Admin Coordinatore. Puoi consultare il tuo orario e stampare il prospetto A4.</div>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-secondary" onclick="sbloccaModalitaAdminManuale()" style="font-size:11px; padding:6px 10px; color:#38bdf8;">
+                🔑 Sblocca con PIN Admin
+              </button>
+            </div>
+          `;
+        }
+      }
+
+      // Barra Azioni Admin
+      const adminActions = document.getElementById('admin-actions-bar');
+      if (adminActions) {
+        if (isAdmin) {
+          adminActions.innerHTML = `
+            <button class="btn btn-magic" onclick="eseguiSviluppoAutomatico()">
+              ⚡ Sviluppa Automatico AI
+            </button>
+            <button class="btn btn-secondary" onclick="aggiungiOperatoreTurnario()">
+              + Nuovo Operatore
+            </button>
+          `;
+        } else {
+          adminActions.innerHTML = `
+            <span style="font-size:11.5px; color:var(--text-muted); font-weight:700;">
+              🔒 Modifica riservata all'Admin
+            </span>
+          `;
+        }
+      }
+
+      // Date Header Settimana
+      const lun = new Date(data.settimanaInizio + 'T00:00:00');
+      const dom = new Date(lun);
+      dom.setDate(lun.getDate() + 6);
+
+      const dp = document.getElementById('date-picker-week');
+      if (dp) dp.value = data.settimanaInizio;
+
+      const sub = document.getElementById('lbl-settimana-sub');
+      if (sub) sub.textContent = `Settimana dal ${lun.toLocaleDateString('it-IT', { day:'2-digit', month:'short' })} al ${dom.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' })}`;
+
+      const range = document.getElementById('lbl-range-date');
+      if (range) range.textContent = `${lun.toLocaleDateString('it-IT', { day:'2-digit', month:'short' })} - ${dom.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' })}`;
+
+      const giorni = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'];
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      giorni.forEach((g, i) => {
+        const curD = new Date(lun);
+        curD.setDate(lun.getDate() + i);
+        const dtEl = document.getElementById(`dt-${g}`);
+        if (dtEl) dtEl.textContent = `${curD.getDate()}/${curD.getMonth() + 1}`;
+
+        const thEl = document.getElementById(`th-col-${g}`);
+        if (thEl) {
+          if (curD.getTime() === today.getTime()) {
+            thEl.classList.add('col-today');
+          } else {
+            thEl.classList.remove('col-today');
+          }
+        }
+      });
+
+      // Tabella Matrice
+      const tbody = document.getElementById('roster-tbody');
+      if (tbody) {
+        let html = '';
+        let totNotti = 0;
+        let totOperatori = data.operatori.length;
+
+        data.operatori.forEach(op => {
+          const { ore, disp } = calcolaOreOperatore(op.id);
+          const riga = data.griglia[op.id] || {};
+
+          let badgeProfilo = op.profilo === 'misto_pn'
+            ? '<span style="font-size:10px; background:rgba(254,243,199,0.15); color:#fcd34d; padding:2px 6px; border-radius:6px; font-weight:800;">🌙 Pom/Notte + Disp.</span>'
+            : (op.profilo === 'diurno'
+              ? '<span style="font-size:10px; background:rgba(220,252,231,0.15); color:#86efac; padding:2px 6px; border-radius:6px; font-weight:800;">☀️ Diurno</span>'
+              : '<span style="font-size:10px; background:rgba(224,231,255,0.15); color:#a5b4fc; padding:2px 6px; border-radius:6px; font-weight:800;">⭐ Full H24</span>');
+
+          const avatarLettera = op.nome.charAt(0).toUpperCase();
+
+          html += `
+            <tr>
+              <td class="cell-op">
+                <div class="op-meta">
+                  <div class="op-avatar">${avatarLettera}</div>
+                  <div>
+                    <div class="op-name">${op.nome}</div>
+                    <div class="op-role">
+                      <span>${op.ruolo}</span> &bull; 
+                      <a href="tel:${op.tel}" style="color:var(--text-muted); text-decoration:none;">📞 ${op.tel}</a>
+                    </div>
+                    <div style="margin-top:4px; display:flex; align-items:center; gap:6px;">
+                      ${badgeProfilo}
+                      ${op.disponibileCoperture ? '<span style="font-size:10px; color:#c084fc; font-weight:800;">🦺 Jolly</span>' : ''}
+                    </div>
+                  </div>
+                </div>
+              </td>
+          `;
+
+          giorni.forEach(g => {
+            const turno = riga[g] || 'R';
+            const inf = TURNI_INFO[turno] || TURNI_INFO['R'];
+            if (turno === 'N') totNotti++;
+
+            const clsShift = `shift-${turno.toLowerCase()}`;
+            const clickAttr = isAdmin ? `onclick="apriEditorTurno('${op.id}', '${g}')"` : '';
+            const disCls = isAdmin ? '' : 'disabled';
+
+            html += `
+              <td>
+                <div class="shift-pill ${clsShift} ${disCls}" ${clickAttr} title="${inf.nome} (${inf.orario})${isAdmin ? ' - Tocca per modificare' : ''}">
+                  <span class="shift-letter">${turno}</span>
+                  <span class="shift-hours">${inf.ore > 0 ? inf.ore + 'h' : (turno === 'D' ? 'DISP' : (turno === 'S' ? 'SMONT' : 'LIB'))}</span>
+                </div>
+              </td>
+            `;
+          });
+
+          const coloreOre = ore >= 36 ? '#34d399' : (ore > 0 ? '#38bdf8' : '#94a3b8');
+          html += `
+              <td style="font-weight:900; font-size:13px; color:${coloreOre};">
+                <div>${ore}h</div>
+                ${disp > 0 ? `<div style="font-size:10px; color:#c084fc; font-weight:800;">+${disp} Disp.</div>` : ''}
+              </td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = html;
+
+        // KPI
+        document.getElementById('kpi-operatori').textContent = totOperatori;
+        document.getElementById('kpi-notti').textContent = `${totNotti} Notti`;
+      }
+
+      // Reperibilità
+      const oncallEl = document.getElementById('oncall-summary-text');
+      if (oncallEl) {
+        const nomiGiorni = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+        const repArr = [];
+        giorni.forEach((g, idx) => {
+          const reperibili = [];
+          data.operatori.forEach(o => {
+            if (data.griglia[o.id] && data.griglia[o.id][g] === 'D') {
+              reperibili.push(`<b>${o.nome}</b> (📞 ${o.tel})`);
+            }
+          });
+          if (reperibili.length > 0) {
+            repArr.push(`<b>${nomiGiorni[idx]}:</b> ${reperibili.join(', ')}`);
+          }
+        });
+        if (repArr.length > 0) {
+          oncallEl.innerHTML = repArr.join(' &bull; ');
+        } else {
+          oncallEl.innerHTML = 'Nessun operatore attualmente in disponibilità per questa settimana.';
+        }
+      }
+    }
+
+    // Navigazione
+    function navigaSettimanaVisual(offset) {
+      navigaSettimana(offset);
+      renderMascheraDedicata();
+    }
+    function cambiaDataSettimana(val) {
+      cambiaSettimanaTurnario(val);
+      renderMascheraDedicata();
+    }
+    function vaiAOggi() {
+      const now = new Date();
+      cambiaDataSettimana(now.toISOString().slice(0, 10));
+    }
+
+    // Azione Esegui Sviluppo Automatico
+    function eseguiSviluppoAutomatico() {
+      sviluppaCombinazioneAutomatica();
+      renderMascheraDedicata();
+      alert("⚡ Combinazione Turni sviluppata con successo!\n\nVerificati vincoli di legge D.Lgs. 66/2003:\n• 11 ore consecutive di riposo tra i turni\n• Smonto notte (S) assegnato automaticamente\n• Reperibilità (D) garantita per le coperture");
+    }
+
+    // Modal Editor Singola Cella (per Admin)
+    function apriEditorTurno(opId, giorno) {
+      if (!isUtenteAdmin()) return;
+      opInModifica = opId;
+      giornoInModifica = giorno;
+      
+      const op = turnarioCorrente.operatori.find(o => o.id === opId);
+      const nomiG = { lun:'Lunedì', mar:'Martedì', mer:'Mercoledì', gio:'Giovedì', ven:'Venerdì', sab:'Sabato', dom:'Domenica' };
+      
+      document.getElementById('editor-title').textContent = `Modifica Turno: ${op ? op.nome : ''}`;
+      document.getElementById('editor-subtitle').textContent = `Giorno: ${nomiG[giorno]} &bull; Seleziona il turno da assegnare:`;
+      
+      document.getElementById('modal-turn-editor').style.display = 'flex';
+    }
+    function chiudiEditorTurno() {
+      document.getElementById('modal-turn-editor').style.display = 'none';
+      opInModifica = null;
+      giornoInModifica = null;
+    }
+    function selezionaNuovoTurno(codiceTurno) {
+      if (opInModifica && giornoInModifica) {
+        impostaTurnoCella(opInModifica, giornoInModifica, codiceTurno);
+        chiudiEditorTurno();
+        renderMascheraDedicata();
+      }
+    }
+
+    // Switch temporaneo per testare la vista Collaboratore
+    function simulaVistaCollaboratore() {
+      localStorage.setItem('milella_role', 'operatore');
+      sessionStorage.removeItem('turnario_admin_unlocked');
+      renderMascheraDedicata();
+    }
+
+    // Azioni Stampa e Condivisione
+    function apriStampaA4() {
+      stampaTurnarioCartaceoA4();
+    }
+    function condividiWhatsAppRoster() {
+      condividiTurnarioWhatsApp();
+    }
+
+    // Inizializzazione al caricamento
+    window.addEventListener('DOMContentLoaded', async () => {
+      await sincronizzaOperatoriCareAssist();
+      renderMascheraDedicata();
+    });
+  </script>
+
+  <!-- Universal Suite Mobile Navigation -->
+  <script src="/suite_nav.js"></script>
+</body>
+</html>

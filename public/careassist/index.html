@@ -247,8 +247,8 @@
         📄 Stampa Diario
       </button>
 
-      <button class="btn" onclick="apriModalTurnarioAdmin()" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(5,150,105,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Generatore Combinazione Turni Operatori e Stampa A4 (Pannello Admin)">
-        🗓️ Turni & Stampa
+      <button class="btn" onclick="window.location.href='/careassist/turni.html'" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(5,150,105,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Apri la Maschera Dedicata Turnario & Roster Operatori">
+        🗓️ Turnario Operatori
       </button>
 
       <button class="btn" onclick="avviaBriefingVocaleAssistitoDemo()" style="background:linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(124,58,237,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Ascolta il Briefing Clinico Vocale AI dell'Assistito (Demo Live)">
@@ -320,6 +320,7 @@
     <button class="nav-tab" data-target="tab-visite">📅 Visite & Prestazioni ADI</button>
     <button class="nav-tab" data-target="tab-glicemia">🩸 Diario Glicemico</button>
     <button class="nav-tab" data-target="tab-diario">📋 Storico Completo (Diario)</button>
+    <a href="/careassist/turni.html" class="nav-tab" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; color:inherit; font-weight:700;">🗓️ Turnario Operatori</a>
   </nav>
 
   <!-- BARRA STICKY CONTESTO ASSISTITO (SEMPRE VISIBILE ANCHE DURANTE LO SCROLL) -->
@@ -3848,7 +3849,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js?v=76', { updateViaCache: 'none' }).then(function(reg) {
+        navigator.serviceWorker.register('./sw.js?v=77', { updateViaCache: 'none' }).then(function(reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) {}
         }).catch(function(err) {
