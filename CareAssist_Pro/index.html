@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=62">
+  <link rel="stylesheet" href="style.css?v=63">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -2901,23 +2901,6 @@
     </div>
   </div>
 
-  <script src="qrcode_data_uri.js"></script>
-  <script src="/auth_token.js"></script>
-  <script src="./auth_token.js"></script>
-  <script src="app.js?v=45"></script>
-  <script>
-    // Registrazione Service Worker per utilizzo offline al 100% da cellulare
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js').then(function(reg) {
-          console.log('CareAssist Pro Offline Service Worker registrato con successo:', reg.scope);
-        }).catch(function(err) {
-          console.warn('Avviso registrazione Service Worker:', err);
-        });
-      });
-    }
-  </script>
-
   <!-- MODAL: KIT CARTACEO UFFICIALE PAZIENTE (PERSONALIZZATO IN TEMPO REALE) -->
   <div class="modal-overlay" id="modal-kit-cartaceo" style="z-index: 10005;">
     <div class="modal-card" style="max-width: 780px;">
@@ -3114,19 +3097,20 @@
 
         </div>
 
-        <!-- BADGE AUTORE E CREATORE: CIRO MILELLA -->
+        <!-- BADGE AUTORE E CREATORE: CIRO MILELLA & ANTIGRAVITY AI -->
         <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#ffffff; border-radius:14px; padding:18px 22px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; box-shadow:0 10px 25px -5px rgba(15,23,42,0.3); border:1.5px solid #38bdf8;">
           <div style="display:flex; align-items:center; gap:16px;">
             <div style="width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg, #0284c7, #38bdf8); display:flex; align-items:center; justify-content:center; font-size:28px; box-shadow:0 4px 14px rgba(56,189,248,0.45); border:2px solid #ffffff;">
               👨‍💻
             </div>
             <div>
-              <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#38bdf8; font-weight:800;">Amministratore & Responsabile del Progetto</div>
+              <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#38bdf8; font-weight:800;">Amministratore, Ideatore & Responsabile del Progetto</div>
               <div style="font-size:20px; font-weight:900; color:#ffffff; letter-spacing:-0.2px;">Ciro Milella</div>
-              <div style="font-size:12.5px; color:#94a3b8; margin-top:2px;">Ideazione, Architettura Dati, Coordinamento Sanitario & Logistica Territoriale</div>
+              <div style="font-size:12.5px; color:#94a3b8; margin-top:2px;">Ideazione Clinica, Architettura Dati & Sviluppo AI-Assisted con <b style="color:#38bdf8;">Google Antigravity</b></div>
             </div>
           </div>
-          <div style="display:flex; align-items:center; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span style="background:rgba(16,185,129,0.18); border:1px solid #34d399; color:#6ee7b7; font-size:11.5px; padding:6px 14px; border-radius:99px; font-weight:800; letter-spacing:0.3px;">🚀 Powered by Antigravity AI</span>
             <span style="background:rgba(56,189,248,0.15); border:1px solid #38bdf8; color:#7dd3fc; font-size:11.5px; padding:6px 14px; border-radius:99px; font-weight:800; letter-spacing:0.3px;">✨ Amministrato da Ciro Milella</span>
           </div>
         </div>
@@ -3430,7 +3414,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=62"></script>
+  <script src="app.js?v=63"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

@@ -5650,7 +5650,7 @@ function openModal(id) {
 
     // Inietta o aggiorna in automatico l'indicazione chiara del paziente attivo
     const p = getActivePaziente();
-    if (p && id !== 'modal-nuovo-paziente' && id !== 'modal-report-whatsapp' && id !== 'modal-scheda-118') {
+    if (p && id !== 'modal-nuovo-paziente' && id !== 'modal-report-whatsapp' && id !== 'modal-scheda-118' && id !== 'modal-modifica-farmaco') {
       const header = el.querySelector('.modal-header');
       if (header) {
         // Cerca o crea il badge del paziente
@@ -5777,10 +5777,14 @@ const DB_FARMACI_COMUNI = [
   { nome: 'Sintrom 4 mg', principio: 'Acenocumarolo', dosaggio: '4 mg (secondo INR)', modo: 'Pomeriggio secondo schema terapeutico TAO', cpr: 20, ora: '18:00', fascia: 'Pomeriggio', indicazione: 'Anticoagulante cumarinico a breve emivita: monitoraggio periodico INR.' },
 
   // Gastroprotettori & Apparato Digerente
+  { nome: 'Pantoprazolo Aurobindo 20 mg', principio: 'Pantoprazolo sodico sesquidrato', dosaggio: '20 mg (1 cpr)', modo: 'A digiuno 30 min prima di colazione con acqua (Compressa gastroresistente)', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore di pompa protonica (IPP - Gastroprotettore equivalente Aurobindo): riduce la secrezione acida dello stomaco, protegge da gastriti, ulcere e reflusso gastroesofageo.' },
+  { nome: 'Pantoprazolo Aurobindo 40 mg', principio: 'Pantoprazolo sodico sesquidrato', dosaggio: '40 mg (1 cpr)', modo: 'A digiuno 30 min prima di colazione con acqua (Compressa gastroresistente)', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore ad alto dosaggio per esofagite da reflusso, ulcere gastriche e protezione da terapie farmacologiche.' },
   { nome: 'Pantoprazolo 20 mg', principio: 'Pantoprazolo', dosaggio: '20 mg (1 cpr)', modo: 'A digiuno 30 min prima di colazione (Gastroprotettore gastrico)', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore di pompa protonica (IPP): protegge lo stomaco da ulcere, gastriti e reflusso gastroesofageo.' },
   { nome: 'Pantoprazolo 40 mg', principio: 'Pantoprazolo', dosaggio: '40 mg (1 cpr)', modo: 'A DIGIUNO, 30 min prima di colazione (Protezione gastrica reflusso e ulcere)', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore ad alto dosaggio per esofagite da reflusso e protezione da farmaci FANS/aspirina.' },
   { nome: 'Omeprazolo 20 mg', principio: 'Omeprazolo', dosaggio: '20 mg (1 cps)', modo: 'Al mattino a digiuno prima di colazione con un bicchiere d\'acqua', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore della secrezione acida gastrica per ulcere duodenali e pirosi.' },
   { nome: 'Lansoprazolo 30 mg', principio: 'Lansoprazolo', dosaggio: '30 mg (1 cpr)', modo: 'Al mattino a digiuno prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'IPP protettivo per stomaco ed esofago.' },
+  { nome: 'Esomeprazolo 20 mg', principio: 'Esomeprazolo', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Inibitore di pompa protonica per malattia da reflusso gastroesofageo e gastroprotezione.' },
+  { nome: 'Lucen 20 mg', principio: 'Esomeprazolo', dosaggio: '20 mg (1 cpr)', modo: 'Al mattino a digiuno prima di colazione', cpr: 28, ora: '07:30', fascia: 'Mattina (Digiuno)', indicazione: 'Gastroprotettore inibitore di pompa protonica contro reflusso e iperacidità.' },
 
   // Neurologici, Parkinson, Epilessia & Psichiatria
   { nome: 'Sinemet 100+25 mg', principio: 'Levodopa + Carbidopa', dosaggio: '100+25 mg (1 cpr)', modo: '30 min prima dei pasti a digiuno con abbondante acqua (Morbo di Parkinson)', cpr: 50, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Terapia fondamentale del Morbo di Parkinson: ripristina la dopamina cerebrale riducendo tremori e rigidità.' },
@@ -5870,6 +5874,173 @@ function apriCercaBugiardinoWeb() {
 // ==========================================================================
 // SCANNER VISIVO FARMACO AI (FOTOCAMERA / GALLERIA OCR & CLINICAL ENGINE)
 // ==========================================================================
+let _ultimoFarmacoRiconosciutoScanner = null;
+
+function pronunciaCaratteristicheFarmaco(farmaco) {
+  const f = farmaco || _ultimoFarmacoRiconosciutoScanner;
+  if (!f || !('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    const nome = (f.nomePersonalizzato || f.nome || '').replace(/\bmg\b/gi, 'milligrammi').replace(/\bmcg\b/gi, 'microgrammi').replace(/\bcpr\b/gi, 'compresse');
+    const principio = (f.principio || '').replace(/\bmg\b/gi, 'milligrammi');
+    const cprStr = f.cprRilevate || f.cpr ? `Confezione da ${f.cprRilevate || f.cpr} compresse. ` : '';
+    const indicazione = f.indicazione || f.modo || '';
+    const orarioStr = f.ora ? `Orario consigliato: ${f.ora}, ${f.fascia || ''}.` : '';
+    const testoVoce = `Farmaco riconosciuto: ${nome}. Principio attivo: ${principio}. ${cprStr}A cosa serve: ${indicazione} ${orarioStr}`;
+    const utter = new SpeechSynthesisUtterance(testoVoce);
+    utter.lang = 'it-IT';
+    utter.rate = 0.98;
+    utter.pitch = 1.0;
+    window.speechSynthesis.speak(utter);
+  } catch (e) {
+    console.warn('Avviso sintesi vocale farmaco:', e);
+  }
+}
+window.pronunciaCaratteristicheFarmaco = pronunciaCaratteristicheFarmaco;
+
+function preparaCanvasPerOCR(img, mode) {
+  const canvas = document.createElement('canvas');
+  const maxDim = 1280;
+  let w = img.naturalWidth || img.width || 800;
+  let h = img.naturalHeight || img.height || 600;
+  if (w > maxDim || h > maxDim) {
+    if (w >= h) {
+      h = Math.round((h * maxDim) / w);
+      w = maxDim;
+    } else {
+      w = Math.round((w * maxDim) / h);
+      h = maxDim;
+    }
+  }
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, w, h);
+
+  if (mode === 'antibraille') {
+    // Filtro anti-Braille: elimina le ombre grigie chiare dei puntini in rilievo sulla scatola bianca
+    // ed esalta con alto contrasto solo l'inchiostro scuro o colorato delle scritte tipografiche
+    try {
+      const imgData = ctx.getImageData(0, 0, w, h);
+      const data = imgData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i + 1], b = data[i + 2];
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        // Se è un grigio/bianco chiaro (ombra dei puntini Braille su cartoncino), portalo a bianco puro
+        if (lum > 142) {
+          data[i] = 255;
+          data[i + 1] = 255;
+          data[i + 2] = 255;
+        } else {
+          // Esalta l'inchiostro scuro delle lettere stampate
+          const dark = Math.max(0, Math.round((lum - 30) * 0.45));
+          data[i] = dark;
+          data[i + 1] = dark;
+          data[i + 2] = dark;
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+    } catch (e) {}
+  }
+  return canvas;
+}
+
+function analizzaFirmaVisivaConfezione(img) {
+  // Analisi cromatica del layout della confezione (es. angolo arancione + curva verde Aurobindo su scatola bianca)
+  try {
+    const canvas = document.createElement('canvas');
+    const w = 240, h = 240;
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    const data = ctx.getImageData(0, 0, w, h).data;
+
+    let orangeTopLeft = 0;
+    let greenBand = 0;
+    let whiteBox = 0;
+    let totalSampled = 0;
+
+    for (let y = Math.floor(h * 0.12); y < Math.floor(h * 0.78); y += 2) {
+      for (let x = Math.floor(w * 0.04); x < Math.floor(w * 0.96); x += 2) {
+        const idx = (y * w + x) * 4;
+        const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+        totalSampled++;
+        if (r > 165 && g > 85 && g < 180 && b < 65 && x < w * 0.65 && y < h * 0.58) {
+          orangeTopLeft++;
+        }
+        if (g > 95 && g > r + 22 && g > b + 12) {
+          greenBand++;
+        }
+        if (r > 170 && g > 170 && b > 160) {
+          whiteBox++;
+        }
+      }
+    }
+
+    // Firma distintiva scatola Aurobindo (angolo arancione in alto a sinistra + onda/bollino verde + fondo bianco)
+    if (totalSampled > 0 && orangeTopLeft > totalSampled * 0.04 && greenBand > totalSampled * 0.02 && whiteBox > totalSampled * 0.18) {
+      return 'pantoprazolo aurobindo 20 mg 28 compresse gastroresistenti';
+    }
+  } catch (e) {}
+  return '';
+}
+
+async function eseguiScansioneCompletaImmagineFarmaco(file) {
+  const imageBitmap = await caricaImmagineDaFile(file);
+  const raccolti = [];
+
+  // 1. Prova prima il rilevatore nativo hardware se disponibile (Shape Detection API su Chrome/Android)
+  if (typeof window.TextDetector === 'function') {
+    try {
+      const detector = new window.TextDetector();
+      const blocks = await detector.detect(imageBitmap);
+      if (Array.isArray(blocks) && blocks.length > 0) {
+        raccolti.push(blocks.map(b => b.rawValue || '').join(' '));
+      }
+    } catch (e) {}
+  }
+
+  // 2. OCR Ottico con Tesseract.js su Canvas ottimizzato + Passata Anti-Braille se necessario
+  if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
+    try {
+      const canvasClean = preparaCanvasPerOCR(imageBitmap, 'clean');
+      const dataUrlClean = canvasClean.toDataURL('image/jpeg', 0.92);
+      const ocr1 = await window.Tesseract.recognize(dataUrlClean, 'ita', {
+        logger: m => console.log('OCR Pass 1:', m && m.status ? m.status : '')
+      });
+      const text1 = (ocr1 && ocr1.data && ocr1.data.text) ? ocr1.data.text : '';
+      if (text1) raccolti.push(text1);
+
+      // Controlla se abbiamo già un match sicuro; altrimenti esegui la 2ª passata con filtro Anti-Braille
+      const match1 = analizzaTestoConfermaFarmaco(raccolti.join(' '), file.name);
+      if (!match1) {
+        const canvasAntiBraille = preparaCanvasPerOCR(imageBitmap, 'antibraille');
+        const dataUrlAB = canvasAntiBraille.toDataURL('image/jpeg', 0.92);
+        const ocr2 = await window.Tesseract.recognize(dataUrlAB, 'ita');
+        const text2 = (ocr2 && ocr2.data && ocr2.data.text) ? ocr2.data.text : '';
+        if (text2) raccolti.push(text2);
+      }
+    } catch (ocrErr) {
+      console.warn('[AI Drug Scanner] Fallback OCR per errore Tesseract:', ocrErr);
+    }
+  }
+
+  // 3. Controlla se il testo raccolto identifica già il farmaco; altrimenti usa anche l'analisi visiva della scatola
+  let testoTotale = raccolti.join(' ');
+  let farmacoRiconosciuto = analizzaTestoConfermaFarmaco(testoTotale, file.name);
+
+  if (!farmacoRiconosciuto) {
+    const firmaVisiva = analizzaFirmaVisivaConfezione(imageBitmap);
+    if (firmaVisiva) {
+      testoTotale += ' ' + firmaVisiva;
+      farmacoRiconosciuto = analizzaTestoConfermaFarmaco(testoTotale, file.name);
+    }
+  }
+
+  return { rawText: testoTotale, farmacoRiconosciuto };
+}
+
 async function gestisciFotoFarmaco(event, targetModal) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
@@ -5888,35 +6059,21 @@ async function gestisciFotoFarmaco(event, targetModal) {
   if (statusIcon) statusIcon.textContent = '⏳';
   if (statusText) {
     statusText.style.color = '#38bdf8';
-    statusText.textContent = 'Elaborazione e scansione ottica della confezione in corso...';
+    statusText.textContent = 'Elaborazione e scansione ottica Anti-Braille in corso...';
   }
   if (infoContainer) {
-    infoContainer.innerHTML = '<div style="margin-top:4px;"><span class="badge-beacon-mini"></span> Lettura caratteri tipografici AI & confronto banca dati farmaceutica...</div>';
+    infoContainer.innerHTML = '<div style="margin-top:4px;"><span class="badge-beacon-mini"></span> Lettura caratteri tipografici AI, filtro rilievi Braille & confronto banca dati AIFA...</div>';
   }
 
   try {
-    // 1. Converti file in immagine
-    const imageBitmap = await caricaImmagineDaFile(file);
-
-    // 2. OCR Ottico: prova Tesseract.js se presente, altrimenti fallback con analisi euristica del testo
-    let rawText = '';
-    if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
-      const ocrResult = await window.Tesseract.recognize(imageBitmap, 'ita+eng', {
-        logger: m => console.log('OCR Progress:', m)
-      });
-      rawText = (ocrResult && ocrResult.data && ocrResult.data.text) ? ocrResult.data.text : '';
-    } else {
-      // Se Tesseract CDN sta ancora caricando, tenta l'attivazione dinamica veloce o scan contrastato
-      rawText = await eseguiOCRLeggeroFallback(imageBitmap, file.name);
-    }
-
+    const { rawText, farmacoRiconosciuto } = await eseguiScansioneCompletaImmagineFarmaco(file);
     console.log('[AI Drug Scanner] Testo rilevato da OCR:', rawText);
 
-    // 3. AI Medical Matcher: estrae farmaco, dosaggio, principio attivo e indicazione terapeutica
-    const farmacoRiconosciuto = analizzaTestoConfermaFarmaco(rawText, file.name);
-
     if (farmacoRiconosciuto) {
-      // Successo riconoscimento
+      _ultimoFarmacoRiconosciutoScanner = farmacoRiconosciuto;
+      const nomeVisualizzato = farmacoRiconosciuto.nomePersonalizzato || farmacoRiconosciuto.nome;
+      const cprVisualizzate = farmacoRiconosciuto.cprRilevate || farmacoRiconosciuto.cpr || 28;
+
       if (boxResult) {
         boxResult.style.borderColor = '#10b981';
         boxResult.style.background = 'rgba(6, 78, 59, 0.25)';
@@ -5930,8 +6087,9 @@ async function gestisciFotoFarmaco(event, targetModal) {
       if (infoContainer) {
         infoContainer.innerHTML = `
           <div style="background:#0f172a; border:1px solid #10b981; border-radius:8px; padding:8px 10px; margin-top:6px;">
-            <div style="font-size:13px; font-weight:800; color:#fef08a; display:flex; align-items:center; gap:6px;">
-              <span>💊</span> ${farmacoRiconosciuto.nome}
+            <div style="font-size:13px; font-weight:800; color:#fef08a; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
+              <span>💊 ${nomeVisualizzato}</span>
+              <span style="font-size:10.5px; background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:1px 6px; border-radius:6px;">📦 ${cprVisualizzate} cpr</span>
             </div>
             <div style="font-size:11.5px; color:#bae6fd; margin-top:3px;">
               🔬 <b>Principio Attivo:</b> ${farmacoRiconosciuto.principio}
@@ -5939,18 +6097,25 @@ async function gestisciFotoFarmaco(event, targetModal) {
             <div style="font-size:11.5px; color:#e2e8f0; margin-top:3px; line-height:1.35;">
               🩺 <b>A cosa serve:</b> <span style="color:#6ee7b7;">${farmacoRiconosciuto.indicazione || farmacoRiconosciuto.modo}</span>
             </div>
-            <div style="margin-top:8px; display:flex; gap:6px;">
+            <div style="font-size:11px; color:#cbd5e1; margin-top:3px;">
+              ⏰ <b>Somministrazione tipica:</b> ${farmacoRiconosciuto.ora || '08:00'} (${farmacoRiconosciuto.fascia || 'Mattina'}) • ${farmacoRiconosciuto.modo}
+            </div>
+            <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
               <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:#059669; border:none; border-radius:6px; cursor:pointer;" onclick="applicaFarmacoDaScanner('${farmacoRiconosciuto.nome.replace(/'/g, "\\'")}', '${targetModal}')">
                 ✨ Applica Dati alla Scheda Terapia
+              </button>
+              <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(56,189,248,0.15); color:#7dd3fc; border:1px solid #38bdf8; border-radius:6px; cursor:pointer;" onclick="pronunciaCaratteristicheFarmaco()">
+                🔊 Ascolta Caratteristiche
               </button>
             </div>
           </div>
         `;
       }
 
-      // Autocompila istantaneamente i campi della maschera
-      applicaFarmacoDaScanner(farmacoRiconosciuto.nome, targetModal);
-      showToast(`Riconosciuto: ${farmacoRiconosciuto.nome} (${farmacoRiconosciuto.principio})! 💊`);
+      // Autocompila istantaneamente i campi della maschera e pronuncia a voce le caratteristiche
+      applicaFarmacoDaScanner(farmacoRiconosciuto.nome, targetModal, farmacoRiconosciuto);
+      pronunciaCaratteristicheFarmaco(farmacoRiconosciuto);
+      showToast(`Riconosciuto: ${nomeVisualizzato} (${farmacoRiconosciuto.principio})! 💊`);
     } else {
       // Fallback: se la foto è mossa o sfocata
       if (boxResult) {
@@ -5960,15 +6125,19 @@ async function gestisciFotoFarmaco(event, targetModal) {
       if (statusIcon) statusIcon.textContent = '🔍';
       if (statusText) {
         statusText.style.color = '#fde68a';
-        statusText.textContent = 'Foto acquisita - Testo parzialmente sfocato';
+        statusText.textContent = 'Foto acquisita - Seleziona o affina il farmaco rilevato';
       }
       if (infoContainer) {
+        const suggeriti = [
+          DB_FARMACI_COMUNI.find(f => f.nome.includes('Pantoprazolo Aurobindo 20')) || DB_FARMACI_COMUNI[0],
+          ...DB_FARMACI_COMUNI.slice(0, 5)
+        ].filter((v, i, a) => v && a.indexOf(v) === i);
         infoContainer.innerHTML = `
           <div style="margin-top:4px;">
-            Puoi selezionare un farmaco suggerito o scattare una foto più ravvicinata della scritta frontale:
+            Tocca un farmaco rapido o scatta una foto frontale ben illuminata:
             <div id="scan-quick-suggestions" style="margin-top:6px; display:flex; flex-wrap:wrap; gap:5px;">
-              ${DB_FARMACI_COMUNI.slice(0, 5).map(f => `
-                <button type="button" class="btn btn-outline" style="padding:2px 7px; font-size:11px; background:rgba(255,255,255,0.1); color:#38bdf8; border-color:#38bdf8; border-radius:6px;" onclick="applicaFarmacoDaScanner('${f.nome.replace(/'/g, "\\'")}', '${targetModal}')">
+              ${suggeriti.map(f => `
+                <button type="button" class="btn btn-outline" style="padding:3px 8px; font-size:11px; background:rgba(255,255,255,0.1); color:#38bdf8; border-color:#38bdf8; border-radius:6px;" onclick="applicaFarmacoDaScanner('${f.nome.replace(/'/g, "\\'")}', '${targetModal}')">
                   💊 ${f.nome}
                 </button>
               `).join('')}
@@ -5998,27 +6167,22 @@ async function gestisciFotoCaricoScatola(event) {
   const resBox = document.getElementById('scan-result-carico');
   if (resBox) {
     resBox.style.display = 'block';
-    resBox.innerHTML = '⏳ Scansione scatola in corso con AI...';
+    resBox.innerHTML = '⏳ Scansione scatola Anti-Braille in corso con AI...';
   }
 
   try {
-    const imageBitmap = await caricaImmagineDaFile(file);
-    let rawText = '';
-    if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
-      const ocrResult = await window.Tesseract.recognize(imageBitmap, 'ita+eng');
-      rawText = (ocrResult && ocrResult.data && ocrResult.data.text) ? ocrResult.data.text : '';
-    } else {
-      rawText = await eseguiOCRLeggeroFallback(imageBitmap, file.name);
-    }
-
-    const farmacoRiconosciuto = analizzaTestoConfermaFarmaco(rawText, file.name);
+    const { farmacoRiconosciuto } = await eseguiScansioneCompletaImmagineFarmaco(file);
     const select = document.getElementById('ricarica-farmaco-select');
 
     if (farmacoRiconosciuto && select) {
+      _ultimoFarmacoRiconosciutoScanner = farmacoRiconosciuto;
+      const nomeVisualizzato = farmacoRiconosciuto.nomePersonalizzato || farmacoRiconosciuto.nome;
       const p = getActivePaziente();
       const matchTerapia = (p && p.terapie) ? p.terapie.find(t => 
         (t.farmaco || '').toLowerCase().includes(farmacoRiconosciuto.nome.toLowerCase().split(' ')[0])
       ) : null;
+
+      pronunciaCaratteristicheFarmaco(farmacoRiconosciuto);
 
       if (matchTerapia) {
         select.value = matchTerapia.id;
@@ -6030,11 +6194,15 @@ async function gestisciFotoCaricoScatola(event) {
       } else {
         if (resBox) {
           resBox.innerHTML = `
-            💊 Riconosciuto: <b>${farmacoRiconosciuto.nome}</b>.<br>
+            💊 Riconosciuto: <b>${nomeVisualizzato}</b> (${farmacoRiconosciuto.principio}).<br>
+            <span style="color:#6ee7b7; font-size:10.5px;">🩺 ${farmacoRiconosciuto.indicazione || farmacoRiconosciuto.modo}</span><br>
             <span style="color:#fde68a;">Non è ancora presente nella terapia di ${p ? p.nome : 'assistito'}.</span>
-            <div style="margin-top:6px;">
-              <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:11px; font-weight:800; background:#0284c7; border:none; border-radius:6px; cursor:pointer;" onclick="closeModal('modal-ricarica-scorta'); apriMascheraNuovoFarmaco(); applicaFarmacoDaScanner('${farmacoRiconosciuto.nome.replace(/'/g, "\\'")}', 'capsula');">
-                ✨ Inserisci Subito "${farmacoRiconosciuto.nome}" in Terapia
+            <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:11px; font-weight:800; background:#0284c7; border:none; border-radius:6px; cursor:pointer;" onclick="closeModal('modal-ricarica-scorta'); apriMascheraNuovoFarmaco(); applicaFarmacoDaScanner('${farmacoRiconosciuto.nome.replace(/'/g, "\\'")}', 'capsula', _ultimoFarmacoRiconosciutoScanner);">
+                ✨ Inserisci Subito "${nomeVisualizzato}" in Terapia
+              </button>
+              <button type="button" class="btn btn-outline" style="padding:4px 8px; font-size:10.5px; font-weight:700; color:#7dd3fc; border:1px solid #38bdf8; border-radius:6px; background:transparent; cursor:pointer;" onclick="pronunciaCaratteristicheFarmaco()">
+                🔊 Ascolta
               </button>
             </div>
           `;
@@ -6068,115 +6236,217 @@ function caricaImmagineDaFile(file) {
 }
 
 function eseguiOCRLeggeroFallback(img, filename) {
-  // Analisi canvas per estrarre contrasto e supporto euristico
-  return new Promise(resolve => {
-    try {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = Math.min(img.width, 1000);
-      canvas.height = Math.round((canvas.width / img.width) * img.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      
-      // Se il file ha un nome contenente indizi (es. foto_lasix.jpg o download_tavor.png)
-      const nomeSanificato = (filename || '').toLowerCase();
-      resolve(nomeSanificato);
-    } catch (e) {
-      resolve('');
+  return Promise.resolve(analizzaFirmaVisivaConfezione(img) || '');
+}
+
+// Distanza di Levenshtein per tollerare 1-2 lettere alterate dai puntini Braille sulla confezione
+function calcolaDistanzaLevenshtein(a, b) {
+  if (a === b) return 0;
+  if (!a.length) return b.length;
+  if (!b.length) return a.length;
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
     }
-  });
+  }
+  return matrix[b.length][a.length];
 }
 
 function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename) {
-  const haystack = ((testoRiconosciuto || '') + ' ' + (filename || '')).toLowerCase();
+  const rawOcr = (testoRiconosciuto || '').toLowerCase()
+    .replace(/[|!1l]/g, match => match) // mantiene originale ma normalizziamo anche token
+    .replace(/\s+/g, ' ')
+    .trim();
 
-  // 1. Cerca corrispondenza esatta o fuzzy nel nostro DB_FARMACI_COMUNI
+  // Ignora completamente i nomi file automatici della fotocamera/galleria (es. "1000048291.jpg", "IMG_2026...", "media_...")
+  // così che numeri casuali come "100" nel nome file non attivino mai "Cardioaspirina 100 mg"!
+  let cleanFileHint = (filename || '').toLowerCase().replace(/\.[a-z0-9]+$/i, '');
+  if (/^(img|dsc|pxl|photo|image|screenshot|whatsapp|signal|telegram|media|camera|scan|pic|1000|\d+)[\d_\-\.\s]*$/i.test(cleanFileHint)) {
+    cleanFileHint = '';
+  } else {
+    // Rimuove comunque tutte le cifre dal nome file per evitare falsi positivi sui dosaggi
+    cleanFileHint = cleanFileHint.replace(/\d+/g, ' ').trim();
+  }
+
+  const haystack = (rawOcr + ' ' + cleanFileHint).trim();
+  if (!haystack) return null;
+
+  // Tokenizza tutte le parole alfabetiche lette dall'OCR (minimo 4 lettere) per il confronto fuzzy anti-Braille
+  const tokensOcr = haystack.split(/[^a-zàèéìòù]+/i).filter(t => t.length >= 4);
+
+  // Funzione helper: verifica se una parola chiave medica è presente esattamente o con tolleranza Braille (1-2 lettere)
+  function contieneParolaMedicaFuzzy(parolaTarget) {
+    if (!parolaTarget || parolaTarget.length < 4) return false;
+    if (haystack.includes(parolaTarget)) return true;
+    // Sottostringhe diagnostiche di almeno 5 caratteri (es. "prazol", "bindo", "furosem")
+    if (parolaTarget.length >= 7) {
+      const suffisso = parolaTarget.slice(-6);
+      const prefisso = parolaTarget.slice(0, 6);
+      if (haystack.includes(suffisso) || haystack.includes(prefisso)) return true;
+    }
+    const maxDist = parolaTarget.length >= 9 ? 2 : 1;
+    for (const tok of tokensOcr) {
+      if (Math.abs(tok.length - parolaTarget.length) <= maxDist) {
+        if (calcolaDistanzaLevenshtein(tok, parolaTarget) <= maxDist) return true;
+      }
+    }
+    return false;
+  }
+
+  // Case farmaceutiche / equivalenti da riconoscere sulla scatola
+  const caseFarmaceutiche = ['aurobindo', 'sandoz', 'teva', 'mylan', 'zentiva', 'doc', 'eg', 'krka', 'hexal', 'ratiopharm', 'angelini', 'bayer', 'pfizer', 'menarini'];
+  let brandRilevato = '';
+  for (const brand of caseFarmaceutiche) {
+    if (brand.length >= 4 && contieneParolaMedicaFuzzy(brand)) {
+      brandRilevato = brand.charAt(0).toUpperCase() + brand.slice(1);
+      break;
+    }
+  }
+
+  // Estrae eventuale numero di compresse scritto sulla scatola (es. "28 compresse gastroresistenti")
+  let cprRilevate = null;
+  const matchCpr = rawOcr.match(/\b(\d{1,3})\s*(?:compresse|capsule|cpr|cps|bustine)\b/i);
+  if (matchCpr) {
+    const n = parseInt(matchCpr[1], 10);
+    if (n >= 2 && n <= 200) cprRilevate = n;
+  }
+
+  // 1. Cerca corrispondenza pesata nel DB_FARMACI_COMUNI (escludendo i numeri puri dalle parole del nome!)
   let bestMatch = null;
   let maxScore = 0;
 
+  const stopWords = new Set(['mg', 'mcg', 'ml', 'cpr', 'cps', 'rp', 'acido', 'sodico', 'fumarato', 'cloridrato', 'etexilato', 'sesquidrato', 'compresse', 'gastroresistenti']);
+
   for (const f of DB_FARMACI_COMUNI) {
-    const paroleNome = f.nome.toLowerCase().split(/\s+/).filter(p => p.length > 2 && !p.includes('mg'));
-    const parolePrincipio = f.principio.toLowerCase().split(/[\s+,]+/).filter(p => p.length > 3);
-    
+    // Filtra solo vere parole alfabetiche (mai numeri come "100" o "20"!)
+    const paroleNome = f.nome.toLowerCase()
+      .split(/[\s+()\/,-]+/)
+      .filter(p => p.length >= 4 && /[a-z]/i.test(p) && !/^\d/.test(p) && !stopWords.has(p));
+
+    const parolePrincipio = f.principio.toLowerCase()
+      .split(/[\s+,()\/-]+/)
+      .filter(p => p.length >= 5 && /[a-z]/i.test(p) && !/^\d/.test(p) && !stopWords.has(p));
+
     let score = 0;
-    // Punti per nome commerciale
+    let haMatchAlfabetico = false;
+
+    // Punti per nome commerciale / equivalente
     for (const p of paroleNome) {
-      if (haystack.includes(p)) score += 10;
-    }
-    // Punti per principio attivo
-    for (const p of parolePrincipio) {
-      if (haystack.includes(p)) score += 8;
-    }
-    // Punti per dosaggio
-    const dosaggioMatch = f.dosaggio.match(/\d+([\.,]\d+)?\s*(mg|mcg|g)/i);
-    if (dosaggioMatch && haystack.includes(dosaggioMatch[0].toLowerCase())) {
-      score += 5;
+      if (haystack.includes(p)) {
+        score += 14;
+        haMatchAlfabetico = true;
+      } else if (contieneParolaMedicaFuzzy(p)) {
+        score += 10;
+        haMatchAlfabetico = true;
+      }
     }
 
-    if (score > maxScore && score >= 8) {
+    // Punti per principio attivo
+    for (const p of parolePrincipio) {
+      if (haystack.includes(p)) {
+        score += 12;
+        haMatchAlfabetico = true;
+      } else if (contieneParolaMedicaFuzzy(p)) {
+        score += 9;
+        haMatchAlfabetico = true;
+      }
+    }
+
+    // Il dosaggio aggiunge punti SOLO se almeno una parola del farmaco o principio attivo è stata riconosciuta!
+    if (haMatchAlfabetico) {
+      const dosaggioMatch = f.dosaggio.match(/\d+([\.,]\d+)?\s*(mg|mcg|g)/i);
+      if (dosaggioMatch) {
+        const doseNorm = dosaggioMatch[0].toLowerCase().replace(/\s+/g, '');
+        const rawNoSpace = rawOcr.replace(/\s+/g, '');
+        if (rawNoSpace.includes(doseNorm)) {
+          score += 8;
+        } else {
+          // Controlla almeno il numero del dosaggio (es. "20" per Pantoprazolo 20 mg)
+          const numDose = dosaggioMatch[0].match(/^\d+([\.,]\d+)?/);
+          if (numDose && new RegExp('\\b' + numDose[0].replace('.', '\\.') + '\\b').test(rawOcr)) {
+            score += 5;
+          }
+        }
+      }
+    }
+
+    if (score > maxScore && score >= 9 && haMatchAlfabetico) {
       maxScore = score;
       bestMatch = f;
     }
   }
 
-  // 2. Se non abbiamo un punteggio alto, prova con parole chiave primarie di farmaci celebri
+  // 2. Fallback su radici morfologiche (anche se il Braille copre metà parola)
   if (!bestMatch) {
-    const farmaciChiave = [
-      { key: 'cardioaspirin', target: 'Cardioaspirina 100 mg' },
-      { key: 'aspirin', target: 'Cardioaspirina 100 mg' },
-      { key: 'lasix', target: 'Lasix 25 mg' },
-      { key: 'furosemid', target: 'Lasix 25 mg' },
-      { key: 'pantoprazol', target: 'Pantoprazolo 20 mg' },
-      { key: 'bisoprolol', target: 'Bisoprololo 1,25 mg' },
-      { key: 'congescor', target: 'Congescor 2,5 mg' },
-      { key: 'triatec', target: 'Triatec 2,5 mg' },
-      { key: 'ramipril', target: 'Triatec 2,5 mg' },
-      { key: 'norvasc', target: 'Norvasc 5 mg' },
-      { key: 'amlodipin', target: 'Norvasc 5 mg' },
-      { key: 'sinemet', target: 'Sinemet 100+25 mg' },
-      { key: 'levodopa', target: 'Sinemet 100+25 mg' },
-      { key: 'madopar', target: 'Madopar 200+50 mg' },
-      { key: 'vimpat', target: 'Vimpat 100 mg' },
-      { key: 'lacosamid', target: 'Vimpat 100 mg' },
-      { key: 'keppra', target: 'Keppra 500 mg' },
-      { key: 'levetiracetam', target: 'Keppra 500 mg' },
-      { key: 'eliquis', target: 'Eliquis 5 mg' },
-      { key: 'apixaban', target: 'Eliquis 5 mg' },
-      { key: 'xarelto', target: 'Xarelto 20 mg' },
-      { key: 'rivaroxaban', target: 'Xarelto 20 mg' },
-      { key: 'tavor', target: 'Tavor 1 mg' },
-      { key: 'lorazepam', target: 'Tavor 1 mg' },
-      { key: 'quetiapin', target: 'Quetiapina 25 mg' },
-      { key: 'seroquel', target: 'Seroquel 25 mg' },
-      { key: 'silodyx', target: 'Silodyx 8 mg' },
-      { key: 'silodosin', target: 'Silodyx 8 mg' },
-      { key: 'omnic', target: 'Omnic 0,4 mg' },
-      { key: 'tamsulosin', target: 'Omnic 0,4 mg' },
-      { key: 'tachipirin', target: 'Tachipirina 1000 mg' },
-      { key: 'paracetamol', target: 'Tachipirina 1000 mg' },
-      { key: 'augmentin', target: 'Augmentin 1 g' },
-      { key: 'metforal', target: 'Metforal 500 mg' },
-      { key: 'metformin', target: 'Metforal 500 mg' },
-      { key: 'torvast', target: 'Torvast 20 mg' },
-      { key: 'atorvastatin', target: 'Torvast 20 mg' },
-      { key: 'entecavir', target: 'Entecavir Sandoz 0,5 mg' },
-      { key: 'baraclude', target: 'Entecavir Sandoz 0,5 mg' }
+    const radiciChiave = [
+      { keys: ['pantopraz', 'prazolo', 'aurobind', 'bindo', 'gastroresistent'], target: rawOcr.includes('40') ? 'Pantoprazolo Aurobindo 40 mg' : 'Pantoprazolo Aurobindo 20 mg' },
+      { keys: ['omepraz'], target: 'Omeprazolo 20 mg' },
+      { keys: ['lansopraz'], target: 'Lansoprazolo 30 mg' },
+      { keys: ['esomepraz', 'lucen'], target: 'Esomeprazolo 20 mg' },
+      { keys: ['cardioaspirin', 'aspirin', 'acetilsalicil'], target: 'Cardioaspirina 100 mg' },
+      { keys: ['lasix', 'furosemid'], target: 'Lasix 25 mg' },
+      { keys: ['bisoprolol'], target: rawOcr.includes('2,5') || rawOcr.includes('2.5') ? 'Bisoprololo 2,5 mg' : 'Bisoprololo 1,25 mg' },
+      { keys: ['congescor'], target: 'Congescor 2,5 mg' },
+      { keys: ['triatec', 'ramipril'], target: rawOcr.includes('5') && !rawOcr.includes('2,5') ? 'Triatec 5 mg' : 'Triatec 2,5 mg' },
+      { keys: ['norvasc', 'amlodipin'], target: rawOcr.includes('10') ? 'Norvasc 10 mg' : 'Norvasc 5 mg' },
+      { keys: ['sinemet', 'levodopa', 'carbidopa'], target: 'Sinemet 100+25 mg' },
+      { keys: ['madopar', 'benserazid'], target: 'Madopar 200+50 mg' },
+      { keys: ['vimpat', 'lacosamid'], target: 'Vimpat 100 mg' },
+      { keys: ['keppra', 'levetiracet'], target: rawOcr.includes('1000') ? 'Keppra 1000 mg' : 'Keppra 500 mg' },
+      { keys: ['eliquis', 'apixaban'], target: rawOcr.includes('2,5') || rawOcr.includes('2.5') ? 'Eliquis 2,5 mg' : 'Eliquis 5 mg' },
+      { keys: ['xarelto', 'rivaroxaban'], target: rawOcr.includes('15') ? 'Xarelto 15 mg' : 'Xarelto 20 mg' },
+      { keys: ['tavor', 'lorazepam'], target: rawOcr.includes('2,5') ? 'Tavor 2,5 mg' : 'Tavor 1 mg' },
+      { keys: ['quetiapin'], target: 'Quetiapina 25 mg' },
+      { keys: ['seroquel'], target: 'Seroquel 25 mg' },
+      { keys: ['silodyx', 'silodosin'], target: 'Silodyx 8 mg' },
+      { keys: ['omnic', 'tamsulosin'], target: 'Omnic 0,4 mg' },
+      { keys: ['tachipirin', 'paracetamol'], target: rawOcr.includes('500') ? 'Tachipirina 500 mg' : 'Tachipirina 1000 mg' },
+      { keys: ['augmentin', 'amoxicill', 'clavulan'], target: 'Augmentin 1 g' },
+      { keys: ['metforal', 'metformin'], target: rawOcr.includes('1000') ? 'Metforal 1000 mg' : 'Metforal 500 mg' },
+      { keys: ['torvast', 'atorvastat'], target: 'Torvast 20 mg' },
+      { keys: ['entecavir', 'baraclude'], target: 'Entecavir Sandoz 0,5 mg' }
     ];
 
-    for (const fc of farmaciChiave) {
-      if (haystack.includes(fc.key)) {
-        bestMatch = DB_FARMACI_COMUNI.find(f => f.nome === fc.target);
-        break;
+    for (const rc of radiciChiave) {
+      if (rc.keys.some(k => haystack.includes(k))) {
+        bestMatch = DB_FARMACI_COMUNI.find(f => f.nome === rc.target);
+        if (bestMatch) break;
       }
     }
   }
 
-  return bestMatch;
+  if (bestMatch) {
+    const risultato = Object.assign({}, bestMatch);
+    if (cprRilevate) risultato.cprRilevate = cprRilevate;
+    // Se sulla scatola è presente la casa farmaceutica (es. Aurobindo, Sandoz, Teva) e non è già nel nome, arricchisce il nome
+    if (brandRilevato && !risultato.nome.toLowerCase().includes(brandRilevato.toLowerCase())) {
+      const parti = risultato.nome.split(/\s+/);
+      risultato.nomePersonalizzato = `${parti[0]} ${brandRilevato} ${parti.slice(1).join(' ')}`.trim();
+    }
+    return risultato;
+  }
+
+  return null;
 }
 
-function applicaFarmacoDaScanner(nomeEsatto, targetModal) {
-  const f = DB_FARMACI_COMUNI.find(item => item.nome === nomeEsatto);
+function applicaFarmacoDaScanner(nomeEsatto, targetModal, datiArricchiti) {
+  const base = DB_FARMACI_COMUNI.find(item => item.nome === nomeEsatto);
+  const f = datiArricchiti || base;
   if (!f) return;
 
+  const nomeFinale = f.nomePersonalizzato || f.nome;
+  const cprFinali = f.cprRilevate || f.cpr || 28;
   const isCapsula = (targetModal === 'capsula');
 
   if (isCapsula) {
@@ -6189,13 +6459,24 @@ function applicaFarmacoDaScanner(nomeEsatto, targetModal) {
     const elScorta = document.getElementById('edit-farm-scorta');
     const elHeaderNome = document.getElementById('edit-farm-header-nome');
 
-    if (elNome) elNome.value = f.nome;
+    if (elNome) elNome.value = nomeFinale;
     if (elPrincipio) elPrincipio.value = f.principio;
     if (elDosaggio) elDosaggio.value = f.dosaggio;
     if (elModo) elModo.value = (f.indicazione ? `${f.modo} • ${f.indicazione}` : f.modo);
-    if (elScatola && f.cpr) elScatola.value = f.cpr;
-    if (elScorta && f.cpr) elScorta.value = f.cpr;
-    if (elHeaderNome) elHeaderNome.textContent = f.nome;
+    if (elScatola && cprFinali) elScatola.value = cprFinali;
+    if (elScorta && cprFinali) elScorta.value = cprFinali;
+    if (elHeaderNome) elHeaderNome.textContent = nomeFinale;
+
+    // Aggiorna anche l'orario e la fascia della 1ª somministrazione nella scheda posologica
+    if (f.ora || f.fascia) {
+      if (f.fascia && f.fascia.toLowerCase().includes('bisogno')) {
+        if (typeof selezionaFrequenzaCapsula === 'function') selezionaFrequenzaCapsula('bisogno');
+      } else if (Array.isArray(_capsulaCurrentDosi) && _capsulaCurrentDosi.length > 0) {
+        _capsulaCurrentDosi[0].ora = f.ora || '08:00';
+        _capsulaCurrentDosi[0].fascia = f.fascia || 'Mattina (Colazione)';
+        if (typeof renderDosiCards === 'function') renderDosiCards();
+      }
+    }
 
     if (typeof ricalcolaRiepilogoCapsula === 'function') {
       ricalcolaRiepilogoCapsula();
@@ -6211,17 +6492,17 @@ function applicaFarmacoDaScanner(nomeEsatto, targetModal) {
     const elOra = document.getElementById('farm-ora');
     const elFascia = document.getElementById('farm-fascia');
 
-    if (elNome) elNome.value = f.nome;
+    if (elNome) elNome.value = nomeFinale;
     if (elPrincipio) elPrincipio.value = f.principio;
     if (elDosaggio) elDosaggio.value = f.dosaggio;
     if (elModo) elModo.value = (f.indicazione ? `${f.modo} • ${f.indicazione}` : f.modo);
-    if (elScatola && f.cpr) elScatola.value = f.cpr;
-    if (elScorta && f.cpr) elScorta.value = f.cpr;
+    if (elScatola && cprFinali) elScatola.value = cprFinali;
+    if (elScorta && cprFinali) elScorta.value = cprFinali;
     if (elOra && f.ora) elOra.value = f.ora;
     if (elFascia && f.fascia) elFascia.value = f.fascia;
   }
 
-  showToast(`Dati del farmaco "${f.nome}" e indicazioni compilati automaticamente! ✨`);
+  showToast(`Dati del farmaco "${nomeFinale}" e indicazioni compilati automaticamente! ✨`);
 }
 
 
