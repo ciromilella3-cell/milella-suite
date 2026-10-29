@@ -1748,9 +1748,9 @@
 
   <!-- MODAL ELEGANTE AGGIUNGI / MODIFICA COLLABORATORE (ZERO PROMPT DEL BROWSER) -->
   <div id="modal-nuovo-operatore" class="modal-backdrop">
-    <div class="modal-box" style="max-width:480px;">
+    <div class="modal-box" style="max-width:540px; max-height:92vh; overflow-y:auto;">
       <input type="hidden" id="editing-op-id" value="">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; position:sticky; top:0; background:rgba(10,15,28,0.95); backdrop-filter:blur(8px); padding-bottom:8px; z-index:2; border-bottom:1px solid rgba(255,255,255,0.08);">
         <div style="font-weight:900; font-size:17px; display:flex; align-items:center; gap:8px;">
           <span id="icona-modal-op">👤</span> <span id="titolo-modal-op">Nuovo Collaboratore Roster</span>
         </div>
@@ -1763,18 +1763,73 @@
           <input type="text" id="nuovo-op-nome" placeholder="Es. Maria Cristina Stoppelli" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13.5px; font-weight:700; outline:none;">
         </div>
 
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div>
+            <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Ruolo / Specializzazione</label>
+            <input type="text" id="nuovo-op-ruolo" placeholder="Es. Infermiere SSN, OSS..." value="OSS Referente" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13px; font-weight:700; outline:none;">
+          </div>
+          <div>
+            <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Cellulare / WhatsApp</label>
+            <input type="tel" id="nuovo-op-tel" placeholder="Es. 338 739 7671" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13px; font-weight:700; outline:none;">
+          </div>
+        </div>
+
+        <!-- SEZIONE REGIME ORARIO: FULL TIME vs PART TIME -->
         <div>
-          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Ruolo / Specializzazione</label>
-          <input type="text" id="nuovo-op-ruolo" placeholder="Es. OSS Referente, Infermiera, Caregiver..." value="OSS Referente" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13.5px; font-weight:700; outline:none;">
+          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:8px;">
+            Regime Contrattuale di Lavoro
+          </label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <label id="label-regime-ft" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; border-radius:10px; border:1.5px solid #0284c7; background:rgba(2,132,199,0.18); cursor:pointer; font-weight:800; font-size:13px; color:#ffffff; transition:all 0.2s;">
+              <input type="radio" name="nuovo_op_regime" value="full_time" checked onchange="aggiornaCampiRegimeOrarioModal('full_time')" style="display:none;">
+              <span>💼 Full Time (Tempo Pieno)</span>
+            </label>
+            <label id="label-regime-pt" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); cursor:pointer; font-weight:800; font-size:13px; color:#94a3b8; transition:all 0.2s;">
+              <input type="radio" name="nuovo_op_regime" value="part_time" onchange="aggiornaCampiRegimeOrarioModal('part_time')" style="display:none;">
+              <span>⏱️ Part Time (Tempo Parziale)</span>
+            </label>
+          </div>
+
+          <!-- BOX OPZIONI CONDIZIONI FULL TIME -->
+          <div id="box-condizioni-ft" style="display:block;">
+            <label style="display:block; font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:5px;">
+              Condizioni Full Time (CCNL & Distribuzione Oraria):
+            </label>
+            <select id="nuovo-op-condizione-ft" onchange="aggiornaDettaglioInfoContratto()" style="width:100%; background:#0f172a; border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:10px 12px; color:#fff; font-size:12.5px; font-weight:700; outline:none;">
+              <option value="ft_ssn_turnista_36h" selected>🩺 SSN Turnista H24 Continuo — 36h medie (CCNL Sanità • P-M-N-S-R)</option>
+              <option value="ft_ssn_36h_5gg">🏛️ SSN Settimana Corta (5 giorni) — 36h (7h 12m/gg, Sab-Dom liberi)</option>
+              <option value="ft_ssn_36h_6gg">📅 SSN Standard (6 giorni) — 36h (6h al giorno lunedì-sabato)</option>
+              <option value="ft_coop_turnista_38h">🤝 Cooperative Sociali Turnista H24 — 38h (CCNL Coop Sociali • RSA)</option>
+              <option value="ft_coop_38h_5gg">🏢 Cooperative Sociali Diurno / ADI — 38h (7,6h al giorno o a scorrimento)</option>
+              <option value="ft_privata_36h">🏥 Sanità Privata AIOP / ARIS — 36h (Cliniche e degenze convenzionate)</option>
+              <option value="ft_standard_40h">⏱️ Full Time 40h Standard / CCNL UNEBA (8h al giorno su 5 giorni)</option>
+            </select>
+          </div>
+
+          <!-- BOX OPZIONI CONDIZIONI PART TIME -->
+          <div id="box-condizioni-pt" style="display:none;">
+            <label style="display:block; font-size:11px; font-weight:800; color:#fb923c; text-transform:uppercase; margin-bottom:5px;">
+              Condizioni Part Time (CCNL & Percentuale / Articolazione):
+            </label>
+            <select id="nuovo-op-condizione-pt" onchange="aggiornaDettaglioInfoContratto()" style="width:100%; background:#0f172a; border:1px solid rgba(251,146,60,0.3); border-radius:10px; padding:10px 12px; color:#fff; font-size:12.5px; font-weight:700; outline:none;">
+              <option value="pt_orizzontale_18h">⏱️ Part Time 50% Orizzontale — 18h settimanali (3h 36m/gg o mezze giornate)</option>
+              <option value="pt_orizzontale_20h" selected>⏱️ Part Time 20h Orizzontale — 20h settimanali (4h al giorno per 5 giorni)</option>
+              <option value="pt_orizzontale_24h">⏱️ Part Time ~66% Orizzontale — 24h settimanali (CCNL Sanità / Coop Sociali)</option>
+              <option value="pt_orizzontale_30h">⏱️ Part Time ~80% Orizzontale — 30h settimanali (6h al giorno per 5 giorni)</option>
+              <option value="pt_verticale_3gg">📅 Part Time Verticale (3 Giorni) — 21h/sett (3 giorni lavorativi a tempo pieno)</option>
+              <option value="pt_verticale_4gg">📅 Part Time Verticale (4 Giorni) — 28h/sett (4 giorni lavorativi a tempo pieno)</option>
+              <option value="pt_ciclico_turnista">🔄 Part Time Ciclico Turnista — 20h medie (Turni rotanti a settimane alterne)</option>
+            </select>
+          </div>
+
+          <!-- INFO DESCRITTIVA CONTRATTUALE -->
+          <div id="info-regime-dettaglio" style="margin-top:8px; background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.2); border-radius:10px; padding:9px 12px; font-size:11.5px; color:#cbd5e1; line-height:1.45;">
+            <!-- Aggiornato via JS -->
+          </div>
         </div>
 
         <div>
-          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Cellulare / WhatsApp</label>
-          <input type="tel" id="nuovo-op-tel" placeholder="Es. 338 739 7671" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13.5px; font-weight:700; outline:none;">
-        </div>
-
-        <div>
-          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Profilo Turnazione</label>
+          <label style="display:block; font-size:11.5px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:6px;">Profilo Turnazione Predefinito</label>
           <select id="nuovo-op-profilo" style="width:100%; background:#0f172a; border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:10px 14px; color:#fff; font-size:13px; font-weight:700; outline:none;">
             <option value="infermiere_ssn">🩺 Infermiere Reparto / SSN (Ciclo P - M - N - S - R)</option>
             <option value="misto_pn" selected>🌙 Misto: Pomeriggio / Notte + Reperibilità (Consigliato)</option>
@@ -1789,7 +1844,7 @@
         </label>
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; justify-content:space-between; align-items:center; position:sticky; bottom:0; background:rgba(10,15,28,0.95); backdrop-filter:blur(8px); padding-top:10px; border-top:1px solid rgba(255,255,255,0.08);">
         <button type="button" class="btn" id="btn-elimina-op" style="background:rgba(239,68,68,0.15); border:1px solid #ef4444; color:#fca5a5; display:none;" onclick="confermaEliminaOperatore()">
           🗑️ Rimuovi
         </button>
@@ -1974,6 +2029,15 @@
           let oreTot = 0;
           let giorniDisp = 0;
 
+          const regInfo = (window.REGIMI_ORARI_INFO && window.REGIMI_ORARI_INFO[op.condizioneOrario]) || {
+            nome: op.regimeOrario === 'part_time' ? 'Part Time' : 'Full Time',
+            ore: op.oreContrattuali || (op.regimeOrario === 'part_time' ? 20 : 36),
+            badge: op.regimeOrario === 'part_time' ? `PT ${op.oreContrattuali || 20}h` : `FT ${op.oreContrattuali || 36}h`,
+            bg: op.regimeOrario === 'part_time' ? 'rgba(251,146,60,0.18)' : 'rgba(56,189,248,0.18)',
+            color: op.regimeOrario === 'part_time' ? '#fb923c' : '#38bdf8'
+          };
+          const badgeRegime = `<span class="op-badge-pill" style="background:${regInfo.bg}; color:${regInfo.color}; border:1px solid ${regInfo.color}40;" title="${regInfo.nome} (${regInfo.ore}h settimanali)">${regInfo.badge}</span>`;
+
           let badgeProfilo = '';
           if (op.profilo === 'infermiere_ssn') {
             badgeProfilo = '<span class="op-badge-pill" style="background:rgba(56,189,248,0.2); color:#38bdf8;">🩺 Infermiere SSN</span>';
@@ -2004,13 +2068,25 @@
                      onclick="${isAdmin ? `apriSelettoreTurnoCella('${op.id}', '${op.nome.replace(/'/g, "\\'")}', '${g}')` : ''}"
                      title="${info.nome} (${info.orario})${isAdmin ? ' - Clicca per cambiare' : ''}">
                   <span class="shift-letter">${t}</span>
-                  <span class="shift-sub">${info.ore > 0 ? info.ore + 'h' : (t === 'D' ? 'DISP' : (t === 'S' ? 'SMONT' : 'LIB'))}</span>
+                  <span class="shift-sub">${info.ore > 0 ? info.ore + 'h' : (t === 'D' ? 'DISP' : (t === 'S' || t === 'SN' ? 'SMONT' : 'LIB'))}</span>
                 </div>
               </td>
             `;
           });
 
-          const oreColor = oreTot >= 36 ? '#34d399' : (oreTot > 0 ? '#38bdf8' : '#94a3b8');
+          const oreTarget = regInfo.ore || 36;
+          const delta = oreTot - oreTarget;
+          let targetBadge = '';
+          if (oreTot === 0) {
+            targetBadge = `<div style="font-size:10px; color:#94a3b8; font-weight:700;">Riposo sett.</div>`;
+          } else if (delta === 0) {
+            targetBadge = `<div style="font-size:10px; color:#34d399; font-weight:800;">✓ In target (${oreTarget}h)</div>`;
+          } else if (delta > 0) {
+            targetBadge = `<div style="font-size:10px; color:#38bdf8; font-weight:800;">+${delta}h credito</div>`;
+          } else {
+            targetBadge = `<div style="font-size:10px; color:#fb923c; font-weight:800;">${delta}h debito</div>`;
+          }
+          const oreColor = (delta >= 0) ? '#34d399' : (oreTot > 0 ? '#38bdf8' : '#94a3b8');
 
           htmlMatrice += `
             <tr>
@@ -2023,7 +2099,8 @@
                       ${isAdmin ? `<button class="btn-icon-edit" onclick="apriModalModificaOperatore('${op.id}')" title="Modifica dati collaboratore">✏️</button>` : ''}
                     </div>
                     <div class="op-role">${op.ruolo} &bull; 📞 ${op.tel}</div>
-                    <div style="display:flex; align-items:center; gap:5px;">
+                    <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin-top:3px;">
+                      ${badgeRegime}
                       ${badgeProfilo}
                       ${dispLabel}
                     </div>
@@ -2032,8 +2109,11 @@
               </td>
               ${celle}
               <td>
-                <div style="font-weight:900; font-size:15px; color:${oreColor};">${oreTot}h</div>
-                ${giorniDisp > 0 ? `<div style="font-size:10.5px; color:#c084fc; font-weight:700;">+${giorniDisp} Disp.</div>` : ''}
+                <div style="font-weight:900; font-size:14.5px; color:${oreColor};">
+                  ${oreTot}h <span style="font-size:11px; opacity:0.8; font-weight:700; color:#94a3b8;">/ ${oreTarget}h</span>
+                </div>
+                ${targetBadge}
+                ${giorniDisp > 0 ? `<div style="font-size:10px; color:#c084fc; font-weight:700; margin-top:2px;">+${giorniDisp} Disp.</div>` : ''}
               </td>
             </tr>
           `;
@@ -2049,6 +2129,14 @@
           const riga = data.griglia[op.id] || {};
           let oreTot = 0;
           let miniChips = '';
+
+          const regInfo = (window.REGIMI_ORARI_INFO && window.REGIMI_ORARI_INFO[op.condizioneOrario]) || {
+            nome: op.regimeOrario === 'part_time' ? 'Part Time' : 'Full Time',
+            ore: op.oreContrattuali || (op.regimeOrario === 'part_time' ? 20 : 36),
+            badge: op.regimeOrario === 'part_time' ? `PT ${op.oreContrattuali || 20}h` : `FT ${op.oreContrattuali || 36}h`,
+            bg: op.regimeOrario === 'part_time' ? 'rgba(251,146,60,0.18)' : 'rgba(56,189,248,0.18)',
+            color: op.regimeOrario === 'part_time' ? '#fb923c' : '#38bdf8'
+          };
 
           giorni.forEach((g) => {
             const t = riga[g] || 'R';
@@ -2067,6 +2155,8 @@
           });
 
           const opIniziali = op.nome.split(' ').map(n => n[0]).slice(0, 2).join('');
+          const oreTarget = regInfo.ore || 36;
+          const delta = oreTot - oreTarget;
 
           htmlCards += `
             <div class="op-card">
@@ -2075,7 +2165,7 @@
                   <div class="op-avatar">${opIniziali}</div>
                   <div>
                     <div style="font-weight:800; font-size:15px; color:#ffffff;">${op.nome}</div>
-                    <div style="font-size:12px; color:var(--text-muted);">${op.ruolo}</div>
+                    <div style="font-size:12px; color:var(--text-muted);">${op.ruolo} &bull; <span style="color:${regInfo.color}; font-weight:700;">${regInfo.badge}</span></div>
                   </div>
                 </div>
                 <div class="op-card-actions">
@@ -2092,10 +2182,11 @@
               <div class="op-card-footer">
                 <div>
                   <span style="color:var(--text-muted);">Ore Settimanali:</span>
-                  <b style="color:var(--cyan-light); font-size:14px; margin-left:4px;">${oreTot}h</b> / 36h
+                  <b style="color:var(--cyan-light); font-size:14px; margin-left:4px;">${oreTot}h</b> / ${oreTarget}h
+                  <span style="font-size:11px; margin-left:6px; color:${regInfo.color}; font-weight:800;">(${regInfo.badge})</span>
                 </div>
-                <div style="font-size:11.5px; color:#34d399; font-weight:700;">
-                  ✓ Conforme D.Lgs 66
+                <div style="font-size:11.5px; color:${delta >= 0 ? '#34d399' : '#fb923c'}; font-weight:700;">
+                  ${delta === 0 ? '✓ In target' : (delta > 0 ? `+${delta}h credito` : `${delta}h debito`)}
                 </div>
               </div>
             </div>
@@ -2362,16 +2453,94 @@
       mostraToast(descMap[preset] || 'Combinazione turni sviluppata con successo!', '✨');
     }
 
+    // GESTIONE REGIME ORARIO: FULL TIME vs PART TIME
+    function aggiornaCampiRegimeOrarioModal(regimePreset) {
+      let regime = regimePreset;
+      if (!regime) {
+        const radios = document.getElementsByName('nuovo_op_regime');
+        for (const r of radios) {
+          if (r.checked) { regime = r.value; break; }
+        }
+      }
+      if (!regime) regime = 'full_time';
+      const isFt = regime === 'full_time';
+      
+      const boxFt = document.getElementById('box-condizioni-ft');
+      const boxPt = document.getElementById('box-condizioni-pt');
+      const lblFt = document.getElementById('label-regime-ft');
+      const lblPt = document.getElementById('label-regime-pt');
+      
+      if (boxFt) boxFt.style.display = isFt ? 'block' : 'none';
+      if (boxPt) boxPt.style.display = isFt ? 'none' : 'block';
+      
+      if (lblFt) {
+        lblFt.style.border = isFt ? '1.5px solid #0284c7' : '1px solid rgba(255,255,255,0.15)';
+        lblFt.style.background = isFt ? 'rgba(2,132,199,0.2)' : 'rgba(255,255,255,0.04)';
+        lblFt.style.color = isFt ? '#ffffff' : '#94a3b8';
+      }
+      if (lblPt) {
+        lblPt.style.border = !isFt ? '1.5px solid #f97316' : '1px solid rgba(255,255,255,0.15)';
+        lblPt.style.background = !isFt ? 'rgba(249,115,22,0.2)' : 'rgba(255,255,255,0.04)';
+        lblPt.style.color = !isFt ? '#ffffff' : '#94a3b8';
+      }
+      aggiornaDettaglioInfoContratto();
+    }
+
+    function aggiornaDettaglioInfoContratto() {
+      let isFt = true;
+      const radios = document.getElementsByName('nuovo_op_regime');
+      for (const r of radios) {
+        if (r.checked) { isFt = (r.value === 'full_time'); break; }
+      }
+
+      const cond = isFt 
+        ? (document.getElementById('nuovo-op-condizione-ft')?.value || 'ft_ssn_turnista_36h')
+        : (document.getElementById('nuovo-op-condizione-pt')?.value || 'pt_orizzontale_20h');
+      
+      const info = (window.REGIMI_ORARI_INFO && window.REGIMI_ORARI_INFO[cond]) || {
+        nome: isFt ? 'Full Time Standard' : 'Part Time',
+        ore: isFt ? 36 : 20,
+        ccnl: 'CCNL Sanità / Assistenza',
+        desc: 'Orario settimanale ordinario conforme alle normative vigenti.'
+      };
+
+      const box = document.getElementById('info-regime-dettaglio');
+      if (box) {
+        box.innerHTML = `
+          <div style="font-weight:800; color:#ffffff; display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+            <span>📋 ${info.nome}</span>
+            <span style="color:${isFt ? '#38bdf8' : '#fb923c'}; font-size:12px; font-weight:900;">${info.ore}h / settimana</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; font-weight:700;">${info.ccnl}</div>
+          <div style="font-size:11px; color:#cbd5e1; margin-top:3px; line-height:1.4;">${info.desc}</div>
+        `;
+        box.style.borderColor = isFt ? 'rgba(56,189,248,0.3)' : 'rgba(251,146,60,0.3)';
+        box.style.background = isFt ? 'rgba(56,189,248,0.06)' : 'rgba(251,146,60,0.06)';
+      }
+    }
+
     // GESTIONE MODAL COLLABORATORE (INSERIMENTO & MODIFICA ELEGANTE)
     function apriModalNuovoOperatore() {
       document.getElementById('editing-op-id').value = '';
       document.getElementById('titolo-modal-op').textContent = 'Nuovo Collaboratore Roster';
       document.getElementById('icona-modal-op').textContent = '👤';
       document.getElementById('nuovo-op-nome').value = '';
-      document.getElementById('nuovo-op-ruolo').value = 'OSS Referente';
+      document.getElementById('nuovo-op-ruolo').value = 'Infermiera / OSS';
       document.getElementById('nuovo-op-tel').value = '';
-      document.getElementById('nuovo-op-profilo').value = 'misto_pn';
+      document.getElementById('nuovo-op-profilo').value = 'infermiere_ssn';
       document.getElementById('nuovo-op-disp').checked = true;
+
+      const radios = document.getElementsByName('nuovo_op_regime');
+      for (const r of radios) {
+        r.checked = (r.value === 'full_time');
+      }
+      if (document.getElementById('nuovo-op-condizione-ft')) {
+        document.getElementById('nuovo-op-condizione-ft').value = 'ft_ssn_turnista_36h';
+      }
+      if (document.getElementById('nuovo-op-condizione-pt')) {
+        document.getElementById('nuovo-op-condizione-pt').value = 'pt_orizzontale_20h';
+      }
+      aggiornaCampiRegimeOrarioModal('full_time');
 
       const btnElimina = document.getElementById('btn-elimina-op');
       if (btnElimina) btnElimina.style.display = 'none';
@@ -2397,8 +2566,24 @@
       document.getElementById('nuovo-op-nome').value = op.nome || '';
       document.getElementById('nuovo-op-ruolo').value = op.ruolo || '';
       document.getElementById('nuovo-op-tel').value = op.tel || '';
-      document.getElementById('nuovo-op-profilo').value = op.profilo || 'misto_pn';
+      document.getElementById('nuovo-op-profilo').value = op.profilo || 'infermiere_ssn';
       document.getElementById('nuovo-op-disp').checked = Boolean(op.disponibileCoperture);
+
+      const regime = op.regimeOrario || 'full_time';
+      const radios = document.getElementsByName('nuovo_op_regime');
+      for (const r of radios) {
+        r.checked = (r.value === regime);
+      }
+      if (regime === 'part_time') {
+        if (document.getElementById('nuovo-op-condizione-pt')) {
+          document.getElementById('nuovo-op-condizione-pt').value = op.condizioneOrario || 'pt_orizzontale_20h';
+        }
+      } else {
+        if (document.getElementById('nuovo-op-condizione-ft')) {
+          document.getElementById('nuovo-op-condizione-ft').value = op.condizioneOrario || 'ft_ssn_turnista_36h';
+        }
+      }
+      aggiornaCampiRegimeOrarioModal(regime);
 
       const btnElimina = document.getElementById('btn-elimina-op');
       if (btnElimina) btnElimina.style.display = 'inline-flex';
@@ -2421,38 +2606,51 @@
         mostraToast('Inserisci il Nome e Cognome del collaboratore', '⚠️');
         return;
       }
-      const ruolo = document.getElementById('nuovo-op-ruolo')?.value.trim() || 'OSS Referente';
+      const ruolo = document.getElementById('nuovo-op-ruolo')?.value.trim() || 'Infermiera / OSS';
       const tel = document.getElementById('nuovo-op-tel')?.value.trim() || '';
-      const profilo = document.getElementById('nuovo-op-profilo')?.value || 'misto_pn';
+      const profilo = document.getElementById('nuovo-op-profilo')?.value || 'infermiere_ssn';
       const disp = document.getElementById('nuovo-op-disp')?.checked ?? true;
+
+      const radios = document.getElementsByName('nuovo_op_regime');
+      let regime = 'full_time';
+      for (const r of radios) {
+        if (r.checked) { regime = r.value; break; }
+      }
+      const cond = regime === 'part_time'
+        ? (document.getElementById('nuovo-op-condizione-pt')?.value || 'pt_orizzontale_20h')
+        : (document.getElementById('nuovo-op-condizione-ft')?.value || 'ft_ssn_turnista_36h');
+      
+      const rInfo = (window.REGIMI_ORARI_INFO && window.REGIMI_ORARI_INFO[cond]) || null;
+      const oreContr = rInfo ? rInfo.ore : (regime === 'part_time' ? 20 : 36);
+
+      const payload = {
+        nome: nome,
+        ruolo: ruolo,
+        tel: tel,
+        profilo: profilo,
+        regimeOrario: regime,
+        condizioneOrario: cond,
+        oreContrattuali: oreContr,
+        disponibileCoperture: disp
+      };
 
       if (editId) {
         // AGGIORNAMENTO
         if (window.aggiornaDatiOperatore) {
-          window.aggiornaDatiOperatore(editId, {
-            nome: nome,
-            ruolo: ruolo,
-            tel: tel,
-            profilo: profilo,
-            disponibileCoperture: disp
-          });
+          window.aggiornaDatiOperatore(editId, payload);
         }
         mostraToast(`Dati di ${nome} aggiornati!`, '✅');
       } else {
         // NUOVO
         if (window.aggiungiOperatoreTurnario) {
-          window.aggiungiOperatoreTurnario({
-            nome: nome,
-            ruolo: ruolo,
-            tel: tel,
-            profilo: profilo,
-            disponibileCoperture: disp
-          });
+          window.aggiungiOperatoreTurnario(payload);
         }
         mostraToast(`Collaboratore ${nome} aggiunto al roster!`, '👤');
       }
 
       chiudiModalNuovoOperatore();
+      renderViste();
+    }
       renderViste();
     }
 

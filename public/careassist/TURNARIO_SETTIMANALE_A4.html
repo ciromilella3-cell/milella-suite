@@ -420,15 +420,19 @@
             `;
           });
 
+          const oreTarget = op.oreContrattuali || (op.regimeOrario === 'part_time' ? 20 : 36);
+          const regimeLabel = op.regimeOrario === 'part_time' ? `<span style="color:#c2410c; font-weight:800;">PT ${oreTarget}h</span>` : `<span style="color:#0284c7; font-weight:800;">FT ${oreTarget}h</span>`;
+
           html += `
             <tr>
               <td style="padding-left:8px;">
                 <div style="font-weight:800; font-size:8.5pt; color:#0f172a;">${op.nome}</div>
-                <div style="font-size:7pt; color:#64748b;">${op.ruolo} &bull; 📞 ${op.tel}</div>
+                <div style="font-size:7pt; color:#64748b;">${op.ruolo} &bull; 📞 ${op.tel} &bull; ${regimeLabel}</div>
               </td>
               ${celle}
               <td style="text-align:center; font-weight:900; font-size:9pt; color:#059669; background:#f8fafc;">
-                ${oreTot}h
+                <div>${oreTot}h</div>
+                <div style="font-size:6.5pt; color:#64748b; font-weight:700;">target ${oreTarget}h</div>
               </td>
             </tr>
           `;

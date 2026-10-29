@@ -29,12 +29,160 @@ function notificaUtente(msg, icon = 'ℹ️') {
   }
 }
 
+const REGIMI_ORARI_INFO = {
+  // FULL TIME
+  'ft_ssn_turnista_36h': {
+    nome: 'Full Time SSN Turnista H24 Continuo',
+    ore: 36,
+    tipo: 'full_time',
+    ccnl: 'CCNL Sanità Pubblica',
+    badge: 'FT 36h Turni',
+    bg: 'rgba(56,189,248,0.15)',
+    color: '#38bdf8',
+    desc: '36 ore medie settimanali con rotazione continua H24 (P-M-N-S-R). Riposo post-notte e banca ore compensativa.'
+  },
+  'ft_ssn_36h_5gg': {
+    nome: 'Full Time SSN 5 Giorni (Settimana Corta)',
+    ore: 36,
+    tipo: 'full_time',
+    ccnl: 'CCNL Sanità Pubblica',
+    badge: 'FT 36h (5gg)',
+    bg: 'rgba(56,189,248,0.15)',
+    color: '#38bdf8',
+    desc: '36 ore distribuite su 5 giorni lavorativi (7h 12m al giorno). Sabato e domenica a riposo.'
+  },
+  'ft_ssn_36h_6gg': {
+    nome: 'Full Time SSN 6 Giorni (Settimana Standard)',
+    ore: 36,
+    tipo: 'full_time',
+    ccnl: 'CCNL Sanità Pubblica',
+    badge: 'FT 36h (6gg)',
+    bg: 'rgba(56,189,248,0.15)',
+    color: '#38bdf8',
+    desc: '36 ore distribuite su 6 giorni lavorativi (6h al giorno dal lunedì al sabato). Domenica di riposo.'
+  },
+  'ft_coop_turnista_38h': {
+    nome: 'Full Time Coop Sociali Turnista H24',
+    ore: 38,
+    tipo: 'full_time',
+    ccnl: 'CCNL Cooperative Sociali',
+    badge: 'FT 38h Turni',
+    bg: 'rgba(129,140,248,0.15)',
+    color: '#818cf8',
+    desc: '38 ore settimanali per operatori socio-sanitari e infermieri in RSA, alloggi protetti e residenze H24.'
+  },
+  'ft_coop_38h_5gg': {
+    nome: 'Full Time Coop Sociali Diurno / ADI',
+    ore: 38,
+    tipo: 'full_time',
+    ccnl: 'CCNL Cooperative Sociali',
+    badge: 'FT 38h Diurno',
+    bg: 'rgba(129,140,248,0.15)',
+    color: '#818cf8',
+    desc: '38 ore settimanali per assistenza domiciliare integrata (ADI) e centri diurni (7,6h al giorno).'
+  },
+  'ft_privata_36h': {
+    nome: 'Full Time Sanità Privata AIOP / ARIS',
+    ore: 36,
+    tipo: 'full_time',
+    ccnl: 'CCNL Sanità Privata',
+    badge: 'FT 36h AIOP',
+    bg: 'rgba(52,211,153,0.15)',
+    color: '#34d399',
+    desc: '36 ore settimanali in case di cura, istituti di riabilitazione e cliniche convenzionate col SSN.'
+  },
+  'ft_standard_40h': {
+    nome: 'Full Time 40h Standard / CCNL UNEBA',
+    ore: 40,
+    tipo: 'full_time',
+    ccnl: 'CCNL UNEBA / Sanità Priv.',
+    badge: 'FT 40h',
+    bg: 'rgba(148,163,184,0.15)',
+    color: '#cbd5e1',
+    desc: '40 ore settimanali ordinarie (8h al giorno dal lunedì al venerdì).'
+  },
+  // PART TIME
+  'pt_orizzontale_18h': {
+    nome: 'Part Time 50% Orizzontale (18h)',
+    ore: 18,
+    tipo: 'part_time',
+    ccnl: 'Tempo Parziale Orizzontale',
+    badge: 'PT 18h (50%)',
+    bg: 'rgba(251,146,60,0.15)',
+    color: '#fb923c',
+    desc: '50% del full time (18 ore settimanali nel SSN), orario ridotto giornaliero uniforme (3h 36m/gg).'
+  },
+  'pt_orizzontale_20h': {
+    nome: 'Part Time 20h Orizzontale',
+    ore: 20,
+    tipo: 'part_time',
+    ccnl: 'Tempo Parziale Orizzontale',
+    badge: 'PT 20h',
+    bg: 'rgba(251,146,60,0.15)',
+    color: '#fb923c',
+    desc: '20 ore settimanali (4 ore al giorno per 5 giorni lavorativi).'
+  },
+  'pt_orizzontale_24h': {
+    nome: 'Part Time ~66% Orizzontale (24h)',
+    ore: 24,
+    tipo: 'part_time',
+    ccnl: 'Tempo Parziale Orizzontale',
+    badge: 'PT 24h (66%)',
+    bg: 'rgba(245,158,11,0.15)',
+    color: '#f59e0b',
+    desc: '24 ore settimanali (circa 4h 48m al giorno su 5 giorni o turni concordati).'
+  },
+  'pt_orizzontale_30h': {
+    nome: 'Part Time ~80% Orizzontale (30h)',
+    ore: 30,
+    tipo: 'part_time',
+    ccnl: 'Tempo Parziale Orizzontale',
+    badge: 'PT 30h (80%)',
+    bg: 'rgba(245,158,11,0.15)',
+    color: '#f59e0b',
+    desc: '30 ore settimanali (6 ore al giorno per 5 giorni lavorativi).'
+  },
+  'pt_verticale_3gg': {
+    nome: 'Part Time Verticale (3 Giorni)',
+    ore: 21,
+    tipo: 'part_time',
+    ccnl: 'Tempo Parziale Verticale',
+    badge: 'PT Vert. 3gg',
+    bg: 'rgba(232,121,249,0.15)',
+    color: '#e879f9',
+    desc: 'Attività lavorativa a tempo pieno concentrata in soli 3 giorni settimanali; i restanti 4 giorni sono di riposo.'
+  },
+  'pt_verticale_4gg': {
+    nome: 'Part Time Verticale (4 Giorni)',
+    ore: 28,
+    tipo: 'part_time',
+    ccnl: 'Tempo Parziale Verticale',
+    badge: 'PT Vert. 4gg',
+    bg: 'rgba(232,121,249,0.15)',
+    color: '#e879f9',
+    desc: 'Attività lavorativa a tempo pieno concentrata in 4 giorni settimanali; i restanti 3 giorni sono di riposo.'
+  },
+  'pt_ciclico_turnista': {
+    nome: 'Part Time Ciclico / Turnista',
+    ore: 20,
+    tipo: 'part_time',
+    ccnl: 'Tempo Parziale Ciclico Turni',
+    badge: 'PT Ciclico',
+    bg: 'rgba(192,132,252,0.15)',
+    color: '#c084fc',
+    desc: 'Inserimento nei turni di reparto con rotazione proporzionata e monte ore medio concordato.'
+  }
+};
+if (typeof window !== 'undefined') {
+  window.REGIMI_ORARI_INFO = REGIMI_ORARI_INFO;
+}
+
 const DEFAULT_OPERATORI_TURNI = [
-  { id: 'op_1', nome: 'Ciro Milella', ruolo: 'Admin / Coordinatore', tel: '366 460 7396', profilo: 'diurno', disponibileCoperture: true },
-  { id: 'op_2', nome: 'M.C. Stoppelli', ruolo: 'OSS Referente (CareAssist)', tel: '338 739 7671', profilo: 'misto_pn', disponibileCoperture: true },
-  { id: 'op_3', nome: 'Marco Rossi', ruolo: 'OSS', tel: '340 123 4567', profilo: 'full_h24', disponibileCoperture: false },
-  { id: 'op_4', nome: 'Sara Viola', ruolo: 'Infermiera / OSS', tel: '347 987 6543', profilo: 'misto_pn', disponibileCoperture: true },
-  { id: 'op_5', nome: 'Elena Bianchi', ruolo: 'OSS Domiciliare', tel: '339 555 1234', profilo: 'full_h24', disponibileCoperture: false }
+  { id: 'op_1', nome: 'Ciro Milella', ruolo: 'Admin / Coordinatore', tel: '366 460 7396', profilo: 'diurno', regimeOrario: 'full_time', condizioneOrario: 'ft_ssn_36h_5gg', oreContrattuali: 36, disponibileCoperture: true },
+  { id: 'op_2', nome: 'M.C. Stoppelli', ruolo: 'OSS Referente (CareAssist)', tel: '338 739 7671', profilo: 'misto_pn', regimeOrario: 'full_time', condizioneOrario: 'ft_coop_turnista_38h', oreContrattuali: 38, disponibileCoperture: true },
+  { id: 'op_3', nome: 'Marco Rossi', ruolo: 'OSS', tel: '340 123 4567', profilo: 'full_h24', regimeOrario: 'full_time', condizioneOrario: 'ft_ssn_turnista_36h', oreContrattuali: 36, disponibileCoperture: false },
+  { id: 'op_4', nome: 'Sara Viola', ruolo: 'Infermiera / Reparto SSN', tel: '347 987 6543', profilo: 'infermiere_ssn', regimeOrario: 'full_time', condizioneOrario: 'ft_ssn_turnista_36h', oreContrattuali: 36, disponibileCoperture: true },
+  { id: 'op_5', nome: 'Elena Bianchi', ruolo: 'OSS Domiciliare Part-Time', tel: '339 555 1234', profilo: 'diurno', regimeOrario: 'part_time', condizioneOrario: 'pt_orizzontale_20h', oreContrattuali: 20, disponibileCoperture: false }
 ];
 
 let turnarioCorrente = null;
@@ -133,6 +281,19 @@ function caricaDatiTurnario() {
     try {
       turnarioCorrente = JSON.parse(salvato);
       if (turnarioCorrente && turnarioCorrente.operatori && turnarioCorrente.griglia) {
+        // Backfill regimi orari se assenti
+        turnarioCorrente.operatori.forEach(op => {
+          if (!op.regimeOrario) {
+            op.regimeOrario = op.ruolo && op.ruolo.toLowerCase().includes('part') ? 'part_time' : 'full_time';
+          }
+          if (!op.condizioneOrario) {
+            op.condizioneOrario = op.regimeOrario === 'part_time' ? 'pt_orizzontale_20h' : (op.profilo === 'infermiere_ssn' ? 'ft_ssn_turnista_36h' : 'ft_ssn_turnista_36h');
+          }
+          if (!op.oreContrattuali) {
+            const rInfo = REGIMI_ORARI_INFO[op.condizioneOrario];
+            op.oreContrattuali = rInfo ? rInfo.ore : (op.regimeOrario === 'part_time' ? 20 : 36);
+          }
+        });
         if (turnarioCorrente.settimanaInizio) {
           const lun = getLunediSettimana(parseDateYMD(turnarioCorrente.settimanaInizio));
           turnarioCorrente.settimanaInizio = formatDateYMD(lun);
@@ -622,8 +783,12 @@ function aggiungiOperatoreTurnario(datiOp) {
   const nome = (datiOp && datiOp.nome) ? datiOp.nome.trim() : 'Nuovo Collaboratore';
   const ruolo = (datiOp && datiOp.ruolo) ? datiOp.ruolo.trim() : 'OSS';
   const tel = (datiOp && datiOp.tel) ? datiOp.tel.trim() : '';
-  const profilo = (datiOp && datiOp.profilo) ? datiOp.profilo : 'misto_pn';
+  const profilo = (datiOp && datiOp.profilo) ? datiOp.profilo : 'infermiere_ssn';
   const disp = (datiOp && typeof datiOp.disponibileCoperture !== 'undefined') ? Boolean(datiOp.disponibileCoperture) : true;
+  const regime = (datiOp && datiOp.regimeOrario) ? datiOp.regimeOrario : 'full_time';
+  const cond = (datiOp && datiOp.condizioneOrario) ? datiOp.condizioneOrario : (regime === 'part_time' ? 'pt_orizzontale_20h' : 'ft_ssn_turnista_36h');
+  const rInfo = REGIMI_ORARI_INFO[cond];
+  const oreContr = (datiOp && datiOp.oreContrattuali) ? Number(datiOp.oreContrattuali) : (rInfo ? rInfo.ore : (regime === 'part_time' ? 20 : 36));
 
   const newId = 'op_' + Date.now();
   turnarioCorrente.operatori.push({
@@ -632,6 +797,9 @@ function aggiungiOperatoreTurnario(datiOp) {
     ruolo: ruolo,
     tel: tel,
     profilo: profilo,
+    regimeOrario: regime,
+    condizioneOrario: cond,
+    oreContrattuali: oreContr,
     disponibileCoperture: disp
   });
 
@@ -659,6 +827,15 @@ function aggiornaDatiOperatore(opId, datiAggiornati) {
   if (datiAggiornati.profilo) op.profilo = datiAggiornati.profilo;
   if (typeof datiAggiornati.disponibileCoperture !== 'undefined') {
     op.disponibileCoperture = Boolean(datiAggiornati.disponibileCoperture);
+  }
+  if (datiAggiornati.regimeOrario) op.regimeOrario = datiAggiornati.regimeOrario;
+  if (datiAggiornati.condizioneOrario) {
+    op.condizioneOrario = datiAggiornati.condizioneOrario;
+    const rInfo = REGIMI_ORARI_INFO[op.condizioneOrario];
+    op.oreContrattuali = rInfo ? rInfo.ore : (op.regimeOrario === 'part_time' ? 20 : 36);
+  }
+  if (typeof datiAggiornati.oreContrattuali !== 'undefined') {
+    op.oreContrattuali = Number(datiAggiornati.oreContrattuali);
   }
 
   salvaTurnarioSuStorage();
