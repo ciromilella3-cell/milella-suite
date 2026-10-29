@@ -6004,14 +6004,26 @@ window.fermaVoceSintesiInApp = fermaVoceSintesiInApp;
 async function cercaSintesiMedicaLiveInApp(queryRicerca) {
   if (!queryRicerca) return null;
   const pulita = String(queryRicerca)
-    .replace(/[🚭🚫🩵🫧🍬🧴💊🌬️👁️🍊🩹]/g, ' ')
+    .replace(/[🚭🚫🩵🫧🍬🧴💊🌬️👁️🍊🩹🛏️💧🥣🫁🦽🩲🩸]/g, ' ')
+    .replace(/\b(cos'è|cos e|cosa sono|a cosa serve|a cosa servono|come si usa|come funziona|spiegami|vorrei sapere|informazioni su|cerca|il|lo|la|i|gli|le|un|uno|una|per|del|della|dei|delle)\b/gi, ' ')
+    .replace(/antidecupit/gi, 'antidecubit')
+    .replace(/decupit/gi, 'decubit')
+    .replace(/colluttor/gi, 'collutor')
     .replace(/\b\d+([\.,]\d+)?\s*(mg|mcg|g|ml|ui|%|compresse|capsule|bustine|tubo|crema|gel)\b/gi, ' ')
     .replace(/\([^)]*\)/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
   if (!pulita) return null;
 
-  const tentativi = [pulita, `${pulita} farmaco`, pulita.split(/\s+/)[0]].filter((v, i, a) => v && v.length >= 3 && a.indexOf(v) === i);
+  const parole = pulita.split(/\s+/).filter(w => w.length >= 3);
+  const ultimaParola = parole.length > 1 ? parole[parole.length - 1] : '';
+  const tentativi = [
+    pulita,
+    `${pulita} medicina`,
+    `${pulita} farmaco`,
+    ultimaParola,
+    parole[0] || ''
+  ].filter((v, i, a) => v && v.length >= 3 && a.indexOf(v) === i);
 
   for (const q of tentativi) {
     try {
@@ -6164,18 +6176,20 @@ async function eseguiRicercaManualeInAppERecita(targetModal, queryForzata) {
       riconosciuto = {
         isNonFarmaco: true,
         isParafarmaco: true,
+        daReteDiretta: true,
         categoriaNonFarmaco: 'parafarmaco',
-        titolo: `🩵 RILEVATO PRODOTTO / PRESIDIO NON-FARMACO: ${webInfo.titolo}`,
+        titolo: `🩵 GUIDA INFORMATIVA FAMILIARI & CAREGIVER: ${webInfo.titolo}`,
         nome: `🩵 ${webInfo.titolo}`,
-        principio: `${webInfo.titolo} — Prodotto / Presidio (NON È UN FARMACO SISTEMICO AIFA)`,
-        dosaggio: 'Uso secondo indicazioni',
-        dosaggioConsigliato: '1 applicazione / utilizzo',
+        principio: `${webInfo.titolo} — Scheda Informativa Medica & Assistenziale (NON È UN FARMACO SISTEMICO)`,
+        dosaggio: 'Uso secondo indicazioni mediche/assistenziali',
+        dosaggioConsigliato: '1 applicazione / controllo',
         oraConsigliata: '09:00',
         fasciaConsigliata: 'Mattina (Colazione)',
         modo: 'Consultare la sintesi informativa qui sotto',
-        indicazione: webInfo.estratto.split('.').slice(0, 2).join('.').trim() + '.',
-        modalitaUso: 'Il prodotto cercato non risulta essere un farmaco sistemico AIFA. Seguire le istruzioni riportate nella scheda per il corretto utilizzo assistenziale.',
-        queryWeb: webInfo.titolo
+        indicazione: webInfo.estratto.split('.').slice(0, 3).join('.').trim() + '.',
+        modalitaUso: 'Il termine cercato riguarda un presidio, ausilio o argomento sanitario e non un farmaco sistemico AIFA. Seguire le indicazioni del medico curante o dell\'équipe di Assistenza Domiciliare (ADI).',
+        queryWeb: webInfo.titolo,
+        messaggioVocaleNonFarmaco: `Guida informativa per i familiari e il caregiver su ${webInfo.titolo}: ${webInfo.estratto.split('.').slice(0, 3).join('.').trim()}.`
       };
     }
   }
@@ -6211,7 +6225,7 @@ async function eseguiRicercaManualeInAppERecita(targetModal, queryForzata) {
   const estrattoRete = (webInfo && webInfo.estratto)
     ? (webInfo.estratto.length > 340 ? webInfo.estratto.slice(0, 337).trim() + '...' : webInfo.estratto)
     : '';
-  const fraseWebVocale = (webInfo && webInfo.estratto)
+  const fraseWebVocale = (webInfo && webInfo.estratto && !riconosciuto.daReteDiretta)
     ? ' Approfondimento dalla rete medica: ' + webInfo.estratto.split('.').slice(0, 2).join('.').trim() + '.'
     : '';
 
@@ -7191,8 +7205,51 @@ function avviaBriefingVocaleAssistitoDemo() {
 }
 window.avviaBriefingVocaleAssistitoDemo = avviaBriefingVocaleAssistitoDemo;
 
-// Riconoscimento vocale o testuale istantaneo per la Demo Live (se l'ambiente è buio o per stupire a voce!)
+// ==========================================================================
+// 🎤 VOCE AI & CONSOLE ASSISTENZA FAMILIARI (FARMACI, AUSILI & RICERCA WEB IN-APP)
+// ==========================================================================
 function avviaDettaturaVocaleFarmacoScanner(targetModal) {
+  const modalMode = targetModal || 'capsula';
+  const isCapsula = (modalMode !== 'standard' && modalMode !== 'nuovo');
+  const boxResult = document.getElementById(isCapsula ? 'scan-result-capsula' : 'scan-result-nuovo');
+  const statusIcon = document.getElementById(isCapsula ? 'scan-status-icon' : 'scan-status-icon-alt');
+  const statusText = document.getElementById(isCapsula ? 'scan-status-text' : 'scan-status-text-alt');
+  const infoContainer = document.getElementById(isCapsula ? 'scan-detected-info' : 'scan-detected-info-alt');
+
+  if (boxResult) {
+    boxResult.style.display = 'block';
+    boxResult.style.borderColor = '#34d399';
+    boxResult.style.background = 'rgba(6, 78, 59, 0.32)';
+  }
+  if (statusIcon) statusIcon.textContent = '🎙️';
+  if (statusText) {
+    statusText.style.color = '#6ee7b7';
+    statusText.textContent = 'Assistente Vocale Familiari & Caregiver Attivo — Parla ora o tocca un ausilio/farmaco:';
+  }
+  if (infoContainer) {
+    infoContainer.innerHTML = `
+      <div style="background:#0f172a; border:1px solid #34d399; border-radius:8px; padding:9px 11px; margin-top:6px;">
+        <div style="font-size:11.5px; color:#d1fae5; line-height:1.4; margin-bottom:7px;">
+          🗣️ <b>Pronuncia qualsiasi farmaco, ausilio o dubbio assistenziale</b> (es. <i>"Materasso antidecubito"</i>, <i>"Sacche per stomia"</i>, <i>"Catetere vescicale"</i>, <i>"Disfagia"</i>, <i>"PEG"</i>, <i>"Imodium"</i>...): l'app esegue la ricerca medica in rete <b>senza uscire dall'app</b> e ti recita a voce la spiegazione completa!
+        </div>
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          <input type="text" id="voce-ai-quick-input" placeholder="Oppure scrivi qui (es. Materasso antidecubito, Sacche per stomia...)" style="flex:1; padding:6px 10px; border-radius:7px; border:1px solid #34d399; background:#1e293b; color:#ffffff; font-size:12px; font-weight:700;" onkeydown="if(event.key==='Enter'){event.preventDefault(); eseguiRicercaManualeInAppERecita('${modalMode}', this.value);}">
+          <button type="button" onclick="var el=document.getElementById('voce-ai-quick-input'); eseguiRicercaManualeInAppERecita('${modalMode}', el ? el.value : '');" style="padding:6px 12px; border-radius:7px; border:none; background:#10b981; color:#fff; font-size:11.5px; font-weight:800; cursor:pointer;">🔍🔊 Spiega</button>
+        </div>
+        <div style="font-size:10.5px; color:#94a3b8; margin-bottom:5px; font-weight:700;">🤝 GUIDA RAPIDA AUSILI & PRESIDI DOMICILIARI PER I FAMILIARI (Tocca per ascoltare):</div>
+        <div style="display:flex; flex-wrap:wrap; gap:5px;">
+          <button type="button" class="btn btn-outline" style="padding:4px 9px; font-size:11px; background:rgba(56,189,248,0.18); color:#bae6fd; border:1px solid #38bdf8; border-radius:8px; font-weight:800; cursor:pointer;" onclick="eseguiRicercaManualeInAppERecita('${modalMode}', 'Materasso antidecubito')">🛏️ Materasso Antidecubito</button>
+          <button type="button" class="btn btn-outline" style="padding:4px 9px; font-size:11px; background:rgba(56,189,248,0.18); color:#bae6fd; border:1px solid #38bdf8; border-radius:8px; font-weight:800; cursor:pointer;" onclick="eseguiRicercaManualeInAppERecita('${modalMode}', 'Sacche per stomia')">🩹 Sacche per Stomia</button>
+          <button type="button" class="btn btn-outline" style="padding:4px 9px; font-size:11px; background:rgba(56,189,248,0.18); color:#bae6fd; border:1px solid #38bdf8; border-radius:8px; font-weight:800; cursor:pointer;" onclick="eseguiRicercaManualeInAppERecita('${modalMode}', 'Catetere vescicale')">💧 Catetere Vescicale</button>
+          <button type="button" class="btn btn-outline" style="padding:4px 9px; font-size:11px; background:rgba(56,189,248,0.18); color:#bae6fd; border:1px solid #38bdf8; border-radius:8px; font-weight:800; cursor:pointer;" onclick="eseguiRicercaManualeInAppERecita('${modalMode}', 'Disfagia e addensante')">🥣 Disfagia & Addensante</button>
+          <button type="button" class="btn btn-outline" style="padding:4px 9px; font-size:11px; background:rgba(56,189,248,0.18); color:#bae6fd; border:1px solid #38bdf8; border-radius:8px; font-weight:800; cursor:pointer;" onclick="eseguiRicercaManualeInAppERecita('${modalMode}', 'PEG nutrizione enterale')">🍼 PEG / Sondino</button>
+          <button type="button" class="btn btn-outline" style="padding:4px 9px; font-size:11px; background:rgba(56,189,248,0.18); color:#bae6fd; border:1px solid #38bdf8; border-radius:8px; font-weight:800; cursor:pointer;" onclick="eseguiRicercaManualeInAppERecita('${modalMode}', 'Saturimetro e ossigenoterapia')">🫁 Ossigeno & Saturimetro</button>
+          <button type="button" class="btn btn-outline" style="padding:4px 9px; font-size:11px; background:rgba(56,189,248,0.18); color:#bae6fd; border:1px solid #38bdf8; border-radius:8px; font-weight:800; cursor:pointer;" onclick="eseguiRicercaManualeInAppERecita('${modalMode}', 'Collutorio clorexidina')">🫧 Collutorio Orale</button>
+        </div>
+      </div>
+    `;
+  }
+
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SpeechRec) {
     try {
@@ -7200,30 +7257,26 @@ function avviaDettaturaVocaleFarmacoScanner(targetModal) {
       rec.lang = 'it-IT';
       rec.interimResults = false;
       rec.maxAlternatives = 3;
-      showToast('🎤 Pronuncia ora il nome del farmaco sulla scatola...');
+      showToast('🎤 Microfono attivo: pronuncia un farmaco o un ausilio (es. "Materasso antidecubito", "Sacche per stomia")...');
       rec.onresult = function(ev) {
-        const trascritto = Array.from(ev.results[0]).map(r => r.transcript).join(' ');
-        const match = analizzaTestoConfermaFarmaco(trascritto, '', true);
-        if (match) {
-          if (match.isNonFarmaco) {
-            mostraCardNonFarmacoScanner(match, targetModal || 'capsula', '');
-            pronunciaCaratteristicheFarmaco(match);
-            showToast(`🚫 Rilevato NON-FARMACO: ${match.nome}!`, 'warning');
-          } else {
-            mostraCardRiconoscimentoScanner(match, targetModal || 'capsula');
-            applicaFarmacoDaScanner(match.nome, targetModal || 'capsula', match);
-            pronunciaCaratteristicheFarmaco(match);
-          }
-        } else {
-          showToast(`Letto: "${trascritto}" — scrivi o seleziona sotto.`);
+        const trascritto = (ev.results && ev.results[0] && ev.results[0][0])
+          ? ev.results[0][0].transcript.trim()
+          : '';
+        if (trascritto) {
+          const inpQuick = document.getElementById('voce-ai-quick-input');
+          if (inpQuick) inpQuick.value = trascritto;
+          const inpMain = document.getElementById(isCapsula ? 'edit-farm-nome' : 'farm-nome');
+          if (inpMain && !inpMain.value) inpMain.value = trascritto;
+          showToast(`🗣️ Hai chiesto: "${trascritto}" — Ricerca & Sintesi Vocale in corso...`);
+          eseguiRicercaManualeInAppERecita(modalMode, trascritto);
         }
       };
       rec.start();
       return;
     } catch (e) {}
   }
-  const elInput = document.getElementById('edit-farm-nome');
-  if (elInput) elInput.focus();
+  const elQuick = document.getElementById('voce-ai-quick-input');
+  if (elQuick) elQuick.focus();
 }
 window.avviaDettaturaVocaleFarmacoScanner = avviaDettaturaVocaleFarmacoScanner;
 
@@ -7235,7 +7288,6 @@ function eseguiRicercaRapidaScannerInput(valore, targetModal) {
     if (match.isNonFarmaco) {
       mostraCardNonFarmacoScanner(match, targetModal || 'capsula', '');
       pronunciaCaratteristicheFarmaco(match);
-      showToast(`🚫 Rilevato NON-FARMACO: ${match.nome}!`, 'warning');
     } else {
       mostraCardRiconoscimentoScanner(match, targetModal || 'capsula');
       applicaFarmacoDaScanner(match.nome, targetModal || 'capsula', match);
@@ -7463,14 +7515,170 @@ function calcolaDistanzaLevenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
-// Rilevatore Intelligente di Oggetti NON-FARMACO (es. Pacchetti di Sigarette/Tabacco, Alimenti, Cosmetici)
+// Rilevatore Intelligente di Ausili Domiciliari, Presidi Medico-Chirurgici, Parafarmaci e Oggetti NON-FARMACO
 function rilevaOggettoNonFarmacoDaTesto(testoOriginale) {
   if (!testoOriginale) return null;
   const t = String(testoOriginale).toLowerCase()
     .replace(/[*_•·]/g, ' ')
+    .replace(/antidecupit/g, 'antidecubit')
+    .replace(/decupit/g, 'decubit')
     .replace(/\s+/g, ' ')
     .trim();
   if (!t) return null;
+
+  // 0A. MATERASSO ANTIDECUBITO / CUSCINO ANTIDECUBITO / PREVENZIONE PIAGHE DA DECUBITO
+  if (/\b(materasso|antidecubit|decubit|piaghe da decubit|lesioni da pression|ciambella antidecubit|cuscino antidecubit|tallonier)\b/i.test(t) && !/\b(compresse|capsule|sciroppo)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'ausilio_domiciliare',
+      titolo: '🛏️ GUIDA FAMILIARI & CAREGIVER — Ausilio Medico: Materasso / Presidio Antidecubito',
+      nome: '🛏️ Materasso / Presidio Antidecubito a Pressione Alternata',
+      principio: 'Ausilio Protesico Domiciliare (NON È UN FARMACO) — Prevenzione Lesioni da Pressione',
+      dosaggio: 'Funzionamento continuo 24 ore su 24',
+      dosaggioConsigliato: 'Controllo postura ogni 2-3 ore',
+      oraConsigliata: '09:00',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Controllo compressore e cambio postura assistito ogni 2-3 ore',
+      indicazione: 'Prescritto ai familiari di pazienti allettati o con mobilità ridotta per prevenire le piaghe da decubito (lesioni della pelle causate dallo schiacciamento prolungato dei tessuti su osso sacro, talloni, fianchi, gomiti e scapole). È composto da celle d\'aria collegate a un compressore silenzioso che le gonfia e sgonfia alternativamente per riattivare la circolazione sanguigna.',
+      modalitaUso: '1) Posizionare il materasso antidecubito SOPRA il normale materasso del letto e fissare i lembi; 2) Accendere il compressore 20 minuti prima di distendere il familiare, regolando la manopola in base al peso corporeo del caro; 3) Il compressore deve restare SEMPRE ACCESO 24 ore su 24; 4) Coprire con un solo lenzuolo di cotone ben teso senza pieghe; 5) Anche con il materasso attivo, aiutare il familiare a cambiare posizione ogni 2-3 ore e mantenere la pelle asciutta, pulita e idratata.',
+      queryWeb: 'Piaga da decubito',
+      messaggioVocaleNonFarmaco: 'Guida di supporto per i familiari: il materasso antidecubito è un ausilio medico fondamentale per proteggere il vostro caro allettato dalle piaghe da decubito, cioè le lesioni della pelle su osso sacro, talloni e schiena. Funziona grazie a un compressore silenzioso che gonfia e sgonfia le celle d\'aria in modo alternato per non bloccare la circolazione del sangue. Consigli pratici per la famiglia: tenetelo sempre acceso ventiquattro ore su ventiquattro regolato sul peso del vostro caro, usate un lenzuolo di cotone ben teso senza pieghe e ricordate comunque di cambiare delicatamente la posizione a letto ogni due o tre ore, controllando che la pelle resti sempre asciutta e rosea.'
+    };
+  }
+
+  // 0B. SACCHE PER STOMIA (COLOSTOMIA / ILEOSTOMIA / UROSTOMIA) & PLACCA ADESIVA
+  if (/\b(stomia|sacche per stomia|sacca per stomia|sacca stomia|sacche stomia|colostomia|ileostomia|urostomia|placca stomia|stoma)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'ausilio_domiciliare',
+      titolo: '🩹 GUIDA FAMILIARI & CAREGIVER — Presidio Protesico: Sacche e Placca per Stomia',
+      nome: '🩹 Sacche di Raccolta e Placca per Stomia (Colostomia / Ileostomia / Urostomia)',
+      principio: 'Presidio Protesico di Raccolta Stomale (NON È UN FARMACO)',
+      dosaggio: 'Svuotamento a metà riempimento / Cambio programmato',
+      dosaggioConsigliato: '1 controllo e igiene stomia',
+      oraConsigliata: '08:30',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Igiene cute peristomale con acqua tiepida e sapone neutro + controllo tenuta placca',
+      indicazione: 'Le sacche per stomia sono dispositivi medici progettati per raccogliere in modo igienico, sicuro e inodore le feci (colostomia o ileostomia) o le urine (urostomia) attraverso l\'apertura creata chirurgicamente sull\'addome (stoma). Sono dotate di filtro antiodore al carbone attivo e di una barriera idrocolloidale che protegge la pelle.',
+      modalitaUso: '1) Svuotare o sostituire la sacca quando è piena per un terzo o al massimo a metà, così il peso non stacca la placca; 2) Staccare la placca delicatamente dall\'alto verso il basso accompagnando la pelle con una spugnetta imbevuta di acqua tiepida; 3) Lavare la zona intorno allo stoma SOLO con acqua tiepida e sapone neutro (NON usare mai alcol, benzina o disinfettanti che bruciano la mucosa!); 4) Asciugare tamponando delicatamente senza sfregare; 5) Ritagliare il foro della nuova placca della misura esatta dello stoma (1-2 mm di margine) e farla aderire sulla pelle perfettamente asciutta.',
+      queryWeb: 'Stomia',
+      messaggioVocaleNonFarmaco: 'Guida di supporto per i familiari: le sacche per stomia sono presidi medici sicuri e inodori che permettono di raccogliere feci o urine proteggendo la pelle dell\'addome. Non abbiate timore nella gestione quotidiana: sostituite o svuotate la sacca quando arriva a metà riempimento. Per il cambio, staccate la placca dolcemente dall\'alto verso il basso bagnando con acqua tiepida. Lavate la pelle intorno allo stoma solo con acqua tiepida e sapone neutro, senza mai usare alcol o disinfettanti aggressivi, e asciugate tamponando con cura prima di applicare la nuova sacca. Lo stoma non ha terminazioni dolorifiche, ma è ricco di capillari: una minima traccia di sangue durante la pulizia può essere normale.'
+    };
+  }
+
+  // 0C. CATETERE VESCICALE & SACCA RACCOLTA URINE
+  if (/\b(catetere|sacca urina|sacca urine|sacca di raccolta|urocondom|globo vescicale|cateterismo)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'ausilio_domiciliare',
+      titolo: '💧 GUIDA FAMILIARI & CAREGIVER — Presidio Urinario: Catetere Vescicale e Sacca di Raccolta',
+      nome: '💧 Catetere Vescicale e Sacca Raccolta Urine a Circuito Chiuso',
+      principio: 'Dispositivo Medico per Drenaggio Urinario (NON È UN FARMACO)',
+      dosaggio: 'Controllo diuresi e svuotamento sacca',
+      dosaggioConsigliato: '1 controllo diuresi e igiene',
+      oraConsigliata: '08:30',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Tenere la sacca sempre sotto il livello della vescica e controllare che il tubo non sia piegato',
+      indicazione: 'Dispositivo medico inserito in vescica per consentire il deflusso continuo delle urine in una sacca graduata di raccolta nei pazienti con ritenzione urinaria, allettamento complesso o necessità di monitoraggio preciso del bilancio idrico.',
+      modalitaUso: '1) La sacca di raccolta deve restare SEMPRE posizionata più in basso rispetto al bacino/vescica dell\'assistito (usare l\'apposito gancio da letto) per impedire il reflusso di urina in vescica; 2) Non appoggiare mai la sacca direttamente sul pavimento; 3) Verificare che il tubo non faccia curve strette e non resti schiacciato sotto le gambe; 4) Svuotare la sacca tramite il rubinetto sul fondo quando è piena a metà e annotare quantità e colore delle urine; 5) Eseguire ogni giorno un\'accurata igiene intima con acqua e detergente delicato; contattare l\'infermiere ADI se non scende urina da oltre 3-4 ore o se compare febbre.',
+      queryWeb: 'Catetere vescicale',
+      messaggioVocaleNonFarmaco: 'Guida per i familiari: il catetere vescicale permette il drenaggio continuo delle urine nella sacca di raccolta. Tre regole d\'oro per assistere il vostro caro in sicurezza: primo, tenete sempre la sacca appesa al di sotto del livello del bacino e mai appoggiata a terra; secondo, controllate che il tubicino non sia piegato o schiacciato sotto il corpo; terzo, non scollegate mai il catetere dalla sacca ma svuotatela dal rubinetto in basso. Se notate che la sacca resta vuota per più di quattro ore o se il vostro caro avverte dolore al basso ventre o febbre, avvisate subito il medico o l\'infermiere domiciliare.'
+    };
+  }
+
+  // 0D. DISFAGIA / POLVERE ADDENSANTE / ACQUA GELIFICATA
+  if (/\b(disfagia|disfagico|addensante|acqua gel|gelificat|deglutizion|va di traverso)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'ausilio_domiciliare',
+      titolo: '🥣 GUIDA FAMILIARI & CAREGIVER — Gestione Disfagia, Addensante e Idratazione Sicura',
+      nome: '🥣 Supporto Disfagia: Polvere Addensante & Acqua Gelificata',
+      principio: 'Presidio Nutrizionale per Deglutizione Sicura (NON È UN FARMACO)',
+      dosaggio: '1-2 misurini per bicchiere secondo consistenza prescritta',
+      dosaggioConsigliato: 'Idratazione addensata ai pasti',
+      oraConsigliata: '12:30',
+      fasciaConsigliata: 'Pranzo',
+      modo: 'Somministrare solo con paziente ben seduto e capo lievemente flesso in avanti',
+      indicazione: 'La disfagia è la difficoltà a deglutire liquidi o cibi solidi (tipica negli anziani fragili o dopo ictus, Parkinson o demenze). L\'addensante e l\'acqua gelificata trasformano l\'acqua e le bevande in una crema o budino omogeneo che scende lentamente in gola senza andare di traverso nei polmoni (prevenendo soffocamento e polmonite ab ingestis).',
+      modalitaUso: '1) Far bere o mangiare il familiare SOLO quando è ben sveglio e seduto con la schiena dritta a 90 gradi; 2) Invitarlo a tenere il mento leggermente abbassato verso il petto mentre deglutisce; 3) Aggiungere la polvere addensante a liquidi, brodi o tisane mescolando con una forchetta per 30 secondi fino a ottenere la consistenza di sciroppo, crema o budino; 4) EVITARE cibi a doppia consistenza (come pastina in brodo o minestrone a pezzi) e cibi che si sbriciolano; 5) Controllare che la bocca sia pulita da residui a fine pasto e lasciare il caro seduto per almeno 30 minuti.',
+      queryWeb: 'Disfagia',
+      messaggioVocaleNonFarmaco: 'Guida per i familiari sulla disfagia e l\'addensante: quando un caro fatica a deglutire o tossisce bevendo l\'acqua, il rischio è che i liquidi vadano nei polmoni. La polvere addensante e l\'acqua gelificata rendono i liquidi densi come un budino o una crema, permettendogli di bere e idratarsi in totale sicurezza. Fate mangiare e bere il vostro caro sempre ben seduto con la schiena dritta e il mento leggermente piegato verso il petto, a piccoli cucchiaini, senza fretta, evitando la pastina in brodo liquido.'
+    };
+  }
+
+  // 0E. PEG / SONDINO NASOGASTRICO / NUTRIZIONE ENTERALE
+  if (/\b(peg\b|sondino|nutrizione enterale|nutrizione artificiale|gastrostomia|pompa nutrizionale)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'ausilio_domiciliare',
+      titolo: '🍼 GUIDA FAMILIARI & CAREGIVER — Gestione PEG / Sondino e Nutrizione Enterale',
+      nome: '🍼 Presidio PEG / Sondino per Nutrizione Enterale Domiciliare',
+      principio: 'Dispositivo Medico per Nutrizione e Idratazione Enterale (NON È UN FARMACO)',
+      dosaggio: 'Secondo piano nutrizionale ADI + lavaggio sonda con acqua',
+      dosaggioConsigliato: 'Lavaggio sonda 20-30 ml acqua',
+      oraConsigliata: '08:30',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Busto sollevato a 30-45° durante l\'infusione e lavaggio sonda prima e dopo',
+      indicazione: 'La PEG (Gastrostomia Endoscopica Percutanea) e il sondino nasogastrico permettono di nutrire, idratare e somministrare la terapia ai pazienti che non possono alimentarsi per bocca in modo sicuro.',
+      modalitaUso: '1) Tenere SEMPRE la testata del letto o il busto sollevato di almeno 30-45 gradi durante tutta la nutrizione e per 1 ora dopo il termine (per evitare reflusso); 2) Lavare sempre la sonda con una siringa da 20-30 ml di acqua naturale PRIMA e DOPO ogni sacca nutrizionale o somministrazione di farmaci, per evitare che il tubicino si ostruisca; 3) Somministrare i farmaci uno alla volta sciolti in acqua, solo dopo aver verificato col medico quali compresse possono essere frantumate; 4) Mantenere pulita e asciutta la cute intorno alla PEG e curare ogni giorno l\'igiene della bocca.',
+      queryWeb: 'Nutrizione enterale',
+      messaggioVocaleNonFarmaco: 'Guida per i familiari sulla gestione della PEG o del sondino: questo presidio permette di nutrire e idratare il vostro caro in modo completo e indolore. Ricordate due passaggi fondamentali: tenete sempre lo schienale del letto sollevato a trenta o quarantacinque gradi durante il pasto e per un\'ora dopo; inoltre lavate sempre il tubicino con venti o trenta millilitri di acqua con l\'apposita siringa prima e dopo ogni pasto o medicina, così rimarrà sempre pulito e libero.'
+    };
+  }
+
+  // 0F. OSSIGENOTERAPIA / SATURIMETRO / TRACHEOSTOMIA / ASPIRATORE
+  if (/\b(saturimetro|ossigenoterapia|concentratore di ossigeno|bombola ossigeno|occhialini nasali|tracheostomia|cannula tracheostomica|aspiratore secrezioni|broncoaspirazion)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'ausilio_domiciliare',
+      titolo: '🫁 GUIDA FAMILIARI & CAREGIVER — Ossigenoterapia, Saturimetro e Assistenza Respiratoria',
+      nome: '🫁 Presidi Respiratori: Saturimetro & Ossigenoterapia Domiciliare',
+      principio: 'Dispositivo Medico di Monitoraggio e Supporto Respiratorio',
+      dosaggio: 'Flusso in Litri/minuto (L/min) rigorosamente secondo prescrizione medica',
+      dosaggioConsigliato: 'Controllo SpO2 e flusso O2',
+      oraConsigliata: '08:30',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Non modificare mai i litri/minuto di ossigeno senza ordine medico',
+      indicazione: 'Il saturimetro misura istantaneamente sul dito l\'ossigenazione del sangue (SpO2, normale tra 95% e 99%, o tra 88% e 92% nei pazienti con BPCO cronica) e i battiti cardiaci. L\'ossigenoterapia (concentratore o bombola con occhialini nasali o mascherina) fornisce il supporto di ossigeno prescritto.',
+      modalitaUso: '1) Per misurare la saturazione, inserire il dito indice o medio ben caldo e senza smalto nel saturimetro e attendere 15 secondi con la mano ferma; 2) Nell\'ossigenoterapia, rispettare esattamente i litri al minuto prescritti dal medico (NON alzare mai il flusso di propria iniziativa!); 3) Tenere lontana qualsiasi fiamma libera, sigaretta o fonte di calore dall\'ossigeno; 4) Idratare le narici con soluzione fisiologica per evitare secchezza delle mucose.',
+      queryWeb: 'Ossigenoterapia',
+      messaggioVocaleNonFarmaco: 'Guida per i familiari su saturimetro e ossigenoterapia: il saturimetro si applica su un dito caldo per leggere la percentuale di ossigeno nel sangue e il battito cardiaco. Se il vostro caro utilizza l\'ossigeno con gli occhialini nasali o la mascherina, mantenete sempre il flusso esattamente sui litri al minuto indicati dal medico, senza aumentarlo da soli, e mantenete umidificate le narici con soluzione fisiologica.'
+    };
+  }
+
+  // 0G. LETTO ORTOPEDICO, SOLLEVATORE, CARROZZINA, DEAMBULATORE, PANNOLONE & TRAVERSA
+  if (/\b(sollevatore|letto ortopedico|spondine|carrozzina|deambulatore|girello|pannolone|traversa salvaletto|incontinenza)\b/i.test(t)) {
+    return {
+      isNonFarmaco: true,
+      isParafarmaco: true,
+      categoriaNonFarmaco: 'parafarmaco',
+      sottocategoria: 'ausilio_domiciliare',
+      titolo: '🦽 GUIDA FAMILIARI & CAREGIVER — Ausili per Mobilizzazione, Letto Ortopedico e Igiene',
+      nome: '🦽 Ausili Domiciliari: Letto Ortopedico, Sollevatore & Presidi di Assorbenza',
+      principio: 'Ausilio Protesico e Assistenziale Domiciliare (NON È UN FARMACO)',
+      dosaggio: 'Utilizzo quotidiano in sicurezza',
+      dosaggioConsigliato: 'Igiene e mobilizzazione sicura',
+      oraConsigliata: '08:00',
+      fasciaConsigliata: 'Mattina (Colazione)',
+      modo: 'Bloccare sempre i freni delle ruote durante i trasferimenti letto-carrozzina',
+      indicazione: 'Gli ausili domiciliari (letto articolato con spondine, sollevatore con imbracatura, carrozzina, deambulatore, traverse e pannoloni) permettono ai familiari di assistere, lavare e spostare il proprio caro in sicurezza, proteggendolo dalle cadute e tutelando la schiena del caregiver.',
+      modalitaUso: '1) Prima di ogni spostamento dal letto alla carrozzina o al sollevatore, bloccare SEMPRE i freni delle ruote; 2) Regolare l\'altezza del letto ortopedico al livello del bacino mentre si eseguono l\'igiene o il cambio del pannolone, poi riabbassarlo e alzare le spondine; 3) Ad ogni cambio del presidio assorbente, lavare la cute con acqua tiepida, asciugare tamponando nelle pieghe cutanee e applicare un velo di crema protettiva all\'ossido di zinco.',
+      queryWeb: 'Ausilio',
+      messaggioVocaleNonFarmaco: 'Guida per i familiari sugli ausili domiciliari: il letto ortopedico, il sollevatore, la carrozzina e i presidi di assorbenza sono pensati per garantire dignità, comfort e sicurezza al vostro caro e per non sovraccaricare la vostra schiena. Ricordate di bloccare sempre i freni delle ruote prima di ogni trasferimento e di asciugare con dolcezza la pelle ad ogni cambio.'
+    };
+  }
 
   // 1. Pacchetto di Sigarette / Tabacco / Dispositivi da Fumo (con avvertenza Ministero della Salute)
   const fumoKeywords = [
