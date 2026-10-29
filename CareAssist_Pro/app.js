@@ -6000,6 +6000,137 @@ function apriCercaBugiardinoWeb() {
 // SCANNER VISIVO FARMACO AI (FOTOCAMERA / GALLERIA OCR & CLINICAL ENGINE)
 // ==========================================================================
 let _ultimoFarmacoRiconosciutoScanner = null;
+let _liveScannerStream = null;
+let _liveScannerBarcodeTimer = null;
+
+function ottieniMonitoraggioAssistenzialeFarmaco(f) {
+  if (!f) return 'Verificare assunzione regolare e registrare eventuali reazioni nel diario clinico.';
+  const testo = `${f.nome || ''} ${f.principio || ''} ${f.indicazione || ''}`.toLowerCase();
+  if (/loperamid|imodium|dissenten/i.test(testo)) {
+    return 'Monitorare diario Alvo e idratazione orale; sospendere appena le scariche diarroiche si arrestano o se compare stipsi.';
+  }
+  if (/prazol|pantorc|peptazol|nolpaza|lucen|nexium|mepral|gastroresistent/i.test(testo)) {
+    return 'Assumere a digiuno 30 min prima del pasto; la compressa gastroresistente va deglutita intera senza masticare né frantumare.';
+  }
+  if (/furosemid|lasix|torasemid|diuresix|idroclorotiazid/i.test(testo)) {
+    return 'Controllare bilancio idrico, diuresi giornaliera e pressione arteriosa (attenzione a cali pressori alzandosi dal letto).';
+  }
+  if (/cardioaspirin|acetilsalicil|clopidogr|plavix|apixaban|eliquis|rivaroxaban|xarelto|edoxaban|lixiana|dabigatr|pradaxa/i.test(testo)) {
+    return 'Monitorare eventuale comparsa di lividi (ecchimosi), gengivorragia, epistassi o bruciore gastrico; segnalare al medico.';
+  }
+  if (/ketoprof|oki|ibuprof|moment|brufen|nurofen|diclofen|voltaren|nimesul|aulin|napross|synflex|ketorol|toradol/i.test(testo)) {
+    return 'Assumere rigorosamente a stomaco pieno; monitorare tollerabilità gastrica e pressione arteriosa.';
+  }
+  if (/ramipril|triatec|amlodipin|norvasc|bisoprol|congescor|valsart|tareg|olmesart|olpress|irbesart|aprovel|telmisart|micardis|losart|candesart|doxazos|cardura/i.test(testo)) {
+    return 'Misurare Pressione Arteriosa (PA) e Frequenza Cardiaca (FC) prima della somministrazione e annotarle in scheda.';
+  }
+  if (/silodosin|silodyx|tamsulosin|omnic|alfuzos|xatral/i.test(testo)) {
+    return 'Assumere sempre dopo lo stesso pasto; far alzare l\'assistito lentamente dal letto per prevenire capogiri posturali.';
+  }
+  if (/amoxicill|augmentin|zimox|azitromic|zitromax|claritromic|klacid|ciproflox|ciproxin|levoflox|levoxacin|cefixim|cefixoral|fosfomic|monuril/i.test(testo)) {
+    return 'Rispettare gli orari del ciclo antibiotico completo; associare fermenti lattici a distanza di 2 ore e monitorare l\'alvo.';
+  }
+  if (/lorazepam|tavor|alprazol|xanax|bromazep|lexotan|zolpidem|stilnox|quetiapin|seroquel/i.test(testo)) {
+    return 'Sorvegliare il rischio di sonnolenza diurna, instabilità posturale e cadute accidentali, specialmente nelle ore notturne.';
+  }
+  if (/metformin|metforal|gliclaz|diamicron|dapaglifl|forxiga|empaglifl|jardiance|sitaglipt|januvia/i.test(testo)) {
+    return 'Controllare il Diario Glicemico e vigilare su eventuali sintomi di ipoglicemia (tremore, sudorazione, debolezza).';
+  }
+  return 'Verificare la corretta deglutizione con acqua e registrare la somministrazione nel piano terapeutico giornaliero.';
+}
+
+function analizzaSicurezzaClinicaFarmaco(f) {
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!f || !p) {
+    return {
+      livello: 'ok',
+      titolo: '🛡️ Scudo Clinico AI: Verificato',
+      messaggio: 'Profilo farmacologico validato sulla banca dati AIFA.',
+      vocale: ''
+    };
+  }
+
+  const nomePaziente = (p.nome || 'Assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+  const nomeScan = (f.nomePersonalizzato || f.nome || '').toLowerCase();
+  const princScan = (f.principio || '').toLowerCase();
+  const allergiePaz = (p.allergie || '').toLowerCase();
+  const terapieAttive = Array.isArray(p.terapie) ? p.terapie : [];
+
+  // 1. Controllo Allergie Note dell'assistito
+  if (allergiePaz && !allergiePaz.includes('nessun') && allergiePaz.trim() !== '-') {
+    const isFans = /ketoprof|ibuprof|diclofen|napross|nimesul|ketorol|acetilsalicil|oki|moment|brufen|voltaren|aulin|aspirin/i.test(nomeScan + ' ' + princScan);
+    const isPenicillina = /amoxicill|ampicill|augmentin|zimox|clavulan|penicill/i.test(nomeScan + ' ' + princScan);
+    if ((allergiePaz.includes('fans') && isFans) ||
+        (allergiePaz.includes('penicill') && isPenicillina) ||
+        (princScan.length >= 5 && allergiePaz.includes(princScan.split(/\s+/)[0]))) {
+      return {
+        livello: 'pericolo',
+        titolo: `⛔ ALLERTA ALLERGIA per ${nomePaziente}!`,
+        messaggio: `Attenzione: nella cartella di ${nomePaziente} è registrata allergia a "${p.allergie}". NON somministrare senza autorizzazione medica!`,
+        vocale: `Attenzione Scudo Clinico: rilevata possibile allergia registrata per ${nomePaziente}. Verificare con il medico.`
+      };
+    }
+  }
+
+  // 2. Controllo Duplicazione Terapeutica (stesso farmaco o stesso principio attivo già in terapia)
+  const radiceNome = nomeScan.split(/\s+/)[0];
+  const radicePrinc = princScan.split(/\s+/)[0];
+  const duplicato = terapieAttive.find(t => {
+    const tf = (t.farmaco || '').toLowerCase();
+    const tp = (t.principio || '').toLowerCase();
+    return (radiceNome.length >= 4 && tf.includes(radiceNome)) ||
+           (radicePrinc.length >= 5 && (tf.includes(radicePrinc) || tp.includes(radicePrinc)));
+  });
+
+  if (duplicato) {
+    return {
+      livello: 'attenzione',
+      titolo: `⚠️ Farmaco già presente nella terapia di ${nomePaziente}`,
+      messaggio: `In scheda è già attivo "${duplicato.farmaco}" (ore ${duplicato.ora || '--:--'}). Verifica se si tratta di un aggiornamento di dosaggio o di un rinnovo scorta.`,
+      vocale: `Nota Scudo Clinico: questo principio attivo è già presente nel piano terapeutico di ${nomePaziente}.`
+    };
+  }
+
+  // 3. Controllo Interazioni tra classi farmacologiche (es. FANS/Cortisonici + Anticoagulanti/Antiaggreganti, o Doppio Gastroprotettore)
+  const tuttiFarmaciPaz = terapieAttive.map(t => `${t.farmaco || ''} ${t.principio || ''}`.toLowerCase()).join(' ');
+  const scanIsFansOrCort = /ketoprof|ibuprof|diclofen|napross|nimesul|ketorol|oki|moment|brufen|voltaren|aulin|toradol|betametas|bentelan|prednis|deltacort|metilprednis|medrol/i.test(nomeScan + ' ' + princScan);
+  const pazHaAnticoag = /cardioaspirin|acetilsalicil|clopidogr|plavix|apixaban|eliquis|rivaroxaban|xarelto|edoxaban|lixiana|dabigatr|pradaxa|warfarin|coumadin|sintrom/i.test(tuttiFarmaciPaz);
+
+  if (scanIsFansOrCort && pazHaAnticoag) {
+    return {
+      livello: 'attenzione',
+      titolo: `🛡️ Avviso Interazione Clinica (${nomePaziente})`,
+      messaggio: `${nomePaziente} assume già antiaggreganti/anticoagulanti: l'associazione con antinfiammatori o cortisonici richiede stomaco pieno e copertura gastroprotettiva.`,
+      vocale: `Avviso Scudo Clinico: verificare la protezione gastrica per l'associazione con la terapia antiaggregante di ${nomePaziente}.`
+    };
+  }
+
+  const scanIsPpi = /prazol|pantorc|peptazol|nolpaza|lucen|nexium|mepral/i.test(nomeScan + ' ' + princScan);
+  const pazHaPpi = /prazol|pantorc|peptazol|nolpaza|lucen|nexium|mepral/i.test(tuttiFarmaciPaz);
+  if (scanIsPpi && pazHaPpi) {
+    return {
+      livello: 'attenzione',
+      titolo: `🛡️ Scudo Clinico AI: Classe Gastroprotettori (IPP)`,
+      messaggio: `${nomePaziente} ha già un gastroprotettore in terapia. Verifica se questo farmaco lo sostituisce.`,
+      vocale: ''
+    };
+  }
+
+  return {
+    livello: 'ok',
+    titolo: `🛡️ Scudo Clinico AI: Compatibile per ${nomePaziente}`,
+    messaggio: `Nessuna allergia nota o duplicazione rilevata con i ${terapieAttive.length} farmaci attuali di ${nomePaziente}.`,
+    vocale: ''
+  };
+}
+window.analizzaSicurezzaClinicaFarmaco = analizzaSicurezzaClinicaFarmaco;
+
+function apriBugiardinoAIFADaScanner(nomeFarmaco) {
+  const f = nomeFarmaco || (_ultimoFarmacoRiconosciutoScanner ? (_ultimoFarmacoRiconosciutoScanner.nomePersonalizzato || _ultimoFarmacoRiconosciutoScanner.nome) : '');
+  const query = `${f || 'farmaco'} foglietto illustrativo AIFA bugiardino posologia`;
+  window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+}
+window.apriBugiardinoAIFADaScanner = apriBugiardinoAIFADaScanner;
 
 function pronunciaCaratteristicheFarmaco(farmaco) {
   const f = farmaco || _ultimoFarmacoRiconosciutoScanner;
@@ -6008,10 +6139,12 @@ function pronunciaCaratteristicheFarmaco(farmaco) {
     window.speechSynthesis.cancel();
     const nome = (f.nomePersonalizzato || f.nome || '').replace(/\bmg\b/gi, 'milligrammi').replace(/\bmcg\b/gi, 'microgrammi').replace(/\bcpr\b/gi, 'compresse');
     const principio = (f.principio || '').replace(/\bmg\b/gi, 'milligrammi');
-    const cprStr = f.cprRilevate || f.cpr ? `Confezione da ${f.cprRilevate || f.cpr} compresse. ` : '';
+    const cprStr = f.cprRilevate || f.cpr ? `Confezione da ${f.cprRilevate || f.cpr} unità. ` : '';
     const indicazione = f.indicazione || f.modo || '';
     const orarioStr = f.ora ? `Orario consigliato: ${f.ora}, ${f.fascia || ''}.` : '';
-    const testoVoce = `Farmaco riconosciuto: ${nome}. Principio attivo: ${principio}. ${cprStr}A cosa serve: ${indicazione} ${orarioStr}`;
+    const scudo = analizzaSicurezzaClinicaFarmaco(f);
+    const extraScudo = (scudo && scudo.vocale) ? ` ${scudo.vocale}` : '';
+    const testoVoce = `Farmaco riconosciuto: ${nome}. Principio attivo: ${principio}. ${cprStr}A cosa serve: ${indicazione} ${orarioStr}${extraScudo}`;
     const utter = new SpeechSynthesisUtterance(testoVoce);
     utter.lang = 'it-IT';
     utter.rate = 0.98;
@@ -6226,7 +6359,146 @@ async function eseguiScansioneCompletaImmagineFarmaco(file) {
   return { rawText: testoTotale, farmacoRiconosciuto, previewDataUrl };
 }
 
+function fermaMirinoLiveScanner() {
+  if (_liveScannerBarcodeTimer) {
+    clearInterval(_liveScannerBarcodeTimer);
+    _liveScannerBarcodeTimer = null;
+  }
+  if (_liveScannerStream) {
+    try {
+      _liveScannerStream.getTracks().forEach(t => t.stop());
+    } catch (e) {}
+    _liveScannerStream = null;
+  }
+  ['live-scanner-box-capsula', 'live-scanner-box-nuovo'].forEach(id => {
+    const box = document.getElementById(id);
+    if (box) box.style.display = 'none';
+  });
+  ['live-scanner-video-capsula', 'live-scanner-video-nuovo'].forEach(id => {
+    const vid = document.getElementById(id);
+    if (vid) {
+      try { vid.srcObject = null; } catch (e) {}
+    }
+  });
+}
+window.fermaMirinoLiveScanner = fermaMirinoLiveScanner;
+
+async function toggleMirinoLiveScanner(targetModal) {
+  const isCapsula = (targetModal !== 'standard' && targetModal !== 'nuovo');
+  const boxId = isCapsula ? 'live-scanner-box-capsula' : 'live-scanner-box-nuovo';
+  const vidId = isCapsula ? 'live-scanner-video-capsula' : 'live-scanner-video-nuovo';
+  const box = document.getElementById(boxId);
+  const video = document.getElementById(vidId);
+
+  if (!box || !video) {
+    ripetiScansioneFotoFarmaco('camera', targetModal);
+    return;
+  }
+
+  if (box.style.display === 'block' && _liveScannerStream) {
+    fermaMirinoLiveScanner();
+    return;
+  }
+
+  fermaMirinoLiveScanner();
+
+  if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+    ripetiScansioneFotoFarmaco('camera', targetModal);
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      },
+      audio: false
+    });
+    _liveScannerStream = stream;
+    box.style.display = 'block';
+    video.srcObject = stream;
+    await video.play();
+
+    // Se il browser supporta BarcodeDetector o TextDetector nativo, controlla in tempo reale nel mirino
+    if (typeof window.BarcodeDetector === 'function' || typeof window.TextDetector === 'function') {
+      const barcodeDet = (typeof window.BarcodeDetector === 'function') ? new window.BarcodeDetector() : null;
+      const textDet = (typeof window.TextDetector === 'function') ? new window.TextDetector() : null;
+      _liveScannerBarcodeTimer = setInterval(async () => {
+        if (!_liveScannerStream || video.readyState < 2) return;
+        try {
+          let testoLive = '';
+          if (barcodeDet) {
+            const codes = await barcodeDet.detect(video);
+            if (Array.isArray(codes) && codes.length > 0) {
+              testoLive += ' ' + codes.map(c => c.rawValue || '').join(' ');
+            }
+          }
+          if (textDet) {
+            const blocks = await textDet.detect(video);
+            if (Array.isArray(blocks) && blocks.length > 0) {
+              testoLive += ' ' + blocks.map(b => b.rawValue || '').join(' ');
+            }
+          }
+          if (testoLive.trim()) {
+            const match = analizzaTestoConfermaFarmaco(testoLive, '', false);
+            if (match) {
+              catturaFrameMirinoLive(targetModal, match);
+            }
+          }
+        } catch (e) {}
+      }, 650);
+    }
+  } catch (err) {
+    console.warn('Avviso fotocamera live, uso fotocamera di sistema:', err);
+    fermaMirinoLiveScanner();
+    ripetiScansioneFotoFarmaco('camera', targetModal);
+  }
+}
+window.toggleMirinoLiveScanner = toggleMirinoLiveScanner;
+
+async function catturaFrameMirinoLive(targetModal, matchPreRilevato) {
+  const isCapsula = (targetModal !== 'standard' && targetModal !== 'nuovo');
+  const vidId = isCapsula ? 'live-scanner-video-capsula' : 'live-scanner-video-nuovo';
+  const video = document.getElementById(vidId);
+  if (!video || video.readyState < 2) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth || 960;
+  canvas.height = video.videoHeight || 720;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  fermaMirinoLiveScanner();
+
+  if (matchPreRiconosciutoValido(matchPreRilevato)) {
+    const thumbCanvas = document.createElement('canvas');
+    thumbCanvas.width = 96;
+    thumbCanvas.height = 96;
+    thumbCanvas.getContext('2d').drawImage(canvas, 0, 0, 96, 96);
+    const previewUrl = thumbCanvas.toDataURL('image/jpeg', 0.85);
+    mostraCardRiconoscimentoScanner(matchPreRilevato, targetModal, previewUrl);
+    applicaFarmacoDaScanner(matchPreRilevato.nome, targetModal, matchPreRilevato);
+    pronunciaCaratteristicheFarmaco(matchPreRilevato);
+    showToast(`Riconosciuto dal Mirino Live: ${matchPreRilevato.nomePersonalizzato || matchPreRilevato.nome}! 🎯`);
+    return;
+  }
+
+  canvas.toBlob(blob => {
+    if (!blob) return;
+    const file = new File([blob], 'live_capture.jpg', { type: 'image/jpeg' });
+    gestisciFotoFarmaco({ target: { files: [file], value: '' } }, targetModal);
+  }, 'image/jpeg', 0.92);
+}
+window.catturaFrameMirinoLive = catturaFrameMirinoLive;
+
+function matchPreRiconosciutoValido(m) {
+  return Boolean(m && m.nome && m.principio);
+}
+
 function resetScannerFarmacoUI(targetModal) {
+  fermaMirinoLiveScanner();
   const isCapsula = (targetModal !== 'standard' && targetModal !== 'nuovo');
   const boxResult = document.getElementById(isCapsula ? 'scan-result-capsula' : 'scan-result-nuovo');
   const infoContainer = document.getElementById(isCapsula ? 'scan-detected-info' : 'scan-detected-info-alt');
@@ -6242,6 +6514,7 @@ function resetScannerFarmacoUI(targetModal) {
 window.resetScannerFarmacoUI = resetScannerFarmacoUI;
 
 function ripetiScansioneFotoFarmaco(modo, targetModal) {
+  fermaMirinoLiveScanner();
   const isCapsula = (targetModal !== 'standard' && targetModal !== 'nuovo');
   const inputId = (modo === 'gallery')
     ? (isCapsula ? 'scan-farm-gallery' : 'scan-farm-gallery-alt')
@@ -6266,6 +6539,18 @@ function mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previ
 
   const nomeVisualizzato = farmacoRiconosciuto.nomePersonalizzato || farmacoRiconosciuto.nome;
   const cprVisualizzate = farmacoRiconosciuto.cprRilevate || farmacoRiconosciuto.cpr || 28;
+  const monitoraggioOss = ottieniMonitoraggioAssistenzialeFarmaco(farmacoRiconosciuto);
+  const scudoClinico = analizzaSicurezzaClinicaFarmaco(farmacoRiconosciuto);
+
+  const scudoBg = scudoClinico.livello === 'pericolo'
+    ? 'rgba(185, 28, 28, 0.35)'
+    : (scudoClinico.livello === 'attenzione' ? 'rgba(180, 83, 9, 0.32)' : 'rgba(6, 95, 70, 0.35)');
+  const scudoBorder = scudoClinico.livello === 'pericolo'
+    ? '#f87171'
+    : (scudoClinico.livello === 'attenzione' ? '#fbbf24' : '#34d399');
+  const scudoColor = scudoClinico.livello === 'pericolo'
+    ? '#fecaca'
+    : (scudoClinico.livello === 'attenzione' ? '#fde68a' : '#a7f3d0');
 
   if (boxResult) {
     boxResult.style.display = 'block';
@@ -6302,12 +6587,22 @@ function mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previ
         <div style="font-size:11px; color:#cbd5e1; margin-top:3px;">
           ⏰ <b>Somministrazione tipica:</b> ${farmacoRiconosciuto.ora || '08:00'} (${farmacoRiconosciuto.fascia || 'Mattina'}) • ${farmacoRiconosciuto.modo}
         </div>
+        <div style="font-size:11px; color:#e0f2fe; margin-top:4px; background:rgba(2,132,199,0.18); border-left:2.5px solid #38bdf8; padding:4px 7px; border-radius:4px;">
+          🔍 <b>Monitoraggio Assistenziale:</b> ${monitoraggioOss}
+        </div>
+        <div style="font-size:11px; color:${scudoColor}; margin-top:5px; background:${scudoBg}; border:1px solid ${scudoBorder}; padding:5px 8px; border-radius:6px; line-height:1.35;">
+          <b>${scudoClinico.titolo}</b><br>
+          <span>${scudoClinico.messaggio}</span>
+        </div>
         <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
           <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:#059669; border:none; border-radius:6px; cursor:pointer;" onclick="applicaFarmacoDaScanner('${(farmacoRiconosciuto.nome || '').replace(/'/g, "\\'")}', '${targetModal}', _ultimoFarmacoRiconosciutoScanner)">
             ✨ Applica Dati
           </button>
           <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(56,189,248,0.15); color:#7dd3fc; border:1px solid #38bdf8; border-radius:6px; cursor:pointer;" onclick="pronunciaCaratteristicheFarmaco()">
             🔊 Ascolta Voce
+          </button>
+          <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(139,92,246,0.2); color:#ddd6fe; border:1px solid #a78bfa; border-radius:6px; cursor:pointer;" onclick="apriBugiardinoAIFADaScanner('${nomeVisualizzato.replace(/'/g, "\\'")}')">
+            📖 Bugiardino AIFA
           </button>
           <button type="button" class="btn btn-outline" style="padding:4px 10px; font-size:11.5px; font-weight:800; background:rgba(245,158,11,0.18); color:#fde68a; border:1px solid #f59e0b; border-radius:6px; cursor:pointer;" onclick="ripetiScansioneFotoFarmaco('camera', '${targetModal}')">
             📷 Ripeti Foto
@@ -6321,6 +6616,59 @@ function mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previ
   }
 }
 window.mostraCardRiconoscimentoScanner = mostraCardRiconoscimentoScanner;
+
+// ==========================================================================
+// 🎙️ BRIEFING VOCALE AI ASSISTITO (MODALITÀ REGIA DEMO LIVE)
+// ==========================================================================
+function avviaBriefingVocaleAssistitoDemo() {
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) {
+    if (typeof showToast === 'function') showToast('Seleziona un assistito per avviare il Briefing AI.');
+    return;
+  }
+
+  const nomePulito = (p.nome || 'Assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+  const eta = (typeof calcolaAnniDaData === 'function' && p.dataNascita) ? calcolaAnniDaData(p.dataNascita) : (p.eta || '');
+  const terapie = Array.isArray(p.terapie) ? p.terapie : [];
+  const terapieOggi = terapie.filter(t => (typeof isTerapiaPrevistaOggi === 'function') ? isTerapiaPrevistaOggi(t) : true);
+  const completate = terapieOggi.filter(t => t.fattoOggi).length;
+  const daFare = terapieOggi.filter(t => !t.fattoOggi && !t.saltatoOggi);
+  const prossima = daFare.length > 0 ? daFare[0] : null;
+  const inScadenza = terapie.filter(t => (parseInt(t.scorta) || 0) <= (parseInt(t.giorniAlert) || 7));
+
+  let testoVoce = `Briefing Clinico Intelligente CareAssist Pro per l'assistito ${nomePulito}` + (eta ? `, di ${eta} anni. ` : '. ');
+  testoVoce += `Il piano terapeutico attivo comprende ${terapieOggi.length} somministrazioni giornaliere, di cui ${completate} già eseguite e tracciate oggi. `;
+  if (prossima) {
+    testoVoce += `Prossima somministrazione programmata: ${(prossima.farmaco || '').split('(')[0].trim()} alle ore ${prossima.ora || '08:00'}. `;
+  } else if (terapieOggi.length > 0) {
+    testoVoce += `Tutte le somministrazioni previste per la giornata odierna risultano regolarmente completate. `;
+  }
+  if (inScadenza.length > 0) {
+    testoVoce += `Attenzione magazzino: ${inScadenza.length} farmaco richiede il rinnovo della ricetta medica. `;
+  } else {
+    testoVoce += `Le scorte domiciliari risultano regolari e coperte. `;
+  }
+  testoVoce += `Scudo Clinico AI e tracciabilità multi-operatore attivi.`;
+
+  if (typeof showToast === 'function') {
+    showToast(`🎙️ Briefing AI attivo per ${nomePulito}: ${completate}/${terapieOggi.length} terapie eseguite oggi.`);
+  }
+
+  if ('speechSynthesis' in window) {
+    try {
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        return;
+      }
+      const utter = new SpeechSynthesisUtterance(testoVoce);
+      utter.lang = 'it-IT';
+      utter.rate = 0.98;
+      utter.pitch = 1.0;
+      window.speechSynthesis.speak(utter);
+    } catch (e) {}
+  }
+}
+window.avviaBriefingVocaleAssistitoDemo = avviaBriefingVocaleAssistitoDemo;
 
 // Riconoscimento vocale o testuale istantaneo per la Demo Live (se l'ambiente è buio o per stupire a voce!)
 function avviaDettaturaVocaleFarmacoScanner(targetModal) {

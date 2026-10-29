@@ -167,6 +167,7 @@
     }
 
     function closeModal(id) {
+      if (typeof fermaMirinoLiveScanner === 'function') fermaMirinoLiveScanner();
       var el = document.getElementById(id);
       if (el) {
         el.classList.remove('active');
@@ -236,6 +237,10 @@
 
       <button class="btn btn-stampa-rapida" onclick="stampaReport()" title="Stampa il diario clinico giornaliero dell'assistito">
         📄 Stampa Diario
+      </button>
+
+      <button class="btn" onclick="avviaBriefingVocaleAssistitoDemo()" style="background:linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(124,58,237,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Ascolta il Briefing Clinico Vocale AI dell'Assistito (Demo Live)">
+        🎙️ Briefing AI
       </button>
 
       <button class="btn btn-smartphone-header" onclick="apriModalSmartphone()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:700; border-radius:12px; padding:8px 16px; border:1px solid rgba(255,255,255,0.25); box-shadow:0 2px 8px rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Connetti Smartphone o Tablet via Wi-Fi tramite QR Code">
@@ -1467,20 +1472,39 @@
             </div>
             <div style="font-size:11px; color:#7dd3fc; margin-bottom:8px;">Fotografa o carica la scatola: compila nome, dosaggio e istruzioni</div>
 
-            <div style="display:flex; gap:8px;">
-              <label class="btn-scan-act" style="flex:1;" onclick="var inp=this.querySelector('input'); if(inp) inp.value='';">
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <label class="btn-scan-act" style="flex:1; min-width:92px;" onclick="var inp=this.querySelector('input'); if(inp) inp.value='';">
                 <span>📷</span> Fotocamera
                 <input type="file" id="scan-farm-camera" accept="image/*" capture="environment" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
               </label>
 
-              <label class="btn-scan-act btn-scan-gallery" style="flex:1;" onclick="var inp=this.querySelector('input'); if(inp) inp.value='';">
+              <button type="button" class="btn-scan-act" style="flex:1; min-width:92px; background:linear-gradient(135deg, #059669 0%, #047857 100%); border-color:#34d399; color:#ffffff;" onclick="toggleMirinoLiveScanner('capsula')" title="Apri mirino fotocamera live con puntatore laser per scatti multipli">
+                <span>🎯</span> Mirino Live
+              </button>
+
+              <label class="btn-scan-act btn-scan-gallery" style="flex:0.9; min-width:82px;" onclick="var inp=this.querySelector('input'); if(inp) inp.value='';">
                 <span>🖼️</span> Galleria
                 <input type="file" id="scan-farm-gallery" accept="image/*" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
               </label>
 
-              <button type="button" class="btn-scan-act btn-scan-gallery" style="flex:0.85; border-color:rgba(52,211,153,0.5); color:#6ee7b7;" onclick="avviaDettaturaVocaleFarmacoScanner('capsula')" title="Pronuncia il nome sulla scatola e l'AI compila e spiega tutto a voce">
+              <button type="button" class="btn-scan-act btn-scan-gallery" style="flex:0.8; min-width:76px; border-color:rgba(52,211,153,0.5); color:#6ee7b7;" onclick="avviaDettaturaVocaleFarmacoScanner('capsula')" title="Pronuncia il nome sulla scatola e l'AI compila e spiega tutto a voce">
                 <span>🎤</span> Voce AI
               </button>
+            </div>
+
+            <!-- MIRINO LIVE IN-APP CON PUNTATORE LASER AI -->
+            <div id="live-scanner-box-capsula" style="display:none; margin-top:8px; position:relative; border-radius:10px; overflow:hidden; border:2px solid #34d399; background:#000;">
+              <video id="live-scanner-video-capsula" playsinline muted style="width:100%; max-height:210px; object-fit:cover; display:block;"></video>
+              <div style="position:absolute; inset:14% 8%; border:2px dashed rgba(52,211,153,0.85); border-radius:10px; pointer-events:none; box-shadow:0 0 0 9999px rgba(0,0,0,0.32);">
+                <div style="position:absolute; top:50%; left:4%; right:4%; height:2px; background:linear-gradient(90deg, transparent, #10b981, #34d399, #10b981, transparent); box-shadow:0 0 8px #10b981;"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 10px; background:rgba(15,23,42,0.92);">
+                <span style="font-size:11px; color:#6ee7b7; font-weight:700;">🎯 Inquadra la scatola nel riquadro</span>
+                <div style="display:flex; gap:6px;">
+                  <button type="button" onclick="catturaFrameMirinoLive('capsula')" style="padding:5px 12px; border-radius:7px; border:none; background:#10b981; color:#fff; font-size:11.5px; font-weight:800; cursor:pointer;">📸 Scatta & Analizza</button>
+                  <button type="button" onclick="fermaMirinoLiveScanner()" style="padding:5px 9px; border-radius:7px; border:1px solid #64748b; background:transparent; color:#cbd5e1; font-size:11px; font-weight:700; cursor:pointer;">✕</button>
+                </div>
+              </div>
             </div>
 
             <!-- Box di Analisi & Risultato Rilevato -->
@@ -3418,7 +3442,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=65"></script>
+  <script src="app.js?v=66"></script>
   <script>
     if ('serviceWorker' in navigator) {
       var _reloadingSw = false;
@@ -3428,7 +3452,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js?v=65', { updateViaCache: 'none' }).then(function(reg) {
+        navigator.serviceWorker.register('./sw.js?v=66', { updateViaCache: 'none' }).then(function(reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) {}
         }).catch(function(err) {
