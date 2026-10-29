@@ -2152,11 +2152,17 @@ function renderPazientiSelector() {
             ${cell}
           </div>
 
-          <!-- BLOCCO C: PULSANTIERA AZIONI RAPIDE SALVAVITA (118, REPORT WHATSAPP, MODIFICA) & STATO -->
+          <!-- BLOCCO C: PULSANTIERA AZIONI RAPIDE SALVAVITA (118, SOS GUIDA, CONSEGNA VOCALE, REPORT WHATSAPP, MODIFICA) & STATO -->
           <div class="patient-hero-actions-container" style="display:flex; flex-direction:column; gap:8px; width:100%; z-index:2;">
             <div class="hero-quick-actions-bar" style="width:100%;">
               <button id="btn-scheda-118" class="btn-hero-action btn-hero-118" onclick="apriModalScheda118()" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
                 <span>🚨</span> <span>Scheda 118</span>
+              </button>
+              <button class="btn-hero-action" onclick="apriModalSOSProntoSoccorso()" style="background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%) !important; color:#fff !important; border:1px solid #fca5a5 !important;" title="Pronto Soccorso Domiciliare & Emergenze con Voce Calma">
+                <span>🆘</span> <span>SOS Guida</span>
+              </button>
+              <button class="btn-hero-action" onclick="apriModalConsegnaVocale()" style="background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important; color:#fff !important; border:1px solid #c7d2fe !important;" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
+                <span>🎙️</span> <span>Consegna</span>
               </button>
               <button id="btn-report-whatsapp" class="btn-hero-action btn-hero-wa" onclick="apriModalReportWhatsApp()" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
                 <span>💬</span> <span>Report WA</span>
@@ -3742,7 +3748,10 @@ function checkAlvoAlarm() {
           <a href="${waAlvoUrl}" target="_blank" class="btn btn-outline" style="background:#25d366; color:#0b0f19; font-weight:800; border:none; text-decoration:none; padding:8px 14px; border-radius:8px; display:inline-flex; align-items:center; gap:6px;">
             💬 Invia Allarme WhatsApp
           </a>
-          <button class="btn btn-danger btn-lg" onclick="openModal('modal-alvo')">+ Registra Evacuazione ORA</button>
+          <button class="btn btn-success" style="background:#059669; font-weight:800; padding:8px 12px;" onclick="registraEvacuazioneRapida1Click('Regolare / Formata', 'Evacuazione spontanea regolare')">
+            💩 Ha Evacuato ORA
+          </button>
+          <button class="btn btn-danger btn-lg" onclick="openModal('modal-alvo')">+ Dettaglio Alvo</button>
         </div>
       </div>`;
 
@@ -3761,9 +3770,14 @@ function checkAlvoAlarm() {
       <div class="alert-banner warning">
         <div>
           <div class="alert-title">⚠️ ATTENZIONE ALVO (${p.nome}): Nessuna evacuazione da 2 giorni (${diffHours} ore)</div>
-          <div class="alert-desc">Ultima evacuazione: <b>${lastEvac.toLocaleDateString('it-IT')} alle ${lastEvac.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}</b>. Favorire idratazione.</div>
+          <div class="alert-desc">Ultima evacuazione: <b>${lastEvac.toLocaleDateString('it-IT')} alle ${lastEvac.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}</b>. Rischio stipsi ostinata: stimolare idratazione.</div>
         </div>
-        <button class="btn btn-outline" onclick="openModal('modal-alvo')">+ Registra Evacuazione</button>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <button class="btn btn-success" style="background:#059669; font-weight:800; padding:6px 12px;" onclick="registraEvacuazioneRapida1Click('Regolare / Formata', 'Evacuazione regolare')">
+            💩 Ha Evacuato ORA
+          </button>
+          <button class="btn btn-outline" onclick="openModal('modal-alvo')">+ Dettaglio Alvo</button>
+        </div>
       </div>`;
   } else {
     alertContainer.innerHTML = `
@@ -3919,6 +3933,9 @@ function checkAusiliScadenzeAlert() {
         </div>
       </div>
       <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+        <button class="btn btn-success" style="background:#059669; font-weight:800; font-size:12px; display:inline-flex; align-items:center; gap:6px;" onclick="apriModalOrdineAusiliWhatsApp()" title="Invia promemoria ordine alla Farmacia o Sanitaria">
+          <span>📱</span> Ordina su WhatsApp
+        </button>
         <button class="btn btn-outline" style="border-color:#b45309; color:#92400e; font-weight:700; font-size:12px; background:#fff;" onclick="apriModificaAnagrafica()">
           ✏️ Aggiorna Date Ausili
         </button>
@@ -5586,6 +5603,12 @@ function renderDiario() {
       icon = '📋';
       badge = 'badge-success';
       desc = `<b>Consegna di Turno Generata</b> | Condivisa per continuità assistenziale`;
+    } else if (r.tipo === 'consegna_vocale') {
+      icon = '🎙️';
+      badge = 'badge-primary';
+      const playBtn = r.audioData ? `<audio src="${r.audioData}" controls style="height:26px; vertical-align:middle; margin-left:6px; max-width:200px;"></audio>` : '';
+      const chips = r.parametriEstratti ? `<div style="display:flex; gap:4px; margin-top:4px; flex-wrap:wrap;">${r.parametriEstratti}</div>` : '';
+      desc = `<b style="color:#4f46e5;">CONSEGNA VOCALE AI:</b> <i>"${r.testo || ''}"</i> ${playBtn} ${chips}`;
     } else if (r.tipo === 'farmaco') {
       icon = '💊';
       badge = 'badge-success';
@@ -10447,6 +10470,7 @@ function renderAll() {
   checkAusiliScadenzeAlert();
   aggiornaOrologioPosturale();
   aggiornaIdratazioneUI();
+  if (typeof aggiornaWidgetNutrizione === 'function') aggiornaWidgetNutrizione();
   renderTerapie();
   renderDiario();
   renderVisite();
@@ -12576,3 +12600,900 @@ function toggleBicchiereAcqua(indice) {
     showToast('Bicchiere rimosso (-150 ml) 💧');
   }
 }
+
+// ==========================================================================
+// SUITE V75: 5 MODULI POTENZIAMENTO CLINICO, VOCALE & EMERGENZE CAREGIVER
+// ==========================================================================
+
+// --------------------------------------------------------------------------
+// 1. MODULO CONSEGNA VOCALE SMART (SPEECH-TO-TEXT & AUDIO RECORDER)
+// --------------------------------------------------------------------------
+let _consegnaMediaRecorder = null;
+let _consegnaAudioChunks = [];
+let _consegnaAudioBlobUrl = null;
+let _consegnaAudioBase64 = null;
+let _consegnaSpeechRec = null;
+let _consegnaIsRecording = false;
+let _consegnaParametriRilevati = null;
+
+function apriModalConsegnaVocale() {
+  const p = getActivePaziente();
+  if (!p) {
+    showToast('Seleziona un assistito per registrare la consegna vocale.', 'warning');
+    return;
+  }
+  openModal('modal-consegna-vocale');
+
+  // Reset interfaccia
+  const statusLabel = document.getElementById('consegna-status-label');
+  const wave = document.getElementById('consegna-soundwave');
+  const micBtn = document.getElementById('mic-record-btn');
+  const txtArea = document.getElementById('consegna-trascrizione-testo');
+  const paramBox = document.getElementById('consegna-parametri-box');
+  const audioBox = document.getElementById('consegna-audio-player-box');
+
+  if (statusLabel) statusLabel.textContent = `Tocca il microfono per registrare per ${p.nome}`;
+  if (wave) wave.classList.remove('active');
+  if (micBtn) micBtn.classList.remove('recording');
+  if (paramBox) paramBox.style.display = 'none';
+  if (audioBox) audioBox.style.display = 'none';
+
+  _consegnaParametriRilevati = null;
+}
+window.apriModalConsegnaVocale = apriModalConsegnaVocale;
+
+function chiudiModalConsegnaVocale() {
+  if (_consegnaIsRecording) {
+    fermaRegistrazioneConsegna();
+  }
+  closeModal('modal-consegna-vocale');
+}
+window.chiudiModalConsegnaVocale = chiudiModalConsegnaVocale;
+
+function toggleRegistrazioneConsegnaVocale() {
+  if (_consegnaIsRecording) {
+    fermaRegistrazioneConsegna();
+  } else {
+    avviaRegistrazioneConsegna();
+  }
+}
+window.toggleRegistrazioneConsegnaVocale = toggleRegistrazioneConsegnaVocale;
+
+async function avviaRegistrazioneConsegna() {
+  const micBtn = document.getElementById('mic-record-btn');
+  const statusLabel = document.getElementById('consegna-status-label');
+  const wave = document.getElementById('consegna-soundwave');
+  const txtArea = document.getElementById('consegna-trascrizione-testo');
+
+  _consegnaAudioChunks = [];
+  _consegnaAudioBlobUrl = null;
+  _consegnaAudioBase64 = null;
+
+  // 1. Avvia Speech Recognition
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRec) {
+    try {
+      _consegnaSpeechRec = new SpeechRec();
+      _consegnaSpeechRec.lang = 'it-IT';
+      _consegnaSpeechRec.continuous = true;
+      _consegnaSpeechRec.interimResults = true;
+
+      _consegnaSpeechRec.onresult = function(ev) {
+        let fullTranscript = '';
+        for (let i = 0; i < ev.results.length; i++) {
+          fullTranscript += ev.results[i][0].transcript + ' ';
+        }
+        if (txtArea) {
+          txtArea.value = fullTranscript.trim();
+        }
+        analizzaEdEstraiParametriConsegna(fullTranscript);
+      };
+
+      _consegnaSpeechRec.onerror = function(err) {
+        console.warn('[Consegna Vocale] Errore SpeechRec:', err);
+      };
+
+      _consegnaSpeechRec.start();
+    } catch (e) {
+      console.warn('[Consegna Vocale] Impossibile avviare SpeechRec:', e);
+    }
+  }
+
+  // 2. Avvia MediaRecorder per catturare l'audio reale (se supportato)
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      _consegnaMediaRecorder = new MediaRecorder(stream);
+      _consegnaMediaRecorder.ondataavailable = function(e) {
+        if (e.data.size > 0) _consegnaAudioChunks.push(e.data);
+      };
+      _consegnaMediaRecorder.onstop = function() {
+        const audioBlob = new Blob(_consegnaAudioChunks, { type: 'audio/webm' });
+        _consegnaAudioBlobUrl = URL.createObjectURL(audioBlob);
+        const player = document.getElementById('consegna-audio-player');
+        const box = document.getElementById('consegna-audio-player-box');
+        if (player && box) {
+          player.src = _consegnaAudioBlobUrl;
+          box.style.display = 'flex';
+        }
+        // Crea anche Data URI base64 compatto se possibile
+        const reader = new FileReader();
+        reader.onloadend = function() {
+          _consegnaAudioBase64 = reader.result;
+        };
+        reader.readAsDataURL(audioBlob);
+
+        // Ferma le tracce del microfono
+        stream.getTracks().forEach(t => t.stop());
+      };
+      _consegnaMediaRecorder.start();
+    } catch (eMedia) {
+      console.warn('[Consegna Vocale] getUserMedia non consentito o non supportato:', eMedia);
+    }
+  }
+
+  _consegnaIsRecording = true;
+  if (micBtn) micBtn.classList.add('recording');
+  if (wave) wave.classList.add('active');
+  if (statusLabel) {
+    statusLabel.style.color = '#dc2626';
+    statusLabel.textContent = '🔴 Registrazione & Trascrizione in corso... Parla liberamente!';
+  }
+  showToast('🎙️ Microfono attivo: parla liberamente...');
+}
+
+function fermaRegistrazioneConsegna() {
+  const micBtn = document.getElementById('mic-record-btn');
+  const statusLabel = document.getElementById('consegna-status-label');
+  const wave = document.getElementById('consegna-soundwave');
+  const txtArea = document.getElementById('consegna-trascrizione-testo');
+
+  if (_consegnaSpeechRec) {
+    try { _consegnaSpeechRec.stop(); } catch(e) {}
+  }
+  if (_consegnaMediaRecorder && _consegnaMediaRecorder.state !== 'inactive') {
+    try { _consegnaMediaRecorder.stop(); } catch(e) {}
+  }
+
+  _consegnaIsRecording = false;
+  if (micBtn) micBtn.classList.remove('recording');
+  if (wave) wave.classList.remove('active');
+  if (statusLabel) {
+    statusLabel.style.color = '#059669';
+    statusLabel.textContent = '✅ Registrazione completata! Puoi modificare il testo o salvare.';
+  }
+
+  if (txtArea && txtArea.value) {
+    analizzaEdEstraiParametriConsegna(txtArea.value);
+  }
+}
+
+// Analizzatore intelligente parametri clinici dal parlato
+function analizzaEdEstraiParametriConsegna(testo) {
+  if (!testo) return;
+  const raw = testo.toLowerCase();
+  const chipsContainer = document.getElementById('consegna-parametri-chips');
+  const box = document.getElementById('consegna-parametri-box');
+  if (!chipsContainer || !box) return;
+
+  const rilevati = [];
+  let paramsData = {};
+
+  // 1. Pressione Arteriosa (es. "pressione 125 su 80", "pa 130 80", "pressione arteriosa 120/80")
+  const matchPa = raw.match(/(?:pressione|press|pa)\s*(?:arteriosa)?\s*(?:è|e|di|a)?\s*(\d{2,3})[\s\/\-a]+(?:su\s*)?(\d{2,3})/i);
+  if (matchPa) {
+    const s = parseInt(matchPa[1]);
+    const d = parseInt(matchPa[2]);
+    if (s > 60 && s < 250 && d > 40 && d < 150) {
+      rilevati.push(`🩺 Pressione: <b>${s}/${d} mmHg</b>`);
+      paramsData.pa_max = s;
+      paramsData.pa_min = d;
+    }
+  }
+
+  // 2. Saturazione (es. "saturazione 98", "spo2 97%", "ossigeno a 96")
+  const matchSpo2 = raw.match(/(?:saturazione|spo2|ossigeno)\s*(?:è|e|al|a|di)?\s*(\d{2,3})\s*%?/i);
+  if (matchSpo2) {
+    const sp = parseInt(matchSpo2[1]);
+    if (sp >= 70 && sp <= 100) {
+      rilevati.push(`🫁 SpO2: <b>${sp}%</b>`);
+      paramsData.spo2 = sp;
+    }
+  }
+
+  // 3. Frequenza cardiaca / Battiti
+  const matchFc = raw.match(/(?:battiti|frequenza|fc|pulsazioni)\s*(?:è|e|a|di)?\s*(\d{2,3})/i);
+  if (matchFc) {
+    const f = parseInt(matchFc[1]);
+    if (f >= 40 && f <= 190) {
+      rilevati.push(`❤️ FC: <b>${f} bpm</b>`);
+      paramsData.fc = f;
+    }
+  }
+
+  // 4. Temperatura / Febbre (es. "temperatura 36 e mezzo", "febbre a 37.8", "temp 36.5")
+  const matchTemp = raw.match(/(?:temperatura|febbre|temp)\s*(?:è|e|a|di)?\s*(\d{2}(?:[,\.]\d)?)/i);
+  if (matchTemp) {
+    const tVal = parseFloat(matchTemp[1].replace(',', '.'));
+    if (tVal >= 34 && tVal <= 42) {
+      rilevati.push(`🌡️ Temperatura: <b>${tVal}°C</b>`);
+      paramsData.temp = tVal;
+    }
+  }
+
+  // 5. Alvo / Evacuazione
+  if (/alvo\s+regolare|ha\s+evacuato|evacuazione\s+regolare/i.test(raw)) {
+    rilevati.push(`💩 Alvo: <b>Regolare</b>`);
+    paramsData.alvo = 'Regolare';
+  } else if (/non\s+ha\s+evacuato|stipsi|nessuna\s+evacuazione/i.test(raw)) {
+    rilevati.push(`💩 Alvo: <b>Non Evacuato (⚠️)</b>`);
+    paramsData.alvo = 'Non Evacuato';
+  }
+
+  // 6. Pasto / Appetito
+  if (/mangiato\s+tutto|pasto\s+completo|ha\s+finito\s+tutto/i.test(raw)) {
+    rilevati.push(`🍲 Pasto: <b>Consumato 100%</b>`);
+    paramsData.pasto = '100% Tutto';
+  } else if (/mangiato\s+metà/i.test(raw)) {
+    rilevati.push(`🍲 Pasto: <b>Consumato 50%</b>`);
+    paramsData.pasto = '50% Metà';
+  } else if (/rifiuto\s+pasto|non\s+ha\s+mangiato/i.test(raw)) {
+    rilevati.push(`🍲 Pasto: <b>Rifiuto pasto (⚠️)</b>`);
+    paramsData.pasto = 'Rifiuto';
+  }
+
+  // 7. Postura
+  if (/fianco\s+destro/i.test(raw)) {
+    rilevati.push(`🛏️ Postura: <b>Fianco Dx</b>`);
+    paramsData.postura = 'Fianco Destro';
+  } else if (/fianco\s+sinistro/i.test(raw)) {
+    rilevati.push(`🛏️ Postura: <b>Fianco Sx</b>`);
+    paramsData.postura = 'Fianco Sinistro';
+  } else if (/supino|schiena\s+a\s+letto/i.test(raw)) {
+    rilevati.push(`🛏️ Postura: <b>Supino</b>`);
+    paramsData.postura = 'Supino';
+  }
+
+  if (rilevati.length > 0) {
+    chipsContainer.innerHTML = rilevati.map(ch => `
+      <span style="background:#ffffff; border:1px solid #86efac; border-radius:8px; padding:4px 9px; font-size:11.5px; color:#166534; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        ${ch}
+      </span>
+    `).join('');
+    box.style.display = 'block';
+    _consegnaParametriRilevati = paramsData;
+  } else {
+    box.style.display = 'none';
+    _consegnaParametriRilevati = null;
+  }
+}
+
+function riproduciTestoConsegnaVocale() {
+  const el = document.getElementById('consegna-trascrizione-testo');
+  const testo = el ? el.value.trim() : '';
+  if (!testo) {
+    showToast('Nessun testo da riascoltare.');
+    return;
+  }
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(testo);
+    utt.lang = 'it-IT';
+    utt.rate = 0.95;
+    window.speechSynthesis.speak(utt);
+    showToast('🔊 Riascolto sintesi vocale in corso...');
+  } else {
+    showToast('Sintesi vocale non supportata su questo browser.');
+  }
+}
+window.riproduciTestoConsegnaVocale = riproduciTestoConsegnaVocale;
+
+function salvaConsegnaVocaleNelDiario() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const elTxt = document.getElementById('consegna-trascrizione-testo');
+  const elOp = document.getElementById('consegna-operatore-nome');
+  const testo = elTxt ? elTxt.value.trim() : '';
+  const op = elOp ? elOp.value.trim() : 'Operatore OSS / Familiare';
+
+  if (!testo) {
+    showToast('Nessun testo registrato da salvare nel diario.', 'warning');
+    return;
+  }
+
+  const now = new Date();
+  if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+
+  let chipsHtml = '';
+  if (_consegnaParametriRilevati) {
+    const keys = Object.keys(_consegnaParametriRilevati);
+    chipsHtml = keys.map(k => `<span class="badge" style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-size:10.5px; padding:2px 6px;">${k}: ${_consegnaParametriRilevati[k]}</span>`).join(' ');
+  }
+
+  p.registrazioni.push({
+    id: 'log_' + Date.now(),
+    tipo: 'consegna_vocale',
+    testo: testo,
+    audioData: _consegnaAudioBase64 || null,
+    parametriEstratti: chipsHtml || null,
+    timestamp: now.toISOString(),
+    operatore: op
+  });
+
+  // Se sono stati rilevati parametri vitali precisi, registrali anche nello storico parametri
+  if (_consegnaParametriRilevati && (_consegnaParametriRilevati.pa_max || _consegnaParametriRilevati.spo2 || _consegnaParametriRilevati.temp)) {
+    p.registrazioni.push({
+      id: 'log_par_' + Date.now(),
+      tipo: 'parametri',
+      pa_max: _consegnaParametriRilevati.pa_max || '--',
+      pa_min: _consegnaParametriRilevati.pa_min || '--',
+      fc: _consegnaParametriRilevati.fc || '--',
+      spo2: _consegnaParametriRilevati.spo2 || '--',
+      temp: _consegnaParametriRilevati.temp || '--',
+      timestamp: now.toISOString(),
+      operatore: `${op} (Voce AI)`
+    });
+  }
+
+  saveDb();
+  renderDiario();
+  chiudiModalConsegnaVocale();
+  showToast('✅ Consegna vocale registrata nel diario con successo!');
+}
+window.salvaConsegnaVocaleNelDiario = salvaConsegnaVocaleNelDiario;
+
+function inviaConsegnaSuWhatsApp() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const elTxt = document.getElementById('consegna-trascrizione-testo');
+  const elOp = document.getElementById('consegna-operatore-nome');
+  const testo = elTxt ? elTxt.value.trim() : '';
+  const op = elOp ? elOp.value.trim() : 'Operatore OSS / Familiare';
+
+  if (!testo) {
+    showToast('Registra prima la consegna da condividere.', 'warning');
+    return;
+  }
+
+  const dStr = new Date().toLocaleDateString('it-IT');
+  const tStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+  const msg = `🎙️ *PASSAGGIO CONSEGNE CAREASSIST PRO*\n` +
+    `👤 *Assistito/a:* ${p.nome}\n` +
+    `📅 *Data & Ora:* ${dStr} ore ${tStr}\n` +
+    `✍️ *Registrato da:* ${op}\n\n` +
+    `📝 *Nota Clinica / Consegna:*\n"${testo}"\n\n` +
+    `🩺 _CareAssist Pro - Diario Socio-Sanitario Domiciliare_`;
+
+  const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+window.inviaConsegnaSuWhatsApp = inviaConsegnaSuWhatsApp;
+
+// --------------------------------------------------------------------------
+// 2. MODULO SOS GUIDA EMERGENZE & PRONTO SOCCORSO DOMICILIARE RAGIONATO
+// --------------------------------------------------------------------------
+let _schedaSOSAttiva = 'soffocamento';
+
+const _GUIDE_SOS_DATI = {
+  soffocamento: {
+    titolo: '🥣 Soffocamento da Cibo / Disfagia (Ab Ingestis)',
+    icona: '🥣',
+    colore: '#ef4444',
+    passi: [
+      { num: '1', titolo: 'VERIFICA LA TOSSE', testo: 'Se il paziente <b>tossisce energicamente</b>, incoraggialo a tossire con forza! La tosse spontanea è la manovra più efficace per disostruire le vie aeree.' },
+      { num: '2', titolo: '5 COLPI INTERSCAPOLARI', testo: 'Se non riesce a tossire, non parla o fatica a respirare: posizionalo con il busto leggermente reclinato in avanti. Con il palmo della mano aperta dai <b>5 colpi decisi tra le scapole</b> verso l\'alto.' },
+      { num: '3', titolo: 'MANOVRA DI HEIMLICH A DOMICILIO', testo: 'Se i colpi non bastano: posizionati alle sue spalle, metti un pugno chiuso tra ombelico e sterno, afferralo con l\'altra mano ed effettua <b>5 compressioni vigorose verso l\'interno e verso l\'alto</b>. Se il paziente è a letto, posizionalo semiseduto e comprimi l\'addome verso il diaframma.' }
+    ],
+    divieti: '🚫 <b>COSA NON FARE ASSOLUTAMENTE:</b> Non dare MAI acqua o liquidi a chi sta soffocando (aumenta l\'ostruzione). Non infilare le dita alla cieca nella bocca per non spingere il boccone più in profondità.',
+    testoVoce: 'Emergenza soffocamento. Primo: incoraggia la tosse spontanea. Secondo: se non respira, dai 5 colpi decisi tra le scapole con la mano aperta verso l\'alto. Terzo: esegui la manovra di Heimlich con compressioni decise sotto lo sterno verso l\'alto. Attenzione: non dare mai da bere.'
+  },
+  caduta: {
+    titolo: '🛏️ Caduta a Terra / Trauma Accidentalmente',
+    icona: '🛏️',
+    colore: '#f59e0b',
+    passi: [
+      { num: '1', titolo: 'VERIFICA COSCIENZA E NON SOLLEVARE DI SCATTO', testo: 'Avvicinati con calma, chiama l\'assistito per nome. <b>NON tentare di rimetterlo subito in piedi da solo!</b> Una mobilizzazione brusca può peggiorare una lesione ossea o vertebrale.' },
+      { num: '2', titolo: 'CONTROLLO SOSPETTA FRATTURA FEMORE', testo: 'Osserva le gambe: se un arto appare <b>più corto o con la punta del piede ruotata verso l\'esterno</b> ed è presente forte dolore all\'inguine, c\'è un\'altissima probabilità di frattura del femore. Mantieni il paziente fermo e chiama subito il 118.' },
+      { num: '3', titolo: 'COPERTURA & RISALITA GRADUALE', testo: 'Se è cosciente, collaborante e non ha dolore acuto: fallo rotolare prima sul fianco, poi a carponi, e aiutalo ad appoggiarsi a una sedia stabile per rialzarsi lentamente con la forza delle sue braccia.' }
+    ],
+    divieti: '🚫 <b>COSA NON FARE:</b> Non tirare l\'assistito per le braccia o per le spalle (rischio lussazione). Non muovere il collo se c\'è stato un colpo alla testa.',
+    testoVoce: 'Paziente a terra. Primo: mantieni la calma e non sollevare subito la persona. Secondo: verifica se il piede è ruotato all\'esterno, segno di frattura del femore. Se c\'è frattura chiama il 118 e mantienilo coperto senza muoverlo.'
+  },
+  ipoglicemia: {
+    titolo: '🍬 Crisi Ipoglicemica / Svenimento (Sincope)',
+    icona: '🍬',
+    colore: '#3b82f6',
+    passi: [
+      { num: '1', titolo: 'SE COSCIENTE: ZUCCHERO IMMEDIATO', testo: 'Se il paziente suda freddo, trema o è confuso ma è in grado di deglutire: somministra subito <b>3 bustine di zucchero</b> disciolte in mezzo bicchiere d\'acqua, oppure mezzo bicchiere di succo di frutta zuccherato o Coca-Cola.' },
+      { num: '2', titolo: 'RICONTROLLO DOPO 15 MINUTI (REGOLA DEL 15)', testo: 'Attendi 15 minuti a riposo e ricontrolla la glicemia capillare col glucometro. Se il valore resta < 70 mg/dl, ripeti la somministrazione di zucchero.' },
+      { num: '3', titolo: 'SE NON COSCIENTE: POSIZIONE LATERALE DI SICUREZZA (PLS)', testo: 'Se il paziente sviene o non risponde: <b>chiama immediatamente il 118</b>. Mettilo sul fianco in Posizione Laterale di Sicurezza con la bocca rivolta in basso per mantenere pervie le vie aeree.' }
+    ],
+    divieti: '🚫 <b>COSA NON FARE:</b> MAI somministrare liquidi, cibo o zucchero in bocca a una persona priva di sensi o non cosciente (rischio immediato di asfissia).',
+    testoVoce: 'Crisi ipoglicemica o svenimento. Se il paziente è cosciente dai subito zucchero o succo di frutta. Se non è cosciente non mettere nulla in bocca, posizionalo sul fianco e chiama il 118.'
+  },
+  dispnea: {
+    titolo: '🫁 Crisi Respiratoria / Dispnea / Fame d\'Aria',
+    icona: '🫁',
+    colore: '#0284c7',
+    passi: [
+      { num: '1', titolo: 'POSIZIONE ORTOPNOICA (SEMISEDUTA)', testo: 'Solleva immediatamente lo schienale del letto a <b>45°-60° (Posizione di Fowler)</b> con le gambe leggermente flesse. La posizione eretta/seduta permette al diaframma di espandere i polmoni.' },
+      { num: '2', titolo: 'LIBERA LE VIE AEREE & MISURA SpO2', testo: 'Slaccia colletto, pigiama o indumenti stretti. Applica il saturimetro al dito: se la saturazione scende sotto il 90% (o < 88% nei pazienti con BPCO nota), attiva l\'ossigenoterapia al flusso prescritto dal medico.' },
+      { num: '3', titolo: 'RASSICURA IL PAZIENTE', testo: 'Invitalo a fare respiri lenti ed espirare a labbra socchiuse (come per spegnere una candela a distanza). Questo riduce l\'iperinsufflazione polmonare e l\'ansia.' }
+    ],
+    divieti: '🚫 <b>COSA NON FARE:</b> Non tenere MAI il paziente sdraiato piatto sulla schiena. Non superare il litraggio di ossigeno prescritto dal medico.',
+    testoVoce: 'Crisi respiratoria. Primo: solleva immediatamente lo schienale a 60 gradi in posizione semiseduta. Secondo: allenta gli abiti e controlla la saturazione. Terzo: rassicura il paziente guidandolo a respirare lentamente con labbra socchiuse.'
+  },
+  ictus: {
+    titolo: '🧠 Segni Sospetto Ictus Cerebrale (F.A.S.T.) / Dolore Toracico',
+    icona: '🧠',
+    colore: '#dc2626',
+    passi: [
+      { num: '1', titolo: 'F - FACCIA (SORRISO)', testo: 'Chiedi al paziente di sorridere o mostrare i denti. <b>Un lato della bocca è cadente o asimmetrico?</b>' },
+      { num: '2', titolo: 'A - BRACCIA (SOLLEVAMENTO)', testo: 'Chiedi di sollevare entrambe le braccia a 90° ad occhi chiusi. <b>Un braccio cade verso il basso o non riesce a muoverlo?</b>' },
+      { num: '3', titolo: 'S - PAROLA (DIZIONE)', testo: 'Chiedi di ripetere una frase semplice (es. "Oggi è una bella giornata"). <b>La parola è impastata, confusa o non riesce a parlare?</b>' },
+      { num: '4', titolo: 'T - TEMPO (CHIAMA 118 SUBITO!)', testo: 'Se anche solo uno di questi 3 segni è presente, <b>chiama subito il 118 comunicando "Sospetto Ictus, codice orario"</b>. Segna l\'orario esatto di inizio sintomi: le terapie trombolitiche salvavita hanno una finestra massima di 4.5 ore!' }
+    ],
+    divieti: '🚫 <b>COSA NON FARE:</b> Non somministrare MAI farmaci (nemmeno aspirina o antipertensivi) prima che sia stata fatta una TAC in ospedale. Non aspettare che i sintomi passino da soli.',
+    testoVoce: 'Sospetto ictus. Verifica il test fast. Bocca storta, debolezza a un braccio, o parola confusa. Se anche uno solo è presente, chiama subito il 118 comunicando l orario esatto di inizio sintomi. Non somministrare alcun farmaco.'
+  }
+};
+
+function apriModalSOSProntoSoccorso(schedaIniziale) {
+  const p = getActivePaziente();
+  const dettEl = document.getElementById('sos-paziente-dettaglio');
+  const critEl = document.getElementById('sos-paziente-critico');
+
+  if (p && dettEl && critEl) {
+    const av = getDettagliAvatarPaziente(p);
+    const eta = calcolaAnniDaData(p.dataNascita);
+    dettEl.innerHTML = `${av.emoji} <b>${p.nome}</b> (${eta} anni, ${av.labelGenere}) • 📍 <b>${p.indirizzo || 'Domicilio Assistito'}</b>`;
+    const telMMG = p.telMedico ? ` • MMG: ${p.telMedico}` : '';
+    critEl.innerHTML = `⚠️ Allergie: <b>${p.allergie || 'Nessuna nota'}</b> • Stato: ${p.allettato ? 'Allettato' : 'Deambulante'}${telMMG}`;
+  }
+
+  mostraSchedaSOS(schedaIniziale || 'soffocamento');
+  openModal('modal-sos-pronto-soccorso');
+}
+window.apriModalSOSProntoSoccorso = apriModalSOSProntoSoccorso;
+
+function mostraSchedaSOS(tipo) {
+  _schedaSOSAttiva = tipo || 'soffocamento';
+  const guida = _GUIDE_SOS_DATI[_schedaSOSAttiva] || _GUIDE_SOS_DATI['soffocamento'];
+
+  // Aggiorna pulsanti tab
+  document.querySelectorAll('.sos-tab-btn').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById(`btn-sos-tab-${_schedaSOSAttiva}`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  const container = document.getElementById('sos-guida-contenuto');
+  if (!container) return;
+
+  const passiHtml = guida.passi.map(p => `
+    <div class="sos-step-card">
+      <div class="sos-step-num" style="background:${guida.colore};">${p.num}</div>
+      <div style="flex:1;">
+        <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin-bottom:3px;">${p.titolo}</div>
+        <div style="font-size:12.5px; color:#334155; line-height:1.45;">${p.testo}</div>
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = `
+    <div style="border-left:4px solid ${guida.colore}; padding-left:12px; margin-bottom:12px;">
+      <div style="font-size:16px; font-weight:900; color:#0f172a;">${guida.titolo}</div>
+      <div style="font-size:12px; color:#64748b;">Protocollo Domiciliare Ragionato • Segui le istruzioni in ordine numerico:</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
+      ${passiHtml}
+    </div>
+
+    <div style="background:#fef2f2; border:1.5px solid #f87171; border-radius:10px; padding:10px 14px; font-size:12px; color:#991b1b; line-height:1.4;">
+      ${guida.divieti}
+    </div>
+  `;
+}
+window.mostraSchedaSOS = mostraSchedaSOS;
+
+function leggiIstruzioniSOSVocale() {
+  const guida = _GUIDE_SOS_DATI[_schedaSOSAttiva];
+  if (!guida || !('speechSynthesis' in window)) {
+    showToast('Sintesi vocale non disponibile.');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(guida.testoVoce);
+  utt.lang = 'it-IT';
+  utt.rate = 0.9;
+  window.speechSynthesis.speak(utt);
+  showToast(`🔊 Guida vocale in riproduzione: ${guida.titolo}`);
+}
+window.leggiIstruzioniSOSVocale = leggiIstruzioniSOSVocale;
+
+// --------------------------------------------------------------------------
+// 3. MODULO SCANNER INTERAZIONI CLINICHE TERAPIE & "OCCHIO CLINICO"
+// --------------------------------------------------------------------------
+function apriVerificaInterazioniFarmaci() {
+  const p = getActivePaziente();
+  if (!p) {
+    showToast('Seleziona un assistito per analizzare le interazioni farmacologiche.', 'warning');
+    return;
+  }
+
+  analizzaInterazioniClinicheAssistito(p);
+  openModal('modal-interazioni-farmaci');
+}
+window.apriVerificaInterazioniFarmaci = apriVerificaInterazioniFarmaci;
+
+function analizzaInterazioniClinicheAssistito(p) {
+  const banner = document.getElementById('interazioni-summary-banner');
+  const listEl = document.getElementById('interazioni-dettaglio-lista');
+  if (!banner || !listEl) return;
+
+  const terapie = p.terapie || [];
+  const nomiTerapie = terapie.map(t => (t.farmaco || '').toLowerCase());
+  const strTerapie = nomiTerapie.join(' ');
+
+  // Classificatori terapeutici
+  const isAnticoagulante = (str) => /cardioaspirina|aspirina|eliquis|sintrom|coumadin|xarelto|pradaxa|clexane|seledie|enoxaparina|clopidogrel|plavix/i.test(str);
+  const isFans = (str) => /ibuprofene|moment|brufen|oki|ketoprofene|voltaren|diclofenac|aulin|nimesulide|toradol|feldene|aspirina/i.test(str);
+  const isDiuretico = (str) => /lasix|furosemide|torasemide|diurix|aldactone|spironolattone|idroclorotiazide/i.test(str);
+  const isAceSartani = (str) => /ramipril|triatec|enalapril|losartan|candesartan|valsartan|olmesartan/i.test(str);
+  const isBetaBloccante = (str) => /bisoprololo|congescor|cardicor|atenololo|carvedilolo|metoprololo|nebivololo/i.test(str);
+  const isSedativoBzd = (str) => /tavor|lorazepam|xanax|alprazolam|en|delorazepam|lexotan|valium|diazepam|minias/i.test(str);
+  const isAntidiabetico = (str) => /insulina|metformina|lantus|humalog|novorapid|xultophy|januvia|diamicron/i.test(str);
+  const isSilodosina = (str) => /silodosina|silodyx|omnic|tamsulosina|cardura/i.test(str);
+  const isGastroprotettore = (str) => /pantoprazolo|omeprazolo|lansoprazolo|esomeprazolo/i.test(str);
+
+  const interazioniRilevate = [];
+
+  // 1. FANS + Anticoagulanti
+  const hasAnti = terapie.some(t => isAnticoagulante(t.farmaco));
+  const hasFans = terapie.some(t => isFans(t.farmaco));
+  if (hasAnti && hasFans) {
+    interazioniRilevate.push({
+      livello: 'danger',
+      titolo: '🔴 RISCHIO EMORRAGIA GASTROINTESTINALE GRAVE',
+      coppia: 'Anticoagulante / Antiaggregante + FANS (Antinfiammatorio)',
+      effetto: 'L\'assunzione combinata danneggia la mucosa gastrica e inibisce la coagulazione del sangue, aumentando esponenzialmente il pericolo di ulcere sanguinanti ed emorragie.',
+      consiglio: 'Sostituire il FANS con Paracetamolo (Tachipirina) sotto parere del curante. Monitorare feci scure (melena) o astenia marcata.'
+    });
+  }
+
+  // 2. FANS + Diuretico (Lasix)
+  const hasDiur = terapie.some(t => isDiuretico(t.farmaco));
+  if (hasDiur && hasFans) {
+    interazioniRilevate.push({
+      livello: 'danger',
+      titolo: '🔴 ANTAGONISMO TERAPEUTICO & RISCHIO RENALE ACUTO',
+      coppia: 'Diuretico (es. Lasix) + FANS (es. Oki, Brufen, Voltaren)',
+      effetto: 'I FANS inibiscono le prostaglandine renali, annullano l\'effetto drenante del Lasix e provocano accumulo di liquidi (edemi) e sovraccarico renale acuto.',
+      consiglio: 'Evitare l\'uso combinato. Verificare la diuresi giornaliera e la comparsa di edemi alle caviglie.'
+    });
+  }
+
+  // 3. Diuretico + ACE-Inibitore / Sartano
+  const hasAce = terapie.some(t => isAceSartani(t.farmaco));
+  if (hasDiur && hasAce) {
+    interazioniRilevate.push({
+      livello: 'warning',
+      titolo: '🟡 MONITORAGGIO PRESSIONE & POTASSIEMIA',
+      coppia: 'Diuretico dell\'ansa + ACE-Inibitore o Sartano (es. Ramipril)',
+      effetto: 'Associazione molto comune ma che può causare cali pressori improvvisi (ipotensione) o variazioni della funzionalità renale ed elettroliti (potassio).',
+      consiglio: 'Misurare regolarmente la pressione prima della somministrazione. Mantenere buona idratazione e verificare esami del sangue periodici.'
+    });
+  }
+
+  // 4. Benzodiazepine + Altri sedativi / Alcol
+  const hasBzd = terapie.some(t => isSedativoBzd(t.farmaco));
+  if (hasBzd) {
+    interazioniRilevate.push({
+      livello: 'warning',
+      titolo: '🟡 SEDAZIONE ECCESSIVA & RISCHIO CADUTE',
+      coppia: 'Sedativi / Benzodiazepine (es. Tavor, En, Xanax)',
+      effetto: 'Negli anziani la clearance epatica e renale è ridotta: la sedazione residua mattutina aumenta notevolmente il rischio di sonnolenza e cadute accidentali durante la deambulazione.',
+      consiglio: 'Monitorare il livello di vigilanza. Non modificare mai gli orari né sospendere bruscamente senza il parere del medico.'
+    });
+  }
+
+  // 5. Beta-bloccante + Antidiabetici
+  const hasBeta = terapie.some(t => isBetaBloccante(t.farmaco));
+  const hasDiab = terapie.some(t => isAntidiabetico(t.farmaco));
+  if (hasBeta && hasDiab) {
+    interazioniRilevate.push({
+      livello: 'warning',
+      titolo: '🟡 MASCHERAMENTO DEI SEGNI DI IPOGLICEMIA',
+      coppia: 'Beta-bloccante (es. Bisoprololo) + Terapia Antidiabetica (Insulina/Metformina)',
+      effetto: 'Il beta-bloccante può mascherare i sintomi d\'allarme tipici del calo di zuccheri (come la tachicardia e le palpitazioni). Rimane solo la sudorazione fredda.',
+      consiglio: 'Eseguire controlli glicemici capillari regolari e non basarsi solo sulla sensazione di palpitazioni del paziente.'
+    });
+  }
+
+  // 6. Silodosina / Omnic + Antipertensivi
+  const hasSilo = terapie.some(t => isSilodosina(t.farmaco));
+  if (hasSilo && (hasAce || hasBeta || hasDiur)) {
+    interazioniRilevate.push({
+      livello: 'warning',
+      titolo: '🟡 IPOTENSIONE ORTOSTATICA DA CAMBIO POSTURA',
+      coppia: 'Silodosina / Tamsulosina + Terapia Cardiovascolare',
+      effetto: 'Possibile calo di pressione al momento di alzarsi dal letto (ipotensione ortostatica) con vertigini o sbandamenti.',
+      consiglio: 'Far sedere il paziente a bordo letto per 2 minuti prima di metterlo in piedi. Assumere la capsula sempre la sera a stomaco pieno.'
+    });
+  }
+
+  // 7. Controllo Incrociato Allergie Note
+  if (p.allergie && p.allergie.toLowerCase() !== 'nessuna nota' && p.allergie.toLowerCase() !== 'nessuna' && p.allergie.toLowerCase() !== 'nkda') {
+    const allTxt = p.allergie.toLowerCase();
+    terapie.forEach(t => {
+      const fNome = (t.farmaco || '').toLowerCase();
+      if (allTxt.includes(fNome) || (allTxt.includes('penicillina') && fNome.includes('amoxicillina')) || (allTxt.includes('aspirina') && isFans(fNome))) {
+        interazioniRilevate.unshift({
+          livello: 'danger',
+          titolo: '🚨 ALLERTA ALLERGIA NOTA ASSISTITO',
+          coppia: `Allergia: "${p.allergie}" vs Farmaco: "${t.farmaco}"`,
+          effetto: 'Rischio elevato di reazione anafilattica o avversa!',
+          consiglio: 'SOSPENSIONE IMMEDIATA e verifica urgente con il Medico Curante.'
+        });
+      }
+    });
+  }
+
+  // RENDER REPORT
+  if (interazioniRilevate.length === 0) {
+    banner.innerHTML = `
+      <div class="interazione-card-safe">
+        <div style="font-size:32px; margin-bottom:6px;">🟢</div>
+        <div style="font-size:16px; font-weight:800; color:#15803d; margin-bottom:4px;">Nessuna Interazione Critica Rilevata</div>
+        <div style="font-size:12.5px; color:#166534;">Tutte le ${terapie.length} terapie attive di <b>${p.nome}</b> presentano un profilo di compatibilità noto senza sovrapposizioni pericolose.</div>
+      </div>
+    `;
+    listEl.innerHTML = `
+      <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:14px; text-align:center; color:#64748b; font-size:12.5px;">
+        Continua a monitorare gli orari di somministrazione e idratazione come da piano terapeutico.
+      </div>
+    `;
+  } else {
+    const numDanger = interazioniRilevate.filter(i => i.livello === 'danger').length;
+    const numWarning = interazioniRilevate.filter(i => i.livello === 'warning').length;
+
+    banner.innerHTML = `
+      <div style="background:${numDanger > 0 ? '#fff1f2' : '#fffbeb'}; border:2px solid ${numDanger > 0 ? '#ef4444' : '#f59e0b'}; border-radius:14px; padding:12px 16px; display:flex; align-items:center; gap:12px;">
+        <span style="font-size:30px;">${numDanger > 0 ? '🔴' : '🟡'}</span>
+        <div>
+          <div style="font-size:15px; font-weight:900; color:${numDanger > 0 ? '#991b1b' : '#92400e'};">
+            ${numDanger > 0 ? `ATTENZIONE: ${numDanger} Interazione/i Critica/che Rilevata/e!` : `Profilo con ${numWarning} Cautela/e Clinica/che`}
+          </div>
+          <div style="font-size:12px; color:${numDanger > 0 ? '#7f1d1d' : '#78350f'};">
+            Analisi automatica su ${terapie.length} terapie attive e allergie per l\'assistito/a <b>${p.nome}</b>:
+          </div>
+        </div>
+      </div>
+    `;
+
+    listEl.innerHTML = interazioniRilevate.map(item => `
+      <div class="${item.livello === 'danger' ? 'interazione-card-danger' : 'interazione-card-warning'}">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div style="font-size:13.5px; font-weight:800; color:${item.livello === 'danger' ? '#991b1b' : '#92400e'};">${item.titolo}</div>
+        </div>
+        <div style="font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:4px;">
+          💊 <u>Coppia Farmacologica:</u> ${item.coppia}
+        </div>
+        <div style="font-size:12px; color:#334155; margin-bottom:6px; line-height:1.4;">
+          ⚠️ <b>Effetto:</b> ${item.effetto}
+        </div>
+        <div style="font-size:11.5px; background:rgba(255,255,255,0.7); border:1px solid ${item.livello === 'danger' ? '#fca5a5' : '#fde68a'}; border-radius:8px; padding:6px 10px; color:${item.livello === 'danger' ? '#7f1d1d' : '#78350f'}; font-weight:600;">
+          💡 <b>Consiglio per Caregiver & Operatore:</b> ${item.consiglio}
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function condividiReportInterazioniWhatsApp() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const dStr = new Date().toLocaleDateString('it-IT');
+  const msg = `🧪 *REPORT INTERAZIONI FARMACOLOGICHE CAREASSIST PRO*\n` +
+    `👤 *Assistito:* ${p.nome}\n` +
+    `📅 *Data Analisi:* ${dStr}\n` +
+    `👨‍⚕️ *Medico Curante:* ${p.medico || 'Dott. Curante'}\n\n` +
+    `Si richiede gentile riscontro clinico per le terapie in corso e relative associazioni farmacologiche a domicilio.\n\n` +
+    `🩺 _CareAssist Pro - Controllo Sicurezza Clinica Domiciliare_`;
+
+  const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+window.condividiReportInterazioniWhatsApp = condividiReportInterazioniWhatsApp;
+
+// --------------------------------------------------------------------------
+// 4. MODULO NUTRIZIONE & PASTI + PREVENZIONE FECALOMA (>48H)
+// --------------------------------------------------------------------------
+let _tipoPastoSelezionato = 'Pranzo';
+
+function selezionaTipoPasto(tipo) {
+  _tipoPastoSelezionato = tipo || 'Pranzo';
+  document.querySelectorAll('.meal-selector-pill').forEach(btn => btn.classList.remove('selected'));
+  if (tipo === 'Pranzo') {
+    const el = document.getElementById('pill-pasto-pranzo');
+    if (el) el.classList.add('selected');
+  } else if (tipo === 'Cena') {
+    const el = document.getElementById('pill-pasto-cena');
+    if (el) el.classList.add('selected');
+  } else {
+    const el = document.getElementById('pill-pasto-colazione');
+    if (el) el.classList.add('selected');
+  }
+}
+window.selezionaTipoPasto = selezionaTipoPasto;
+
+function registraPastoRapido(quantita, note) {
+  const p = getActivePaziente();
+  if (!p) return;
+
+  const now = new Date();
+  if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+
+  p.registrazioni.push({
+    id: 'log_pasto_' + Date.now(),
+    tipo: 'pasto',
+    pasto: _tipoPastoSelezionato,
+    quantita: quantita,
+    alimenti: note || 'Assunzione controllata',
+    timestamp: now.toISOString(),
+    operatore: 'Operatore OSS / Famiglia'
+  });
+
+  saveDb();
+  renderDiario();
+  aggiornaWidgetNutrizione();
+  showToast(`🍲 Pasto [${_tipoPastoSelezionato}] registrato: ${quantita}`);
+}
+window.registraPastoRapido = registraPastoRapido;
+
+function aggiornaWidgetNutrizione() {
+  const badge = document.getElementById('nutrizione-status-badge');
+  const box = document.getElementById('nutrizione-ultimo-riepilogo');
+  if (!box) return;
+
+  const p = getActivePaziente();
+  if (!p || !p.registrazioni) return;
+
+  const pastiLogs = p.registrazioni.filter(r => r.tipo === 'pasto')
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  if (!pastiLogs.length) {
+    box.innerHTML = 'Ultimo pasto: <b>Nessun pasto registrato oggi</b>';
+    if (badge) badge.textContent = 'In attesa pasto';
+    return;
+  }
+
+  const last = pastiLogs[0];
+  const d = new Date(last.timestamp);
+  const timeStr = `${d.toLocaleDateString('it-IT')} ore ${d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`;
+
+  box.innerHTML = `Ultimo: <b>${last.pasto}</b> (${last.quantita}) • <span style="color:#64748b;">${timeStr}</span>`;
+  if (badge) {
+    badge.textContent = `${last.pasto}: ${last.quantita}`;
+    if (last.quantita.includes('100%')) {
+      badge.style.background = '#ecfdf5';
+      badge.style.color = '#065f46';
+      badge.style.borderColor = '#a7f3d0';
+    } else if (last.quantita.includes('Rifiuto')) {
+      badge.style.background = '#fef2f2';
+      badge.style.color = '#991b1b';
+      badge.style.borderColor = '#fca5a5';
+    } else {
+      badge.style.background = '#fefce8';
+      badge.style.color = '#854d0e';
+      badge.style.borderColor = '#fde047';
+    }
+  }
+}
+window.aggiornaWidgetNutrizione = aggiornaWidgetNutrizione;
+
+// 1-Click Fast Evacuazione Alvo (senza aprire popup complessi)
+function registraEvacuazioneRapida1Click(consistenza, note) {
+  const p = getActivePaziente();
+  if (!p) return;
+
+  const now = new Date();
+  if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+
+  p.registrazioni.push({
+    id: 'log_alvo_' + Date.now(),
+    tipo: 'alvo',
+    consistenza: consistenza || 'Normale / Formata',
+    clisma: false,
+    note: note || 'Evacuazione regolare a domicilio',
+    timestamp: now.toISOString(),
+    operatore: 'Operatore OSS / Famiglia'
+  });
+
+  saveDb();
+  renderDiario();
+  checkAlvoAlarm();
+  showToast(`💩 Evacuazione [${consistenza}] registrata istantaneamente!`);
+}
+window.registraEvacuazioneRapida1Click = registraEvacuazioneRapida1Click;
+
+// --------------------------------------------------------------------------
+// 5. MODULO SCORTE AUSILI & RIORDINO WHATSAPP ALLA FARMACIA / SANITARIA
+// --------------------------------------------------------------------------
+const _AUSILI_DEFAULT_CATALOGO = [
+  { nome: 'Pannoloni a Mutandina / Panni Assorbenti (Taglia M/L)', defaultQta: '3 pacchi (90 pz)' },
+  { nome: 'Traverse Salva-Materasso Monouso (60x90)', defaultQta: '2 pacchi (60 pz)' },
+  { nome: 'Guanti Monouso in Nitrile Senza Polvere (M)', defaultQta: '2 scatole (200 pz)' },
+  { nome: 'Strisce Reattive Glicemia & Lancette Pungidito', defaultQta: '1 confezione (50 strisce)' },
+  { nome: 'Aghi per Penna Insulina 4mm / 5mm', defaultQta: '1 scatola (100 aghi)' },
+  { nome: 'Sacche di Drenaggio Urine / Stomia', defaultQta: '1 confezione (30 sacche)' },
+  { nome: 'Soluzione Fisiologica 500ml & Garze Sterili 10x10', defaultQta: '1 kit medicazione' }
+];
+
+function apriModalOrdineAusiliWhatsApp() {
+  const p = getActivePaziente();
+  if (!p) {
+    showToast('Seleziona un assistito per creare l\'ordine ausili.', 'warning');
+    return;
+  }
+
+  const container = document.getElementById('ordine-ausili-checklist');
+  if (container) {
+    container.innerHTML = _AUSILI_DEFAULT_CATALOGO.map((item, idx) => `
+      <label style="display:flex; align-items:center; gap:8px; background:#ffffff; border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; cursor:pointer; font-size:12.5px;">
+        <input type="checkbox" id="chk-ausilio-${idx}" ${idx < 3 ? 'checked' : ''} onchange="aggiornaAnteprimaOrdineAusiliWA()" style="width:16px; height:16px; accent-color:#059669;">
+        <span style="flex:1; font-weight:700; color:#1e293b;">${item.nome}</span>
+        <span style="color:#059669; font-weight:800; font-size:11.5px;">${item.defaultQta}</span>
+      </label>
+    `).join('');
+  }
+
+  aggiornaAnteprimaOrdineAusiliWA();
+  openModal('modal-ordine-ausili-whatsapp');
+}
+window.apriModalOrdineAusiliWhatsApp = apriModalOrdineAusiliWhatsApp;
+
+function aggiornaAnteprimaOrdineAusiliWA() {
+  const p = getActivePaziente();
+  const txt = document.getElementById('ordine-ausili-testo-wa');
+  if (!p || !txt) return;
+
+  const selezionati = [];
+  _AUSILI_DEFAULT_CATALOGO.forEach((item, idx) => {
+    const chk = document.getElementById(`chk-ausilio-${idx}`);
+    if (chk && chk.checked) {
+      selezionati.push(`• ${item.nome} (${item.defaultQta})`);
+    }
+  });
+
+  const dStr = new Date().toLocaleDateString('it-IT');
+  const elencoStr = selezionati.length ? selezionati.join('\n') : '• (Nessun prodotto selezionato)';
+
+  txt.value = `📦 *ORDINE AUSILI & PRESIDI SANITARI DOMICILIARI*\n` +
+    `Gentile Farmacia / Sanitaria Fornitrice,\n` +
+    `si richiede il riordino dei seguenti presidi per l'assistito:\n\n` +
+    `👤 *Paziente:* ${p.nome}\n` +
+    `📍 *Indirizzo Consegna:* ${p.indirizzo || 'Domicilio Assistito'}\n` +
+    `📞 *Recapito Telefonico:* ${p.cellulare || p.telefonoFisso || p.moglieCellulare || '338 739 76 71'}\n` +
+    `📅 *Data Richiesta:* ${dStr}\n\n` +
+    `📋 *ELENCO PRESIDI DA CONSEGNARE:*\n${elencoStr}\n\n` +
+    `Si ringrazia per la consueta disponibilità e puntualità.\n` +
+    `_CareAssist Pro - Gestione Domiciliare Assistiti_`;
+}
+window.aggiornaAnteprimaOrdineAusiliWA = aggiornaAnteprimaOrdineAusiliWA;
+
+function inviaOrdineAusiliWhatsAppDiretto() {
+  const txt = document.getElementById('ordine-ausili-testo-wa');
+  const msg = txt ? txt.value.trim() : '';
+  if (!msg) {
+    showToast('Nessun messaggio da inviare.');
+    return;
+  }
+
+  const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+  closeModal('modal-ordine-ausili-whatsapp');
+  showToast('📱 Ordine ausili aperto su WhatsApp!');
+}
+window.inviaOrdineAusiliWhatsAppDiretto = inviaOrdineAusiliWhatsAppDiretto;
+

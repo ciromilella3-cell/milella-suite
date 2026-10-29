@@ -5260,5 +5260,269 @@ textarea.form-control {
   }
 }
 
+/* ==========================================================================
+   SUITE V75: 5 MODULI POTENZIAMENTO CLINICO & CAREGIVER
+   1. CONSEGNA VOCALE CON TRASCRIZIONE AI & SPEECH-TO-TEXT
+   2. SOS GUIDA PRONTO SOCCORSO DOMICILIARE
+   3. VERIFICA INTERAZIONI FARMACOLOGICHE CLINICHE
+   4. REGISTRO NUTRIZIONE & PREVENZIONE FECALOMA/ALVO >48H
+   5. ORDINE SCORTE AUSILI SU WHATSAPP
+   ========================================================================== */
+
+@keyframes sosBlink {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@keyframes micPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  50% { transform: scale(1.08); box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@keyframes soundWaveAnim {
+  0%, 100% { height: 6px; }
+  50% { height: 28px; }
+}
+
+.btn-sos-pulse {
+  animation: sosBlink 2.2s infinite !important;
+}
+
+/* MODALE CONSEGNA VOCALE */
+.modal-consegna-pro {
+  max-width: 620px !important;
+  width: 95% !important;
+  max-height: 90vh !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 60px -10px rgba(79, 70, 229, 0.4), 0 0 0 1.5px rgba(99, 102, 241, 0.3) !important;
+  overflow: hidden !important;
+}
+
+.header-consegna-pro {
+  background: linear-gradient(135deg, #4338ca 0%, #4f46e5 50%, #6366f1 100%) !important;
+  color: #ffffff !important;
+  padding: 14px 18px !important;
+}
+
+.mic-record-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  border: 3px solid #fee2e2;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.mic-record-btn.recording {
+  animation: micPulse 1.4s infinite;
+  background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+  border-color: #fca5a5;
+}
+
+.soundwave-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 36px;
+}
+
+.soundwave-bar {
+  width: 4px;
+  height: 8px;
+  background: #6366f1;
+  border-radius: 3px;
+  transition: height 0.1s ease;
+}
+
+.soundwave-box.active .soundwave-bar:nth-child(1) { animation: soundWaveAnim 0.7s infinite 0.1s; }
+.soundwave-box.active .soundwave-bar:nth-child(2) { animation: soundWaveAnim 0.8s infinite 0.3s; }
+.soundwave-box.active .soundwave-bar:nth-child(3) { animation: soundWaveAnim 0.6s infinite 0.2s; }
+.soundwave-box.active .soundwave-bar:nth-child(4) { animation: soundWaveAnim 0.9s infinite 0.4s; }
+.soundwave-box.active .soundwave-bar:nth-child(5) { animation: soundWaveAnim 0.7s infinite 0.15s; }
+
+/* MODALE SOS PRONTO SOCCORSO */
+.modal-sos-pro {
+  max-width: 660px !important;
+  width: 95% !important;
+  max-height: 92vh !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 70px -10px rgba(220, 38, 38, 0.5), 0 0 0 2px rgba(239, 68, 68, 0.35) !important;
+  overflow: hidden !important;
+}
+
+.header-sos-pro {
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 45%, #b91c1c 100%) !important;
+  color: #ffffff !important;
+  padding: 14px 18px !important;
+}
+
+.sos-tab-btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sos-tab-btn.active {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #991b1b;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.15);
+}
+
+.sos-step-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.sos-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* MODALE INTERAZIONI CLINICHE */
+.modal-interazioni-pro {
+  max-width: 660px !important;
+  width: 95% !important;
+  max-height: 90vh !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 60px -10px rgba(13, 148, 136, 0.4), 0 0 0 1.5px rgba(20, 184, 166, 0.3) !important;
+  overflow: hidden !important;
+}
+
+.header-interazioni-pro {
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%) !important;
+  color: #ffffff !important;
+  padding: 14px 18px !important;
+}
+
+.interazione-card-danger {
+  background: #fff1f2;
+  border: 1.5px solid #f87171;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.interazione-card-warning {
+  background: #fffbeb;
+  border: 1.5px solid #f59e0b;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.interazione-card-safe {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: center;
+}
+
+/* WIDGET NUTRIZIONE & PASTI */
+.meal-selector-pill {
+  flex: 1;
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  color: #1e293b;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.meal-selector-pill:hover {
+  background: #f1f5f9;
+}
+
+.meal-selector-pill.selected {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #065f46;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
+}
+
+.meal-amount-btn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.meal-amount-btn.active {
+  background: #0284c7;
+  color: #fff;
+  border-color: #0284c7;
+}
+
+/* PREVENZIONE FECALOMA ALERT */
+.fecaloma-alert-banner {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 2px solid #ef4444;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .modal-consegna-pro,
+  .modal-sos-pro,
+  .modal-interazioni-pro {
+    width: 98% !important;
+    max-height: calc(100dvh - 12px) !important;
+    border-radius: 14px !important;
+  }
+}
+
+
 
 

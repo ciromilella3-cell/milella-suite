@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=74">
+  <link rel="stylesheet" href="style.css?v=75">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -231,6 +231,14 @@
 
     <!-- AZIONI PRINCIPALI & MENU STRUMENTI / OPZIONI -->
     <div class="header-right-actions">
+      <button class="btn btn-sos-pulse" onclick="apriModalSOSProntoSoccorso()" style="background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:#fff; font-weight:900; border-radius:12px; padding:8px 14px; border:1px solid #fca5a5; box-shadow:0 2px 8px rgba(239,68,68,0.4); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Guida Rapida alle Emergenze Domiciliari & Chiamata 118">
+        🚨 SOS Guida
+      </button>
+
+      <button class="btn" onclick="apriModalConsegnaVocale()" style="background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(79,70,229,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
+        🎙️ Consegna Vocale
+      </button>
+
       <button class="btn" onclick="window.location.href='/launcher.html'" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; font-weight:700; border-radius:12px; padding:8px 16px; border:1px solid rgba(255,255,255,0.25); box-shadow:0 2px 8px rgba(2,132,199,0.3); cursor:pointer;" title="Torna al Portale Aziendale">
         🏠 Torna al Menu
       </button>
@@ -254,6 +262,15 @@
         </button>
         <div class="tools-dropdown-menu" id="tools-dropdown-panel">
           <div class="dropdown-section-title">Strumenti Assistenza</div>
+          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalSOSProntoSoccorso()">
+            <span>🚨</span> SOS Guida Emergenze 118
+          </button>
+          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalConsegnaVocale()">
+            <span>🎙️</span> Consegna Vocale Smart (AI)
+          </button>
+          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriVerificaInterazioniFarmaci()">
+            <span>🧪</span> Scanner Interazioni Terapie
+          </button>
           <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); openModal('modal-info-guida')">
             <span>ℹ️</span> Guida & Istruzioni per l'uso
           </button>
@@ -414,6 +431,34 @@
           </div>
         </div>
 
+        <!-- CARD 3: REGISTRO NUTRIZIONE & PASTI GIORNALIERI (DISFAGIA & APPETITO) -->
+        <div class="rsa-card" id="card-nutrizione-pasti">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="font-family:'Outfit',sans-serif; font-weight:800; font-size:16px; color:#0f172a; display:flex; align-items:center; gap:8px;">
+              <span>🍲</span> <span>Nutrizione & Pasti Oggi</span>
+            </div>
+            <span class="badge" id="nutrizione-status-badge" style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-weight:700;">Controllo Pasti</span>
+          </div>
+
+          <div style="display:flex; gap:6px; margin-bottom:8px;">
+            <button type="button" class="meal-selector-pill selected" id="pill-pasto-pranzo" onclick="selezionaTipoPasto('Pranzo')">🍽️ Pranzo</button>
+            <button type="button" class="meal-selector-pill" id="pill-pasto-cena" onclick="selezionaTipoPasto('Cena')">🥣 Cena</button>
+            <button type="button" class="meal-selector-pill" id="pill-pasto-colazione" onclick="selezionaTipoPasto('Colazione/Snack')">☕ Snack</button>
+          </div>
+
+          <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-bottom:5px;">Assunzione / Appetito Assistito:</div>
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:5px; margin-bottom:8px;">
+            <button type="button" class="meal-amount-btn" onclick="registraPastoRapido('100% Tutto', 'Pasto consumato interamente con appetito')">🟢 Tutto</button>
+            <button type="button" class="meal-amount-btn" onclick="registraPastoRapido('50% Metà', 'Consumata metà porzione')">🟡 Metà</button>
+            <button type="button" class="meal-amount-btn" onclick="registraPastoRapido('25% Poco', 'Poco appetito, assunti pochi bocconi')">🟠 Poco</button>
+            <button type="button" class="meal-amount-btn" onclick="registraPastoRapido('Rifiuto (0%)', 'Rifiuto del pasto / inappetenza')">🔴 Rifiuto</button>
+          </div>
+
+          <div id="nutrizione-ultimo-riepilogo" style="font-size:11.5px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px 10px; color:#334155;">
+            Ultimo pasto: <b>In attesa di registrazione</b>
+          </div>
+        </div>
+
       </div>
 
       <!-- QUICK ACTION TILES (AZIONI RAPIDE OSS & RSA) -->
@@ -470,6 +515,24 @@
           <div class="tile-icon" style="background:#dcfce7; color:#15803d;">📋</div>
           <div class="tile-title" style="color:#166534;">Consegna Turno</div>
           <div class="tile-sub" style="color:#15803d;">Passaggio OSS / Famiglia</div>
+        </div>
+
+        <div class="tile" onmouseenter="mostraLenteClinica('CONSEGNA VOCALE CON TRASCRIZIONE AI & AUDIO', 'Parla liberamente al microfono: l AI trascrive la consegna, rileva parametri vitali (PA, SpO2, Temp, Alvo) e salva l audio e il testo nel diario clinico.', '🎙️')" onmouseleave="nascondiLenteClinica()" onclick="apriModalConsegnaVocale()" style="border-color:#c7d2fe; background:#f5f3ff;">
+          <div class="tile-icon" style="background:#ede9fe; color:#6366f1;">🎙️</div>
+          <div class="tile-title" style="color:#4f46e5;">Consegna Vocale AI</div>
+          <div class="tile-sub" style="color:#6366f1;">Trascrizione & Audio Note</div>
+        </div>
+
+        <div class="tile" onmouseenter="mostraLenteClinica('GUIDA SOS PRONTO SOCCORSO DOMICILIARE', 'Pronto soccorso guidato per: Soffocamento/Disfagia, Caduta, Ipoglicemia, Dispnea, Test FAST Ictus e Chiamata 118 diretta con dati clinici a schermo.', '🚨')" onmouseleave="nascondiLenteClinica()" onclick="apriModalSOSProntoSoccorso()" style="border-color:#fca5a5; background:#fff1f2;">
+          <div class="tile-icon" style="background:#fee2e2; color:#dc2626;">🚨</div>
+          <div class="tile-title" style="color:#b91c1c;">SOS Guida 118</div>
+          <div class="tile-sub" style="color:#dc2626;">Emergenze & Voce Calma</div>
+        </div>
+
+        <div class="tile" onmouseenter="mostraLenteClinica('VERIFICA INTERAZIONI CLINICHE TERAPIE', 'Controllo automatico sovrapposizioni e rischi tra farmaci attivi (FANS + Anticoagulanti, Diuretici + Renale, Sedativi, ecc.) e allergie.', '🧪')" onmouseleave="nascondiLenteClinica()" onclick="apriVerificaInterazioniFarmaci()" style="border-color:#99f6e4; background:#f0fdfa;">
+          <div class="tile-icon" style="background:#ccfbf1; color:#0d9488;">🧪</div>
+          <div class="tile-title" style="color:#0f766e;">Interazioni Farmaci</div>
+          <div class="tile-sub" style="color:#0d9488;">Controllo Sovrapposizioni</div>
         </div>
       </div>
 
@@ -618,6 +681,9 @@
             </button>
             <button class="btn btn-primary" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-weight:800;" onclick="apriRichiestaRicetteMedico()">
               📲 Richiedi Ricette al Medico
+            </button>
+            <button class="btn" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color:#fff; font-weight:800; border-radius:8px; border:1px solid #5eead4; box-shadow:0 2px 8px rgba(13,148,136,0.25);" onclick="apriVerificaInterazioniFarmaci()" title="Controllo Automatico Interazioni Farmacologiche & Occhio Clinico">
+              🧪 Verifica Interazioni Cliniche
             </button>
             <button class="btn btn-success" onclick="apriRicaricaScorta()">📦 Carica Scatole Ritirate</button>
             <button class="btn btn-outline" onclick="apriMascheraNuovoFarmaco()">+ Nuovo Farmaco</button>
@@ -3458,7 +3524,220 @@
     </div>
   </div>
 
-  
+  <!-- MODAL 1: CONSEGNA VOCALE CON TRASCRIZIONE AI & PARAMETRI VITALI -->
+  <div id="modal-consegna-vocale" class="modal-overlay">
+    <div class="modal-card modal-consegna-pro">
+      <div class="modal-header header-consegna-pro">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:26px;">🎙️</span>
+          <div>
+            <div style="font-size:16px; font-weight:800; letter-spacing:0.3px;">Passaggio Consegne Vocale Smart (AI)</div>
+            <div style="font-size:12px; color:#c7d2fe;">Parla liberamente: trascrizione live e rilevamento parametri clinici</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="chiudiModalConsegnaVocale()" style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:32px; height:32px; font-size:16px; font-weight:800; cursor:pointer;">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding:16px; background:#f8fafc; max-height:calc(85vh - 130px); overflow-y:auto;">
+        <!-- ZONA REGISTRAZIONE -->
+        <div style="background:#ffffff; border:1.5px solid #e0e7ff; border-radius:14px; padding:16px; text-align:center; box-shadow:0 4px 12px rgba(99,102,241,0.08); margin-bottom:14px;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+            <div id="mic-record-btn" class="mic-record-btn" onclick="toggleRegistrazioneConsegnaVocale()" title="Tocca per iniziare a parlare">
+              <span>🎙️</span>
+            </div>
+            <div id="consegna-status-label" style="font-size:13px; font-weight:800; color:#4f46e5;">
+              Tocca il microfono e parla liberamente
+            </div>
+            <!-- ONDA AUDIO -->
+            <div id="consegna-soundwave" class="soundwave-box">
+              <div class="soundwave-bar"></div>
+              <div class="soundwave-bar"></div>
+              <div class="soundwave-bar"></div>
+              <div class="soundwave-bar"></div>
+              <div class="soundwave-bar"></div>
+            </div>
+          </div>
+          <div style="font-size:11.5px; color:#64748b; margin-top:6px;">
+            💡 <i>Esempio: "Oggi alle 15:00 la signora è stata tranquilla, pressione 125 su 80, saturazione 98%, ha pranzato con appetito e l'alvo è regolare."</i>
+          </div>
+        </div>
+
+        <!-- ANTEPRIMA AUDIO PLAYER SE REGISTRATO -->
+        <div id="consegna-audio-player-box" style="display:none; margin-bottom:12px; background:#ede9fe; border:1px solid #c7d2fe; border-radius:10px; padding:10px 12px; align-items:center; justify-content:space-between; gap:10px;">
+          <div style="font-size:12px; font-weight:700; color:#4338ca; display:flex; align-items:center; gap:6px;">
+            <span>🔊</span> Registrazione Audio Pronta:
+          </div>
+          <audio id="consegna-audio-player" controls style="height:36px; max-width:240px;"></audio>
+        </div>
+
+        <!-- TRASCRIZIONE LIVE & MODIFICABILE -->
+        <div style="margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label style="font-size:12.5px; font-weight:800; color:#1e293b; margin:0;">
+              📝 Testo Trascritto (Modificabile):
+            </label>
+            <button type="button" class="btn btn-outline" style="padding:2px 8px; font-size:11px;" onclick="riproduciTestoConsegnaVocale()">
+              🔊 Riascolta
+            </button>
+          </div>
+          <textarea id="consegna-trascrizione-testo" rows="4" style="width:100%; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px; font-size:13px; line-height:1.45; font-family:inherit; resize:vertical;" placeholder="Il testo pronunciato apparirà qui in tempo reale..."></textarea>
+        </div>
+
+        <!-- PARAMETRI RILEVATI AUTOMATICAMENTE DALL'AI -->
+        <div id="consegna-parametri-box" style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:12px; margin-bottom:12px; display:none;">
+          <div style="font-size:12px; font-weight:800; color:#166534; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+            <span>✨</span> Parametri Rilevati Automaticamente:
+          </div>
+          <div id="consegna-parametri-chips" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+        </div>
+
+        <!-- FIRMA OPERATORE / CAREGIVER -->
+        <div style="display:flex; gap:10px; align-items:center;">
+          <label style="font-size:12px; font-weight:700; color:#64748b; white-space:nowrap;">Firmato da:</label>
+          <input type="text" id="consegna-operatore-nome" value="Operatore OSS / Familiare" style="flex:1; border:1px solid #cbd5e1; border-radius:8px; padding:6px 10px; font-size:12px;">
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding:12px 16px; background:#f1f5f9; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-secondary" onclick="chiudiModalConsegnaVocale()">Chiudi</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-outline" style="border-color:#10b981; color:#065f46; font-weight:700;" onclick="inviaConsegnaSuWhatsApp()">
+            💬 Invia WhatsApp
+          </button>
+          <button type="button" class="btn btn-primary" style="background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); font-weight:800;" onclick="salvaConsegnaVocaleNelDiario()">
+            💾 Salva nel Diario
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: GUIDA SOS EMERGENZE & PRONTO SOCCORSO DOMICILIARE -->
+  <div id="modal-sos-pronto-soccorso" class="modal-overlay">
+    <div class="modal-card modal-sos-pro">
+      <div class="modal-header header-sos-pro">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:26px;">🚨</span>
+          <div>
+            <div style="font-size:16px; font-weight:800; letter-spacing:0.3px;">SOS & Pronto Soccorso Domiciliare</div>
+            <div style="font-size:12px; color:#fecaca;">Guida ragionata e Chiamata 118 Immediata</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('modal-sos-pronto-soccorso')" style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:32px; height:32px; font-size:16px; font-weight:800; cursor:pointer;">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding:14px; background:#fffafb; max-height:calc(85vh - 130px); overflow-y:auto;">
+        
+        <!-- TOP CALL 118 RAPIDA & DATI ASSISTITO -->
+        <div style="background:linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border:2px solid #ef4444; border-radius:14px; padding:12px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="flex:1; min-width:240px;">
+            <div style="font-size:11px; font-weight:900; color:#dc2626; text-transform:uppercase; letter-spacing:0.5px;">DATI DA DETTARE ALL'OPERATORE 118:</div>
+            <div style="font-size:14px; font-weight:800; color:#991b1b;" id="sos-paziente-dettaglio">Assistito: Ciro Milella • Via Giulio Petroni 69</div>
+            <div style="font-size:11.5px; color:#7f1d1d; margin-top:2px;" id="sos-paziente-critico">Nessuna allergia nota • Terapia attiva monitorata</div>
+          </div>
+          <a href="tel:118" class="btn" style="background:#dc2626; color:#fff; font-weight:900; font-size:14px; padding:10px 18px; border-radius:12px; border:2px solid #fff; box-shadow:0 4px 14px rgba(220,38,38,0.4); text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+            <span>📞</span> <span>CHIAMA 118</span>
+          </a>
+        </div>
+
+        <!-- SELETTORE CASO EMERGENZA -->
+        <div style="font-size:12px; font-weight:800; color:#475569; margin-bottom:6px;">SELEZIONA L'EMERGENZA IN CORSO:</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+          <button type="button" class="sos-tab-btn active" id="btn-sos-tab-soffocamento" onclick="mostraSchedaSOS('soffocamento')">🥣 Soffocamento / Disfagia</button>
+          <button type="button" class="sos-tab-btn" id="btn-sos-tab-caduta" onclick="mostraSchedaSOS('caduta')">🛏️ Caduta / Trauma</button>
+          <button type="button" class="sos-tab-btn" id="btn-sos-tab-ipoglicemia" onclick="mostraSchedaSOS('ipoglicemia')">🍬 Ipoglicemia / Svenimento</button>
+          <button type="button" class="sos-tab-btn" id="btn-sos-tab-dispnea" onclick="mostraSchedaSOS('dispnea')">🫁 Dispnea / Fame d'Aria</button>
+          <button type="button" class="sos-tab-btn" id="btn-sos-tab-ictus" onclick="mostraSchedaSOS('ictus')">🧠 Ictus FAST / Dolore</button>
+        </div>
+
+        <!-- CONTENITORE GUIDA PASSO-PASSO -->
+        <div id="sos-guida-contenuto">
+          <!-- Popolato dinamicamente da app.js -->
+        </div>
+
+      </div>
+
+      <div class="modal-footer" style="padding:10px 16px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn btn-outline" id="btn-sos-voce-guida" style="border-color:#dc2626; color:#b91c1c; font-weight:800;" onclick="leggiIstruzioniSOSVocale()">
+          🔊 Ascolta Guida Vocale
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-sos-pronto-soccorso')">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: SCANNER INTERAZIONI FARMACOLOGICHE CLINICHE -->
+  <div id="modal-interazioni-farmaci" class="modal-overlay">
+    <div class="modal-card modal-interazioni-pro">
+      <div class="modal-header header-interazioni-pro">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:26px;">🧪</span>
+          <div>
+            <div style="font-size:16px; font-weight:800; letter-spacing:0.3px;">Verifica Interazioni Terapie & Occhio Clinico</div>
+            <div style="font-size:12px; color:#ccfbf1;">Controllo sovrapposizioni farmaci, antagonismi e reazioni avverse</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('modal-interazioni-farmaci')" style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:32px; height:32px; font-size:16px; font-weight:800; cursor:pointer;">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding:16px; background:#f8fafc; max-height:calc(85vh - 130px); overflow-y:auto;">
+        <!-- BADGE PUNTEGGIO SICUREZZA TERAPIA -->
+        <div id="interazioni-summary-banner" style="margin-bottom:14px;"></div>
+
+        <!-- LISTA INTERAZIONI E CONSIGLI PRATICI -->
+        <div id="interazioni-dettaglio-lista">
+          <!-- Popolato dinamicamente da app.js -->
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding:12px 16px; background:#f1f5f9; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-interazioni-farmaci')">Chiudi</button>
+        <button type="button" class="btn btn-success" style="background:#059669; font-weight:800;" onclick="condividiReportInterazioniWhatsApp()">
+          📱 Condividi col Curante (WhatsApp)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: RIORDINO SCORTE AUSILI SANITARI VIA WHATSAPP -->
+  <div id="modal-ordine-ausili-whatsapp" class="modal-overlay">
+    <div class="modal-card modal-wa-pro">
+      <div class="modal-header header-wa-pro">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:26px;">📦</span>
+          <div>
+            <div style="font-size:16px; font-weight:800;">Riordino Ausili & Sanitaria WhatsApp</div>
+            <div style="font-size:12px; color:#a7f3d0;">Invia l'elenco dei presidi necessari alla farmacia o sanitaria</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('modal-ordine-ausili-whatsapp')" style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:32px; height:32px; font-size:16px; font-weight:800; cursor:pointer;">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding:16px; background:#f8fafc; max-height:calc(85vh - 130px); overflow-y:auto;">
+        <div style="font-size:12.5px; color:#475569; margin-bottom:10px;">
+          Seleziona o personalizza i presidi da ordinare per la consegna domiciliare:
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;" id="ordine-ausili-checklist">
+          <!-- Popolato dinamicamente -->
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px; font-weight:800; color:#1e293b; margin-bottom:4px; display:block;">
+            Anteprima Messaggio WhatsApp:
+          </label>
+          <textarea id="ordine-ausili-testo-wa" rows="5" style="width:100%; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px; font-size:12.5px; font-family:inherit;"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding:12px 16px; background:#f1f5f9; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-ordine-ausili-whatsapp')">Annulla</button>
+        <button type="button" class="btn btn-success" style="background:#059669; font-weight:800;" onclick="inviaOrdineAusiliWhatsAppDiretto()">
+          <span>🟢</span> Invia Ordine WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- OCR ENGINE FOR SMART DRUG SCANNER -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -3466,7 +3745,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=74"></script>
+  <script src="app.js?v=75"></script>
   <script>
     if ('serviceWorker' in navigator) {
       var _reloadingSw = false;
@@ -3476,7 +3755,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js?v=70', { updateViaCache: 'none' }).then(function(reg) {
+        navigator.serviceWorker.register('./sw.js?v=75', { updateViaCache: 'none' }).then(function(reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) {}
         }).catch(function(err) {
