@@ -829,6 +829,28 @@
       line-height: 1.25;
     }
 
+    .btn-icon-edit {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--cyan-light);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      flex-shrink: 0;
+    }
+
+    .btn-icon-edit:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: var(--cyan-light);
+      transform: scale(1.1);
+    }
+
     .op-role {
       font-size: 11.5px;
       color: var(--text-muted);
@@ -1652,12 +1674,13 @@
     </div>
   </div>
 
-  <!-- MODAL ELEGANTE AGGIUNGI NUOVO COLLABORATORE (ZERO PROMPT DEL BROWSER) -->
+  <!-- MODAL ELEGANTE AGGIUNGI / MODIFICA COLLABORATORE (ZERO PROMPT DEL BROWSER) -->
   <div id="modal-nuovo-operatore" class="modal-backdrop">
     <div class="modal-box" style="max-width:480px;">
+      <input type="hidden" id="editing-op-id" value="">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
         <div style="font-weight:900; font-size:17px; display:flex; align-items:center; gap:8px;">
-          <span>👤</span> <span>Nuovo Collaboratore Roster</span>
+          <span id="icona-modal-op">👤</span> <span id="titolo-modal-op">Nuovo Collaboratore Roster</span>
         </div>
         <button onclick="chiudiModalNuovoOperatore()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#94a3b8;">✕</button>
       </div>
@@ -1693,11 +1716,16 @@
         </label>
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:10px;">
-        <button class="btn btn-ghost" onclick="chiudiModalNuovoOperatore()">Annulla</button>
-        <button class="btn btn-emerald" onclick="salvaNuovoOperatoreDaModal()">
-          💾 Salva nel Roster
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn" id="btn-elimina-op" style="background:rgba(239,68,68,0.15); border:1px solid #ef4444; color:#fca5a5; display:none;" onclick="confermaEliminaOperatore()">
+          🗑️ Rimuovi
         </button>
+        <div style="display:flex; gap:10px; margin-left:auto;">
+          <button class="btn btn-ghost" onclick="chiudiModalNuovoOperatore()">Annulla</button>
+          <button class="btn btn-emerald" id="btn-salva-op" onclick="salvaNuovoOperatoreDaModal()">
+            💾 Salva nel Roster
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1914,8 +1942,11 @@
               <td class="td-op">
                 <div class="op-meta-box">
                   <div class="op-avatar">${opIniziali}</div>
-                  <div>
-                    <div class="op-name">${op.nome}</div>
+                  <div style="flex:1; min-width:0;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+                      <div class="op-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${op.nome}</div>
+                      ${isAdmin ? `<button class="btn-icon-edit" onclick="apriModalModificaOperatore('${op.id}')" title="Modifica dati collaboratore">✏️</button>` : ''}
+                    </div>
                     <div class="op-role">${op.ruolo} &bull; 📞 ${op.tel}</div>
                     <div style="display:flex; align-items:center; gap:5px;">
                       ${badgeProfilo}
@@ -1973,6 +2004,7 @@
                   </div>
                 </div>
                 <div class="op-card-actions">
+                  ${isAdmin ? `<button class="btn-icon-action" onclick="apriModalModificaOperatore('${op.id}')" title="Modifica dati collaboratore">✏️</button>` : ''}
                   <button class="btn-icon-action btn-icon-wa" onclick="apriChatWhatsApp('${op.tel}', '${op.nome}')" title="Invia WhatsApp">💬</button>
                   <button class="btn-icon-action btn-icon-tel" onclick="gestisciChiamata('${op.tel}', '${op.nome}')" title="Contatta">📞</button>
                 </div>
@@ -2246,17 +2278,51 @@
       mostraToast('Combinazione turni sviluppata con successo!', '⚡');
     }
 
-    // MODAL NUOVO COLLABORATORE (ELEGANTE, ZERO PROMPT BROWSER)
+    // GESTIONE MODAL COLLABORATORE (INSERIMENTO & MODIFICA ELEGANTE)
     function apriModalNuovoOperatore() {
+      document.getElementById('editing-op-id').value = '';
+      document.getElementById('titolo-modal-op').textContent = 'Nuovo Collaboratore Roster';
+      document.getElementById('icona-modal-op').textContent = '👤';
+      document.getElementById('nuovo-op-nome').value = '';
+      document.getElementById('nuovo-op-ruolo').value = 'OSS Referente';
+      document.getElementById('nuovo-op-tel').value = '';
+      document.getElementById('nuovo-op-profilo').value = 'misto_pn';
+      document.getElementById('nuovo-op-disp').checked = true;
+
+      const btnElimina = document.getElementById('btn-elimina-op');
+      if (btnElimina) btnElimina.style.display = 'none';
+      const btnSalva = document.getElementById('btn-salva-op');
+      if (btnSalva) btnSalva.innerHTML = '💾 Salva nel Roster';
+
       const modal = document.getElementById('modal-nuovo-operatore');
       if (modal) {
-        const inpNome = document.getElementById('nuovo-op-nome');
-        const inpTel = document.getElementById('nuovo-op-tel');
-        if (inpNome) inpNome.value = '';
-        if (inpTel) inpTel.value = '';
         modal.style.display = 'flex';
-        setTimeout(() => inpNome?.focus(), 100);
+        setTimeout(() => document.getElementById('nuovo-op-nome')?.focus(), 100);
       }
+    }
+
+    function apriModalModificaOperatore(opId) {
+      const data = window.caricaDatiTurnario ? window.caricaDatiTurnario() : null;
+      if (!data) return;
+      const op = data.operatori.find(o => o.id === opId);
+      if (!op) return;
+
+      document.getElementById('editing-op-id').value = op.id;
+      document.getElementById('titolo-modal-op').textContent = 'Modifica Dati Collaboratore';
+      document.getElementById('icona-modal-op').textContent = '✏️';
+      document.getElementById('nuovo-op-nome').value = op.nome || '';
+      document.getElementById('nuovo-op-ruolo').value = op.ruolo || '';
+      document.getElementById('nuovo-op-tel').value = op.tel || '';
+      document.getElementById('nuovo-op-profilo').value = op.profilo || 'misto_pn';
+      document.getElementById('nuovo-op-disp').checked = Boolean(op.disponibileCoperture);
+
+      const btnElimina = document.getElementById('btn-elimina-op');
+      if (btnElimina) btnElimina.style.display = 'inline-flex';
+      const btnSalva = document.getElementById('btn-salva-op');
+      if (btnSalva) btnSalva.innerHTML = '💾 Salva Modifiche';
+
+      const modal = document.getElementById('modal-nuovo-operatore');
+      if (modal) modal.style.display = 'flex';
     }
 
     function chiudiModalNuovoOperatore() {
@@ -2265,6 +2331,7 @@
     }
 
     function salvaNuovoOperatoreDaModal() {
+      const editId = document.getElementById('editing-op-id')?.value;
       const nome = document.getElementById('nuovo-op-nome')?.value.trim();
       if (!nome) {
         mostraToast('Inserisci il Nome e Cognome del collaboratore', '⚠️');
@@ -2275,18 +2342,47 @@
       const profilo = document.getElementById('nuovo-op-profilo')?.value || 'misto_pn';
       const disp = document.getElementById('nuovo-op-disp')?.checked ?? true;
 
-      if (window.aggiungiOperatoreTurnario) {
-        window.aggiungiOperatoreTurnario({
-          nome: nome,
-          ruolo: ruolo,
-          tel: tel,
-          profilo: profilo,
-          disponibileCoperture: disp
-        });
+      if (editId) {
+        // AGGIORNAMENTO
+        if (window.aggiornaDatiOperatore) {
+          window.aggiornaDatiOperatore(editId, {
+            nome: nome,
+            ruolo: ruolo,
+            tel: tel,
+            profilo: profilo,
+            disponibileCoperture: disp
+          });
+        }
+        mostraToast(`Dati di ${nome} aggiornati!`, '✅');
+      } else {
+        // NUOVO
+        if (window.aggiungiOperatoreTurnario) {
+          window.aggiungiOperatoreTurnario({
+            nome: nome,
+            ruolo: ruolo,
+            tel: tel,
+            profilo: profilo,
+            disponibileCoperture: disp
+          });
+        }
+        mostraToast(`Collaboratore ${nome} aggiunto al roster!`, '👤');
+      }
+
+      chiudiModalNuovoOperatore();
+      renderViste();
+    }
+
+    function confermaEliminaOperatore() {
+      const editId = document.getElementById('editing-op-id')?.value;
+      const nome = document.getElementById('nuovo-op-nome')?.value.trim() || 'Collaboratore';
+      if (!editId) return;
+
+      if (window.rimuoviOperatoreTurnario) {
+        window.rimuoviOperatoreTurnario(editId);
       }
       chiudiModalNuovoOperatore();
       renderViste();
-      mostraToast(`Collaboratore ${nome} aggiunto al roster!`, '👤');
+      mostraToast(`Collaboratore ${nome} rimosso dal roster.`, '🗑️');
     }
 
     // MODAL SBLOCCO PIN ADMIN (ELEGANTE, ZERO PROMPT BROWSER)

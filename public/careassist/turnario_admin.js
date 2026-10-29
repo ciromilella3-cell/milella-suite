@@ -575,6 +575,28 @@ function aggiungiOperatoreTurnario(datiOp) {
   return true;
 }
 
+// Modifica / aggiornamento anagrafica e profilo operatore esistente (SOLO ADMIN)
+function aggiornaDatiOperatore(opId, datiAggiornati) {
+  if (!isUtenteAdmin()) return false;
+  if (!turnarioCorrente) caricaDatiTurnario();
+  const op = turnarioCorrente.operatori.find(o => o.id === opId);
+  if (!op) return false;
+
+  if (datiAggiornati.nome) op.nome = datiAggiornati.nome.trim();
+  if (datiAggiornati.ruolo) op.ruolo = datiAggiornati.ruolo.trim();
+  if (typeof datiAggiornati.tel !== 'undefined') op.tel = datiAggiornati.tel.trim();
+  if (datiAggiornati.profilo) op.profilo = datiAggiornati.profilo;
+  if (typeof datiAggiornati.disponibileCoperture !== 'undefined') {
+    op.disponibileCoperture = Boolean(datiAggiornati.disponibileCoperture);
+  }
+
+  salvaTurnarioSuStorage();
+  if (typeof aggiornaVistaTurnarioModal === 'function') {
+    try { aggiornaVistaTurnarioModal(); } catch(e) {}
+  }
+  return true;
+}
+
 // Rimuovi operatore (SOLO ADMIN, senza confirm nativo)
 function rimuoviOperatoreTurnario(opId) {
   if (!isUtenteAdmin()) return false;
@@ -644,6 +666,7 @@ window.sincronizzaOperatoriCareAssist = sincronizzaOperatoriCareAssist;
 window.cambiaSettimanaTurnario = cambiaSettimanaTurnario;
 window.navigaSettimana = navigaSettimana;
 window.aggiungiOperatoreTurnario = aggiungiOperatoreTurnario;
+window.aggiornaDatiOperatore = aggiornaDatiOperatore;
 window.rimuoviOperatoreTurnario = rimuoviOperatoreTurnario;
 window.stampaTurnarioCartaceoA4 = stampaTurnarioCartaceoA4;
 window.condividiTurnarioWhatsApp = condividiTurnarioWhatsApp;
