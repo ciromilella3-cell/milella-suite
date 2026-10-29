@@ -4168,30 +4168,38 @@
             const descLabel = document.getElementById('lblDescText');
             const descInput = document.getElementById('inpDesc');
             const dateLabel = document.getElementById('lblDateText');
+            const costInp = document.getElementById('inpCost');
 
             if (type === 'Lotteria Italia') {
                 if (descLabel) descLabel.innerHTML = '🎟️ Serie & Numero Biglietto';
                 if (descInput) descInput.placeholder = 'Es. Serie F 356983';
                 if (dateLabel) dateLabel.innerHTML = '📅 Data Acquisto (Estr. 6 Gennaio)';
+                if (costInp && (!costInp.value || costInp.value === '0' || costInp.value === '1.50' || costInp.value === '2.00')) costInp.value = '5.00';
             } else if (type === 'Gratta e Vinci') {
                 if (descLabel) descLabel.innerHTML = '🏷️ Nome Biglietto Gratta e Vinci';
                 if (descInput) descInput.placeholder = 'Es. Il Miliardario, 100X, Doppia Sfida...';
                 if (dateLabel) dateLabel.innerHTML = '📅 Data e Ora Giocata';
+                if (costInp && (!costInp.value || costInp.value === '0' || costInp.value === '1.50' || costInp.value === '2.00')) costInp.value = '5.00';
             } else if (type === 'SuperEnalotto') {
                 if (descLabel) descLabel.innerHTML = '🔢 Sestina / Tipo Giocata';
                 if (descInput) descInput.placeholder = 'Es. Sestina SuperEnalotto, Superstar...';
                 if (dateLabel) dateLabel.innerHTML = '📅 Data e Ora Concorso';
+                if (costInp && (!costInp.value || costInp.value === '0' || costInp.value === '5.00' || costInp.value === '2.00')) costInp.value = '1.50';
             } else if (type === 'Lotto') {
                 if (descLabel) descLabel.innerHTML = '🎲 Ruota & Numeri Giocati';
                 if (descInput) descInput.placeholder = 'Es. Bari: Ambo 10-25, Terno...';
                 if (dateLabel) dateLabel.innerHTML = '📅 Data e Ora Estrazione';
+                if (costInp && (!costInp.value || costInp.value === '0' || costInp.value === '1.50' || costInp.value === '5.00')) costInp.value = '2.00';
             }
 
             currentGame = type;
-            document.getElementById('tabSuper').classList.toggle('active', type === 'SuperEnalotto');
-            document.getElementById('tabLotto').classList.toggle('active', type === 'Lotto');
-            document.getElementById('tabGratta').classList.toggle('active', type === 'Gratta e Vinci');
+            const tabSuper = document.getElementById('tabSuper');
+            const tabLotto = document.getElementById('tabLotto');
+            const tabGratta = document.getElementById('tabGratta');
             const tabLot = document.getElementById('tabLotteria');
+            if (tabSuper) tabSuper.classList.toggle('active', type === 'SuperEnalotto');
+            if (tabLotto) tabLotto.classList.toggle('active', type === 'Lotto');
+            if (tabGratta) tabGratta.classList.toggle('active', type === 'Gratta e Vinci');
             if (tabLot) tabLot.classList.toggle('active', type === 'Lotteria Italia');
 
             const genBox = document.getElementById('generatorBox');
@@ -4204,7 +4212,7 @@
             if (slotSubtitle) slotSubtitle.style.display = 'none';
 
             if (genBox) {
-                if (type === 'Gratta e Vinci') {
+                if (type === 'Lotteria Italia' || type === 'Gratta e Vinci') {
                     genBox.style.display = 'none';
                 } else if (type === 'SuperEnalotto') {
                     genBox.style.display = 'block';
@@ -4219,7 +4227,8 @@
 
             const descInp = document.getElementById('inpDesc');
             if (descInp && !editingTimestamp) {
-                if (type === 'Gratta e Vinci') descInp.placeholder = 'Es. Il Miliardario, 100X, Doppia Sfida...';
+                if (type === 'Lotteria Italia') descInp.placeholder = 'Es. Serie F 356983';
+                else if (type === 'Gratta e Vinci') descInp.placeholder = 'Es. Il Miliardario, 100X, Doppia Sfida...';
                 else if (type === 'SuperEnalotto') descInp.placeholder = 'Es. Sestina singola, Superstar...';
                 else descInp.placeholder = 'Es. Ambo, Terno, Ruota di Napoli...';
             }
@@ -6228,7 +6237,7 @@ function preprocessTicketImage(file) {
     });
 }
 
-// MOTORE OCR POTENZIATO: DUAL-PASS CON PRE-PROCESSING E FEEDBACK VOCALE AI
+// MOTORE OCR POTENZIATO: DUAL-PASS CON PRE-PROCESSING, QR-FALLBACK E FEEDBACK VOCALE AI
 async function handleTicketImageCapture(event) {
     const rawFile = event.target.files && event.target.files[0];
     if (!rawFile) return;
@@ -6248,8 +6257,8 @@ async function handleTicketImageCapture(event) {
     if (previewImg) previewImg.src = URL.createObjectURL(rawFile);
     if (modalIcon) modalIcon.textContent = '🔍';
     if (modalTitle) modalTitle.textContent = 'Analisi Biglietto con Voce AI...';
-    if (statusText) statusText.textContent = 'Pre-elaborazione ottica e scansione della serie...';
-    if (percentText) percentText.textContent = 'Ottimizzazione contrasto (0%)...';
+    if (statusText) statusText.textContent = 'Riconoscimento automatico gioco e serie...';
+    if (percentText) percentText.textContent = 'Analisi ottica in corso (10%)...';
     if (progressBox) progressBox.style.display = 'block';
     if (resultBox) { resultBox.style.display = 'none'; resultBox.innerHTML = ''; }
     if (btnRiascolta) btnRiascolta.style.display = 'none';
@@ -6258,9 +6267,31 @@ async function handleTicketImageCapture(event) {
     _ultimoRisultatoEstrazioneOcr = null;
 
     let recognizedText = '';
+    let qrDetected = '';
+
+    // Passaggio 0: Controllo rapido QR / Barcode presente sul biglietto
+    if (typeof Html5Qrcode !== 'undefined') {
+        try {
+            let dummyBox = document.getElementById('dummyQrScanBox');
+            if (!dummyBox) {
+                dummyBox = document.createElement('div');
+                dummyBox.id = 'dummyQrScanBox';
+                dummyBox.style.display = 'none';
+                document.body.appendChild(dummyBox);
+            }
+            const fScanner = new Html5Qrcode("dummyQrScanBox");
+            qrDetected = await fScanner.scanFile(rawFile, false);
+            fScanner.clear();
+            if (qrDetected) {
+                console.log('✓ QR / Barcode rilevato dal file:', qrDetected);
+            }
+        } catch(e) {
+            // Nessun QR/barcode, prosegue con OCR Tesseract
+        }
+    }
 
     try {
-        if (percentText) percentText.textContent = 'Miglioramento nitidezza ottica (15%)...';
+        if (percentText) percentText.textContent = 'Ottimizzazione nitidezza e contrasto (30%)...';
         const processedBlob = await preprocessTicketImage(rawFile);
 
         if (typeof Tesseract !== 'undefined') {
@@ -6276,11 +6307,11 @@ async function handleTicketImageCapture(event) {
                 }
             });
 
-            // Passaggio 1: Analizza immagine pre-elaborata
+            // Passaggio 1: Analizza immagine ad alto contrasto
             const ret = await worker.recognize(processedBlob);
             recognizedText = (ret && ret.data && ret.data.text) ? ret.data.text : '';
 
-            // Se il testo è troppo corto, prova un rapido passaggio sull'originale
+            // Se il testo è troppo corto, effettua passaggio secondario sull'originale
             if (recognizedText.length < 8) {
                 if (percentText) percentText.textContent = 'Secondo passaggio ad alta sensibilità...';
                 const retRaw = await worker.recognize(rawFile);
@@ -6295,11 +6326,12 @@ async function handleTicketImageCapture(event) {
         console.warn('OCR error:', err);
     }
 
-    console.log('--- TESTO OCR ESTRATTO DAL BIGLIETTO ---\n', recognizedText);
+    const testoCompleto = ((qrDetected ? (qrDetected + '\n') : '') + recognizedText).trim();
+    console.log('--- TESTO OCR & QR ESTRATTO DAL BIGLIETTO ---\n', testoCompleto);
     if (progressBox) progressBox.style.display = 'none';
 
     // Analizza ed estrae serie / tipo di gioco / filtro non-gioco
-    const estratto = analizzaTestoBigliettoEPopola(recognizedText);
+    const estratto = analizzaTestoBigliettoEPopola(testoCompleto);
     _ultimoRisultatoEstrazioneOcr = estratto;
 
     // CASO 1: OGGETTO NON DI GIOCO (Come NON FARMACO di CareAssist)
@@ -6315,7 +6347,7 @@ async function handleTicketImageCapture(event) {
                         <span>🚫</span> <span>Rilevato: Prodotto Commerciale / Non Gioco</span>
                     </div>
                     <div>L'immagine fotografata contiene diciture commerciali o sanitarie (es. crema, farmaco o articolo vario).</div>
-                    <div style="margin-top:6px; font-weight:700; color:#ffffff;">👉 Per registrare la giocata, inquadra la <b>Serie</b> del biglietto (es. <i>Serie D 425073</i>) o lo scontrino di gioco.</div>
+                    <div style="margin-top:6px; font-weight:700; color:#ffffff;">👉 Per registrare la giocata, inquadra la <b>Serie</b> del biglietto (es. <i>Serie F 356983</i>) o lo scontrino di gioco.</div>
                 </div>
             `;
             resultBox.style.display = 'block';
@@ -6328,19 +6360,20 @@ async function handleTicketImageCapture(event) {
     if (estratto && estratto.haSerie) {
         if (modalIcon) modalIcon.textContent = '🎉';
         if (modalTitle) modalTitle.textContent = 'Biglietto Identificato!';
-        if (statusText) statusText.textContent = `Rilevato con successo: ${estratto.serieTrovata}`;
+        if (statusText) statusText.textContent = `Scheda: ${estratto.tipoGioco} • Serie: ${estratto.serieTrovata}`;
 
         if (resultBox) {
             resultBox.innerHTML = `
                 <div style="background:linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(6,78,59,0.3) 100%); border:1.5px solid #10b981; border-radius:14px; padding:12px 14px; color:#ffffff;">
                     <div style="font-size:11px; font-weight:800; color:#34d399; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">
-                        ✨ RISULTATO OTTICO ACQUISITO:
+                        ✨ SCHEDA RICONOSCIUTA E ATTIVATA:
                     </div>
-                    <div style="font-size:16px; font-weight:900; color:#ffffff; margin-bottom:4px;">
+                    <div style="font-size:17px; font-weight:900; color:#ffffff; margin-bottom:6px;">
                         🎟️ ${estratto.serieTrovata}
                     </div>
-                    <div style="font-size:12px; color:#a7f3d0;">
-                        Tipo: <b>${estratto.tipoGioco}</b> • Giocata pronta per il salvataggio immediato!
+                    <div style="font-size:12px; color:#a7f3d0; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <span>Scheda Selezionata: <b style="color:#ffffff; background:rgba(16,185,129,0.3); padding:2px 8px; border-radius:6px;">${estratto.tipoGioco}</b></span>
+                        <span>• Campi compilati al 100%!</span>
                     </div>
                 </div>
             `;
@@ -6359,32 +6392,25 @@ async function handleTicketImageCapture(event) {
         }, 2500);
 
     } else {
-        // CASO 3: FOTO ACQUISITA MA SERIE NON CHIARA (PREDISPONE CURSORE)
+        // CASO 3: FOTO ACQUISITA MA SERIE NON DISTINGUIBILE
         if (modalIcon) modalIcon.textContent = '📸';
         if (modalTitle) modalTitle.textContent = 'Foto Acquisita!';
-        if (statusText) statusText.textContent = 'Completa o verifica la serie prima di salvare.';
+        if (statusText) statusText.textContent = 'Inquadra da vicino la serie o scrivi il numero del biglietto.';
 
-        const annuncioFallback = "Foto acquisita! Completa la serie del biglietto.";
+        const annuncioFallback = "Foto acquisita! Completa la serie del biglietto per registrare.";
         pronunciaEsitoBigliettoVocale(annuncioFallback);
 
         setTimeout(() => {
             chiudiOcrModal();
             const descInp = document.getElementById('inpDesc');
             if (descInp) {
-                if (!descInp.value || descInp.value.trim() === '') {
-                    descInp.value = 'Lotteria Italia 2026 (Serie ';
-                }
                 descInp.focus();
-                if (descInp.setSelectionRange) {
-                    const l = descInp.value.length;
-                    descInp.setSelectionRange(l, l);
-                }
                 descInp.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
             if (typeof showToast === 'function') {
-                showToast('Foto acquisita! Verifica o scrivi la serie (es. D 425073) e salva.', 'info');
+                showToast('Foto acquisita! Verifica o scrivi la serie (es. F 356983) e premi Salva.', 'info');
             }
-        }, 1200);
+        }, 1300);
     }
 
     event.target.value = '';
@@ -6435,23 +6461,27 @@ async function startLiveScanner() {
                 if (typeof playSound === 'function') playSound('win');
                 if (typeof launchConfetti === 'function') launchConfetti(3000);
 
-                if (typeof setGameType === 'function') setGameType('Lotteria Italia');
-                
-                let finalSerie = 'D 425073';
-                const m = decodedText.match(/([A-Z])\s*([0-9]{5,6})/i);
-                if (m) {
-                    finalSerie = m[1].toUpperCase() + ' ' + m[2];
-                } else {
-                    const numMatch = decodedText.match(/([0-9]{6})/);
-                    if (numMatch) finalSerie = 'Serie F ' + numMatch[1];
+                // Analizza con la funzione unificata intelligente
+                const estrattoLive = analizzaTestoBigliettoEPopola(decodedText);
+
+                if (!estrattoLive || !estrattoLive.haSerie) {
+                    if (typeof setGameType === 'function') setGameType('Lotteria Italia');
+                    let finalSerie = 'F 356983';
+                    const m = decodedText.match(/([A-Z])\s*([0-9]{5,6})/i);
+                    if (m) {
+                        finalSerie = m[1].toUpperCase() + ' ' + m[2];
+                    } else {
+                        const numMatch = decodedText.match(/([0-9]{6})/);
+                        if (numMatch) finalSerie = 'Serie F ' + numMatch[1];
+                    }
+
+                    const descInp = document.getElementById('inpDesc');
+                    if (descInp) descInp.value = 'Lotteria Italia 2026 (Serie ' + finalSerie + ')';
+                    const costInp = document.getElementById('inpCost');
+                    if (costInp) costInp.value = '5.00';
+
+                    if (typeof updateLivePreview === 'function') updateLivePreview();
                 }
-
-                const descInp = document.getElementById('inpDesc');
-                if (descInp) descInp.value = 'Lotteria Italia 2026 (Serie ' + finalSerie + ')';
-                const costInp = document.getElementById('inpCost');
-                if (costInp) costInp.value = '5.00';
-
-                if (typeof updateLivePreview === 'function') updateLivePreview();
 
                 setTimeout(() => {
                     if (typeof registraGiocataCorrenteDiretta === 'function') {
@@ -6490,6 +6520,13 @@ function analizzaTestoBigliettoEPopola(txt) {
     const costInp = document.getElementById('inpCost');
     const winInp = document.getElementById('inpWin');
     const locInp = document.getElementById('inpLocation');
+    const dateInp = document.getElementById('inpDate');
+
+    // Imposta data e ora attuale se vuota
+    if (dateInp && !dateInp.value) {
+        const now = new Date();
+        dateInp.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    }
 
     // FILTRO ANTI "NON GIOCO" (Come il NON FARMACO di CareAssist)
     const paroleFarmaceuticheNonGioco = [
@@ -6502,7 +6539,8 @@ function analizzaTestoBigliettoEPopola(txt) {
     const paroleGioco = [
         'LOTTERIA', 'SERIE', 'BIGLIETTO', 'GRATTA', 'VINCI', 'MILIARDARIO',
         'SUPERENALOTTO', 'LOTTO', 'SCONTRINO', 'SISAL', 'LOTTOMATICA', 'MONOPOLI',
-        'ADM', 'AGENZIA DELLE DOGANE', 'PREMIO', 'ESTRAZIONE', 'AFFARI TUOI'
+        'ADM', 'AGENZIA DELLE DOGANE', 'PREMIO', 'ESTRAZIONE', 'AFFARI TUOI', 'GENNAIO',
+        '5 MILIONI', 'MYLOTTERIES'
     ];
 
     const haTerminiGioco = paroleGioco.some(w => upper.includes(w));
@@ -6520,17 +6558,26 @@ function analizzaTestoBigliettoEPopola(txt) {
         };
     }
 
-    // 1. RICONOSCIMENTO LOTTERIA ITALIA
-    // Cerchiamo la Serie (Lettera A-Z) e il Numero (5-6 cifre)
-    let serieLettera = '';
-    let serieCifre = '';
+    // =========================================================================
+    // 1. RICONOSCIMENTO PRIORITARIO LOTTERIA ITALIA (ANCHE SE SELEZIONATO SUPERENALOTTO)
+    // =========================================================================
+    const paroleChiaveLotteria = [
+        'LOTTERIA', 'ITALIA', 'ESTRAZIONE', 'GENNAIO', '6 GENNAIO', 'AFFARI TUOI',
+        'PRIMO PREMIO', '5 MILIONI', '5.000.000', 'MYLOTTERIES', 'LOTTERIA-ITALIA',
+        'SERIE', '5 EURO'
+    ];
 
+    // Cerca Serie (Lettera A-Z) e Numero (5-6 cifre) come da vero biglietto Lotteria Italia (es. F 356983)
     const matchExplicit = upper.match(/SERIE\s*[:\-\s]?\s*([A-Z])[\s\S]{0,35}?(?:N\.?|NUMERO|NUM\.?|\b)\s*[:\-\s]?\s*([0-9]{5,6})/i);
     const matchSerieDirect = upper.match(/SERIE\s*[:\-\s]?\s*([A-Z])\s*([0-9]{5,6})/i);
-    const matchLetterDigits = upper.match(/\b([A-Z])\s*([0-9]{6})\b/);
-    const matchLetter5Digits = upper.match(/\b([A-Z])\s*([0-9]{5})\b/);
-    const matchDigitsLetter = upper.match(/\b([0-9]{6})\s*([A-Z])\b/);
+    const matchLetterDigits = upper.match(/\b([A-Z])\s*[:\.\-_]?\s*([0-9]{6})\b/);
+    const matchLetterSpaced = upper.match(/\b([A-Z])\s*[:\.\-_]?\s*([0-9]{2,3})\s+([0-9]{3})\b/);
+    const matchLetter5Digits = upper.match(/\b([A-Z])\s*[:\.\-_]?\s*([0-9]{5})\b/);
+    const matchDigitsLetter = upper.match(/\b([0-9]{6})\s*[:\.\-_]?\s*([A-Z])\b/);
     const matchSolo6Cifre = upper.match(/\b([0-9]{6})\b/);
+
+    let serieLettera = '';
+    let serieCifre = '';
 
     if (matchExplicit) {
         serieLettera = matchExplicit[1].toUpperCase();
@@ -6541,55 +6588,68 @@ function analizzaTestoBigliettoEPopola(txt) {
     } else if (matchLetterDigits) {
         serieLettera = matchLetterDigits[1].toUpperCase();
         serieCifre = matchLetterDigits[2];
+    } else if (matchLetterSpaced) {
+        serieLettera = matchLetterSpaced[1].toUpperCase();
+        serieCifre = matchLetterSpaced[2] + matchLetterSpaced[3];
     } else if (matchLetter5Digits) {
         serieLettera = matchLetter5Digits[1].toUpperCase();
         serieCifre = matchLetter5Digits[2];
     } else if (matchDigitsLetter) {
         serieLettera = matchDigitsLetter[2].toUpperCase();
         serieCifre = matchDigitsLetter[1];
+    } else if (matchSolo6Cifre) {
+        serieCifre = matchSolo6Cifre[1];
+        // Cerca una lettera isolata nelle immediate vicinanze (15 caratteri prima)
+        const idx = upper.indexOf(serieCifre);
+        if (idx > 0) {
+            const before = upper.substring(Math.max(0, idx - 15), idx);
+            const mNear = before.match(/([A-Z])\s*[:\.\-_]?\s*$/);
+            if (mNear) serieLettera = mNear[1];
+        }
     }
 
-    if (serieLettera && serieCifre) {
-        const serieCompleta = `Serie ${serieLettera} ${serieCifre}`;
+    const haSegnaliLotteria = paroleChiaveLotteria.some(w => upper.includes(w)) || (serieLettera && serieCifre);
+
+    if (haSegnaliLotteria) {
+        // FORZA IL CAMBIO SCHEDA A LOTTERIA ITALIA QUALSIASI SCHEDA FOSSE ATTIVA
         if (typeof setGameType === 'function') setGameType('Lotteria Italia');
-        if (descInp) descInp.value = `Lotteria Italia 2026 (${serieCompleta})`;
+
+        let serieDesc = '';
+        if (serieLettera && serieCifre) {
+            serieDesc = `Serie ${serieLettera} ${serieCifre}`;
+        } else if (serieCifre) {
+            serieDesc = `Numero ${serieCifre}`;
+        } else {
+            serieDesc = `Edizione 2026`;
+        }
+
+        const nomeCompleto = `Lotteria Italia 2026 (${serieDesc})`;
+        if (descInp) descInp.value = nomeCompleto;
         if (costInp) costInp.value = '5.00';
         if (winInp && (!winInp.value || winInp.value === '0')) winInp.value = '0.00';
         if (locInp && !locInp.value) locInp.value = 'Ricevitoria / Tabacchi';
         if (typeof updateLivePreview === 'function') updateLivePreview();
 
-        const annuncio = `Biglietto Lotteria Italia identificato: Serie ${serieLettera}, numero ${serieCifre}! In bocca al lupo per l'estrazione!`;
+        const annuncio = (serieLettera && serieCifre)
+            ? `Biglietto Lotteria Italia identificato: Serie ${serieLettera}, numero ${serieCifre}! Costo 5 euro. In bocca al lupo per l'estrazione!`
+            : `Biglietto Lotteria Italia rilevato! Costo 5 euro. Verifica la serie e il numero.`;
+        
         pronunciaEsitoBigliettoVocale(annuncio);
 
         return {
             haSerie: true,
             isNonGioco: false,
             tipoGioco: 'Lotteria Italia',
-            serieTrovata: serieCompleta,
+            serieTrovata: serieDesc,
             lettera: serieLettera,
             numero: serieCifre,
             annuncioVoce: annuncio
         };
-    } else if (matchSolo6Cifre && (currentGame === 'Lotteria Italia' || upper.includes('LOTTERIA'))) {
-        const serieCompleta = `Numero ${matchSolo6Cifre[1]}`;
-        if (typeof setGameType === 'function') setGameType('Lotteria Italia');
-        if (descInp) descInp.value = `Lotteria Italia 2026 (${serieCompleta})`;
-        if (costInp) costInp.value = '5.00';
-        if (typeof updateLivePreview === 'function') updateLivePreview();
-
-        const annuncio = `Numero ${matchSolo6Cifre[1]} rilevato! Verifica la lettera della serie.`;
-        pronunciaEsitoBigliettoVocale(annuncio);
-
-        return {
-            haSerie: true,
-            isNonGioco: false,
-            tipoGioco: 'Lotteria Italia',
-            serieTrovata: serieCompleta,
-            annuncioVoce: annuncio
-        };
     }
 
-    // 2. RICONOSCIMENTO GRATTA E VINCI
+    // =========================================================================
+    // 2. RICONOSCIMENTO PRIORITARIO GRATTA E VINCI
+    // =========================================================================
     const catalogGratta = [
         { key: 'MILIARDARIO MAXI', name: 'Il Miliardario Maxi', cost: '20.00' },
         { key: 'MILIARDARIO MEGA', name: 'Il Miliardario Mega', cost: '10.00' },
@@ -6606,51 +6666,88 @@ function analizzaTestoBigliettoEPopola(txt) {
         { key: 'SUPER NUMERONE', name: 'Super Numerone', cost: '10.00' }
     ];
 
-    for (const g of catalogGratta) {
-        if (upper.includes(g.key)) {
-            if (typeof setGameType === 'function') setGameType('Gratta e Vinci');
-            if (descInp) descInp.value = g.name;
-            if (costInp) costInp.value = g.cost;
-            if (winInp && (!winInp.value || winInp.value === '0')) winInp.value = '0.00';
-            if (locInp && !locInp.value) locInp.value = 'Tabacchi / Bar';
-            if (typeof updateLivePreview === 'function') updateLivePreview();
+    const grattaTrovato = catalogGratta.find(g => upper.includes(g.key));
+    const haSegnaliGratta = grattaTrovato || upper.includes('GRATTA') || upper.includes('VINCI') || upper.includes('AREA BONUS') || upper.includes('NUMERI VINCENTI');
 
-            const annuncio = `Riconosciuto Gratta e Vinci ${g.name}, costo ${parseInt(g.cost)} euro! Buona fortuna!`;
-            pronunciaEsitoBigliettoVocale(annuncio);
+    if (haSegnaliGratta) {
+        if (typeof setGameType === 'function') setGameType('Gratta e Vinci');
+        const nomeG = grattaTrovato ? grattaTrovato.name : 'Gratta e Vinci';
+        const costoG = grattaTrovato ? grattaTrovato.cost : '5.00';
 
-            return {
-                haSerie: true,
-                isNonGioco: false,
-                tipoGioco: 'Gratta e Vinci',
-                serieTrovata: g.name,
-                annuncioVoce: annuncio
-            };
-        }
+        if (descInp) descInp.value = nomeG;
+        if (costInp) costInp.value = costoG;
+        if (winInp && (!winInp.value || winInp.value === '0')) winInp.value = '0.00';
+        if (locInp && !locInp.value) locInp.value = 'Bar / Ricevitoria';
+        if (typeof updateLivePreview === 'function') updateLivePreview();
+
+        const annuncio = `Riconosciuto Gratta e Vinci ${nomeG}, costo ${parseInt(costoG)} euro! Buona fortuna!`;
+        pronunciaEsitoBigliettoVocale(annuncio);
+
+        return {
+            haSerie: true,
+            isNonGioco: false,
+            tipoGioco: 'Gratta e Vinci',
+            serieTrovata: nomeG,
+            annuncioVoce: annuncio
+        };
     }
 
-    // 3. SUPERENALOTTO & LOTTO
-    if (upper.includes('SUPERENALOTTO') || upper.includes('SUPERSTAR') || currentGame === 'SuperEnalotto') {
+    // =========================================================================
+    // 3. RICONOSCIMENTO ESPLICITO SUPERENALOTTO & SISAL
+    // =========================================================================
+    const haSegnaliSuper = upper.includes('SUPERENALOTTO') || upper.includes('SUPERSTAR') || upper.includes('SISAL') || upper.includes('CONCORSO');
+    if (haSegnaliSuper) {
         if (typeof setGameType === 'function') setGameType('SuperEnalotto');
         if (descInp) descInp.value = 'Schedina SuperEnalotto';
         if (costInp && (!costInp.value || costInp.value === '0.00' || costInp.value === '0')) costInp.value = '1.50';
+        if (winInp && (!winInp.value || winInp.value === '0')) winInp.value = '0.00';
+        if (locInp && !locInp.value) locInp.value = 'Ricevitoria Sisal';
         if (typeof updateLivePreview === 'function') updateLivePreview();
+
         const annuncio = "Schedina SuperEnalotto registrata! In bocca al lupo!";
         pronunciaEsitoBigliettoVocale(annuncio);
-        return { haSerie: true, isNonGioco: false, tipoGioco: 'SuperEnalotto', serieTrovata: 'SuperEnalotto', annuncioVoce: annuncio };
+
+        return {
+            haSerie: true,
+            isNonGioco: false,
+            tipoGioco: 'SuperEnalotto',
+            serieTrovata: 'SuperEnalotto',
+            annuncioVoce: annuncio
+        };
     }
 
-    if (upper.includes('LOTTO') || currentGame === 'Lotto') {
+    // =========================================================================
+    // 4. RICONOSCIMENTO ESPLICITO GIOCO DEL LOTTO
+    // =========================================================================
+    const haSegnaliLotto = upper.includes('LOTTO') || upper.includes('RUOTA') || upper.includes('AMBO') || upper.includes('TERNO') || upper.includes('LOTTOMATICA');
+    if (haSegnaliLotto) {
         if (typeof setGameType === 'function') setGameType('Lotto');
         if (descInp) descInp.value = 'Scontrino Gioco del Lotto';
         if (costInp && (!costInp.value || costInp.value === '0.00' || costInp.value === '0')) costInp.value = '2.00';
+        if (winInp && (!winInp.value || winInp.value === '0')) winInp.value = '0.00';
+        if (locInp && !locInp.value) locInp.value = 'Ricevitoria Lotto';
         if (typeof updateLivePreview === 'function') updateLivePreview();
+
         const annuncio = "Scontrino Gioco del Lotto registrato! Buona fortuna!";
         pronunciaEsitoBigliettoVocale(annuncio);
-        return { haSerie: true, isNonGioco: false, tipoGioco: 'Lotto', serieTrovata: 'Gioco del Lotto', annuncioVoce: annuncio };
+
+        return {
+            haSerie: true,
+            isNonGioco: false,
+            tipoGioco: 'Lotto',
+            serieTrovata: 'Gioco del Lotto',
+            annuncioVoce: annuncio
+        };
     }
 
-    // Default se non trova nulla di specifico
-    return { haSerie: false, isNonGioco: false };
+    // =========================================================================
+    // 5. NESSUN GIOCO RICONOSCIUTO CHIARAMENTE: NON FORZARE SUPERENALOTTO!
+    // =========================================================================
+    return {
+        haSerie: false,
+        isNonGioco: false,
+        tipoGioco: null
+    };
 }
 
 function analizzaNomeFileEFallback(filename) {
