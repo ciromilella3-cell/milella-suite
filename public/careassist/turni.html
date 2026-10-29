@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CareAssist Pro - Gestione Turni & Personale Assistenziale</title>
+  <title>CareAssist Pro - Gestione Roster & Turni Personale</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -11,27 +11,34 @@
 
   <style>
     :root {
-      --bg: #0b1120;
-      --card-bg: rgba(15, 23, 42, 0.85);
-      --card-border: rgba(56, 189, 248, 0.18);
-      --card-border-hover: rgba(56, 189, 248, 0.4);
-      --primary: #0284c7;
-      --primary-light: #38bdf8;
-      --primary-glow: rgba(56, 189, 248, 0.25);
-      --emerald: #10b981;
+      --bg-dark: #080d1a;
+      --surface-1: #0e1726;
+      --surface-2: #152238;
+      --surface-3: #1e2f4d;
+      --card-bg: rgba(14, 23, 38, 0.78);
+      --card-border: rgba(148, 163, 184, 0.12);
+      --card-border-hover: rgba(56, 189, 248, 0.35);
+      
+      --cyan-primary: #0284c7;
+      --cyan-light: #38bdf8;
+      --cyan-glow: rgba(56, 189, 248, 0.25);
+      
+      --emerald-accent: #10b981;
       --emerald-light: #34d399;
-      --amber: #f59e0b;
-      --purple: #8b5cf6;
-      --rose: #f43f5e;
-      --text-main: #f8fafc;
+      --amber-accent: #f59e0b;
+      --indigo-accent: #6366f1;
+      --purple-accent: #a855f7;
+      --rose-accent: #f43f5e;
+      
+      --text-main: #ffffff;
       --text-muted: #94a3b8;
       --text-sub: #64748b;
-      --surface-1: rgba(30, 41, 59, 0.7);
-      --surface-2: rgba(51, 65, 85, 0.5);
-      --radius-lg: 18px;
-      --radius-md: 12px;
-      --radius-sm: 8px;
-      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      
+      --radius-xl: 20px;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+      --transition-smooth: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     * {
@@ -43,22 +50,23 @@
 
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at 15% 10%, #0f172a 0%, #020617 100%);
+      background: radial-gradient(circle at 10% 5%, #131c31 0%, #080d1a 60%, #030712 100%);
       color: var(--text-main);
       min-height: 100vh;
-      padding-bottom: 70px;
+      padding-bottom: 80px;
+      line-height: 1.5;
     }
 
-    /* TOP BAR */
+    /* EXECUTIVE TOPBAR */
     .topbar {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(11, 17, 32, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(56, 189, 248, 0.15);
-      padding: 12px 24px;
+      background: rgba(8, 13, 26, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -66,45 +74,57 @@
       flex-wrap: wrap;
     }
 
-    .brand {
+    .brand-group {
       display: flex;
       align-items: center;
       gap: 14px;
     }
 
-    .brand-icon {
+    .brand-icon-wrap {
       width: 44px;
       height: 44px;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-      box-shadow: 0 4px 18px rgba(2, 132, 199, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 22px;
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .brand-title {
       font-size: 1.15rem;
       font-weight: 900;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.4px;
       display: flex;
       align-items: center;
       gap: 8px;
+      color: #ffffff;
+    }
+
+    .brand-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan-light);
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 2px 8px;
+      border-radius: 9999px;
     }
 
     .brand-subtitle {
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       color: var(--text-muted);
       font-weight: 500;
     }
 
-    /* RUOLO E ACCESSO */
+    /* ROLE BADGE */
     .role-badge {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      padding: 6px 14px;
+      gap: 8px;
+      padding: 6px 16px;
       border-radius: 9999px;
       font-size: 12px;
       font-weight: 800;
@@ -113,21 +133,22 @@
 
     .role-admin {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.25) 100%);
-      border: 1px solid #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.6);
       color: #fbbf24;
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.2);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.15);
     }
 
     .role-collaboratore {
       background: rgba(56, 189, 248, 0.12);
-      border: 1px solid #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
       color: #38bdf8;
     }
 
+    /* ACTIONS GROUP */
     .top-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -137,14 +158,15 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 9px 16px;
+      padding: 9px 18px;
       border-radius: var(--radius-md);
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       border: none;
-      transition: var(--transition);
+      transition: var(--transition-smooth);
       text-decoration: none;
+      user-select: none;
     }
 
     .btn:hover {
@@ -154,137 +176,170 @@
     .btn-sky {
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       color: #ffffff;
-      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .btn-sky:hover {
-      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+      box-shadow: 0 6px 22px rgba(2, 132, 199, 0.5);
     }
 
     .btn-emerald {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
       color: #ffffff;
-      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+      box-shadow: 0 4px 16px rgba(5, 150, 105, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .btn-emerald:hover {
-      box-shadow: 0 6px 20px rgba(5, 150, 105, 0.5);
+      box-shadow: 0 6px 22px rgba(5, 150, 105, 0.5);
     }
 
     .btn-wa {
-      background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
       color: #ffffff;
-      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+      box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .btn-ghost {
-      background: var(--surface-1);
+      background: rgba(255, 255, 255, 0.05);
       color: var(--text-main);
       border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
     }
 
     .btn-ghost:hover {
-      background: var(--surface-2);
+      background: rgba(255, 255, 255, 0.1);
       border-color: rgba(255, 255, 255, 0.25);
     }
 
-    /* CONTAINER PRINCIPALE */
+    /* CONTAINER */
     .container {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 20px 20px;
+      padding: 24px 28px;
     }
 
-    /* PATIENT & CONTEXT BANNER */
-    .patient-strip {
-      background: linear-gradient(135deg, rgba(2, 132, 199, 0.14) 0%, rgba(15, 23, 42, 0.8) 100%);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: var(--radius-lg);
-      padding: 14px 20px;
-      margin-bottom: 20px;
+    /* PATIENT EXECUTIVE BANNER */
+    .patient-banner {
+      background: linear-gradient(135deg, rgba(14, 23, 38, 0.85) 0%, rgba(21, 34, 56, 0.6) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      border-radius: var(--radius-xl);
+      padding: 16px 24px;
+      margin-bottom: 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
+      gap: 18px;
       flex-wrap: wrap;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
     }
 
-    .patient-info {
+    .patient-meta-group {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
     }
 
-    .patient-avatar {
-      width: 42px;
-      height: 42px;
+    .patient-avatar-box {
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+      color: #0b1120;
+      font-size: 17px;
+      font-weight: 900;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      font-weight: 900;
-      color: #0b1120;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.8);
     }
 
-    .patient-meta h2 {
+    .patient-title-h2 {
       font-size: 15px;
       font-weight: 800;
       color: #ffffff;
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .patient-meta p {
+    .patient-badge-h24 {
+      font-size: 10.5px;
+      font-weight: 800;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+    }
+
+    .patient-coord-text {
       font-size: 12.5px;
-      color: #94a3b8;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
 
-    .emergency-tags {
+    .emergency-dial-group {
       display: flex;
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
     }
 
-    .em-pill {
-      background: rgba(244, 63, 94, 0.15);
-      border: 1px solid rgba(244, 63, 94, 0.4);
+    .btn-dial {
+      background: rgba(244, 63, 94, 0.14);
+      border: 1px solid rgba(244, 63, 94, 0.35);
       color: #fda4af;
-      padding: 5px 12px;
+      padding: 6px 14px;
       border-radius: 9999px;
       font-size: 12px;
       font-weight: 800;
-      text-decoration: none;
-      display: flex;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
+      transition: var(--transition-smooth);
     }
 
-    .em-pill:hover {
-      background: rgba(244, 63, 94, 0.3);
+    .btn-dial:hover {
+      background: rgba(244, 63, 94, 0.28);
+      transform: translateY(-1px);
     }
 
-    /* KPI GRID */
+    .btn-dial-gm {
+      background: rgba(2, 132, 199, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #7dd3fc;
+    }
+
+    .btn-dial-gm:hover {
+      background: rgba(2, 132, 199, 0.28);
+    }
+
+    /* KPI METRICS GRID */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
     .kpi-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius-lg);
-      padding: 16px;
+      padding: 16px 18px;
       display: flex;
       align-items: center;
       gap: 14px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
-      transition: var(--transition);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
+      transition: var(--transition-smooth);
     }
 
     .kpi-card:hover {
@@ -314,7 +369,7 @@
     .kpi-lbl {
       font-size: 0.72rem;
       color: var(--text-muted);
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -325,7 +380,7 @@
       border: 1.5px solid rgba(56, 189, 248, 0.35);
       border-radius: var(--radius-lg);
       padding: 14px 18px;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -335,31 +390,32 @@
       font-size: 13px;
     }
 
-    /* VIEW SWITCHER & CONTROLS */
+    /* CONTROLS STRIP */
     .controls-strip {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      padding: 14px 18px;
-      margin-bottom: 20px;
+      border-radius: var(--radius-xl);
+      padding: 14px 20px;
+      margin-bottom: 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 16px;
       flex-wrap: wrap;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
 
-    .view-pills {
+    .segmented-control {
       display: flex;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(10, 15, 28, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 9999px;
       padding: 4px;
       gap: 4px;
     }
 
-    .view-pill {
-      padding: 7px 16px;
+    .seg-pill {
+      padding: 7px 18px;
       border-radius: 9999px;
       font-size: 12.5px;
       font-weight: 700;
@@ -370,10 +426,10 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: var(--transition);
+      transition: var(--transition-smooth);
     }
 
-    .view-pill.active {
+    .seg-pill.active {
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       color: #ffffff;
       box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
@@ -387,28 +443,30 @@
     }
 
     .date-input-styled {
-      background: var(--surface-1);
+      background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #ffffff;
-      padding: 8px 12px;
+      padding: 8px 14px;
       border-radius: var(--radius-md);
       font-family: inherit;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       outline: none;
+      transition: var(--transition-smooth);
     }
 
     .date-input-styled:focus {
-      border-color: var(--primary-light);
+      border-color: var(--cyan-light);
+      box-shadow: 0 0 10px var(--cyan-glow);
     }
 
     /* ROSTER MATRIX TABLE */
     .roster-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 10px 36px rgba(0, 0, 0, 0.35);
       overflow: hidden;
       margin-bottom: 24px;
     }
@@ -427,25 +485,25 @@
     }
 
     .roster-table th {
-      background: rgba(15, 23, 42, 0.95);
+      background: rgba(14, 23, 38, 0.96);
       color: var(--text-muted);
       font-size: 11px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       padding: 14px 10px;
-      border-bottom: 1.5px solid rgba(56, 189, 248, 0.2);
+      border-bottom: 1.5px solid rgba(56, 189, 248, 0.18);
       text-align: center;
       white-space: nowrap;
     }
 
     .roster-table th.th-op {
       text-align: left;
-      padding-left: 20px;
-      min-width: 250px;
+      padding-left: 24px;
+      min-width: 260px;
       position: sticky;
       left: 0;
-      background: #0f172a;
+      background: #0e1726;
       z-index: 10;
       border-right: 1px solid rgba(255, 255, 255, 0.08);
     }
@@ -457,8 +515,8 @@
     }
 
     .day-header-date {
-      font-size: 10.5px;
-      color: #38bdf8;
+      font-size: 11px;
+      color: var(--cyan-light);
       font-weight: 700;
       margin-top: 2px;
     }
@@ -473,20 +531,20 @@
 
     .roster-table td.td-op {
       text-align: left;
-      padding-left: 20px;
+      padding-left: 24px;
       position: sticky;
       left: 0;
-      background: #0f172a;
+      background: #0e1726;
       z-index: 9;
       border-right: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .roster-table tr:hover td {
-      background: rgba(30, 41, 59, 0.4);
+      background: rgba(30, 47, 77, 0.4);
     }
 
     .roster-table tr:hover td.td-op {
-      background: #131c33;
+      background: #121e33;
     }
 
     /* OPERATOR CELL META */
@@ -497,8 +555,8 @@
     }
 
     .op-avatar {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       color: #ffffff;
@@ -509,6 +567,7 @@
       justify-content: center;
       flex-shrink: 0;
       border: 1.5px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
     .op-name {
@@ -528,15 +587,15 @@
       display: inline-block;
       font-size: 10px;
       font-weight: 800;
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 9999px;
       margin-top: 4px;
     }
 
-    /* SHIFT CHIP */
+    /* SHIFT CAPSULE */
     .shift-chip {
       width: 100%;
-      min-width: 72px;
+      min-width: 74px;
       min-height: 48px;
       border-radius: var(--radius-md);
       display: flex;
@@ -544,7 +603,7 @@
       align-items: center;
       justify-content: center;
       gap: 2px;
-      transition: var(--transition);
+      transition: var(--transition-smooth);
       border: 1.5px solid transparent;
       user-select: none;
     }
@@ -554,7 +613,7 @@
     }
 
     .shift-chip.interactive:hover {
-      transform: scale(1.06);
+      transform: scale(1.05);
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
     }
 
@@ -567,52 +626,52 @@
     .shift-sub {
       font-size: 10px;
       font-weight: 700;
-      opacity: 0.85;
+      opacity: 0.9;
     }
 
-    /* CHIP STYLES */
+    /* REFINED SHIFT THEMES */
     .chip-m {
-      background: rgba(16, 185, 129, 0.18);
-      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.16);
+      border-color: rgba(16, 185, 129, 0.45);
       color: #6ee7b7;
     }
 
     .chip-p {
-      background: rgba(245, 158, 11, 0.18);
-      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.16);
+      border-color: rgba(245, 158, 11, 0.45);
       color: #fcd34d;
     }
 
     .chip-n {
-      background: rgba(99, 102, 241, 0.22);
-      border-color: #818cf8;
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(129, 140, 248, 0.5);
       color: #c7d2fe;
-      box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.18);
     }
 
     .chip-s {
-      background: rgba(234, 179, 8, 0.15);
-      border-color: #eab308;
+      background: rgba(234, 179, 8, 0.14);
+      border-color: rgba(234, 179, 8, 0.38);
       color: #fef08a;
     }
 
     .chip-r {
-      background: rgba(148, 163, 184, 0.1);
-      border-color: rgba(148, 163, 184, 0.25);
+      background: rgba(148, 163, 184, 0.08);
+      border-color: rgba(148, 163, 184, 0.2);
       color: #94a3b8;
     }
 
     .chip-d {
-      background: rgba(168, 85, 247, 0.2);
-      border-color: #c084fc;
+      background: rgba(168, 85, 247, 0.18);
+      border-color: rgba(192, 132, 252, 0.5);
       color: #e9d5ff;
-      box-shadow: 0 0 10px rgba(168, 85, 247, 0.25);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.2);
     }
 
     /* LEGEND BAR */
     .roster-legend-bar {
-      padding: 14px 20px;
-      background: rgba(15, 23, 42, 0.95);
+      padding: 14px 24px;
+      background: rgba(14, 23, 38, 0.95);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       align-items: center;
@@ -634,7 +693,7 @@
       gap: 6px;
       font-size: 11.5px;
       font-weight: 700;
-      padding: 5px 10px;
+      padding: 5px 12px;
       border-radius: var(--radius-sm);
     }
 
@@ -649,10 +708,10 @@
     .op-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      padding: 18px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-      transition: var(--transition);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      box-shadow: 0 4px 22px rgba(0, 0, 0, 0.25);
+      transition: var(--transition-smooth);
     }
 
     .op-card:hover {
@@ -664,7 +723,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .op-card-profile {
@@ -679,41 +738,42 @@
       gap: 6px;
     }
 
-    .btn-icon-wa {
-      width: 34px;
-      height: 34px;
+    .btn-icon-action {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: rgba(37, 211, 102, 0.15);
-      border: 1px solid #25d366;
-      color: #25d366;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      text-decoration: none;
-      transition: var(--transition);
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-icon-action:hover {
+      transform: scale(1.08);
+    }
+
+    .btn-icon-wa {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: rgba(34, 197, 94, 0.4);
+      color: #4ade80;
     }
 
     .btn-icon-tel {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
       background: rgba(56, 189, 248, 0.15);
-      border: 1px solid #38bdf8;
-      color: #38bdf8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      text-decoration: none;
-      transition: var(--transition);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #7dd3fc;
     }
 
     .week-chips-row {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 6px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .mini-day-box {
@@ -733,11 +793,11 @@
       justify-content: space-between;
       align-items: center;
       font-size: 12px;
-      padding-top: 12px;
+      padding-top: 14px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    /* AGENDA VIEW (DAILY HANDOVER) */
+    /* AGENDA VIEW */
     .agenda-view-container {
       display: flex;
       flex-direction: column;
@@ -748,23 +808,22 @@
     .agenda-day-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      padding: 16px 20px;
-      transition: var(--transition);
+      border-radius: var(--radius-xl);
+      padding: 18px 22px;
+      transition: var(--transition-smooth);
     }
 
-    .agenda-day-card.today {
-      border-color: #38bdf8;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+    .agenda-day-card:hover {
+      border-color: var(--card-border-hover);
     }
 
     .agenda-day-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 8px;
+      padding-bottom: 10px;
     }
 
     .agenda-shifts-grid {
@@ -774,10 +833,10 @@
     }
 
     .agenda-shift-slot {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(10, 15, 28, 0.65);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: var(--radius-md);
-      padding: 10px 14px;
+      padding: 12px 14px;
     }
 
     .agenda-slot-title {
@@ -792,21 +851,18 @@
     }
 
     .agenda-slot-body {
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 700;
       color: #ffffff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     /* REPERIBILITÀ SECTION */
     .rep-card {
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(15, 23, 42, 0.8) 100%);
-      border: 1px solid rgba(168, 85, 247, 0.35);
-      border-radius: var(--radius-lg);
-      padding: 18px 22px;
-      box-shadow: 0 4px 20px rgba(168, 85, 247, 0.15);
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(14, 23, 38, 0.85) 100%);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: var(--radius-xl);
+      padding: 20px 24px;
+      box-shadow: 0 4px 22px rgba(168, 85, 247, 0.15);
       margin-bottom: 24px;
     }
 
@@ -817,7 +873,7 @@
       font-size: 14px;
       font-weight: 900;
       color: #e9d5ff;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       letter-spacing: 0.3px;
     }
 
@@ -831,33 +887,52 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(2, 6, 23, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(4, 7, 15, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       z-index: 100;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 18px;
     }
 
     .modal-box {
-      background: #0f172a;
-      border: 1.5px solid rgba(56, 189, 248, 0.3);
+      background: #0e1726;
+      border: 1px solid rgba(56, 189, 248, 0.35);
       border-radius: 22px;
       width: 100%;
       max-width: 520px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
-      padding: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      padding: 26px;
       color: #ffffff;
       max-height: 90vh;
       overflow-y: auto;
     }
 
+    /* TOAST ELEGANTE */
+    #elegant-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(14, 23, 38, 0.95);
+      border: 1px solid var(--cyan-light);
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: var(--radius-lg);
+      font-size: 13px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
     /* RESPONSIVE */
     @media (max-width: 768px) {
       .topbar {
-        padding: 10px 14px;
+        padding: 10px 16px;
       }
       .brand-title {
         font-size: 1rem;
@@ -867,13 +942,13 @@
         justify-content: flex-start;
       }
       .container {
-        padding: 14px 10px;
+        padding: 16px 12px;
       }
       .controls-strip {
         flex-direction: column;
         align-items: stretch;
       }
-      .view-pills {
+      .segmented-control {
         justify-content: space-around;
       }
     }
@@ -881,18 +956,17 @@
 </head>
 <body>
 
-  <!-- TOP BAR -->
+  <!-- EXECUTIVE TOPBAR -->
   <header class="topbar">
-    <div class="brand">
-      <div class="brand-icon">🗓️</div>
+    <div class="brand-group">
+      <div class="brand-icon-wrap">🗓️</div>
       <div>
         <div class="brand-title">
           <span>CareAssist Pro</span>
-          <span style="font-weight:400; opacity:0.4;">|</span>
-          <span style="font-size:15px; font-weight:700; color:#38bdf8;">Roster & Turnario Personale</span>
+          <span class="brand-tag">Roster Sanitario H24</span>
         </div>
         <div class="brand-subtitle">
-          Pianificazione Continua H24 &bull; Conforme D.Lgs. 66/2003 (11h riposo) &bull; CCNL Sanità / Cooperative 36h/38h
+          Pianificazione Continua &bull; Conforme D.Lgs. 66/2003 (11h riposo) &bull; CCNL 36h/38h
         </div>
       </div>
     </div>
@@ -911,7 +985,7 @@
         📲 Invia WhatsApp
       </button>
       <a href="/careassist/" class="btn btn-ghost">
-        🏠 Torna a CareAssist
+        🏠 CareAssist
       </a>
     </div>
   </header>
@@ -919,33 +993,35 @@
   <div class="container">
 
     <!-- PATIENT & COORDINATOR STRIP -->
-    <section class="patient-strip">
-      <div class="patient-info">
-        <div class="patient-avatar">CM</div>
-        <div class="patient-meta">
-          <h2>
+    <section class="patient-banner">
+      <div class="patient-meta-group">
+        <div class="patient-avatar-box">CM</div>
+        <div>
+          <h2 class="patient-title-h2">
             <span>Paziente: Sig. Ciro Milella</span>
-            <span style="font-size:11px; background:rgba(56,189,248,0.2); color:#38bdf8; padding:2px 8px; border-radius:9999px; font-weight:700;">H24 Domiciliare</span>
+            <span class="patient-badge-h24">Assistenza Continua H24</span>
           </h2>
-          <p>
-            Coordinatore Turni: <b>Ciro Milella (Admin Master PIN SOS999)</b> &bull; Bari (BA)
-          </p>
+          <div class="patient-coord-text">
+            Coordinatore Turni: <b>Ciro Milella (Admin Master PIN SOS999)</b> &bull; Sede Bari (BA)
+          </div>
         </div>
       </div>
-      <div class="emergency-tags">
-        <a href="tel:118" class="em-pill">
+
+      <!-- RECAPITI EMERGENZA GESTITI SENZA POPUP WINDOWS -->
+      <div class="emergency-dial-group">
+        <button class="btn-dial" onclick="gestisciChiamata('118', 'Pronto Intervento 118')">
           <span>🚨</span> <b>118 Emergenza</b>
-        </a>
-        <a href="tel:0805841111" class="em-pill" style="background:rgba(2,132,199,0.15); border-color:#0284c7; color:#38bdf8;">
+        </button>
+        <button class="btn-dial btn-dial-gm" onclick="gestisciChiamata('0805841111', 'Guardia Medica Bari')">
           <span>📞</span> <b>Guardia Medica</b>
-        </a>
+        </button>
       </div>
     </section>
 
     <!-- KPI STATS CARDS -->
     <section class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-icon-wrap" style="background:#e0f2fe; color:#0284c7;">👥</div>
+        <div class="kpi-icon-wrap" style="background:rgba(2,132,199,0.15); color:#38bdf8;">👥</div>
         <div>
           <div class="kpi-val" id="kpi-tot-ops">--</div>
           <div class="kpi-lbl">Operatori Abilitati Care</div>
@@ -953,7 +1029,7 @@
       </div>
 
       <div class="kpi-card">
-        <div class="kpi-icon-wrap" style="background:#dcfce7; color:#15803d;">☀️</div>
+        <div class="kpi-icon-wrap" style="background:rgba(16,185,129,0.15); color:#34d399;">☀️</div>
         <div>
           <div class="kpi-val" id="kpi-mattine">100%</div>
           <div class="kpi-lbl">Copertura Mattine (07-14)</div>
@@ -961,7 +1037,7 @@
       </div>
 
       <div class="kpi-card">
-        <div class="kpi-icon-wrap" style="background:#ffedd5; color:#c2410c;">🌤️</div>
+        <div class="kpi-icon-wrap" style="background:rgba(245,158,11,0.15); color:#fbbf24;">🌤️</div>
         <div>
           <div class="kpi-val" id="kpi-pomeriggi">100%</div>
           <div class="kpi-lbl">Copertura Pomeriggi (14-21)</div>
@@ -969,7 +1045,7 @@
       </div>
 
       <div class="kpi-card">
-        <div class="kpi-icon-wrap" style="background:#e0e7ff; color:#4338ca;">🌙</div>
+        <div class="kpi-icon-wrap" style="background:rgba(99,102,241,0.18); color:#a5b4fc;">🌙</div>
         <div>
           <div class="kpi-val" id="kpi-notti">100%</div>
           <div class="kpi-lbl">Copertura Notti (21-07)</div>
@@ -977,10 +1053,10 @@
       </div>
 
       <div class="kpi-card">
-        <div class="kpi-icon-wrap" style="background:#f3e8ff; color:#7e22ce;">🦺</div>
+        <div class="kpi-icon-wrap" style="background:rgba(168,85,247,0.18); color:#d8b4fe;">🦺</div>
         <div>
           <div class="kpi-val" id="kpi-disp">Attivo</div>
-          <div class="kpi-lbl">Reperibili per Emergenze</div>
+          <div class="kpi-lbl">Reperibili Emergenze</div>
         </div>
       </div>
 
@@ -988,7 +1064,7 @@
         <div class="kpi-icon-wrap" style="background:rgba(16,185,129,0.15); color:#10b981;">⚖️</div>
         <div>
           <div class="kpi-val" style="color:#34d399;">100%</div>
-          <div class="kpi-lbl">Riposo 11h & Smonto D.Lgs 66</div>
+          <div class="kpi-lbl">D.Lgs 66 (11h Riposo)</div>
         </div>
       </div>
     </section>
@@ -1008,15 +1084,15 @@
 
     <!-- CONTROLS STRIP: VIEW SWITCHER & WEEK NAVIGATOR -->
     <div class="controls-strip">
-      <!-- TRI-VIEW SWITCHER -->
-      <div class="view-pills">
-        <button class="view-pill active" id="btn-view-matrix" onclick="cambiaVista('matrix')">
+      <!-- SEGMENTED TRI-VIEW SWITCHER -->
+      <div class="segmented-control">
+        <button class="seg-pill active" id="btn-view-matrix" onclick="cambiaVista('matrix')">
           <span>📊</span> Matrice Roster
         </button>
-        <button class="view-pill" id="btn-view-cards" onclick="cambiaVista('cards')">
+        <button class="seg-pill" id="btn-view-cards" onclick="cambiaVista('cards')">
           <span>📱</span> Schede Personali
         </button>
-        <button class="view-pill" id="btn-view-agenda" onclick="cambiaVista('agenda')">
+        <button class="seg-pill" id="btn-view-agenda" onclick="cambiaVista('agenda')">
           <span>🗓️</span> Agenda Giornaliera
         </button>
       </div>
@@ -1030,7 +1106,7 @@
         <button class="btn btn-ghost" onclick="navigaSettimanaOffset(1)" title="Settimana successiva">
           Succ ▶
         </button>
-        <span id="label-settimana-estesa" style="font-size:13px; font-weight:800; color:#38bdf8; margin-left:8px;">
+        <span id="label-settimana-estesa" style="font-size:13px; font-weight:800; color:var(--cyan-light); margin-left:8px;">
           Settimana dal Lunedì al Domenica
         </span>
       </div>
@@ -1108,12 +1184,12 @@
 
     <!-- VISTA 2: CARDS PERSONALI OPERATORI -->
     <div id="view-cards" class="cards-view-grid" style="display:none;">
-      <!-- Popolato dinamicamente con le card personali dei collaboratori -->
+      <!-- Popolato dinamicamente -->
     </div>
 
     <!-- VISTA 3: AGENDA GIORNALIERA CONSEGNE -->
     <div id="view-agenda" class="agenda-view-container" style="display:none;">
-      <!-- Popolato dinamicamente con i giorni LUN-DOM e le fasce orarie -->
+      <!-- Popolato dinamicamente -->
     </div>
 
     <!-- SEZIONE PIANO REPERIBILITÀ & COPERTURE DI EMERGENZA -->
@@ -1122,7 +1198,7 @@
         <span>🦺</span> <b>PIANO REPERIBILITÀ & COPERTURE DI EMERGENZA (DISPONIBILITÀ ATTIVA)</b>
       </div>
       <div class="rep-content" id="rep-giornaliera-testo">
-        <!-- Generato dinamicamente con i colleghi disponibili giorno per giorno -->
+        <!-- Generato dinamicamente -->
       </div>
     </div>
 
@@ -1187,12 +1263,12 @@
       </div>
 
       <div style="margin-bottom:16px;">
-        <label style="display:block; font-size:12px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:8px;">
+        <label style="display:block; font-size:12px; font-weight:800; color:var(--cyan-light); text-transform:uppercase; margin-bottom:8px;">
           1. Seleziona Modello di Combinazione:
         </label>
 
         <div style="display:flex; flex-direction:column; gap:8px;">
-          <label style="display:flex; align-items:flex-start; gap:10px; background:rgba(15,23,42,0.6); border:1.5px solid #0284c7; padding:12px; border-radius:12px; cursor:pointer;">
+          <label style="display:flex; align-items:flex-start; gap:10px; background:rgba(10,15,28,0.6); border:1.5px solid #0284c7; padding:12px; border-radius:12px; cursor:pointer;">
             <input type="radio" name="preset_combinazione" value="misto_pn" checked style="margin-top:3px;">
             <div>
               <div style="font-weight:800; color:#ffffff; font-size:13.5px;">🌟 Turno Misto (Pomeriggio & Notte + Disponibilità Coperture)</div>
@@ -1202,7 +1278,7 @@
             </div>
           </label>
 
-          <label style="display:flex; align-items:flex-start; gap:10px; background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.12); padding:12px; border-radius:12px; cursor:pointer;">
+          <label style="display:flex; align-items:flex-start; gap:10px; background:rgba(10,15,28,0.6); border:1px solid rgba(255,255,255,0.12); padding:12px; border-radius:12px; cursor:pointer;">
             <input type="radio" name="preset_combinazione" value="standard_3turni" style="margin-top:3px;">
             <div>
               <div style="font-weight:800; color:#ffffff; font-size:13.5px;">🔄 Rotazione Continua Sanitaria (M - P - N - S - R)</div>
@@ -1212,7 +1288,7 @@
             </div>
           </label>
 
-          <label style="display:flex; align-items:flex-start; gap:10px; background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.12); padding:12px; border-radius:12px; cursor:pointer;">
+          <label style="display:flex; align-items:flex-start; gap:10px; background:rgba(10,15,28,0.6); border:1px solid rgba(255,255,255,0.12); padding:12px; border-radius:12px; cursor:pointer;">
             <input type="radio" name="preset_combinazione" value="staffetta_h24" style="margin-top:3px;">
             <div>
               <div style="font-weight:800; color:#ffffff; font-size:13.5px;">🤝 Staffetta 2 Operatori H24 (Giorno & Notte)</div>
@@ -1240,10 +1316,90 @@
     </div>
   </div>
 
+  <!-- MODAL SMART DIAL INFO (PER EVITARE POPUP WINDOWS) -->
+  <div id="modal-smart-dial" class="modal-backdrop">
+    <div class="modal-box" style="max-width:380px; text-align:center;">
+      <div style="font-size:36px; margin-bottom:10px;" id="dial-modal-icon">📞</div>
+      <div style="font-size:17px; font-weight:800; margin-bottom:4px;" id="dial-modal-title">Contatto Telefonico</div>
+      <div style="font-size:22px; font-weight:900; color:var(--cyan-light); margin:12px 0; letter-spacing:1px;" id="dial-modal-number">
+        --
+      </div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:18px;">
+        Su smartphone avvia la chiamata diretta. Da PC puoi copiare il recapito negli appunti.
+      </div>
+      <div style="display:flex; justify-content:center; gap:10px;">
+        <button class="btn btn-sky" onclick="copiaNumeroChiamata()">
+          📋 Copia Numero
+        </button>
+        <button class="btn btn-ghost" onclick="chiudiModalDial()">
+          Chiudi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ELEGANT TOAST NOTIFIER -->
+  <div id="elegant-toast">
+    <span id="elegant-toast-icon">✨</span>
+    <span id="elegant-toast-msg">Notifica</span>
+  </div>
+
   <script src="/careassist/turnario_admin.js?v=3"></script>
   <script>
     let activeCellTarget = null;
     let currentViewMode = 'matrix';
+    let _ultimoNumeroSelezionato = '';
+
+    function mostraToast(msg, icon = '✨') {
+      const t = document.getElementById('elegant-toast');
+      const mi = document.getElementById('elegant-toast-icon');
+      const mm = document.getElementById('elegant-toast-msg');
+      if (!t) return;
+      if (mi) mi.textContent = icon;
+      if (mm) mm.textContent = msg;
+      t.style.display = 'flex';
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
+    }
+
+    // GESTORE CHIAMATE SENZA TRIGGERARE "SCEGLI UN'APP" SU WINDOWS
+    function gestisciChiamata(numero, label) {
+      _ultimoNumeroSelezionato = numero;
+      const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.location.href = `tel:${numero}`;
+      } else {
+        // Su Desktop apriamo un modal pulito senza far scattare il prompt di Windows
+        const modal = document.getElementById('modal-smart-dial');
+        const tit = document.getElementById('dial-modal-title');
+        const num = document.getElementById('dial-modal-number');
+        if (tit) tit.textContent = label || 'Contatto Telefonico';
+        if (num) num.textContent = numero;
+        if (modal) modal.style.display = 'flex';
+      }
+    }
+
+    function chiudiModalDial() {
+      const modal = document.getElementById('modal-smart-dial');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function copiaNumeroChiamata() {
+      if (_ultimoNumeroSelezionato) {
+        navigator.clipboard.writeText(_ultimoNumeroSelezionato).then(() => {
+          chiudiModalDial();
+          mostraToast(`Numero ${_ultimoNumeroSelezionato} copiato negli appunti!`, '📋');
+        }).catch(() => {
+          chiudiModalDial();
+          mostraToast(`Numero: ${_ultimoNumeroSelezionato}`, '📞');
+        });
+      }
+    }
+
+    function apriChatWhatsApp(tel, nome) {
+      const telClean = (tel || '').replace(/\D/g, '');
+      const url = `https://wa.me/39${telClean}?text=${encodeURIComponent(`Ciao ${nome}, ti contatto per il coordinamento del servizio di assistenza CareAssist.`)}`;
+      window.open(url, '_blank');
+    }
 
     function verificaRuoloAdmin() {
       const isAdmin = window.isUtenteAdmin ? window.isUtenteAdmin() : true;
@@ -1388,7 +1544,7 @@
         tbody.innerHTML = htmlMatrice;
       }
 
-      // 2. RENDER SCHEDE PERSONALI (MOBILE)
+      // 2. RENDER SCHEDE PERSONALI
       const cardsBox = document.getElementById('view-cards');
       if (cardsBox) {
         let htmlCards = '';
@@ -1397,7 +1553,7 @@
           let oreTot = 0;
           let miniChips = '';
 
-          giorni.forEach((g, idx) => {
+          giorni.forEach((g) => {
             const t = riga[g] || 'R';
             const info = window.TURNI_INFO ? (window.TURNI_INFO[t] || window.TURNI_INFO['R']) : { ore: 0 };
             oreTot += info.ore;
@@ -1414,7 +1570,6 @@
           });
 
           const opIniziali = op.nome.split(' ').map(n => n[0]).slice(0, 2).join('');
-          const telClean = (op.tel || '').replace(/\s+/g, '');
 
           htmlCards += `
             <div class="op-card">
@@ -1423,12 +1578,12 @@
                   <div class="op-avatar">${opIniziali}</div>
                   <div>
                     <div style="font-weight:800; font-size:15px; color:#ffffff;">${op.nome}</div>
-                    <div style="font-size:12px; color:#94a3b8;">${op.ruolo}</div>
+                    <div style="font-size:12px; color:var(--text-muted);">${op.ruolo}</div>
                   </div>
                 </div>
                 <div class="op-card-actions">
-                  <a href="https://wa.me/39${telClean}" target="_blank" class="btn-icon-wa" title="WhatsApp">💬</a>
-                  <a href="tel:${telClean}" class="btn-icon-tel" title="Chiama">📞</a>
+                  <button class="btn-icon-action btn-icon-wa" onclick="apriChatWhatsApp('${op.tel}', '${op.nome}')" title="Invia WhatsApp">💬</button>
+                  <button class="btn-icon-action btn-icon-tel" onclick="gestisciChiamata('${op.tel}', '${op.nome}')" title="Contatta">📞</button>
                 </div>
               </div>
 
@@ -1438,8 +1593,8 @@
 
               <div class="op-card-footer">
                 <div>
-                  <span style="color:#94a3b8;">Ore Settimanali:</span>
-                  <b style="color:#38bdf8; font-size:14px; margin-left:4px;">${oreTot}h</b> / 36h
+                  <span style="color:var(--text-muted);">Ore Settimanali:</span>
+                  <b style="color:var(--cyan-light); font-size:14px; margin-left:4px;">${oreTot}h</b> / 36h
                 </div>
                 <div style="font-size:11.5px; color:#34d399; font-weight:700;">
                   ✓ Conforme D.Lgs 66
@@ -1477,10 +1632,10 @@
             <div class="agenda-day-card">
               <div class="agenda-day-header">
                 <div style="font-size:15px; font-weight:900; color:#ffffff; display:flex; align-items:center; gap:8px;">
-                  <span style="color:#38bdf8;">📅</span> <span>${nomiGiorni[idx]}</span>
-                  <span style="font-size:12.5px; color:#94a3b8; font-weight:600;">(${dataStr})</span>
+                  <span style="color:var(--cyan-light);">📅</span> <span>${nomiGiorni[idx]}</span>
+                  <span style="font-size:12.5px; color:var(--text-muted); font-weight:600;">(${dataStr})</span>
                 </div>
-                <div style="font-size:11px; background:rgba(56,189,248,0.15); color:#38bdf8; padding:3px 10px; border-radius:9999px; font-weight:700;">
+                <div style="font-size:11px; background:rgba(56,189,248,0.15); color:var(--cyan-light); padding:3px 10px; border-radius:9999px; font-weight:700;">
                   Copertura H24
                 </div>
               </div>
@@ -1520,7 +1675,7 @@
           const repOggi = [];
           ops.forEach(op => {
             if (data.griglia[op.id] && data.griglia[op.id][g] === 'D') {
-              repArray.push(`• <b>${nomiGiorni[idx]}:</b> ${op.nome} (📞 <a href="tel:${(op.tel||'').replace(/\s+/g,'')}" style="color:#38bdf8; text-decoration:none;">${op.tel}</a>)`);
+              repArray.push(`• <b>${nomiGiorni[idx]}:</b> ${op.nome} (📞 <span onclick="gestisciChiamata('${op.tel}','${op.nome}')" style="color:var(--cyan-light); cursor:pointer; text-decoration:underline;">${op.tel}</span>)`);
             }
           });
         });
@@ -1528,7 +1683,7 @@
         if (repArray.length > 0) {
           repBox.innerHTML = repArray.join('<br>');
         } else {
-          repBox.innerHTML = '<i>Reperibilità garantita dall\'Admin Coordinatore Ciro Milella (📞 366 460 7396).</i>';
+          repBox.innerHTML = '<i>Reperibilità garantita dall\'Admin Coordinatore Ciro Milella (📞 <span onclick="gestisciChiamata(\'3664607396\',\'Ciro Milella\')" style="color:var(--cyan-light); cursor:pointer; text-decoration:underline;">366 460 7396</span>).</i>';
         }
       }
     }
@@ -1564,6 +1719,7 @@
       }
       chiudiModalConfiguratoreAI();
       renderViste();
+      mostraToast('Combinazione turni sviluppata con successo!', '⚡');
     }
 
     function aggiungiNuovoOperatore() {
@@ -1604,6 +1760,7 @@
       }
       chiudiModalTurno();
       renderViste();
+      mostraToast(`Turno ${turno} assegnato con successo!`, '✅');
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
