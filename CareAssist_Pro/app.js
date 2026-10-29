@@ -2068,43 +2068,41 @@ function renderPazientiSelector() {
     const dataOggiStr = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
     badgeInfo.innerHTML = `
-      <div style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
         <!-- RIGA 1: TESTATA PROFILO CLINICO CON IDENTITÀ, BADGE CHIAVE E AZIONI RAPIDE SALVAVITA -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; border-bottom:1.5px solid #e2e8f0; padding-bottom:12px;">
+        <div class="patient-hero-top-wrapper" style="display:flex; flex-direction:column; gap:12px; border-bottom:1.5px solid #e2e8f0; padding-bottom:12px; width:100%;">
           
-          <!-- LATO SINISTRO: NOME, AVATAR E PILLOLE DI STATO -->
-          <div style="flex:1; min-width:0; width:100%;">
-            <div class="patient-hero-identity">
-              <span class="patient-avatar-badge-modern" onclick="apriModificaAnagrafica()" title="Tocca per cartella anagrafica assistito">👤</span>
-              <div class="patient-hero-text">
-                <div class="patient-hero-title-row">
-                  <h2 class="patient-hero-fullname" title="${activeP.nome}">${activeP.nome}</h2>
-                </div>
-                <div class="patient-hero-chips-row">
-                  <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer; font-size:11.5px; padding:3px 9px; border-radius:8px;" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h) per prevenzione lesioni da decubito.' : 'Paziente deambulante in modo autonomo o assistito.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
-                    ${activeP.allettato ? '🛏️ Allettato (q2h)' : '🚶 Deambulante'}
-                  </span>
-                  <span class="badge badge-warning clinica-zoom-item" style="font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px; padding:3px 9px; border-radius:8px;" onclick="apriModificaAnagrafica()" title="Tocca per aprire e modificare cartella anagrafica e data di nascita" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${dataNascitaFmt} (Anno ${annoNascita || '--'}, ${eta} anni)', '🎂')" onmouseleave="nascondiLenteClinica()">
-                    🎂 ${eta} anni • ${annoNascita || '--'} (${dataNascitaFmt || '--'})
-                  </span>
-                  ${allergieBadge}
-                  ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; font-size:11px; padding:3px 9px; border-radius:8px; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe</span>' : ''}
-                  ${activeP.id === 'paz_angela' ? '<span class="badge badge-danger" style="background:#dc2626; font-size:11px; padding:3px 9px; border-radius:8px;">🫁 CPAP (OSAS)</span>' : ''}
-                </div>
+          <!-- BLOCCO A: IDENTITÀ (AVATAR 52px + NOME ORIZZONTALE + BADGE) -->
+          <div class="patient-hero-identity" style="display:flex; align-items:center; gap:14px; width:100%;">
+            <span class="patient-avatar-badge-modern" onclick="apriModificaAnagrafica()" title="Tocca per cartella anagrafica assistito">👤</span>
+            <div class="patient-hero-text" style="flex:1; min-width:0;">
+              <div class="patient-hero-title-row" style="margin-bottom:4px;">
+                <h2 class="patient-hero-fullname" title="${activeP.nome}">${activeP.nome}</h2>
+              </div>
+              <div class="patient-hero-chips-row" style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer; font-size:11.5px; padding:3px 9px; border-radius:8px;" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h) per prevenzione lesioni da decubito.' : 'Paziente deambulante in modo autonomo o assistito.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
+                  ${activeP.allettato ? '🛏️ Allettato (q2h)' : '🚶 Deambulante'}
+                </span>
+                <span class="badge badge-warning clinica-zoom-item" style="font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px; padding:3px 9px; border-radius:8px;" onclick="apriModificaAnagrafica()" title="Tocca per aprire e modificare cartella anagrafica e data di nascita" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${dataNascitaFmt} (Anno ${annoNascita || '--'}, ${eta} anni)', '🎂')" onmouseleave="nascondiLenteClinica()">
+                  🎂 ${eta} anni • ${annoNascita || '--'} (${dataNascitaFmt || '--'})
+                </span>
+                ${allergieBadge}
+                ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; font-size:11px; padding:3px 9px; border-radius:8px; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe</span>' : ''}
+                ${activeP.id === 'paz_angela' ? '<span class="badge badge-danger" style="background:#dc2626; font-size:11px; padding:3px 9px; border-radius:8px;">🫁 CPAP (OSAS)</span>' : ''}
               </div>
             </div>
-            
-            <!-- RECAPITI DOMICILIO ASSISTITO (INDIRIZZO, FISSO, CELLULARE) RAGGRUPPATI STILE APPLE HEALTH -->
-            <div class="patient-contacts-card">
-              ${ind}
-              ${tel}
-              ${cell}
-            </div>
+          </div>
+          
+          <!-- BLOCCO B: RECAPITI DOMICILIO ASSISTITO (INDIRIZZO, FISSO, CELLULARE) RAGGRUPPATI APPLE HEALTH -->
+          <div class="patient-contacts-card" style="width:100%;">
+            ${ind}
+            ${tel}
+            ${cell}
           </div>
 
-          <!-- LATO DESTRO: PULSANTIERA AZIONI RAPIDE DEDICATE (118, REPORT WHATSAPP, MODIFICA) & STATO -->
-          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; z-index:2;">
-            <div class="hero-quick-actions-bar">
+          <!-- BLOCCO C: PULSANTIERA AZIONI RAPIDE SALVAVITA (118, REPORT WHATSAPP, MODIFICA) & STATO -->
+          <div class="patient-hero-actions-container" style="display:flex; flex-direction:column; gap:8px; width:100%; z-index:2;">
+            <div class="hero-quick-actions-bar" style="width:100%;">
               <button id="btn-scheda-118" class="btn-hero-action btn-hero-118" onclick="apriModalScheda118()" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
                 <span>🚨</span> <span>Scheda 118</span>
               </button>
@@ -2116,7 +2114,7 @@ function renderPazientiSelector() {
               </button>
             </div>
             
-            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
               <span class="hero-status-pill" style="background:#eff6ff; color:#1e40af; border-color:#bfdbfe;">
                 📅 <b>${dataOggiStr}</b>
               </span>

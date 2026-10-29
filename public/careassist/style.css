@@ -658,9 +658,11 @@ body {
   font-weight: 800 !important;
   color: #0f172a !important;
   margin: 0 !important;
-  line-height: 1.15 !important;
+  line-height: 1.2 !important;
   letter-spacing: -0.3px !important;
-  word-break: break-word !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
 }
 
 .patient-hero-chips-row {
@@ -2585,9 +2587,12 @@ textarea.form-control {
     border-radius: 14px !important;
   }
   .patient-hero-fullname {
-    font-size: 18.5px !important;
-    line-height: 1.15 !important;
+    font-size: 19px !important;
+    line-height: 1.2 !important;
     margin-bottom: 3px !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
   .patient-hero-chips-row {
     gap: 5px !important;
