@@ -14683,6 +14683,113 @@ function getEpatologiaDatiPaziente() {
   return p.epatologiaFollowUp;
 }
 
+
+// ==============================================================================
+// COSTRUZIONE VISTA 4 COLONNE FEDELE AL PRESTAMPATO POLICLINICO
+// ==============================================================================
+let _vistaModuloTipo = 'colonne'; // 'colonne' (predefinito) oppure 'tabella'
+
+function impostaTipoVistaModulo(tipo) {
+  _vistaModuloTipo = tipo;
+  renderEpatologiaView();
+}
+window.impostaTipoVistaModulo = impostaTipoVistaModulo;
+
+function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
+  // Raggruppamento per le 4 colonne esatte del foglio originale
+  var col1_generali = esami.filter(function(e) { return e.categoria === 'ESAMI GENERALI'; });
+  var col1_batterio = esami.filter(function(e) { return e.categoria === 'BATTERIOLOGIA E PARASS.'; });
+
+  var col2_fegato = esami.filter(function(e) { return e.categoria === 'FEGATO'; });
+
+  var col3_radiologici = esami.filter(function(e) { return e.categoria === 'ESAMI RADIOLOGICI'; });
+  var col3_strumentali = esami.filter(function(e) { return e.categoria === 'ESAMI STRUMENTALI'; });
+  var col3_altri = esami.filter(function(e) { return e.categoria === 'ALTRI'; });
+
+  var col4_immunologici = esami.filter(function(e) { return e.categoria === 'ESAMI IMMUNOLOGICI'; });
+  var col4_sierologia = esami.filter(function(e) { return e.categoria === 'SIEROLOGIA'; });
+
+  function renderSezione(titolo, items, icona) {
+    var itemsHtml = items.map(function(es) {
+      var isSpuntato = (es.spuntato !== false);
+      var isPennarello = isSpuntato && (es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4');
+      
+      var bgStyle = '';
+      var borderStyle = 'border:1px solid transparent;';
+      if (isPennarello) {
+        bgStyle = 'background:linear-gradient(90deg, #cffafe 0%, #e0f2fe 100%); font-weight:800;';
+        borderStyle = 'border:1.5px solid #06b6d4; box-shadow:0 1px 4px rgba(6,182,212,0.25);';
+      } else if (isSpuntato) {
+        bgStyle = 'background:#f0fdf4; font-weight:700;';
+        borderStyle = 'border:1px solid #86efac;';
+      }
+
+      var badgeCod = '';
+      if (isPennarello) {
+        var cod = es.codicePrestazione || (es.id === 'feg_13' ? '88606' : (es.id === 'rad_4' ? '96101' : '88301'));
+        badgeCod = '<span style="background:#0284c7; color:#fff; font-size:9.5px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px;">' + cod + '</span>';
+      }
+
+      // Stato sintetico referto o data
+      var miniStato = '';
+      if (isSpuntato) {
+        if (es.refertato) {
+          miniStato = '<span style="font-size:10px; font-weight:800; color:#15803d; cursor:pointer;" onclick="event.stopPropagation(); apriModalInserisciEsito(\'' + es.id + '\')" title="Referto registrato: ' + (es.valoreReferto || 'Normale') + '">✓ Ref</span>';
+        } else if (es.prenotatoCUP && es.dataPrenotazioneCUP) {
+          miniStato = '<span style="font-size:9.5px; font-weight:800; color:#0284c7; cursor:pointer;" onclick="event.stopPropagation(); apriModalModificaPrenotazioneEsame(\'' + es.id + '\')" title="Prenotato per ' + es.dataPrenotazioneCUP + '">📅 ' + es.dataPrenotazioneCUP.slice(5) + '</span>';
+        } else {
+          miniStato = '<span style="font-size:10px; color:#b45309; font-weight:800; cursor:pointer;" onclick="event.stopPropagation(); apriModalModificaPrenotazioneEsame(\'' + es.id + '\')" title="Clicca per inserire data prenotazione">+ Data</span>';
+        }
+      }
+
+      return '<div class="item-prestampato" onclick="toggleSpuntaEsameModulo(\'' + es.id + '\')" style="display:flex; align-items:center; justify-content:space-between; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; ' + bgStyle + ' ' + borderStyle + ' transition:all 0.15s ease;" title="' + (isSpuntato ? 'Contrassegnato sul foglio - Clicca per deselezionare' : 'Non contrassegnato - Clicca per spuntare') + '">' +
+        '<div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
+          '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;" onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')">' +
+          '<span style="color:' + (isSpuntato ? '#0f172a' : '#475569') + '; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + es.nome + '</span>' +
+          badgeCod +
+        '</div>' +
+        '<div style="flex-shrink:0; margin-left:6px;">' + miniStato + '</div>' +
+      '</div>';
+    }).join('');
+
+    return '<div style="margin-bottom:14px;">' +
+      '<div style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid #0284c7; padding-bottom:3px; margin-bottom:6px; display:flex; align-items:center; gap:5px;">' +
+        '<span>' + icona + '</span> <span>' + titolo + '</span>' +
+      '</div>' +
+      '<div style="display:flex; flex-direction:column;">' +
+        itemsHtml +
+      '</div>' +
+    '</div>';
+  }
+
+  return '<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:16px; background:#ffffff; border-radius:12px; padding:6px;">' +
+    // COLONNA 1
+    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:12px 10px;">' +
+      renderSezione('ESAMI GENERALI', col1_generali, '🩸') +
+      renderSezione('BATTERIOLOGIA E PARASS.', col1_batterio, '🧫') +
+    '</div>' +
+
+    // COLONNA 2
+    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:12px 10px;">' +
+      renderSezione('FEGATO', col2_fegato, '🧬') +
+    '</div>' +
+
+    // COLONNA 3
+    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:12px 10px;">' +
+      renderSezione('ESAMI RADIOLOGICI', col3_radiologici, '☢️') +
+      renderSezione('ESAMI STRUMENTALI', col3_strumentali, '📸') +
+      renderSezione('ALTRI', col3_altri, '📑') +
+    '</div>' +
+
+    // COLONNA 4
+    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:12px 10px;">' +
+      renderSezione('ESAMI IMMUNOLOGICI', col4_immunologici, '🛡️') +
+      renderSezione('SIEROLOGIA', col4_sierologia, '🧪') +
+    '</div>' +
+  '</div>';
+}
+window.buildPrestampatoColonneHtml = buildPrestampatoColonneHtml;
+
 function renderEpatologiaView() {
   var dati = getEpatologiaDatiPaziente();
   var tbody = document.getElementById('epatologia-esami-tbody');
@@ -15488,19 +15595,25 @@ function renderEpatologiaView() {
       </div>
     </div>
 
-    <!-- CORPO AMBULATORIALE: TABELLA ESAMI & SEZIONE CLINICA -->
-    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; align-items:flex-start;">
-      <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #e2e8f0; border-radius:16px;">
-        <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #e2e8f0; border-radius:16px 16px 0 0; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+    <!-- CORPO AMBULATORIALE: VISTA 4 COLONNE O TABELLA CLINICA -->
+    <div style="display:grid; grid-template-columns: 2.2fr 1fr; gap:20px; align-items:flex-start;">
+      <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff;">
+        
+        <!-- HEADER DELLA SCHEDA CON SELETTORE VISTA -->
+        <div class="card-header" style="background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-bottom:1.5px solid #cbd5e1; border-radius:16px 16px 0 0; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
-            <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Protocollo Esami Prescritti & Follow-up</div>
-            <div style="font-size:12px; color:#64748b;">Traccia in tempo reale: Richiesta MMG &bull; Prenotazione CUP &bull; Refertazione</div>
+            <div style="font-size:16px; font-weight:900; color:#0f172a; display:flex; align-items:center; gap:8px;">
+              <span>📑</span> Modulo Prestampato Ufficiale Policlinico di Bari
+            </div>
+            <div style="font-size:12px; color:#64748b;">Disposizione identica al prestampato originale &bull; ${esamiSpuntati.length} esami contrassegnati</div>
           </div>
-          <div style="display:flex; gap:8px;">
-            <button type="button" class="btn btn-sm" onclick="apriModalGestioneModuloPoliclinico()" style="font-size:12px; font-weight:800; border-radius:8px; border:1.5px solid #0284c7; color:#0369a1; background:#f0f9ff; padding:6px 12px; cursor:pointer;">
-              📋 Gestisci Tutti gli Esami del Modulo
+          <div style="display:flex; align-items:center; gap:6px;">
+            <button type="button" class="btn btn-sm" onclick="impostaTipoVistaModulo('colonne')" style="font-size:11.5px; font-weight:800; border-radius:8px; padding:6px 12px; cursor:pointer; background:${_vistaModuloTipo === 'colonne' ? '#0284c7' : '#ffffff'}; color:${_vistaModuloTipo === 'colonne' ? '#ffffff' : '#334155'}; border:1.5px solid ${_vistaModuloTipo === 'colonne' ? '#0284c7' : '#cbd5e1'};">
+              📄 Vista a 4 Colonne (Prestampato)
             </button>
-            <button type="button" class="btn btn-sm btn-outline" onclick="aggiungiEsamePersonalizzatoNelModulo()" style="font-size:12px; font-weight:700; border-radius:8px;">+ Altro Esame</button>
+            <button type="button" class="btn btn-sm" onclick="impostaTipoVistaModulo('tabella')" style="font-size:11.5px; font-weight:800; border-radius:8px; padding:6px 12px; cursor:pointer; background:${_vistaModuloTipo === 'tabella' ? '#0284c7' : '#ffffff'}; color:${_vistaModuloTipo === 'tabella' ? '#ffffff' : '#334155'}; border:1.5px solid ${_vistaModuloTipo === 'tabella' ? '#0284c7' : '#cbd5e1'};">
+              📋 Vista Tabella Dettagli
+            </button>
           </div>
         </div>
 
@@ -15536,24 +15649,60 @@ function renderEpatologiaView() {
           </div>
         </div>
 
-        <div class="table-responsive" style="padding:0;">
-          <table class="custom-table" style="margin:0;">
-            <thead>
-              <tr style="background:#f1f5f9; color:#475569; font-size:11px;">
-                <th style="padding:10px 8px; text-align:center; width:45px;">SPUNTA</th>
-                <th style="padding:10px 14px;">ESAME / PRESTAZIONE</th>
-                <th style="padding:10px 10px; text-align:center;">CATEGORIA</th>
-                <th style="padding:10px 10px; text-align:center;">1. RICHIESTA MMG</th>
-                <th style="padding:10px 10px; text-align:center;">2. PRENOTAZIONE CUP</th>
-                <th style="padding:10px 10px; text-align:center;">3. REFERTO / ESITO</th>
-                <th style="padding:10px 12px; text-align:center;">STATO</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-            </tbody>
-          </table>
-        </div>
+        ${_vistaModuloTipo === 'colonne' ? `
+          <!-- CORPO FEDELE AL PRESTAMPATO ORIGINALE (4 COLONNE) -->
+          <div style="padding:16px 18px; background:#f8fafc;">
+            
+            <!-- INTESTAZIONE CARTACEA ORIGINALE -->
+            <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div>
+                <div style="font-size:10.5px; font-weight:800; color:#0369a1; text-transform:uppercase;">REGIONE PUGLIA &bull; POLICLINICO DI BARI CONSORZIALE</div>
+                <div style="font-size:13px; font-weight:900; color:#0f172a;">UNITÀ OPERATIVA MALATTIE INFETTIVE UNIVERSITARIA</div>
+                <div style="font-size:11px; color:#64748b;">Direttore: <b>Prof.ssa Annalisa SARACINO</b> &bull; Segr. 080 5592473 &bull; Bari, lì <b>23/02/2026</b></div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:14px; font-weight:900; color:#0284c7;">Sig. <u>${p.nome.toUpperCase()}</u></div>
+                <div style="font-size:11.5px; color:#15803d; font-weight:800;">Tornare a controllo il: <b>22/03/2027</b></div>
+              </div>
+            </div>
+
+            <!-- LE 4 COLONNE ESATTE DEL PRESTAMPATO -->
+            ${buildPrestampatoColonneHtml(esami, esamiSpuntati)}
+
+            <!-- PIEDE DELLA SCHEDA CARTACEA CON PRESCRIZIONE VISITA E RECAPITI -->
+            <div style="margin-top:14px; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div style="font-size:12px; color:#1e293b; line-height:1.45;">
+                📅 <b>Tornare a controllo il:</b> <span style="font-size:13.5px; font-weight:900; color:#0284c7; background:#e0f2fe; padding:2px 8px; border-radius:6px;">22-3-2027</span><br>
+                📋 Con l'esito degli esami contrassegnati, <b>visita infettivologica programmata di reparto</b> &bull; Tel: <b>080 559 3222</b>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:11.5px; color:#475569;">Email reparto: <b>epatologia.malinf@policlinico.ba.it</b></span><br>
+                <span style="font-size:10px; color:#94a3b8;">Mod. 1/Al/Cl-1 - Cod. 5009 (06/2013) Tip. Pubblidea Policoro MT</span>
+              </div>
+            </div>
+
+          </div>
+        ` : `
+          <!-- VISTA TABELLA TRADIZIONALE -->
+          <div class="table-responsive" style="padding:0;">
+            <table class="custom-table" style="margin:0;">
+              <thead>
+                <tr style="background:#f1f5f9; color:#475569; font-size:11px;">
+                  <th style="padding:10px 8px; text-align:center; width:45px;">SPUNTA</th>
+                  <th style="padding:10px 14px;">ESAME / PRESTAZIONE</th>
+                  <th style="padding:10px 10px; text-align:center;">CATEGORIA</th>
+                  <th style="padding:10px 10px; text-align:center;">1. RICHIESTA MMG</th>
+                  <th style="padding:10px 10px; text-align:center;">2. PRENOTAZIONE CUP</th>
+                  <th style="padding:10px 10px; text-align:center;">3. REFERTO / ESITO</th>
+                  <th style="padding:10px 12px; text-align:center;">STATO</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          </div>
+        `}
       </div>
 
       <!-- COLONNA DESTRA: PIANO TERAPEUTICO ANNUALE DPC, SCALARE SCATOLE & COINCIDENZA VISITA -->
