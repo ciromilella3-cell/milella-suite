@@ -14689,44 +14689,175 @@ function aggiornaVisibilitaTabEpatologia() {
 // ==============================================================================
 
 
+
 function getPianoTerapeuticoAttivo(paziente) {
   var p = paziente || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
   if (!p) return null;
 
-  if (!p.pianoTerapeuticoDpc || p.pianoTerapeuticoDpc.scatoleRitirateTotali !== 9) {
+  var pNome = (p.nome || '').toLowerCase();
+
+  // 1. PROFILO CIRO MILELLA (Epatite Cronica B - Entecavir 0,5 mg)
+  if (pNome.includes('ciro')) {
+    if (!p.pianoTerapeuticoDpc || p.pianoTerapeuticoDpc.scatoleRitirateTotali !== 9) {
+      p.pianoTerapeuticoDpc = {
+        idPrescrizione: "011BQ1X145RHL",
+        nRegistrazioneRicetta: "630889604",
+        strutturaPrescrittrice: "AO CONS. POLICLINICO - BARI - MALATTIE INFETTIVE UNIVERSITARIA",
+        medicoPrescrittore: "Dr. Michele MILELLA (Cod. 640631)",
+        direttoreUO: "Prof.ssa Annalisa SARACINO",
+        diagnosiAifa: "07032 EPATITE VIRALE B CRONICA SENZA MENZIONE DI COMA EPATICO, SENZA MENZIONE DI EPATITE DELTA",
+        codiceEsenzione: "TOT04",
+        farmacoNome: "ENTACAVIR SUN 0,5 MG (30 CPR)",
+        formaFarmaceutica: "Compresse rivestite",
+        posologia: "1 cpr / die (a digiuno)",
+        cprPerConfezione: 30,
+        scatoleSpettantiAnno: 12,
+        dataPrescrizioneInizio: "2026-02-23",
+        dataScadenzaAnno: "2027-02-22",
+        prossimaVisitaAmbulatoriale: "2027-03-22",
+        scatoleRitirateTotali: 9,
+        scatoleResidueDaRitirare: 3,
+        puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO",
+        storicoRitiri: [
+          { data: "2026-02-23", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "1° Tranche" },
+          { data: "2026-05-20", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "2° Tranche" },
+          { data: "2026-08-18", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "3° Tranche" }
+        ]
+      };
+      var tCiro = (p.terapie || []).find(function(item) { return (item.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
+      if (tCiro) tCiro.scorta = 40;
+      saveDb();
+    }
+    return p.pianoTerapeuticoDpc;
+  }
+
+  // 2. PROFILO ROSA CAVALCANTE (Diabete Mellito Tipo 2 / Insulina Xultophy & Forxiga)
+  if (pNome.includes('rosa')) {
+    if (!p.pianoTerapeuticoDpc) {
+      p.pianoTerapeuticoDpc = {
+        idPrescrizione: "018XUL99420PZ",
+        nRegistrazioneRicetta: "740912384",
+        strutturaPrescrittrice: "ASP BASILICATA - AMBULATORIO DIABETOLOGIA & MALATTIE METABOLICHE",
+        medicoPrescrittore: "Dr.ssa Carolina POTENZA (MMG / Diabetologia)",
+        direttoreUO: "U.O. Diabetologia Territoriale",
+        diagnosiAifa: "25000 DIABETE MELLITO TIPO 2 NON COMPLICATO / TERAPIA INIETTIVA COMBINATA",
+        codiceEsenzione: "013.250",
+        farmacoNome: "XULTOPHY PENNE PRERIEMPITE (100 U/ml + 3,6 mg/ml) + FORXIGA 10 MG",
+        formaFarmaceutica: "Soluzione iniettabile sottocute in penna preriempita",
+        posologia: "1 iniezione al giorno al mattino",
+        cprPerConfezione: 3,
+        scatoleSpettantiAnno: 12,
+        dataPrescrizioneInizio: "2026-04-10",
+        dataScadenzaAnno: "2027-04-09",
+        prossimaVisitaAmbulatoriale: "2027-04-05",
+        scatoleRitirateTotali: 8,
+        scatoleResidueDaRitirare: 4,
+        puntoRitiro: "Farmacia Girasole Picconi / ASL Territoriale",
+        storicoRitiri: [
+          { data: "2026-04-10", scatole: 3, puntoRitiro: "Farmacia Girasole Picconi", note: "1° Ritiro Penne" },
+          { data: "2026-07-08", scatole: 3, puntoRitiro: "Farmacia Girasole Picconi", note: "2° Ritiro Penne" },
+          { data: "2026-10-02", scatole: 2, puntoRitiro: "Farmacia Girasole Picconi", note: "3° Ritiro Penne" }
+        ]
+      };
+      saveDb();
+    }
+    return p.pianoTerapeuticoDpc;
+  }
+
+  // 3. PROFILO ANGELA MAZZICONE (Cardiopatia Ipertensiva / Scompenso - Irbesartan/Idroclorotiazide & Lasix)
+  if (pNome.includes('angela')) {
+    if (!p.pianoTerapeuticoDpc) {
+      p.pianoTerapeuticoDpc = {
+        idPrescrizione: "011CARD8831BA",
+        nRegistrazioneRicetta: "630441920",
+        strutturaPrescrittrice: "POLIAMBULATORIO DISTRETTUALE CARDIOLOGIA ASL BARI",
+        medicoPrescrittore: "Dott. Roberto SCARCIA",
+        direttoreUO: "U.O. Cardiologia Territoriale Bari",
+        diagnosiAifa: "4019 IPERTENSIONE ARTERIOSA ESSENZIALE COMPLICATA / INSUFFICIENZA CARDIACA",
+        codiceEsenzione: "031.401",
+        farmacoNome: "IRBESARTAN/IDROCLOROTIAZIDE 300/12,5 MG + LASIX 25 MG",
+        formaFarmaceutica: "Compresse rivestite",
+        posologia: "1 cpr al giorno a colazione",
+        cprPerConfezione: 28,
+        scatoleSpettantiAnno: 12,
+        dataPrescrizioneInizio: "2026-03-15",
+        dataScadenzaAnno: "2027-03-14",
+        prossimaVisitaAmbulatoriale: "2027-03-10",
+        scatoleRitirateTotali: 9,
+        scatoleResidueDaRitirare: 3,
+        puntoRitiro: "Farmacia Dott. MACARIO (Via G. Petroni, Bari)",
+        storicoRitiri: [
+          { data: "2026-03-15", scatole: 3, puntoRitiro: "Farmacia Macario", note: "1° Tranche" },
+          { data: "2026-06-12", scatole: 3, puntoRitiro: "Farmacia Macario", note: "2° Tranche" },
+          { data: "2026-09-08", scatole: 3, puntoRitiro: "Farmacia Macario", note: "3° Tranche" }
+        ]
+      };
+      saveDb();
+    }
+    return p.pianoTerapeuticoDpc;
+  }
+
+  // 4. PROFILO ALDO ZAMPARINO (Neurologico / Epilessia & Ipertrofia Prostatica - Vimpat & Silodyx)
+  if (pNome.includes('aldo')) {
+    if (!p.pianoTerapeuticoDpc) {
+      p.pianoTerapeuticoDpc = {
+        idPrescrizione: "011VIMP7712BA",
+        nRegistrazioneRicetta: "630119854",
+        strutturaPrescrittrice: "CENTRO REGIONALE EPILESSIA & NEUROLOGIA CLINICA ASL BARI",
+        medicoPrescrittore: "Dott. Roberto SCARCIA (Specialista Neurologo)",
+        direttoreUO: "Clinica Neurologica Ospedaliera",
+        diagnosiAifa: "34590 EPILESSIA SECONDARIA / TERAPIA ADJUVANT CRONICA CON LACOSAMIDE",
+        codiceEsenzione: "017.345",
+        farmacoNome: "VIMPAT 100 MG (LACOSAMIDE) + SILODYX 8 MG",
+        formaFarmaceutica: "Compresse rivestite",
+        posologia: "1 cpr 3 volte al giorno (Colazione, Pranzo, Sera)",
+        cprPerConfezione: 56,
+        scatoleSpettantiAnno: 20,
+        dataPrescrizioneInizio: "2026-01-15",
+        dataScadenzaAnno: "2027-01-14",
+        prossimaVisitaAmbulatoriale: "2027-01-10",
+        scatoleRitirateTotali: 15,
+        scatoleResidueDaRitirare: 5,
+        puntoRitiro: "Farmacia Territoriale Dott. MACARIO",
+        storicoRitiri: [
+          { data: "2026-01-15", scatole: 5, puntoRitiro: "Farmacia Macario", note: "1° Fornitura" },
+          { data: "2026-04-18", scatole: 5, puntoRitiro: "Farmacia Macario", note: "2° Fornitura" },
+          { data: "2026-08-01", scatole: 5, puntoRitiro: "Farmacia Macario", note: "3° Fornitura" }
+        ]
+      };
+      saveDb();
+    }
+    return p.pianoTerapeuticoDpc;
+  }
+
+  // 5. GENERATORE AUTOMATICO PER QUALSIASI NUOVO ASSISTITO
+  if (!p.pianoTerapeuticoDpc) {
     p.pianoTerapeuticoDpc = {
-      idPrescrizione: "011BQ1X145RHL",
-      nRegistrazioneRicetta: "630889604",
-      strutturaPrescrittrice: "AO CONS. POLICLINICO - BARI - MALATTIE INFETTIVE UNIVERSITARIA",
-      medicoPrescrittore: "Dr. Michele MILELLA (Cod. 640631)",
-      direttoreUO: "Prof.ssa Annalisa SARACINO",
-      diagnosiAifa: "07032 EPATITE VIRALE B CRONICA SENZA MENZIONE DI COMA EPATICO, SENZA MENZIONE DI EPATITE DELTA",
-      codiceEsenzione: "TOT04",
-      farmacoNome: "ENTACAVIR SUN 0,5 MG (30 CPR)",
-      formaFarmaceutica: "Compresse rivestite",
-      posologia: "1 cpr / die (a digiuno)",
+      idPrescrizione: "PT-" + Date.now().toString().slice(-8),
+      nRegistrazioneRicetta: "REC-" + Date.now().toString().slice(-6),
+      strutturaPrescrittrice: "DISTRETTO SANITARIO TERRITORIALE / CENTRO SPECIALISTICO",
+      medicoPrescrittore: p.medicoNome || p.medico || "Medico Curante",
+      direttoreUO: "Ufficio Piani Terapeutici & DPC",
+      diagnosiAifa: (p.patologie && p.patologie.length > 0) ? p.patologie[0] : "MONITORAGGIO PATOLOGIA CRONICA ASSISTITO",
+      codiceEsenzione: "000.000",
+      farmacoNome: (p.terapie && p.terapie.length > 0) ? p.terapie[0].farmaco : "TERAPIA CRONICA CONTINUA",
+      formaFarmaceutica: "Compresse / Soluzione",
+      posologia: "1 somministrazione die",
       cprPerConfezione: 30,
       scatoleSpettantiAnno: 12,
-      dataPrescrizioneInizio: "2026-02-23",
-      dataScadenzaAnno: "2027-02-22",
-      prossimaVisitaAmbulatoriale: "2027-03-22",
+      dataPrescrizioneInizio: new Date().toISOString().slice(0, 10),
+      dataScadenzaAnno: new Date(Date.now() + 365*24*3600*1000).toISOString().slice(0, 10),
+      prossimaVisitaAmbulatoriale: new Date(Date.now() + 330*24*3600*1000).toISOString().slice(0, 10),
       scatoleRitirateTotali: 9,
       scatoleResidueDaRitirare: 3,
+      puntoRitiro: p.farmaciaDiRiferimento || "Farmacia Territoriale",
       storicoRitiri: [
-        { data: "2026-02-23", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "1° Tranche" },
-        { data: "2026-05-20", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "2° Tranche" },
-        { data: "2026-08-18", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "3° Tranche" }
+        { data: new Date().toISOString().slice(0, 10), scatole: 3, puntoRitiro: p.farmaciaDiRiferimento || "Farmacia", note: "Fornitura iniziale" }
       ]
     };
-
-    // Allinea esattamente le scorte di casa a 40 compresse (1 scatola da 30 + 10 compresse sfuse)
-    var t = (p.terapie || []).find(function(item) { return (item.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
-    if (t) {
-      t.scorta = 40;
-    }
-
     saveDb();
   }
+
   return p.pianoTerapeuticoDpc;
 }
 window.getPianoTerapeuticoAttivo = getPianoTerapeuticoAttivo;
@@ -14736,9 +14867,14 @@ function calcolaSincronizzazionePianoVisita() {
   var pt = getPianoTerapeuticoAttivo(p);
   if (!pt) return null;
 
-  var terapieCiro = (p.terapie || []).find(function(t) { return (t.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
-  var scortaCompresseCasa = terapieCiro ? (terapieCiro.scorta || 40) : 40;
-  var giorniCasa = scortaCompresseCasa; // 1 cpr al giorno
+  // Calcola le scorte attuali del farmaco principale associato al piano
+  var terapie = p.terapie || [];
+  var farmacoRef = terapie[0] || { scorta: 40 };
+  if ((p.nome || '').toLowerCase().includes('ciro')) {
+    farmacoRef = terapie.find(function(t) { return (t.farmaco || '').toUpperCase().includes('ENTECAVIR'); }) || farmacoRef;
+  }
+  var scortaCompresseCasa = farmacoRef.scorta || 40;
+  var giorniCasa = Math.max(1, scortaCompresseCasa);
 
   var dOggi = new Date();
   var dFineScortaCasa = new Date();
@@ -14746,7 +14882,7 @@ function calcolaSincronizzazionePianoVisita() {
 
   var scatoleTotaliSpettanti = pt.scatoleSpettantiAnno || 12;
   var scatoleRimanentiTerritoriale = Math.max(0, scatoleTotaliSpettanti - pt.scatoleRitirateTotali);
-  var giorniTotaliRimanenti = (scatoleRimanentiTerritoriale * 30) + scortaCompresseCasa;
+  var giorniTotaliRimanenti = (scatoleRimanentiTerritoriale * (pt.cprPerConfezione || 30)) + scortaCompresseCasa;
   
   var dFineTotaleAnno = new Date();
   dFineTotaleAnno.setDate(dOggi.getDate() + giorniTotaliRimanenti);
@@ -14754,11 +14890,7 @@ function calcolaSincronizzazionePianoVisita() {
   var dVisita = new Date(pt.prossimaVisitaAmbulatoriale || '2027-03-22');
   var giorniAllaVisita = Math.ceil((dVisita - dOggi) / (1000 * 60 * 60 * 24));
 
-  // DUE AVVISI DISTINTI E AUTOMATICI:
-  // 1. Alert Ritiro Scatole Territoriale (quando mancano <= 10 giorni alle 40 compresse di casa)
-  var alertRitiroScatole = (giorniCasa <= 12);
-
-  // 2. Alert Rinnovo Piano Terapeutico (siamo all'ultima tranche di 3 scatole e la scadenza coincide con la visita del 22/03/2027)
+  var alertRitiroScatole = (giorniCasa <= 14);
   var alertRinnovoPiano = (scatoleRimanentiTerritoriale <= 3 || giorniAllaVisita <= 45);
 
   return {
