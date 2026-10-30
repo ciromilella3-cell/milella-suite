@@ -13687,3 +13687,145 @@ function impostaSedeRitiroRapida(val) {
   if (inp) inp.value = val;
 }
 window.impostaSedeRitiroRapida = impostaSedeRitiroRapida;
+
+// ==============================================================================
+// GESTIONE COMPILAZIONE & INVIO MODULO UFFICIALE EX-CTO ASL BARI
+// ==============================================================================
+
+function apriModuloPrenotazioneCto(farmacoIdCustom) {
+  var p = getActivePaziente();
+  var farmId = farmacoIdCustom || parseInt(document.getElementById('avviso-ext-farmaco-id') ? document.getElementById('avviso-ext-farmaco-id').value : 0);
+  
+  var farmacoNome = 'ENTERCAVIR 0,5 mg';
+  var dosaggio = '0.5 mg';
+  var scorta = 0;
+
+  if (p && p.terapie && farmId) {
+    var t = p.terapie.find(function(item) { return item.id === farmId; });
+    if (t) {
+      farmacoNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toUpperCase();
+      dosaggio = t.dosaggio || '0.5 mg';
+      scorta = t.scorta || 0;
+    }
+  }
+
+  var m = document.getElementById('modal-prenotazione-cto');
+  if (!m) return;
+
+  // 1. Dati anagrafici dal profilo o predefiniti esatti di Ciro Milella
+  var nomePaziente = (p && p.nome) ? p.nome.split(' ')[0] : 'CIRO';
+  var cognomePaziente = (p && p.nome && p.nome.split(' ').length > 1) ? p.nome.split(' ').slice(1).join(' ') : 'MILELLA';
+  if (nomePaziente.toUpperCase() === 'ALDO') {
+    nomePaziente = 'ALDO';
+    cognomePaziente = 'MILELLA';
+  } else if (nomePaziente.toUpperCase() === 'ANGELA') {
+    nomePaziente = 'ANGELA';
+    cognomePaziente = 'MAZZICONE';
+  } else {
+    nomePaziente = 'CIRO';
+    cognomePaziente = 'MILELLA';
+  }
+
+  var dataNascita = (p && p.dataNascita) ? p.dataNascita : '16/12/1967';
+  var tel = (p && (p.cellulare || p.telefonoFisso)) ? (p.cellulare || p.telefonoFisso) : '3664607396';
+  var email = 'ciromilella3@gmail.com';
+
+  document.getElementById('cto-form-nome').value = nomePaziente.toUpperCase();
+  document.getElementById('cto-form-cognome').value = cognomePaziente.toUpperCase();
+  document.getElementById('cto-form-nascita').value = dataNascita;
+  document.getElementById('cto-form-telefono').value = tel.replace(/\s+/g, '');
+  document.getElementById('cto-form-email').value = email;
+  document.getElementById('cto-form-farmaco').value = farmacoNome + ' (n. 3 scatole come da piano terapeutico attivo)';
+  document.getElementById('cto-form-note').value = 'Grazie per quello che fate';
+  document.getElementById('cto-form-consenso').checked = true;
+
+  aggiornaAnteprimaTestoCto();
+
+  // Aggiungi listener sugli input per aggiornare l'anteprima in tempo reale
+  ['cto-form-nome', 'cto-form-cognome', 'cto-form-nascita', 'cto-form-telefono', 'cto-form-email', 'cto-form-farmaco', 'cto-form-note'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.oninput = aggiornaAnteprimaTestoCto;
+  });
+
+  m.style.display = 'flex';
+}
+window.apriModuloPrenotazioneCto = apriModuloPrenotazioneCto;
+
+function chiudiModalPrenotazioneCto() {
+  var m = document.getElementById('modal-prenotazione-cto');
+  if (m) m.style.display = 'none';
+}
+window.chiudiModalPrenotazioneCto = chiudiModalPrenotazioneCto;
+
+function componiTestoRichiestaCto() {
+  var nome = document.getElementById('cto-form-nome').value.trim();
+  var cognome = document.getElementById('cto-form-cognome').value.trim();
+  var nascita = document.getElementById('cto-form-nascita').value.trim();
+  var tel = document.getElementById('cto-form-telefono').value.trim();
+  var email = document.getElementById('cto-form-email').value.trim();
+  var farmaco = document.getElementById('cto-form-farmaco').value.trim();
+  var note = document.getElementById('cto-form-note').value.trim();
+
+  var text = 'PRENOTAZIONE DI FARMACI - AREA FARMACEUTICA TERRITORIALE EX-CTO ASL BARI\n' +
+    '----------------------------------------------------------------------\n' +
+    'NOME DEL PAZIENTE: ' + nome + '\n' +
+    'COGNOME DEL PAZIENTE: ' + cognome + '\n' +
+    'DATA DI NASCITA: ' + nascita + '\n' +
+    'NUMERO DI TELEFONO: ' + tel + '\n' +
+    'EMAIL DI RIFERIMENTO: ' + email + '\n\n' +
+    'FARMACO DA RITIRARE (Piano Terapeutico DPC):\n' +
+    farmaco + '\n\n' +
+    'NOTE DEL PAZIENTE:\n' +
+    (note || 'Nessuna comunicazione aggiuntiva') + '\n\n' +
+    'DICHIARAZIONE DI CONSENSO INFORMATO (GDPR 2016/679):\n' +
+    'ACCONSENTO al trattamento dei dati personali per la finalità di erogazione farmaci.';
+
+  return text;
+}
+
+function aggiornaAnteprimaTestoCto() {
+  var box = document.getElementById('cto-anteprima-testo');
+  if (box) {
+    box.textContent = componiTestoRichiestaCto();
+  }
+}
+
+function copiaTestoRichiestaCto() {
+  var text = componiTestoRichiestaCto();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('📋 Testo del modulo copiato negli appunti!');
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('📋 Testo del modulo copiato negli appunti!');
+  }
+}
+window.copiaTestoRichiestaCto = copiaTestoRichiestaCto;
+
+function inviaRichiestaCtoEmailUfficiale() {
+  var nome = document.getElementById('cto-form-nome').value.trim();
+  var cognome = document.getElementById('cto-form-cognome').value.trim();
+  var farmaco = document.getElementById('cto-form-farmaco').value.trim();
+  var body = componiTestoRichiestaCto();
+
+  var subject = 'PRENOTAZIONE FARMACI EX-CTO: ' + cognome + ' ' + nome + ' - ' + farmaco.slice(0, 35);
+  var mailto = 'mailto:agft.farmacia.bari@asl.bari.it?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  
+  window.location.href = mailto;
+  showToast('✉️ Richiesta aperta nel tuo client di posta indirizzata ad agft.farmacia.bari@asl.bari.it!');
+}
+window.inviaRichiestaCtoEmailUfficiale = inviaRichiestaCtoEmailUfficiale;
+
+function apriModuloGoogleUfficiale() {
+  var formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSebVeV7FJSS2mlMTt1hRyovwl2Oe_0vfbdoyqZLi3a-fo6vdQ/viewform?usp=sf_link';
+  window.open(formUrl, '_blank');
+  copiaTestoRichiestaCto();
+  showToast('🌐 Modulo Google aperto! I tuoi dati sono stati copiati per incollarli subito!');
+}
+window.apriModuloGoogleUfficiale = apriModuloGoogleUfficiale;
