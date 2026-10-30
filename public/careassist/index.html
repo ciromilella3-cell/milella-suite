@@ -224,9 +224,10 @@
       <!-- SELETTORE ASSISTITO ATTIVO (CAPSULE EXECUTIVE CARD) -->
       <div class="header-center-patient">
         <div class="patient-picker-box">
-          <div class="patient-picker-chip">
-            <span class="patient-picker-icon">👤</span>
+          <div class="patient-picker-chip" onclick="apriSwitchPazienteRapido()" title="Tocca per cambiare rapidamente assistito (4 schede con avatar)" style="cursor:pointer;">
+            <span class="patient-picker-icon">👥</span>
             <span class="patient-picker-label">ASSISTITO:</span>
+            <span style="font-size:10px; color:#0284c7; margin-left:2px; font-weight:900;">▾</span>
           </div>
           <select id="select-paziente-attivo" class="patient-select-input" onchange="cambiaPaziente(this.value)">
             <!-- popolato dinamicamente -->

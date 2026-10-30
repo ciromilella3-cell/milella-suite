@@ -12250,7 +12250,11 @@ function apriSwitchPazienteRapido() {
   }).join('');
 
   modal.classList.add('active');
+  modal.style.display = 'flex';
+  document.body.classList.add('modal-open');
 }
+window.apriSwitchPazienteRapido = apriSwitchPazienteRapido;
+window.selezionaPazienteRapido = selezionaPazienteRapido;
 
 function selezionaPazienteRapido(pazienteId) {
   closeModal('modal-switch-paziente-rapido');
