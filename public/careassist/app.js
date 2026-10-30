@@ -14688,11 +14688,12 @@ function aggiornaVisibilitaTabEpatologia() {
 // Connessione Automatica tra Scatole Spettanti, Scarico Farmacia Territoriale e Visita Specialistica
 // ==============================================================================
 
+
 function getPianoTerapeuticoAttivo(paziente) {
   var p = paziente || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
   if (!p) return null;
 
-  if (!p.pianoTerapeuticoDpc) {
+  if (!p.pianoTerapeuticoDpc || p.pianoTerapeuticoDpc.scatoleRitirateTotali !== 9) {
     p.pianoTerapeuticoDpc = {
       idPrescrizione: "011BQ1X145RHL",
       nRegistrazioneRicetta: "630889604",
@@ -14708,13 +14709,22 @@ function getPianoTerapeuticoAttivo(paziente) {
       scatoleSpettantiAnno: 12,
       dataPrescrizioneInizio: "2026-02-23",
       dataScadenzaAnno: "2027-02-22",
-      prossimaVisitaAmbulatoriale: "2026-09-21",
-      scatoleRitirateTotali: 3,
-      scatoleResidueDaRitirare: 9,
+      prossimaVisitaAmbulatoriale: "2027-03-22",
+      scatoleRitirateTotali: 9,
+      scatoleResidueDaRitirare: 3,
       storicoRitiri: [
-        { data: "2026-02-23", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", operatore: "Ciro Milella" }
+        { data: "2026-02-23", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "1° Tranche" },
+        { data: "2026-05-20", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "2° Tranche" },
+        { data: "2026-08-18", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "3° Tranche" }
       ]
     };
+
+    // Allinea esattamente le scorte di casa a 40 compresse (1 scatola da 30 + 10 compresse sfuse)
+    var t = (p.terapie || []).find(function(item) { return (item.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
+    if (t) {
+      t.scorta = 40;
+    }
+
     saveDb();
   }
   return p.pianoTerapeuticoDpc;
@@ -14726,17 +14736,14 @@ function calcolaSincronizzazionePianoVisita() {
   var pt = getPianoTerapeuticoAttivo(p);
   if (!pt) return null;
 
-  // Calcola compresse e autonomia
   var terapieCiro = (p.terapie || []).find(function(t) { return (t.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
-  var scortaCompresseCasa = terapieCiro ? (terapieCiro.scorta || 41) : 41;
+  var scortaCompresseCasa = terapieCiro ? (terapieCiro.scorta || 40) : 40;
   var giorniCasa = scortaCompresseCasa; // 1 cpr al giorno
 
-  // Calcola data esaurimento scorte casa
   var dOggi = new Date();
   var dFineScortaCasa = new Date();
   dFineScortaCasa.setDate(dOggi.getDate() + giorniCasa);
 
-  // Calcola data esaurimento totale delle 12 scatole dell'anno
   var scatoleTotaliSpettanti = pt.scatoleSpettantiAnno || 12;
   var scatoleRimanentiTerritoriale = Math.max(0, scatoleTotaliSpettanti - pt.scatoleRitirateTotali);
   var giorniTotaliRimanenti = (scatoleRimanentiTerritoriale * 30) + scortaCompresseCasa;
@@ -14744,12 +14751,15 @@ function calcolaSincronizzazionePianoVisita() {
   var dFineTotaleAnno = new Date();
   dFineTotaleAnno.setDate(dOggi.getDate() + giorniTotaliRimanenti);
 
-  // Prossima visita ambulatoriale
-  var dVisita = new Date(pt.prossimaVisitaAmbulatoriale || '2026-09-21');
+  var dVisita = new Date(pt.prossimaVisitaAmbulatoriale || '2027-03-22');
   var giorniAllaVisita = Math.ceil((dVisita - dOggi) / (1000 * 60 * 60 * 24));
 
-  // Verifica coincidenza: il nuovo piano terapeutico va richiesto durante la visita del 21/09/2026!
-  var coincidenzaPerfetta = Math.abs(giorniAllaVisita - giorniTotaliRimanenti) <= 45;
+  // DUE AVVISI DISTINTI E AUTOMATICI:
+  // 1. Alert Ritiro Scatole Territoriale (quando mancano <= 10 giorni alle 40 compresse di casa)
+  var alertRitiroScatole = (giorniCasa <= 12);
+
+  // 2. Alert Rinnovo Piano Terapeutico (siamo all'ultima tranche di 3 scatole e la scadenza coincide con la visita del 22/03/2027)
+  var alertRinnovoPiano = (scatoleRimanentiTerritoriale <= 3 || giorniAllaVisita <= 45);
 
   return {
     scortaCasa: scortaCompresseCasa,
@@ -14758,11 +14768,13 @@ function calcolaSincronizzazionePianoVisita() {
     scatoleRitirate: pt.scatoleRitirateTotali,
     scatoleResidue: scatoleRimanentiTerritoriale,
     scatoleTotali: scatoleTotaliSpettanti,
+    giorniTotaliRimanenti: giorniTotaliRimanenti,
+    dataFineTotaleStr: dFineTotaleAnno.toLocaleDateString('it-IT'),
     giorniAllaVisita: giorniAllaVisita,
     dataVisitaStr: dVisita.toLocaleDateString('it-IT'),
     dataScadenzaAnnoStr: new Date(pt.dataScadenzaAnno).toLocaleDateString('it-IT'),
-    coincidenzaPerfetta: coincidenzaPerfetta,
-    avvisoRinnovo: (giorniAllaVisita <= 30 || scatoleRimanentiTerritoriale <= 2)
+    alertRitiroScatole: alertRitiroScatole,
+    alertRinnovoPiano: alertRinnovoPiano
   };
 }
 window.calcolaSincronizzazionePianoVisita = calcolaSincronizzazionePianoVisita;
