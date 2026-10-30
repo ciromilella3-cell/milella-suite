@@ -13845,6 +13845,134 @@ window.apriModuloGoogleUfficiale = apriModuloGoogleUfficiale;
 // U.O. Malattie Infettive Universitaria - Direttore: Prof.ssa Annalisa Saracino
 // ==============================================================================
 
+
+// ==============================================================================
+// CATALOGO UFFICIALE INTEGRALE 105 ESAMI MODULO POLICLINICO DI BARI (MOD. 1/AL/CL-1)
+// ==============================================================================
+const TUTTI_ESAMI_MODULO_POLICLINICO_BASE = [
+  // 1. ESAMI GENERALI (24)
+  { id: 'gen_1', nome: 'VES', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_2', nome: 'Emocromo con formula', categoria: 'ESAMI GENERALI', spuntato: true, note: 'Serie rossa, bianca e piastrine' },
+  { id: 'gen_3', nome: 'Piastrine', categoria: 'ESAMI GENERALI', spuntato: true, note: 'Conta piastrinica specifica' },
+  { id: 'gen_4', nome: 'Coombs dir. e ind.', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_5', nome: 'Sideremia', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_6', nome: 'Ferritinemia', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_7', nome: 'Transferrinemia', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_8', nome: 'Azotemia', categoria: 'ESAMI GENERALI', spuntato: true, note: 'Azoto ureico e funzione renale' },
+  { id: 'gen_9', nome: 'Glicemia', categoria: 'ESAMI GENERALI', spuntato: true, note: 'Glicemia a digiuno' },
+  { id: 'gen_10', nome: 'Creatininemia', categoria: 'ESAMI GENERALI', spuntato: true, note: 'Clearance glomerulare per dosaggio antivirale' },
+  { id: 'gen_11', nome: 'Amilasi pancreatica', categoria: 'ESAMI GENERALI', spuntato: true, note: 'Indice pancreatico' },
+  { id: 'gen_12', nome: 'Lipasi', categoria: 'ESAMI GENERALI', spuntato: true, note: 'Indice pancreatico specifico' },
+  { id: 'gen_13', nome: 'Sodiemia', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_14', nome: 'Potassiemia', categoria: 'ESAMI GENERALI', spuntato: true, note: 'Elettroliti sierici (Potassio)' },
+  { id: 'gen_15', nome: 'Calcemia', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_16', nome: 'Fosforemia', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_17', nome: 'Magnesiemia', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_18', nome: 'Colesterolo', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_19', nome: 'Trigliceridi', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_20', nome: 'Colinesterasi', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_21', nome: 'CPK', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_22', nome: 'Uricemia', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_23', nome: 'LDH', categoria: 'ESAMI GENERALI', spuntato: false },
+  { id: 'gen_24', nome: 'Esame urine', categoria: 'ESAMI GENERALI', spuntato: false },
+
+  // 2. BATTERIOLOGIA E PARASS. (4)
+  { id: 'bat_1', nome: 'Es. parassitol. feci', categoria: 'BATTERIOLOGIA E PARASS.', spuntato: false },
+  { id: 'bat_2', nome: 'Coprocoltura', categoria: 'BATTERIOLOGIA E PARASS.', spuntato: false },
+  { id: 'bat_3', nome: 'Ricerca BK', categoria: 'BATTERIOLOGIA E PARASS.', spuntato: false },
+  { id: 'bat_4', nome: 'Urinocoltura', categoria: 'BATTERIOLOGIA E PARASS.', spuntato: false },
+
+  // 3. FEGATO (30)
+  { id: 'feg_1', nome: 'Transaminasi', categoria: 'FEGATO', spuntato: true, note: 'ALT/GPT & AST/GOT (necrosi/citolisi epatica)' },
+  { id: 'feg_2', nome: 'Fosfatasi alc.', categoria: 'FEGATO', spuntato: true, note: 'Fosfatasi alcalina (colestasi)' },
+  { id: 'feg_3', nome: 'gamma GT', categoria: 'FEGATO', spuntato: true, note: 'Gamma glutamil transferasi' },
+  { id: 'feg_4', nome: 'Alfa - fetoproteina', categoria: 'FEGATO', spuntato: true, note: 'Sorveglianza semestrale epatocarcinoma' },
+  { id: 'feg_5', nome: 'Ammoniemia', categoria: 'FEGATO', spuntato: true, note: 'Ammoniaca plasmatica a freddo' },
+  { id: 'feg_6', nome: 'Bilirubina tot. e dir.', categoria: 'FEGATO', spuntato: true, note: 'Frazionata totale e diretta' },
+  { id: 'feg_7', nome: 'Proteine totali', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_8', nome: 'Elettroforesi', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_9', nome: 'Albuminemia', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_10', nome: 'Anti - HAV IgG', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_11', nome: 'Anti - HAV IgM', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_12', nome: 'Anti HEV', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_13', nome: 'HBsAg', categoria: 'FEGATO', spuntato: true, codicePrestazione: '88606', evidenziatoPennarello: true, emessoDaAmbulatorio: true, note: '🖊️ Evidenziato pennarello celeste (Cod. 88606) - Ambulatorio Infettivi' },
+  { id: 'feg_14', nome: 'Anti - HBs', categoria: 'FEGATO', spuntato: true, note: 'Anticorpi anti-superficie HBV' },
+  { id: 'feg_15', nome: 'Anti - HBc IgM', categoria: 'FEGATO', spuntato: true, note: 'Anticorpi anti-core IgM' },
+  { id: 'feg_16', nome: 'Anti - HBc', categoria: 'FEGATO', spuntato: true, note: 'Anticorpi anti-core totali' },
+  { id: 'feg_17', nome: 'HBeAg', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_18', nome: 'Anti HBe', categoria: 'FEGATO', spuntato: true, note: 'Anticorpi anti-antigene e' },
+  { id: 'feg_19', nome: 'HBV - DNA', categoria: 'FEGATO', spuntato: true, codicePrestazione: '88301', evidenziatoPennarello: true, emessoDaAmbulatorio: true, note: '🖊️ Evidenziato pennarello celeste (Cod. 88301) - Ambulatorio Infettivi' },
+  { id: 'feg_20', nome: 'HDV - RNA', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_21', nome: 'Anti - HDV IgG', categoria: 'FEGATO', spuntato: true, note: 'Anticorpi Epatite Delta IgG' },
+  { id: 'feg_22', nome: 'Anti - HDV IgM', categoria: 'FEGATO', spuntato: true, note: 'Anticorpi Epatite Delta IgM' },
+  { id: 'feg_23', nome: 'Anti - HCV', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_24', nome: 'HCV genotipo', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_25', nome: 'HCV - RNA quantitativo', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_26', nome: 'HCV - RNA qualitativo', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_27', nome: 'HCV - test conferma', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_28', nome: 'PT/PTT', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_29', nome: 'Antitrombina III', categoria: 'FEGATO', spuntato: false },
+  { id: 'feg_30', nome: 'Fibrinogeno', categoria: 'FEGATO', spuntato: false },
+
+  // 4. ESAMI RADIOLOGICI (4)
+  { id: 'rad_1', nome: 'T.A.C.', categoria: 'ESAMI RADIOLOGICI', spuntato: false },
+  { id: 'rad_2', nome: 'RMN', categoria: 'ESAMI RADIOLOGICI', spuntato: false },
+  { id: 'rad_3', nome: 'Colangio-RMN', categoria: 'ESAMI RADIOLOGICI', spuntato: false },
+  { id: 'rad_4', nome: 'PRELIEVO (96101)', categoria: 'ESAMI RADIOLOGICI', spuntato: true, codicePrestazione: '96101', emessoDaAmbulatorio: true, note: 'Prelievo ematico ambulatoriale (Cod. 96101)' },
+
+  // 5. ESAMI STRUMENTALI (6)
+  { id: 'str_1', nome: 'E.G.D. scopia', categoria: 'ESAMI STRUMENTALI', spuntato: false },
+  { id: 'str_2', nome: 'ECG', categoria: 'ESAMI STRUMENTALI', spuntato: false },
+  { id: 'str_3', nome: 'Ecografia addome sup.', categoria: 'ESAMI STRUMENTALI', spuntato: true, note: 'Sorveglianza parenchima epatico, calibro porta e milza' },
+  { id: 'str_4', nome: 'Ecografia renale', categoria: 'ESAMI STRUMENTALI', spuntato: false },
+  { id: 'str_5', nome: 'Ecografia tiroide', categoria: 'ESAMI STRUMENTALI', spuntato: false },
+  { id: 'str_6', nome: 'Fibroscan', categoria: 'ESAMI STRUMENTALI', spuntato: false },
+
+  // 6. ALTRI (5)
+  { id: 'alt_1', nome: 'CEA', categoria: 'ALTRI', spuntato: false },
+  { id: 'alt_2', nome: 'CA-19-9', categoria: 'ALTRI', spuntato: false },
+  { id: 'alt_3', nome: 'CA-125, TPA', categoria: 'ALTRI', spuntato: false },
+  { id: 'alt_4', nome: 'P.S.A.', categoria: 'ALTRI', spuntato: false },
+  { id: 'alt_5', nome: 'S.O.F.', categoria: 'ALTRI', spuntato: false },
+
+  // 7. ESAMI IMMUNOLOGICI (14)
+  { id: 'imm_1', nome: 'C3, C4', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_2', nome: 'Dosaggio immunoglobuline', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_3', nome: 'Immunocomplessi circolanti', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_4', nome: 'Sottopopolazioni linfocitarie', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_5', nome: 'Waaler Rose, RA - test - FR', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_6', nome: 'PCR', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_7', nome: 'Crioglobuline', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_8', nome: 'Ab anti - LKM', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_9', nome: 'Ab anti - tireoglobulina', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_10', nome: 'Ab anti - tireoperossidosi', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_11', nome: 'Ab anti - DNA nativo', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_12', nome: 'Ab anti - nucleo', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_13', nome: 'Ab anti - mitocondrio', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+  { id: 'imm_14', nome: 'Ab anti - muscolo liscio', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
+
+  // 8. SIEROLOGIA (18)
+  { id: 'sie_1', nome: 'S. di Vidal', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_2', nome: 'S. di Wright', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_3', nome: 'Ab incompleti anti - brucella', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_4', nome: 'IgG anti - toxoplasma', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_5', nome: 'IgM anti - toxoplasma', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_6', nome: 'IgG anti - CMV', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_7', nome: 'IgM anti - CMV', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_8', nome: 'Paul Bunnel', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_9', nome: 'Anti - VGA - IgG - IgM', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_10', nome: 'Anti - EBNA - IgG - IgM', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_11', nome: 'IgG anti - rosolia', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_12', nome: 'IgM anti - rosolia', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_13', nome: 'IgG anti - HSV - 1 - 2', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_14', nome: 'IgM anti - HSV - 1 - 2', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_15', nome: 'Anti - HIV 1/2', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_16', nome: 'Ab anti - echinococco', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_17', nome: 'Ab anti - listeria', categoria: 'SIEROLOGIA', spuntato: false },
+  { id: 'sie_18', nome: 'FT3, FT4 - TSH', categoria: 'SIEROLOGIA', spuntato: false }
+];
+window.TUTTI_ESAMI_MODULO_POLICLINICO_BASE = TUTTI_ESAMI_MODULO_POLICLINICO_BASE;
+
 const CATALOGO_COMPLETO_MODULO_POLICLINICO = {
   fegato: {
     titolo: 'FEGATO & ASSETTO VIROLOGICO',
@@ -13994,6 +14122,48 @@ const CATALOGO_COMPLETO_MODULO_POLICLINICO = {
   }
 };
 window.CATALOGO_COMPLETO_MODULO_POLICLINICO = CATALOGO_COMPLETO_MODULO_POLICLINICO;
+
+let _filtroModuloEpatologia = 'tutti'; // 'tutti', 'spuntati', 'mmg', 'ambulatorio'
+let _ricercaModuloEpatologia = '';
+
+function impostaFiltroModuloEpatologia(filtro) {
+  _filtroModuloEpatologia = filtro;
+  renderEpatologiaView();
+}
+window.impostaFiltroModuloEpatologia = impostaFiltroModuloEpatologia;
+
+function cercaNelModuloEpatologia(testo) {
+  _ricercaModuloEpatologia = (testo || '').toLowerCase().trim();
+  renderEpatologiaView();
+}
+window.cercaNelModuloEpatologia = cercaNelModuloEpatologia;
+
+function toggleSpuntaEsameModulo(esameId) {
+  var p = getActivePaziente();
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  if (!scheda || !scheda.esami) return;
+
+  var es = scheda.esami.find(function(item) { return item.id === esameId; });
+  if (es) {
+    es.spuntato = !es.spuntato;
+    if (es.spuntato) {
+      if (es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4') {
+        es.richiestoMMG = true;
+        es.dataRichiestaMMG = 'Automatico (Ambulatorio)';
+      }
+      showToast('✓ Contrassegnato sul modulo: ' + es.nome);
+    } else {
+      showToast('⚪ Rimosso dal modulo: ' + es.nome);
+    }
+    saveDb();
+    renderEpatologiaView();
+  }
+}
+window.toggleSpuntaEsameModulo = toggleSpuntaEsameModulo;
+
 
 
 // PRESET UFFICIALE RILEVATO DALLA FOTO DELLA VISITA DI CIRO MILELLA (23/02/2026)
@@ -14602,7 +14772,8 @@ function toggleRichiestaMMGEsame(esameId) {
   }
   var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === esameId; }) : null;
   if (es) {
-    if (es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'ep_3' || es.id === 'ep_4') {
+    if (es.spuntato === false) { es.spuntato = true; }
+    if (es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4' || es.id === 'ep_3' || es.id === 'ep_4') {
       showToast('ℹ️ Questo esame è spuntato AUTOMATICAMENTE perché emesso direttamente dall\'Ambulatorio Infettivi Policlinico (Cod. ' + (es.codicePrestazione || '88.30.1 / 88.60.6') + ')!');
       return;
     }
@@ -14661,9 +14832,9 @@ function richiediTutteRicetteAlMedicoMMG() {
   }
   var esami = (scheda && scheda.esami) ? scheda.esami : [];
 
-  // Filtriamo solo gli esami di competenza del Medico di Base (escludendo quelli con pennarello/ambulatorio)
+  // Filtriamo solo gli esami effettivamente SPUNTATI sul modulo e di competenza del Medico di Base (escludendo non spuntati e pennarello/ambulatorio)
   var esamiPerMMG = esami.filter(function(e) {
-    return !(e.emessoDaAmbulatorio || e.evidenziatoPennarello || e.id === 'ep_3' || e.id === 'ep_4');
+    return (e.spuntato !== false) && !(e.emessoDaAmbulatorio || e.evidenziatoPennarello || e.id === 'feg_13' || e.id === 'feg_19' || e.id === 'rad_4' || e.id === 'ep_3' || e.id === 'ep_4');
   });
 
   var listaNomiMMG = esamiPerMMG.map(function(e, i) {
@@ -14981,6 +15152,30 @@ let _specialitaAttivaCronica = 'epatologia';
 
 function sincronizzaEsamiPennarelloAmbulatorio(scheda) {
   if (!scheda || !scheda.esami) return;
+
+  // Se la scheda ha ancora il vecchio set parziale di esami, espandi all'intero modulo di 105 esami conservando gli stati già registrati!
+  if (scheda.chiave === 'epatologia' && scheda.esami.length < 50) {
+    var vecchiEsami = scheda.esami;
+    var nuovoSet = JSON.parse(JSON.stringify(TUTTI_ESAMI_MODULO_POLICLINICO_BASE));
+    nuovoSet.forEach(function(ne) {
+      var trovato = vecchiEsami.find(function(ve) {
+        return ve.nome.toLowerCase().includes(ne.nome.toLowerCase().slice(0, 10)) ||
+               ne.nome.toLowerCase().includes(ve.nome.toLowerCase().slice(0, 10));
+      });
+      if (trovato) {
+        ne.spuntato = (trovato.spuntato !== undefined) ? trovato.spuntato : true;
+        ne.richiestoMMG = trovato.richiestoMMG;
+        ne.dataRichiestaMMG = trovato.dataRichiestaMMG;
+        ne.prenotatoCUP = trovato.prenotatoCUP;
+        ne.dataPrenotazioneCUP = trovato.dataPrenotazioneCUP;
+        ne.oraPrenotazione = trovato.oraPrenotazione;
+        ne.luogoPrenotazione = trovato.luogoPrenotazione;
+        ne.refertato = trovato.refertato;
+        ne.valoreReferto = trovato.valoreReferto;
+      }
+    });
+    scheda.esami = nuovoSet;
+  }
   scheda.esami.forEach(function(es) {
     if (es.id === 'ep_3' || es.id === 'ep_4' || (es.nome && (es.nome.includes('HBV-DNA') || es.nome.includes('HBsAg')))) {
       es.emessoDaAmbulatorio = true;
@@ -15016,12 +15211,16 @@ function getSchedaCronicaAttivaPaziente() {
     else if (_specialitaAttivaCronica === 'cardiologia') dataVisita = '2026-03-10';
     else if (_specialitaAttivaCronica === 'parkinson') dataVisita = '2026-04-08';
 
+    var initialEsami = (_specialitaAttivaCronica === 'epatologia') 
+      ? JSON.parse(JSON.stringify(TUTTI_ESAMI_MODULO_POLICLINICO_BASE))
+      : JSON.parse(JSON.stringify(proto.esami));
+
     p.cartelleCroniche[_specialitaAttivaCronica] = {
       chiave: _specialitaAttivaCronica,
       dataProssimaVisita: dataVisita,
       centro: proto.centro,
       emailCentro: proto.emailCentro,
-      esami: JSON.parse(JSON.stringify(proto.esami))
+      esami: initialEsami
     };
     saveDb();
   }
@@ -15066,12 +15265,15 @@ function renderEpatologiaView() {
 
   // 2. CALCOLO PROGRESSO & CONTO ALLA ROVESCIA
   var esami = scheda.esami || [];
+  
+  // Per l'epatologia consideriamo tutti gli esami del modulo, calcolando il progresso solo sugli esami effettivamente SPUNTATI
+  var esamiSpuntati = esami.filter(function(es) { return es.spuntato !== false; });
   var completati = 0;
-  esami.forEach(function(es) {
+  esamiSpuntati.forEach(function(es) {
     if (es.refertato) completati += 1;
     else if (es.prenotatoCUP) completati += 0.5;
   });
-  var perc = esami.length > 0 ? Math.round((completati / esami.length) * 100) : 0;
+  var perc = esamiSpuntati.length > 0 ? Math.round((completati / esamiSpuntati.length) * 100) : 0;
 
   var dTarget = new Date(scheda.dataProssimaVisita || '2026-02-23');
   var now = new Date();
@@ -15082,88 +15284,137 @@ function renderEpatologiaView() {
     countdownStr = '⏳ Mancano <b>' + diffDays + ' giorni</b> al controllo';
   }
 
-  // 3. GENERAZIONE RIGHE TABELLA ESAMI
-  var rowsHtml = esami.map(function(es) {
-    var isAutoAmbulatorio = es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'ep_3' || es.id === 'ep_4';
+  // FILTRAGGIO DINAMICO ESAMI DA MOSTRARE NELLA TABELLA
+  var esamiFiltrati = esami.filter(function(es) {
+    if (_ricercaModuloEpatologia) {
+      var txt = _ricercaModuloEpatologia;
+      var match = es.nome.toLowerCase().includes(txt) || 
+                  es.categoria.toLowerCase().includes(txt) ||
+                  (es.note && es.note.toLowerCase().includes(txt));
+      if (!match) return false;
+    }
+    if (_filtroModuloEpatologia === 'spuntati') return (es.spuntato !== false);
+    if (_filtroModuloEpatologia === 'mmg') return (es.spuntato !== false && !es.emessoDaAmbulatorio);
+    if (_filtroModuloEpatologia === 'ambulatorio') return (es.spuntato !== false && es.emessoDaAmbulatorio);
+    return true; // 'tutti'
+  });
+
+  // 3. GENERAZIONE RIGHE TABELLA ESAMI (TUTTI GLI ESAMI DEL MODULO CON SPUNTA ATTIVABILE)
+  var rowsHtml = esamiFiltrati.map(function(es) {
+    var isSpuntato = (es.spuntato !== false);
+    var isAutoAmbulatorio = isSpuntato && (es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4' || es.id === 'ep_3' || es.id === 'ep_4');
+    
     if (isAutoAmbulatorio) {
       es.richiestoMMG = true; // Auto-spuntato sempre!
       if (!es.codicePrestazione) {
-        es.codicePrestazione = (es.id === 'ep_4' || (es.nome && es.nome.includes('HBsAg'))) ? '88.60.6' : '88.30.1';
+        if (es.id === 'feg_13' || (es.nome && es.nome.includes('HBsAg'))) es.codicePrestazione = '88606';
+        else if (es.id === 'rad_4' || (es.nome && es.nome.includes('PRELIEVO'))) es.codicePrestazione = '96101';
+        else es.codicePrestazione = '88301';
       }
     }
 
-    var rowStyle = isAutoAmbulatorio 
-      ? 'background: linear-gradient(90deg, #f0fdf4 0%, #e0f2fe 45%, #ffffff 100%); border-left: 4.5px solid #0284c7;' 
-      : 'border-bottom:1px solid #f1f5f9;';
+    var rowStyle = '';
+    if (!isSpuntato) {
+      rowStyle = 'border-bottom:1px solid #f1f5f9; background:#ffffff; opacity:0.68; transition:all 0.2s ease;';
+    } else if (isAutoAmbulatorio) {
+      rowStyle = 'background: linear-gradient(90deg, #f0fdf4 0%, #e0f2fe 45%, #ffffff 100%); border-left: 4.5px solid #0284c7; border-bottom:1px solid #e2e8f0;';
+    } else {
+      rowStyle = 'border-bottom:1px solid #f1f5f9; background:#ffffff;';
+    }
 
+    // COLONNA 1: CHECKBOX DI SPUNTA SUL MODULO
+    var cellSpunta = '<div style="display:flex; justify-content:center; align-items:center;">' +
+      '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' onchange="toggleSpuntaEsameModulo(\'' + es.id + '\')" style="width:19px; height:19px; accent-color:#0284c7; cursor:pointer;" title="' + (isSpuntato ? 'Spuntato sul foglio - Clicca per togliere' : 'Non spuntato - Clicca per spuntare') + '">' +
+    '</div>';
+
+    // COLONNA 2: NOME PRESTAZIONE & BADGE
     var nomePrestazioneHtml = '';
     if (isAutoAmbulatorio) {
-      nomePrestazioneHtml = '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">' +
-        '<span style="background:linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color:#ffffff; font-size:10px; font-weight:900; padding:2px 7px; border-radius:5px; text-transform:uppercase; letter-spacing:0.3px; box-shadow:0 1px 3px rgba(2,132,199,0.25);">🖊️ EVIDENZIATO SUL PRESTAMPATO</span>' +
-        '<span style="background:#0284c7; color:#ffffff; font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px;">Cod. ' + es.codicePrestazione + '</span>' +
+      nomePrestazioneHtml = '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:2px;">' +
+        '<span style="background:linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color:#ffffff; font-size:9.5px; font-weight:900; padding:2px 7px; border-radius:4px; text-transform:uppercase; letter-spacing:0.3px; box-shadow:0 1px 3px rgba(2,132,199,0.25);">🖊️ EVIDENZIATO PENNARELLO CELESTE</span>' +
+        '<span style="background:#0284c7; color:#ffffff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:4px;">Cod. ' + es.codicePrestazione + '</span>' +
       '</div>' +
-      '<div style="font-weight:900; font-size:14px; color:#0369a1;">' + es.nome + '</div>' +
-      '<div style="font-size:11px; color:#0284c7; font-weight:600; margin-top:1px;">🏥 Prescritto ed eseguito direttamente dall\'Ambulatorio Infettivi Policlinico (Prelievo 96.10.1)</div>';
+      '<div style="font-weight:900; font-size:13.5px; color:#0369a1;">' + es.nome + '</div>' +
+      '<div style="font-size:11px; color:#0284c7; font-weight:600; margin-top:1px;">🏥 Predisposto ed eseguito direttamente dall\'Ambulatorio Infettivi Policlinico</div>';
+    } else if (isSpuntato) {
+      nomePrestazioneHtml = '<div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">' +
+        '<span style="background:#dcfce7; color:#15803d; font-size:9.5px; font-weight:800; padding:1px 6px; border-radius:4px; border:1px solid #86efac;">✓ SPUNTATO A PENNA</span>' +
+      '</div>' +
+      '<div style="font-weight:800; font-size:13px; color:#0f172a;">' + es.nome + '</div>' +
+      '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>';
     } else {
-      nomePrestazioneHtml = '<div style="font-weight:800; font-size:13.5px; color:#0f172a;">' + es.nome + '</div>' +
-        '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>';
+      nomePrestazioneHtml = '<div style="font-weight:600; font-size:12.5px; color:#64748b;">' + es.nome + '</div>' +
+        '<div style="font-size:10.5px; color:#94a3b8; font-style:italic;">(Non contrassegnato sul modulo cartaceo)</div>';
     }
 
-    var catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#e2e8f0; color:#334155;">' + es.categoria + '</span>';
+    // CATEGORIA BADGE
+    var catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#f1f5f9; color:#475569;">' + es.categoria + '</span>';
     if (isAutoAmbulatorio) {
-      catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc;">🔬 Virologia Reparto</span>';
-    } else if (es.categoria.includes('Strumentale')) {
-      catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#fef3c7; color:#b45309; border:1px solid #fde047;">📸 Strumentale</span>';
-    } else if (es.categoria.includes('Virologia') || es.categoria.includes('Metabolico')) {
-      catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">🔬 Laboratorio</span>';
+      catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc;">🔬 Virologia Reparto</span>';
+    } else if (es.categoria.includes('STRUMENTALI') || es.categoria.includes('RADIOLOGICI')) {
+      catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#fef3c7; color:#b45309; border:1px solid #fde047;">📸 Strumentale</span>';
+    } else if (es.categoria.includes('FEGATO')) {
+      catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">🧬 Fegato</span>';
     }
 
+    // COLONNA 3: RICHIESTA MMG
     var cellRichiesto = '';
-    if (isAutoAmbulatorio) {
-      cellRichiesto = '<div onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" style="background:#e0f2fe; border:1.5px solid #38bdf8; border-radius:8px; padding:5px 8px; text-align:center; box-shadow:0 2px 6px rgba(2,132,199,0.12); cursor:pointer;" title="Clicca per info: già predisposto d\'ufficio dalla clinica">' +
-        '<div style="font-weight:900; color:#0369a1; font-size:11px; display:flex; align-items:center; justify-content:center; gap:4px;">' +
-          '<span>✅</span> <span>SPUNTATO AUTOMATICO</span>' +
+    if (!isSpuntato) {
+      cellRichiesto = '<button class="btn btn-sm" style="font-size:10.5px; padding:2px 8px; background:#f8fafc; border:1px dashed #cbd5e1; color:#94a3b8; border-radius:6px;" onclick="toggleSpuntaEsameModulo(\'' + es.id + '\')">+ Spunta</button>';
+    } else if (isAutoAmbulatorio) {
+      cellRichiesto = '<div onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" style="background:#e0f2fe; border:1.5px solid #38bdf8; border-radius:8px; padding:4px 6px; text-align:center; box-shadow:0 2px 6px rgba(2,132,199,0.12); cursor:pointer;" title="Prestazione disposta d\'ufficio dal reparto">' +
+        '<div style="font-weight:900; color:#0369a1; font-size:10.5px; display:flex; align-items:center; justify-content:center; gap:4px;">' +
+          '<span>✅</span> <span>Auto-Spuntato</span>' +
         '</div>' +
-        '<div style="font-size:10px; color:#0284c7; font-weight:800; margin-top:2px;">Emesso dall\'Ambulatorio</div>' +
-        '<div style="font-size:9px; color:#64748b; font-style:italic;">(Non serve Medico di Base)</div>' +
+        '<div style="font-size:9.5px; color:#0284c7; font-weight:800;">Diretto Ambulatorio</div>' +
       '</div>';
     } else {
       cellRichiesto = es.richiestoMMG 
-        ? '<span style="color:#16a34a; font-weight:800; font-size:12px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta al MMG</span>' 
-        : '<button class="btn btn-sm" style="font-size:11px; padding:3px 8px; background:#fff; border:1px solid #cbd5e1; color:#64748b; border-radius:6px;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')">⚪ Da richiedere</button>';
+        ? '<span style="color:#16a34a; font-weight:800; font-size:11.5px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta MMG</span>' 
+        : '<button class="btn btn-sm" style="font-size:10.5px; padding:2px 7px; background:#fff; border:1px solid #cbd5e1; color:#64748b; border-radius:6px;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')">⚪ Da richiedere</button>';
     }
 
+    // COLONNA 4: PRENOTAZIONE CUP
     var cellPrenotato = '';
-    if (es.prenotatoCUP && es.dataPrenotazioneCUP) {
+    if (!isSpuntato) {
+      cellPrenotato = '<span style="color:#cbd5e1; font-size:11px;">-</span>';
+    } else if (es.prenotatoCUP && es.dataPrenotazioneCUP) {
       var dStr = new Date(es.dataPrenotazioneCUP).toLocaleDateString('it-IT');
-      cellPrenotato = '<div style="font-size:12px; font-weight:800; color:#0284c7; cursor:pointer;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')" title="Clicca per modificare data o orario">📅 ' + dStr + ' ' + (es.oraPrenotazione || '') + '</div><div style="font-size:10px; color:#64748b;">' + (es.luogoPrenotazione || 'CUP') + '</div>';
+      cellPrenotato = '<div style="font-size:11.5px; font-weight:800; color:#0284c7; cursor:pointer;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')" title="Clicca per modificare data o orario">📅 ' + dStr + ' ' + (es.oraPrenotazione || '') + '</div><div style="font-size:9.5px; color:#64748b;">' + (es.luogoPrenotazione || 'CUP') + '</div>';
     } else {
-      cellPrenotato = '<button class="btn btn-sm" style="font-size:11px; padding:4px 8px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; border-radius:6px; font-weight:700;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')">+ Inserisci Data</button>';
+      cellPrenotato = '<button class="btn btn-sm" style="font-size:10.5px; padding:3px 7px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; border-radius:6px; font-weight:700;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')">+ Data</button>';
     }
 
+    // COLONNA 5: REFERTO / ESITO
     var cellReferto = '';
-    if (es.refertato) {
-      cellReferto = '<div style="font-size:12px; font-weight:800; color:#16a34a; cursor:pointer;" onclick="apriModalInserisciEsito(\'' + es.id + '\')">✓ Refertato: <b style="color:#0f172a;">' + (es.valoreReferto || 'Normale') + '</b></div>';
+    if (!isSpuntato) {
+      cellReferto = '<span style="color:#cbd5e1; font-size:11px;">-</span>';
+    } else if (es.refertato) {
+      cellReferto = '<div style="font-size:11.5px; font-weight:800; color:#16a34a; cursor:pointer;" onclick="apriModalInserisciEsito(\'' + es.id + '\')">✓ Refertato: <b style="color:#0f172a;">' + (es.valoreReferto || 'Normale') + '</b></div>';
     } else {
-      cellReferto = '<button class="btn btn-sm" style="font-size:11px; padding:4px 8px; background:#fff; border:1px dashed #94a3b8; color:#475569; border-radius:6px;" onclick="apriModalInserisciEsito(\'' + es.id + '\')">📝 Registra Esito</button>';
+      cellReferto = '<button class="btn btn-sm" style="font-size:10.5px; padding:3px 7px; background:#fff; border:1px dashed #94a3b8; color:#475569; border-radius:6px;" onclick="apriModalInserisciEsito(\'' + es.id + '\')">📝 Esito</button>';
     }
 
-    var statusCol = es.refertato 
-      ? '<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; font-size:11px; border:1px solid #86efac;">COMPLETO</span>'
-      : (es.prenotatoCUP 
-        ? '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:11px; border:1px solid #7dd3fc;">PRENOTATO</span>' 
-        : '<span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; font-size:11px; border:1px solid #fde047;">DA PRENOTARE</span>');
+    // COLONNA 6: STATO
+    var statusCol = '';
+    if (!isSpuntato) {
+      statusCol = '<span class="badge" style="background:#f1f5f9; color:#94a3b8; font-weight:700; font-size:9.5px; border:1px solid #e2e8f0;">NON SPUNTATO</span>';
+    } else if (es.refertato) {
+      statusCol = '<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; font-size:10px; border:1px solid #86efac;">COMPLETO</span>';
+    } else if (es.prenotatoCUP) {
+      statusCol = '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:10px; border:1px solid #7dd3fc;">PRENOTATO</span>';
+    } else {
+      statusCol = '<span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; font-size:10px; border:1px solid #fde047;">DA PRENOTARE</span>';
+    }
 
-    return '<tr style="border-bottom:1px solid #f1f5f9;">' +
-      '<td style="padding:12px 14px;">' +
-        '<div style="font-weight:800; font-size:13.5px; color:#0f172a;">' + es.nome + '</div>' +
-        '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>' +
-      '</td>' +
-      '<td style="padding:12px 10px; text-align:center;">' + catBadge + '</td>' +
-      '<td style="padding:12px 10px; text-align:center;">' + cellRichiesto + '</td>' +
-      '<td style="padding:12px 10px; text-align:center;">' + cellPrenotato + '</td>' +
-      '<td style="padding:12px 10px; text-align:center;">' + cellReferto + '</td>' +
-      '<td style="padding:12px 14px; text-align:center;">' + statusCol + '</td>' +
+    return '<tr style="' + rowStyle + '">' +
+      '<td style="padding:10px 10px; text-align:center;">' + cellSpunta + '</td>' +
+      '<td style="padding:10px 14px;">' + nomePrestazioneHtml + '</td>' +
+      '<td style="padding:10px 10px; text-align:center;">' + catBadge + '</td>' +
+      '<td style="padding:10px 10px; text-align:center;">' + cellRichiesto + '</td>' +
+      '<td style="padding:10px 10px; text-align:center;">' + cellPrenotato + '</td>' +
+      '<td style="padding:10px 10px; text-align:center;">' + cellReferto + '</td>' +
+      '<td style="padding:10px 12px; text-align:center;">' + statusCol + '</td>' +
     '</tr>';
   }).join('');
 
@@ -15210,7 +15461,7 @@ function renderEpatologiaView() {
           <span style="font-size:12.5px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
             <span>📈</span> Avanzamento Esami & Controlli: <span style="color:#38bdf8;">${perc}%</span>
           </span>
-          <span style="font-size:11.5px; color:#cbd5e1;">${Math.floor(completati)} di ${esami.length} esami pronti</span>
+          <span style="font-size:11.5px; color:#cbd5e1;">${Math.floor(completati)} di ${esamiSpuntati.length} esami pronti (${esami.length} nel modulo)</span>
         </div>
         <div style="width:100%; height:10px; background:rgba(0,0,0,0.3); border-radius:999px; overflow:hidden;">
           <div style="width:${perc}%; height:100%; background:linear-gradient(90deg, #38bdf8 0%, #10b981 100%); transition:width 0.4s ease; border-radius:999px;"></div>
@@ -15263,16 +15514,39 @@ function renderEpatologiaView() {
           </div>
         </div>
 
+        <!-- BARRA FILTRI RAPIDI & RICERCA NEL MODULO -->
+        <div style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span style="font-size:11.5px; font-weight:800; color:#475569; margin-right:4px;">Mostra:</span>
+            <button type="button" class="btn btn-sm" onclick="impostaFiltroModuloEpatologia('tutti')" style="background:${_filtroModuloEpatologia === 'tutti' ? '#0284c7' : '#ffffff'}; color:${_filtroModuloEpatologia === 'tutti' ? '#ffffff' : '#334155'}; border:1.5px solid ${_filtroModuloEpatologia === 'tutti' ? '#0284c7' : '#cbd5e1'}; font-size:11px; font-weight:800; padding:5px 12px; border-radius:6px; cursor:pointer;">
+              📋 Tutti gli Esami del Modulo (${esami.length})
+            </button>
+            <button type="button" class="btn btn-sm" onclick="impostaFiltroModuloEpatologia('spuntati')" style="background:${_filtroModuloEpatologia === 'spuntati' ? '#10b981' : '#ffffff'}; color:${_filtroModuloEpatologia === 'spuntati' ? '#ffffff' : '#334155'}; border:1.5px solid ${_filtroModuloEpatologia === 'spuntati' ? '#10b981' : '#cbd5e1'}; font-size:11px; font-weight:800; padding:5px 12px; border-radius:6px; cursor:pointer;">
+              ✓ Solo Spuntati / Prescritti (${esamiSpuntati.length})
+            </button>
+            <button type="button" class="btn btn-sm" onclick="impostaFiltroModuloEpatologia('mmg')" style="background:${_filtroModuloEpatologia === 'mmg' ? '#0369a1' : '#ffffff'}; color:${_filtroModuloEpatologia === 'mmg' ? '#ffffff' : '#334155'}; border:1.5px solid ${_filtroModuloEpatologia === 'mmg' ? '#0369a1' : '#cbd5e1'}; font-size:11px; font-weight:800; padding:5px 12px; border-radius:6px; cursor:pointer;">
+              🖊️ Spunta MMG (${esamiSpuntati.filter(e => !e.emessoDaAmbulatorio).length})
+            </button>
+            <button type="button" class="btn btn-sm" onclick="impostaFiltroModuloEpatologia('ambulatorio')" style="background:${_filtroModuloEpatologia === 'ambulatorio' ? '#38bdf8' : '#ffffff'}; color:${_filtroModuloEpatologia === 'ambulatorio' ? '#082f49' : '#334155'}; border:1.5px solid ${_filtroModuloEpatologia === 'ambulatorio' ? '#38bdf8' : '#cbd5e1'}; font-size:11px; font-weight:800; padding:5px 12px; border-radius:6px; cursor:pointer;">
+              🖊️ Pennarello Reparto (${esamiSpuntati.filter(e => e.emessoDaAmbulatorio).length})
+            </button>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="text" placeholder="🔍 Cerca qualsiasi esame..." value="${_ricercaModuloEpatologia}" oninput="cercaNelModuloEpatologia(this.value)" style="font-size:11.5px; padding:6px 12px; border-radius:6px; border:1.5px solid #cbd5e1; width:220px; outline:none;">
+          </div>
+        </div>
+
         <div class="table-responsive" style="padding:0;">
           <table class="custom-table" style="margin:0;">
             <thead>
-              <tr style="background:#f1f5f9; color:#475569; font-size:11.5px;">
-                <th style="padding:12px 14px;">ESAME / PRESTAZIONE</th>
-                <th style="padding:12px 10px; text-align:center;">CATEGORIA</th>
-                <th style="padding:12px 10px; text-align:center;">1. RICHIESTA MMG</th>
-                <th style="padding:12px 10px; text-align:center;">2. PRENOTAZIONE CUP</th>
-                <th style="padding:12px 10px; text-align:center;">3. REFERTO / ESITO</th>
-                <th style="padding:12px 14px; text-align:center;">STATO</th>
+              <tr style="background:#f1f5f9; color:#475569; font-size:11px;">
+                <th style="padding:10px 8px; text-align:center; width:45px;">SPUNTA</th>
+                <th style="padding:10px 14px;">ESAME / PRESTAZIONE</th>
+                <th style="padding:10px 10px; text-align:center;">CATEGORIA</th>
+                <th style="padding:10px 10px; text-align:center;">1. RICHIESTA MMG</th>
+                <th style="padding:10px 10px; text-align:center;">2. PRENOTAZIONE CUP</th>
+                <th style="padding:10px 10px; text-align:center;">3. REFERTO / ESITO</th>
+                <th style="padding:10px 12px; text-align:center;">STATO</th>
               </tr>
             </thead>
             <tbody>
