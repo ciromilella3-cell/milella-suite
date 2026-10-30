@@ -13848,9 +13848,9 @@ const PROTOCOLLO_EPATOLOGIA_BASE = [
   { id: 'ep_1', nome: 'Ecografia Addome Superiore', categoria: 'Strumentale', note: 'Studio parenchima epatico, calibro vena porta e milza', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: true, dataPrenotazioneCUP: '2026-01-20', oraPrenotazione: '09:30', luogoPrenotazione: 'Radiologia Policlinico Bari', refertato: false, valoreReferto: '' },
   { id: 'ep_2', nome: 'Elettrocardiogramma (ECG)', categoria: 'Strumentale', note: 'Controllo cardiologico periodico con refertazione', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Ambulatorio Cardiologia / Territoriale', refertato: false, valoreReferto: '' },
 
-  // 2. ASSETTO VIROLOGICO & IMMUNOLOGICO HBV
-  { id: 'ep_3', nome: 'HBV-DNA Quantitativo (Real Time PCR)', categoria: 'Virologia HBV', note: 'Verifica soppressione virologica in corso di Entecavir', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Malattie Infettive Policlinico', refertato: false, valoreReferto: '' },
-  { id: 'ep_4', nome: 'HBsAg (Antigene di Superficie HBV)', categoria: 'Virologia HBV', note: 'Monitoraggio antigene di superficie', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+  // 2. ASSETTO VIROLOGICO & IMMUNOLOGICO HBV (EVIDENZIATI CON PENNARELLO CELESTE - DIRETTI AMBULATORIO)
+  { id: 'ep_3', nome: 'HBV-DNA Quantitativo (Real Time PCR)', codicePrestazione: '88.30.1', emessoDaAmbulatorio: true, evidenziatoPennarello: true, categoria: 'Virologia HBV', note: 'Verifica soppressione virologica in corso di Entecavir - Emesso direttamente da Ambulatorio Infettivi', richiestoMMG: true, dataRichiestaMMG: 'Automatico (Ambulatorio Infettivi)', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Ambulatorio Malattie Infettive Policlinico (Cod. 88.30.1)', refertato: false, valoreReferto: '' },
+  { id: 'ep_4', nome: 'HBsAg (Antigene di Superficie HBV)', codicePrestazione: '88.60.6', emessoDaAmbulatorio: true, evidenziatoPennarello: true, categoria: 'Virologia HBV', note: 'Monitoraggio antigene di superficie - Emesso direttamente da Ambulatorio Infettivi', richiestoMMG: true, dataRichiestaMMG: 'Automatico (Ambulatorio Infettivi)', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Ambulatorio Malattie Infettive Policlinico (Cod. 88.60.6)', refertato: false, valoreReferto: '' },
   { id: 'ep_5', nome: 'Alfa-fetoproteina (AFP)', categoria: 'Marcatori Epatici', note: 'Marcatore sierologico di sorveglianza epatocarcinoma', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
 
   // 3. FUNZIONALITÀ EPATICA
@@ -13924,10 +13924,9 @@ function renderEpatologiaView() {
         ? '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:11px; border:1px solid #7dd3fc;">PRENOTATO</span>' 
         : '<span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; font-size:11px; border:1px solid #fde047;">DA PRENOTARE</span>');
 
-    return '<tr style="border-bottom:1px solid #f1f5f9;">' +
+    return '<tr style="' + rowStyle + '">' +
       '<td style="padding:12px 14px;">' +
-        '<div style="font-weight:800; font-size:13.5px; color:#0f172a;">' + es.nome + '</div>' +
-        '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>' +
+        nomePrestazioneHtml +
       '</td>' +
       '<td style="padding:12px 10px; text-align:center;">' + catBadge + '</td>' +
       '<td style="padding:12px 10px; text-align:center;">' + cellRichiesto + '</td>' +
@@ -13966,9 +13965,16 @@ function renderEpatologiaView() {
 window.renderEpatologiaView = renderEpatologiaView;
 
 function toggleRichiestaMMGEsame(esameId) {
-  var dati = getEpatologiaDatiPaziente();
-  var es = (dati.esami || []).find(function(item) { return item.id === esameId; });
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === esameId; }) : null;
   if (es) {
+    if (es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'ep_3' || es.id === 'ep_4') {
+      showToast('ℹ️ Questo esame è spuntato AUTOMATICAMENTE perché emesso direttamente dall\'Ambulatorio Infettivi Policlinico (Cod. ' + (es.codicePrestazione || '88.30.1 / 88.60.6') + ')!');
+      return;
+    }
     es.richiestoMMG = !es.richiestoMMG;
     if (es.richiestoMMG) es.dataRichiestaMMG = new Date().toISOString().slice(0, 10);
     saveDb();
@@ -14018,18 +14024,28 @@ window.apriModalInserisciEsito = apriModalInserisciEsito;
 
 function richiediTutteRicetteAlMedicoMMG() {
   var p = getActivePaziente();
-  var dati = getEpatologiaDatiPaziente();
-  var esami = dati.esami || [];
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  var esami = (scheda && scheda.esami) ? scheda.esami : [];
 
-  var listaNomi = esami.map(function(e, i) {
+  // Filtriamo solo gli esami di competenza del Medico di Base (escludendo quelli con pennarello/ambulatorio)
+  var esamiPerMMG = esami.filter(function(e) {
+    return !(e.emessoDaAmbulatorio || e.evidenziatoPennarello || e.id === 'ep_3' || e.id === 'ep_4');
+  });
+
+  var listaNomiMMG = esamiPerMMG.map(function(e, i) {
     return (i + 1) + '. ' + e.nome + (e.categoria === 'Strumentale' ? ' [STRUMENTALE]' : '');
   }).join('\n');
 
   var msg = 'Gentile Dott. Roberto Scarcia (MMG),\n\n' +
-    'in vista del controllo specialistico programmato per il Sig. Ciro Milella presso la Clinica delle Malattie Infettive ed Epatologia del Policlinico di Bari (fissato per il 23/02/2026), si richiede l\'emissione delle relative ricette dematerializzate (NRE) per il seguente protocollo di esami:\n\n' +
-    'ELENCO PRESTAZIONI DA RICETTARE:\n' +
-    listaNomi + '\n\n' +
+    'in vista del controllo specialistico programmato per il Sig. Ciro Milella presso la Clinica delle Malattie Infettive ed Epatologia del Policlinico di Bari (fissato per il 22/03/2027), si richiede l\'emissione delle relative ricette dematerializzate (NRE) per le prestazioni di competenza del Medico Curante:\n\n' +
+    '📋 PRESTAZIONI DA RICETTARE (SPUNTATE A PENNA SUL MODULO):\n' +
+    listaNomiMMG + '\n\n' +
     'Inoltre si richiede la ricetta per: "Visita Infettivologica di Controllo".\n\n' +
+    '📌 NOTA BENE (PRESTAZIONI AMBULATORIALI DIRETTE POLICLINICO):\n' +
+    'Si comunica che HBsAg (Cod. Tariffario 88.60.6) e HBV-DNA Quantitativo Real Time PCR (Cod. Tariffario 88.30.1), evidenziati con apposito pennarello celeste sul modulo di reparto, vengono presi in carico ed emessi DIRETTAMENTE dall\'Ambulatorio Malattie Infettive del Policlinico di Bari, pertanto NON necessitano di alcuna impegnativa da parte Sua.\n\n' +
     'In allegato e a disposizione la scheda prescrittiva originale dell\'U.O. Malattie Infettive.\n' +
     'Ringraziando cordialmente,\nCiro Milella (Cell: 366 460 7396)';
 
@@ -14332,6 +14348,23 @@ window.rilevaMalattieCronicheDaiFarmaci = rilevaMalattieCronicheDaiFarmaci;
 // RECUPERA O INIZIALIZZA LA SCHEDA DELLA MALATTIA CRONICA SELEZIONATA PER IL PAZIENTE
 let _specialitaAttivaCronica = 'epatologia';
 
+function sincronizzaEsamiPennarelloAmbulatorio(scheda) {
+  if (!scheda || !scheda.esami) return;
+  scheda.esami.forEach(function(es) {
+    if (es.id === 'ep_3' || es.id === 'ep_4' || (es.nome && (es.nome.includes('HBV-DNA') || es.nome.includes('HBsAg')))) {
+      es.emessoDaAmbulatorio = true;
+      es.evidenziatoPennarello = true;
+      es.richiestoMMG = true; // Auto-spuntato d'ufficio!
+      if (!es.codicePrestazione) {
+        es.codicePrestazione = (es.id === 'ep_4' || es.nome.includes('HBsAg')) ? '88.60.6' : '88.30.1';
+      }
+      if (!es.dataRichiestaMMG || es.dataRichiestaMMG === '') {
+        es.dataRichiestaMMG = 'Automatico (Ambulatorio Infettivi)';
+      }
+    }
+  });
+}
+
 function getSchedaCronicaAttivaPaziente() {
   var p = getActivePaziente();
   if (!p) return null;
@@ -14362,6 +14395,7 @@ function getSchedaCronicaAttivaPaziente() {
     saveDb();
   }
 
+  sincronizzaEsamiPennarelloAmbulatorio(p.cartelleCroniche[_specialitaAttivaCronica]);
   return p.cartelleCroniche[_specialitaAttivaCronica];
 }
 
@@ -14419,13 +14453,54 @@ function renderEpatologiaView() {
 
   // 3. GENERAZIONE RIGHE TABELLA ESAMI
   var rowsHtml = esami.map(function(es) {
-    var catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#e2e8f0; color:#334155;">' + es.categoria + '</span>';
-    if (es.categoria.includes('Strumentale')) catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#fef3c7; color:#b45309; border:1px solid #fde047;">📸 Strumentale</span>';
-    else if (es.categoria.includes('Virologia') || es.categoria.includes('Metabolico')) catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">🔬 Laboratorio</span>';
+    var isAutoAmbulatorio = es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'ep_3' || es.id === 'ep_4';
+    if (isAutoAmbulatorio) {
+      es.richiestoMMG = true; // Auto-spuntato sempre!
+      if (!es.codicePrestazione) {
+        es.codicePrestazione = (es.id === 'ep_4' || (es.nome && es.nome.includes('HBsAg'))) ? '88.60.6' : '88.30.1';
+      }
+    }
 
-    var cellRichiesto = es.richiestoMMG 
-      ? '<span style="color:#16a34a; font-weight:800; font-size:12px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta</span>' 
-      : '<button class="btn btn-sm" style="font-size:11px; padding:3px 8px; background:#fff; border:1px solid #cbd5e1; color:#64748b; border-radius:6px;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')">⚪ Da richiedere</button>';
+    var rowStyle = isAutoAmbulatorio 
+      ? 'background: linear-gradient(90deg, #f0fdf4 0%, #e0f2fe 45%, #ffffff 100%); border-left: 4.5px solid #0284c7;' 
+      : 'border-bottom:1px solid #f1f5f9;';
+
+    var nomePrestazioneHtml = '';
+    if (isAutoAmbulatorio) {
+      nomePrestazioneHtml = '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">' +
+        '<span style="background:linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color:#ffffff; font-size:10px; font-weight:900; padding:2px 7px; border-radius:5px; text-transform:uppercase; letter-spacing:0.3px; box-shadow:0 1px 3px rgba(2,132,199,0.25);">🖊️ EVIDENZIATO SUL PRESTAMPATO</span>' +
+        '<span style="background:#0284c7; color:#ffffff; font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px;">Cod. ' + es.codicePrestazione + '</span>' +
+      '</div>' +
+      '<div style="font-weight:900; font-size:14px; color:#0369a1;">' + es.nome + '</div>' +
+      '<div style="font-size:11px; color:#0284c7; font-weight:600; margin-top:1px;">🏥 Prescritto ed eseguito direttamente dall\'Ambulatorio Infettivi Policlinico (Prelievo 96.10.1)</div>';
+    } else {
+      nomePrestazioneHtml = '<div style="font-weight:800; font-size:13.5px; color:#0f172a;">' + es.nome + '</div>' +
+        '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>';
+    }
+
+    var catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#e2e8f0; color:#334155;">' + es.categoria + '</span>';
+    if (isAutoAmbulatorio) {
+      catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc;">🔬 Virologia Reparto</span>';
+    } else if (es.categoria.includes('Strumentale')) {
+      catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#fef3c7; color:#b45309; border:1px solid #fde047;">📸 Strumentale</span>';
+    } else if (es.categoria.includes('Virologia') || es.categoria.includes('Metabolico')) {
+      catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">🔬 Laboratorio</span>';
+    }
+
+    var cellRichiesto = '';
+    if (isAutoAmbulatorio) {
+      cellRichiesto = '<div onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" style="background:#e0f2fe; border:1.5px solid #38bdf8; border-radius:8px; padding:5px 8px; text-align:center; box-shadow:0 2px 6px rgba(2,132,199,0.12); cursor:pointer;" title="Clicca per info: già predisposto d\'ufficio dalla clinica">' +
+        '<div style="font-weight:900; color:#0369a1; font-size:11px; display:flex; align-items:center; justify-content:center; gap:4px;">' +
+          '<span>✅</span> <span>SPUNTATO AUTOMATICO</span>' +
+        '</div>' +
+        '<div style="font-size:10px; color:#0284c7; font-weight:800; margin-top:2px;">Emesso dall\'Ambulatorio</div>' +
+        '<div style="font-size:9px; color:#64748b; font-style:italic;">(Non serve Medico di Base)</div>' +
+      '</div>';
+    } else {
+      cellRichiesto = es.richiestoMMG 
+        ? '<span style="color:#16a34a; font-weight:800; font-size:12px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta al MMG</span>' 
+        : '<button class="btn btn-sm" style="font-size:11px; padding:3px 8px; background:#fff; border:1px solid #cbd5e1; color:#64748b; border-radius:6px;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')">⚪ Da richiedere</button>';
+    }
 
     var cellPrenotato = '';
     if (es.prenotatoCUP && es.dataPrenotazioneCUP) {
@@ -14531,6 +14606,16 @@ function renderEpatologiaView() {
             <div style="font-size:12px; color:#64748b;">Traccia in tempo reale: Richiesta MMG &bull; Prenotazione CUP &bull; Refertazione</div>
           </div>
           <button type="button" class="btn btn-sm btn-outline" onclick="aggiungiNuovoEsamePersonalizzato()" style="font-size:12px; font-weight:700; border-radius:8px;">+ Aggiungi Esame</button>
+        </div>
+
+        <!-- BANNER GUIDA PENNARELLO POLICLINICO -->
+        <div style="background:#f0f9ff; border-bottom:1px solid #bae6fd; padding:12px 20px; display:flex; align-items:center; gap:12px;">
+          <div style="font-size:24px;">🖊️</div>
+          <div style="font-size:12px; color:#0369a1; line-height:1.45;">
+            <b>Legenda Prescrittiva dal Prestampato dell\'Ambulatorio Infettivi:</b><br>
+            • <b>Spunta a penna:</b> Esami da richiedere al Medico di Medicina Generale (Dott. Roberto Scarcia).<br>
+            • <b style="background:#bae6fd; color:#0c4a6e; padding:1px 6px; border-radius:4px;">Evidenziati con Pennarello Celeste:</b> <b>HBsAg (Cod. 88.60.6)</b> e <b>HBV-DNA (Cod. 88.30.1)</b> sono disposti ed eseguiti <u>direttamente dalla Clinica Malattie Infettive del Policlinico</u> &rarr; <b style="color:#0284c7;">Spuntati automaticamente nel sistema</b> (non occorre impegnativa MMG).
+          </div>
         </div>
 
         <div class="table-responsive" style="padding:0;">
