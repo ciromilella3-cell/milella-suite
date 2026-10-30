@@ -3703,6 +3703,9 @@ function initTabs() {
       tab.classList.add('active');
       const target = tab.getAttribute('data-target');
       document.getElementById(target).style.display = 'block';
+      if (target === 'tab-epatologia') {
+        if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
+      }
     });
   });
 }
@@ -13829,3 +13832,275 @@ function apriModuloGoogleUfficiale() {
   showToast('🌐 Modulo Google aperto! I tuoi dati sono stati copiati per incollarli subito!');
 }
 window.apriModuloGoogleUfficiale = apriModuloGoogleUfficiale;
+
+// ==============================================================================
+// MODULO CLINICO EPATOLOGIA & MALATTIE INFETTIVE POLICLINICO DI BARI
+// ==============================================================================
+
+const PROTOCOLLO_EPATOLOGIA_BASE = [
+  // 1. ESAMI STRUMENTALI
+  { id: 'ep_1', nome: 'Ecografia Addome Superiore', categoria: 'Strumentale', note: 'Studio parenchima epatico, calibro vena porta e milza', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: true, dataPrenotazioneCUP: '2026-01-20', oraPrenotazione: '09:30', luogoPrenotazione: 'Radiologia Policlinico Bari', refertato: false, valoreReferto: '' },
+  { id: 'ep_2', nome: 'Elettrocardiogramma (ECG)', categoria: 'Strumentale', note: 'Controllo cardiologico periodico con refertazione', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Ambulatorio Cardiologia / Territoriale', refertato: false, valoreReferto: '' },
+
+  // 2. ASSETTO VIROLOGICO & IMMUNOLOGICO HBV
+  { id: 'ep_3', nome: 'HBV-DNA Quantitativo (Real Time PCR)', categoria: 'Virologia HBV', note: 'Verifica soppressione virologica in corso di Entecavir', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Malattie Infettive Policlinico', refertato: false, valoreReferto: '' },
+  { id: 'ep_4', nome: 'HBsAg (Antigene di Superficie HBV)', categoria: 'Virologia HBV', note: 'Monitoraggio antigene di superficie', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+  { id: 'ep_5', nome: 'Alfa-fetoproteina (AFP)', categoria: 'Marcatori Epatici', note: 'Marcatore sierologico di sorveglianza epatocarcinoma', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+
+  // 3. FUNZIONALITÀ EPATICA
+  { id: 'ep_6', nome: 'Transaminasi (ALT/GPT & AST/GOT)', categoria: 'Funzione Epatica', note: 'Necrosi/citolisi epatica', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+  { id: 'ep_7', nome: 'Gamma GT & Fosfatasi Alcalina', categoria: 'Funzione Epatica', note: 'Indici di colestasi', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+  { id: 'ep_8', nome: 'Bilirubina Totale e Frazionata', categoria: 'Funzione Epatica', note: 'Bilirubina diretta e indiretta', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+  { id: 'ep_9', nome: 'Ammoniemia', categoria: 'Funzione Epatica', note: 'Livelli sierici di ammoniaca', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi (Prelievo a freddo)', refertato: false, valoreReferto: '' },
+  { id: 'ep_10', nome: 'Proteine Totali, Elettroforesi & Albumina', categoria: 'Funzione Epatica', note: 'Funzione sintetizzatrice epatica', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+
+  // 4. ESAMI GENERALI E METABOLICI
+  { id: 'ep_11', nome: 'Emocromo Completo con Formula & Piastrine', categoria: 'Ematochimici Generali', note: 'Conta piastrinica fondamentale', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+  { id: 'ep_12', nome: 'Creatininemia & Azotemia', categoria: 'Ematochimici Generali', note: 'Valutazione funzione renale e clearance', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+  { id: 'ep_13', nome: 'Amilasi Pancreatica & Lipasi', categoria: 'Ematochimici Generali', note: 'Indici pancreatici', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+  { id: 'ep_14', nome: 'Elettroliti Sierici (Sodio & Potassio)', categoria: 'Ematochimici Generali', note: 'Sodiemia e Potassiemia', richiestoMMG: true, dataRichiestaMMG: '2025-10-15', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' }
+];
+
+function getEpatologiaDatiPaziente() {
+  var p = getActivePaziente();
+  if (!p) return { esami: PROTOCOLLO_EPATOLOGIA_BASE, dataVisita: '2026-02-23' };
+  if (!p.epatologiaFollowUp) {
+    p.epatologiaFollowUp = {
+      dataPrescrizione: '2025-09-29',
+      dataProssimaVisita: '2026-02-23',
+      medicoSpecialista: 'Prof.ssa Annalisa Saracino - Clinica Malattie Infettive Policlinico Bari',
+      esami: JSON.parse(JSON.stringify(PROTOCOLLO_EPATOLOGIA_BASE))
+    };
+    saveDb();
+  }
+  return p.epatologiaFollowUp;
+}
+
+function renderEpatologiaView() {
+  var dati = getEpatologiaDatiPaziente();
+  var tbody = document.getElementById('epatologia-esami-tbody');
+  if (!tbody) return;
+
+  var esami = dati.esami || [];
+  var completati = 0;
+
+  var htmlRows = esami.map(function(es) {
+    var isDone = es.refertato || (es.prenotatoCUP && es.dataPrenotazioneCUP);
+    if (es.refertato) completati += 1;
+    else if (es.prenotatoCUP) completati += 0.5;
+
+    var catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#e2e8f0; color:#334155;">' + es.categoria + '</span>';
+    if (es.categoria === 'Strumentale') catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#fef3c7; color:#b45309; border:1px solid #fde047;">📸 Strumentale</span>';
+    else if (es.categoria.includes('Virologia')) catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">🔬 Virologia</span>';
+
+    var cellRichiesto = es.richiestoMMG 
+      ? '<span style="color:#16a34a; font-weight:800; font-size:12px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta</span>' 
+      : '<button class="btn btn-sm" style="font-size:11px; padding:3px 8px; background:#fff; border:1px solid #cbd5e1; color:#64748b; border-radius:6px;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')">⚪ Da richiedere</button>';
+
+    var cellPrenotato = '';
+    if (es.prenotatoCUP && es.dataPrenotazioneCUP) {
+      var dStr = new Date(es.dataPrenotazioneCUP).toLocaleDateString('it-IT');
+      cellPrenotato = '<div style="font-size:12px; font-weight:800; color:#0284c7; cursor:pointer;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')" title="Clicca per modificare data o orario">📅 ' + dStr + ' ' + (es.oraPrenotazione || '') + '</div><div style="font-size:10px; color:#64748b;">' + (es.luogoPrenotazione || 'CUP') + '</div>';
+    } else {
+      cellPrenotato = '<button class="btn btn-sm" style="font-size:11px; padding:4px 8px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; border-radius:6px; font-weight:700;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')">+ Inserisci Data</button>';
+    }
+
+    var cellReferto = '';
+    if (es.refertato) {
+      cellReferto = '<div style="font-size:12px; font-weight:800; color:#16a34a; cursor:pointer;" onclick="apriModalInserisciEsito(\'' + es.id + '\')">✓ Refertato: <b style="color:#0f172a;">' + (es.valoreReferto || 'Normale') + '</b></div>';
+    } else {
+      cellReferto = '<button class="btn btn-sm" style="font-size:11px; padding:4px 8px; background:#fff; border:1px dashed #94a3b8; color:#475569; border-radius:6px;" onclick="apriModalInserisciEsito(\'' + es.id + '\')">📝 Registra Esito</button>';
+    }
+
+    var statusCol = es.refertato 
+      ? '<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; font-size:11px; border:1px solid #86efac;">COMPLETO</span>'
+      : (es.prenotatoCUP 
+        ? '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:11px; border:1px solid #7dd3fc;">PRENOTATO</span>' 
+        : '<span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; font-size:11px; border:1px solid #fde047;">DA PRENOTARE</span>');
+
+    return '<tr style="border-bottom:1px solid #f1f5f9;">' +
+      '<td style="padding:12px 14px;">' +
+        '<div style="font-weight:800; font-size:13.5px; color:#0f172a;">' + es.nome + '</div>' +
+        '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>' +
+      '</td>' +
+      '<td style="padding:12px 10px; text-align:center;">' + catBadge + '</td>' +
+      '<td style="padding:12px 10px; text-align:center;">' + cellRichiesto + '</td>' +
+      '<td style="padding:12px 10px; text-align:center;">' + cellPrenotato + '</td>' +
+      '<td style="padding:12px 10px; text-align:center;">' + cellReferto + '</td>' +
+      '<td style="padding:12px 14px; text-align:center;">' + statusCol + '</td>' +
+    '</tr>';
+  }).join('');
+
+  tbody.innerHTML = htmlRows;
+
+  // Calcolo Percentuale e Aggiornamento Barra
+  var perc = Math.round((completati / esami.length) * 100);
+  var pBar = document.getElementById('epatologia-progresso-bar');
+  var pPerc = document.getElementById('epatologia-progresso-percentuale');
+  var pDet = document.getElementById('epatologia-progresso-dettaglio');
+
+  if (pBar) pBar.style.width = perc + '%';
+  if (pPerc) pPerc.textContent = perc + '%';
+  if (pDet) pDet.textContent = Math.floor(completati) + ' di ' + esami.length + ' esami pronti';
+
+  // Calcolo Conto alla rovescia al 23/02/2026
+  var countdownEl = document.getElementById('epatologia-countdown-box');
+  if (countdownEl) {
+    var targetDate = new Date('2026-02-23T09:00:00');
+    var now = new Date();
+    var diffMs = targetDate - now;
+    if (diffMs > 0) {
+      var diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      countdownEl.innerHTML = '⏳ Mancano <b>' + diffDays + ' giorni</b> al controllo';
+    } else {
+      countdownEl.innerHTML = '🎯 Data controllo raggiunta';
+    }
+  }
+}
+window.renderEpatologiaView = renderEpatologiaView;
+
+function toggleRichiestaMMGEsame(esameId) {
+  var dati = getEpatologiaDatiPaziente();
+  var es = (dati.esami || []).find(function(item) { return item.id === esameId; });
+  if (es) {
+    es.richiestoMMG = !es.richiestoMMG;
+    if (es.richiestoMMG) es.dataRichiestaMMG = new Date().toISOString().slice(0, 10);
+    saveDb();
+    renderEpatologiaView();
+    showToast(es.richiestoMMG ? '✓ Contrassegnato come richiesto al Medico!' : '⚪ Reso da richiedere');
+  }
+}
+window.toggleRichiestaMMGEsame = toggleRichiestaMMGEsame;
+
+function apriModalModificaPrenotazioneEsame(esameId) {
+  var dati = getEpatologiaDatiPaziente();
+  var es = (dati.esami || []).find(function(item) { return item.id === esameId; });
+  if (!es) return;
+
+  var dataPrompt = prompt('Inserisci la data prenotata (AAAA-MM-GG) per ' + es.nome + ':', es.dataPrenotazioneCUP || '2026-01-20');
+  if (dataPrompt !== null) {
+    var oraPrompt = prompt('Inserisci orario appuntamento (es. 09:30):', es.oraPrenotazione || '09:00');
+    var luogoPrompt = prompt('Luogo di esecuzione (es. Policlinico Bari / Laboratorio):', es.luogoPrenotazione || 'Policlinico di Bari');
+    
+    es.prenotatoCUP = (dataPrompt.trim().length > 0);
+    es.dataPrenotazioneCUP = dataPrompt.trim();
+    es.oraPrenotazione = oraPrompt ? oraPrompt.trim() : '';
+    es.luogoPrenotazione = luogoPrompt ? luogoPrompt.trim() : '';
+    
+    saveDb();
+    renderEpatologiaView();
+    showToast('📅 Prenotazione aggiornata con successo per ' + es.nome + '!');
+  }
+}
+window.apriModalModificaPrenotazioneEsame = apriModalModificaPrenotazioneEsame;
+
+function apriModalInserisciEsito(esameId) {
+  var dati = getEpatologiaDatiPaziente();
+  var es = (dati.esami || []).find(function(item) { return item.id === esameId; });
+  if (!es) return;
+
+  var esito = prompt('Inserisci il valore o referto per ' + es.nome + ' (es. "Nella norma / HBV-DNA Non rilevabile"):', es.valoreReferto || 'Nella norma');
+  if (esito !== null) {
+    es.refertato = (esito.trim().length > 0);
+    es.valoreReferto = esito.trim();
+    saveDb();
+    renderEpatologiaView();
+    showToast('📝 Referto archiviato per ' + es.nome + '!');
+  }
+}
+window.apriModalInserisciEsito = apriModalInserisciEsito;
+
+function richiediTutteRicetteAlMedicoMMG() {
+  var p = getActivePaziente();
+  var dati = getEpatologiaDatiPaziente();
+  var esami = dati.esami || [];
+
+  var listaNomi = esami.map(function(e, i) {
+    return (i + 1) + '. ' + e.nome + (e.categoria === 'Strumentale' ? ' [STRUMENTALE]' : '');
+  }).join('\n');
+
+  var msg = 'Gentile Dott. Roberto Scarcia (MMG),\n\n' +
+    'in vista del controllo specialistico programmato per il Sig. Ciro Milella presso la Clinica delle Malattie Infettive ed Epatologia del Policlinico di Bari (fissato per il 23/02/2026), si richiede l\'emissione delle relative ricette dematerializzate (NRE) per il seguente protocollo di esami:\n\n' +
+    'ELENCO PRESTAZIONI DA RICETTARE:\n' +
+    listaNomi + '\n\n' +
+    'Inoltre si richiede la ricetta per: "Visita Infettivologica di Controllo".\n\n' +
+    'In allegato e a disposizione la scheda prescrittiva originale dell\'U.O. Malattie Infettive.\n' +
+    'Ringraziando cordialmente,\nCiro Milella (Cell: 366 460 7396)';
+
+  var mailDoc = (p && p.medicoEmail) ? p.medicoEmail : 'scarcia.roberto@alice.it';
+  var subject = 'Richiesta Impegnative Protocollo Follow-up Epatologico Policlinico - Ciro Milella';
+  var mailto = 'mailto:' + encodeURIComponent(mailDoc) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(msg);
+  
+  window.location.href = mailto;
+  showToast('✉️ Richiesta ricette pronta nel client di posta per il Dott. Scarcia!');
+}
+window.richiediTutteRicetteAlMedicoMMG = richiediTutteRicetteAlMedicoMMG;
+
+function sincronizzaTuttoCalendarioEpatologia() {
+  var ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//CareAssist Pro//Follow-up Epatologico Policlinico Bari//IT',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+
+    // EVENTO 1: VISITA INFIPOLICLINICO 23 FEBBRAIO 2026
+    'BEGIN:VEVENT',
+    'UID:visita-infettivi-20260223@careassist.pro',
+    'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
+    'DTSTART:20260223T090000',
+    'DTEND:20260223T120000',
+    'SUMMARY:🏥 VISITA EPATOLOGICA DI CONTROLLO - POLICLINICO BARI',
+    'DESCRIPTION:Controllo semestrale Malattie Infettive & Epatologia (Prof.ssa Saracino). Portare: esiti esami del sangue, referto Ecografia addome sup, ECG e impegnative MMG.',
+    'LOCATION:Policlinico Universitario di Bari - Piazza Giulio Cesare, 11 (U.O. Malattie Infettive)',
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-P7D',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Promemoria: tra 7 giorni visita di controllo al Policlinico di Bari',
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-P1D',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Domani controllo al Policlinico: preparare tutti i referti cartacei ed ecografia',
+    'END:VALARM',
+    'END:VEVENT',
+
+    // EVENTO 2: ECOGRAFIA ADDOME SUPERIORE
+    'BEGIN:VEVENT',
+    'UID:eco-addome-20260120@careassist.pro',
+    'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
+    'DTSTART:20260120T093000',
+    'DTEND:20260120T103000',
+    'SUMMARY:📸 ECOGRAFIA ADDOME SUPERIORE - Ciro Milella',
+    'DESCRIPTION:Esame semestrale di sorveglianza parenchima epatico. Digiuno da almeno 6 ore.',
+    'LOCATION:Policlinico di Bari / Presidio Sanitario',
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-P1D',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Domani Ecografia Addome Superiore: ricordare digiuno',
+    'END:VALARM',
+    'END:VEVENT',
+
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'CALENDARIO_FOLLOWUP_POLICLINICO_MILELLA.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast('📅 Sveglie sincronizzate! File iCal pronto per Google Calendar e iPhone!');
+}
+window.sincronizzaTuttoCalendarioEpatologia = sincronizzaTuttoCalendarioEpatologia;
+
+function apriSchedaPrescrittivaOriginale() {
+  window.open('/careassist/assets/img/scheda_prescrittiva_policlinico.jpg', '_blank');
+}
+window.apriSchedaPrescrittivaOriginale = apriSchedaPrescrittivaOriginale;
