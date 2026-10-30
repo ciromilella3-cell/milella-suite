@@ -690,7 +690,14 @@
           "unitaPerPenna": 300,
           "penneScorta": 2,
           "pennePerScatola": 3,
-          "giorniAlert": 15
+          "giorniAlert": 15,
+          "kitGlicemiaAssociato": {
+            "attivo": true,
+            "sensoriNome": "GlucoMen areo Sensor (25 sensori)",
+            "sensoriScorta": 25,
+            "lancetteNome": "Glucoject Lancets Extra 33G (25 lancette)",
+            "lancetteScorta": 25
+          }
         },
         {
           "id": 307,

@@ -1983,6 +1983,49 @@
               <div style="background:#ffffff; border:1px solid #bfdbfe; border-radius:8px; padding:8px 10px; font-size:11px; color:#1e40af; line-height:1.4;">
                 💡 <b>Regola Clinica MMG / Diabetologo:</b> Il software calcola in automatico la data in cui si apre l'ultima penna in frigorifero, avvisando di richiedere la ricetta con il giusto anticipo (senza mai rischiare di restare senza insulina).
               </div>
+
+              <!-- KIT AUTOCONTROLLO GLICEMICO ASSOCIATO (SENSORI & PUNGIDITO) -->
+              <div style="background:#ffffff; border:1.5px solid #86efac; border-radius:10px; padding:10px 12px; margin-top:10px; box-shadow: 0 1px 4px rgba(16,185,129,0.08);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="font-weight:800; font-size:12px; color:#166534; display:flex; align-items:center; gap:6px;">
+                    <span>🩸</span> Kit Autocontrollo Glicemico Associato
+                  </span>
+                  <label style="font-size:11px; font-weight:700; color:#15803d; display:flex; align-items:center; gap:5px; cursor:pointer; background:#ecfdf5; padding:2px 8px; border-radius:6px; border:1px solid #a7f3d0;">
+                    <input type="checkbox" id="edit-penna-kit-attivo" checked onchange="var el=document.getElementById('box-kit-diabete-dettagli'); if(el) el.style.display=this.checked?'block':'none';">
+                    <span>Associa Strisce & Lancette</span>
+                  </label>
+                </div>
+                
+                <div id="box-kit-diabete-dettagli" style="display:block;">
+                  <!-- RIGA SENSORI GLUCOMEN -->
+                  <div class="riga-doppia-pro" style="margin-bottom:6px; align-items:center;">
+                    <div class="form-group-compact" style="flex:1.8;">
+                      <label class="form-label-compact" style="color:#065f46; font-weight:700;">🩸 Strisce / Sensori Glicemia</label>
+                      <input type="text" class="form-control-compact" id="edit-penna-sensori-nome" value="GlucoMen areo Sensor (25 sensori)" placeholder="Nome sensori glicemia" style="font-size:12px;">
+                    </div>
+                    <div class="form-group-compact" style="flex:1;">
+                      <label class="form-label-compact" style="color:#065f46; font-weight:700;">Scorta Sensori</label>
+                      <input type="number" class="form-control-compact" id="edit-penna-sensori-scorta" min="0" value="25" style="font-weight:800; color:#065f46; font-size:13px;">
+                    </div>
+                  </div>
+
+                  <!-- RIGA LANCETTE GLUCOJECT -->
+                  <div class="riga-doppia-pro" style="margin-bottom:6px; align-items:center;">
+                    <div class="form-group-compact" style="flex:1.8;">
+                      <label class="form-label-compact" style="color:#065f46; font-weight:700;">📍 Lancette Pungidito Sterili</label>
+                      <input type="text" class="form-control-compact" id="edit-penna-lancette-nome" value="Glucoject Lancets Extra 33G (25 lancette)" placeholder="Nome lancette pungidito" style="font-size:12px;">
+                    </div>
+                    <div class="form-group-compact" style="flex:1;">
+                      <label class="form-label-compact" style="color:#065f46; font-weight:700;">Scorta Lancette</label>
+                      <input type="number" class="form-control-compact" id="edit-penna-lancette-scorta" min="0" value="25" style="font-weight:800; color:#065f46; font-size:13px;">
+                    </div>
+                  </div>
+                  <div style="font-size:10.5px; color:#15803d; line-height:1.35; margin-top:4px;">
+                    ✨ <i>Integrazione Clinica: inserendo l'insulina, i sensori e le lancette si collegano automaticamente ed escono visualizzati sotto la penna nell'elenco terapie.</i>
+                  </div>
+                </div>
+              </div>
+
             </div>
 </div>
           </div>

@@ -4446,6 +4446,31 @@ function renderTerapie() {
                 : (dPen.richiediSubito 
                     ? '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#dc2626; color:#fff; border:1px solid #991b1b; padding:2px 7px; border-radius:6px; box-shadow:0 2px 6px rgba(220,38,38,0.25);">🚨 RICHIEDI RICETTA MMG (Ultima penna!)</span>'
                     : '<span class="badge badge-success" style="font-weight:800; font-size:11px; background:#16a34a; color:#fff;">🟢 PENNE DISPONIBILI</span>');
+              let kitGlicemiaHtml = '';
+              const sensoriPz = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.sensoriScorta !== 'undefined') ? t.kitGlicemiaAssociato.sensoriScorta : (p.ausili ? (p.ausili.find(a => (a.tipo || '').toUpperCase().includes('GLUCOMEN') || (a.tipo || '').toUpperCase().includes('SENSOR'))?.pezziTotali || 25) : 25);
+              const lancettePz = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.lancetteScorta !== 'undefined') ? t.kitGlicemiaAssociato.lancetteScorta : (p.ausili ? (p.ausili.find(a => (a.tipo || '').toUpperCase().includes('GLUCOJECT') || (a.tipo || '').toUpperCase().includes('LANCET'))?.pezziTotali || 25) : 25);
+              const sensoriNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.sensoriNome) ? t.kitGlicemiaAssociato.sensoriNome : 'GlucoMen areo Sensor';
+              const lancetteNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.lancetteNome) ? t.kitGlicemiaAssociato.lancetteNome : 'Glucoject Extra 33G';
+
+              kitGlicemiaHtml = `
+                <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:8px; padding:5px 8px; margin-top:6px; text-align:left; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+                  <div style="font-size:10px; font-weight:800; color:#166534; margin-bottom:3px; display:flex; align-items:center; justify-content:space-between;">
+                    <span style="display:flex; align-items:center; gap:4px;"><span>🩸</span> KIT AUTOCONTROLLO ASSOCIATO:</span>
+                    <span style="font-size:9px; background:#dcfce7; color:#14532d; padding:1px 5px; border-radius:4px; font-weight:800;">COLLEGATO</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:2px; font-size:10.5px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #bbf7d0; padding:2px 6px; border-radius:5px;">
+                      <span>🩸 <b>${sensoriNome.replace(/\s*\(.*\)/, '')}:</b></span>
+                      <span style="font-weight:800; color:#15803d;">${sensoriPz} sensori</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #bbf7d0; padding:2px 6px; border-radius:5px;">
+                      <span>📍 <b>${lancetteNome.replace(/\s*\(.*\)/, '')}:</b></span>
+                      <span style="font-weight:800; color:#15803d;">${lancettePz} lancette</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+
               return `
                 ${pBadge}
                 <div style="font-size:13.5px; font-weight:800; color:#0369a1; margin-top:4px;">
@@ -4458,6 +4483,7 @@ function renderTerapie() {
                 <div style="background:${dPen.richiediSubito ? '#fef2f2' : '#ecfdf5'}; border:1px solid ${dPen.richiediSubito ? '#ef4444' : '#a7f3d0'}; border-radius:6px; padding:3px 8px; margin-top:4px; display:inline-block;">
                   <span style="font-size:10px; color:${dPen.richiediSubito ? '#991b1b' : '#065f46'}; font-weight:800;">📅 Richiedi ricetta entro: <b>${dPen.dataRichiestaMMGStr}</b></span>
                 </div>
+                ${kitGlicemiaHtml}
                 ${ritiroInfo}
               `;
             }
@@ -9400,6 +9426,18 @@ function apriModificaFarmaco(farmacoId) {
     if (document.getElementById('edit-penna-dose-die')) document.getElementById('edit-penna-dose-die').value = dPen.doseDie;
     if (document.getElementById('edit-penna-unita-totali')) document.getElementById('edit-penna-unita-totali').value = dPen.unitaTotaliPenna;
     if (document.getElementById('edit-penna-per-scatola')) document.getElementById('edit-penna-per-scatola').value = t.pennePerScatola || 3;
+    var kitBox = document.getElementById('box-kit-diabete-dettagli');
+    var chkKit = document.getElementById('edit-penna-kit-attivo');
+    if (chkKit) chkKit.checked = true;
+    if (kitBox) kitBox.style.display = 'block';
+    var kSensNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.sensoriNome) ? t.kitGlicemiaAssociato.sensoriNome : 'GlucoMen areo Sensor (25 sensori)';
+    var kSensScorta = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.sensoriScorta !== 'undefined') ? t.kitGlicemiaAssociato.sensoriScorta : 25;
+    var kLancNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.lancetteNome) ? t.kitGlicemiaAssociato.lancetteNome : 'Glucoject Lancets Extra 33G (25 lancette)';
+    var kLancScorta = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.lancetteScorta !== 'undefined') ? t.kitGlicemiaAssociato.lancetteScorta : 25;
+    if (document.getElementById('edit-penna-sensori-nome')) document.getElementById('edit-penna-sensori-nome').value = kSensNome;
+    if (document.getElementById('edit-penna-sensori-scorta')) document.getElementById('edit-penna-sensori-scorta').value = kSensScorta;
+    if (document.getElementById('edit-penna-lancette-nome')) document.getElementById('edit-penna-lancette-nome').value = kLancNome;
+    if (document.getElementById('edit-penna-lancette-scorta')) document.getElementById('edit-penna-lancette-scorta').value = kLancScorta;
     var badgeFormato = document.getElementById('badge-auto-rilevato-formato');
     if (badgeFormato) {
       badgeFormato.style.display = 'inline-block';
@@ -9559,6 +9597,13 @@ function salvaModificaFarmaco(e) {
       unitaDoseDie: pDoseDie,
       unitaPerPenna: pUnitaTot,
       pennePerScatola: pScatola,
+      kitGlicemiaAssociato: isFormatoPenna ? {
+        attivo: document.getElementById('edit-penna-kit-attivo') ? document.getElementById('edit-penna-kit-attivo').checked : true,
+        sensoriNome: document.getElementById('edit-penna-sensori-nome') ? document.getElementById('edit-penna-sensori-nome').value.trim() : 'GlucoMen areo Sensor (25 sensori)',
+        sensoriScorta: parseInt(document.getElementById('edit-penna-sensori-scorta') ? document.getElementById('edit-penna-sensori-scorta').value : 25) || 25,
+        lancetteNome: document.getElementById('edit-penna-lancette-nome') ? document.getElementById('edit-penna-lancette-nome').value.trim() : 'Glucoject Lancets Extra 33G (25 lancette)',
+        lancetteScorta: parseInt(document.getElementById('edit-penna-lancette-scorta') ? document.getElementById('edit-penna-lancette-scorta').value : 25) || 25
+      } : null,
       ultimaModificaClinica: ultimaMod
     });
   });
