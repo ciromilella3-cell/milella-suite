@@ -1077,6 +1077,38 @@
           "fabbisogno": "Fornitura programmata ogni 90 giorni (ASP Potenza)",
           "prossimaConsegnaIndicativa": "2026-11-24",
           "scadenzaPiano": "2027-02-18"
+        },
+        {
+          "tipo": "Sensori Glicemia - GlucoMen areo Sensor",
+          "marca": "A. Menarini Diagnostics - GlucoMen areo Sensor (25 sensori)",
+          "utilizzo": "Sensori reattivi per l'autocontrollo della glicemia con glucometro linea GlucoMen areo (Diabete mellito in terapia con Xultophy)",
+          "cartoni": "1 confezione (25 sensori)",
+          "scortaPacchi": 1,
+          "pezziPerPacco": 25,
+          "pezziTotali": 25,
+          "dataRifornimento": "2026-10-30",
+          "prossimaRichiesta": "2026-11-24",
+          "dataScadenza": "2026-11-24",
+          "giorniAlert": 7,
+          "stato": "In uso attivo regolare",
+          "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
+          "fabbisogno": "Autocontrollo glicemico domiciliare pre-colazione e monitoraggio terapia insulinica"
+        },
+        {
+          "tipo": "Lancette Pungidito - Glucoject Lancets Extra 33G",
+          "marca": "A. Menarini Diagnostics - Glucoject Lancets Extra 33G (25 lancette)",
+          "utilizzo": "Lancette sterili monouso calibro 33G (extra-sottili) per dispositivo pungidito per prelievo capillare glicemia",
+          "cartoni": "1 confezione (25 lancette)",
+          "scortaPacchi": 1,
+          "pezziPerPacco": 25,
+          "pezziTotali": 25,
+          "dataRifornimento": "2026-10-30",
+          "prossimaRichiesta": "2026-11-24",
+          "dataScadenza": "2026-11-24",
+          "giorniAlert": 7,
+          "stato": "In uso attivo regolare",
+          "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
+          "fabbisogno": "1 lancetta monouso per ciascun controllo glicemico"
         }
       ],
       "moglieNome": "Maria Carmela (Figlia / Caregiver)",

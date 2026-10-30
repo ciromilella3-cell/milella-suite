@@ -1169,6 +1169,54 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       rosaFoto.patologie.push('Dislipidemia / Ipercolesterolemia (Sivastin)');
     }
   }
+  // SINCRONIZZAZIONE FORNITURE DIABETE: ROSA ANNUNZIATA - GLUCOMEN & GLUCOJECT (30/10/2026)
+  if (rosaFoto && (!AppData.rosaFornitureDiabete20261030)) {
+    AppData.rosaFornitureDiabete20261030 = true;
+    rosaFoto.ausili = rosaFoto.ausili || [];
+    rosaFoto.ausili = rosaFoto.ausili.filter(function(a) {
+      var t = (a.tipo || '').toUpperCase();
+      return t.indexOf('GLUCOMEN') === -1 && t.indexOf('GLUCOJECT') === -1;
+    });
+
+    rosaFoto.ausili.push({
+    "tipo": "Sensori Glicemia - GlucoMen areo Sensor",
+    "marca": "A. Menarini Diagnostics - GlucoMen areo Sensor (25 sensori)",
+    "utilizzo": "Sensori reattivi per l'autocontrollo della glicemia con glucometro linea GlucoMen areo (Diabete mellito in terapia con Xultophy)",
+    "cartoni": "1 confezione (25 sensori)",
+    "scortaPacchi": 1,
+    "pezziPerPacco": 25,
+    "pezziTotali": 25,
+    "dataRifornimento": "2026-10-30",
+    "prossimaRichiesta": "2026-11-24",
+    "dataScadenza": "2026-11-24",
+    "giorniAlert": 7,
+    "stato": "In uso attivo regolare",
+    "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
+    "fabbisogno": "Autocontrollo glicemico domiciliare pre-colazione e monitoraggio terapia insulinica"
+});
+    rosaFoto.ausili.push({
+    "tipo": "Lancette Pungidito - Glucoject Lancets Extra 33G",
+    "marca": "A. Menarini Diagnostics - Glucoject Lancets Extra 33G (25 lancette)",
+    "utilizzo": "Lancette sterili monouso calibro 33G (extra-sottili) per dispositivo pungidito per prelievo capillare glicemia",
+    "cartoni": "1 confezione (25 lancette)",
+    "scortaPacchi": 1,
+    "pezziPerPacco": 25,
+    "pezziTotali": 25,
+    "dataRifornimento": "2026-10-30",
+    "prossimaRichiesta": "2026-11-24",
+    "dataScadenza": "2026-11-24",
+    "giorniAlert": 7,
+    "stato": "In uso attivo regolare",
+    "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
+    "fabbisogno": "1 lancetta monouso per ciascun controllo glicemico"
+});
+
+    try {
+      localStorage.setItem(DB_KEY, JSON.stringify(AppData));
+    } catch(err) {}
+    console.log('Forniture diabete (GlucoMen & Glucoject) integrate nella cartella di Rosa Annunziata!');
+  }
+
   // SINCRONIZZAZIONE CLINICA AUTOMATICA: ROSA ANNUNZIATA - SCHEMA SINEMET MULTI-TEMPO & XULTOPHY (30/10/2026)
   if (rosaFoto && (!AppData.rosaSinemetMultiTempo20261030_v2)) {
     AppData.rosaSinemetMultiTempo20261030_v2 = true;
@@ -2254,6 +2302,8 @@ function renderPazientiSelector() {
         const s = (tipoStr || '').toLowerCase();
         if (s.includes('deambulatore') || s.includes('rollator') || s.includes('bastone') || s.includes('stampell')) return '🚶';
         if (s.includes('calz') || s.includes('elastich') || s.includes('antitrombo')) return '🧦';
+        if (s.includes('glucomen') || s.includes('sensor') || s.includes('strisc') || s.includes('glicem')) return '🩸';
+        if (s.includes('glucoject') || s.includes('lancett') || s.includes('pungidito')) return '📍';
         if (s.includes('pants') || s.includes('mutandin') || s.includes('pannolon') || s.includes('assorbent')) return '🩲';
         if (s.includes('materasso') || s.includes('letto')) return '🛏️';
         if (s.includes('posturale') || s.includes('rotazione')) return '🔄';
