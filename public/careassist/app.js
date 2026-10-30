@@ -18041,50 +18041,68 @@ function renderRoadmapScadenzeHTML(filtroPaz, filtroCat) {
   }
 
   if (eventi.length === 0) {
-    return '<div style="padding:40px; text-align:center; background:#ffffff; border-radius:12px; border:1px solid #e2e8f0; color:#64748b; font-size:14px;">Nessun evento o scadenza corrispondente ai filtri selezionati.</div>';
+    return '<div style="padding:40px; text-align:center; background:#ffffff; border-radius:16px; border:1.5px solid #e2e8f0; color:#64748b; font-size:14px; box-shadow:0 2px 8px rgba(0,0,0,0.03);">Nessun evento o scadenza corrispondente ai filtri selezionati.</div>';
   }
+
+  var mesiNomi = {
+    '01': 'GEN', '02': 'FEB', '03': 'MAR', '04': 'APR',
+    '05': 'MAG', '06': 'GIU', '07': 'LUG', '08': 'AGO',
+    '09': 'SET', '10': 'OTT', '11': 'NOV', '12': 'DIC'
+  };
 
   return eventi.map(function(ev) {
     var dParts = ev.data.split('-');
-    var dFormattata = dParts[2] + '/' + dParts[1] + '/' + dParts[0];
+    var giorno = dParts[2];
+    var meseTxt = mesiNomi[dParts[1]] || dParts[1];
+    var anno = dParts[0];
 
-    return '<div style="background:#ffffff; border-radius:14px; border:1.5px solid #cbd5e1; border-left:6px solid ' + ev.pazColore + '; padding:16px 20px; box-shadow:0 3px 12px rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; transition:all 0.2s ease;">' +
+    var isImminente = (ev.diffDays >= 0 && ev.diffDays <= 7);
+    var isMese = (ev.diffDays > 7 && ev.diffDays <= 30);
+    
+    var cardBorderColor = isImminente ? '#fca5a5' : (isMese ? '#fde047' : '#e2e8f0');
+    var dateHeaderBg = isImminente ? '#ef4444' : (isMese ? '#d97706' : '#0284c7');
+
+    return '<div style="background:#ffffff; border-radius:16px; border:1.5px solid ' + cardBorderColor + '; border-left:6px solid ' + ev.pazColore + '; padding:14px 18px; box-shadow:0 3px 14px rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; transition:all 0.2s ease;" onmouseover="this.style.boxShadow=\'0 6px 20px rgba(0,0,0,0.08)\'; this.style.transform=\'translateY(-1px)\';" onmouseout="this.style.boxShadow=\'0 3px 14px rgba(0,0,0,0.04)\'; this.style.transform=\'translateY(0)\';">' +
       
-      // PARTE SINISTRA: DATA E COUNTDOWN
-      '<div style="display:flex; align-items:center; gap:16px; min-width:200px;">' +
-        '<div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:8px 14px; text-align:center; min-width:85px;">' +
-          '<div style="font-size:20px; font-weight:900; color:#0f172a; line-height:1;">' + dParts[2] + '</div>' +
-          '<div style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; margin-top:2px;">' + dParts[1] + '/' + dParts[0] + '</div>' +
-          '<div style="font-size:10px; color:#0284c7; font-weight:700; margin-top:2px;">' + (ev.ora || 'Mattina') + '</div>' +
+      // PARTE SINISTRA: CALENDARIO BADGE & INFO
+      '<div style="display:flex; align-items:center; gap:14px; min-width:240px; flex:1;">' +
+        // TILE CALENDARIO AD ALTO IMPATTO
+        '<div style="width:72px; border-radius:12px; overflow:hidden; border:1.5px solid #cbd5e1; box-shadow:0 2px 8px rgba(0,0,0,0.06); text-align:center; flex-shrink:0;">' +
+          '<div style="background:' + dateHeaderBg + '; color:#ffffff; font-size:10px; font-weight:900; letter-spacing:0.5px; padding:3px 0; text-transform:uppercase;">' + meseTxt + ' ' + anno + '</div>' +
+          '<div style="background:#ffffff; padding:4px 0 2px 0;">' +
+            '<div style="font-size:22px; font-weight:900; color:#0f172a; line-height:1;">' + giorno + '</div>' +
+            '<div style="font-size:10.5px; font-weight:700; color:#64748b; margin-top:1px;">' + (ev.ora || 'Mattina') + '</div>' +
+          '</div>' +
         '</div>' +
-        '<div>' +
+
+        // TESTI CLINICI
+        '<div style="flex:1; min-width:0;">' +
           '<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; flex-wrap:wrap;">' +
-            '<span style="background:' + ev.pazColore + '; color:white; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">' +
+            '<span style="background:' + ev.pazColore + '; color:#ffffff; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 4px rgba(0,0,0,0.15);">' +
               '<span>' + ev.pazIcona + '</span> <span>' + ev.pazNome + '</span>' +
             '</span>' +
-            '<span style="background:#f1f5f9; color:#475569; font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px;">' + ev.categoriaLabel + '</span>' +
+            '<span style="background:#f1f5f9; color:#475569; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:6px; border:1px solid #e2e8f0;">' + ev.categoriaLabel + '</span>' +
             ev.badgeUrgenza +
           '</div>' +
-          '<h3 style="font-size:15.5px; font-weight:900; color:#0f172a; margin:0 0 3px;">' + ev.titolo + '</h3>' +
-          '<div style="font-size:12px; color:#475569;">' + ev.descrizione + '</div>' +
-          '<div style="font-size:11.5px; color:#64748b; margin-top:3px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
-            '<span>📍 ' + ev.luogo + '</span>' +
-            (ev.medico ? '<span>👨‍⚕️ ' + ev.medico + '</span>' : '') +
-            (ev.nre ? '<span style="font-family:monospace; background:#f0fdf4; color:#166534; font-weight:700; padding:1px 6px; border-radius:4px;">NRE: ' + ev.nre + '</span>' : '') +
+          '<h3 style="font-size:15px; font-weight:800; color:#0f2744; margin:0 0 3px; line-height:1.25;">' + ev.titolo + '</h3>' +
+          '<div style="font-size:12px; color:#475569; line-height:1.35; margin-bottom:4px;">' + ev.descrizione + '</div>' +
+          '<div style="font-size:11.5px; color:#64748b; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
+            '<span>📍 <b>' + ev.luogo + '</b></span>' +
+            (ev.medico ? '<span>🩺 ' + ev.medico + '</span>' : '') +
+            (ev.nre ? '<span style="font-family:monospace; background:#ecfdf5; color:#065f46; font-weight:800; padding:1px 6px; border-radius:4px; border:1px solid #a7f3d0;">NRE: ' + ev.nre + '</span>' : '') +
           '</div>' +
         '</div>' +
       '</div>' +
 
       // PARTE DESTRA: AZIONI RAPIDE
-      '<div style="display:flex; gap:8px; align-items:center;">' +
-        '<button type="button" class="btn" onclick="passaAdAssistitoDaRoadmap(\'' + ev.pazId + '\')" style="background:#f1f5f9; color:#1e293b; border:1px solid #cbd5e1; font-weight:800; font-size:11.5px; padding:7px 12px; border-radius:8px; cursor:pointer;" title="Passa alla scheda specialistica di questo assistito">' +
-          '👤 Vai a Scheda' +
+      '<div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">' +
+        '<button type="button" class="btn" onclick="sincronizzaSingoloEventoCalendario(\'' + ev.id + '\')" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; font-weight:800; font-size:12px; padding:7px 14px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3); transition:all 0.15s;" title="Salva questo promemoria direttamente sul tuo cellulare">' +
+          '<span>📲</span> <span>Salva nel Telefono</span>' +
         '</button>' +
-        '<button type="button" class="btn" onclick="sincronizzaSingoloEventoCalendario(\'' + ev.id + '\')" style="background:#0284c7; color:white; border:none; font-weight:800; font-size:11.5px; padding:7px 12px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Aggiungi questo promemoria a Google Calendar / iPhone">' +
-          '📲 iCal' +
+        '<button type="button" class="btn" onclick="passaAdAssistitoDaRoadmap(\'' + ev.pazId + '\')" style="background:#f8fafc; color:#1e293b; border:1px solid #cbd5e1; font-weight:700; font-size:12px; padding:7px 12px; border-radius:8px; cursor:pointer;" title="Passa alla cartella di questo assistito">' +
+          '<span>👤</span> <span>Vai a Cartella</span>' +
         '</button>' +
       '</div>' +
-
     '</div>';
   }).join('');
 }

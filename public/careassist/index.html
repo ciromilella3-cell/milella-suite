@@ -4693,71 +4693,115 @@
     }
   </style>
 
-  <!-- MODAL ROADMAP CLINICA & SCADENZARIO FAMILIARE UNIFICATO -->
+  <!-- MODAL ROADMAP CLINICA & SCADENZARIO FAMILIARE UNIFICATO (EXECUTIVE LUXURY) -->
   <div class="modal-overlay" id="modal-roadmap-scadenze" style="z-index: 10040;">
-    <div class="modal-card" style="max-width: 980px; width: 95%; max-height: 92vh; display: flex; flex-direction: column;">
+    <div class="modal-card roadmap-modal-card" style="max-width: 1020px; width: 96%; max-height: 94vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; box-shadow: 0 24px 60px rgba(2, 6, 23, 0.45); border: 1.5px solid rgba(56, 189, 248, 0.3);">
       
-      <!-- HEADER ROADMAP -->
-      <div class="modal-header" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #ffffff; padding: 18px 24px; border-bottom: 2px solid #818cf8; display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; align-items: center; gap: 14px;">
-          <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1.5px solid #a5b4fc;">
+      <!-- HEADER ROADMAP EXECUTIVE (RESISTENTE AD OVERRIDE MOBILE) -->
+      <div class="roadmap-header-executive" style="background: linear-gradient(135deg, #091e3a 0%, #0f2744 50%, #0369a1 100%) !important; color: #ffffff !important; padding: 16px 22px; border-bottom: 2px solid #38bdf8; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 22px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 4px 12px rgba(0,0,0,0.25); flex-shrink: 0; backdrop-filter: blur(8px);">
             🗓️
           </div>
-          <div>
-            <div style="font-size: 11px; font-weight: 800; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.6px;">CRUSCOTTO COORDINAMENTO CLINICO DOMICILIARE</div>
-            <h2 style="font-size: 20px; font-weight: 900; margin: 2px 0 0; color: #ffffff;">Roadmap Clinica & Scadenzario Familiare Unificato</h2>
+          <div style="min-width: 0;">
+            <div style="font-size: 11px; font-weight: 800; color: #7dd3fc !important; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px;">
+              COORDINAMENTO CLINICO DOMICILIARE &bull; 4 ASSISTITI
+            </div>
+            <h2 style="font-size: 19px; font-weight: 900; margin: 0; color: #ffffff !important; letter-spacing: -0.3px; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+              Roadmap Clinica & Scadenzario Familiare
+            </h2>
           </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <button type="button" class="btn" onclick="sincronizzaCalendarioTuttiPazienti()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(16,185,129,0.35);">
-            📅 Esporta Tutto (.ics)
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+          <button type="button" class="btn btn-roadmap-export" onclick="sincronizzaCalendarioTuttiPazienti()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; border: 1px solid #6ee7b7 !important; padding: 7px 14px !important; border-radius: 9px !important; font-weight: 800 !important; font-size: 12px !important; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(16,185,129,0.35); transition: all 0.2s;" title="Scarica il file .ics per integrare tutte le date nel calendario del tuo smartphone">
+            <span>📅</span> <span>Esporta Calendario (.ics)</span>
           </button>
-          <button class="btn btn-outline" onclick="closeModal('modal-roadmap-scadenze')" style="color: #ffffff; border-color: rgba(255,255,255,0.4);">✕</button>
+          <button type="button" class="btn btn-roadmap-close" onclick="closeModal('modal-roadmap-scadenze')" style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.15) !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.3) !important; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" title="Chiudi finestra">✕</button>
         </div>
       </div>
 
       <!-- BODY ROADMAP -->
-      <div class="modal-body" style="padding: 20px; overflow-y: auto; flex: 1; background: #f8fafc;">
+      <div class="modal-body roadmap-body" style="padding: 18px 20px; overflow-y: auto; flex: 1; background: #f8fafc;">
         
-        <!-- KPI METRICS SUMMARY -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
-          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-            <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Assistiti in Monitoraggio</div>
-            <div style="font-size: 24px; font-weight: 900; color: #1e1b4b; margin-top: 2px;">4 Pazienti</div>
-            <div style="font-size: 11px; color: #0284c7; font-weight: 600;">Aldo, Angela, Rosa, Ciro</div>
+        <!-- 3 KPI METRICS CARDS EXECUTIVE (GLASSMORPHISM & ACCENTI VIBRANTI) -->
+        <div class="roadmap-kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 18px;">
+          
+          <!-- CARD 1: ASSISTITI -->
+          <div class="roadmap-kpi-card" style="background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%); border: 1.5px solid #bae6fd; border-radius: 14px; padding: 14px 16px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.08); display: flex; align-items: center; gap: 14px; transition: transform 0.2s ease;">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);">
+              👥
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; color: #0284c7; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">ASSISTITI IN MONITORAGGIO</div>
+              <div style="font-size: 24px; font-weight: 900; color: #0c2b4e; line-height: 1.1; margin: 2px 0;">4 Pazienti</div>
+              <div style="font-size: 11.5px; color: #475569; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                👴 Aldo &bull; 👵 Angela &bull; 👵 Rosa &bull; 👨 Ciro
+              </div>
+            </div>
           </div>
-          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-            <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Prossima Scadenza Imminente</div>
-            <div id="roadmap-kpi-prossima" style="font-size: 20px; font-weight: 900; color: #dc2626; margin-top: 2px;">05/11/2026</div>
-            <div id="roadmap-kpi-prossima-dettaglio" style="font-size: 11px; color: #475569; font-weight: 600;">Prelievo Angela Mazzicone</div>
+
+          <!-- CARD 2: PROSSIMA SCADENZA -->
+          <div class="roadmap-kpi-card" style="background: linear-gradient(135deg, #ffffff 0%, #fff1f2 100%); border: 1.5px solid #fecdd3; border-radius: 14px; padding: 14px 16px; box-shadow: 0 4px 14px rgba(225, 29, 72, 0.08); display: flex; align-items: center; gap: 14px; transition: transform 0.2s ease;">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);">
+              ⚡
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; color: #be123c; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">PROSSIMA SCADENZA IMMINENTE</div>
+              <div id="roadmap-kpi-prossima" style="font-size: 22px; font-weight: 900; color: #e11d48; line-height: 1.1; margin: 2px 0;">05/11/2026</div>
+              <div id="roadmap-kpi-prossima-dettaglio" style="font-size: 11.5px; color: #881337; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                Angela &bull; Prelievo Assetto Lipidico
+              </div>
+            </div>
           </div>
-          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-            <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Controlli Prossimi 30 Giorni</div>
-            <div id="roadmap-kpi-prossimi30" style="font-size: 24px; font-weight: 900; color: #d97706; margin-top: 2px;">6 Eventi</div>
-            <div style="font-size: 11px; color: #166534; font-weight: 600;">Visite ADI, CAD & Prelievi</div>
+
+          <!-- CARD 3: CONTROLLI PROSSIMI 30 GIORNI -->
+          <div class="roadmap-kpi-card" style="background: linear-gradient(135deg, #ffffff 0%, #fefce8 100%); border: 1.5px solid #fde047; border-radius: 14px; padding: 14px 16px; box-shadow: 0 4px 14px rgba(217, 119, 6, 0.08); display: flex; align-items: center; gap: 14px; transition: transform 0.2s ease;">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);">
+              🗓️
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; color: #b45309; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">CONTROLLI PROSSIMI 30 GIORNI</div>
+              <div id="roadmap-kpi-prossimi30" style="font-size: 24px; font-weight: 900; color: #d97706; line-height: 1.1; margin: 2px 0;">8 Eventi</div>
+              <div style="font-size: 11.5px; color: #78350f; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                Visite ADI, CAD & Prelievi
+              </div>
+            </div>
           </div>
+
         </div>
 
-        <!-- BARRA FILTRI PAZIENTE & CATEGORIA -->
-        <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;">
+        <!-- BARRA FILTRI EXECUTIVE (PAZIENTI & CATEGORIE) -->
+        <div class="roadmap-filter-box" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px 16px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
           <div style="display: flex; flex-direction: column; gap: 10px;">
-            <!-- Filtro Pazienti -->
+            <!-- Filtro Pazienti con Avatar -->
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span style="font-size: 11.5px; font-weight: 800; color: #475569; text-transform: uppercase; min-width: 70px;">Assistito:</span>
-              <button type="button" class="btn btn-sm btn-filter-paz" id="btn-filtro-paz-tutti" onclick="filtraRoadmapPaziente('tutti')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #1e1b4b; color: white;">Tutti (4)</button>
-              <button type="button" class="btn btn-sm btn-filter-paz" id="btn-filtro-paz-aldo" onclick="filtraRoadmapPaziente('paz_aldo')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #e0e7ff; color: #3730a3;">🧠 Aldo Zamparino</button>
-              <button type="button" class="btn btn-sm btn-filter-paz" id="btn-filtro-paz-angela" onclick="filtraRoadmapPaziente('paz_angela')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #fce7f3; color: #9d174d;">❤️ Angela Mazzicone</button>
-              <button type="button" class="btn btn-sm btn-filter-paz" id="btn-filtro-paz-rosa" onclick="filtraRoadmapPaziente('paz_rosa')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #dcfce7; color: #166534;">🩸 Rosa Cavalcante</button>
-              <button type="button" class="btn btn-sm btn-filter-paz" id="btn-filtro-paz-ciro" onclick="filtraRoadmapPaziente('paz_1793216119572')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #e0f2fe; color: #0369a1;">🩺 Ciro Milella</button>
+              <span style="font-size: 11.5px; font-weight: 800; color: #64748b; text-transform: uppercase; min-width: 72px;">Assistito:</span>
+              <button type="button" class="btn btn-roadmap-pill" id="btn-filtro-paz-tutti" onclick="filtraRoadmapPaziente('tutti')" style="border-radius: 999px; font-weight: 800; font-size: 12px; padding: 5px 14px; background: #0f172a; color: #ffffff; border: 1.5px solid #0f172a; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(15,23,42,0.25);">
+                <span>🌐</span> <span>Tutti (4)</span>
+              </button>
+              <button type="button" class="btn btn-roadmap-pill" id="btn-filtro-paz-aldo" onclick="filtraRoadmapPaziente('paz_aldo')" style="border-radius: 999px; font-weight: 800; font-size: 12px; padding: 5px 14px; background: #e0e7ff; color: #3730a3; border: 1.5px solid #a5b4fc; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                <span>👴</span> <span>Aldo (ADI)</span>
+              </button>
+              <button type="button" class="btn btn-roadmap-pill" id="btn-filtro-paz-angela" onclick="filtraRoadmapPaziente('paz_angela')" style="border-radius: 999px; font-weight: 800; font-size: 12px; padding: 5px 14px; background: #fce7f3; color: #9d174d; border: 1.5px solid #fbcfe8; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                <span>👵</span> <span>Angela (Cardio)</span>
+              </button>
+              <button type="button" class="btn btn-roadmap-pill" id="btn-filtro-paz-rosa" onclick="filtraRoadmapPaziente('paz_rosa')" style="border-radius: 999px; font-weight: 800; font-size: 12px; padding: 5px 14px; background: #fae8ff; color: #86198f; border: 1.5px solid #f0abfc; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                <span>👵</span> <span>Rosa (Diabete)</span>
+              </button>
+              <button type="button" class="btn btn-roadmap-pill" id="btn-filtro-paz-ciro" onclick="filtraRoadmapPaziente('paz_1793216119572')" style="border-radius: 999px; font-weight: 800; font-size: 12px; padding: 5px 14px; background: #e0f2fe; color: #0369a1; border: 1.5px solid #7dd3fc; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                <span>👨</span> <span>Ciro (Epatologia)</span>
+              </button>
             </div>
+            
             <!-- Filtro Categorie -->
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border-top: 1px solid #f1f5f9; padding-top: 8px;">
-              <span style="font-size: 11.5px; font-weight: 800; color: #475569; text-transform: uppercase; min-width: 70px;">Tipo:</span>
-              <button type="button" class="btn btn-sm btn-filter-cat" id="btn-filtro-cat-tutti" onclick="filtraRoadmapCategoria('tutti')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 10px; background: #0f172a; color: white;">Tutti</button>
-              <button type="button" class="btn btn-sm btn-filter-cat" id="btn-filtro-cat-visite" onclick="filtraRoadmapCategoria('Visite')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 10px; background: #f1f5f9; color: #334155;">🏥 Visite Specialistiche</button>
-              <button type="button" class="btn btn-sm btn-filter-cat" id="btn-filtro-cat-laboratorio" onclick="filtraRoadmapCategoria('Laboratorio')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 10px; background: #f1f5f9; color: #334155;">🩸 Esami del Sangue</button>
-              <button type="button" class="btn btn-sm btn-filter-cat" id="btn-filtro-cat-strumentali" onclick="filtraRoadmapCategoria('Strumentali')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 10px; background: #f1f5f9; color: #334155;">🔬 Diagnostica & Eco</button>
-              <button type="button" class="btn btn-sm btn-filter-cat" id="btn-filtro-cat-piani" onclick="filtraRoadmapCategoria('Piani')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 10px; background: #f1f5f9; color: #334155;">📦 Piani, NRE & Forniture</button>
+              <span style="font-size: 11.5px; font-weight: 800; color: #64748b; text-transform: uppercase; min-width: 72px;">Tipo:</span>
+              <button type="button" class="btn btn-roadmap-cat" id="btn-filtro-cat-tutti" onclick="filtraRoadmapCategoria('tutti')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #0f172a; color: white; border: 1px solid #0f172a; cursor: pointer;">Tutti</button>
+              <button type="button" class="btn btn-roadmap-cat" id="btn-filtro-cat-visite" onclick="filtraRoadmapCategoria('Visite')" style="border-radius: 999px; font-weight: 700; font-size: 11.5px; padding: 4px 12px; background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; cursor: pointer;">🏥 Visite Specialistiche</button>
+              <button type="button" class="btn btn-roadmap-cat" id="btn-filtro-cat-laboratorio" onclick="filtraRoadmapCategoria('Laboratorio')" style="border-radius: 999px; font-weight: 700; font-size: 11.5px; padding: 4px 12px; background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; cursor: pointer;">🩸 Esami del Sangue</button>
+              <button type="button" class="btn btn-roadmap-cat" id="btn-filtro-cat-strumentali" onclick="filtraRoadmapCategoria('Strumentali')" style="border-radius: 999px; font-weight: 700; font-size: 11.5px; padding: 4px 12px; background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; cursor: pointer;">🔬 Diagnostica & Eco</button>
+              <button type="button" class="btn btn-roadmap-cat" id="btn-filtro-cat-piani" onclick="filtraRoadmapCategoria('Piani')" style="border-radius: 999px; font-weight: 700; font-size: 11.5px; padding: 4px 12px; background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; cursor: pointer;">📦 Piani, NRE & Forniture</button>
             </div>
           </div>
         </div>
@@ -4770,15 +4814,15 @@
       </div>
 
       <!-- FOOTER ROADMAP -->
-      <div class="modal-footer" style="background: #ffffff; border-top: 1.5px solid #cbd5e1; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <div style="font-size: 12px; color: #64748b;">
-          💡 <i>Tocca "Passa ad Assistito" per entrare nella cartella specialistica dedicata o scarica il promemoria iCal per il tuo telefono.</i>
+      <div class="roadmap-footer-executive" style="background: #ffffff; border-top: 1.5px solid #e2e8f0; padding: 12px 22px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; flex-shrink: 0;">
+        <div style="font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 6px;">
+          <span>💡</span> <span>Tocca <b>"Salva nel Telefono"</b> su un evento per impostare il promemoria o scarica l'intero calendario.</span>
         </div>
-        <div style="display: flex; gap: 8px;">
-          <button type="button" class="btn" onclick="sincronizzaCalendarioTuttiPazienti()" style="background: #059669; color: white; font-weight: 800; font-size: 12.5px; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;">
-            📲 Scarica Calendario Completo (.ics)
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button type="button" class="btn" onclick="sincronizzaCalendarioTuttiPazienti()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: white !important; font-weight: 800 !important; font-size: 12.5px !important; padding: 9px 18px !important; border-radius: 10px !important; border: none !important; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;">
+            <span>📲</span> <span>Scarica Calendario Completo (.ics)</span>
           </button>
-          <button type="button" class="btn btn-outline" onclick="closeModal('modal-roadmap-scadenze')">Chiudi</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-roadmap-scadenze')" style="border: 1px solid #cbd5e1; color: #475569; font-weight: 700; font-size: 12.5px; padding: 9px 16px; border-radius: 10px; cursor: pointer; background: #f8fafc;">Chiudi</button>
         </div>
       </div>
 
