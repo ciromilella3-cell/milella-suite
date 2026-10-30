@@ -1217,6 +1217,16 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     console.log('Forniture diabete (GlucoMen & Glucoject) integrate nella cartella di Rosa Annunziata!');
   }
 
+  // PULIZIA AUTOMATICA AVVISI RITARDO TEST: ROSA ANNUNZIATA (30/10/2026)
+  if (rosaFoto && !AppData.rosaPuliziaRitardiTest20261030) {
+    AppData.rosaPuliziaRitardiTest20261030 = true;
+    rosaFoto.registrazioni = (rosaFoto.registrazioni || []).filter(function(r) { return r.tipo !== 'farmaco_ritardo'; });
+    try {
+      localStorage.setItem(DB_KEY, JSON.stringify(AppData));
+    } catch(err) {}
+    console.log('Avvisi ritardo test cancellati da Rosa Annunziata!');
+  }
+
   // SINCRONIZZAZIONE CLINICA AUTOMATICA: ROSA ANNUNZIATA - SCHEMA SINEMET MULTI-TEMPO & XULTOPHY (30/10/2026)
   if (rosaFoto && (!AppData.rosaSinemetMultiTempo20261030_v2)) {
     AppData.rosaSinemetMultiTempo20261030_v2 = true;
@@ -2773,6 +2783,7 @@ function customConfirm(titolo, testo, icona = '💊') {
     const btnX = document.getElementById('confirm-modal-x-btn');
 
     modal.classList.add('active');
+    modal.style.display = 'flex';
 
     const handleOk = () => {
       cleanup();
@@ -2786,6 +2797,7 @@ function customConfirm(titolo, testo, icona = '💊') {
 
     const cleanup = () => {
       modal.classList.remove('active');
+      modal.style.display = 'none';
       btnOk.removeEventListener('click', handleOk);
       btnCancel.removeEventListener('click', handleCancel);
       if (btnX) btnX.removeEventListener('click', handleCancel);
@@ -6178,18 +6190,56 @@ function renderDiario() {
 async function eliminaLog(id) {
   const p = getActivePaziente();
   if (!p) return;
-  const ok = await customConfirm(
-    'Elimina Annotazione',
-    'Sei sicuro di voler eliminare questa annotazione dal registro?',
-    '🗑️'
-  );
+  
+  let ok = false;
+  try {
+    ok = await customConfirm(
+      'Elimina Annotazione',
+      'Vuoi eliminare questa annotazione dal diario clinico?',
+      '🗑️'
+    );
+  } catch(e) {
+    ok = confirm('Vuoi eliminare questa annotazione dal diario clinico?');
+  }
+
   if (ok) {
-    p.registrazioni = p.registrazioni.filter(r => String(r.id) !== String(id));
+    p.registrazioni = (p.registrazioni || []).filter(r => String(r.id) !== String(id));
     saveDb();
     renderDiario();
-    showToast('Registrazione rimossa.');
+    showToast('Annotazione rimossa con successo! 🗑️');
   }
 }
+window.eliminaLog = eliminaLog;
+
+async function svuotaRitardiFarmaci() {
+  const p = getActivePaziente();
+  if (!p) return;
+
+  const ritardi = (p.registrazioni || []).filter(r => r.tipo === 'farmaco_ritardo');
+  if (ritardi.length === 0) {
+    showToast('Nessun avviso di ritardo presente nel registro.', 'info');
+    return;
+  }
+
+  let ok = false;
+  try {
+    ok = await customConfirm(
+      'Cancella Avvisi di Ritardo',
+      'Vuoi cancellare tutti i ' + ritardi.length + ' avvisi di ritardo registrati per ' + p.nome + '?',
+      '🧹'
+    );
+  } catch(e) {
+    ok = confirm('Vuoi cancellare tutti i ' + ritardi.length + ' avvisi di ritardo registrati?');
+  }
+
+  if (ok) {
+    p.registrazioni = (p.registrazioni || []).filter(r => r.tipo !== 'farmaco_ritardo');
+    saveDb();
+    renderDiario();
+    showToast('Tutti i ' + ritardi.length + ' avvisi di ritardo sono stati cancellati! 🧹');
+  }
+}
+window.svuotaRitardiFarmaci = svuotaRitardiFarmaci;
 
 // Rendering Visite Mediche
 function renderVisite() {
