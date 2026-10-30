@@ -2553,6 +2553,10 @@ function showToast(messaggio, tipo = 'success') {
 function cambiaPaziente(pazId) {
   AppData.activePazienteId = pazId;
   if (typeof aggiornaVisibilitaTabEpatologia === 'function') aggiornaVisibilitaTabEpatologia();
+  var tabSection = document.getElementById('tab-epatologia');
+  if (tabSection && (tabSection.style.display === 'block' || tabSection.style.display === 'flex' || tabSection.classList.contains('active'))) {
+    if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
+  }
   saveDb();
 }
 
@@ -14979,7 +14983,7 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
 }
 window.buildPrestampatoColonneHtml = buildPrestampatoColonneHtml;
 
-function renderEpatologiaView() {
+function renderOldEpatologiaTbodyView() {
   var dati = getEpatologiaDatiPaziente();
   var tbody = document.getElementById('epatologia-esami-tbody');
   if (!tbody) return;
@@ -15294,17 +15298,20 @@ function aggiornaVisibilitaTabEpatologia() {
   tabBtn.style.display = 'inline-flex';
 
   if (isInfettivo) {
-    tabBtn.innerHTML = '🩺 Malattie Infettive (Policlinico)';
-    tabBtn.title = 'Cartella Ambulatoriale Follow-up Malattie Infettive & Epatologia - Policlinico di Bari';
+    tabBtn.innerHTML = '🩺 Malattie Infettive';
+    tabBtn.title = 'Cartella Ambulatoriale Follow-up Malattie Infettive & Epatologia - Policlinico di Bari (Ciro Milella)';
   } else if (pId === 'paz_aldo' || pNome.includes('aldo')) {
-    tabBtn.innerHTML = '🧠 Neurologia & Cardiologia';
-    tabBtn.title = 'Cartella Monitoraggio Specialistico Geriatrico & Decubito - Aldo Zamparino';
+    tabBtn.innerHTML = '🧠 Neurologia & Cuore';
+    tabBtn.title = 'Cartella Monitoraggio Specialistico Geriatrico & Decubito (Aldo Zamparino)';
   } else if (pId === 'paz_angela' || pNome.includes('angela')) {
-    tabBtn.innerHTML = '❤️ Cardiologia & Metabolica';
-    tabBtn.title = 'Cartella Monitoraggio Cardiometabolico & Ipertensione - Angela Mazzicone';
+    tabBtn.innerHTML = '❤️ Cardiologia & PA';
+    tabBtn.title = 'Cartella Monitoraggio Cardiometabolico & Ipertensione (Angela Mazzicone)';
+  } else if (pId === 'paz_rosa' || pNome.includes('rosa') || pNome.includes('cavalcante')) {
+    tabBtn.innerHTML = '🩸 Diabete & Terapie';
+    tabBtn.title = 'Cartella Diabetologia, Piani Terapeutici & Cardiovascolare (Rosa Annunziata Cavalcante)';
   } else {
-    tabBtn.innerHTML = '🩺 Follow-up Specialistico';
-    tabBtn.title = 'Cartella Clinica Specialistica & Follow-up';
+    tabBtn.innerHTML = '🩺 Ambulatorio & Esami';
+    tabBtn.title = 'Cartella Clinica Specialistica & Follow-up (' + (p.nome || 'Assistito') + ')';
   }
 
   // Se il tab è attualmente visualizzato, aggiorna il render per il nuovo assistito
@@ -15562,8 +15569,10 @@ function renderEpatologiaView() {
     renderSchedaSpecialisticaAldo(container, p);
   } else if (pId === 'paz_angela' || pNome.includes('angela')) {
     renderSchedaSpecialisticaAngela(container, p);
+  } else if (pId === 'paz_rosa' || pNome.includes('rosa') || pNome.includes('cavalcante')) {
+    renderSchedaSpecialisticaRosa(container, p);
   } else {
-    renderSchedaSpecialisticaAldo(container, p);
+    renderSchedaSpecialisticaGenerica(container, p);
   }
 }
 window.renderEpatologiaView = renderEpatologiaView;
@@ -17118,3 +17127,197 @@ function renderSchedaSpecialisticaAngela(container, p) {
   container.innerHTML = html;
 }
 
+
+
+
+// ==============================================================================
+// SCHEDA CLINICA SPECIALISTICA DEDICATA: ROSA ANNUNZIATA CAVALCANTE (88 ANNI)
+// Diabetologia, Piani Terapeutici (Xultophy, Forxiga) & Cardiovascolare
+// ==============================================================================
+
+const ESAMI_ROSA_DEFAULT = [
+  { id: 'rosa_1', nome: 'Emoglobina Glicata (HbA1c)', categoria: 'Laboratorio', note: 'Monitoraggio compenso glicometabolico e dosaggio Xultophy', spuntato: true, richiestoMMG: true, prenotatoCUP: true, dataPrenotazioneCUP: '2026-11-20', luogoPrenotazione: 'CAD / Laboratorio Territoriale' },
+  { id: 'rosa_2', nome: 'Glicemia a Digiuno & Profilo Glucidico', categoria: 'Laboratorio', note: 'Controllo glicemico settimanale e target digiuno', spuntato: true, richiestoMMG: true, refertato: true, valoreReferto: 'Glicemia media: 130 mg/dL' },
+  { id: 'rosa_3', nome: 'Microalbuminuria & Creatininemia / eGFR', categoria: 'Laboratorio', note: 'Sorveglianza funzionalità renale per assunzione Forxiga', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+  { id: 'rosa_4', nome: 'Monitoraggio Pressione Arteriosa (Diario PA)', categoria: 'Cardiologia', note: 'Verifica efficacia Triatec a dose alternata (½ cpr e 1 cpr)', spuntato: true, richiestoMMG: true, refertato: true, valoreReferto: 'PA media: 125/70 mmHg' },
+  { id: 'rosa_5', nome: 'Assetto Lipidico Completo (Colesterolo Tot, HDL, LDL, Trigliceridi)', categoria: 'Laboratorio', note: 'Target cardiovascolare e tolleranza Sivastin', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+  { id: 'rosa_6', nome: 'Visita Diabetologica & Rinnovo Piano Terapeutico', categoria: 'Specialistica', note: 'Rinnovo piano terapeutico Xultophy & Forxiga', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+  { id: 'rosa_7', nome: 'Fondo Oculare / Retinografia Digitale', categoria: 'Specialistica', note: 'Screening periodico retinopatia diabetica', spuntato: true, richiestoMMG: false, prenotatoCUP: false },
+  { id: 'rosa_8', nome: 'Fornitura Ausili Assorbenti Pants Serenity (ASP Basilicata)', categoria: 'Distretto Sanitario', note: 'Rinnovo trimestrale fornitura ausili incontinenza (Scad. 24/11/2026)', spuntato: true, richiestoMMG: true, prenotatoCUP: true, dataPrenotazioneCUP: '2026-11-24', luogoPrenotazione: 'ASP Basilicata - Distretto' }
+];
+
+function getSchedaSpecialisticaRosa(p) {
+  if (!p) return null;
+  if (!p.schedaDiabetoCardio) {
+    p.schedaDiabetoCardio = {
+      dataProssimoControllo: '2026-11-20',
+      medicoCurante: 'Dr.ssa Carolina Potenza',
+      centroRiferimento: 'CAD Territoriale / ASP Basilicata (Corleto Perticara)',
+      esami: JSON.parse(JSON.stringify(ESAMI_ROSA_DEFAULT))
+    };
+    saveDb();
+  }
+  return p.schedaDiabetoCardio;
+}
+window.getSchedaSpecialisticaRosa = getSchedaSpecialisticaRosa;
+
+function renderSchedaSpecialisticaRosa(container, p) {
+  var scheda = getSchedaSpecialisticaRosa(p);
+  var esami = scheda.esami || [];
+
+  var completati = esami.filter(e => e.refertato).length;
+  var perc = esami.length > 0 ? Math.round((completati / esami.length) * 100) : 0;
+
+  var html = `
+    <!-- BANNER CLINICO DEDICATO A ROSA ANNUNZIATA CAVALCANTE -->
+    <div style="background:linear-gradient(135deg, #065f46 0%, #047857 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(6,95,70,0.35); border:2px solid #34d399; position:relative; overflow:hidden;">
+      <div style="position:absolute; right:-20px; top:-20px; font-size:120px; opacity:0.07; pointer-events:none;">🩸</div>
+      
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; position:relative; z-index:2;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:64px; height:64px; border-radius:16px; background:rgba(255,255,255,0.12); border:2px solid #a7f3d0; display:flex; align-items:center; justify-content:center; font-size:32px;">
+            🩸
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="background:#a7f3d0; color:#065f46; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px;">MONITORAGGIO SPECIALISTICO DIABETOLOGICO & CARDIO</span>
+              <span style="background:rgba(255,255,255,0.15); color:#ffffff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">ASSISTITA (88 ANNI)</span>
+            </div>
+            <h2 style="font-size:22px; font-weight:900; margin:4px 0 2px; color:#ffffff; letter-spacing:-0.4px;">
+              Protocollo Diabetologia, Piani Terapeutici & Cardiovascolare
+            </h2>
+            <div style="font-size:13px; color:#d1fae5; font-weight:500;">
+              Assistita: <b>Rosa Annunziata Cavalcante</b> &bull; MMG Curante: <b>Dr.ssa Carolina Potenza</b> &bull; CAD Territoriale ASP Basilicata
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(15,23,42,0.65); border:1.5px solid #d4af37; border-radius:14px; padding:12px 18px; text-align:right; backdrop-filter:blur(6px);">
+          <div style="font-size:11px; color:#fde047; font-weight:800; text-transform:uppercase; letter-spacing:0.4px;">Prossimo Controllo CAD:</div>
+          <div style="font-size:22px; font-weight:900; color:#ffffff; margin:2px 0;">20/11/2026</div>
+          <div style="font-size:11.5px; color:#a7f3d0; font-weight:600;">Controllo Glicemico & Rinnovo Piani</div>
+        </div>
+      </div>
+
+      <!-- AVANZAMENTO ESAMI E CONTROLLI -->
+      <div style="margin-top:20px; background:rgba(255,255,255,0.1); border-radius:12px; padding:14px 18px; position:relative; z-index:2; border:1px solid rgba(255,255,255,0.15);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:12.5px; font-weight:800; color:#f8fafc;">
+            📈 Avanzamento Controlli Clinici: <span style="color:#a7f3d0;">${perc}%</span>
+          </span>
+          <span style="font-size:11.5px; color:#cbd5e1;">${completati} di ${esami.length} controlli registrati</span>
+        </div>
+        <div style="width:100%; height:10px; background:rgba(0,0,0,0.3); border-radius:999px; overflow:hidden;">
+          <div style="width:${perc}%; height:100%; background:linear-gradient(90deg, #34d399 0%, #10b981 100%); border-radius:999px; transition:width 0.4s ease;"></div>
+        </div>
+      </div>
+
+      <!-- AZIONI RAPIDE PER ROSA -->
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; position:relative; z-index:2;">
+        <button type="button" class="btn" onclick="richiediTutteRicetteAlMedicoMMG()" style="background:#10b981; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          ✉️ Invia Richiesta alla Dr.ssa Potenza
+        </button>
+        <button type="button" class="btn" onclick="document.querySelector('[data-target=\'tab-glicemia\']').click()" style="background:#0284c7; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          🩸 Diario Glicemico (Xultophy)
+        </button>
+        <button type="button" class="btn" onclick="openModal('modal-parametri')" style="background:#059669; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          🩺 Registra Pressione Arteriosa
+        </button>
+        <button type="button" class="btn" onclick="window.open('FORNITURA_PANTS_ROSA.html', '_blank')" style="background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3); padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          📦 Fornitura Pants Serenity ASP
+        </button>
+      </div>
+    </div>
+
+    <!-- TABELLA ESAMI E CONTROLLI CLINICI SPECIALISTICI -->
+    <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
+      <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Monitoraggio Diabetologico & Cardiovascolare - Rosa Annunziata Cavalcante</div>
+          <div style="font-size:12px; color:#64748b;">Sorveglianza: Emoglobina Glicata &bull; Xultophy &bull; Forxiga &bull; Pressione Triatec &bull; Ausili</div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="custom-table" style="margin:0; width:100%;">
+          <thead>
+            <tr style="background:#f1f5f9; color:#475569; font-size:11.5px; text-transform:uppercase;">
+              <th style="padding:10px 10px; width:45px; text-align:center;">Spunta</th>
+              <th style="padding:10px 14px; text-align:left;">Prestazione / Esame</th>
+              <th style="padding:10px 10px; text-align:center;">Specialità</th>
+              <th style="padding:10px 10px; text-align:center;">1. Richiesta MMG</th>
+              <th style="padding:10px 10px; text-align:center;">2. Prenotazione CUP/CAD</th>
+              <th style="padding:10px 10px; text-align:center;">3. Referto & 📎 Allegato</th>
+              <th style="padding:10px 12px; text-align:center;">Stato</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${renderTabellaEsamiSpecialisticiGenerica(esami, false)}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+window.renderSchedaSpecialisticaRosa = renderSchedaSpecialisticaRosa;
+
+// SCHEDA CLINICA SPECIALISTICA GENERICA PER NUOVI ASSISTITI
+function renderSchedaSpecialisticaGenerica(container, p) {
+  if (!p) return;
+  var nomePaz = p.nome || 'Assistito';
+  var medico = p.medicoNome || 'Medico Curante';
+  var eta = p.eta || (typeof calcolaAnniDaData === 'function' ? calcolaAnniDaData(p.dataNascita) : '--');
+
+  var esami = p.esamiSpecialisticiGenerici || [
+    { id: 'gen_1', nome: 'Visita Medica di Controllo Periodica', categoria: 'Specialistica', note: 'Valutazione clinica globale e terapia', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+    { id: 'gen_2', nome: 'Esami Ematochimici Completi di Routine', categoria: 'Laboratorio', note: 'Emocromo, funzionalità epatica e renale, glicemia', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+    { id: 'gen_3', nome: 'Elettrocardiogramma (ECG)', categoria: 'Cardiologia', note: 'Controllo cardiologico periodico', spuntato: true, richiestoMMG: false, prenotatoCUP: false },
+    { id: 'gen_4', nome: 'Monitoraggio Parametri Vitali & Pressione', categoria: 'Parametri', note: 'Diario pressorio e frequenza cardiaca', spuntato: true, richiestoMMG: true, refertato: true, valoreReferto: 'Regolare' }
+  ];
+
+  var html = `
+    <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(15,23,42,0.35); border:2px solid #38bdf8; position:relative;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:60px; height:60px; border-radius:14px; background:rgba(255,255,255,0.1); border:1.5px solid #38bdf8; display:flex; align-items:center; justify-content:center; font-size:28px;">
+            🩺
+          </div>
+          <div>
+            <div style="font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase;">MONITORAGGIO SPECIALISTICO & CONTROLLI</div>
+            <h2 style="font-size:20px; font-weight:900; margin:2px 0; color:#ffffff;">Protocollo Controlli Specialistici &bull; ${nomePaz}</h2>
+            <div style="font-size:12.5px; color:#cbd5e1;">Assistito: <b>${nomePaz} (${eta} anni)</b> &bull; Medico Curante: <b>${medico}</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
+      <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px;">
+        <div style="font-size:15px; font-weight:900; color:#0f172a;">📋 Controlli ed Esami Programmati - ${nomePaz}</div>
+      </div>
+      <div class="table-responsive">
+        <table class="custom-table" style="margin:0; width:100%;">
+          <thead>
+            <tr style="background:#f1f5f9; color:#475569; font-size:11.5px; text-transform:uppercase;">
+              <th style="padding:10px 10px; width:45px; text-align:center;">Spunta</th>
+              <th style="padding:10px 14px; text-align:left;">Prestazione / Esame</th>
+              <th style="padding:10px 10px; text-align:center;">Specialità</th>
+              <th style="padding:10px 10px; text-align:center;">1. Richiesta MMG</th>
+              <th style="padding:10px 10px; text-align:center;">2. Prenotazione CUP</th>
+              <th style="padding:10px 10px; text-align:center;">3. Referto & 📎 Allegato</th>
+              <th style="padding:10px 12px; text-align:center;">Stato</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${renderTabellaEsamiSpecialisticiGenerica(esami, false)}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+window.renderSchedaSpecialisticaGenerica = renderSchedaSpecialisticaGenerica;
