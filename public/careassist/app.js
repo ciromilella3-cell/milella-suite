@@ -13914,26 +13914,37 @@ const TUTTI_ESAMI_MODULO_POLICLINICO_BASE = [
   { id: 'feg_29', nome: 'Antitrombina III', categoria: 'FEGATO', spuntato: false },
   { id: 'feg_30', nome: 'Fibrinogeno', categoria: 'FEGATO', spuntato: false },
 
-  // 4. ESAMI RADIOLOGICI (4)
-  { id: 'rad_1', nome: 'T.A.C.', categoria: 'ESAMI RADIOLOGICI', spuntato: false },
-  { id: 'rad_2', nome: 'RMN', categoria: 'ESAMI RADIOLOGICI', spuntato: false },
-  { id: 'rad_3', nome: 'Colangio-RMN', categoria: 'ESAMI RADIOLOGICI', spuntato: false },
-  { id: 'rad_4', nome: 'PRELIEVO (96101)', categoria: 'ESAMI RADIOLOGICI', spuntato: true, codicePrestazione: '96101', emessoDaAmbulatorio: true, note: 'Prelievo ematico ambulatoriale (Cod. 96101)' },
+  // 4. ESAMI RADIOLOGICI (con righe libere puntinate per annotazioni manoscritte come da prestampato originale)
+  { id: 'rad_1', nome: 'T.A.C.', categoria: 'ESAMI RADIOLOGICI', spuntato: false, haPuntini: true },
+  { id: 'rad_2', nome: 'RMN', categoria: 'ESAMI RADIOLOGICI', spuntato: false, haPuntini: true },
+  { id: 'rad_3', nome: 'Colangio-RMN', categoria: 'ESAMI RADIOLOGICI', spuntato: false, haPuntini: true },
+  { id: 'rad_vuota_1', nome: '', categoria: 'ESAMI RADIOLOGICI', rigaVuota: true, spuntato: false },
+  { id: 'rad_4', nome: 'PRELIEVO (96101)', categoria: 'ESAMI RADIOLOGICI', rigaVuota: true, spuntato: true, codicePrestazione: '96101', emessoDaAmbulatorio: true, note: 'Annotazione scritta a mano su riga libera (Cod. 96101)' },
+  { id: 'rad_vuota_2', nome: '', categoria: 'ESAMI RADIOLOGICI', rigaVuota: true, spuntato: false },
+  { id: 'rad_vuota_3', nome: '', categoria: 'ESAMI RADIOLOGICI', rigaVuota: true, spuntato: false },
+  { id: 'rad_vuota_4', nome: '', categoria: 'ESAMI RADIOLOGICI', rigaVuota: true, spuntato: false },
+  { id: 'rad_vuota_5', nome: '', categoria: 'ESAMI RADIOLOGICI', rigaVuota: true, spuntato: false },
 
-  // 5. ESAMI STRUMENTALI (6)
+  // 5. ESAMI STRUMENTALI
   { id: 'str_1', nome: 'E.G.D. scopia', categoria: 'ESAMI STRUMENTALI', spuntato: false },
   { id: 'str_2', nome: 'ECG', categoria: 'ESAMI STRUMENTALI', spuntato: false },
   { id: 'str_3', nome: 'Ecografia addome sup.', categoria: 'ESAMI STRUMENTALI', spuntato: true, note: 'Sorveglianza parenchima epatico, calibro porta e milza' },
   { id: 'str_4', nome: 'Ecografia renale', categoria: 'ESAMI STRUMENTALI', spuntato: false },
   { id: 'str_5', nome: 'Ecografia tiroide', categoria: 'ESAMI STRUMENTALI', spuntato: false },
   { id: 'str_6', nome: 'Fibroscan', categoria: 'ESAMI STRUMENTALI', spuntato: false },
+  // Sotto-sezione ALTRI (Strumentali con righe puntinate)
+  { id: 'str_altri_1', nome: '', categoria: 'ESAMI STRUMENTALI - ALTRI', rigaVuota: true, spuntato: false },
+  { id: 'str_altri_2', nome: '', categoria: 'ESAMI STRUMENTALI - ALTRI', rigaVuota: true, spuntato: false },
+  { id: 'str_altri_3', nome: '', categoria: 'ESAMI STRUMENTALI - ALTRI', rigaVuota: true, spuntato: false },
+  { id: 'str_altri_4', nome: '', categoria: 'ESAMI STRUMENTALI - ALTRI', rigaVuota: true, spuntato: false },
 
-  // 6. ALTRI (5)
-  { id: 'alt_1', nome: 'CEA', categoria: 'ALTRI', spuntato: false },
-  { id: 'alt_2', nome: 'CA-19-9', categoria: 'ALTRI', spuntato: false },
-  { id: 'alt_3', nome: 'CA-125, TPA', categoria: 'ALTRI', spuntato: false },
-  { id: 'alt_4', nome: 'P.S.A.', categoria: 'ALTRI', spuntato: false },
-  { id: 'alt_5', nome: 'S.O.F.', categoria: 'ALTRI', spuntato: false },
+  // 6. ALTRI (con righe puntinate come da prestampato originale)
+  { id: 'alt_1', nome: 'CEA', categoria: 'ALTRI', spuntato: false, haPuntini: true },
+  { id: 'alt_2', nome: 'CA-19-9', categoria: 'ALTRI', spuntato: false, haPuntini: true },
+  { id: 'alt_3', nome: 'CA-125, TPA', categoria: 'ALTRI', spuntato: false, haPuntini: true },
+  { id: 'alt_4', nome: 'P.S.A.', categoria: 'ALTRI', spuntato: false, haPuntini: true },
+  { id: 'alt_5', nome: 'S.O.F.', categoria: 'ALTRI', spuntato: false, haPuntini: true },
+  { id: 'alt_vuota_1', nome: '', categoria: 'ALTRI', rigaVuota: true, spuntato: false },
 
   // 7. ESAMI IMMUNOLOGICI (14)
   { id: 'imm_1', nome: 'C3, C4', categoria: 'ESAMI IMMUNOLOGICI', spuntato: false },
@@ -14687,6 +14698,47 @@ function getEpatologiaDatiPaziente() {
 // ==============================================================================
 // COSTRUZIONE VISTA 4 COLONNE FEDELE AL PRESTAMPATO POLICLINICO
 // ==============================================================================
+
+let _mostraRigheVuote = true; // true = Mostra tutto il prestampato; false = Nascondi righe vuote e non spuntati
+
+function impostaVisualizzazioneRigheVuote(mostra) {
+  _mostraRigheVuote = !!mostra;
+  renderEpatologiaView();
+}
+window.impostaVisualizzazioneRigheVuote = impostaVisualizzazioneRigheVuote;
+
+function compilaRigaVuotaModulo(esameId) {
+  var p = getActivePaziente();
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  if (!scheda || !scheda.esami) return;
+
+  var es = scheda.esami.find(function(e) { return e.id === esameId; });
+  if (!es) return;
+
+  var attuale = es.nome || '';
+  var nuovoNome = prompt('Inserisci la prescrizione scritta a mano su questa riga (es. PRELIEVO (96101), Radiografia Torace, ecc.) oppure lascia vuoto per cancellare:', attuale);
+  
+  if (nuovoNome !== null) {
+    es.nome = nuovoNome.trim();
+    es.spuntato = (es.nome.length > 0);
+    if (es.spuntato) {
+      if (es.nome.toUpperCase().includes('PRELIEVO') || es.nome.includes('96101')) {
+        es.codicePrestazione = '96101';
+        es.emessoDaAmbulatorio = true;
+      }
+      showToast('✓ Riga compilata e contrassegnata: ' + es.nome);
+    } else {
+      showToast('⚪ Riga ripristinata come libera');
+    }
+    saveDb();
+    renderEpatologiaView();
+  }
+}
+window.compilaRigaVuotaModulo = compilaRigaVuotaModulo;
+
 let _vistaModuloTipo = 'colonne'; // 'colonne' (predefinito) oppure 'tabella'
 
 function impostaTipoVistaModulo(tipo) {
@@ -14696,24 +14748,57 @@ function impostaTipoVistaModulo(tipo) {
 window.impostaTipoVistaModulo = impostaTipoVistaModulo;
 
 function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
+  // Se _mostraRigheVuote è false (modalità compatta), filtra solo gli esami effettivamente spuntati e compresi
+  var esamiDaElaborare = esami;
+  if (!_mostraRigheVuote) {
+    esamiDaElaborare = esami.filter(function(e) {
+      return (e.spuntato !== false) && (!e.rigaVuota || (e.nome && e.nome.trim().length > 0));
+    });
+  }
+
   // Raggruppamento per le 4 colonne esatte del foglio originale
-  var col1_generali = esami.filter(function(e) { return e.categoria === 'ESAMI GENERALI'; });
-  var col1_batterio = esami.filter(function(e) { return e.categoria === 'BATTERIOLOGIA E PARASS.'; });
+  var col1_generali = esamiDaElaborare.filter(function(e) { return e.categoria === 'ESAMI GENERALI'; });
+  var col1_batterio = esamiDaElaborare.filter(function(e) { return e.categoria === 'BATTERIOLOGIA E PARASS.'; });
 
-  var col2_fegato = esami.filter(function(e) { return e.categoria === 'FEGATO'; });
+  var col2_fegato = esamiDaElaborare.filter(function(e) { return e.categoria === 'FEGATO'; });
 
-  var col3_radiologici = esami.filter(function(e) { return e.categoria === 'ESAMI RADIOLOGICI'; });
-  var col3_strumentali = esami.filter(function(e) { return e.categoria === 'ESAMI STRUMENTALI'; });
-  var col3_altri = esami.filter(function(e) { return e.categoria === 'ALTRI'; });
+  var col3_radiologici = esamiDaElaborare.filter(function(e) { return e.categoria === 'ESAMI RADIOLOGICI'; });
+  var col3_strumentali = esamiDaElaborare.filter(function(e) { return e.categoria === 'ESAMI STRUMENTALI' || e.categoria === 'ESAMI STRUMENTALI - ALTRI'; });
+  var col3_altri = esamiDaElaborare.filter(function(e) { return e.categoria === 'ALTRI'; });
 
-  var col4_immunologici = esami.filter(function(e) { return e.categoria === 'ESAMI IMMUNOLOGICI'; });
-  var col4_sierologia = esami.filter(function(e) { return e.categoria === 'SIEROLOGIA'; });
+  var col4_immunologici = esamiDaElaborare.filter(function(e) { return e.categoria === 'ESAMI IMMUNOLOGICI'; });
+  var col4_sierologia = esamiDaElaborare.filter(function(e) { return e.categoria === 'SIEROLOGIA'; });
 
   function renderSezione(titolo, items, icona) {
+    if (items.length === 0 && !_mostraRigheVuote) return '';
+
     var itemsHtml = items.map(function(es) {
       var isSpuntato = (es.spuntato !== false);
       var isPennarello = isSpuntato && (es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4');
-      
+
+      // 1. CASO RIGA VUOTA O PERSONALIZZATA
+      if (es.rigaVuota) {
+        if (!es.nome || es.nome.trim().length === 0) {
+          // Riga vuota con puntini (esattamente come nel prestampato!)
+          return '<div class="item-prestampato riga-vuota" onclick="compilaRigaVuotaModulo(\'' + es.id + '\')" style="display:flex; align-items:center; gap:6px; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; color:#94a3b8; transition:all 0.15s ease;" title="Riga libera del prestampato: clicca per scrivere">' +
+            '<div style="width:14px; height:14px; border:1.5px solid #94a3b8; border-radius:3px; background:#fff; flex-shrink:0;"></div>' +
+            '<span style="letter-spacing:1px; font-family:monospace; font-size:10px; color:#cbd5e1; flex:1; overflow:hidden; white-space:nowrap;">...................................................</span>' +
+            '<span style="font-size:9.5px; color:#0284c7; font-weight:700; flex-shrink:0; opacity:0.8;">✏️ Scrivi</span>' +
+          '</div>';
+        } else {
+          // Riga compilata con testo manoscritto (es. PRELIEVO 96101)
+          var badgeCodice = es.codicePrestazione ? (' <span style="background:#0284c7; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px;">' + es.codicePrestazione + '</span>') : '';
+          return '<div class="item-prestampato" onclick="compilaRigaVuotaModulo(\'' + es.id + '\')" style="display:flex; align-items:center; justify-content:space-between; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; background:#f0fdf4; border:1px solid #86efac;" title="Scritto a mano su riga libera - Clicca per modificare o cancellare">' +
+            '<div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
+              '<input type="checkbox" checked onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')" style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;">' +
+              '<span style="font-weight:900; color:#0369a1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">✍️ ' + es.nome + badgeCodice + '</span>' +
+            '</div>' +
+            '<span style="font-size:9px; color:#64748b; font-weight:700; flex-shrink:0;">✏️ Modifica</span>' +
+          '</div>';
+        }
+      }
+
+      // 2. CASO ESAME NORMALE DEL MODULO
       var bgStyle = '';
       var borderStyle = 'border:1px solid transparent;';
       if (isPennarello) {
@@ -14729,6 +14814,8 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
         var cod = es.codicePrestazione || (es.id === 'feg_13' ? '88606' : (es.id === 'rad_4' ? '96101' : '88301'));
         badgeCod = '<span style="background:#0284c7; color:#fff; font-size:9.5px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px;">' + cod + '</span>';
       }
+
+      var puntiniHtml = es.haPuntini ? '<span style="letter-spacing:1px; font-family:monospace; font-size:9.5px; color:#cbd5e1; flex:1; margin-left:3px; overflow:hidden; white-space:nowrap;">..................</span>' : '';
 
       // Stato sintetico referto o data
       var miniStato = '';
@@ -14746,6 +14833,7 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
         '<div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
           '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;" onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')">' +
           '<span style="color:' + (isSpuntato ? '#0f172a' : '#475569') + '; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + es.nome + '</span>' +
+          puntiniHtml +
           badgeCod +
         '</div>' +
         '<div style="flex-shrink:0; margin-left:6px;">' + miniStato + '</div>' +
@@ -14753,7 +14841,7 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
     }).join('');
 
     return '<div style="margin-bottom:14px;">' +
-      '<div style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid #0284c7; padding-bottom:3px; margin-bottom:6px; display:flex; align-items:center; gap:5px;">' +
+      '<div style="font-size:11.5px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.4px; border-bottom:2px solid #0284c7; padding-bottom:3px; margin-bottom:6px; display:flex; align-items:center; gap:5px;">' +
         '<span>' + icona + '</span> <span>' + titolo + '</span>' +
       '</div>' +
       '<div style="display:flex; flex-direction:column;">' +
@@ -14762,27 +14850,43 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
     '</div>';
   }
 
-  return '<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:16px; background:#ffffff; border-radius:12px; padding:6px;">' +
+  // Barra di comando toggle rapido per richiamare / nascondere
+  var toolbarToggle = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:8px 12px; background:#f1f5f9; border-radius:8px; margin-bottom:12px; border:1px solid #cbd5e1;">' +
+    '<div style="display:flex; align-items:center; gap:8px;">' +
+      '<span style="font-size:11px; font-weight:900; color:#334155; text-transform:uppercase;">👁️ Vista Foglio:</span>' +
+      '<button type="button" class="btn btn-sm" onclick="impostaVisualizzazioneRigheVuote(true)" style="background:' + (_mostraRigheVuote ? '#0284c7' : '#ffffff') + '; color:' + (_mostraRigheVuote ? '#ffffff' : '#334155') + '; border:1px solid ' + (_mostraRigheVuote ? '#0284c7' : '#cbd5e1') + '; font-size:11px; font-weight:800; padding:4px 10px; border-radius:6px; cursor:pointer;">' +
+        '📄 Tutto il Prestampato (con righe vuote & puntini)' +
+      '</button>' +
+      '<button type="button" class="btn btn-sm" onclick="impostaVisualizzazioneRigheVuote(false)" style="background:' + (!_mostraRigheVuote ? '#10b981' : '#ffffff') + '; color:' + (!_mostraRigheVuote ? '#ffffff' : '#334155') + '; border:1px solid ' + (!_mostraRigheVuote ? '#10b981' : '#cbd5e1') + '; font-size:11px; font-weight:800; padding:4px 10px; border-radius:6px; cursor:pointer;">' +
+        '🎯 Solo Esami Prescritti (' + esamiSpuntati.length + ' spuntati - nascondi vuote)' +
+      '</button>' +
+    '</div>' +
+    '<div style="font-size:11px; color:#64748b;">' +
+      (_mostraRigheVuote ? '💡 Clicca su una riga con puntini per scrivere a mano' : 'Vista compatta pulita') +
+    '</div>' +
+  '</div>';
+
+  return toolbarToggle + '<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; background:#ffffff; border-radius:12px; padding:4px;">' +
     // COLONNA 1
-    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:12px 10px;">' +
+    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
       renderSezione('ESAMI GENERALI', col1_generali, '🩸') +
       renderSezione('BATTERIOLOGIA E PARASS.', col1_batterio, '🧫') +
     '</div>' +
 
     // COLONNA 2
-    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:12px 10px;">' +
+    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
       renderSezione('FEGATO', col2_fegato, '🧬') +
     '</div>' +
 
     // COLONNA 3
-    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:12px 10px;">' +
+    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
       renderSezione('ESAMI RADIOLOGICI', col3_radiologici, '☢️') +
       renderSezione('ESAMI STRUMENTALI', col3_strumentali, '📸') +
       renderSezione('ALTRI', col3_altri, '📑') +
     '</div>' +
 
     // COLONNA 4
-    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:12px 10px;">' +
+    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
       renderSezione('ESAMI IMMUNOLOGICI', col4_immunologici, '🛡️') +
       renderSezione('SIEROLOGIA', col4_sierologia, '🧪') +
     '</div>' +
