@@ -12196,20 +12196,53 @@ function apriSwitchPazienteRapido() {
     const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
     const ritardi = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo).length;
     
+    // Avatar and clinical focus by patient
+    let avatarEmoji = '👤';
+    let avatarBg = 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)';
+    let avatarBorder = '#7dd3fc';
+    let focusClinico = 'Assistito Domiciliare';
+
+    if (p.id === 'paz_aldo' || pulitoNome.toLowerCase().includes('aldo')) {
+      avatarEmoji = '👴';
+      avatarBg = 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)';
+      avatarBorder = '#818cf8';
+      focusClinico = '🛏️ Allettato • Epilessia & Post-Ictus (ADI)';
+    } else if (p.id === 'paz_angela' || pulitoNome.toLowerCase().includes('angela')) {
+      avatarEmoji = '👵';
+      avatarBg = 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)';
+      avatarBorder = '#f472b6';
+      focusClinico = '🚶 Deambulante • Cardiopatia & Ipertensione';
+    } else if (p.id === 'paz_rosa' || pulitoNome.toLowerCase().includes('rosa')) {
+      avatarEmoji = '👵';
+      avatarBg = 'linear-gradient(135deg, #fae8ff 0%, #f5d0fe 100%)';
+      avatarBorder = '#c084fc';
+      focusClinico = '🚶 Deambulante • Diabete Tipo 2 & Glicemie';
+    } else if (p.id === 'paz_1793216119572' || pulitoNome.toLowerCase().includes('ciro')) {
+      avatarEmoji = '👨';
+      avatarBg = 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)';
+      avatarBorder = '#38bdf8';
+      focusClinico = '🚶 Deambulante • Epatite HBV & Lab. Scotti / Policlinico';
+    }
+
     return `
-      <div onclick="selezionaPazienteRapido('${p.id}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:12px; cursor:pointer; transition:all 0.2s; border:1.5px solid ${isAttivo ? '#0284c7' : '#e2e8f0'}; background:${isAttivo ? '#f0f9ff' : '#ffffff'}; box-shadow:${isAttivo ? '0 2px 8px rgba(2,132,199,0.18)' : '0 1px 3px rgba(0,0,0,0.04)'};">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:24px;">👤</span>
+      <div onclick="selezionaPazienteRapido('${p.id}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:14px; cursor:pointer; transition:all 0.2s cubic-bezier(0.16,1,0.3,1); border:2px solid ${isAttivo ? '#0284c7' : '#e2e8f0'}; background:${isAttivo ? 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' : '#ffffff'}; box-shadow:${isAttivo ? '0 4px 14px rgba(2,132,199,0.25)' : '0 1px 3px rgba(0,0,0,0.04)'};" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:46px; height:46px; border-radius:12px; background:${avatarBg}; border:1.5px solid ${avatarBorder}; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 2px 6px rgba(0,0,0,0.08); flex-shrink:0;">
+            ${avatarEmoji}
+          </div>
           <div>
-            <div style="font-size:14.5px; font-weight:800; color:${isAttivo ? '#0369a1' : '#0f172a'};">${pulitoNome}</div>
-            <div style="font-size:11.5px; color:#64748b; font-weight:600;">${eta} anni &bull; ${p.stanza ? 'Stanza ' + p.stanza : 'Assistito Domiciliare'}</div>
+            <div style="font-size:15px; font-weight:800; color:${isAttivo ? '#0369a1' : '#0f172a'}; display:flex; align-items:center; gap:6px;">
+              <span>${pulitoNome}</span>
+              <span style="font-size:11px; font-weight:700; color:#64748b; background:rgba(0,0,0,0.05); padding:1px 6px; border-radius:6px;">${eta} anni</span>
+            </div>
+            <div style="font-size:11.5px; color:${isAttivo ? '#0284c7' : '#64748b'}; font-weight:600; margin-top:2px;">${focusClinico}</div>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:6px;">
-          ${ritardi > 0 ? `<span class="badge" style="background:#dc2626; color:#fff; font-size:11px; font-weight:800; padding:4px 8px; border-radius:12px;">🚨 ${ritardi} Ritardi</span>` : ''}
+        <div style="display:flex; align-items:center; gap:8px;">
+          ${ritardi > 0 ? `<span class="badge" style="background:#dc2626; color:#fff; font-size:11px; font-weight:800; padding:4px 8px; border-radius:12px; box-shadow:0 2px 6px rgba(220,38,38,0.3);">🚨 ${ritardi} Ritardi</span>` : ''}
           ${isAttivo 
-            ? `<span style="font-size:12px; font-weight:800; color:#0284c7; background:#e0f2fe; padding:4px 10px; border-radius:20px;">✓ In Uso</span>`
-            : `<span style="font-size:12px; font-weight:700; color:#64748b; background:#f1f5f9; padding:4px 10px; border-radius:20px;">Apri ➔</span>`
+            ? `<span style="font-size:12px; font-weight:800; color:#ffffff; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding:5px 12px; border-radius:20px; box-shadow:0 2px 6px rgba(2,132,199,0.35);">✓ In Uso</span>`
+            : `<span style="font-size:12px; font-weight:700; color:#0369a1; background:#f0f9ff; border:1px solid #bae6fd; padding:5px 12px; border-radius:20px;">Apri Cartella ➔</span>`
           }
         </div>
       </div>
@@ -12360,7 +12393,7 @@ function apriModalScheda118() {
         listaFarmaciContainer.innerHTML = '<div style="color:#94a3b8; padding:8px;">Nessun farmaco configurato.</div>';
       } else {
         listaFarmaciContainer.innerHTML = terapieList.map(t => {
-          const isSalvavita = (t.farmaco || '').match(/cardioaspirin|lasix|bisoprolol|irbesartan|sintrom|coumadin|eliquis|xarelto|pradaxa|cordarone|sinemet|madopar/i);
+          const isSalvavita = (t.farmaco || '').match(/cardioaspirin|lasix|bisoprolol|irbesartan|sintrom|coumadin|eliquis|xarelto|pradaxa|cordarone|sinemet|madopar|entecavir/i);
           const bg = isSalvavita ? '#fff1f2' : '#ffffff';
           const border = isSalvavita ? '1.5px solid #fecdd3' : '1px solid #e2e8f0';
           const statoText = t.fattoOggi ? '<span style="color:#16a34a; font-weight:800;">✅ Assunto</span>' : '<span style="color:#d97706; font-weight:700;">⚪ Da somministrare</span>';
@@ -12386,7 +12419,7 @@ function apriModalScheda118() {
 
     // Contatto Famiglia / Caregiver (ricerca tra coniuge e caregiver)
     const famNome = p.maritoNome || p.moglieNome || p.caregiverNome || 'Famiglia di Riferimento';
-    const famCell = p.maritoCellulare || p.moglieCellulare || p.cellulare || '';
+    const famCell = p.moglieTel || p.moglieCellulare || p.maritoCellulare || p.cellulare || '';
     setTxt('s118-famiglia-nome', famNome);
     setTxt('s118-famiglia-tel', famCell ? 'Cell: ' + famCell : 'Cell non inserito');
     const linkFam = document.getElementById('s118-famiglia-link');
@@ -13589,8 +13622,8 @@ function scaricaPromemoriaCalendarioFarmaco() {
     'DTSTART:20261201T090000',
     'DTEND:20261201T103000',
     'SUMMARY:🔬 RICHIESTA RICETTE PRIORITÀ [P] & PRENOTAZIONE LAB. SCOTTI',
-    'DESCRIPTION:Finestra 180 giorni aperta! Richiedere al Dott. Scarcia le ricette NRE ematochimiche con PRIORITÀ P (obbligatoria per accettazione ASL Bari). Chiamare Laboratorio Scotti al 080 521 1386 per fissare data prelievo.',
-    'LOCATION:Laboratorio Scotti - Via Putignani 85, Bari (Tel 080 521 1386)',
+    'DESCRIPTION:Finestra 180 giorni aperta! Richiedere al Dott. Scarcia le ricette NRE ematochimiche con PRIORITÀ P (obbligatoria per accettazione ASL Bari). Chiamare Laboratorio Scotti al 080 561 3974 per fissare data prelievo.',
+    'LOCATION:Laboratorio Scotti - Via Giuseppe Maria Giovene 60, Bari (Tel 080 561 3974)',
     'STATUS:CONFIRMED',
     'BEGIN:VALARM',
     'TRIGGER:-P3D',
@@ -17862,10 +17895,10 @@ function calcolaRoadmapScadenzeTuttiPazienti() {
         categoria: 'Laboratorio',
         categoriaLabel: 'Laboratorio Scotti (Convenzione ASL)',
         titolo: 'Richiesta Ricette Priorità [P] & Prenotazione Lab. Scotti',
-        descrizione: 'Finestra 180 giorni: richiedere al Dott. Scarcia le ricette ematochimiche con PRIORITÀ [ P ] obbligatoria per ASL Bari. Chiamare Laboratorio Scotti (080 521 1386) per prenotare il prelievo.',
+        descrizione: 'Finestra 180 giorni: richiedere al Dott. Scarcia le ricette ematochimiche con PRIORITÀ [ P ] obbligatoria per ASL Bari. Chiamare Laboratorio Scotti (080 561 3974) per prenotare il prelievo.',
         data: '2026-12-01',
         ora: '09:00',
-        luogo: 'Laboratorio Scotti - Via Putignani 85, Bari / MMG Dott. Scarcia',
+        luogo: 'Laboratorio Scotti - Via Giuseppe Maria Giovene 60, Bari / MMG Dott. Scarcia',
         medico: 'Dott. Roberto Scarcia (Curante)',
         nre: 'Priorità P Obbligatoria',
         tipoAzione: 'laboratorio'

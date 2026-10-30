@@ -1144,7 +1144,48 @@
           "operatore": "Ciro Milella (Admin)"
         }
       ],
-      "visite": [],
+      "visite": [
+        {
+          "id": 1793390000001,
+          "data": "2026-12-01",
+          "ora": "09:00",
+          "medico": "Dott. Roberto Scarcia (MMG)",
+          "motivo": "Richiesta Impegnative Esami Ematici con Priorità [P] per Laboratorio Scotti",
+          "luogo": "Studio Medico MMG Dott. Scarcia",
+          "note": "Le ricette SSN valgono 180 giorni. Far contrassegnare con lettera P (Prioritario) come prescritto dalla ASL Bari per il prelievo pre-visita.",
+          "fatto": false
+        },
+        {
+          "id": 1793390000002,
+          "data": "2027-02-05",
+          "ora": "08:00",
+          "medico": "Laboratorio di Analisi Scotti srl",
+          "motivo": "Prelievo Ematico Follow-up Epatite B (HBV-DNA, HBsAg, Transaminasi, Emocromo, Funzionalità Epatica)",
+          "luogo": "Laboratorio Scotti - Via Giuseppe Maria Giovene 60, Bari (Tel 080 561 3974)",
+          "note": "Eseguire almeno 15 giorni prima della visita del 23/02/2027 per avere tutti i referti virologici pronti. Digiuno 8h. Portare ricette con Priorità P.",
+          "fatto": false
+        },
+        {
+          "id": 1793390000003,
+          "data": "2027-02-23",
+          "ora": "09:00",
+          "medico": "Prof.ssa Annalisa Saracino / Equipe Malattie Infettive",
+          "motivo": "Visita Specialistica Epatologia & Malattie Infettive - Controllo Semestrale & Rinnovo Piano Terapeutico Entecavir DPC",
+          "luogo": "Policlinico di Bari - Padiglione Malattie Infettive (Ambulatorio Epatiti)",
+          "note": "Portare impegnativa per visita infettivologica, referti recenti Laboratorio Scotti ed ecografia addome. Ritirare piano terapeutico per Entecavir 0.5 mg.",
+          "fatto": false
+        },
+        {
+          "id": 1793390000004,
+          "data": "2027-06-08",
+          "ora": "09:15",
+          "medico": "Equipe Gastroenterologia PO San Paolo",
+          "motivo": "Ecografia dell'Addome Superiore - Controllo (Codice Prestazione 24152)",
+          "luogo": "Ospedale \"San Paolo\" Bari - Via Caposcardicchio (Gastroenterologia, Piano 5° Lato Est)",
+          "note": "NRE: 160A24681691013 • Num. Prenotazione: 1588303 • Esenzione: 016. Digiuno da almeno 8 ore. Portare ecografie precedenti. Disdetta obbligatoria entro le ore 09:15 del 04/06/2027.",
+          "fatto": false
+        }
+      ],
       "indirizzo": "Via Giulio Petroni, 69",
       "telefonoFisso": "366 460 73 96",
       "cellulare": "",
@@ -1159,13 +1200,19 @@
       "medicoEmail": "scarcia.roberto@alice.it",
       "farmaciaDiRiferimento": "Farmacia di Riferimento",
       "farmaciaTelefono": "",
-      "patologie": [],
+      "patologie": [
+        "Epatite Cronica B (HBV) attiva in trattamento antivirale con Entecavir 0.5 mg (DPC)",
+        "Follow-up Specialistico Semestrale c/o Clinica Malattie Infettive Policlinico di Bari (Prof.ssa Saracino)",
+        "Sorveglianza Ecografica Semestrale Ospedale San Paolo Bari (Esenzione Ticket Codice 016)"
+      ],
       "ausili": [],
       "medicoIndirizzo": "",
       "medicoStudio": "",
       "medicoTelStudio": "",
       "farmaciaIndirizzo": "",
-      "idratazioneOggi": 0
+      "idratazioneOggi": 0,
+      "esenzione": "016",
+      "esenzioneDesc": "Epatite Cronica Attiva (Ex D.M. 329/99)"
     }
   ],
   "ultimoGiornoOperativo": "2026-10-29",
