@@ -13681,3 +13681,9 @@ function inviaAvvisoFarmacoEmail() {
   showToast('📧 Scheda notifica email aperta nel client di posta!');
 }
 window.inviaAvvisoFarmacoEmail = inviaAvvisoFarmacoEmail;
+
+function impostaSedeRitiroRapida(val) {
+  var inp = document.getElementById('avviso-ext-farmacia');
+  if (inp) inp.value = val;
+}
+window.impostaSedeRitiroRapida = impostaSedeRitiroRapida;

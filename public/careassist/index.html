@@ -2954,10 +2954,49 @@
           </div>
         </div>
 
-        <!-- RECAPITI DI NOTIFICA -->
+        <!-- GUIDA & SCHEDA OPERATIVA FARMACIE TERRITORIALI BARI -->
+        <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:12px; padding:14px; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:18px;">🏥</span>
+              <span style="font-weight:800; font-size:13px; color:#1e40af;">FARMACIA TERRITORIALE ASL BARI (Distribuzione Diretta DPC)</span>
+            </div>
+            <span style="background:#dbeafe; color:#1d4ed8; font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; border:1px solid #bfdbfe;">EX CTO BARI</span>
+          </div>
+
+          <div style="font-size:12px; color:#1e293b; line-height:1.5; margin-bottom:10px;">
+            📍 <b>Sede Ufficiale:</b> Lungomare G. e P. Starita, 6 - 70132 Bari (BA) presso ex CTO<br>
+            📞 <b>Tel. Informazioni / Prenotazioni:</b> <a href="tel:0805842181" style="color:#0284c7; font-weight:800; text-decoration:none;">080 584 2181</a> &bull; <a href="tel:0805842455" style="color:#0284c7; font-weight:800; text-decoration:none;">080 584 2455</a> &bull; <a href="tel:0805842299" style="color:#0284c7; font-weight:800; text-decoration:none;">080 584 2299</a><br>
+            ✉️ <b>Email Piani Terapeutici:</b> <a href="mailto:agft.farmacia.bari@asl.bari.it" style="color:#0284c7; font-weight:800; text-decoration:none;">agft.farmacia.bari@asl.bari.it</a>
+          </div>
+
+          <!-- ORARI DI SPORTELLO UFFICIALI -->
+          <div style="background:#ffffff; border:1px solid #bfdbfe; border-radius:8px; padding:8px 10px; font-size:11.5px; color:#334155; margin-bottom:10px;">
+            <div style="font-weight:800; color:#0369a1; margin-bottom:3px;">🕒 Orari Apertura Sportello Ritiro Farmaci:</div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:6px;">
+              <div>• <b>Lun - Mer - Ven:</b> 09:00 - 12:00</div>
+              <div>• <b>Martedì:</b> 09:00 - 13:30 / 14:30 - 16:30</div>
+              <div>• <b>Giovedì:</b> <i>Chiuso al pubblico</i></div>
+            </div>
+          </div>
+
+          <!-- SELETTORE RAPIDO PRESIDIO DI BARI -->
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:11px; font-weight:700; color:#475569;">Punti Ritiro Bari:</span>
+            <select class="form-control" style="font-size:11.5px; padding:4px 8px; border-radius:6px; flex:1; background:#ffffff; border:1px solid #94a3b8; font-weight:700;" onchange="impostaSedeRitiroRapida(this.value)">
+              <option value="Farmacia Territoriale ASL Bari (Ex CTO - Lungomare Starita 6) • Tel: 080 5842181">🏥 Farmacia Territoriale Ex CTO (Lungomare Starita, 6)</option>
+              <option value="Farmacia Ospedaliera Di Venere (Bari Carbonara) • Centralino: 080 5845111">🏥 Presidio Ospedaliero Di Venere (Bari Carbonara)</option>
+              <option value="Farmacia Ospedaliera San Paolo (Bari) • Centralino: 080 5843111">🏥 Presidio Ospedaliero San Paolo (Bari)</option>
+              <option value="Farmacia Aziendale Policlinico Giovanni XXIII Bari • P.zza G. Cesare 11">🏥 Policlinico / Ospedale Giovanni XXIII (P.zza Giulio Cesare)</option>
+              <option value="Farmacia MACARIO (Via G. Petroni, 69/b - Bari) • Tel: 080 542 8061">💊 Farmacia Territoriale di Famiglia (Dott. Macario - Via G. Petroni)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- CAMPO LUOGO RITIRO EFFETTIVO -->
         <div style="margin-bottom:18px;">
-          <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:6px;">📍 Luogo di Ritiro Farmaco / Farmacia Territoriale:</label>
-          <input type="text" id="avviso-ext-farmacia" class="form-control" placeholder="Es. Farmacia Territoriale Ospedale di Bari (DPC)" style="font-size:13px; font-weight:600; padding:8px 12px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+          <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:6px;">📍 Punto di Ritiro Selezionato per il Promemoria:</label>
+          <input type="text" id="avviso-ext-farmacia" class="form-control" value="Farmacia Territoriale ASL Bari (Ex CTO - Lungomare Starita 6) • Tel: 080 5842181" style="font-size:12.5px; font-weight:700; padding:8px 12px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:18px;">
