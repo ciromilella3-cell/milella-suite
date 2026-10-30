@@ -15161,44 +15161,95 @@ function richiediTutteRicetteAlMedicoMMG() {
 window.richiediTutteRicetteAlMedicoMMG = richiediTutteRicetteAlMedicoMMG;
 
 function sincronizzaTuttoCalendarioEpatologia() {
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  var dVisitaStr = (scheda && scheda.dataProssimaVisita) ? scheda.dataProssimaVisita : '2027-02-23';
+  var dVis = new Date(dVisitaStr + 'T00:00:00');
+  var dLim = new Date(dVis.getTime() - 15 * 24 * 60 * 60 * 1000);
+  var nowStr = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+  var fmtIcsDate = function(d, h, m) {
+    var dd = String(d.getDate()).padStart(2, '0');
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    var yyyy = d.getFullYear();
+    return yyyy + mm + dd + 'T' + String(h).padStart(2, '0') + String(m).padStart(2, '0') + '00';
+  };
+
+  var startPrelievo = fmtIcsDate(dLim, 8, 0);
+  var endPrelievo = fmtIcsDate(dLim, 10, 0);
+  var startVisita = fmtIcsDate(dVis, 9, 0);
+  var endVisita = fmtIcsDate(dVis, 12, 0);
+
   var ics = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//CareAssist Pro//Follow-up Epatologico Policlinico Bari//IT',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
+    'X-WR-CALNAME:Follow-up Policlinico Ciro Milella',
 
-    // EVENTO 1: VISITA INFIPOLICLINICO 23 FEBBRAIO 2026
+    // EVENTO 1: PRELIEVO HBV-DNA T-15 GIORNI PRIMA DELLA VISITA
     'BEGIN:VEVENT',
-    'UID:visita-infettivi-20260223@careassist.pro',
-    'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
-    'DTSTART:20260223T090000',
-    'DTEND:20260223T120000',
-    'SUMMARY:🏥 VISITA EPATOLOGICA DI CONTROLLO - POLICLINICO BARI',
-    'DESCRIPTION:Controllo semestrale Malattie Infettive & Epatologia (Prof.ssa Saracino). Portare: esiti esami del sangue, referto Ecografia addome sup, ECG e impegnative MMG.',
+    'UID:prelievo-infettivi-t15-' + startPrelievo + '@careassist.pro',
+    'DTSTAMP:' + nowStr,
+    'DTSTART:' + startPrelievo,
+    'DTEND:' + endPrelievo,
+    'SUMMARY:🩸 PRELIEVO HBV-DNA (T-15gg) - Ambulatorio Infettivi Policlinico',
+    'DESCRIPTION:OBBLIGATORIO DA FARE ALMENO 15 GIORNI PRIMA DELLA VISITA! Ricetta NRE: 160A24681622426 (Esenzione 016). Prestazioni: HBV-DNA quantitativo, HBsAg reflex. Digiuno da 6 ore. Questo anticipo permette al laboratorio di caricare il referto a video per la Prof.ssa Saracino.',
+    'LOCATION:Policlinico Universitario di Bari - Centro Prelievi Malattie Infettive',
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-P7D',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Promemoria tra 7 giorni: Prelievo HBV-DNA al Policlinico (T-15gg prima della visita)',
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-P2D',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Promemoria tra 2 giorni: Prelievo HBV-DNA (Ricetta NRE 160A24681622426)',
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT2H',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Oggi Prelievo sangue HBV-DNA al Policlinico: ricordare digiuno e ricetta NRE',
+    'END:VALARM',
+    'END:VEVENT',
+
+    // EVENTO 2: VISITA INFETTIVOLOGICA DI CONTROLLO (GIORNO DELLA VISITA)
+    'BEGIN:VEVENT',
+    'UID:visita-infettivi-' + startVisita + '@careassist.pro',
+    'DTSTAMP:' + nowStr,
+    'DTSTART:' + startVisita,
+    'DTEND:' + endVisita,
+    'SUMMARY:🏥 VISITA INFETTIVOLOGICA DI CONTROLLO - Prof.ssa Saracino',
+    'DESCRIPTION:Controllo semestrale Malattie Infettive ed Epatologia c/o Policlinico di Bari. Consegnare promemoria cartaceo Ricetta NRE: 160A24681622429. Portare referto Ecografia Addome Superiore. I risultati del prelievo HBV-DNA sono già a sistema.',
     'LOCATION:Policlinico Universitario di Bari - Piazza Giulio Cesare, 11 (U.O. Malattie Infettive)',
     'STATUS:CONFIRMED',
     'BEGIN:VALARM',
     'TRIGGER:-P7D',
     'ACTION:DISPLAY',
-    'DESCRIPTION:Promemoria: tra 7 giorni visita di controllo al Policlinico di Bari',
+    'DESCRIPTION:Promemoria tra 7 giorni: Visita Infettivologica al Policlinico di Bari',
     'END:VALARM',
     'BEGIN:VALARM',
     'TRIGGER:-P1D',
     'ACTION:DISPLAY',
-    'DESCRIPTION:Domani controllo al Policlinico: preparare tutti i referti cartacei ed ecografia',
+    'DESCRIPTION:Domani controllo al Policlinico: portare ricetta NRE visita ed ecografia',
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT2H',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Oggi ore 09:00 visita controllo con la Prof.ssa Saracino',
     'END:VALARM',
     'END:VEVENT',
 
-    // EVENTO 2: ECOGRAFIA ADDOME SUPERIORE
+    // EVENTO 3: ECOGRAFIA ADDOME SUPERIORE
     'BEGIN:VEVENT',
-    'UID:eco-addome-20260120@careassist.pro',
-    'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
-    'DTSTART:20260120T093000',
-    'DTEND:20260120T103000',
+    'UID:eco-addome-20270120@careassist.pro',
+    'DTSTAMP:' + nowStr,
+    'DTSTART:20270120T093000',
+    'DTEND:20270120T103000',
     'SUMMARY:📸 ECOGRAFIA ADDOME SUPERIORE - Ciro Milella',
-    'DESCRIPTION:Esame semestrale di sorveglianza parenchima epatico. Digiuno da almeno 6 ore.',
-    'LOCATION:Policlinico di Bari / Presidio Sanitario',
+    'DESCRIPTION:Sorveglianza semestrale parenchima epatico. Digiuno da almeno 6 ore. Portare il referto alla visita del 23/02/2027.',
+    'LOCATION:Policlinico di Bari / Diagnostica Territoriale',
     'STATUS:CONFIRMED',
     'BEGIN:VALARM',
     'TRIGGER:-P1D',
@@ -15214,13 +15265,15 @@ function sincronizzaTuttoCalendarioEpatologia() {
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
   a.href = url;
-  a.download = 'CALENDARIO_FOLLOWUP_POLICLINICO_MILELLA.ics';
+  a.download = 'CALENDARIO_COORDINATO_FOLLOWUP_MILELLA.ics';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  showToast('📅 Sveglie sincronizzate! File iCal pronto per Google Calendar e iPhone!');
+  if (typeof showToast === 'function') {
+    showToast('📅 Sveglie a due fasi sincronizzate! Eventi Prelievo (T-15gg) e Visita aggiunti con allarmi!');
+  }
 }
 window.sincronizzaTuttoCalendarioEpatologia = sincronizzaTuttoCalendarioEpatologia;
 
@@ -15841,6 +15894,110 @@ function renderEpatologiaInfettiviCiro(container, p) {
           📋 Dossier Ospedaliero A4
         </button>
       </div>
+    </div>
+
+    
+    <!-- WIDGET COORDINATO A DUE FASI: PRELIEVO T-15GG & VISITA (RICETTE NRE POLICLINICO) -->
+    <div style="background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%); border: 2px solid #38bdf8; border-radius: 16px; padding: 20px 24px; color: white; margin-bottom: 22px; box-shadow: 0 8px 30px rgba(12,74,110,0.35); position: relative; overflow: hidden;">
+      
+      <!-- INTESTAZIONE CARD PROTOCOLLO A DUE FASI -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:14px; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:50px; height:50px; border-radius:14px; background:rgba(255,255,255,0.15); border:1.5px solid #7dd3fc; display:flex; align-items:center; justify-content:center; font-size:26px;">
+            🛡️
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="background:#38bdf8; color:#082f49; font-size:10.5px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px;">PROTOCOLLO CRITICO DI CONTROLLO</span>
+              <span style="background:rgba(255,255,255,0.2); color:#ffffff; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:6px;">INTERVALLO SEMESTRALE (6 MESI)</span>
+            </div>
+            <h2 style="font-size:19px; font-weight:900; margin:3px 0 1px; color:#ffffff; letter-spacing:-0.3px;">
+              Workflow a Due Fasi: Prelievo T-15gg & Visita Infettivologica
+            </h2>
+            <div style="font-size:12px; color:#bae6fd;">
+              L'ambulatorio virologico richiede <b>almeno 15 giorni</b> per refertare l'HBV-DNA a video prima dell'appuntamento con la Prof.ssa Saracino.
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button type="button" class="btn" onclick="inviaPromemoriaWhatsAppPrelievoCiro()" style="background:#25d366; color:#ffffff; border:none; padding:8px 14px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(37,211,102,0.35);">
+            📲 Promemoria WhatsApp
+          </button>
+          <button type="button" class="btn" onclick="sincronizzaTuttoCalendarioEpatologia()" style="background:#0284c7; color:#ffffff; border:1px solid #38bdf8; padding:8px 14px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            📅 Sincronizza Sveglie (.ics)
+          </button>
+        </div>
+      </div>
+
+      <!-- LE DUE FASI VISIVE (STEP 1 & STEP 2) -->
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+        
+        <!-- FASE 1: PRELIEVO T-15GG -->
+        <div style="background:rgba(15,23,42,0.55); border:1.5px solid ${scheda.prelievoEseguito ? '#4ade80' : '#f59e0b'}; border-radius:12px; padding:16px; position:relative; backdrop-filter:blur(6px);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:20px;">🩸</span>
+              <span style="font-size:12px; font-weight:900; color:#fde047; text-transform:uppercase;">FASE 1: ALMENO 15 GIORNI PRIMA</span>
+            </div>
+            ${scheda.prelievoEseguito ? 
+              '<span style="background:#22c55e; color:#ffffff; font-size:11px; font-weight:900; padding:2px 8px; border-radius:999px;">✓ PRELIEVO ESEGUITO</span>' : 
+              '<span style="background:#f59e0b; color:#1e1b4b; font-size:11px; font-weight:900; padding:2px 8px; border-radius:999px;">⏳ DA ESEGUIRE ENTRO 08/02/2027</span>'
+            }
+          </div>
+
+          <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
+            Prelievo HBV-DNA & Sierologia Reflex (Ambulatorio)
+          </div>
+          <div style="font-size:12px; color:#cbd5e1; line-height:1.4; margin-bottom:10px;">
+            <b>Finestra consigliata:</b> <u>dal 01/02/2027 al 08/02/2027</u>.<br>
+            <b>Ricetta Elettronica:</b> NRE <span style="font-family:monospace; color:#38bdf8; font-weight:800;">160A24681622426</span> (Esenzione 016).<br>
+            <b>Analisi:</b> HBV-DNA Ibridazione diretta (88.30.1) + HBsAg reflex (85.75.2) + Prelievo (96.10.1).<br>
+            <b>Digiuno:</b> Minimo 6 ore.
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px; flex-wrap:wrap; gap:8px;">
+            <div style="font-size:11.5px; color:#94a3b8;">
+              ${scheda.prelievoEseguito ? 'Referti a video pronti per la visita' : 'Necessario per avere i referti a video'}
+            </div>
+            <button type="button" class="btn btn-sm" onclick="toggleStatoPrelievoInfettiviCiro()" style="background:${scheda.prelievoEseguito ? '#334155' : '#10b981'}; color:#ffffff; font-weight:800; font-size:11.5px; padding:6px 12px; border-radius:8px; border:none; cursor:pointer;">
+              ${scheda.prelievoEseguito ? '↩️ Segna come Da Eseguire' : '✓ Segna Prelievo Eseguito'}
+            </button>
+          </div>
+        </div>
+
+        <!-- FASE 2: VISITA DI CONTROLLO -->
+        <div style="background:rgba(15,23,42,0.55); border:1.5px solid #38bdf8; border-radius:12px; padding:16px; position:relative; backdrop-filter:blur(6px);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:20px;">🏥</span>
+              <span style="font-size:12px; font-weight:900; color:#38bdf8; text-transform:uppercase;">FASE 2: GIORNO DELL'APPUNTAMENTO</span>
+            </div>
+            <span style="background:rgba(56,189,248,0.2); color:#7dd3fc; font-size:11px; font-weight:900; padding:2px 8px; border-radius:999px;">23/02/2027 ORE 09:00</span>
+          </div>
+
+          <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
+            Visita Infettivologica di Controllo & Terapia Entecavir
+          </div>
+          <div style="font-size:12px; color:#cbd5e1; line-height:1.4; margin-bottom:10px;">
+            <b>Medico:</b> Prof.ssa Annalisa Saracino &bull; U.O. Malattie Infettive Policlinico Bari.<br>
+            <b>Ricetta da consegnare:</b> NRE <span style="font-family:monospace; color:#38bdf8; font-weight:800;">160A24681622429</span> (Visita Infettivologica 89.01).<br>
+            <b>Cosa portare:</b> Promemoria cartaceo ricetta visita + referto Ecografia Addome Superiore.<br>
+            <b>Esito atteso:</b> Valutazione carica virale e rinnovo fornitura Entecavir 0.5 mg.
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px; flex-wrap:wrap; gap:8px;">
+            <div style="font-size:11.5px; color:#94a3b8;">
+              📍 Policlinico Consorziale Bari - Padiglione Infettivi
+            </div>
+            <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_visita')" style="background:#0284c7; color:#ffffff; font-weight:800; font-size:11.5px; padding:6px 12px; border-radius:8px; border:none; cursor:pointer;">
+              📄 Mostra Ricetta NRE
+            </button>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 
     <!-- CORPO AMBULATORIALE: VISTA 4 COLONNE O TABELLA CLINICA -->
@@ -18344,3 +18501,62 @@ function stampaDossierClinicoA4() {
   }, 1000);
 }
 window.stampaDossierClinicoA4 = stampaDossierClinicoA4;
+
+
+/* ==========================================================================
+   WORKFLOW COORDINATO 2 FASI POLICLINICO BARI (CIRO MILELLA)
+   Fase 1: Prelievo HBV-DNA (Ricetta NRE 160A24681622426) - Almeno 15gg prima
+   Fase 2: Visita Infettivologica (Ricetta NRE 160A24681622429) - Consegna il giorno
+   ========================================================================== */
+
+function toggleStatoPrelievoInfettiviCiro() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+  if (!p.cartelleCroniche) p.cartelleCroniche = {};
+  if (!p.cartelleCroniche.epatologia) p.cartelleCroniche.epatologia = {};
+  var sc = p.cartelleCroniche.epatologia;
+  sc.prelievoEseguito = !sc.prelievoEseguito;
+  if (sc.prelievoEseguito) {
+    sc.dataPrelievoEseguito = new Date().toLocaleDateString('it-IT');
+    if (typeof showToast === 'function') showToast('✓ Prelievo segnato come ESEGUITO! Risultati HBV-DNA a video per la visita.');
+  } else {
+    sc.dataPrelievoEseguito = null;
+    if (typeof showToast === 'function') showToast('Stato prelievo reimpostato: DA ESEGUIRE.');
+  }
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
+}
+window.toggleStatoPrelievoInfettiviCiro = toggleStatoPrelievoInfettiviCiro;
+
+function inviaPromemoriaWhatsAppPrelievoCiro() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  var dVisitaStr = (scheda && scheda.dataProssimaVisita) ? scheda.dataProssimaVisita : '2027-02-23';
+  var dVis = new Date(dVisitaStr + 'T00:00:00');
+  var dLim = new Date(dVis.getTime() - 15 * 24 * 60 * 60 * 1000);
+  var dIni = new Date(dVis.getTime() - 22 * 24 * 60 * 60 * 1000);
+
+  var fmt = function(d) {
+    var dd = String(d.getDate()).padStart(2, '0');
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    var yyyy = d.getFullYear();
+    return dd + '/' + mm + '/' + yyyy;
+  };
+
+  var testo = '⚠️ *PROMEMORIA CLINICO POLICLINICO BARI - CIRO MILELLA*\n\n' +
+    '🏥 *Follow-up Malattie Infettive & Epatologia (Prof.ssa Saracino)*\n' +
+    '📅 *Data Visita di Controllo:* ' + fmt(dVis) + ' ore 09:00\n\n' +
+    '🩸 *FASE 1: PRELIEVO SANGUE OBBLIGATORIO (T-15 GIORNI)*\n' +
+    '• *Finestra consigliata:* dal ' + fmt(dIni) + ' al ' + fmt(dLim) + '\n' +
+    '• *Ricetta NRE:* 160A24681622426 (Esenzione 016)\n' +
+    '• *Esami:* HBV-DNA Acidi Nucleici Ibridazione Diretta + HBsAg Reflex + Ematochimici\n' +
+    '• *Luogo:* Centro Prelievi Malattie Infettive Policlinico (Digiuno da 6 ore)\n' +
+    '⚠️ *IMPORTANTE:* Il prelievo DEVE essere fatto ALMENO 15 GIORNI PRIMA della visita, altrimenti il laboratorio non potrà caricare i risultati a video per la dottoressa!\n\n' +
+    '📜 *FASE 2: IL GIORNO DELLA VISITA (' + fmt(dVis) + ')*\n' +
+    '• Consegnare la Ricetta Visita NRE: 160A24681622429\n' +
+    '• Portare referto Ecografia addome superiore\n' +
+    '• I risultati del sangue saranno già pronti a sistema sul computer del medico.';
+
+  window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(testo), '_blank');
+}
+window.inviaPromemoriaWhatsAppPrelievoCiro = inviaPromemoriaWhatsAppPrelievoCiro;
