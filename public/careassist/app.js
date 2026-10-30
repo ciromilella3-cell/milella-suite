@@ -13602,6 +13602,28 @@ function scaricaPromemoriaCalendarioFarmaco() {
 
   var ics = [
     'BEGIN:VCALENDAR',
+
+    // EVENTO 0: FINESTRA DICEMBRE LABORATORIO SCOTTI & MEDICO CURANTE
+    'BEGIN:VEVENT',
+    'UID:scotti-dicembre-20261201@careassist.pro',
+    'DTSTAMP:' + nowStr,
+    'DTSTART:20261201T090000',
+    'DTEND:20261201T103000',
+    'SUMMARY:🔬 RICHIESTA RICETTE PRIORITÀ [P] & PRENOTAZIONE LAB. SCOTTI',
+    'DESCRIPTION:Finestra 180 giorni aperta! Richiedere al Dott. Scarcia le ricette NRE ematochimiche con PRIORITÀ P (obbligatoria per accettazione ASL Bari). Chiamare Laboratorio Scotti al 080 521 1386 per fissare data prelievo.',
+    'LOCATION:Laboratorio Scotti - Via Putignani 85, Bari (Tel 080 521 1386)',
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-P3D',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Promemoria tra 3 giorni: Finestra Dicembre per ricette con Priorità P al Laboratorio Scotti',
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT2H',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Oggi: inviare richiesta ricette con Priorità P al Dott. Scarcia e chiamare Lab. Scotti',
+    'END:VALARM',
+    'END:VEVENT',
     'VERSION:2.0',
     'PRODID:-//CareAssist Pro//Promemoria Farmaci H24//IT',
     'CALSCALE:GREGORIAN',
@@ -15918,135 +15940,139 @@ function renderEpatologiaInfettiviCiro(container, p) {
     </div>
 
     
-    <!-- WIDGET COORDINATO A DUE FASI: PRELIEVO T-15GG & VISITA (RICETTE NRE POLICLINICO) -->
-    <div style="background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%); border: 2px solid #38bdf8; border-radius: 16px; padding: 20px 24px; color: white; margin-bottom: 22px; box-shadow: 0 8px 30px rgba(12,74,110,0.35); position: relative; overflow: hidden;">
+    <!-- CONSOLE CLINICA A 4 TAPPE COORDINATE: SCOTTI, PRELIEVO T-15, VISITA, ECO SAN PAOLO -->
+    <div style="background: linear-gradient(135deg, #092e48 0%, #0b3d60 100%); border: 2px solid #38bdf8; border-radius: 18px; padding: 22px 26px; color: white; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(9,46,72,0.4); position: relative; overflow: hidden;">
       
-      <!-- INTESTAZIONE CARD PROTOCOLLO A DUE FASI -->
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:14px; margin-bottom:16px;">
+      <!-- INTESTAZIONE CONSOLE DIAGNOSTICA -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:16px; margin-bottom:18px;">
         <div style="display:flex; align-items:center; gap:14px;">
-          <div style="width:50px; height:50px; border-radius:14px; background:rgba(255,255,255,0.15); border:1.5px solid #7dd3fc; display:flex; align-items:center; justify-content:center; font-size:26px;">
-            🛡️
+          <div style="width:52px; height:52px; border-radius:14px; background:rgba(255,255,255,0.12); border:1.5px solid #38bdf8; display:flex; align-items:center; justify-content:center; font-size:26px;">
+            🏥
           </div>
           <div>
             <div style="display:flex; align-items:center; gap:8px;">
-              <span style="background:#38bdf8; color:#082f49; font-size:10.5px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px;">PROTOCOLLO CRITICO DI CONTROLLO</span>
-              <span style="background:rgba(255,255,255,0.2); color:#ffffff; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:6px;">INTERVALLO SEMESTRALE (6 MESI)</span>
+              <span style="background:#38bdf8; color:#082f49; font-size:10.5px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px;">PIANO DIAGNOSTICO COMPLETO 2026 - 2027</span>
+              <span style="background:#10b981; color:#ffffff; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">4 TAPPE BLINDATE</span>
             </div>
-            <h2 style="font-size:19px; font-weight:900; margin:3px 0 1px; color:#ffffff; letter-spacing:-0.3px;">
-              Workflow a Due Fasi: Prelievo T-15gg & Visita Infettivologica
+            <h2 style="font-size:21px; font-weight:900; margin:3px 0 2px; color:#ffffff; letter-spacing:-0.3px;">
+              Cronoprogramma Clinico di Sorveglianza Epatologica &bull; Ciro Milella
             </h2>
-            <div style="font-size:12px; color:#bae6fd;">
-              L'ambulatorio virologico richiede <b>almeno 15 giorni</b> per refertare l'HBV-DNA a video prima dell'appuntamento con la Prof.ssa Saracino.
+            <div style="font-size:12.5px; color:#bae6fd;">
+              Coordinamento integrato: <b>Laboratorio Scotti (Bari)</b> &bull; <b>Clinica Malattie Infettive (Policlinico)</b> &bull; <b>Gastroenterologia (PO San Paolo)</b>
             </div>
           </div>
         </div>
 
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button type="button" class="btn" onclick="inviaPromemoriaWhatsAppPrelievoCiro()" style="background:#25d366; color:#ffffff; border:none; padding:8px 14px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(37,211,102,0.35);">
-            📲 Promemoria WhatsApp
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn" onclick="apriModalLaboratorioScotti()" style="background:#0284c7; color:#ffffff; border:1px solid #38bdf8; padding:8px 14px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(2,132,199,0.3);">
+            🔬 Console Lab. Scotti
           </button>
-          <button type="button" class="btn" onclick="sincronizzaTuttoCalendarioEpatologia()" style="background:#0284c7; color:#ffffff; border:1px solid #38bdf8; padding:8px 14px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
-            📅 Sincronizza Sveglie (.ics)
+          <button type="button" class="btn" onclick="inviaPromemoriaWhatsAppPrelievoCiro()" style="background:#25d366; color:#ffffff; border:none; padding:8px 14px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(37,211,102,0.35);">
+            📲 WhatsApp Caregiver
+          </button>
+          <button type="button" class="btn" onclick="sincronizzaTuttoCalendarioEpatologia()" style="background:#10b981; color:#ffffff; border:none; padding:8px 14px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(16,185,129,0.35);">
+            📅 Sincronizza Tutto (.ics)
           </button>
         </div>
       </div>
 
-      <!-- LE DUE FASI VISIVE (STEP 1 & STEP 2) -->
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+      <!-- LE 4 TAPPE CRONOLOGICHE DISPOSTE A CARD PROFESSIONALI -->
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:14px;">
         
-        <!-- FASE 1: PRELIEVO T-15GG -->
-        <div style="background:rgba(15,23,42,0.55); border:1.5px solid ${scheda.prelievoEseguito ? '#4ade80' : '#f59e0b'}; border-radius:12px; padding:16px; position:relative; backdrop-filter:blur(6px);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:20px;">🩸</span>
-              <span style="font-size:12px; font-weight:900; color:#fde047; text-transform:uppercase;">FASE 1: ALMENO 15 GIORNI PRIMA</span>
+        <!-- TAPPA 1: LABORATORIO ANALISI SCOTTI (DICEMBRE 2026 - PRIORITÀ P) -->
+        <div style="background:rgba(15,23,42,0.65); border:1.5px solid #f59e0b; border-radius:14px; padding:16px; position:relative; backdrop-filter:blur(6px); display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:11px; font-weight:900; color:#fde047; text-transform:uppercase;">1. DICEMBRE 2026</span>
+              <span style="background:#fef3c7; color:#92400e; font-size:10px; font-weight:900; padding:2px 6px; border-radius:4px;">PRIORITÀ [ P ] ASL</span>
             </div>
-            ${scheda.prelievoEseguito ? 
-              '<span style="background:#22c55e; color:#ffffff; font-size:11px; font-weight:900; padding:2px 8px; border-radius:999px;">✓ PRELIEVO ESEGUITO</span>' : 
-              '<span style="background:#f59e0b; color:#1e1b4b; font-size:11px; font-weight:900; padding:2px 8px; border-radius:999px;">⏳ DA ESEGUIRE ENTRO 08/02/2027</span>'
-            }
-          </div>
-
-          <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
-            Prelievo HBV-DNA & Sierologia Reflex (Ambulatorio)
-          </div>
-          <div style="font-size:12px; color:#cbd5e1; line-height:1.4; margin-bottom:10px;">
-            <b>Finestra consigliata:</b> <u>dal 01/02/2027 al 08/02/2027</u>.<br>
-            <b>Ricetta Elettronica:</b> NRE <span style="font-family:monospace; color:#38bdf8; font-weight:800;">160A24681622426</span> (Esenzione 016).<br>
-            <b>Analisi:</b> HBV-DNA Ibridazione diretta (88.30.1) + HBsAg reflex (85.75.2) + Prelievo (96.10.1).<br>
-            <b>Digiuno:</b> Minimo 6 ore.
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px; flex-wrap:wrap; gap:8px;">
-            <div style="font-size:11.5px; color:#94a3b8;">
-              ${scheda.prelievoEseguito ? 'Referti a video pronti per la visita' : 'Necessario per avere i referti a video'}
+            <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
+              🔬 Laboratorio Scotti (Bari)
             </div>
-            <button type="button" class="btn btn-sm" onclick="toggleStatoPrelievoInfettiviCiro()" style="background:${scheda.prelievoEseguito ? '#334155' : '#10b981'}; color:#ffffff; font-weight:800; font-size:11.5px; padding:6px 12px; border-radius:8px; border:none; cursor:pointer;">
-              ${scheda.prelievoEseguito ? '↩️ Segna come Da Eseguire' : '✓ Segna Prelievo Eseguito'}
+            <div style="font-size:11.5px; color:#cbd5e1; line-height:1.45; margin-bottom:12px;">
+              <b>Esami Sangue Generali:</b> Transaminasi, VES, Emocromo, Glicemia, Creatinina, Lipasi.<br>
+              <b>Azione:</b> Richiedere ricette NRE al Curante nella prima decade di Dicembre con <u>Priorità P</u>, poi chiamare il laboratorio.
+            </div>
+          </div>
+          <div style="display:flex; gap:6px; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px;">
+            <button type="button" class="btn btn-sm" onclick="apriModalLaboratorioScotti()" style="flex:1; background:#0284c7; color:#fff; font-size:11px; font-weight:800; padding:5px 8px; border-radius:6px; border:none; cursor:pointer;">
+              Dettagli & Modulo
+            </button>
+            <a href="tel:0805211386" class="btn btn-sm" style="background:#f1f5f9; color:#0f172a; font-size:11px; font-weight:800; padding:5px 8px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center;">
+              📞 Chiama
+            </a>
+          </div>
+        </div>
+
+        <!-- TAPPA 2: PRELIEVO HBV-DNA POLICLINICO (T-15GG PRIMA) -->
+        <div style="background:rgba(15,23,42,0.65); border:1.5px solid ${scheda.prelievoEseguito ? '#4ade80' : '#38bdf8'}; border-radius:14px; padding:16px; position:relative; backdrop-filter:blur(6px); display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:11px; font-weight:900; color:#38bdf8; text-transform:uppercase;">2. ENTRO 08/02/2027</span>
+              <span style="background:rgba(56,189,248,0.2); color:#7dd3fc; font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px;">T - 15 GIORNI</span>
+            </div>
+            <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
+              🩸 Prelievo HBV-DNA (Policlinico)
+            </div>
+            <div style="font-size:11.5px; color:#cbd5e1; line-height:1.45; margin-bottom:12px;">
+              <b>Sede:</b> Centro Prelievi Malattie Infettive.<br>
+              <b>Ricetta NRE:</b> <span style="font-family:monospace; color:#38bdf8;">160A24681622426</span> (Es. 016).<br>
+              <b>Esami:</b> HBV-DNA Ibridazione (88301) + HBsAg Reflex (85752) &bull; Digiuno 6h.
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px;">
+            <button type="button" class="btn btn-sm" onclick="toggleStatoPrelievoInfettiviCiro()" style="width:100%; background:${scheda.prelievoEseguito ? '#334155' : '#10b981'}; color:#ffffff; font-weight:800; font-size:11px; padding:5px 8px; border-radius:6px; border:none; cursor:pointer;">
+              ${scheda.prelievoEseguito ? '✓ Prelievo Eseguito' : 'Segna Prelievo Eseguito'}
             </button>
           </div>
         </div>
 
-        <!-- FASE 2: VISITA DI CONTROLLO -->
-        <div style="background:rgba(15,23,42,0.55); border:1.5px solid #38bdf8; border-radius:12px; padding:16px; position:relative; backdrop-filter:blur(6px);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:20px;">🏥</span>
-              <span style="font-size:12px; font-weight:900; color:#38bdf8; text-transform:uppercase;">FASE 2: GIORNO DELL'APPUNTAMENTO</span>
+        <!-- TAPPA 3: VISITA INFETTIVOLOGICA POLICLINICO (23/02/2027) -->
+        <div style="background:rgba(15,23,42,0.65); border:1.5px solid #a855f7; border-radius:14px; padding:16px; position:relative; backdrop-filter:blur(6px); display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:11px; font-weight:900; color:#c084fc; text-transform:uppercase;">3. 23/02/2027 ORE 09:00</span>
+              <span style="background:rgba(168,85,247,0.2); color:#e9d5ff; font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px;">CONTROLLO SPECIALISTICO</span>
             </div>
-            <span style="background:rgba(56,189,248,0.2); color:#7dd3fc; font-size:11px; font-weight:900; padding:2px 8px; border-radius:999px;">23/02/2027 ORE 09:00</span>
-          </div>
-
-          <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
-            Visita Infettivologica di Controllo & Terapia Entecavir
-          </div>
-          <div style="font-size:12px; color:#cbd5e1; line-height:1.4; margin-bottom:10px;">
-            <b>Medico:</b> Prof.ssa Annalisa Saracino &bull; U.O. Malattie Infettive Policlinico Bari.<br>
-            <b>Ricetta da consegnare:</b> NRE <span style="font-family:monospace; color:#38bdf8; font-weight:800;">160A24681622429</span> (Visita Infettivologica 89.01).<br>
-            <b>Cosa portare:</b> Promemoria cartaceo ricetta visita + referto Ecografia Addome Superiore.<br>
-            <b>Esito atteso:</b> Valutazione carica virale e rinnovo fornitura Entecavir 0.5 mg.
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px; flex-wrap:wrap; gap:8px;">
-            <div style="font-size:11.5px; color:#94a3b8;">
-              📍 Policlinico Consorziale Bari - Padiglione Infettivi
+            <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
+              🏥 Visita con Prof.ssa Saracino
             </div>
-            <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_visita')" style="background:#0284c7; color:#ffffff; font-weight:800; font-size:11.5px; padding:6px 12px; border-radius:8px; border:none; cursor:pointer;">
-              📄 Mostra Ricetta NRE
+            <div style="font-size:11.5px; color:#cbd5e1; line-height:1.45; margin-bottom:12px;">
+              <b>Sede:</b> U.O. Malattie Infettive Policlinico Bari.<br>
+              <b>Ricetta NRE da consegnare:</b> <span style="font-family:monospace; color:#c084fc;">160A24681622429</span>.<br>
+              <b>Obiettivo:</b> Verifica carica virale a video e prosecuzione Entecavir 0.5 mg.
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px;">
+            <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_visita')" style="width:100%; background:#7c3aed; color:#fff; font-weight:800; font-size:11px; padding:5px 8px; border-radius:6px; border:none; cursor:pointer;">
+              📄 Mostra Ricetta NRE Visita
             </button>
           </div>
         </div>
 
-      
-        <!-- FASE 3: ECOGRAFIA ADDOME CONFERMATA SAN PAOLO -->
-        <div style="background:rgba(15,23,42,0.55); border:1.5px solid #38bdf8; border-radius:12px; padding:16px; position:relative; backdrop-filter:blur(6px);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:20px;">📸</span>
-              <span style="font-size:12px; font-weight:900; color:#38bdf8; text-transform:uppercase;">ECOGRAFIA PRENOTATA (CUP 1588303)</span>
+        <!-- TAPPA 4: ECOGRAFIA ADDOME SAN PAOLO (08/06/2027) -->
+        <div style="background:rgba(15,23,42,0.65); border:1.5px solid #0284c7; border-radius:14px; padding:16px; position:relative; backdrop-filter:blur(6px); display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:11px; font-weight:900; color:#38bdf8; text-transform:uppercase;">4. 08/06/2027 ORE 09:15</span>
+              <span style="background:#0284c7; color:#fff; font-size:10px; font-weight:900; padding:2px 6px; border-radius:4px;">CUP: 1588303</span>
             </div>
-            <span style="background:#0284c7; color:#ffffff; font-size:11px; font-weight:900; padding:2px 8px; border-radius:999px;">08/06/2027 ORE 09:15</span>
-          </div>
-
-          <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
-            Ecografia dell'Addome Superiore - Controllo
-          </div>
-          <div style="font-size:12px; color:#cbd5e1; line-height:1.4; margin-bottom:10px;">
-            <b>Sede:</b> Ospedale "San Paolo" Bari &bull; Via Caposcardicchio.<br>
-            <b>Ubicazione:</b> Gastroenterologia - Piano 5° Lato Est (Agenda GAN474).<br>
-            <b>Ricetta Elettronica:</b> NRE <span style="font-family:monospace; color:#38bdf8; font-weight:800;">160A24681691013</span> (Esenzione 016).<br>
-            <b>Avvertenze:</b> Digiuno da almeno 8 ore &bull; Portare ecografie precedenti.
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px; flex-wrap:wrap; gap:8px;">
-            <div style="font-size:11px; color:#fde047;">
-              ⚠️ Eventuale disdetta entro le 9:15 del 04/06/2027
+            <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
+              📸 Ecografia Addome PO San Paolo
             </div>
-            <button type="button" class="btn btn-sm" onclick="apriFoglioPrenotazioneEcografiaCiro()" style="background:#0284c7; color:#ffffff; font-weight:800; font-size:11.5px; padding:6px 12px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+            <div style="font-size:11.5px; color:#cbd5e1; line-height:1.45; margin-bottom:12px;">
+              <b>Sede:</b> Gastroenterologia &bull; Piano 5° Lato Est.<br>
+              <b>Ricetta NRE:</b> <span style="font-family:monospace; color:#38bdf8;">160A24681691013</span> (Es. 016).<br>
+              <b>Avvertenze:</b> Digiuno da 8 ore &bull; Portare ecografie precedenti &bull; Disdetta entro 04/06.
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px;">
+            <button type="button" class="btn btn-sm" onclick="apriFoglioPrenotazioneEcografiaCiro()" style="width:100%; background:#0284c7; color:#fff; font-weight:800; font-size:11px; padding:5px 8px; border-radius:6px; border:none; cursor:pointer;">
               📄 Mostra Modulo CUP
             </button>
           </div>
         </div>
+
       </div>
 
     </div>
@@ -17846,6 +17872,25 @@ function calcolaRoadmapScadenzeTuttiPazienti() {
     } else if (pId === 'paz_1793216119572' || pNome.toLowerCase().includes('ciro')) {
       pColore = '#0284c7';
       pIcona = '🩺';
+      // 0. Laboratorio Analisi Scotti (Finestra Dicembre 2026 - Priorità P)
+      eventi.push({
+        id: 'ev_ciro_scotti',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Laboratorio',
+        categoriaLabel: 'Laboratorio Scotti (Convenzione ASL)',
+        titolo: 'Richiesta Ricette Priorità [P] & Prenotazione Lab. Scotti',
+        descrizione: 'Finestra 180 giorni: richiedere al Dott. Scarcia le ricette ematochimiche con PRIORITÀ [ P ] obbligatoria per ASL Bari. Chiamare Laboratorio Scotti (080 521 1386) per prenotare il prelievo.',
+        data: '2026-12-01',
+        ora: '09:00',
+        luogo: 'Laboratorio Scotti - Via Putignani 85, Bari / MMG Dott. Scarcia',
+        medico: 'Dott. Roberto Scarcia (Curante)',
+        nre: 'Priorità P Obbligatoria',
+        tipoAzione: 'laboratorio'
+      });
+      
       // 1. Ecografia Addome Superiore (Prenotazione Ufficiale CUP 1588303)
       eventi.push({
         id: 'ev_ciro_1',
@@ -18620,3 +18665,106 @@ function apriFoglioPrenotazioneEcografiaCiro() {
   window.open('/careassist/assets/img/prenotazione_ecografia_san_paolo.jpg', '_blank');
 }
 window.apriFoglioPrenotazioneEcografiaCiro = apriFoglioPrenotazioneEcografiaCiro;
+
+
+/* ==========================================================================
+   MODULO LABORATORIO ANALISI CLINICHE SCOTTI (BARI) - GESTIONE PRIORITÀ [ P ]
+   ========================================================================== */
+
+function generaTestoRichiestaScottiMedico() {
+  return 'Gentile Dott. Roberto Scarcia (MMG),\n\n' +
+    'in vista del controllo specialistico programmato per il Sig. Ciro Milella presso la Clinica delle Malattie Infettive ed Epatologia del Policlinico di Bari, richiedo cortesemente il rilascio delle ricette elettroniche dematerializzate (NRE) per il pannello ematochimico di controllo:\n\n' +
+    '1. VES\n' +
+    '2. Emocromo completo con formula e piastrine\n' +
+    '3. Transaminasi (GOT/AST e GPT/ALT)\n' +
+    '4. Fosfatasi Alcalina\n' +
+    '5. Gamma GT\n' +
+    '6. Alfa - fetoproteina\n' +
+    '7. Bilirubina totale e frazionata\n' +
+    '8. Elettroforesi proteica\n' +
+    '9. Azotemia\n' +
+    '10. Glicemia\n' +
+    '11. Creatininemia\n' +
+    '12. Amilasi pancreatica e Lipasi\n\n' +
+    '⚠️ NOTA TASSATIVA PER ACCETTAZIONE IN CONVENZIONE ASL (LABORATORIO SCOTTI - BARI):\n' +
+    'Il Laboratorio Analisi Scotti ha espressamente specificato che, per accettare le impegnative in convenzione con il Servizio Sanitario Nazionale ed evitare il blocco del tetto di spesa regionale, È INDISPENSABILE CONTRASSEGNARE LE RICETTE CON CLASSE DI PRIORITÀ: [ P ] (Programmata / Prioritaria).\n\n' +
+    'Dati Assistito: Ciro Milella - Data di Nascita: 16/12/1967\n' +
+    'Codice Fiscale: MLLCRI67T16A662Z\n' +
+    'Codice Esenzione: 016 (Epatite Cronica Attiva B)\n\n' +
+    'Ringraziando per la consueta disponibilità e collaborazione, invio cordiali saluti.';
+}
+window.generaTestoRichiestaScottiMedico = generaTestoRichiestaScottiMedico;
+
+function apriModalLaboratorioScotti() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var txtArea = document.getElementById('textarea-richiesta-scotti-medico');
+  if (txtArea) {
+    txtArea.value = generaTestoRichiestaScottiMedico();
+  }
+
+  // Carica stato checkboxes e data se salvati
+  var dati = (p && p.gestioneLaboratorioScotti) ? p.gestioneLaboratorioScotti : {};
+  var c1 = document.getElementById('check-scotti-richiesta-mmg');
+  var c2 = document.getElementById('check-scotti-ricette-ricevute');
+  var c3 = document.getElementById('check-scotti-chiamata-fatta');
+  var c4 = document.getElementById('check-scotti-prelievo-fissato');
+  var dInp = document.getElementById('input-scotti-data-prelievo');
+
+  if (c1) c1.checked = !!dati.richiestaMmgInviata;
+  if (c2) c2.checked = !!dati.ricettePRicevute;
+  if (c3) c3.checked = !!dati.chiamataScottiFatta;
+  if (c4) c4.checked = !!dati.prelievoFissato;
+  if (dInp) dInp.value = dati.dataPrelievoConcordata || '';
+
+  if (typeof openModal === 'function') {
+    openModal('modal-laboratorio-scotti');
+  }
+}
+window.apriModalLaboratorioScotti = apriModalLaboratorioScotti;
+
+function salvaDatiLaboratorioScotti() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+  if (!p.gestioneLaboratorioScotti) p.gestioneLaboratorioScotti = {};
+
+  var c1 = document.getElementById('check-scotti-richiesta-mmg');
+  var c2 = document.getElementById('check-scotti-ricette-ricevute');
+  var c3 = document.getElementById('check-scotti-chiamata-fatta');
+  var c4 = document.getElementById('check-scotti-prelievo-fissato');
+  var dInp = document.getElementById('input-scotti-data-prelievo');
+
+  p.gestioneLaboratorioScotti = {
+    richiestaMmgInviata: c1 ? c1.checked : false,
+    ricettePRicevute: c2 ? c2.checked : false,
+    chiamataScottiFatta: c3 ? c3.checked : false,
+    prelievoFissato: c4 ? c4.checked : false,
+    dataPrelievoConcordata: dInp ? dInp.value : ''
+  };
+
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof showToast === 'function') showToast('💾 Stato Laboratorio Scotti salvato!');
+}
+window.salvaDatiLaboratorioScotti = salvaDatiLaboratorioScotti;
+
+function inviaRichiestaScottiWhatsApp() {
+  var testo = generaTestoRichiestaScottiMedico();
+  window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(testo), '_blank');
+}
+window.inviaRichiestaScottiWhatsApp = inviaRichiestaScottiWhatsApp;
+
+function copiaTestoRichiestaScotti() {
+  var testo = generaTestoRichiestaScottiMedico();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(testo).then(function() {
+      if (typeof showToast === 'function') showToast('📋 Testo richiesta copiato negli appunti!');
+    });
+  } else {
+    var txt = document.getElementById('textarea-richiesta-scotti-medico');
+    if (txt) {
+      txt.select();
+      document.execCommand('copy');
+      if (typeof showToast === 'function') showToast('📋 Testo copiato!');
+    }
+  }
+}
+window.copiaTestoRichiestaScotti = copiaTestoRichiestaScotti;
