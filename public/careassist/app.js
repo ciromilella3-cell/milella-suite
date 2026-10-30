@@ -4160,6 +4160,7 @@ function renderTerapie() {
             <span style="font-size:11px; color:#64748b; font-weight:600;" title="Sola somministrazione e spunta (Modifiche riservate all'Amministratore)">🔒 Sola Lettura</span>
           `}
           <button class="btn btn-outline" style="padding:5px 8px; font-size:11px; margin-left:3px;" onclick="mostraAuditFarmaco(${t.id})" title="Tracciabilità e cronologia controlli">🕒 Traccia</button>
+          <button class="btn btn-outline" style="padding:5px 8px; font-size:11px; margin-left:3px; background:#f0fdf4; border-color:#86efac; color:#166534; font-weight:700;" onclick="apriModalAvvisoFarmacoEsterno(${t.id})" title="Configura avviso esterno su Smartphone, Calendario, WhatsApp e Mail per questo farmaco">🔔 Avviso</button>
         </td>
       </tr>
     `;
@@ -13497,3 +13498,186 @@ function inviaOrdineAusiliWhatsAppDiretto() {
 }
 window.inviaOrdineAusiliWhatsAppDiretto = inviaOrdineAusiliWhatsAppDiretto;
 
+
+
+// ==============================================================================
+// MODULO GESTIONE AVVISI ESTERNI, CALENDARIO SMARTPHONE, TELEGRAM, WA & EMAIL
+// ==============================================================================
+
+function apriModalAvvisoFarmacoEsterno(farmacoId) {
+  var p = getActivePaziente();
+  if (!p || !p.terapie) return;
+  var t = p.terapie.find(function(item) { return item.id === farmacoId; });
+  if (!t) return;
+
+  var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
+  var giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
+  var dataTermineStr = 'Esaurito';
+  var dataScadenzaObj = new Date();
+  if (giorniAutonomia > 0) {
+    dataScadenzaObj.setDate(dataScadenzaObj.getDate() + giorniAutonomia);
+    dataTermineStr = dataScadenzaObj.toLocaleDateString('it-IT');
+  }
+
+  // Pre-imposta campi del modal
+  var m = document.getElementById('modal-avviso-farmaco-esterno');
+  if (!m) return;
+
+  document.getElementById('avviso-ext-farmaco-id').value = t.id;
+  document.getElementById('avviso-ext-nome-farmaco').textContent = cleanNome;
+  document.getElementById('avviso-ext-paziente-nome').textContent = p.nome || 'Assistito';
+  document.getElementById('avviso-ext-scorta-val').textContent = (t.scorta || 0) + ' compresse';
+  document.getElementById('avviso-ext-autonomia-val').textContent = '~' + giorniAutonomia + ' giorni (fino al ' + dataTermineStr + ')';
+  document.getElementById('avviso-ext-orario-val').textContent = t.ora || 'Orario prescritto';
+  document.getElementById('avviso-ext-farmacia').value = t.farmacia || p.farmaciaDiRiferimento || 'Ospedale Territoriale / Farmacia';
+
+  // Canali contatti salvati
+  var savedTel = localStorage.getItem('careassist_notifica_tel') || p.cellulare || p.telefonoFisso || '366 460 7396';
+  var savedMail = localStorage.getItem('careassist_notifica_mail') || 'ciromilella3@gmail.com';
+  document.getElementById('avviso-ext-telefono').value = savedTel;
+  document.getElementById('avviso-ext-email').value = savedMail;
+
+  m.style.display = 'flex';
+}
+window.apriModalAvvisoFarmacoEsterno = apriModalAvvisoFarmacoEsterno;
+
+function chiudiModalAvvisoFarmacoEsterno() {
+  var m = document.getElementById('modal-avviso-farmaco-esterno');
+  if (m) m.style.display = 'none';
+}
+window.chiudiModalAvvisoFarmacoEsterno = chiudiModalAvvisoFarmacoEsterno;
+
+// 1. GENERA EVENTO CALENDARIO SMARTPHONE (.ICS) PER SVEGLIA E PROMEMORIA SCORTE
+function scaricaPromemoriaCalendarioFarmaco() {
+  var p = getActivePaziente();
+  var farmId = parseInt(document.getElementById('avviso-ext-farmaco-id').value);
+  if (!p || !p.terapie || !farmId) return;
+  var t = p.terapie.find(function(item) { return item.id === farmId; });
+  if (!t) return;
+
+  var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
+  var giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
+  var farmacia = document.getElementById('avviso-ext-farmacia').value.trim() || 'Ospedale Territoriale di Bari / Farmacia';
+
+  var dOggi = new Date();
+  var dRitiro = new Date();
+  dRitiro.setDate(dRitiro.getDate() + Math.max(1, giorniAutonomia - 3)); // 3 giorni prima del termine scorte
+
+  var y = dRitiro.getFullYear();
+  var m = String(dRitiro.getMonth() + 1).padStart(2, '0');
+  var d = String(dRitiro.getDate()).padStart(2, '0');
+  var startEvent = y + m + d + 'T090000';
+  var endEvent = y + m + d + 'T100000';
+  var nowStamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+  var ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//CareAssist Pro//Promemoria Farmaci H24//IT',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    'UID:farmaco-ritiro-' + farmId + '-' + Date.now() + '@careassist.pro',
+    'DTSTAMP:' + nowStamp,
+    'DTSTART:' + startEvent,
+    'DTEND:' + endEvent,
+    'SUMMARY:🚨 RITIRO FARMACO: ' + cleanNome + ' - ' + (p.nome || 'Paziente'),
+    'DESCRIPTION:Avviso Scorte in Esaurimento! Mancano pochi giorni al termine di ' + cleanNome + '. Ricordare ricetta medica e ritirare le nuove confezioni presso: ' + farmacia + '.',
+    'LOCATION:' + farmacia,
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-P1D',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Promemoria: domani ritirare ' + cleanNome,
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT2H',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:URGENTE: oggi ritiro ' + cleanNome + ' presso ' + farmacia,
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'PROMEMORIA_RITIRO_' + cleanNome.replace(/\s+/g, '_') + '.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast('📅 Sveglia/Promemoria creato! Aprilo per aggiungerlo al tuo Google Calendar o iPhone!');
+}
+window.scaricaPromemoriaCalendarioFarmaco = scaricaPromemoriaCalendarioFarmaco;
+
+// 2. INVIA AVVISO ISTANTANEO SU WHATSAPP (A SE STESSI, AL MEDICO O AL FAMILIARE)
+function inviaAvvisoFarmacoWhatsApp() {
+  var p = getActivePaziente();
+  var farmId = parseInt(document.getElementById('avviso-ext-farmaco-id').value);
+  if (!p || !p.terapie || !farmId) return;
+  var t = p.terapie.find(function(item) { return item.id === farmId; });
+  if (!t) return;
+
+  var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
+  var giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
+  var farmacia = document.getElementById('avviso-ext-farmacia').value.trim() || 'Ospedale Territoriale / Farmacia';
+  var telTarget = document.getElementById('avviso-ext-telefono').value.trim().replace(/\D/g, '');
+  if (telTarget) localStorage.setItem('careassist_notifica_tel', telTarget);
+
+  var dTermine = new Date();
+  dTermine.setDate(dTermine.getDate() + giorniAutonomia);
+  var dTermineStr = dTermine.toLocaleDateString('it-IT');
+
+  var msg = '*🔔 CAREASSIST PRO — NOTIFICA SCORTE & ASSUNZIONE FARMACO*\n\n' +
+    '👤 *Assistito:* ' + (p.nome || 'Paziente') + '\n' +
+    '💊 *Farmaco:* *' + cleanNome + '* (' + (t.dosaggio || '1 cpr') + ')\n' +
+    '⏰ *Orario abituale:* ' + (t.ora || 'Mattina') + '\n' +
+    '📦 *Scorta residua:* ' + (t.scorta || 0) + ' compresse (~' + giorniAutonomia + ' giorni)\n' +
+    '⏳ *Data presunta esaurimento:* *' + dTermineStr + '*\n\n' +
+    '📍 *Punto di Ritiro:* ' + farmacia + '\n' +
+    '⚠️ *Azione richiesta:* Richiedere prescrizione/piano terapeutico al medico e recarsi al ritiro delle nuove scatole prima della data indicata.\n\n' +
+    '_Avviso generato da CareAssist Pro Suite Milella_';
+
+  var numStr = telTarget.length > 8 ? (telTarget.startsWith('39') ? telTarget : '39' + telTarget) : '';
+  var url = numStr ? ('https://wa.me/' + numStr + '?text=' + encodeURIComponent(msg)) : ('https://wa.me/?text=' + encodeURIComponent(msg));
+  window.open(url, '_blank');
+  showToast('📲 Avviso pronto da inviare su WhatsApp!');
+}
+window.inviaAvvisoFarmacoWhatsApp = inviaAvvisoFarmacoWhatsApp;
+
+// 3. INVIA AVVISO VIA EMAIL DIRETTA (MAILTO COMPILATA / SERVER)
+function inviaAvvisoFarmacoEmail() {
+  var p = getActivePaziente();
+  var farmId = parseInt(document.getElementById('avviso-ext-farmaco-id').value);
+  if (!p || !p.terapie || !farmId) return;
+  var t = p.terapie.find(function(item) { return item.id === farmId; });
+  if (!t) return;
+
+  var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
+  var giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
+  var farmacia = document.getElementById('avviso-ext-farmacia').value.trim() || 'Ospedale Territoriale / Farmacia';
+  var mailTarget = document.getElementById('avviso-ext-email').value.trim();
+  if (mailTarget) localStorage.setItem('careassist_notifica_mail', mailTarget);
+
+  var dTermine = new Date();
+  dTermine.setDate(dTermine.getDate() + giorniAutonomia);
+  var dTermineStr = dTermine.toLocaleDateString('it-IT');
+
+  var subject = 'Avviso Scorte & Ritiro Farmaco: ' + cleanNome + ' - ' + (p.nome || 'Assistito');
+  var body = 'Gentile ' + (p.nome || 'Assistito') + ' / Caregiver,\n\n' +
+    'Questo promemoria automatico da CareAssist Pro segnala che il farmaco:\n\n' +
+    'FARMACO: ' + cleanNome + ' (' + (t.dosaggio || '1 cpr') + ')\n' +
+    'SCORTA RESIDUA: ' + (t.scorta || 0) + ' compresse\n' +
+    'AUTONOMIA: circa ' + giorniAutonomia + ' giorni (data limite: ' + dTermineStr + ')\n' +
+    'LUOGO DI RITIRO: ' + farmacia + '\n\n' +
+    'Si raccomanda di contattare il medico curante per il rinnovo della prescrizione e pianificare il ritiro delle confezioni necessarie.\n\n' +
+    'Cordiali saluti,\nCareAssist Pro - Suite Milella';
+
+  var mailtoUrl = 'mailto:' + encodeURIComponent(mailTarget) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  window.location.href = mailtoUrl;
+  showToast('📧 Scheda notifica email aperta nel client di posta!');
+}
+window.inviaAvvisoFarmacoEmail = inviaAvvisoFarmacoEmail;

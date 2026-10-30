@@ -2920,6 +2920,95 @@
   </div>
 
 
+  
+  <!-- MODAL: NOTIFICHE ESTERNE FARMACO & CALENDARIO SMARTPHONE -->
+  <div class="modal-overlay" id="modal-avviso-farmaco-esterno" style="z-index:999999; background:rgba(15, 23, 42, 0.85); backdrop-filter:blur(6px);">
+    <div class="modal-card" style="max-width:580px; border-radius:18px; overflow:hidden; border:2px solid #38bdf8; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+      <div class="modal-header" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:white; padding:16px 20px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:28px;">🔔</span>
+          <div>
+            <h3 style="margin:0; font-size:18px; font-weight:800;">Notifiche Esterne & Promemoria Farmaco</h3>
+            <p style="margin:2px 0 0; font-size:12.5px; color:#bae6fd;">Avvisi su Smartphone, WhatsApp ed Email anche a schermo spento</p>
+          </div>
+        </div>
+        <button class="modal-close" style="color:white; font-size:24px; cursor:pointer;" onclick="chiudiModalAvvisoFarmacoEsterno()">&times;</button>
+      </div>
+
+      <div class="modal-body" style="padding:20px; background:#ffffff; color:#0f172a;">
+        <input type="hidden" id="avviso-ext-farmaco-id">
+
+        <!-- RIEPILOGO CLINICO FARMACO SELEZIONATO -->
+        <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:14px; margin-bottom:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <span style="font-size:11px; font-weight:800; color:#15803d; text-transform:uppercase; letter-spacing:0.5px;">Assistito: <span id="avviso-ext-paziente-nome">Ciro Milella</span></span>
+              <div style="font-size:17px; font-weight:900; color:#166534; margin-top:2px;" id="avviso-ext-nome-farmaco">Entecavir 0.5 mg</div>
+            </div>
+            <span style="background:#dcfce7; color:#166534; font-size:11px; font-weight:800; padding:3px 8px; border-radius:999px; border:1px solid #86efac;">Salva-Vita / Continuo</span>
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-top:10px; font-size:12px; color:#334155; border-top:1px dashed #bbf7d0; padding-top:8px;">
+            <div>📦 Scorta Residua: <b id="avviso-ext-scorta-val" style="color:#0f172a;">--</b></div>
+            <div>⏳ Autonomia: <b id="avviso-ext-autonomia-val" style="color:#0369a1;">--</b></div>
+            <div>⏰ Orario: <b id="avviso-ext-orario-val" style="color:#0f172a;">--</b></div>
+          </div>
+        </div>
+
+        <!-- RECAPITI DI NOTIFICA -->
+        <div style="margin-bottom:18px;">
+          <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:6px;">📍 Luogo di Ritiro Farmaco / Farmacia Territoriale:</label>
+          <input type="text" id="avviso-ext-farmacia" class="form-control" placeholder="Es. Farmacia Territoriale Ospedale di Bari (DPC)" style="font-size:13px; font-weight:600; padding:8px 12px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:18px;">
+          <div>
+            <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:4px;">📱 Cellulare per WhatsApp:</label>
+            <input type="tel" id="avviso-ext-telefono" class="form-control" placeholder="366 460 7396" style="font-size:13px; padding:8px 10px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+          </div>
+          <div>
+            <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:4px;">📧 Email per Riepilogo Scorte:</label>
+            <input type="email" id="avviso-ext-email" class="form-control" placeholder="ciromilella3@gmail.com" style="font-size:13px; padding:8px 10px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+          </div>
+        </div>
+
+        <!-- LE 3 AZIONI RAPIDE DI NOTIFICA -->
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <!-- AZIONE 1: CALENDARIO NATIVO SMARTPHONE -->
+          <button type="button" class="btn" onclick="scaricaPromemoriaCalendarioFarmaco()" style="background:#0284c7; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 3px 10px rgba(2,132,199,0.25);" onmouseover="this.style.background='#0369a1'" onmouseout="this.style.background='#0284c7'">
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">📅</span> 
+              <span>1. Aggiungi Sveglia & Promemoria a Calendario Smartphone</span>
+            </span>
+            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px;">Google / Apple iCal</span>
+          </button>
+
+          <!-- AZIONE 2: NOTIFICA WHATSAPP -->
+          <button type="button" class="btn" onclick="inviaAvvisoFarmacoWhatsApp()" style="background:#16a34a; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 3px 10px rgba(22,163,74,0.25);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">📲</span> 
+              <span>2. Invia Promemoria Scorte su WhatsApp</span>
+            </span>
+            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px;">Messaggio Istantaneo</span>
+          </button>
+
+          <!-- AZIONE 3: NOTIFICA EMAIL -->
+          <button type="button" class="btn" onclick="inviaAvvisoFarmacoEmail()" style="background:#475569; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 3px 10px rgba(71,85,105,0.25);" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#475569'">
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">📧</span> 
+              <span>3. Invia Notifica Scorte via Email</span>
+            </span>
+            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px;">Posta Elettronica</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding:12px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; text-align:right;">
+        <button type="button" class="btn btn-outline" onclick="chiudiModalAvvisoFarmacoEsterno()" style="font-weight:700;">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- MODAL: REGISTRAZIONE FARMACO SALTATO / MANCATA ASSUNZIONE -->
   <div class="modal-overlay" id="modal-salta-farmaco" style="z-index:999999; background:rgba(15, 23, 42, 0.85); backdrop-filter:blur(6px);">
     <div class="modal-card" style="max-width:540px; border-radius:18px; overflow:hidden; border:2px solid #f87171;">
