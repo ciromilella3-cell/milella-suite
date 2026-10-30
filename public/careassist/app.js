@@ -2552,12 +2552,16 @@ function showToast(messaggio, tipo = 'success') {
 
 function cambiaPaziente(pazId) {
   AppData.activePazienteId = pazId;
-  if (typeof aggiornaVisibilitaTabEpatologia === 'function') aggiornaVisibilitaTabEpatologia();
+  saveDb();
+  if (typeof renderAll === 'function') {
+    renderAll();
+  } else {
+    if (typeof aggiornaVisibilitaTabEpatologia === 'function') aggiornaVisibilitaTabEpatologia();
+  }
   var tabSection = document.getElementById('tab-epatologia');
   if (tabSection && (tabSection.style.display === 'block' || tabSection.style.display === 'flex' || tabSection.classList.contains('active'))) {
     if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
   }
-  saveDb();
 }
 
 // Gestione Intelligente Patologie Cliniche (Chip Rapidi & Catalogo Dinamico)
