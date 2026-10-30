@@ -13839,6 +13839,637 @@ function apriModuloGoogleUfficiale() {
 }
 window.apriModuloGoogleUfficiale = apriModuloGoogleUfficiale;
 
+
+// ==============================================================================
+// CATALOGO COMPLETO UFFICIALE PRESTAMPATO POLICLINICO DI BARI (MOD. 1/AL/CL-1)
+// U.O. Malattie Infettive Universitaria - Direttore: Prof.ssa Annalisa Saracino
+// ==============================================================================
+
+const CATALOGO_COMPLETO_MODULO_POLICLINICO = {
+  fegato: {
+    titolo: 'FEGATO & ASSETTO VIROLOGICO',
+    icona: '🔬',
+    esami: [
+      { nome: 'Transaminasi (ALT/GPT & AST/GOT)', cat: 'Funzione Epatica', note: 'Necrosi/citolisi epatica' },
+      { nome: 'Fosfatasi alcalina', cat: 'Funzione Epatica', note: 'Indice di colestasi' },
+      { nome: 'gamma GT', cat: 'Funzione Epatica', note: 'Enzima microsomiale epatico' },
+      { nome: 'Alfa - fetoproteina (AFP)', cat: 'Marcatori Epatici', note: 'Sorveglianza epatocarcinoma semestrale' },
+      { nome: 'Ammoniemia', cat: 'Funzione Epatica', note: 'Livelli sierici ammoniaca' },
+      { nome: 'Bilirubina tot. e dir.', cat: 'Funzione Epatica', note: 'Metabolismo biliare' },
+      { nome: 'Proteine totali', cat: 'Funzione Epatica', note: 'Sintesi proteica' },
+      { nome: 'Elettroforesi proteica', cat: 'Funzione Epatica', note: 'Tracciato siero-proteico' },
+      { nome: 'Albuminemia', cat: 'Funzione Epatica', note: 'Quadro albuminico' },
+      { nome: 'Anti - HAV IgG', cat: 'Virologia Epatica', note: 'Immunità Epatite A' },
+      { nome: 'Anti - HAV IgM', cat: 'Virologia Epatica', note: 'Infezione acuta Epatite A' },
+      { nome: 'Anti HEV', cat: 'Virologia Epatica', note: 'Anticorpi Epatite E' },
+      { nome: 'HBsAg (Antigene di Superficie HBV)', cat: 'Virologia HBV', codice: '88.60.6', pennarello: true, ambulatorio: true, note: '🖊️ Evidenziato con pennarello celeste - Emesso direttamente da Ambulatorio Infettivi' },
+      { nome: 'Anti - HBs', cat: 'Virologia HBV', note: 'Titolo anticorpale anti-HBs' },
+      { nome: 'Anti - HBc IgM', cat: 'Virologia HBV', note: 'Infezione acuta/riacutizzazione' },
+      { nome: 'Anti - HBc (totale)', cat: 'Virologia HBV', note: 'Contatto pregresso o cronico' },
+      { nome: 'HBeAg', cat: 'Virologia HBV', note: 'Replicazione attiva HBV' },
+      { nome: 'Anti HBe', cat: 'Virologia HBV', note: 'Sieroconversione e' },
+      { nome: 'HBV - DNA Quantitativo (Real Time PCR)', cat: 'Virologia HBV', codice: '88.30.1', pennarello: true, ambulatorio: true, note: '🖊️ Evidenziato con pennarello celeste - Emesso direttamente da Ambulatorio Infettivi' },
+      { nome: 'HDV - RNA', cat: 'Virologia HDV', note: 'Replicazione Delta virale' },
+      { nome: 'Anti - HDV IgG', cat: 'Virologia HDV', note: 'Anticorpi Epatite Delta IgG' },
+      { nome: 'Anti - HDV IgM', cat: 'Virologia HDV', note: 'Anticorpi Epatite Delta IgM' },
+      { nome: 'Anti - HCV', cat: 'Virologia HCV', note: 'Screening Epatite C' },
+      { nome: 'HCV genotipo', cat: 'Virologia HCV', note: 'Tipizzazione genotipica HCV' },
+      { nome: 'HCV - RNA quantitativo', cat: 'Virologia HCV', note: 'Viremia Epatite C' },
+      { nome: 'HCV - RNA qualitativo', cat: 'Virologia HCV', note: 'Rilevazione presenza virus C' },
+      { nome: 'HCV - test conferma', cat: 'Virologia HCV', note: 'Immunoblot di conferma HCV' },
+      { nome: 'PT / PTT (Coagulazione)', cat: 'Coagulazione', note: 'Attività protrombinica e INR' },
+      { nome: 'Antitrombina III', cat: 'Coagulazione', note: 'Inibitore coagulazione' },
+      { nome: 'Fibrinogeno', cat: 'Coagulazione', note: 'Proteina della fase acuta e sintesi' }
+    ]
+  },
+
+  generali: {
+    titolo: 'ESAMI GENERALI & METABOLICI',
+    icona: '🩸',
+    esami: [
+      { nome: 'VES', cat: 'Infiammazione', note: 'Velocità eritrosedimentazione' },
+      { nome: 'Emocromo completo con formula', cat: 'Ematologia', note: 'Serie rossa e bianca' },
+      { nome: 'Piastrine', cat: 'Ematologia', note: 'Conta piastrinica specifica' },
+      { nome: 'Coombs dir. e ind.', cat: 'Immunoematologia', note: 'Test di Coombs' },
+      { nome: 'Sideremia', cat: 'Assetto Marziale', note: 'Ferro sierico' },
+      { nome: 'Ferritinemia', cat: 'Assetto Marziale', note: 'Depositi marziali' },
+      { nome: 'Transferrinemia', cat: 'Assetto Marziale', note: 'Capacità legante ferro' },
+      { nome: 'Azotemia', cat: 'Funzione Renale', note: 'Azoto ureico plasmatico' },
+      { nome: 'Glicemia', cat: 'Metabolismo Glucidico', note: 'Glucosio plasmatico' },
+      { nome: 'Creatininemia', cat: 'Funzione Renale', note: 'Clearance e funzione renale' },
+      { nome: 'Amilasi pancreatica', cat: 'Pancreas', note: 'Enzima pancreatico' },
+      { nome: 'Lipasi', cat: 'Pancreas', note: 'Specificità pancreatica' },
+      { nome: 'Sodiemia', cat: 'Elettroliti', note: 'Sodio plasmatico' },
+      { nome: 'Potassiemia', cat: 'Elettroliti', note: 'Potassio plasmatico' },
+      { nome: 'Calcemia', cat: 'Elettroliti', note: 'Calcio totale' },
+      { nome: 'Fosforemia', cat: 'Elettroliti', note: 'Fosforo sierico' },
+      { nome: 'Magnesiemia', cat: 'Elettroliti', note: 'Magnesio sierico' },
+      { nome: 'Colesterolo', cat: 'Assetto Lipidico', note: 'Colesterolo totale' },
+      { nome: 'Trigliceridi', cat: 'Assetto Lipidico', note: 'Trigliceridemia' },
+      { nome: 'Colinesterasi', cat: 'Funzione Epatica', note: 'Funzione di sintesi epatica' },
+      { nome: 'CPK', cat: 'Muscolare/Cardiaco', note: 'Creatinfosfochinasi' },
+      { nome: 'Uricemia', cat: 'Metabolismo Purine', note: 'Acido urico sierico' },
+      { nome: 'LDH', cat: 'Enzimologia', note: 'Lattato deidrogenasi' },
+      { nome: 'Esame urine completo', cat: 'Nefrologia', note: 'Chimico-fisico e microscopico sedimento' }
+    ]
+  },
+
+  strumentali: {
+    titolo: 'ESAMI STRUMENTALI & RADIOLOGICI',
+    icona: '📸',
+    esami: [
+      { nome: 'Ecografia addome sup.', cat: 'Strumentale', note: 'Sorveglianza semestrale parenchima epatico, calibro vena porta e milza' },
+      { nome: 'Ecografia renale', cat: 'Strumentale', note: 'Studio reni e vie urinarie' },
+      { nome: 'Ecografia tiroide', cat: 'Strumentale', note: 'Studio parenchima tiroideo' },
+      { nome: 'ECG (Elettrocardiogramma)', cat: 'Strumentale', note: 'Ritmo cardiaco' },
+      { nome: 'Fibroscan', cat: 'Strumentale', note: 'Elastometria epatica di rigidità tissutale' },
+      { nome: 'E.G.D. scopia', cat: 'Strumentale', note: 'Esofagogastroduodenoscopia per varici esofagee' },
+      { nome: 'T.A.C.', cat: 'Radiologia', note: 'Tomografia Assiale Computerizzata' },
+      { nome: 'RMN', cat: 'Radiologia', note: 'Risonanza Magnetica Nucleare' },
+      { nome: 'Colangio-RMN', cat: 'Radiologia', note: 'Studio vie biliari' },
+      { nome: 'Prelievo Ambulatoriale (Cod. 96.10.1)', cat: 'Prestazione Reparto', codice: '96.10.1', pennarello: true, ambulatorio: true, note: 'Eseguito direttamente presso l\'ambulatorio infettivi' }
+    ]
+  },
+
+  immunologia: {
+    titolo: 'ESAMI IMMUNOLOGICI',
+    icona: '🛡️',
+    esami: [
+      { nome: 'C3, C4', cat: 'Complemento', note: 'Frazioni frazioni complemento' },
+      { nome: 'Dosaggio immunoglobuline', cat: 'Immunoglobuline', note: 'IgG, IgA, IgM' },
+      { nome: 'Immunocomplessi circolanti', cat: 'Autoimmunità', note: 'Complessi antigene-anticorpo' },
+      { nome: 'Sottopopolazioni linfocitarie', cat: 'Immunologia', note: 'CD4, CD8, rapporto CD4/CD8' },
+      { nome: 'Waaler Rose, RA - test - FR', cat: 'Reumatologia', note: 'Fattore reumatoide' },
+      { nome: 'PCR', cat: 'Infiammazione', note: 'Proteina C Reattiva' },
+      { nome: 'Crioglobuline', cat: 'Autoimmunità', note: 'Ricerca e dosaggio crioglobuline' },
+      { nome: 'Ab anti - LKM', cat: 'Autoimmunità Epatica', note: 'Anticorpi microsomiali fegato-rene' },
+      { nome: 'Ab anti - tireoglobulina', cat: 'Tiroide', note: 'Anti-TG' },
+      { nome: 'Ab anti - tireoperossidosi', cat: 'Tiroide', note: 'Anti-TPO' },
+      { nome: 'Ab anti - DNA nativo', cat: 'Autoimmunità', note: 'Anti-dsDNA' },
+      { nome: 'Ab anti - nucleo', cat: 'Autoimmunità', note: 'ANA' },
+      { nome: 'Ab anti - mitocondrio', cat: 'Autoimmunità Epatica', note: 'AMA (Cirrosi biliare primitiva)' },
+      { nome: 'Ab anti - muscolo liscio', cat: 'Autoimmunità Epatica', note: 'ASMA (Epatite autoimmune)' }
+    ]
+  },
+
+  sierologia: {
+    titolo: 'SIEROLOGIA INFETTIVOLOGICA',
+    icona: '🧪',
+    esami: [
+      { nome: 'S. di Vidal', cat: 'Sierodiagnosi', note: 'Tifo' },
+      { nome: 'S. di Wright', cat: 'Sierodiagnosi', note: 'Brucellosi' },
+      { nome: 'Ab incompleti anti - brucella', cat: 'Sierodiagnosi', note: 'Test al Coombs per brucella' },
+      { nome: 'IgG anti - toxoplasma', cat: 'Parassitologia', note: 'Toxoplasmosi pregressa' },
+      { nome: 'IgM anti - toxoplasma', cat: 'Parassitologia', note: 'Toxoplasmosi recente' },
+      { nome: 'IgG anti - CMV', cat: 'Virologia', note: 'Citomegalovirus pregresso' },
+      { nome: 'IgM anti - CMV', cat: 'Virologia', note: 'Citomegalovirus attivo' },
+      { nome: 'Paul Bunnel', cat: 'Virologia', note: 'Mononucleosi infettiva' },
+      { nome: 'Anti - VGA - IgG - IgM', cat: 'Virologia', note: 'Anticorpi virus specifici' },
+      { nome: 'Anti - EBNA - IgG - IgM', cat: 'Virologia', note: 'Epstein-Barr' },
+      { nome: 'IgG anti - rosolia', cat: 'Virologia', note: 'Rubeo test' },
+      { nome: 'IgM anti - rosolia', cat: 'Virologia', note: 'Rosolia attiva' },
+      { nome: 'IgG anti - HSV - 1 - 2', cat: 'Virologia', note: 'Herpes simplex' },
+      { nome: 'IgM anti - HSV - 1 - 2', cat: 'Virologia', note: 'Herpes simplex attivo' },
+      { nome: 'Anti - HIV 1/2', cat: 'Virologia', note: 'Screening HIV' },
+      { nome: 'Ab anti - echinococco', cat: 'Parassitologia', note: 'Idatidosi' },
+      { nome: 'Ab anti - listeria', cat: 'Batteriologia', note: 'Listeriosi' },
+      { nome: 'FT3, FT4 - TSH', cat: 'Tiroide', note: 'Funzione tiroidea completa' }
+    ]
+  },
+
+  altri: {
+    titolo: 'BATTERIOLOGIA, MARCATORI & ALTRI',
+    icona: '📑',
+    esami: [
+      { nome: 'Es. parassitol. feci', cat: 'Parassitologia', note: 'Ricerca uova e parassiti' },
+      { nome: 'Coprocoltura', cat: 'Batteriologia', note: 'Flora batterica intestinale patogena' },
+      { nome: 'Ricerca BK', cat: 'Micobatteri', note: 'Bacillo di Koch' },
+      { nome: 'Urinocoltura', cat: 'Batteriologia', note: 'Urinocoltura con antibiogramma' },
+      { nome: 'CEA', cat: 'Marcatori Tumorali', note: 'Antigene carcino-embrionario' },
+      { nome: 'CA-19-9', cat: 'Marcatori Tumorali', note: 'Gastrointestinale / vie biliari' },
+      { nome: 'CA-125, TPA', cat: 'Marcatori Tumorali', note: 'Marcatori sierici' },
+      { nome: 'P.S.A.', cat: 'Urologia', note: 'Antigene prostatico specifico' },
+      { nome: 'S.O.F.', cat: 'Screening', note: 'Sangue occulto nelle feci (3 campioni)' }
+    ]
+  }
+};
+window.CATALOGO_COMPLETO_MODULO_POLICLINICO = CATALOGO_COMPLETO_MODULO_POLICLINICO;
+
+
+// PRESET UFFICIALE RILEVATO DALLA FOTO DELLA VISITA DI CIRO MILELLA (23/02/2026)
+const PRESET_FOTO_CIRO_2026 = [
+  { nome: 'Ecografia addome sup.', cat: 'Strumentale', note: 'Studio parenchima epatico, calibro vena porta e milza', mmg: true },
+  { nome: 'Transaminasi (ALT/GPT & AST/GOT)', cat: 'Funzione Epatica', note: 'Necrosi/citolisi epatica', mmg: true },
+  { nome: 'Fosfatasi alcalina', cat: 'Funzione Epatica', note: 'Indice di colestasi', mmg: true },
+  { nome: 'gamma GT', cat: 'Funzione Epatica', note: 'Enzima microsomiale', mmg: true },
+  { nome: 'Alfa - fetoproteina (AFP)', cat: 'Marcatori Epatici', note: 'Sorveglianza semestrale epatocarcinoma', mmg: true },
+  { nome: 'Bilirubina tot. e dir.', cat: 'Funzione Epatica', note: 'Metabolismo biliare ed escrezione', mmg: true },
+  { nome: 'Azotemia', cat: 'Funzione Renale', note: 'Azoto ureico', mmg: true },
+  { nome: 'Glicemia', cat: 'Metabolismo Glucidico', note: 'Glicemia a digiuno', mmg: true },
+  { nome: 'Creatininemia', cat: 'Funzione Renale', note: 'Funzione glomerulare e clearance', mmg: true },
+  { nome: 'Potassiemia', cat: 'Elettroliti', note: 'Potassio sierico', mmg: true },
+  { nome: 'HBsAg (Antigene di Superficie HBV)', cat: 'Virologia HBV', codice: '88.60.6', pennarello: true, ambulatorio: true, note: '🖊️ Evidenziato con pennarello celeste - Emesso direttamente da Ambulatorio Infettivi' },
+  { nome: 'HBV - DNA Quantitativo (Real Time PCR)', cat: 'Virologia HBV', codice: '88.30.1', pennarello: true, ambulatorio: true, note: '🖊️ Evidenziato con pennarello celeste - Emesso direttamente da Ambulatorio Infettivi' },
+  { nome: 'Prelievo Ambulatoriale (Cod. 96.10.1)', cat: 'Prestazione Reparto', codice: '96.10.1', pennarello: true, ambulatorio: true, note: 'Eseguito internamente presso Ambulatorio Malattie Infettive' }
+];
+
+// INIZIALIZZA O RECUPERA L'ARCHIVIO STORICO VISITE POLICLINICO
+function getArchivioStoricoControlliPaziente(paziente) {
+  var p = paziente || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
+  if (!p) return [];
+  if (!p.archivioControlliInfettivi) {
+    p.archivioControlliInfettivi = [
+      {
+        id: 'visita_20250929',
+        dataPrescrizione: '2025-09-29',
+        dataProssimaVisita: '2026-02-23',
+        medicoSpecialista: 'Prof.ssa Annalisa Saracino - Clinica Malattie Infettive Policlinico Bari',
+        note: 'Controllo semestrale HBV & Sorveglianza ecografica. Prescritto rinnovo Entecavir 0.5 mg.',
+        immagineScheda: '/careassist/assets/img/scheda_prescrittiva_policlinico.jpg',
+        stato: 'Completata & Refertata',
+        esami: [
+          { nome: 'Ecografia addome sup.', refertato: true, valoreReferto: 'Regolare, parenchima nei limiti' },
+          { nome: 'Transaminasi (ALT/AST)', refertato: true, valoreReferto: 'ALT 22 UI/L, AST 19 UI/L (Normali)' },
+          { nome: 'gamma GT & Fosfatasi', refertato: true, valoreReferto: 'Nella norma' },
+          { nome: 'Alfa - fetoproteina', refertato: true, valoreReferto: '3.2 ng/mL (Negativo)' },
+          { nome: 'Bilirubina tot/dir', refertato: true, valoreReferto: '0.8 mg/dL' },
+          { nome: 'HBV-DNA Quantitativo', refertato: true, valoreReferto: 'Non Rilevabile (< 10 UI/mL)' },
+          { nome: 'HBsAg', refertato: true, valoreReferto: 'Presente (Monitoraggio stabile)' }
+        ]
+      }
+    ];
+    saveDb();
+  }
+  return p.archivioControlliInfettivi;
+}
+window.getArchivioStoricoControlliPaziente = getArchivioStoricoControlliPaziente;
+
+
+// ==============================================================================
+// GESTIONE AUTONOMA MODULO POLICLINICO (MODAL & INTERACTION)
+// ==============================================================================
+
+let _esamiSelezionatiInModuloTemp = [];
+
+function apriModalGestioneModuloPoliclinico() {
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  var esamiAttivi = (scheda && scheda.esami) ? scheda.esami : [];
+  
+  // Copia profonda nello stato temporaneo del modal
+  _esamiSelezionatiInModuloTemp = JSON.parse(JSON.stringify(esamiAttivi));
+
+  renderGrigliaModuloPoliclinico();
+  var modal = document.getElementById('modal-gestione-modulo-policlinico');
+  if (modal) modal.classList.add('active');
+}
+window.apriModalGestioneModuloPoliclinico = apriModalGestioneModuloPoliclinico;
+
+function chiudiModalGestioneModuloPoliclinico() {
+  var modal = document.getElementById('modal-gestione-modulo-policlinico');
+  if (modal) modal.classList.remove('active');
+}
+window.chiudiModalGestioneModuloPoliclinico = chiudiModalGestioneModuloPoliclinico;
+
+function renderGrigliaModuloPoliclinico() {
+  var container = document.getElementById('griglia-modulo-policlinico-container');
+  var contaEl = document.getElementById('conta-esami-modulo-attivi');
+  if (!container) return;
+
+  if (contaEl) contaEl.textContent = _esamiSelezionatiInModuloTemp.length;
+
+  var chiaviSezioni = ['fegato', 'generali', 'strumentali', 'immunologia', 'sierologia', 'altri'];
+  var html = '<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap:16px;">';
+
+  chiaviSezioni.forEach(function(sezKey) {
+    var sez = CATALOGO_COMPLETO_MODULO_POLICLINICO[sezKey];
+    if (!sez) return;
+
+    var itemsHtml = sez.esami.map(function(esItem) {
+      var isAttivo = _esamiSelezionatiInModuloTemp.some(function(sel) {
+        return sel.nome.toLowerCase().includes(esItem.nome.toLowerCase().slice(0, 10)) || 
+               esItem.nome.toLowerCase().includes(sel.nome.toLowerCase().slice(0, 10));
+      });
+
+      var isPennarello = esItem.pennarello || (esItem.codice === '88.60.6' || esItem.codice === '88.30.1' || esItem.codice === '96.10.1');
+      var itemBg = isAttivo 
+        ? (isPennarello ? '#e0f2fe' : '#f0fdf4') 
+        : '#ffffff';
+      var itemBorder = isAttivo 
+        ? (isPennarello ? '#0284c7' : '#22c55e') 
+        : '#e2e8f0';
+
+      var badgeAmbulatorio = isPennarello 
+        ? '<span style="font-size:9.5px; font-weight:900; background:#38bdf8; color:#0c4a6e; padding:1px 5px; border-radius:4px; margin-left:4px;">🖊️ PENNARELLO (Cod. ' + (esItem.codice || 'SSN') + ')</span>' 
+        : '';
+
+      return '<div style="background:' + itemBg + '; border:1.5px solid ' + itemBorder + '; border-radius:8px; padding:7px 10px; display:flex; align-items:flex-start; gap:8px; transition:all 0.2s ease; cursor:pointer;" onclick="toggleEsameNelModulo(\'' + encodeURIComponent(esItem.nome) + '\', \'' + sezKey + '\')">' +
+        '<input type="checkbox" ' + (isAttivo ? 'checked' : '') + ' style="width:17px; height:17px; accent-color:#0284c7; margin-top:2px; cursor:pointer;" onclick="event.stopPropagation(); toggleEsameNelModulo(\'' + encodeURIComponent(esItem.nome) + '\', \'' + sezKey + '\')">' +
+        '<div style="flex:1;">' +
+          '<div style="font-size:12px; font-weight:800; color:#0f172a; line-height:1.25;">' + esItem.nome + badgeAmbulatorio + '</div>' +
+          '<div style="font-size:10px; color:#64748b; margin-top:2px;">' + (esItem.note || esItem.cat) + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    html += '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px 14px; box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
+      '<div style="display:flex; align-items:center; gap:8px; border-bottom:1.5px solid #f1f5f9; padding-bottom:8px; margin-bottom:10px;">' +
+        '<span style="font-size:18px;">' + sez.icona + '</span>' +
+        '<div style="font-size:12.5px; font-weight:900; color:#1e293b; text-transform:uppercase; letter-spacing:0.4px;">' + sez.titolo + '</div>' +
+      '</div>' +
+      '<div style="display:flex; flex-direction:column; gap:6px; max-height:320px; overflow-y:auto; padding-right:4px;">' +
+        itemsHtml +
+      '</div>' +
+    '</div>';
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+window.renderGrigliaModuloPoliclinico = renderGrigliaModuloPoliclinico;
+
+function toggleEsameNelModulo(nomeEsameEnc, sezKey) {
+  var nomeEsame = decodeURIComponent(nomeEsameEnc);
+  var idx = _esamiSelezionatiInModuloTemp.findIndex(function(sel) {
+    return sel.nome.toLowerCase().includes(nomeEsame.toLowerCase().slice(0, 10)) || 
+           nomeEsame.toLowerCase().includes(sel.nome.toLowerCase().slice(0, 10));
+  });
+
+  if (idx !== -1) {
+    // Rimuove
+    _esamiSelezionatiInModuloTemp.splice(idx, 1);
+  } else {
+    // Trova le info complete nel catalogo
+    var itemFound = null;
+    var sez = CATALOGO_COMPLETO_MODULO_POLICLINICO[sezKey];
+    if (sez) {
+      itemFound = sez.esami.find(function(i) { return i.nome === nomeEsame; });
+    }
+    if (!itemFound) {
+      for (var k in CATALOGO_COMPLETO_MODULO_POLICLINICO) {
+        var found = CATALOGO_COMPLETO_MODULO_POLICLINICO[k].esami.find(function(i) { return i.nome === nomeEsame; });
+        if (found) { itemFound = found; break; }
+      }
+    }
+
+    var isPennarello = itemFound && (itemFound.pennarello || itemFound.codice === '88.60.6' || itemFound.codice === '88.30.1' || itemFound.codice === '96.10.1');
+    _esamiSelezionatiInModuloTemp.push({
+      id: 'ep_cust_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+      nome: itemFound ? itemFound.nome : nomeEsame,
+      categoria: itemFound ? itemFound.cat : 'Personalizzato',
+      note: itemFound ? itemFound.note : '',
+      codicePrestazione: itemFound ? itemFound.codice : '',
+      emessoDaAmbulatorio: isPennarello,
+      evidenziatoPennarello: isPennarello,
+      richiestoMMG: isPennarello ? true : false,
+      dataRichiestaMMG: isPennarello ? 'Automatico (Ambulatorio Infettivi)' : '',
+      prenotatoCUP: false,
+      dataPrenotazioneCUP: '',
+      oraPrenotazione: '',
+      luogoPrenotazione: isPennarello ? 'Ambulatorio Malattie Infettive Policlinico' : 'Laboratorio Analisi',
+      refertato: false,
+      valoreReferto: ''
+    });
+  }
+
+  renderGrigliaModuloPoliclinico();
+}
+window.toggleEsameNelModulo = toggleEsameNelModulo;
+
+function applicaPresetModuloPoliclinico(tipo) {
+  if (tipo === 'deseleziona_tutti') {
+    _esamiSelezionatiInModuloTemp = [];
+  } else if (tipo === 'minimo_hbv') {
+    _esamiSelezionatiInModuloTemp = [
+      { id: 'ep_4', nome: 'HBsAg (Antigene di Superficie HBV)', codicePrestazione: '88.60.6', emessoDaAmbulatorio: true, evidenziatoPennarello: true, categoria: 'Virologia HBV', note: '🖊️ Evidenziato pennarello', richiestoMMG: true, dataRichiestaMMG: 'Automatico', prenotatoCUP: false, refertato: false },
+      { id: 'ep_3', nome: 'HBV - DNA Quantitativo (Real Time PCR)', codicePrestazione: '88.30.1', emessoDaAmbulatorio: true, evidenziatoPennarello: true, categoria: 'Virologia HBV', note: '🖊️ Evidenziato pennarello', richiestoMMG: true, dataRichiestaMMG: 'Automatico', prenotatoCUP: false, refertato: false },
+      { nome: 'Transaminasi (ALT/GPT & AST/GOT)', cat: 'Funzione Epatica', note: 'Necrosi/citolisi epatica', richiestoMMG: false, prenotatoCUP: false, refertato: false },
+      { nome: 'Alfa - fetoproteina (AFP)', cat: 'Marcatori Epatici', note: 'Sorveglianza semestrale', richiestoMMG: false, prenotatoCUP: false, refertato: false },
+      { nome: 'Ecografia addome sup.', cat: 'Strumentale', note: 'Sorveglianza parenchima epatico', richiestoMMG: false, prenotatoCUP: false, refertato: false }
+    ];
+  } else if (tipo === 'ciro_reale') {
+    _esamiSelezionatiInModuloTemp = PRESET_FOTO_CIRO_2026.map(function(item, idx) {
+      return {
+        id: 'ep_preset_' + idx,
+        nome: item.nome,
+        categoria: item.cat,
+        note: item.note,
+        codicePrestazione: item.codice || '',
+        emessoDaAmbulatorio: !!item.ambulatorio,
+        evidenziatoPennarello: !!item.pennarello,
+        richiestoMMG: item.ambulatorio ? true : false,
+        dataRichiestaMMG: item.ambulatorio ? 'Automatico (Ambulatorio Infettivi)' : '',
+        prenotatoCUP: false,
+        dataPrenotazioneCUP: '',
+        oraPrenotazione: '',
+        luogoPrenotazione: item.ambulatorio ? 'Ambulatorio Malattie Infettive Policlinico' : 'Laboratorio Analisi / CUP',
+        refertato: false,
+        valoreReferto: ''
+      };
+    });
+  }
+
+  renderGrigliaModuloPoliclinico();
+  showToast('⚡ Preset applicato: ' + _esamiSelezionatiInModuloTemp.length + ' esami selezionati');
+}
+window.applicaPresetModuloPoliclinico = applicaPresetModuloPoliclinico;
+
+function salvaConfigurazioneModuloPoliclinico() {
+  var p = getActivePaziente();
+  if (!p) return;
+
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  if (!scheda) return;
+
+  scheda.esami = JSON.parse(JSON.stringify(_esamiSelezionatiInModuloTemp));
+  if (typeof sincronizzaEsamiPennarelloAmbulatorio === 'function') {
+    sincronizzaEsamiPennarelloAmbulatorio(scheda);
+  }
+
+  saveDb();
+  chiudiModalGestioneModuloPoliclinico();
+  if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
+  showToast('✅ Modulo aggiornato con successo! ' + scheda.esami.length + ' esami attivi nella cartella.');
+}
+window.salvaConfigurazioneModuloPoliclinico = salvaConfigurazioneModuloPoliclinico;
+
+function aggiungiEsamePersonalizzatoNelModulo() {
+  var nome = prompt('Inserisci il nome del nuovo esame da aggiungere al modulo:', '');
+  if (!nome || !nome.trim()) return;
+
+  var cat = prompt('Inserisci la categoria (es. Ematologia, Strumentale, Funzione Renale):', 'Laboratorio Specialistico');
+  
+  _esamiSelezionatiInModuloTemp.push({
+    id: 'ep_cust_' + Date.now(),
+    nome: nome.trim(),
+    categoria: cat ? cat.trim() : 'Personalizzato',
+    note: 'Esame aggiunto manualmente',
+    richiestoMMG: false,
+    prenotatoCUP: false,
+    refertato: false
+  });
+
+  renderGrigliaModuloPoliclinico();
+  showToast('➕ Esame "' + nome.trim() + '" aggiunto alla lista attiva!');
+}
+window.aggiungiEsamePersonalizzatoNelModulo = aggiungiEsamePersonalizzatoNelModulo;
+
+
+// ==============================================================================
+// NUOVO CONTROLLO DA FOTO & ARCHIVIAZIONE AUTOMATICA SCHEDA PRECEDENTE
+// ==============================================================================
+
+let _fotoNuovoControlloDataUrl = '';
+
+function apriModalNuovoControlloFoto() {
+  _fotoNuovoControlloDataUrl = '';
+  var placeholder = document.getElementById('box-placeholder-foto-nuova');
+  var preview = document.getElementById('preview-foto-nuova-scheda');
+  var info = document.getElementById('info-foto-caricata');
+  var fileInput = document.getElementById('input-file-nuova-scheda');
+
+  if (placeholder) placeholder.style.display = 'block';
+  if (preview) { preview.style.display = 'none'; preview.src = ''; }
+  if (info) info.style.display = 'none';
+  if (fileInput) fileInput.value = '';
+
+  var modal = document.getElementById('modal-nuovo-controllo-foto');
+  if (modal) modal.classList.add('active');
+}
+window.apriModalNuovoControlloFoto = apriModalNuovoControlloFoto;
+
+function chiudiModalNuovoControlloFoto() {
+  var modal = document.getElementById('modal-nuovo-controllo-foto');
+  if (modal) modal.classList.remove('active');
+}
+window.chiudiModalNuovoControlloFoto = chiudiModalNuovoControlloFoto;
+
+function gestisciUploadFotoNuovoControllo(event) {
+  var file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _fotoNuovoControlloDataUrl = e.target.result;
+    var preview = document.getElementById('preview-foto-nuova-scheda');
+    var placeholder = document.getElementById('box-placeholder-foto-nuova');
+    var info = document.getElementById('info-foto-caricata');
+
+    if (preview) {
+      preview.src = _fotoNuovoControlloDataUrl;
+      preview.style.display = 'block';
+    }
+    if (placeholder) placeholder.style.display = 'none';
+    if (info) {
+      info.textContent = '✓ Foto "' + file.name + '" pronta per l\'elaborazione';
+      info.style.display = 'block';
+    }
+    showToast('📸 Foto acquisita! Controlla la data e conferma l\'attivazione.');
+  };
+  reader.readAsDataURL(file);
+}
+window.gestisciUploadFotoNuovoControllo = gestisciUploadFotoNuovoControllo;
+
+function eseguiArchiviazioneEAttivaNuovoControllo() {
+  var p = getActivePaziente();
+  if (!p) return;
+
+  var inputData = document.getElementById('input-nuova-data-controllo');
+  var inputMedico = document.getElementById('input-nuovo-medico-controllo');
+  var inputDataPrescr = document.getElementById('input-data-rilascio-prescrizione');
+  var inputNote = document.getElementById('input-nuove-note-controllo');
+
+  var nuovaDataControllo = (inputData && inputData.value) ? inputData.value : '2027-03-22';
+  var nuovoMedico = (inputMedico && inputMedico.value) ? inputMedico.value : 'Dr. Michele Milella - Clinica Malattie Infettive Policlinico Bari';
+  var dataPrescr = (inputDataPrescr && inputDataPrescr.value) ? inputDataPrescr.value : '2026-02-23';
+  var noteNuove = (inputNote && inputNote.value) ? inputNote.value : 'Prenotazione allo 080 559 3222';
+
+  // 1. ARCHIVIAZIONE SCHEDA PRECEDENTE
+  var archivio = getArchivioStoricoControlliPaziente(p);
+  var schedaAttuale = (p.cartelleCroniche && p.cartelleCroniche.epatologia) ? p.cartelleCroniche.epatologia : p.epatologiaFollowUp;
+  
+  if (schedaAttuale) {
+    archivio.push({
+      id: 'visita_archiviata_' + Date.now(),
+      dataPrescrizione: schedaAttuale.dataPrescrizione || '2025-09-29',
+      dataProssimaVisita: schedaAttuale.dataProssimaVisita || '2026-02-23',
+      medicoSpecialista: schedaAttuale.medicoSpecialista || 'Clinica Malattie Infettive Policlinico Bari',
+      note: schedaAttuale.note || 'Scheda di controllo completata e archiviata nello storico.',
+      immagineScheda: schedaAttuale.immagineScheda || '/careassist/assets/img/scheda_prescrittiva_policlinico.jpg',
+      stato: 'Archiviata (Controllo Eseguito)',
+      esami: JSON.parse(JSON.stringify(schedaAttuale.esami || []))
+    });
+  }
+
+  // 2. CREAZIONE DELLA NUOVA SCHEDA ATTIVA
+  var nuoviEsami = PRESET_FOTO_CIRO_2026.map(function(item, idx) {
+    return {
+      id: 'ep_new_' + idx,
+      nome: item.nome,
+      categoria: item.cat,
+      note: item.note,
+      codicePrestazione: item.codice || '',
+      emessoDaAmbulatorio: !!item.ambulatorio,
+      evidenziatoPennarello: !!item.pennarello,
+      richiestoMMG: item.ambulatorio ? true : false,
+      dataRichiestaMMG: item.ambulatorio ? 'Automatico (Ambulatorio Infettivi)' : '',
+      prenotatoCUP: false,
+      dataPrenotazioneCUP: '',
+      oraPrenotazione: '',
+      luogoPrenotazione: item.ambulatorio ? 'Ambulatorio Malattie Infettive Policlinico' : 'Laboratorio Analisi / CUP',
+      refertato: false,
+      valoreReferto: ''
+    };
+  });
+
+  var nuovaScheda = {
+    chiave: 'epatologia',
+    dataPrescrizione: dataPrescr,
+    dataProssimaVisita: nuovaDataControllo,
+    medicoSpecialista: nuovoMedico,
+    note: noteNuove,
+    immagineScheda: _fotoNuovoControlloDataUrl || '/careassist/assets/img/visita_controllo_2026.jpg',
+    esami: nuoviEsami
+  };
+
+  if (!p.cartelleCroniche) p.cartelleCroniche = {};
+  p.cartelleCroniche.epatologia = nuovaScheda;
+  p.epatologiaFollowUp = nuovaScheda;
+
+  saveDb();
+  chiudiModalNuovoControlloFoto();
+  if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
+
+  showToast('🎉 Nuovo Controllo programmato per il ' + new Date(nuovaDataControllo).toLocaleDateString('it-IT') + '! Scheda precedente archiviata.');
+}
+window.eseguiArchiviazioneEAttivaNuovoControllo = eseguiArchiviazioneEAttivaNuovoControllo;
+
+
+// ==============================================================================
+// VISUALIZZATORE ARCHIVIO STORICO VISITE & SCHEDE PRECEDENTI
+// ==============================================================================
+
+function apriModalArchivioStoricoControlli() {
+  renderArchivioStoricoControlli();
+  var modal = document.getElementById('modal-archivio-storico-controlli');
+  if (modal) modal.classList.add('active');
+}
+window.apriModalArchivioStoricoControlli = apriModalArchivioStoricoControlli;
+
+function chiudiModalArchivioStoricoControlli() {
+  var modal = document.getElementById('modal-archivio-storico-controlli');
+  if (modal) modal.classList.remove('active');
+}
+window.chiudiModalArchivioStoricoControlli = chiudiModalArchivioStoricoControlli;
+
+function renderArchivioStoricoControlli() {
+  var p = getActivePaziente();
+  var container = document.getElementById('lista-schede-archiviate-container');
+  if (!container || !p) return;
+
+  var archivio = getArchivioStoricoControlliPaziente(p);
+  if (archivio.length === 0) {
+    container.innerHTML = '<div style="padding:40px; text-align:center; color:#64748b;">Nessuna scheda precedente archiviata al momento.</div>';
+    return;
+  }
+
+  var html = archivio.map(function(item, idx) {
+    var dataControlloStr = item.dataProssimaVisita ? new Date(item.dataProssimaVisita).toLocaleDateString('it-IT') : 'N.D.';
+    var dataPrescrStr = item.dataPrescrizione ? new Date(item.dataPrescrizione).toLocaleDateString('it-IT') : 'N.D.';
+    var esami = item.esami || [];
+    var refertatiCount = esami.filter(function(e) { return e.refertato; }).length;
+
+    var elencoEsamiSintesi = esami.slice(0, 6).map(function(e) {
+      return '<span style="background:#f1f5f9; color:#334155; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:700;">' + e.nome.split(' (')[0] + (e.valoreReferto ? ': <b style="color:#16a34a;">' + e.valoreReferto.slice(0, 16) + '</b>' : '') + '</span>';
+    }).join(' ');
+
+    if (esami.length > 6) {
+      elencoEsamiSintesi += ' <span style="font-size:11px; color:#64748b; font-weight:700;">+' + (esami.length - 6) + ' altri esami</span>';
+    }
+
+    var imgBtn = item.immagineScheda 
+      ? '<button type="button" class="btn btn-sm" onclick="window.open(\'' + item.immagineScheda + '\', \'_blank\')" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:800; font-size:11.5px; cursor:pointer;">🔍 Visualizza Foto Scheda</button>'
+      : '';
+
+    return '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:16px 18px; margin-bottom:14px; box-shadow:0 3px 12px rgba(0,0,0,0.04);">' +
+      '<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:10px;">' +
+        '<div>' +
+          '<div style="display:flex; align-items:center; gap:8px;">' +
+            '<span style="background:#4338ca; color:#ffffff; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase;">SCHEDA ARCHIVIATA #' + (idx + 1) + '</span>' +
+            '<span style="background:#e0e7ff; color:#3730a3; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px;">' + (item.stato || 'Completata') + '</span>' +
+          '</div>' +
+          '<div style="font-size:16px; font-weight:900; color:#0f172a; margin-top:4px;">' +
+            'Controllo del ' + dataControlloStr + ' &bull; Rilasciata il ' + dataPrescrStr +
+          '</div>' +
+          '<div style="font-size:12px; color:#64748b; margin-top:2px;">' +
+            '👨‍⚕️ ' + (item.medicoSpecialista || 'Clinica Malattie Infettive Policlinico Bari') +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex; gap:8px;">' +
+          imgBtn +
+        '</div>' +
+      '</div>' +
+
+      '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px 12px; margin-bottom:8px;">' +
+        '<div style="font-size:11.5px; font-weight:800; color:#475569; margin-bottom:4px;">' +
+          '📋 Sintesi Esami & Referti Archiviati (' + refertatiCount + ' refertati su ' + esami.length + ' prescritti):' +
+        '</div>' +
+        '<div style="display:flex; flex-wrap:wrap; gap:6px;">' +
+          elencoEsamiSintesi +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  container.innerHTML = html;
+}
+window.renderArchivioStoricoControlli = renderArchivioStoricoControlli;
+
 // ==============================================================================
 // MODULO CLINICO EPATOLOGIA & MALATTIE INFETTIVE POLICLINICO DI BARI
 // ==============================================================================
@@ -14043,9 +14674,9 @@ function richiediTutteRicetteAlMedicoMMG() {
     'in vista del controllo specialistico programmato per il Sig. Ciro Milella presso la Clinica delle Malattie Infettive ed Epatologia del Policlinico di Bari (fissato per il 22/03/2027), si richiede l\'emissione delle relative ricette dematerializzate (NRE) per le prestazioni di competenza del Medico Curante:\n\n' +
     '📋 PRESTAZIONI DA RICETTARE (SPUNTATE A PENNA SUL MODULO):\n' +
     listaNomiMMG + '\n\n' +
-    'Inoltre si richiede la ricetta per: "Visita Infettivologica di Controllo".\n\n' +
-    '📌 NOTA BENE (PRESTAZIONI AMBULATORIALI DIRETTE POLICLINICO):\n' +
-    'Si comunica che HBsAg (Cod. Tariffario 88.60.6) e HBV-DNA Quantitativo Real Time PCR (Cod. Tariffario 88.30.1), evidenziati con apposito pennarello celeste sul modulo di reparto, vengono presi in carico ed emessi DIRETTAMENTE dall\'Ambulatorio Malattie Infettive del Policlinico di Bari, pertanto NON necessitano di alcuna impegnativa da parte Sua.\n\n' +
+    '📌 NOTA SULLA VISITA SPECIALISTICA & PRESTAZIONI DIRETTE AMBULATORIO INFITTI:\n' +
+    '• La "Visita Infettivologica di Controllo" è già stata programmata e prescritta direttamente dall\'Infettivologo di reparto (fissata per il 22/03/2027), pertanto non è necessaria impegnativa per la visita.\n' +
+    '• Le prestazioni virologiche HBsAg (Cod. 88.60.6) e HBV-DNA Quantitativo Real Time PCR (Cod. 88.30.1), evidenziate con pennarello celeste sul modulo originale, unitamente al Prelievo (Cod. 96.10.1), vengono gestite ed emesse DIRETTAMENTE dall\'Ambulatorio Malattie Infettive del Policlinico di Bari (non necessitano di ricetta MMG).\n\n' +
     'In allegato e a disposizione la scheda prescrittiva originale dell\'U.O. Malattie Infettive.\n' +
     'Ringraziando cordialmente,\nCiro Milella (Cell: 366 460 7396)';
 
@@ -14589,10 +15220,19 @@ function renderEpatologiaView() {
       <!-- AZIONI RAPIDE DEL PROTOCOLLO -->
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; position:relative; z-index:2;">
         <button type="button" class="btn" onclick="richiediTutteRicetteAlMedicoMMG()" style="background:#10b981; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(16,185,129,0.3);">
-          <span>✉️</span> Invia Richiesta Impegnative al Medico (MMG)
+          <span>✉️</span> Invia Richiesta Impegnative (MMG)
+        </button>
+        <button type="button" class="btn" onclick="apriModalNuovoControlloFoto()" style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(5,150,105,0.3);">
+          <span>📷</span> Nuovo Controllo da Foto (Archivia Precedente)
+        </button>
+        <button type="button" class="btn" onclick="apriModalGestioneModuloPoliclinico()" style="background:#ffffff; color:#0369a1; border:1.5px solid #38bdf8; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <span>📋</span> Gestisci Modulo in Autonomia
+        </button>
+        <button type="button" class="btn" onclick="apriModalArchivioStoricoControlli()" style="background:#4338ca; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(67,56,202,0.3);">
+          <span>📁</span> Archivio Storico Controlli
         </button>
         <button type="button" class="btn" onclick="sincronizzaTuttoCalendarioEpatologia()" style="background:#0284c7; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(2,132,199,0.3);">
-          <span>📅</span> Sincronizza Sveglie su Smartphone (Google / Apple Calendar)
+          <span>📅</span> Sincronizza Calendario
         </button>
       </div>
     </div>
@@ -14600,12 +15240,17 @@ function renderEpatologiaView() {
     <!-- CORPO AMBULATORIALE: TABELLA ESAMI & SEZIONE CLINICA -->
     <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; align-items:flex-start;">
       <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #e2e8f0; border-radius:16px;">
-        <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #e2e8f0; border-radius:16px 16px 0 0; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #e2e8f0; border-radius:16px 16px 0 0; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
             <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Protocollo Esami Prescritti & Follow-up</div>
             <div style="font-size:12px; color:#64748b;">Traccia in tempo reale: Richiesta MMG &bull; Prenotazione CUP &bull; Refertazione</div>
           </div>
-          <button type="button" class="btn btn-sm btn-outline" onclick="aggiungiNuovoEsamePersonalizzato()" style="font-size:12px; font-weight:700; border-radius:8px;">+ Aggiungi Esame</button>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn btn-sm" onclick="apriModalGestioneModuloPoliclinico()" style="font-size:12px; font-weight:800; border-radius:8px; border:1.5px solid #0284c7; color:#0369a1; background:#f0f9ff; padding:6px 12px; cursor:pointer;">
+              📋 Gestisci Tutti gli Esami del Modulo
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="aggiungiEsamePersonalizzatoNelModulo()" style="font-size:12px; font-weight:700; border-radius:8px;">+ Altro Esame</button>
+          </div>
         </div>
 
         <!-- BANNER GUIDA PENNARELLO POLICLINICO -->

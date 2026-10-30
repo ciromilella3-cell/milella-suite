@@ -3205,6 +3205,219 @@
 
 
   
+  
+  <!-- ============================================================================== -->
+  <!-- MODAL 1: GESTIONE AUTONOMA COMPLETA MODULO POLICLINICO (TUTTI GLI ESAMI) -->
+  <!-- ============================================================================== -->
+  <div class="modal-overlay" id="modal-gestione-modulo-policlinico" style="z-index:9999999; background:rgba(15, 23, 42, 0.88); backdrop-filter:blur(8px);">
+    <div class="modal-card" style="max-width:980px; width:96%; border-radius:18px; overflow:hidden; border:2px solid #0284c7; box-shadow:0 12px 45px rgba(0,0,0,0.6); display:flex; flex-direction:column; max-height:90vh;">
+      
+      <!-- HEADER MODAL -->
+      <div class="modal-header" style="background:linear-gradient(135deg, #092c4c 0%, #034b75 100%); color:white; padding:16px 22px; flex-shrink:0;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:32px;">📋</span>
+          <div>
+            <h3 style="margin:0; font-size:18px; font-weight:900; letter-spacing:-0.2px;">Modulo Ufficiale Policlinico Bari - Gestione Autonoma Esami</h3>
+            <p style="margin:2px 0 0; font-size:12px; color:#bae6fd;">U.O. Malattie Infettive ed Epatologia (Mod. 1/Al/Cl-1) &bull; Attiva, disattiva o personalizza qualsiasi esame del modulo</p>
+          </div>
+        </div>
+        <button class="modal-close" style="color:white; font-size:24px; cursor:pointer;" onclick="chiudiModalGestioneModuloPoliclinico()">&times;</button>
+      </div>
+
+      <!-- BARRA STRUMENTI & PRESET RAPIDI -->
+      <div style="background:#f1f5f9; border-bottom:1px solid #cbd5e1; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; flex-shrink:0;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-sm" onclick="applicaPresetModuloPoliclinico('ciro_reale')" style="background:#0284c7; color:#fff; font-weight:800; font-size:11.5px; padding:6px 12px; border-radius:8px; border:none; cursor:pointer;">
+            ⚡ Preset Controllo 23/02/2026 (Foto Reale)
+          </button>
+          <button type="button" class="btn btn-sm" onclick="applicaPresetModuloPoliclinico('minimo_hbv')" style="background:#fff; color:#0369a1; border:1px solid #bae6fd; font-weight:700; font-size:11.5px; padding:6px 12px; border-radius:8px; cursor:pointer;">
+            🔬 Minimo Virologico HBV
+          </button>
+          <button type="button" class="btn btn-sm" onclick="applicaPresetModuloPoliclinico('deseleziona_tutti')" style="background:#fff; color:#64748b; border:1px solid #cbd5e1; font-weight:700; font-size:11.5px; padding:6px 12px; border-radius:8px; cursor:pointer;">
+            ⚪ Deseleziona Tutti
+          </button>
+          <button type="button" class="btn btn-sm" onclick="aggiungiEsamePersonalizzatoNelModulo()" style="background:#10b981; color:#fff; font-weight:800; font-size:11.5px; padding:6px 12px; border-radius:8px; border:none; cursor:pointer;">
+            ➕ Nuovo Esame Fuori Modulo
+          </button>
+        </div>
+        <div style="font-size:12.5px; font-weight:800; color:#0f172a; background:#e0f2fe; padding:5px 12px; border-radius:20px; border:1px solid #7dd3fc;">
+          <span id="conta-esami-modulo-attivi">14</span> esami attivi selezionati
+        </div>
+      </div>
+
+      <!-- CORPO CON LE SEZIONI DEL PRESTAMPATO ORIGINALE -->
+      <div class="modal-body" style="padding:18px 20px; background:#f8fafc; color:#0f172a; overflow-y:auto; flex-grow:1;">
+        <div style="background:#fff; border:1.5px solid #e2e8f0; border-radius:12px; padding:12px 16px; margin-bottom:14px; font-size:12px; color:#475569; display:flex; align-items:center; gap:10px;">
+          <span style="font-size:20px;">💡</span>
+          <div>
+            <b>Istruzioni Gestione Autonoma:</b> Spunta le caselle per gli esami che il medico ha contrassegnato. Gli esami virologici <b>HBsAg</b> e <b>HBV-DNA</b> sono evidenziati col pennarello celeste e impostati come <i>Emessi direttamente da Ambulatorio</i> (non serve richiederli al medico di base). Puoi attivare o disattivare qualsiasi esame in ogni momento.
+          </div>
+        </div>
+
+        <div id="griglia-modulo-policlinico-container">
+          <!-- Popolato dinamicamente da renderGrigliaModuloPoliclinico() -->
+        </div>
+      </div>
+
+      <!-- FOOTER SALVATAGGIO -->
+      <div class="modal-footer" style="background:#ffffff; border-top:1.5px solid #e2e8f0; padding:14px 22px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+        <button type="button" class="btn btn-outline" onclick="chiudiModalGestioneModuloPoliclinico()" style="font-weight:700; border-radius:8px; padding:8px 16px;">Annulla</button>
+        <button type="button" class="btn" onclick="salvaConfigurazioneModuloPoliclinico()" style="background:#0284c7; color:#fff; border:none; font-weight:800; border-radius:8px; padding:10px 22px; font-size:13.5px; cursor:pointer; box-shadow:0 3px 10px rgba(2,132,199,0.3);">
+          💾 Applica Modifiche alla Maschera Attiva
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================================== -->
+  <!-- MODAL 2: NUOVO CONTROLLO DA FOTO SCHEDA & ARCHIVIAZIONE AUTOMATICA -->
+  <!-- ============================================================================== -->
+  <div class="modal-overlay" id="modal-nuovo-controllo-foto" style="z-index:9999999; background:rgba(15, 23, 42, 0.88); backdrop-filter:blur(8px);">
+    <div class="modal-card" style="max-width:850px; width:95%; border-radius:18px; overflow:hidden; border:2px solid #10b981; box-shadow:0 12px 45px rgba(0,0,0,0.6); display:flex; flex-direction:column; max-height:90vh;">
+      
+      <!-- HEADER MODAL -->
+      <div class="modal-header" style="background:linear-gradient(135deg, #065f46 0%, #047857 100%); color:white; padding:16px 22px; flex-shrink:0;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:32px;">📷</span>
+          <div>
+            <h3 style="margin:0; font-size:18px; font-weight:900; letter-spacing:-0.2px;">Nuovo Controllo da Foto Scheda Policlinico</h3>
+            <p style="margin:2px 0 0; font-size:12px; color:#a7f3d0;">Carica o scatta la foto della nuova scheda, archivia il controllo precedente e imposta la nuova data</p>
+          </div>
+        </div>
+        <button class="modal-close" style="color:white; font-size:24px; cursor:pointer;" onclick="chiudiModalNuovoControlloFoto()">&times;</button>
+      </div>
+
+      <!-- CORPO FORM ACQUISIZIONE -->
+      <div class="modal-body" style="padding:20px; background:#f8fafc; color:#0f172a; overflow-y:auto; flex-grow:1;">
+        
+        <!-- BOX AVVISO ARCHIVIAZIONE AUTOMATICA -->
+        <div style="background:#ecfdf5; border:1.5px solid #6ee7b7; border-radius:12px; padding:12px 16px; margin-bottom:18px; font-size:12.5px; color:#065f46; display:flex; align-items:center; gap:12px;">
+          <span style="font-size:26px;">📁</span>
+          <div style="line-height:1.45;">
+            <b>Archiviazione Storica Automatica:</b> Confermando, la scheda del controllo precedente (23/02/2026) con tutti i suoi esami e referti verrà <b>salvata in modo permanente nell'Archivio Storico</b>. La maschera attiva verrà reimpostata per il nuovo appuntamento con la nuova foto allegata.
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-bottom:18px;">
+          
+          <!-- COLONNA CARICAMENTO FOTO -->
+          <div>
+            <label style="font-size:12.5px; font-weight:800; color:#334155; display:block; margin-bottom:6px;">
+              📸 Foto / Scansione Scheda Modulo (JPG o PNG)
+            </label>
+            <div style="border:2px dashed #94a3b8; border-radius:12px; padding:18px; text-align:center; background:#ffffff; cursor:pointer; position:relative; min-height:190px; display:flex; flex-direction:column; align-items:center; justify-content:center;" onclick="document.getElementById('input-file-nuova-scheda').click()">
+              <input type="file" id="input-file-nuova-scheda" accept="image/*" style="display:none;" onchange="gestisciUploadFotoNuovoControllo(event)">
+              <div id="box-placeholder-foto-nuova">
+                <span style="font-size:38px;">📷</span>
+                <div style="font-size:13px; font-weight:800; color:#0284c7; margin-top:6px;">Clicca per scegliere la foto</div>
+                <div style="font-size:11px; color:#64748b;">oppure scatta con lo smartphone</div>
+              </div>
+              <img id="preview-foto-nuova-scheda" src="" style="max-width:100%; max-height:220px; border-radius:8px; display:none; object-fit:contain; border:1px solid #cbd5e1;">
+            </div>
+            <div id="info-foto-caricata" style="font-size:11px; color:#059669; font-weight:700; margin-top:4px; text-align:center; display:none;">
+              ✓ Foto acquisita con successo
+            </div>
+          </div>
+
+          <!-- COLONNA DATI DEL NUOVO CONTROLLO -->
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div>
+              <label style="font-size:12px; font-weight:800; color:#334155; display:block; margin-bottom:4px;">
+                🎯 Data del Prossimo Controllo Ambulatoriale *
+              </label>
+              <input type="date" id="input-nuova-data-controllo" class="form-control" value="2027-03-22" style="font-size:14px; font-weight:800; padding:9px 12px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+              <div style="font-size:11px; color:#64748b; margin-top:2px;">(Data rilevata dall'ultimo foglio: 22 Marzo 2027)</div>
+            </div>
+
+            <div>
+              <label style="font-size:12px; font-weight:800; color:#334155; display:block; margin-bottom:4px;">
+                👨‍⚕️ Medico Prescrittore / Referente Ambulatorio
+              </label>
+              <input type="text" id="input-nuovo-medico-controllo" class="form-control" value="Dr. Michele Milella - Clinica Malattie Infettive Policlinico Bari" style="font-size:13px; font-weight:700; padding:8px 12px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+            </div>
+
+            <div>
+              <label style="font-size:12px; font-weight:800; color:#334155; display:block; margin-bottom:4px;">
+                📅 Data Rilascio Prescrizione
+              </label>
+              <input type="date" id="input-data-rilascio-prescrizione" class="form-control" value="2026-02-23" style="font-size:13px; font-weight:700; padding:8px 12px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+            </div>
+
+            <div>
+              <label style="font-size:12px; font-weight:800; color:#334155; display:block; margin-bottom:4px;">
+                📝 Note e Contatti Ambulatorio
+              </label>
+              <input type="text" id="input-nuove-note-controllo" class="form-control" value="Prenotazione allo 080 559 3222 - Email: epatologia.malinf@policlinico.ba.it" style="font-size:12.5px; padding:8px 12px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SEZIONE ESAMI DA PRE-ATTIVARE -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:12px; padding:14px 16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="font-size:13px; font-weight:800; color:#0f172a;">
+              📋 Esami da pre-impostare nella nuova maschera:
+            </div>
+            <span style="font-size:11px; background:#dcfce7; color:#15803d; font-weight:800; padding:2px 8px; border-radius:6px;">
+              Protocollo Completo Rilevato
+            </span>
+          </div>
+          <div style="font-size:12px; color:#475569; line-height:1.45;">
+            Verranno predisposti: <b>Ecografia Addome Superiore</b> + <b>9 esami ematochimici MMG</b> (Transaminasi, Fosfatasi, Gamma GT, AFP, Bilirubina, Azotemia, Glicemia, Creatinina, Potassio) + <b>HBsAg (88.60.6)</b> e <b>HBV-DNA (88.30.1)</b> auto-spuntati a pennarello per l'ambulatorio + <b>Prelievo 96.10.1</b>.<br>
+            <i>Potrai in ogni momento aggiungere o togliere qualsiasi esame dal selettore dedicato.</i>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER CONFERMA -->
+      <div class="modal-footer" style="background:#ffffff; border-top:1.5px solid #e2e8f0; padding:14px 22px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+        <button type="button" class="btn btn-outline" onclick="chiudiModalNuovoControlloFoto()" style="font-weight:700; border-radius:8px; padding:8px 16px;">Annulla</button>
+        <button type="button" class="btn" onclick="eseguiArchiviazioneEAttivaNuovoControllo()" style="background:#10b981; color:#fff; border:none; font-weight:800; border-radius:8px; padding:10px 22px; font-size:13.5px; cursor:pointer; box-shadow:0 3px 10px rgba(16,185,129,0.3);">
+          🚀 Elabora, Archivia Precedente e Attiva Nuovo Controllo
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================================== -->
+  <!-- MODAL 3: ARCHIVIO STORICO CONTROLLI & SCHEDE POLICLINICO -->
+  <!-- ============================================================================== -->
+  <div class="modal-overlay" id="modal-archivio-storico-controlli" style="z-index:9999999; background:rgba(15, 23, 42, 0.88); backdrop-filter:blur(8px);">
+    <div class="modal-card" style="max-width:900px; width:95%; border-radius:18px; overflow:hidden; border:2px solid #6366f1; box-shadow:0 12px 45px rgba(0,0,0,0.6); display:flex; flex-direction:column; max-height:90vh;">
+      
+      <!-- HEADER MODAL -->
+      <div class="modal-header" style="background:linear-gradient(135deg, #312e81 0%, #4338ca 100%); color:white; padding:16px 22px; flex-shrink:0;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:32px;">📁</span>
+          <div>
+            <h3 style="margin:0; font-size:18px; font-weight:900; letter-spacing:-0.2px;">Archivio Storico Visite & Schede Policlinico</h3>
+            <p style="margin:2px 0 0; font-size:12px; color:#c7d2fe;">Raccolta cronologica di tutte le schede prescrittive, date di controllo e referti precedenti</p>
+          </div>
+        </div>
+        <button class="modal-close" style="color:white; font-size:24px; cursor:pointer;" onclick="chiudiModalArchivioStoricoControlli()">&times;</button>
+      </div>
+
+      <!-- CORPO LISTA SCHEDE ARCHIVIATE -->
+      <div class="modal-body" style="padding:20px; background:#f8fafc; color:#0f172a; overflow-y:auto; flex-grow:1;">
+        <div id="lista-schede-archiviate-container">
+          <!-- Popolato dinamicamente da renderArchivioStoricoControlli() -->
+        </div>
+      </div>
+
+      <!-- FOOTER CHIUSURA -->
+      <div class="modal-footer" style="background:#ffffff; border-top:1.5px solid #e2e8f0; padding:14px 22px; display:flex; justify-content:flex-end; align-items:center; flex-shrink:0;">
+        <button type="button" class="btn btn-outline" onclick="chiudiModalArchivioStoricoControlli()" style="font-weight:700; border-radius:8px; padding:8px 20px;">Chiudi</button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- MODAL: COMPILAZIONE AUTOMATICA MODULO PRENOTAZIONE FARMACI EX-CTO ASL BARI -->
   <div class="modal-overlay" id="modal-prenotazione-cto" style="z-index:9999999; background:rgba(15, 23, 42, 0.88); backdrop-filter:blur(8px);">
     <div class="modal-card" style="max-width:680px; width:95%; border-radius:18px; overflow:hidden; border:2px solid #0284c7; box-shadow:0 12px 45px rgba(0,0,0,0.6);">
