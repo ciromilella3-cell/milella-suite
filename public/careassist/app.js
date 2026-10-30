@@ -14183,3 +14183,425 @@ function aggiornaVisibilitaTabEpatologia() {
   }
 }
 window.aggiornaVisibilitaTabEpatologia = aggiornaVisibilitaTabEpatologia;
+
+
+// ==============================================================================
+// MOTORE CLINICO AUTOMATICO: RILEVAMENTO MALATTIE CRONICHE DAI FARMACI & PROTOCOLLI
+// ==============================================================================
+
+const PROTOCOLLI_SPECIALISTICI_CRONICI = {
+  diabete: {
+    chiave: 'diabete',
+    titolo: 'Ambulatorio Diabetologia & Malattie del Metabolismo',
+    sottotitolo: 'Sorveglianza Glicemica, Controllo Emoglobina Glicata & Prevenzione Complicanze',
+    icona: '🩸',
+    centro: 'CAD Territoriale / Diabetologia Ospedaliera',
+    emailCentro: 'diabetologia.territoriale@asl.bari.it',
+    medicoReferente: 'Specialista Diabetologo & MMG',
+    intervalloMesi: 3,
+    prossimaVisitaOffsetMesi: 3,
+    esami: [
+      { id: 'diab_1', nome: 'Emoglobina Glicata (HbA1c)', categoria: 'Laboratorio Metabolico', note: 'Obiettivo terapeutico: HbA1c < 7% (< 53 mmol/mol)', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+      { id: 'diab_2', nome: 'Glicemia a Digiuno & Profilo Glucidi', categoria: 'Laboratorio Metabolico', note: 'Verifica glicemia plasmatica mattutina', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+      { id: 'diab_3', nome: 'Microalbuminuria & Rapporto Alb/Creatinina (UACR)', categoria: 'Nefrologia / Complicanze', note: 'Sorveglianza nefropatia diabetica precoce', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi (Urine mattino)', refertato: false, valoreReferto: '' },
+      { id: 'diab_4', nome: 'Creatinina Sierica & eGFR (Clearance)', categoria: 'Nefrologia / Complicanze', note: 'Stima del filtrato glomerulare per dosaggio farmaci', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+      { id: 'diab_5', nome: 'Fondo Oculare (Retinografia Digitale)', categoria: 'Strumentale Specialistico', note: 'Screening semestrale/annuale retinopatia diabetica', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Ambulatorio Oculistico', refertato: false, valoreReferto: '' },
+      { id: 'diab_6', nome: 'Valutazione Piede Diabetico & Polsi Periferici', categoria: 'Esame Clinico', note: 'Ispezione lesioni cutanee e sensibilità al monofilamento', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Ambulatorio Diabetologico / ADI', refertato: false, valoreReferto: '' }
+    ]
+  },
+
+  cardiologia: {
+    chiave: 'cardiologia',
+    titolo: 'Ambulatorio Cardiologia & Ipertensione Arteriosa',
+    sottotitolo: 'Monitoraggio Scompenso Cardiaco, Pressione, Rischio Trombotico ed Aritmie',
+    icona: '🫀',
+    centro: 'U.O. Cardiologia & UTIC Territoriale',
+    emailCentro: 'cardiologia.controlli@asl.bari.it',
+    medicoReferente: 'Specialista Cardiologo & MMG',
+    intervalloMesi: 6,
+    prossimaVisitaOffsetMesi: 6,
+    esami: [
+      { id: 'card_1', nome: 'Elettrocardiogramma (ECG) a riposo', categoria: 'Strumentale', note: 'Studio ritmo sinusale, intervallo QTc e ischemia', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Ambulatorio Cardiologia', refertato: false, valoreReferto: '' },
+      { id: 'card_2', nome: 'Ecocardiogramma Color-Doppler', categoria: 'Strumentale', note: 'Frazione di eiezione (FE%), cinetica e valvole cardiache', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Poliambulatorio Specialistico', refertato: false, valoreReferto: '' },
+      { id: 'card_3', nome: 'Elettroliti Sierici (Potassio & Sodio)', categoria: 'Laboratorio Elettroliti', note: 'Essenziale per pazienti in terapia con Lasix / Diuretici', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+      { id: 'card_4', nome: 'Assetto Lipidico Completo (Colesterolo tot, HDL, LDL, Trigliceridi)', categoria: 'Profilo Lipidico', note: 'Valutazione target LDL in corso di Statina', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' },
+      { id: 'card_5', nome: 'Creatininemia & Azotemia', categoria: 'Funzione Renale', note: 'Controllo tolleranza ACE-inibitori / Sartani', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Laboratorio Analisi', refertato: false, valoreReferto: '' }
+    ]
+  },
+
+  parkinson: {
+    chiave: 'parkinson',
+    titolo: 'Centro Malattie Neurodegenerative & Parkinson',
+    sottotitolo: 'Adeguamento Schema Levodopa, Monitoraggio Fluttuazioni Motorie e Disfagia',
+    icona: '🧠',
+    centro: 'Clinica Neurologica Ospedaliera / Territoriale',
+    emailCentro: 'neurologia.parkinson@asl.bari.it',
+    medicoReferente: 'Specialista Neurologo',
+    intervalloMesi: 6,
+    prossimaVisitaOffsetMesi: 6,
+    esami: [
+      { id: 'neur_1', nome: 'Visita Neurologica di Controllo con scala UPDRS', categoria: 'Valutazione Clinica', note: 'Stadiazione tremore, bradicinesia, rigidità e festinazione', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Ambulatorio Parkinson', refertato: false, valoreReferto: '' },
+      { id: 'neur_2', nome: 'Screening Deglutizione & Rischio Disfagia', categoria: 'Esame Funzionale', note: 'Prevenzione polmoniti ab ingestis ed adeguamento consistenza pasti', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Servizio Foniatria / Logopedia ADI', refertato: false, valoreReferto: '' },
+      { id: 'neur_3', nome: 'Monitoraggio Ipotensione Ortostatica (PA clino/orto)', categoria: 'Parametri Vitali', note: 'Pressione arteriosa da sdraiati e in piedi (effetto Sinemet)', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: true, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Rilevazione Domiciliare Infermieristica', refertato: false, valoreReferto: '' },
+      { id: 'neur_4', nome: 'Valutazione Fisioterapica & Prevenzione Cadute', categoria: 'Fisiatria / ADI', note: 'Piano mobilizzazione attiva e deambulazione assistita', richiestoMMG: true, dataRichiestaMMG: '', prenotatoCUP: false, dataPrenotazioneCUP: '', oraPrenotazione: '', luogoPrenotazione: 'Terapista della Riabilitazione', refertato: false, valoreReferto: '' }
+    ]
+  },
+
+  epatologia: {
+    chiave: 'epatologia',
+    titolo: 'U.O. Malattie Infettive & Epatologia - Policlinico di Bari',
+    sottotitolo: 'Follow-up Epatite Cronica B (HBV), Sorveglianza Epatocarcinoma & Carica Virale',
+    icona: '🔬',
+    centro: 'Policlinico di Bari - D.A.I. Malattie Infettive (Prof.ssa A. Saracino)',
+    emailCentro: 'epatologia.malinf@policlinico.ba.it',
+    medicoReferente: 'Prof.ssa Annalisa Saracino',
+    intervalloMesi: 6,
+    prossimaVisitaOffsetMesi: 4,
+    esami: JSON.parse(JSON.stringify(PROTOCOLLO_EPATOLOGIA_BASE))
+  }
+};
+
+// VALUTAZIONE INTELLIGENTE DELLE MALATTIE CRONICHE DI UN PAZIENTE DAI SUOI FARMACI
+function rilevaMalattieCronicheDaiFarmaci(paziente) {
+  var p = paziente || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
+  if (!p) return [];
+
+  var terapie = p.terapie || [];
+  var patologie = (p.patologie || []).join(' ').toLowerCase();
+  var note = (p.note || '').toLowerCase();
+  var cronicheRilevate = [];
+
+  // Mappa di rilevamento farmaco -> cronicità
+  var haDiabete = false;
+  var haCardio = false;
+  var haParkinson = false;
+  var haEpatologia = false;
+
+  terapie.forEach(function(t) {
+    var txt = ((t.farmaco || '') + ' ' + (t.principio || '') + ' ' + (t.modo || '')).toLowerCase();
+    
+    // 1. DIABETE: Insuline, Gliclazide, Metformina, Dapagliflozin, Liraglutide...
+    if (txt.includes('insulina') || txt.includes('xultophy') || txt.includes('diamicron') || 
+        txt.includes('gliclazide') || txt.includes('forxiga') || txt.includes('dapagliflozin') || 
+        txt.includes('metformina') || txt.includes('jardiance') || txt.includes('victoza') || txt.includes('diabete')) {
+      haDiabete = true;
+    }
+
+    // 2. CARDIOPATIA / IPERTENSIONE: Beta-bloccanti, Sartani, Diuretici, Statine, Antiaggreganti
+    if (txt.includes('bisoprololo') || txt.includes('congescor') || txt.includes('triatec') || 
+        txt.includes('ramipril') || txt.includes('irbesartan') || txt.includes('lasix') || 
+        txt.includes('furosemide') || txt.includes('cardioaspirin') || txt.includes('clopidogrel') || 
+        txt.includes('averelix') || txt.includes('sivastin') || txt.includes('simvastatina') || 
+        txt.includes('atorvastatina') || txt.includes('ipertens') || txt.includes('cardiopat')) {
+      haCardio = true;
+    }
+
+    // 3. PARKINSON / NEUROLOGIA: Sinemet, Levodopa, Madopar, Ropinirolo...
+    if (txt.includes('sinemet') || txt.includes('levodopa') || txt.includes('carbidopa') || 
+        txt.includes('madopar') || txt.includes('parkinson')) {
+      haParkinson = true;
+    }
+
+    // 4. EPATOLOGIA / INFETTIVE: Entecavir, Tenofovir, HBV, HCV...
+    if (txt.includes('entecavir') || txt.includes('tenofovir') || txt.includes('baraclude') || 
+        txt.includes('hbv') || txt.includes('epatite') || txt.includes('policlinico')) {
+      haEpatologia = true;
+    }
+  });
+
+  // Integrazione diagnosi scritta
+  if (patologie.includes('diabete') || note.includes('diabete')) haDiabete = true;
+  if (patologie.includes('ipertens') || patologie.includes('cardio') || note.includes('cardio')) haCardio = true;
+  if (patologie.includes('parkinson') || note.includes('parkinson')) haParkinson = true;
+  if (patologie.includes('epatite') || patologie.includes('infettiv') || note.includes('epatite')) haEpatologia = true;
+
+  if (haEpatologia) cronicheRilevate.push(PROTOCOLLI_SPECIALISTICI_CRONICI.epatologia);
+  if (haDiabete) cronicheRilevate.push(PROTOCOLLI_SPECIALISTICI_CRONICI.diabete);
+  if (haCardio) cronicheRilevate.push(PROTOCOLLI_SPECIALISTICI_CRONICI.cardiologia);
+  if (haParkinson) cronicheRilevate.push(PROTOCOLLI_SPECIALISTICI_CRONICI.parkinson);
+
+  // Se nessun protocollo specifico corrisponde ma ha farmaci cronici, fornisci supporto cardiologico/metabolico base
+  if (cronicheRilevate.length === 0 && terapie.length > 0) {
+    cronicheRilevate.push(PROTOCOLLI_SPECIALISTICI_CRONICI.cardiologia);
+  }
+
+  return cronicheRilevate;
+}
+window.rilevaMalattieCronicheDaiFarmaci = rilevaMalattieCronicheDaiFarmaci;
+
+// RECUPERA O INIZIALIZZA LA SCHEDA DELLA MALATTIA CRONICA SELEZIONATA PER IL PAZIENTE
+let _specialitaAttivaCronica = 'epatologia';
+
+function getSchedaCronicaAttivaPaziente() {
+  var p = getActivePaziente();
+  if (!p) return null;
+  if (!p.cartelleCroniche) p.cartelleCroniche = {};
+
+  var croniche = rilevaMalattieCronicheDaiFarmaci(p);
+  if (croniche.length === 0) return null;
+
+  // Se la specialità attiva non fa parte delle patologie di questo paziente, imposta la prima rilevata
+  if (!croniche.some(function(c) { return c.chiave === _specialitaAttivaCronica; })) {
+    _specialitaAttivaCronica = croniche[0].chiave;
+  }
+
+  var proto = PROTOCOLLI_SPECIALISTICI_CRONICI[_specialitaAttivaCronica];
+  if (!p.cartelleCroniche[_specialitaAttivaCronica]) {
+    var dataVisita = '2026-02-23';
+    if (_specialitaAttivaCronica === 'diabete') dataVisita = '2026-01-15';
+    else if (_specialitaAttivaCronica === 'cardiologia') dataVisita = '2026-03-10';
+    else if (_specialitaAttivaCronica === 'parkinson') dataVisita = '2026-04-08';
+
+    p.cartelleCroniche[_specialitaAttivaCronica] = {
+      chiave: _specialitaAttivaCronica,
+      dataProssimaVisita: dataVisita,
+      centro: proto.centro,
+      emailCentro: proto.emailCentro,
+      esami: JSON.parse(JSON.stringify(proto.esami))
+    };
+    saveDb();
+  }
+
+  return p.cartelleCroniche[_specialitaAttivaCronica];
+}
+
+function selezionaSpecialitaCronica(chiave) {
+  _specialitaAttivaCronica = chiave;
+  renderEpatologiaView();
+}
+window.selezionaSpecialitaCronica = selezionaSpecialitaCronica;
+
+
+function renderEpatologiaView() {
+  var p = getActivePaziente();
+  var container = document.getElementById('tab-epatologia');
+  if (!container || !p) return;
+
+  var croniche = rilevaMalattieCronicheDaiFarmaci(p);
+  if (croniche.length === 0) {
+    container.innerHTML = '<div style="padding:40px; text-align:center; color:#64748b; font-size:15px;">Nessuna patologia cronica rilevata per questo paziente.</div>';
+    return;
+  }
+
+  var scheda = getSchedaCronicaAttivaPaziente();
+  if (!scheda) return;
+  var proto = PROTOCOLLI_SPECIALISTICI_CRONICI[_specialitaAttivaCronica] || croniche[0];
+
+  // 1. BARRA SELEZIONE SPECIALITÀ CRONICHE (SE IL PAZIENTE HA PIÙ CRONICITÀ)
+  var pillsSpecialita = croniche.map(function(c) {
+    var active = (c.chiave === _specialitaAttivaCronica);
+    var bg = active ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' : '#ffffff';
+    var col = active ? '#ffffff' : '#334155';
+    var border = active ? '#38bdf8' : '#cbd5e1';
+    var shadow = active ? 'box-shadow:0 4px 14px rgba(2,132,199,0.3);' : '';
+    return '<button type="button" class="btn" onclick="selezionaSpecialitaCronica(\'' + c.chiave + '\')" style="background:' + bg + '; color:' + col + '; border:1.5px solid ' + border + '; font-size:13px; font-weight:800; padding:8px 16px; border-radius:999px; cursor:pointer; ' + shadow + ' display:inline-flex; align-items:center; gap:6px;">' +
+      '<span>' + c.icona + '</span> <span>' + c.titolo.split(' & ')[0] + '</span>' +
+    '</button>';
+  }).join(' ');
+
+  // 2. CALCOLO PROGRESSO & CONTO ALLA ROVESCIA
+  var esami = scheda.esami || [];
+  var completati = 0;
+  esami.forEach(function(es) {
+    if (es.refertato) completati += 1;
+    else if (es.prenotatoCUP) completati += 0.5;
+  });
+  var perc = esami.length > 0 ? Math.round((completati / esami.length) * 100) : 0;
+
+  var dTarget = new Date(scheda.dataProssimaVisita || '2026-02-23');
+  var now = new Date();
+  var diffMs = dTarget - now;
+  var countdownStr = '🎯 Data controllo raggiunta';
+  if (diffMs > 0) {
+    var diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    countdownStr = '⏳ Mancano <b>' + diffDays + ' giorni</b> al controllo';
+  }
+
+  // 3. GENERAZIONE RIGHE TABELLA ESAMI
+  var rowsHtml = esami.map(function(es) {
+    var catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#e2e8f0; color:#334155;">' + es.categoria + '</span>';
+    if (es.categoria.includes('Strumentale')) catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#fef3c7; color:#b45309; border:1px solid #fde047;">📸 Strumentale</span>';
+    else if (es.categoria.includes('Virologia') || es.categoria.includes('Metabolico')) catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">🔬 Laboratorio</span>';
+
+    var cellRichiesto = es.richiestoMMG 
+      ? '<span style="color:#16a34a; font-weight:800; font-size:12px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta</span>' 
+      : '<button class="btn btn-sm" style="font-size:11px; padding:3px 8px; background:#fff; border:1px solid #cbd5e1; color:#64748b; border-radius:6px;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')">⚪ Da richiedere</button>';
+
+    var cellPrenotato = '';
+    if (es.prenotatoCUP && es.dataPrenotazioneCUP) {
+      var dStr = new Date(es.dataPrenotazioneCUP).toLocaleDateString('it-IT');
+      cellPrenotato = '<div style="font-size:12px; font-weight:800; color:#0284c7; cursor:pointer;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')" title="Clicca per modificare data o orario">📅 ' + dStr + ' ' + (es.oraPrenotazione || '') + '</div><div style="font-size:10px; color:#64748b;">' + (es.luogoPrenotazione || 'CUP') + '</div>';
+    } else {
+      cellPrenotato = '<button class="btn btn-sm" style="font-size:11px; padding:4px 8px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; border-radius:6px; font-weight:700;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')">+ Inserisci Data</button>';
+    }
+
+    var cellReferto = '';
+    if (es.refertato) {
+      cellReferto = '<div style="font-size:12px; font-weight:800; color:#16a34a; cursor:pointer;" onclick="apriModalInserisciEsito(\'' + es.id + '\')">✓ Refertato: <b style="color:#0f172a;">' + (es.valoreReferto || 'Normale') + '</b></div>';
+    } else {
+      cellReferto = '<button class="btn btn-sm" style="font-size:11px; padding:4px 8px; background:#fff; border:1px dashed #94a3b8; color:#475569; border-radius:6px;" onclick="apriModalInserisciEsito(\'' + es.id + '\')">📝 Registra Esito</button>';
+    }
+
+    var statusCol = es.refertato 
+      ? '<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; font-size:11px; border:1px solid #86efac;">COMPLETO</span>'
+      : (es.prenotatoCUP 
+        ? '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:11px; border:1px solid #7dd3fc;">PRENOTATO</span>' 
+        : '<span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; font-size:11px; border:1px solid #fde047;">DA PRENOTARE</span>');
+
+    return '<tr style="border-bottom:1px solid #f1f5f9;">' +
+      '<td style="padding:12px 14px;">' +
+        '<div style="font-weight:800; font-size:13.5px; color:#0f172a;">' + es.nome + '</div>' +
+        '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>' +
+      '</td>' +
+      '<td style="padding:12px 10px; text-align:center;">' + catBadge + '</td>' +
+      '<td style="padding:12px 10px; text-align:center;">' + cellRichiesto + '</td>' +
+      '<td style="padding:12px 10px; text-align:center;">' + cellPrenotato + '</td>' +
+      '<td style="padding:12px 10px; text-align:center;">' + cellReferto + '</td>' +
+      '<td style="padding:12px 14px; text-align:center;">' + statusCol + '</td>' +
+    '</tr>';
+  }).join('');
+
+  // 4. COSTRUZIONE TEMPLATE AMBULATORIALE COMPLETO
+  var fullHtml = `
+    <div style="margin-bottom:16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <span style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.4px;">Ambulatori Cronici Attivi per ${p.nome}:</span>
+      ${pillsSpecialita}
+    </div>
+
+    <!-- BANNER CLINICO SPECIALISTICO DINAMICO -->
+    <div style="background:linear-gradient(135deg, #092c4c 0%, #034b75 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(9,44,76,0.3); border:2px solid rgba(56,189,248,0.4); position:relative; overflow:hidden;">
+      <div style="position:absolute; right:-20px; top:-20px; font-size:120px; opacity:0.07; pointer-events:none;">${proto.icona}</div>
+      
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; position:relative; z-index:2;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:64px; height:64px; border-radius:16px; background:rgba(255,255,255,0.12); border:2px solid #38bdf8; display:flex; align-items:center; justify-content:center; font-size:32px; box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+            ${proto.icona}
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="background:#38bdf8; color:#082f49; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px;">PIANO DI MONITORAGGIO CRONICO AUTOMATICO</span>
+              <span style="background:rgba(255,255,255,0.15); color:#ffffff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">RILEVATO DAI FARMACI</span>
+            </div>
+            <h2 style="font-size:22px; font-weight:900; margin:4px 0 2px; color:#ffffff; letter-spacing:-0.4px;">
+              ${proto.titolo}
+            </h2>
+            <div style="font-size:13px; color:#bae6fd; font-weight:500;">
+              ${proto.sottotitolo} &bull; Centro: <b>${proto.centro}</b>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(15,23,42,0.65); border:1.5px solid #d4af37; border-radius:14px; padding:12px 18px; text-align:right; backdrop-filter:blur(6px); box-shadow:0 4px 14px rgba(212,175,55,0.2);">
+          <div style="font-size:11px; color:#fde047; font-weight:800; text-transform:uppercase; letter-spacing:0.4px;">Prossima Visita di Controllo:</div>
+          <div style="font-size:22px; font-weight:900; color:#ffffff; margin:2px 0;">${new Date(scheda.dataProssimaVisita).toLocaleDateString('it-IT')}</div>
+          <div style="font-size:11.5px; color:#7dd3fc; font-weight:600;">${countdownStr}</div>
+        </div>
+      </div>
+
+      <!-- PROGRESS BAR DEL PERCORSO SPECIALISTICO (PDTA) -->
+      <div style="margin-top:20px; background:rgba(255,255,255,0.1); border-radius:12px; padding:14px 18px; position:relative; z-index:2; border:1px solid rgba(255,255,255,0.15);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:12.5px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
+            <span>📈</span> Avanzamento Esami & Controlli: <span style="color:#38bdf8;">${perc}%</span>
+          </span>
+          <span style="font-size:11.5px; color:#cbd5e1;">${Math.floor(completati)} di ${esami.length} esami pronti</span>
+        </div>
+        <div style="width:100%; height:10px; background:rgba(0,0,0,0.3); border-radius:999px; overflow:hidden;">
+          <div style="width:${perc}%; height:100%; background:linear-gradient(90deg, #38bdf8 0%, #10b981 100%); transition:width 0.4s ease; border-radius:999px;"></div>
+        </div>
+      </div>
+
+      <!-- AZIONI RAPIDE DEL PROTOCOLLO -->
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; position:relative; z-index:2;">
+        <button type="button" class="btn" onclick="richiediTutteRicetteAlMedicoMMG()" style="background:#10b981; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(16,185,129,0.3);">
+          <span>✉️</span> Invia Richiesta Impegnative al Medico (MMG)
+        </button>
+        <button type="button" class="btn" onclick="sincronizzaTuttoCalendarioEpatologia()" style="background:#0284c7; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(2,132,199,0.3);">
+          <span>📅</span> Sincronizza Sveglie su Smartphone (Google / Apple Calendar)
+        </button>
+      </div>
+    </div>
+
+    <!-- CORPO AMBULATORIALE: TABELLA ESAMI & SEZIONE CLINICA -->
+    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; align-items:flex-start;">
+      <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #e2e8f0; border-radius:16px;">
+        <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #e2e8f0; border-radius:16px 16px 0 0; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Protocollo Esami Prescritti & Follow-up</div>
+            <div style="font-size:12px; color:#64748b;">Traccia in tempo reale: Richiesta MMG &bull; Prenotazione CUP &bull; Refertazione</div>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline" onclick="aggiungiNuovoEsamePersonalizzato()" style="font-size:12px; font-weight:700; border-radius:8px;">+ Aggiungi Esame</button>
+        </div>
+
+        <div class="table-responsive" style="padding:0;">
+          <table class="custom-table" style="margin:0;">
+            <thead>
+              <tr style="background:#f1f5f9; color:#475569; font-size:11.5px;">
+                <th style="padding:12px 14px;">ESAME / PRESTAZIONE</th>
+                <th style="padding:12px 10px; text-align:center;">CATEGORIA</th>
+                <th style="padding:12px 10px; text-align:center;">1. RICHIESTA MMG</th>
+                <th style="padding:12px 10px; text-align:center;">2. PRENOTAZIONE CUP</th>
+                <th style="padding:12px 10px; text-align:center;">3. REFERTO / ESITO</th>
+                <th style="padding:12px 14px; text-align:center;">STATO</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COLONNA DESTRA: TERAPIE ATTIVE CORRELATE & RECAPITI -->
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <div class="card" style="border:1.5px solid #86efac; background:#f0fdf4; border-radius:16px; padding:18px;">
+          <div style="font-size:11.5px; font-weight:900; color:#15803d; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:8px;">
+            💊 Terapie Correlate alla Patologia
+          </div>
+          <div style="font-size:12.5px; color:#1e293b; line-height:1.45;">
+            Le prestazioni di controllo sono sincronizzate con lo schema posologico del paziente. I farmaci assunti alimentano in tempo reale gli alert e le scadenze.
+          </div>
+        </div>
+
+        <div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:18px; background:#ffffff;">
+          <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin-bottom:8px;">
+            🏥 Centro di Cura & Contatti
+          </div>
+          <div style="font-size:12px; color:#475569; line-height:1.5;">
+            📍 <b>Struttura:</b> ${proto.centro}<br>
+            ✉️ <b>Email Prenotazioni/Piani:</b> <a href="mailto:${proto.emailCentro}" style="color:#0284c7; font-weight:700; text-decoration:none;">${proto.emailCentro}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = fullHtml;
+}
+
+
+function aggiornaVisibilitaTabEpatologia() {
+  var p = getActivePaziente();
+  var tabBtn = document.querySelector('[data-target="tab-epatologia"]');
+  var tabSection = document.getElementById('tab-epatologia');
+  
+  var croniche = rilevaMalattieCronicheDaiFarmaci(p);
+  var haCroniche = (croniche && croniche.length > 0);
+
+  if (tabBtn) {
+    if (haCroniche) {
+      tabBtn.style.display = 'inline-flex';
+      var prima = croniche[0];
+      tabBtn.innerHTML = '🩺 ' + prima.titolo.split(' & ')[0] + ' & Esami';
+      tabBtn.title = 'Cartella Clinica Specialistica & Follow-up Cronico (' + croniche.map(function(c){return c.titolo.split(' & ')[0];}).join(', ') + ')';
+    } else {
+      tabBtn.style.display = 'none';
+    }
+  }
+
+  if (!haCroniche && tabSection && tabSection.style.display !== 'none') {
+    tabSection.style.display = 'none';
+    var dashBtn = document.querySelector('[data-target="tab-dashboard"]');
+    if (dashBtn) dashBtn.click();
+  }
+}
