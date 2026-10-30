@@ -197,138 +197,160 @@
 <body>
 
   <!-- HEADER CON SELETTORE MULTI-PAZIENTE (VERSIONE PULITA ED ERGONOMICA) -->
+    <!-- HEADER CON SELETTORE MULTI-PAZIENTE (VERSIONE EXECUTIVE CLINICA A 2 LIVELLI) -->
   <header class="app-header">
-    <div class="header-left">
-      <div class="brand">
-        <div class="brand-icon">🩺</div>
-        <div>
-          <div class="brand-title">CareAssist Pro</div>
-          <div class="brand-sub">Diario Socio-Sanitario Domiciliare</div>
+    <!-- LIVELLO 1: IDENTITÀ CLINICA, SELETTORE ASSISTITO & COMANDI DI SISTEMA -->
+    <div class="header-main-bar">
+      <!-- BRAND & OROLOGIO CLINICO IN TEMPO REALE -->
+      <div class="header-left">
+        <div class="brand" onclick="window.location.href='/launcher.html'" title="CareAssist Pro • Diario Socio-Sanitario Domiciliare (Clicca per Menu)">
+          <div class="brand-icon">🩺</div>
+          <div class="brand-text">
+            <div class="brand-title">CareAssist Pro</div>
+            <div class="brand-sub">Diario Socio-Sanitario Domiciliare</div>
+          </div>
+        </div>
+
+        <!-- DATA & ORA ODIERNA IN TEMPO REALE -->
+        <div id="header-data-ora-live" class="header-clock-pill">
+          <span style="font-size:15px; opacity:0.9;">📅</span>
+          <div style="line-height:1.2;">
+            <div id="header-data-live-testo" class="clock-date-text">--/--/----</div>
+            <div id="header-ora-live-testo" class="clock-time-text">Ore --:--:--</div>
+          </div>
         </div>
       </div>
-      <!-- DATA & ORA ODIE RNA IN TEMPO REALE -->
-      <div id="header-data-ora-live" class="header-clock-pill">
-        <span style="font-size:16px;">📅</span>
-        <div style="line-height:1.2;">
-          <div id="header-data-live-testo" style="font-size:12.5px; font-weight:800; color:#ffffff; letter-spacing:0.2px;">--/--/----</div>
-          <div id="header-ora-live-testo" style="font-size:10.5px; font-weight:600; color:#bae6fd;">Ore --:--:--</div>
+
+      <!-- SELETTORE ASSISTITO ATTIVO (CAPSULE EXECUTIVE CARD) -->
+      <div class="header-center-patient">
+        <div class="patient-picker-box">
+          <div class="patient-picker-chip">
+            <span class="patient-picker-icon">👤</span>
+            <span class="patient-picker-label">ASSISTITO:</span>
+          </div>
+          <select id="select-paziente-attivo" class="patient-select-input" onchange="cambiaPaziente(this.value)">
+            <!-- popolato dinamicamente -->
+          </select>
+          <button class="btn btn-new-patient" onclick="openModal('modal-nuovo-paziente')" title="Aggiungi una nuova cartella assistito">
+            <span>➕</span> <span class="btn-new-patient-full-label">Nuovo Assistito</span><span class="btn-new-patient-mobile-label" style="display:none;">Nuovo</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- UTILITY HEADER: MENU APPLICAZIONI & OPZIONI / BACKUP -->
+      <div class="header-top-utilities">
+        <button class="btn btn-header-utility btn-menu-home" onclick="window.location.href='/launcher.html'" title="Torna al Portale Aziendale">
+          <span>🏠</span> <span>Torna al Menu</span>
+        </button>
+
+        <!-- MENU A COMPARSA STRUMENTI / OPZIONI AVANZATE -->
+        <div class="dropdown-tools-wrapper" id="dropdown-tools-container">
+          <button class="btn btn-header-utility btn-tools-toggle" id="btn-toggle-tools-menu" onclick="toggleMenuStrumenti(event)" title="Opzioni, Backup, Guida e Connessione Smartphone">
+            <span>⚙️</span> <span>Opzioni & Backup</span> <span style="font-size:10px; opacity:0.75;">▾</span>
+          </button>
+          <div class="tools-dropdown-menu" id="tools-dropdown-panel">
+            <div class="dropdown-section-title">Strumenti Assistenza</div>
+
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalRoadmapScadenze()">
+              <span>🗓️</span> Roadmap Scadenze Familiare (4 Pazienti)
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalDossierClinico()">
+              <span>📋</span> Dossier Clinico Ospedaliero (A4)
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); sincronizzaCalendarioTuttiPazienti()">
+              <span>📅</span> Sincronizza Calendari Familiari (.ics)
+            </button>
+    
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalSOSProntoSoccorso()">
+              <span>🚨</span> SOS Guida Emergenze 118
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalConsegnaVocale()">
+              <span>🎙️</span> Consegna Vocale Smart (AI)
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriVerificaInterazioniFarmaci()">
+              <span>🧪</span> Scanner Interazioni Terapie
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); openModal('modal-info-guida')">
+              <span>ℹ️</span> Guida & Istruzioni per l'uso
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalSmartphone()">
+              <span>📱</span> Connetti Smartphone / Tablet
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalTurnarioAdmin()">
+              <span>🗓️</span> Turnario & Combinatore Turni (Admin)
+            </button>
+            <a href="GRIGLIA_SETTIMANALE_ROSA.html" target="_blank" class="dropdown-menu-item" onclick="chiudiMenuStrumenti()">
+              <span>📅</span> Stampa Griglia Settimanale
+            </a>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalKitCartaceo()">
+              <span>🖨️</span> Cartella Cartacea A4 (5 Schede)
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); openModal('modal-scopri-progetto')">
+              <span>💡</span> Info sul Progetto CareAssist
+            </button>
+
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-section-title">Sicurezza & Dati</div>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); esportaBackup()">
+              <span>💾</span> Salva Backup (File JSON)
+            </button>
+            <label class="dropdown-menu-item" style="cursor:pointer; margin:0;" onclick="chiudiMenuStrumenti()">
+              <span>📥</span> Ripristina Backup
+              <input type="file" id="backup-file-input" style="display:none;" onchange="importaBackup(event)">
+            </label>
+
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-menu-item text-danger" onclick="chiudiMenuStrumenti(); eliminaPazienteAttivo()">
+              <span>🗑️</span> Elimina Cartella Assistito Attivo
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- SELETTORE PAZIENTE ATTIVO: FOCUS CENTRALE CHIARO ED EVIDENTE -->
-    <div class="header-center-patient">
-      <div class="patient-picker-box">
-        <span class="patient-picker-label">👤 ASSISTITO:</span>
-        <select id="select-paziente-attivo" class="patient-select-input" onchange="cambiaPaziente(this.value)">
-          <!-- popolato dinamicamente -->
-        </select>
-        <button class="btn btn-new-patient" onclick="openModal('modal-nuovo-paziente')" title="Aggiungi una nuova cartella assistito">
-          ➕ <span class="btn-new-patient-full-label">Nuovo Assistito</span><span class="btn-new-patient-mobile-label" style="display:none;">Nuovo</span>
+    <!-- LIVELLO 2: TOOLBAR CLINICA OPERATIVA (COMANDI ARMONIOSI & EXECUTIVE) -->
+    <div class="header-toolbar-row">
+      <div class="header-toolbar-inner">
+        <button class="btn btn-clinical-tool btn-tool-dossier" onclick="apriModalDossierClinico()" title="Genera e Stampa il Dossier Ospedaliero Clinico A4 dell'Assistito">
+          <span class="tool-icon">📋</span>
+          <span class="tool-label">Dossier Clinico A4</span>
         </button>
-      </div>
-    </div>
 
-    <!-- AZIONI PRINCIPALI & MENU STRUMENTI / OPZIONI -->
-    <div class="header-right-actions">
-      <button class="btn btn-sos-pulse" onclick="apriModalSOSProntoSoccorso()" style="background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color:#fff; font-weight:900; border-radius:12px; padding:8px 14px; border:1px solid #fca5a5; box-shadow:0 2px 8px rgba(239,68,68,0.4); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Guida Rapida alle Emergenze Domiciliari & Chiamata 118">
-        🚨 SOS Guida
-      </button>
-
-      <button class="btn" onclick="apriModalConsegnaVocale()" style="background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(79,70,229,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
-        🎙️ Consegna Vocale
-      </button>
-
-      <button class="btn" onclick="window.location.href='/launcher.html'" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; font-weight:700; border-radius:12px; padding:8px 16px; border:1px solid rgba(255,255,255,0.25); box-shadow:0 2px 8px rgba(2,132,199,0.3); cursor:pointer;" title="Torna al Portale Aziendale">
-        🏠 Torna al Menu
-      </button>
-
-      
-      <button class="btn" onclick="apriModalDossierClinico()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(2,132,199,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Genera e Stampa il Dossier Ospedaliero Clinico A4 dell'Assistito">
-        📋 Dossier Clinico A4
-      </button>
-
-      <button class="btn" onclick="apriModalRoadmapScadenze()" style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(79,70,229,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Apri il Cruscotto Unificato Scadenzario & Roadmap Clinica Familiare">
-        🗓️ Roadmap Scadenze
-      </button>
-  
-      <button class="btn btn-stampa-rapida" onclick="stampaReport()" title="Stampa il diario clinico giornaliero dell'assistito">
-        📄 Stampa Diario
-      </button>
-
-      <button class="btn" onclick="window.location.href='/careassist/turni.html'" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(5,150,105,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Apri la Maschera Dedicata Turnario & Roster Operatori">
-        🗓️ Turnario Operatori
-      </button>
-
-      <button class="btn" onclick="avviaBriefingVocaleAssistitoDemo()" style="background:linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(124,58,237,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Ascolta il Briefing Clinico Vocale AI dell'Assistito (Demo Live)">
-        🎙️ Briefing AI
-      </button>
-
-      <button class="btn btn-smartphone-header" onclick="apriModalSmartphone()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-weight:700; border-radius:12px; padding:8px 16px; border:1px solid rgba(255,255,255,0.25); box-shadow:0 2px 8px rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Connetti Smartphone o Tablet via Wi-Fi tramite QR Code">
-        📱 Smartphone
-      </button>
-
-      <!-- MENU A COMPARSA STRUMENTI / OPZIONI AVANZATE -->
-      <div class="dropdown-tools-wrapper" id="dropdown-tools-container">
-        <button class="btn btn-tools-toggle" id="btn-toggle-tools-menu" onclick="toggleMenuStrumenti(event)" title="Opzioni, Backup, Guida e Connessione Smartphone">
-          ⚙️ Opzioni & Backup ▾
+        <button class="btn btn-clinical-tool btn-tool-roadmap" onclick="apriModalRoadmapScadenze()" title="Apri il Cruscotto Unificato Scadenzario & Roadmap Clinica Familiare">
+          <span class="tool-icon">🗓️</span>
+          <span class="tool-label">Roadmap Scadenze</span>
         </button>
-        <div class="tools-dropdown-menu" id="tools-dropdown-panel">
-          <div class="dropdown-section-title">Strumenti Assistenza</div>
 
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalRoadmapScadenze()">
-            <span>🗓️</span> Roadmap Scadenze Familiare (4 Pazienti)
-          </button>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalDossierClinico()">
-            <span>📋</span> Dossier Clinico Ospedaliero (A4)
-          </button>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); sincronizzaCalendarioTuttiPazienti()">
-            <span>📅</span> Sincronizza Calendari Familiari (.ics)
-          </button>
-  
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalSOSProntoSoccorso()">
-            <span>🚨</span> SOS Guida Emergenze 118
-          </button>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalConsegnaVocale()">
-            <span>🎙️</span> Consegna Vocale Smart (AI)
-          </button>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriVerificaInterazioniFarmaci()">
-            <span>🧪</span> Scanner Interazioni Terapie
-          </button>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); openModal('modal-info-guida')">
-            <span>ℹ️</span> Guida & Istruzioni per l'uso
-          </button>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalSmartphone()">
-            <span>📱</span> Connetti Smartphone / Tablet
-          </button>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalTurnarioAdmin()">
-            <span>🗓️</span> Turnario & Combinatore Turni (Admin)
-          </button>
-          <a href="GRIGLIA_SETTIMANALE_ROSA.html" target="_blank" class="dropdown-menu-item" onclick="chiudiMenuStrumenti()">
-            <span>📅</span> Stampa Griglia Settimanale
-          </a>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalKitCartaceo()">
-            <span>🖨️</span> Cartella Cartacea A4 (5 Schede)
-          </button>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); openModal('modal-scopri-progetto')">
-            <span>💡</span> Info sul Progetto CareAssist
-          </button>
+        <button class="btn btn-clinical-tool btn-tool-stampa" onclick="stampaReport()" title="Stampa il diario clinico giornaliero dell'assistito">
+          <span class="tool-icon">📄</span>
+          <span class="tool-label">Stampa Diario</span>
+        </button>
 
-          <div class="dropdown-divider"></div>
-          <div class="dropdown-section-title">Sicurezza & Dati</div>
-          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); esportaBackup()">
-            <span>💾</span> Salva Backup (File JSON)
-          </button>
-          <label class="dropdown-menu-item" style="cursor:pointer; margin:0;" onclick="chiudiMenuStrumenti()">
-            <span>📥</span> Ripristina Backup
-            <input type="file" id="backup-file-input" style="display:none;" onchange="importaBackup(event)">
-          </label>
+        <button class="btn btn-clinical-tool btn-tool-turnario" onclick="window.location.href='/careassist/turni.html'" title="Apri la Maschera Dedicata Turnario & Roster Operatori">
+          <span class="tool-icon">👥</span>
+          <span class="tool-label">Turnario Operatori</span>
+        </button>
 
-          <div class="dropdown-divider"></div>
-          <button class="dropdown-menu-item text-danger" onclick="chiudiMenuStrumenti(); eliminaPazienteAttivo()">
-            <span>🗑️</span> Elimina Cartella Assistito Attivo
-          </button>
-        </div>
+        <button class="btn btn-clinical-tool btn-tool-ai" onclick="avviaBriefingVocaleAssistitoDemo()" title="Ascolta il Briefing Clinico Vocale AI dell'Assistito (Sintesi Vocale Intelligente)">
+          <span class="tool-icon">🎙️</span>
+          <span class="tool-label">Briefing AI</span>
+          <span class="tool-badge-pill">AI</span>
+        </button>
+
+        <button class="btn btn-clinical-tool btn-tool-consegna" onclick="apriModalConsegnaVocale()" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
+          <span class="tool-icon">🗣️</span>
+          <span class="tool-label">Consegna Vocale</span>
+        </button>
+
+        <button class="btn btn-clinical-tool btn-tool-smartphone" onclick="apriModalSmartphone()" title="Connetti Smartphone o Tablet via Wi-Fi tramite QR Code">
+          <span class="tool-icon">📱</span>
+          <span class="tool-label">Smartphone</span>
+        </button>
+
+        <button class="btn btn-clinical-tool btn-tool-sos" onclick="apriModalSOSProntoSoccorso()" title="Guida Rapida alle Emergenze Domiciliari & Chiamata 118">
+          <span class="tool-icon">🚨</span>
+          <span class="tool-label">SOS Guida 118</span>
+        </button>
       </div>
     </div>
   </header>
