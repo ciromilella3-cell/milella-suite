@@ -14699,6 +14699,28 @@ function getEpatologiaDatiPaziente() {
 // COSTRUZIONE VISTA 4 COLONNE FEDELE AL PRESTAMPATO POLICLINICO
 // ==============================================================================
 
+
+let _filtroTendinaModulo = 'tutti'; // 'tutti', 'spuntati', 'laboratorio', 'radiologia', 'strumentali', 'mmg', 'ambulatorio', 'altri', 'non_spuntati'
+
+function impostaFiltroTendinaModulo(valore) {
+  _filtroTendinaModulo = valore || 'tutti';
+  if (_filtroTendinaModulo === 'spuntati' || _filtroTendinaModulo === 'mmg' || _filtroTendinaModulo === 'ambulatorio') {
+    _mostraRigheVuote = false;
+  } else if (_filtroTendinaModulo === 'tutti') {
+    _mostraRigheVuote = true;
+  }
+  renderEpatologiaView();
+}
+window.impostaFiltroTendinaModulo = impostaFiltroTendinaModulo;
+
+function apriPrenotazionePugliaSalute(nomeEsame) {
+  var url = 'https://www.sanita.puglia.it/servizi-online';
+  window.open(url, '_blank');
+  var dettaglio = nomeEsame ? (' per "' + nomeEsame + '"') : '';
+  showToast('🌐 Apertura portale regionale PUGLIA SALUTE' + dettaglio + ' (CUP Online)...');
+}
+window.apriPrenotazionePugliaSalute = apriPrenotazionePugliaSalute;
+
 let _mostraRigheVuote = true; // true = Mostra tutto il prestampato; false = Nascondi righe vuote e non spuntati
 
 function impostaVisualizzazioneRigheVuote(mostra) {
@@ -14748,10 +14770,24 @@ function impostaTipoVistaModulo(tipo) {
 window.impostaTipoVistaModulo = impostaTipoVistaModulo;
 
 function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
-  // Se _mostraRigheVuote è false (modalità compatta), filtra solo gli esami effettivamente spuntati e compresi
-  var esamiDaElaborare = esami;
+  // Filtro in base alla selezione a tendina
+  var esamiDaElaborare = esami.filter(function(e) {
+    if (_filtroTendinaModulo === 'spuntati') return (e.spuntato !== false);
+    if (_filtroTendinaModulo === 'non_spuntati') return (e.spuntato === false);
+    if (_filtroTendinaModulo === 'laboratorio') {
+      return e.categoria === 'FEGATO' || e.categoria === 'ESAMI GENERALI' || e.categoria === 'SIEROLOGIA' || e.categoria === 'ESAMI IMMUNOLOGICI' || e.categoria === 'BATTERIOLOGIA E PARASS.';
+    }
+    if (_filtroTendinaModulo === 'radiologia') return e.categoria === 'ESAMI RADIOLOGICI';
+    if (_filtroTendinaModulo === 'strumentali') return e.categoria === 'ESAMI STRUMENTALI' || e.categoria === 'ESAMI STRUMENTALI - ALTRI';
+    if (_filtroTendinaModulo === 'mmg') return (e.spuntato !== false && !e.emessoDaAmbulatorio);
+    if (_filtroTendinaModulo === 'ambulatorio') return (e.emessoDaAmbulatorio || e.evidenziatoPennarello);
+    if (_filtroTendinaModulo === 'altri') return e.categoria === 'ALTRI';
+    return true; // 'tutti'
+  });
+
+  // Se _mostraRigheVuote è false, rimuovi righe vuote non compilate
   if (!_mostraRigheVuote) {
-    esamiDaElaborare = esami.filter(function(e) {
+    esamiDaElaborare = esamiDaElaborare.filter(function(e) {
       return (e.spuntato !== false) && (!e.rigaVuota || (e.nome && e.nome.trim().length > 0));
     });
   }
@@ -14816,6 +14852,13 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
       }
 
       var puntiniHtml = es.haPuntini ? '<span style="letter-spacing:1px; font-family:monospace; font-size:9.5px; color:#cbd5e1; flex:1; margin-left:3px; overflow:hidden; white-space:nowrap;">..................</span>' : '';
+      
+      // Link diretto Puglia Salute per esami strumentali e radiologici (Ecografia, TAC, RMN, ECG, Fibroscan)
+      var pugliaSaluteBtn = '';
+      var isStrumentaleORadiologico = es.categoria.includes('STRUMENTALI') || es.categoria.includes('RADIOLOGICI') || (es.nome && (es.nome.includes('Ecografia') || es.nome.includes('T.A.C.') || es.nome.includes('RMN') || es.nome.includes('ECG') || es.nome.includes('Fibroscan')));
+      if (isStrumentaleORadiologico && !es.rigaVuota) {
+        pugliaSaluteBtn = '<span onclick="event.stopPropagation(); apriPrenotazionePugliaSalute(\'' + encodeURIComponent(es.nome) + '\')" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-size:9px; font-weight:800; padding:1px 6px; border-radius:4px; margin-left:4px; cursor:pointer; flex-shrink:0; display:inline-flex; align-items:center; gap:2px;" title="Prenota ' + es.nome + ' su Puglia Salute (CUP Online)">🌐 Puglia Salute</span>';
+      }
 
       // Stato sintetico referto o data
       var miniStato = '';
@@ -14835,6 +14878,7 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
           '<span style="color:' + (isSpuntato ? '#0f172a' : '#475569') + '; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + es.nome + '</span>' +
           puntiniHtml +
           badgeCod +
+          pugliaSaluteBtn +
         '</div>' +
         '<div style="flex-shrink:0; margin-left:6px;">' + miniStato + '</div>' +
       '</div>';
@@ -14850,19 +14894,37 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
     '</div>';
   }
 
-  // Barra di comando toggle rapido per richiamare / nascondere
-  var toolbarToggle = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:8px 12px; background:#f1f5f9; border-radius:8px; margin-bottom:12px; border:1px solid #cbd5e1;">' +
-    '<div style="display:flex; align-items:center; gap:8px;">' +
-      '<span style="font-size:11px; font-weight:900; color:#334155; text-transform:uppercase;">👁️ Vista Foglio:</span>' +
-      '<button type="button" class="btn btn-sm" onclick="impostaVisualizzazioneRigheVuote(true)" style="background:' + (_mostraRigheVuote ? '#0284c7' : '#ffffff') + '; color:' + (_mostraRigheVuote ? '#ffffff' : '#334155') + '; border:1px solid ' + (_mostraRigheVuote ? '#0284c7' : '#cbd5e1') + '; font-size:11px; font-weight:800; padding:4px 10px; border-radius:6px; cursor:pointer;">' +
-        '📄 Tutto il Prestampato (con righe vuote & puntini)' +
-      '</button>' +
-      '<button type="button" class="btn btn-sm" onclick="impostaVisualizzazioneRigheVuote(false)" style="background:' + (!_mostraRigheVuote ? '#10b981' : '#ffffff') + '; color:' + (!_mostraRigheVuote ? '#ffffff' : '#334155') + '; border:1px solid ' + (!_mostraRigheVuote ? '#10b981' : '#cbd5e1') + '; font-size:11px; font-weight:800; padding:4px 10px; border-radius:6px; cursor:pointer;">' +
-        '🎯 Solo Esami Prescritti (' + esamiSpuntati.length + ' spuntati - nascondi vuote)' +
-      '</button>' +
+  // Barra di comando con FILTRO A TENDINA + LINK DIRETTO PUGLIA SALUTE CUP ONLINE
+  var toolbarToggle = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 14px; background:#f8fafc; border-radius:10px; margin-bottom:14px; border:1.5px solid #cbd5e1; box-shadow:0 2px 6px rgba(0,0,0,0.03);">' +
+    '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
+      '<div style="display:flex; align-items:center; gap:6px;">' +
+        '<span style="font-size:12px; font-weight:900; color:#0f172a;">🔽 Filtro Rapido:</span>' +
+        '<select id="select-filtro-categoria" onchange="impostaFiltroTendinaModulo(this.value)" style="font-size:12px; font-weight:800; color:#0369a1; background:#ffffff; border:1.5px solid #0284c7; padding:6px 12px; border-radius:8px; outline:none; cursor:pointer; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
+          '<option value="tutti"' + (_filtroTendinaModulo === 'tutti' ? ' selected' : '') + '>📋 Tutti gli Esami del Prestampato (105+)</option>' +
+          '<option value="spuntati"' + (_filtroTendinaModulo === 'spuntati' ? ' selected' : '') + '>✓ Solo con Spunta / Prescritti (' + esamiSpuntati.length + ')</option>' +
+          '<option value="laboratorio"' + (_filtroTendinaModulo === 'laboratorio' ? ' selected' : '') + '>🔬 Laboratorio & Sangue (Fegato, Generali, Sierologia, Immuno)</option>' +
+          '<option value="radiologia"' + (_filtroTendinaModulo === 'radiologia' ? ' selected' : '') + '>☢️ Radiologia (TAC, RMN, Colangio, Prelievo)</option>' +
+          '<option value="strumentali"' + (_filtroTendinaModulo === 'strumentali' ? ' selected' : '') + '>📸 Esami Strumentali (Ecografia, ECG, Fibroscan)</option>' +
+          '<option value="mmg"' + (_filtroTendinaModulo === 'mmg' ? ' selected' : '') + '>🖊️ Richieste Medico di Base (MMG)</option>' +
+          '<option value="ambulatorio"' + (_filtroTendinaModulo === 'ambulatorio' ? ' selected' : '') + '>🖊️ Reparto Infettivi (Pennarello 88606 / 88301)</option>' +
+          '<option value="altri"' + (_filtroTendinaModulo === 'altri' ? ' selected' : '') + '>📑 Altri & Marcatori Tumorali</option>' +
+          '<option value="non_spuntati"' + (_filtroTendinaModulo === 'non_spuntati' ? ' selected' : '') + '>⚪ Solo Non Spuntati</option>' +
+        '</select>' +
+      '</div>' +
+      '<div style="display:flex; align-items:center; gap:6px;">' +
+        '<button type="button" class="btn btn-sm" onclick="impostaVisualizzazioneRigheVuote(true)" style="background:' + (_mostraRigheVuote ? '#0284c7' : '#ffffff') + '; color:' + (_mostraRigheVuote ? '#ffffff' : '#334155') + '; border:1.5px solid ' + (_mostraRigheVuote ? '#0284c7' : '#cbd5e1') + '; font-size:11px; font-weight:800; padding:5px 10px; border-radius:6px; cursor:pointer;" title="Mostra tutte le righe vuote con puntini">' +
+          '📄 Righe Vuote: ON' +
+        '</button>' +
+        '<button type="button" class="btn btn-sm" onclick="impostaVisualizzazioneRigheVuote(false)" style="background:' + (!_mostraRigheVuote ? '#10b981' : '#ffffff') + '; color:' + (!_mostraRigheVuote ? '#ffffff' : '#334155') + '; border:1.5px solid ' + (!_mostraRigheVuote ? '#10b981' : '#cbd5e1') + '; font-size:11px; font-weight:800; padding:5px 10px; border-radius:6px; cursor:pointer;" title="Nascondi le righe vuote">' +
+          '🎯 Righe Vuote: OFF' +
+        '</button>' +
+      '</div>' +
     '</div>' +
-    '<div style="font-size:11px; color:#64748b;">' +
-      (_mostraRigheVuote ? '💡 Clicca su una riga con puntini per scrivere a mano' : 'Vista compatta pulita') +
+
+    '<div>' +
+      '<button type="button" class="btn btn-sm" onclick="apriPrenotazionePugliaSalute()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:900; font-size:12px; padding:7px 14px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(2,132,199,0.35);">' +
+        '<span>🌐</span> Prenota su PUGLIA SALUTE (CUP Online)' +
+      '</button>' +
     '</div>' +
   '</div>';
 
@@ -15587,13 +15649,21 @@ function renderEpatologiaView() {
 
     // COLONNA 4: PRENOTAZIONE CUP
     var cellPrenotato = '';
+    var isStrumentaleOrRad = es.categoria.includes('STRUMENTALI') || es.categoria.includes('RADIOLOGICI') || (es.nome && (es.nome.includes('Ecografia') || es.nome.includes('T.A.C.') || es.nome.includes('RMN') || es.nome.includes('ECG') || es.nome.includes('Fibroscan')));
+    var btnPuglia = (isStrumentaleOrRad && !es.rigaVuota) 
+      ? '<button class="btn btn-sm" style="font-size:9.5px; padding:2px 6px; background:#0284c7; color:#fff; border:none; border-radius:4px; font-weight:800; margin-top:3px; cursor:pointer;" onclick="event.stopPropagation(); apriPrenotazionePugliaSalute(\'' + encodeURIComponent(es.nome) + '\')" title="Prenota ' + es.nome + ' su Puglia Salute (CUP Online)">🌐 Puglia Salute</button>' 
+      : '';
+
     if (!isSpuntato) {
       cellPrenotato = '<span style="color:#cbd5e1; font-size:11px;">-</span>';
     } else if (es.prenotatoCUP && es.dataPrenotazioneCUP) {
       var dStr = new Date(es.dataPrenotazioneCUP).toLocaleDateString('it-IT');
-      cellPrenotato = '<div style="font-size:11.5px; font-weight:800; color:#0284c7; cursor:pointer;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')" title="Clicca per modificare data o orario">📅 ' + dStr + ' ' + (es.oraPrenotazione || '') + '</div><div style="font-size:9.5px; color:#64748b;">' + (es.luogoPrenotazione || 'CUP') + '</div>';
+      cellPrenotato = '<div style="font-size:11.5px; font-weight:800; color:#0284c7; cursor:pointer;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')" title="Clicca per modificare data o orario">📅 ' + dStr + ' ' + (es.oraPrenotazione || '') + '</div><div style="font-size:9.5px; color:#64748b;">' + (es.luogoPrenotazione || 'CUP') + '</div>' + btnPuglia;
     } else {
-      cellPrenotato = '<button class="btn btn-sm" style="font-size:10.5px; padding:3px 7px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; border-radius:6px; font-weight:700;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')">+ Data</button>';
+      cellPrenotato = '<div style="display:flex; flex-direction:column; align-items:center; gap:2px;">' +
+        '<button class="btn btn-sm" style="font-size:10.5px; padding:3px 7px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; border-radius:6px; font-weight:700;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')">+ Data</button>' +
+        btnPuglia +
+      '</div>';
     }
 
     // COLONNA 5: REFERTO / ESITO
