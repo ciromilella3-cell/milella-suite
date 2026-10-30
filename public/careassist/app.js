@@ -15983,7 +15983,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
       <!-- LE 4 TAPPE CRONOLOGICHE DISPOSTE A CARD PROFESSIONALI -->
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:14px;">
         
-        <!-- TAPPA 1: LABORATORIO ANALISI SCOTTI (DICEMBRE 2026 - PRIORITÀ P) -->
+        <!-- TAPPA 1: LABORATORIO ANALISI SCOTTI (DICEMBRE 2026 - PRIORITÀ P & GESTIONE AUTONOMA) -->
         <div style="background:rgba(15,23,42,0.65); border:1.5px solid #f59e0b; border-radius:14px; padding:16px; position:relative; backdrop-filter:blur(6px); display:flex; flex-direction:column; justify-content:space-between;">
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -15991,18 +15991,19 @@ function renderEpatologiaInfettiviCiro(container, p) {
               <span style="background:#fef3c7; color:#92400e; font-size:10px; font-weight:900; padding:2px 6px; border-radius:4px;">PRIORITÀ [ P ] ASL</span>
             </div>
             <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
-              🔬 Laboratorio Scotti (Bari)
+              🔬 ${(typeof getDatiLaboratorioScotti === 'function' ? getDatiLaboratorioScotti(p).nome : 'Laboratorio di Analisi Scotti srl')}
             </div>
             <div style="font-size:11.5px; color:#cbd5e1; line-height:1.45; margin-bottom:12px;">
-              <b>Esami Sangue Generali:</b> Transaminasi, VES, Emocromo, Glicemia, Creatinina, Lipasi.<br>
-              <b>Azione:</b> Richiedere ricette NRE al Curante nella prima decade di Dicembre con <u>Priorità P</u>, poi chiamare il laboratorio.
+              <b>📍 Sede:</b> ${(typeof getDatiLaboratorioScotti === 'function' ? getDatiLaboratorioScotti(p).indirizzo : 'Via Giuseppe Maria Giovene, 60, 70124 Bari BA')}<br>
+              <b>📞 Tel:</b> ${(typeof getDatiLaboratorioScotti === 'function' ? getDatiLaboratorioScotti(p).telefono : '080 561 3974')}<br>
+              <b>Esami:</b> 12 Ematochimici con <u>Priorità P</u> tassativa per ASL.
             </div>
           </div>
-          <div style="display:flex; gap:6px; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px;">
-            <button type="button" class="btn btn-sm" onclick="apriModalLaboratorioScotti()" style="flex:1; background:#0284c7; color:#fff; font-size:11px; font-weight:800; padding:5px 8px; border-radius:6px; border:none; cursor:pointer;">
-              Dettagli & Modulo
+          <div style="display:flex; gap:6px; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-sm" onclick="apriModalLaboratorioScotti()" style="flex:1; background:#0284c7; color:#fff; font-size:11px; font-weight:800; padding:5px 8px; border-radius:6px; border:none; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:4px;">
+              ✏️ Gestisci in Autonomia
             </button>
-            <a href="tel:0805211386" class="btn btn-sm" style="background:#f1f5f9; color:#0f172a; font-size:11px; font-weight:800; padding:5px 8px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center;">
+            <a href="tel:${(typeof getDatiLaboratorioScotti === 'function' ? getDatiLaboratorioScotti(p).telefono.replace(/[\s\.\-\/]/g, '') : '0805613974')}" class="btn btn-sm" style="background:#f1f5f9; color:#0f172a; font-size:11px; font-weight:800; padding:5px 8px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
               📞 Chiama
             </a>
           </div>
@@ -18672,10 +18673,149 @@ window.apriFoglioPrenotazioneEcografiaCiro = apriFoglioPrenotazioneEcografiaCiro
 
 
 /* ==========================================================================
-   MODULO LABORATORIO ANALISI CLINICHE SCOTTI (BARI) - GESTIONE PRIORITÀ [ P ]
+   MODULO LABORATORIO ANALISI CLINICHE SCOTTI (BARI) - GESTIONE AUTONOMA & PRIORITÀ [ P ]
    ========================================================================== */
 
+function getDatiLaboratorioScotti(p) {
+  var s = (p && p.gestioneLaboratorioScotti) ? p.gestioneLaboratorioScotti : {};
+  return {
+    nome: s.nome || 'Laboratorio di Analisi Scotti srl',
+    indirizzo: s.indirizzo || 'Via Giuseppe Maria Giovene, 60, 70124 Bari BA',
+    telefono: s.telefono || '080 561 3974',
+    telefonoAlternativo: s.telefonoAlternativo || '',
+    sitoWeb: s.sitoWeb || 'https://www.laboratorioscotti.it',
+    orari: s.orari || 'Lun - Ven: 07:30 - 10:30 (Prelievi) • Pomeriggio apre alle ore 15:00',
+    note: s.note || 'Convenzionato SSN. Priorità [ P ] obbligatoria per accettazione ASL Bari.',
+    richiestaMmgInviata: !!s.richiestaMmgInviata,
+    ricettePRicevute: !!s.ricettePRicevute,
+    chiamataScottiFatta: !!s.chiamataScottiFatta,
+    prelievoFissato: !!s.prelievoFissato,
+    dataPrelievoConcordata: s.dataPrelievoConcordata || '',
+    testoRichiestaPersonalizzato: s.testoRichiestaPersonalizzato || ''
+  };
+}
+window.getDatiLaboratorioScotti = getDatiLaboratorioScotti;
+
+function aggiornaUIModaleLaboratorioScotti(p) {
+  var s = getDatiLaboratorioScotti(p);
+
+  // Aggiorna header
+  var hTitle = document.getElementById('scotti-modal-title');
+  if (hTitle) hTitle.innerHTML = s.nome + ' &bull; Gestione & Prenotazione';
+  var hInd = document.getElementById('scotti-header-indirizzo');
+  if (hInd) hInd.textContent = s.indirizzo;
+
+  // Aggiorna visualizzazione
+  var vNome = document.getElementById('scotti-view-nome');
+  if (vNome) vNome.textContent = s.nome;
+  var vInd = document.getElementById('scotti-view-indirizzo');
+  if (vInd) vInd.textContent = '📍 ' + s.indirizzo;
+  var vOrari = document.getElementById('scotti-view-orari');
+  if (vOrari) vOrari.textContent = s.orari;
+  var vTel = document.getElementById('scotti-view-tel');
+  if (vTel) vTel.textContent = s.telefono;
+  var vTelLink = document.getElementById('scotti-view-tel-link');
+  if (vTelLink) vTelLink.href = 'tel:' + s.telefono.replace(/[\s\.\-\/]/g, '');
+  var vSito = document.getElementById('scotti-view-sito');
+  if (vSito) vSito.textContent = s.sitoWeb.replace(/^https?:\/\//, '');
+  var vSitoLink = document.getElementById('scotti-view-sito-link');
+  if (vSitoLink) vSitoLink.href = s.sitoWeb;
+
+  // Aggiorna pulsanti rapidi
+  var btnChiama = document.getElementById('scotti-btn-chiama');
+  if (btnChiama) btnChiama.href = 'tel:' + s.telefono.replace(/[\s\.\-\/]/g, '');
+  var btnSito = document.getElementById('scotti-btn-sito');
+  if (btnSito) btnSito.href = s.sitoWeb;
+
+  // Aggiorna campi form di modifica
+  var inNome = document.getElementById('input-scotti-edit-nome');
+  if (inNome) inNome.value = s.nome;
+  var inInd = document.getElementById('input-scotti-edit-indirizzo');
+  if (inInd) inInd.value = s.indirizzo;
+  var inTel = document.getElementById('input-scotti-edit-telefono');
+  if (inTel) inTel.value = s.telefono;
+  var inSito = document.getElementById('input-scotti-edit-sito');
+  if (inSito) inSito.value = s.sitoWeb;
+  var inOrari = document.getElementById('input-scotti-edit-orari');
+  if (inOrari) inOrari.value = s.orari;
+}
+window.aggiornaUIModaleLaboratorioScotti = aggiornaUIModaleLaboratorioScotti;
+
+function toggleModificaDatiScotti(forzato) {
+  var boxView = document.getElementById('scotti-box-visualizzazione');
+  var boxEdit = document.getElementById('scotti-box-modifica');
+  if (!boxView || !boxEdit) return;
+
+  var showEdit = (typeof forzato === 'boolean') ? forzato : (boxEdit.style.display === 'none' || !boxEdit.style.display);
+  boxEdit.style.display = showEdit ? 'block' : 'none';
+  boxView.style.display = showEdit ? 'none' : 'block';
+
+  if (showEdit) {
+    var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+    aggiornaUIModaleLaboratorioScotti(p);
+  }
+}
+window.toggleModificaDatiScotti = toggleModificaDatiScotti;
+
+function salvaModificheStrutturaScotti() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+  if (!p.gestioneLaboratorioScotti) p.gestioneLaboratorioScotti = {};
+
+  var inNome = document.getElementById('input-scotti-edit-nome');
+  var inInd = document.getElementById('input-scotti-edit-indirizzo');
+  var inTel = document.getElementById('input-scotti-edit-telefono');
+  var inSito = document.getElementById('input-scotti-edit-sito');
+  var inOrari = document.getElementById('input-scotti-edit-orari');
+
+  if (inNome && inNome.value.trim()) p.gestioneLaboratorioScotti.nome = inNome.value.trim();
+  if (inInd && inInd.value.trim()) p.gestioneLaboratorioScotti.indirizzo = inInd.value.trim();
+  if (inTel && inTel.value.trim()) p.gestioneLaboratorioScotti.telefono = inTel.value.trim();
+  if (inSito && inSito.value.trim()) p.gestioneLaboratorioScotti.sitoWeb = inSito.value.trim();
+  if (inOrari && inOrari.value.trim()) p.gestioneLaboratorioScotti.orari = inOrari.value.trim();
+
+  if (typeof saveDb === 'function') saveDb();
+  aggiornaUIModaleLaboratorioScotti(p);
+  toggleModificaDatiScotti(false);
+
+  // Aggiorna anche la scheda principale se visibile
+  var container = document.getElementById('tab-epatologia');
+  if (container && (container.style.display === 'block' || container.style.display === 'flex' || container.classList.contains('active'))) {
+    if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
+  }
+
+  if (typeof showToast === 'function') showToast('💾 Dati del laboratorio aggiornati in piena autonomia!');
+}
+window.salvaModificheStrutturaScotti = salvaModificheStrutturaScotti;
+
+function ripristinaDatiPredefinitiScotti() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+  if (!p.gestioneLaboratorioScotti) p.gestioneLaboratorioScotti = {};
+
+  p.gestioneLaboratorioScotti.nome = 'Laboratorio di Analisi Scotti srl';
+  p.gestioneLaboratorioScotti.indirizzo = 'Via Giuseppe Maria Giovene, 60, 70124 Bari BA';
+  p.gestioneLaboratorioScotti.telefono = '080 561 3974';
+  p.gestioneLaboratorioScotti.sitoWeb = 'https://www.laboratorioscotti.it';
+  p.gestioneLaboratorioScotti.orari = 'Lun - Ven: 07:30 - 10:30 (Prelievi) • Apre alle ore 15:00';
+
+  if (typeof saveDb === 'function') saveDb();
+  aggiornaUIModaleLaboratorioScotti(p);
+  if (typeof showToast === 'function') showToast('🔄 Dati ripristinati da Google Maps!');
+}
+window.ripristinaDatiPredefinitiScotti = ripristinaDatiPredefinitiScotti;
+
+function apriMappaLaboratorioScotti() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var s = getDatiLaboratorioScotti(p);
+  var query = encodeURIComponent((s.nome || 'Laboratorio Scotti') + ' ' + (s.indirizzo || 'Bari'));
+  window.open('https://maps.google.com/?q=' + query, '_blank');
+}
+window.apriMappaLaboratorioScotti = apriMappaLaboratorioScotti;
+
 function generaTestoRichiestaScottiMedico() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var s = getDatiLaboratorioScotti(p);
   return 'Gentile Dott. Roberto Scarcia (MMG),\n\n' +
     'in vista del controllo specialistico programmato per il Sig. Ciro Milella presso la Clinica delle Malattie Infettive ed Epatologia del Policlinico di Bari, richiedo cortesemente il rilascio delle ricette elettroniche dematerializzate (NRE) per il pannello ematochimico di controllo:\n\n' +
     '1. VES\n' +
@@ -18690,7 +18830,7 @@ function generaTestoRichiestaScottiMedico() {
     '10. Glicemia\n' +
     '11. Creatininemia\n' +
     '12. Amilasi pancreatica e Lipasi\n\n' +
-    '⚠️ NOTA TASSATIVA PER ACCETTAZIONE IN CONVENZIONE ASL (LABORATORIO SCOTTI - BARI):\n' +
+    '⚠️ NOTA TASSATIVA PER ACCETTAZIONE IN CONVENZIONE ASL (' + s.nome.toUpperCase() + ' - ' + s.indirizzo + '):\n' +
     'Il Laboratorio Analisi Scotti ha espressamente specificato che, per accettare le impegnative in convenzione con il Servizio Sanitario Nazionale ed evitare il blocco del tetto di spesa regionale, È INDISPENSABILE CONTRASSEGNARE LE RICETTE CON CLASSE DI PRIORITÀ: [ P ] (Programmata / Prioritaria).\n\n' +
     'Dati Assistito: Ciro Milella - Data di Nascita: 16/12/1967\n' +
     'Codice Fiscale: MLLCRI67T16A662Z\n' +
@@ -18699,26 +18839,45 @@ function generaTestoRichiestaScottiMedico() {
 }
 window.generaTestoRichiestaScottiMedico = generaTestoRichiestaScottiMedico;
 
-function apriModalLaboratorioScotti() {
-  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+function rigeneraTestoPredefinitoRichiestaScotti() {
   var txtArea = document.getElementById('textarea-richiesta-scotti-medico');
   if (txtArea) {
     txtArea.value = generaTestoRichiestaScottiMedico();
+    var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+    if (p && p.gestioneLaboratorioScotti) {
+      delete p.gestioneLaboratorioScotti.testoRichiestaPersonalizzato;
+      if (typeof saveDb === 'function') saveDb();
+    }
+    if (typeof showToast === 'function') showToast('🔄 Testo richiesta reimpostato con tutti i 12 esami!');
+  }
+}
+window.rigeneraTestoPredefinitoRichiestaScotti = rigeneraTestoPredefinitoRichiestaScotti;
+
+function apriModalLaboratorioScotti() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  aggiornaUIModaleLaboratorioScotti(p);
+
+  var s = getDatiLaboratorioScotti(p);
+  var txtArea = document.getElementById('textarea-richiesta-scotti-medico');
+  if (txtArea) {
+    txtArea.value = s.testoRichiestaPersonalizzato || generaTestoRichiestaScottiMedico();
   }
 
   // Carica stato checkboxes e data se salvati
-  var dati = (p && p.gestioneLaboratorioScotti) ? p.gestioneLaboratorioScotti : {};
   var c1 = document.getElementById('check-scotti-richiesta-mmg');
   var c2 = document.getElementById('check-scotti-ricette-ricevute');
   var c3 = document.getElementById('check-scotti-chiamata-fatta');
   var c4 = document.getElementById('check-scotti-prelievo-fissato');
   var dInp = document.getElementById('input-scotti-data-prelievo');
 
-  if (c1) c1.checked = !!dati.richiestaMmgInviata;
-  if (c2) c2.checked = !!dati.ricettePRicevute;
-  if (c3) c3.checked = !!dati.chiamataScottiFatta;
-  if (c4) c4.checked = !!dati.prelievoFissato;
-  if (dInp) dInp.value = dati.dataPrelievoConcordata || '';
+  if (c1) c1.checked = !!s.richiestaMmgInviata;
+  if (c2) c2.checked = !!s.ricettePRicevute;
+  if (c3) c3.checked = !!s.chiamataScottiFatta;
+  if (c4) c4.checked = !!s.prelievoFissato;
+  if (dInp) dInp.value = s.dataPrelievoConcordata || '';
+
+  // Assicura che la vista iniziale sia la visualizzazione
+  toggleModificaDatiScotti(false);
 
   if (typeof openModal === 'function') {
     openModal('modal-laboratorio-scotti');
@@ -18736,36 +18895,37 @@ function salvaDatiLaboratorioScotti() {
   var c3 = document.getElementById('check-scotti-chiamata-fatta');
   var c4 = document.getElementById('check-scotti-prelievo-fissato');
   var dInp = document.getElementById('input-scotti-data-prelievo');
+  var txtArea = document.getElementById('textarea-richiesta-scotti-medico');
 
-  p.gestioneLaboratorioScotti = {
-    richiestaMmgInviata: c1 ? c1.checked : false,
-    ricettePRicevute: c2 ? c2.checked : false,
-    chiamataScottiFatta: c3 ? c3.checked : false,
-    prelievoFissato: c4 ? c4.checked : false,
-    dataPrelievoConcordata: dInp ? dInp.value : ''
-  };
+  p.gestioneLaboratorioScotti.richiestaMmgInviata = c1 ? c1.checked : false;
+  p.gestioneLaboratorioScotti.ricettePRicevute = c2 ? c2.checked : false;
+  p.gestioneLaboratorioScotti.chiamataScottiFatta = c3 ? c3.checked : false;
+  p.gestioneLaboratorioScotti.prelievoFissato = c4 ? c4.checked : false;
+  p.gestioneLaboratorioScotti.dataPrelievoConcordata = dInp ? dInp.value : '';
+  if (txtArea) p.gestioneLaboratorioScotti.testoRichiestaPersonalizzato = txtArea.value;
 
   if (typeof saveDb === 'function') saveDb();
-  if (typeof showToast === 'function') showToast('💾 Stato Laboratorio Scotti salvato!');
+  if (typeof showToast === 'function') showToast('💾 Dati salvati con successo!');
 }
 window.salvaDatiLaboratorioScotti = salvaDatiLaboratorioScotti;
 
 function inviaRichiestaScottiWhatsApp() {
-  var testo = generaTestoRichiestaScottiMedico();
+  var txtArea = document.getElementById('textarea-richiesta-scotti-medico');
+  var testo = (txtArea && txtArea.value.trim()) ? txtArea.value.trim() : generaTestoRichiestaScottiMedico();
   window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(testo), '_blank');
 }
 window.inviaRichiestaScottiWhatsApp = inviaRichiestaScottiWhatsApp;
 
 function copiaTestoRichiestaScotti() {
-  var testo = generaTestoRichiestaScottiMedico();
+  var txtArea = document.getElementById('textarea-richiesta-scotti-medico');
+  var testo = (txtArea && txtArea.value.trim()) ? txtArea.value.trim() : generaTestoRichiestaScottiMedico();
   if (navigator.clipboard) {
     navigator.clipboard.writeText(testo).then(function() {
       if (typeof showToast === 'function') showToast('📋 Testo richiesta copiato negli appunti!');
     });
   } else {
-    var txt = document.getElementById('textarea-richiesta-scotti-medico');
-    if (txt) {
-      txt.select();
+    if (txtArea) {
+      txtArea.select();
       document.execCommand('copy');
       if (typeof showToast === 'function') showToast('📋 Testo copiato!');
     }

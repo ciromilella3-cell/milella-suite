@@ -4814,8 +4814,9 @@
   
 
   <!-- MODAL LABORATORIO ANALISI CLINICHE SCOTTI (BARI) - GESTIONE PRIORITÀ P -->
+    <!-- MODAL LABORATORIO ANALISI CLINICHE SCOTTI (BARI) - GESTIONE AUTONOMA & PRIORITÀ P -->
   <div class="modal-overlay" id="modal-laboratorio-scotti" style="z-index: 10050;">
-    <div class="modal-card" style="max-width: 900px; width: 95%; max-height: 92vh; display: flex; flex-direction: column; background: #ffffff;">
+    <div class="modal-card" style="max-width: 920px; width: 95%; max-height: 94vh; display: flex; flex-direction: column; background: #ffffff;">
       
       <!-- HEADER LABORATORIO ELEGANTE -->
       <div class="modal-header" style="background: linear-gradient(135deg, #092e48 0%, #0b3d60 100%); color: #ffffff; padding: 18px 24px; border-bottom: 2px solid #0284c7; display: flex; justify-content: space-between; align-items: center;">
@@ -4828,11 +4829,11 @@
               <span style="background: #38bdf8; color: #082f49; font-size: 10.5px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;">LABORATORIO ANALISI CLINICHE CONVENZIONATO</span>
               <span style="background: #f59e0b; color: #1e1b4b; font-size: 10.5px; font-weight: 900; padding: 2px 8px; border-radius: 6px;">REQUISITO ASL: PRIORITÀ [ P ]</span>
             </div>
-            <h2 style="font-size: 20px; font-weight: 900; margin: 3px 0 1px; color: #ffffff; letter-spacing: -0.3px;">
-              Laboratorio Analisi Cliniche Scotti &bull; Prescrizioni & Prenotazione
+            <h2 id="scotti-modal-title" style="font-size: 20px; font-weight: 900; margin: 3px 0 1px; color: #ffffff; letter-spacing: -0.3px;">
+              Laboratorio di Analisi Scotti srl &bull; Gestione & Prenotazione
             </h2>
             <div style="font-size: 12px; color: #bae6fd;">
-              Assistito: <b>Ciro Milella</b> &bull; MMG: <b>Dott. Roberto Scarcia</b> &bull; Sede: <b>Via Putignani 85, Bari</b>
+              Assistito: <b>Ciro Milella</b> &bull; MMG: <b>Dott. Roberto Scarcia</b> &bull; Sede: <b id="scotti-header-indirizzo">Via Giuseppe Maria Giovene 60, Bari</b>
             </div>
           </div>
         </div>
@@ -4847,41 +4848,104 @@
           <div style="font-size: 28px; line-height: 1;">⚠️</div>
           <div style="font-size: 12.5px; color: #1e3a8a; line-height: 1.5;">
             <b style="color: #1e40af; font-size: 13.5px;">Istruzioni Ufficiali per l'Accettazione in Convenzione ASL:</b><br>
-            • <b>Validità Ricetta 180 Giorni:</b> Per non far scadere le impegnative prima del controllo, richiedile al Curante <u>nella prima decade di Dicembre 2026</u>.<br>
+            • <b>Validità Ricetta 180 Giorni:</b> Per non far scadere le impegnative prima del controllo 2027, richiedile al Curante <u>nella prima decade di Dicembre 2026</u>.<br>
             • <b style="background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 4px;">Priorità Obbligatoria [ P ]:</b> Il Laboratorio Scotti richiede tassativamente che il Medico contrassegni le ricette con <b>Priorità "P" (Programmata / Prioritaria)</b>, altrimenti la ASL Bari respinge l'accettazione in convenzione a carico del SSN.
           </div>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 18px; margin-bottom: 20px;">
           
-          <!-- BOX 1: RECAPITI E CONTATTI RAPIDI LABORATORIO SCOTTI -->
+          <!-- BOX 1: RECAPITI E GESTIONE IN COMPLETA AUTONOMIA -->
           <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
               <div style="font-size: 12px; font-weight: 900; color: #0369a1; text-transform: uppercase;">1. Dati & Contatti Laboratorio</div>
-              <span style="font-size: 11px; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 6px;">Convenzionato SSN</span>
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 6px;">Convenzionato SSN</span>
+                <button type="button" class="btn btn-sm" onclick="toggleModificaDatiScotti()" style="background: #f1f5f9; color: #0369a1; border: 1px solid #cbd5e1; font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                  ✏️ Modifica in Autonomia
+                </button>
+              </div>
             </div>
             
-            <div style="font-size: 16px; font-weight: 900; color: #0f172a; margin-bottom: 2px;">
-              Laboratorio Analisi Cliniche Scotti S.r.l.
-            </div>
-            <div style="font-size: 12.5px; color: #475569; margin-bottom: 8px;">
-              📍 Via Nicolò Putignani, 85 &bull; 70122 Bari (BA) &bull; Centro Città
+            <!-- SCHEDA IN MODALITÀ VISUALIZZAZIONE -->
+            <div id="scotti-box-visualizzazione">
+              <div style="font-size: 16px; font-weight: 900; color: #0f172a; margin-bottom: 2px;" id="scotti-view-nome">
+                Laboratorio di Analisi Scotti srl
+              </div>
+              <div style="font-size: 12.5px; color: #475569; margin-bottom: 8px;" id="scotti-view-indirizzo">
+                📍 Via Giuseppe Maria Giovene, 60, 70124 Bari BA
+              </div>
+
+              <div style="background: #f1f5f9; border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 12px; color: #334155; line-height: 1.5;">
+                🕒 <b>Orario Prelievi / Apertura:</b> <span id="scotti-view-orari">Lun - Ven: 07:30 - 10:30 (Prelievi) &bull; Pomeriggio apre alle ore 15:00</span><br>
+                📞 <b>Centralino / Prenotazioni:</b> <a id="scotti-view-tel-link" href="tel:0805613974" style="color: #0284c7; font-weight: 800; text-decoration: none;"><span id="scotti-view-tel">080 561 3974</span></a><br>
+                🌐 <b>Sito Web Ufficiale:</b> <a id="scotti-view-sito-link" href="https://www.laboratorioscotti.it" target="_blank" style="color: #0284c7; font-weight: 700; text-decoration: underline;"><span id="scotti-view-sito">laboratorioscotti.it</span></a><br>
+                🩸 <b>Istruzioni Prelievo:</b> Digiuno da almeno 8-10 ore la mattina dell'esame.
+              </div>
+
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <a id="scotti-btn-chiama" href="tel:0805613974" class="btn" style="flex: 1; background: #0284c7; color: #ffffff; font-weight: 800; font-size: 12.5px; padding: 9px 14px; border-radius: 8px; text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                  📞 Chiama Lab. Scotti
+                </a>
+                <button id="scotti-btn-mappa" type="button" class="btn" onclick="apriMappaLaboratorioScotti()" style="background: #f8fafc; color: #334155; border: 1.5px solid #cbd5e1; font-weight: 800; font-size: 12px; padding: 9px 12px; border-radius: 8px; cursor: pointer;">
+                  🗺️ Mappa Google
+                </button>
+                <a id="scotti-btn-sito" href="https://www.laboratorioscotti.it" target="_blank" class="btn" style="background: #f8fafc; color: #334155; border: 1.5px solid #cbd5e1; font-weight: 800; font-size: 12px; padding: 9px 12px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center;">
+                  🌐 Sito Web
+                </a>
+              </div>
             </div>
 
-            <div style="background: #f1f5f9; border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 12px; color: #334155;">
-              🕒 <b>Orario Prelievi:</b> Lunedì - Venerdì: 07:30 - 10:30<br>
-              📞 <b>Centralino / Prenotazioni:</b> <a href="tel:0805211386" style="color: #0284c7; font-weight: 800; text-decoration: none;">080 521 1386</a> &bull; 080 523 5403<br>
-              🩸 <b>Regola:</b> Digiuno da almeno 8-10 ore prima del prelievo.
+            <!-- FORM DI MODIFICA IN PIENA AUTONOMIA DELL'UTENTE -->
+            <div id="scotti-box-modifica" style="display: none; background: #f8fafc; border: 1.5px solid #38bdf8; border-radius: 12px; padding: 14px; margin-top: 6px;">
+              <div style="font-size: 12.5px; font-weight: 900; color: #0284c7; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                <span>✏️</span> Modifica Dati Struttura in Autonomia
+              </div>
+              <div style="font-size: 11px; color: #64748b; margin-bottom: 12px;">
+                Tutti i campi sono modificabili liberamente. I pulsanti di chiamata, mappa e sito si aggiorneranno all'istante.
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 9px; font-size: 12px;">
+                <div>
+                  <label style="font-weight: 800; color: #334155; display: block; margin-bottom: 2px;">Nome Laboratorio / Struttura:</label>
+                  <input type="text" id="input-scotti-edit-nome" class="form-control" style="width: 100%; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-size: 12.5px; font-weight: 700; outline: none;" placeholder="Laboratorio di Analisi Scotti srl">
+                </div>
+
+                <div>
+                  <label style="font-weight: 800; color: #334155; display: block; margin-bottom: 2px;">Indirizzo Completo:</label>
+                  <input type="text" id="input-scotti-edit-indirizzo" class="form-control" style="width: 100%; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-size: 12.5px; outline: none;" placeholder="Via Giuseppe Maria Giovene, 60, 70124 Bari BA">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <div>
+                    <label style="font-weight: 800; color: #334155; display: block; margin-bottom: 2px;">Telefono Principale:</label>
+                    <input type="text" id="input-scotti-edit-telefono" class="form-control" style="width: 100%; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-size: 12.5px; font-weight: 700; outline: none;" placeholder="080 561 3974">
+                  </div>
+                  <div>
+                    <label style="font-weight: 800; color: #334155; display: block; margin-bottom: 2px;">Sito Web:</label>
+                    <input type="text" id="input-scotti-edit-sito" class="form-control" style="width: 100%; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-size: 12.5px; outline: none;" placeholder="https://www.laboratorioscotti.it">
+                  </div>
+                </div>
+
+                <div>
+                  <label style="font-weight: 800; color: #334155; display: block; margin-bottom: 2px;">Orari di Prelievo & Apertura:</label>
+                  <input type="text" id="input-scotti-edit-orari" class="form-control" style="width: 100%; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-size: 12px; outline: none;" placeholder="Lun - Ven: 07:30 - 10:30 (Prelievi) • Apre alle ore 15:00">
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;">
+                <button type="button" class="btn" onclick="salvaModificheStrutturaScotti()" style="flex: 1; background: #10b981; color: #ffffff; font-weight: 800; font-size: 12px; padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 6px rgba(16,185,129,0.3);">
+                  💾 Salva Modifiche Struttura
+                </button>
+                <button type="button" class="btn btn-outline" onclick="ripristinaDatiPredefinitiScotti()" style="font-size: 11px; padding: 8px 10px; border-color: #cbd5e1; color: #475569;" title="Ripristina dati da Google Maps">
+                  🔄 Ripristina Google Maps
+                </button>
+                <button type="button" class="btn btn-outline" onclick="toggleModificaDatiScotti(false)" style="font-size: 11px; padding: 8px 10px;">
+                  Annulla
+                </button>
+              </div>
             </div>
 
-            <div style="display: flex; gap: 8px;">
-              <a href="tel:0805211386" class="btn" style="flex: 1; background: #0284c7; color: #ffffff; font-weight: 800; font-size: 12.5px; padding: 9px 14px; border-radius: 8px; text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
-                📞 Chiama Lab. Scotti
-              </a>
-              <button type="button" class="btn" onclick="window.open('https://maps.google.com/?q=Laboratorio+Scotti+Via+Putignani+85+Bari', '_blank')" style="background: #f8fafc; color: #334155; border: 1.5px solid #cbd5e1; font-weight: 800; font-size: 12px; padding: 9px 12px; border-radius: 8px; cursor: pointer;">
-                🗺️ Mappa
-              </button>
-            </div>
           </div>
 
           <!-- BOX 2: STATO AVANZAMENTO & NOTE PERSONALI -->
@@ -4903,7 +4967,7 @@
 
               <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
                 <input type="checkbox" id="check-scotti-chiamata-fatta" onchange="salvaDatiLaboratorioScotti()" style="width: 16px; height: 16px; accent-color: #0284c7;">
-                <span>📞 Chiamata effettuata al Laboratorio Scotti per data</span>
+                <span>📞 Chiamata effettuata al Laboratorio per data</span>
               </label>
 
               <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
@@ -4913,21 +4977,21 @@
             </div>
 
             <div style="margin-top: 14px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
-              <label style="font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">DATA PRELIEVO CONCORDATA CON LAB. SCOTTI:</label>
+              <label style="font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">DATA PRELIEVO CONCORDATA CON IL LABORATORIO:</label>
               <input type="date" id="input-scotti-data-prelievo" onchange="salvaDatiLaboratorioScotti()" style="font-size: 12.5px; font-weight: 800; padding: 6px 10px; border-radius: 8px; border: 1.5px solid #cbd5e1; width: 100%; outline: none; background: #f8fafc;">
             </div>
           </div>
 
         </div>
 
-        <!-- BOX 3: MODULO DI RICHIESTA GENERATA PER IL MEDICO (DOTT. SCARCIA) -->
+        <!-- BOX 3: MODULO DI RICHIESTA GENERATA PER IL MEDICO (DOTT. SCARCIA) - COMPLETAMENTE MODIFICABILE -->
         <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
             <div>
               <div style="font-size: 12.5px; font-weight: 900; color: #0f172a; display: flex; align-items: center; gap: 6px;">
                 <span>✉️</span> Modulo Richiesta Ricette da Inviare al Curante (Dott. Roberto Scarcia)
               </div>
-              <div style="font-size: 11.5px; color: #64748b;">Include automaticamente tutti gli esami ematochimici del prestampato + avviso prioritario [ P ]</div>
+              <div style="font-size: 11.5px; color: #64748b;">✏️ Testo libero modificabile: puoi aggiungere o personalizzare qualunque nota prima dell'invio.</div>
             </div>
             
             <div style="display: flex; gap: 8px;">
@@ -4937,10 +5001,13 @@
               <button type="button" class="btn btn-sm" onclick="copiaTestoRichiestaScotti()" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-weight: 800; font-size: 11.5px; padding: 6px 12px; border-radius: 8px; cursor: pointer;">
                 📋 Copia Testo
               </button>
+              <button type="button" class="btn btn-sm" onclick="rigeneraTestoPredefinitoRichiestaScotti()" style="background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 8px; cursor: pointer;" title="Ripristina testo predefinito con tutti gli esami">
+                🔄 Reimposta
+              </button>
             </div>
           </div>
 
-          <textarea id="textarea-richiesta-scotti-medico" readonly style="width: 100%; height: 160px; font-family: monospace; font-size: 11.5px; color: #334155; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; line-height: 1.45; resize: none; outline: none;"></textarea>
+          <textarea id="textarea-richiesta-scotti-medico" style="width: 100%; height: 160px; font-family: monospace; font-size: 11.5px; color: #334155; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 10px 14px; line-height: 1.45; resize: vertical; outline: none;"></textarea>
         </div>
 
       </div>
@@ -4948,7 +5015,7 @@
       <!-- FOOTER MODALE -->
       <div class="modal-footer" style="background: #ffffff; border-top: 1.5px solid #cbd5e1; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
         <div style="font-size: 12px; color: #64748b;">
-          💡 <i>Le ricette per il Laboratorio Scotti riguardano solo gli esami ematochimici generali; l'HBV-DNA è a parte c/o l'ambulatorio Policlinico.</i>
+          💡 <i>Le modifiche ai dati della struttura e alle date vengono salvate in automatico e persistono su smartphone e PC.</i>
         </div>
         <button type="button" class="btn btn-outline" onclick="closeModal('modal-laboratorio-scotti')">Chiudi</button>
       </div>
