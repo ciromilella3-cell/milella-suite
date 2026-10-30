@@ -1,3 +1,14 @@
+
+/* NASCONDE LA BARRA STICKY RIDONDANTE: L'HEADER PRINCIPALE È GIÀ SEMPRE VISIBILE */
+#sticky-patient-bar,
+.sticky-patient-bar,
+.sticky-patient-bar.is-sticky-active {
+  display: none !important;
+  max-height: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 :root {
@@ -57,15 +68,15 @@ body {
 .app-header {
   background: linear-gradient(180deg, #07172c 0%, #0c213d 60%, #0d284a 100%);
   color: white;
-  padding: 8px 18px 6px 18px;
-  box-shadow: 0 4px 24px rgba(2, 6, 23, 0.45);
+  padding: 6px 16px 5px 16px;
+  box-shadow: 0 4px 20px rgba(2, 6, 23, 0.4);
   position: sticky;
   top: 0;
   z-index: 50;
   border-bottom: 1px solid rgba(56, 189, 248, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   backdrop-filter: blur(16px);
 }
 
@@ -167,9 +178,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1 1 340px;
-  max-width: 520px;
-  min-width: 240px;
+  flex: 1 1 420px;
+  max-width: 620px;
+  min-width: 280px;
 }
 
 .patient-picker-box {
@@ -210,13 +221,12 @@ body {
 
 .patient-select-input {
   flex: 1 1 auto;
-  min-width: 140px;
+  min-width: 200px;
   width: 100%;
-  max-width: 260px;
   font-size: 13.5px;
   font-weight: 700;
   color: #0f172a;
-  padding: 6px 8px;
+  padding: 5px 8px;
   border: 1px solid transparent;
   border-radius: 8px;
   background: #f8fafc;
@@ -225,6 +235,7 @@ body {
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
   letter-spacing: -0.2px;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .patient-select-input:hover {
@@ -402,8 +413,8 @@ body {
 /* LIVELLO 2: CLINICAL TOOLBAR */
 .header-toolbar-row {
   width: 100%;
-  border-top: 1px solid rgba(255, 255, 255, 0.09);
-  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 4px;
 }
 
 .header-toolbar-inner {
@@ -419,18 +430,18 @@ body {
   background: rgba(255, 255, 255, 0.08) !important;
   color: #f1f5f9 !important;
   border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  font-size: 12px !important;
+  font-size: 11.5px !important;
   font-weight: 600 !important;
-  padding: 6px 12px !important;
-  border-radius: 8px !important;
+  padding: 4px 10px !important;
+  border-radius: 7px !important;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   white-space: nowrap;
   backdrop-filter: blur(6px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-clinical-tool:hover {
@@ -533,31 +544,31 @@ body {
 
 
 .nav-bar {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  padding: 8px 32px;
+  padding: 6px 24px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   position: sticky;
-  top: 76px;
+  top: 78px;
   z-index: 40;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .nav-tab {
-  padding: 10px 20px;
-  font-size: 13.5px;
+  padding: 7px 16px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);
   border: none;
   background: transparent;
   cursor: pointer;
-  border-radius: 24px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-tab:hover {
