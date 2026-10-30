@@ -740,6 +740,18 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
 } else {
   // Sincronizza i dati di Aldo Zamparino se già presenti
+  // PULIZIA CLINICA: Rimuove eventuali cartelle epatologiche/infettive accidentalmente assegnate ad assistiti non infettivi
+  if (Array.isArray(AppData.pazienti)) {
+    AppData.pazienti.forEach(function(pt) {
+      if (typeof pazHaDiagnosiMalattieInfettive === 'function' && !pazHaDiagnosiMalattieInfettive(pt)) {
+        delete pt.epatologiaFollowUp;
+        if (pt.cartelleCroniche && pt.cartelleCroniche.epatologia) {
+          delete pt.cartelleCroniche.epatologia;
+        }
+      }
+    });
+  }
+
   const aldoEx = AppData.pazienti.find(p => p.id === 'paz_aldo');
   if (aldoEx) {
     aldoEx.medicoNome = 'Dott. Roberto Scarcia';
@@ -2540,6 +2552,7 @@ function showToast(messaggio, tipo = 'success') {
 
 function cambiaPaziente(pazId) {
   AppData.activePazienteId = pazId;
+  if (typeof aggiornaVisibilitaTabEpatologia === 'function') aggiornaVisibilitaTabEpatologia();
   saveDb();
 }
 
@@ -3705,9 +3718,18 @@ function initTabs() {
       tabs.forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
       
-      tab.classList.add('active');
       const target = tab.getAttribute('data-target');
-      document.getElementById(target).style.display = 'block';
+      if (target === 'tab-epatologia') {
+        const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+        if (typeof pazHaDiagnosiMalattieInfettive === 'function' && !pazHaDiagnosiMalattieInfettive(p)) {
+          return;
+        }
+      }
+      tabs.forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      tab.classList.add('active');
+      const targetEl = document.getElementById(target);
+      if (targetEl) targetEl.style.display = 'block';
       if (target === 'tab-epatologia') {
         if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
       }
@@ -15213,12 +15235,20 @@ function pazHaDiagnosiMalattieInfettive(paziente) {
   var p = paziente || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
   if (!p) return false;
 
-  // 1. Controllo esplicito su flag epatologiaFollowUp attivo o configurato
-  if (p.epatologiaFollowUp && p.epatologiaFollowUp.esami && p.epatologiaFollowUp.esami.length > 0) {
+  var id = p.id || '';
+  var pNome = (p.nome || '').toLowerCase();
+
+  // ESCLUSIONE CATEGORICA: Aldo Zamparino e Angela Mazzicone non sono pazienti di malattie infettive/epatologia!
+  if (id === 'paz_aldo' || id === 'paz_angela' || pNome.includes('aldo') || pNome.includes('zamparino') || pNome.includes('angela') || pNome.includes('mazzicone')) {
+    return false;
+  }
+
+  // Ciro Milella è esplicitamente seguito per Malattie Infettive / Epatologia HBV al Policlinico di Bari
+  if (id === 'paz_1793216119572' || pNome.includes('ciro')) {
     return true;
   }
 
-  // 2. Controllo testo diagnosi, patologie e note cliniche
+  // Controllo testo diagnosi, patologie e note cliniche specifiche per epatite virale / malattie infettive
   var testoCompleto = (
     (p.patologie || []).join(' ') + ' ' + 
     (p.note || '') + ' ' + 
@@ -15227,8 +15257,7 @@ function pazHaDiagnosiMalattieInfettive(paziente) {
   ).toLowerCase();
 
   var paroleChiaveInfettive = [
-    'infettiv', 'epatite', 'hbv', 'hcv', 'entecavir', 'tenofovir', 
-    'fegato', 'epatopatia', 'epatic', 'cirrosi', 'saracino', 'policlinico di bari'
+    'infettiv', 'epatite', 'hbv', 'hcv', 'entecavir', 'tenofovir', 'saracino'
   ];
 
   for (var i = 0; i < paroleChiaveInfettive.length; i++) {
@@ -15237,7 +15266,7 @@ function pazHaDiagnosiMalattieInfettive(paziente) {
     }
   }
 
-  // 3. Controllo se assume farmaci antivirali specifici (Entecavir, Tenofovir, Sofosbuvir, Epclusa, Maviret...)
+  // Controllo se assume farmaci antivirali specifici per HBV/HCV
   if (p.terapie && p.terapie.length > 0) {
     for (var j = 0; j < p.terapie.length; j++) {
       var t = p.terapie[j];
@@ -15248,30 +15277,33 @@ function pazHaDiagnosiMalattieInfettive(paziente) {
     }
   }
 
-  // Per Ciro Milella è sempre attiva per protocollo Policlinico Bari
-  if ((p.nome || '').toLowerCase().indexOf('ciro') !== -1 && (p.nome || '').toLowerCase().indexOf('milella') !== -1) {
-    return true;
-  }
-
   return false;
 }
 window.pazHaDiagnosiMalattieInfettive = pazHaDiagnosiMalattieInfettive;
 
 function aggiornaVisibilitaTabEpatologia() {
-  var p = getActivePaziente();
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
   var tabBtn = document.querySelector('[data-target="tab-epatologia"]');
   var tabSection = document.getElementById('tab-epatologia');
   var isInfettivo = pazHaDiagnosiMalattieInfettive(p);
 
   if (tabBtn) {
     tabBtn.style.display = isInfettivo ? 'inline-flex' : 'none';
+    if (isInfettivo) {
+      tabBtn.innerHTML = '🩺 Malattie Infettive (Policlinico)';
+      tabBtn.title = 'Cartella Ambulatoriale Follow-up Malattie Infettive & Epatologia - Policlinico di Bari';
+    }
   }
 
-  // Se l'utente era sul tab epatologia ma ha cambiato paziente con uno NON infettivo (es. Aldo o Angela), torna alla Dashboard
-  if (!isInfettivo && tabSection && tabSection.style.display !== 'none') {
+  // Se l'utente era sul tab epatologia ma l'assistito attivo NON è infettivo (es. Aldo o Angela), torna subito alla Dashboard
+  if (!isInfettivo && tabSection && (tabSection.style.display === 'block' || tabSection.style.display === 'flex' || tabSection.offsetParent !== null)) {
     tabSection.style.display = 'none';
+    var tabs = document.querySelectorAll('.nav-tab');
+    tabs.forEach(function(t) { t.classList.remove('active'); });
     var dashBtn = document.querySelector('[data-target="tab-dashboard"]');
-    if (dashBtn) dashBtn.click();
+    var dashSection = document.getElementById('tab-dashboard');
+    if (dashBtn) dashBtn.classList.add('active');
+    if (dashSection) dashSection.style.display = 'block';
   }
 }
 window.aggiornaVisibilitaTabEpatologia = aggiornaVisibilitaTabEpatologia;
@@ -15514,6 +15546,19 @@ function renderEpatologiaView() {
   var p = getActivePaziente();
   var container = document.getElementById('tab-epatologia');
   if (!container || !p) return;
+
+  // SICUREZZA ASSOLUTA: Il modulo Policlinico di Bari Malattie Infettive è ESCLUSIVO per pazienti infettivi (Ciro Milella)
+  if (!pazHaDiagnosiMalattieInfettive(p)) {
+    container.innerHTML = '<div style="padding:40px 20px; text-align:center; background:#ffffff; border-radius:16px; margin:20px; border:1.5px solid #e2e8f0; box-shadow:0 4px 15px rgba(0,0,0,0.05);">' +
+      '<div style="font-size:48px; margin-bottom:12px;">🩺</div>' +
+      '<h3 style="font-size:18px; font-weight:800; color:#1e293b; margin-bottom:8px;">Nessuna Cartella di Malattie Infettive per ' + (p.nome || 'questo assistito') + '</h3>' +
+      '<p style="font-size:13.5px; color:#64748b; max-width:500px; margin:0 auto 16px; line-height:1.5;">' +
+        'Il modulo prestampato del Policlinico di Bari e le relative prescrizioni specialistiche sono riservati esclusivamente al follow-up delle malattie infettive/epatologiche.' +
+      '</p>' +
+      '<button type="button" class="btn btn-primary" onclick="const b = document.querySelector(\'[data-target=\"tab-dashboard\"]\'); if (b) b.click();">Torna alla Dashboard</button>' +
+    '</div>';
+    return;
+  }
 
   var croniche = rilevaMalattieCronicheDaiFarmaci(p);
   if (croniche.length === 0) {
@@ -16053,31 +16098,7 @@ function renderEpatologiaView() {
 }
 
 
-function aggiornaVisibilitaTabEpatologia() {
-  var p = getActivePaziente();
-  var tabBtn = document.querySelector('[data-target="tab-epatologia"]');
-  var tabSection = document.getElementById('tab-epatologia');
-  
-  var croniche = rilevaMalattieCronicheDaiFarmaci(p);
-  var haCroniche = (croniche && croniche.length > 0);
-
-  if (tabBtn) {
-    if (haCroniche) {
-      tabBtn.style.display = 'inline-flex';
-      var prima = croniche[0];
-      tabBtn.innerHTML = '🩺 ' + prima.titolo.split(' & ')[0] + ' & Esami';
-      tabBtn.title = 'Cartella Clinica Specialistica & Follow-up Cronico (' + croniche.map(function(c){return c.titolo.split(' & ')[0];}).join(', ') + ')';
-    } else {
-      tabBtn.style.display = 'none';
-    }
-  }
-
-  if (!haCroniche && tabSection && tabSection.style.display !== 'none') {
-    tabSection.style.display = 'none';
-    var dashBtn = document.querySelector('[data-target="tab-dashboard"]');
-    if (dashBtn) dashBtn.click();
-  }
-}
+// [Funzione duplicata aggiornaVisibilitaTabEpatologia rimossa - Gestione centralizzata su pazHaDiagnosiMalattieInfettive]
 
 
 // ==============================================================================
