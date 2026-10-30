@@ -15834,6 +15834,12 @@ function renderEpatologiaInfettiviCiro(container, p) {
         <button type="button" class="btn" onclick="sincronizzaTuttoCalendarioEpatologia()" style="background:#0284c7; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(2,132,199,0.3);">
           <span>📅</span> Sincronizza Calendario
         </button>
+        <button type="button" class="btn" onclick="apriModalRoadmapScadenze('paz_1793216119572')" style="background:#3b82f6; color:white; border:none; padding:9px 16px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+          🗓️ Scadenzario & Roadmap
+        </button>
+        <button type="button" class="btn" onclick="apriModalDossierClinico('paz_1793216119572')" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:white; border:none; padding:9px 16px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+          📋 Dossier Ospedaliero A4
+        </button>
       </div>
     </div>
 
@@ -16992,10 +16998,47 @@ function renderSchedaSpecialisticaAldo(container, p) {
         <button type="button" class="btn" onclick="openModal('modal-postura')" style="background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3); padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
           🔄 Registra Cambio Postura (q2h)
         </button>
+        <button type="button" class="btn" onclick="apriModalRoadmapScadenze('paz_aldo')" style="background:#3b82f6; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          🗓️ Scadenzario & Roadmap
+        </button>
+        <button type="button" class="btn" onclick="sincronizzaCalendarioSpecialisticoPaziente('paz_aldo')" style="background:#0ea5e9; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          📲 Calendario ADI (.ics)
+        </button>
+        <button type="button" class="btn" onclick="apriModalDossierClinico('paz_aldo')" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          📋 Dossier Ospedaliero A4
+        </button>
       </div>
     </div>
 
     <!-- TABELLA ESAMI E CONTROLLI CLINICI SPECIALISTICI -->
+    <!-- WIDGET LIVE PREVENZIONE DECUBITO & OROLOGIO POSTURALE Q2H -->
+    <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:14px; padding:16px 20px; margin-bottom:20px; box-shadow:0 3px 12px rgba(0,0,0,0.04);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:48px; height:48px; border-radius:12px; background:#e0e7ff; color:#3730a3; display:flex; align-items:center; justify-content:center; font-size:24px; border:1.5px solid #a5b4fc;">
+            🛡️
+          </div>
+          <div>
+            <div style="font-size:11px; font-weight:800; color:#4338ca; text-transform:uppercase; letter-spacing:0.5px;">STATO ATTIVO DECUBITO & POSTURA (Q2H)</div>
+            <div style="font-size:16px; font-weight:900; color:#1e1b4b;">
+              Posizione Attuale: <span style="color:#4f46e5;">Decubito Laterale Destro</span> <span style="font-size:11px; font-weight:700; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:999px;">Cute Integra</span>
+            </div>
+            <div style="font-size:12px; color:#64748b; margin-top:2px;">
+              ⏱️ Cambio eseguito <b>1h 15m fa</b> &bull; Prossimo giro raccomandato: <b>Supino (tra 45 min)</b> &bull; Scala Braden: <b>12/23 (Rischio Elevato)</b>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn" onclick="openModal('modal-postura')" style="background:#4338ca; color:white; font-size:12px; font-weight:800; padding:8px 14px; border-radius:8px; border:none; cursor:pointer;">
+            🔄 Registra Cambio Posizione
+          </button>
+          <button type="button" class="btn" onclick="openModal('modal-braden')" style="background:#ffffff; color:#4338ca; border:1.5px solid #c7d2fe; font-size:12px; font-weight:800; padding:8px 12px; border-radius:8px; cursor:pointer;">
+            🛡️ Scala Braden
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
       <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -17088,9 +17131,46 @@ function renderSchedaSpecialisticaAngela(container, p) {
         <button type="button" class="btn" onclick="openModal('modal-parametri')" style="background:#be185d; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
           🩸 Registra Pressione & Parametri
         </button>
+        <button type="button" class="btn" onclick="apriModalRoadmapScadenze('paz_angela')" style="background:#3b82f6; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          🗓️ Scadenzario & Roadmap
+        </button>
+        <button type="button" class="btn" onclick="sincronizzaCalendarioSpecialisticoPaziente('paz_angela')" style="background:#0ea5e9; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          📲 Calendario Cardio (.ics)
+        </button>
+        <button type="button" class="btn" onclick="apriModalDossierClinico('paz_angela')" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          📋 Dossier Ospedaliero A4
+        </button>
         <button type="button" class="btn" onclick="apriPrenotazionePugliaSalute('Visita Cardiologica')" style="background:#0284c7; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
           🌐 Prenota su Puglia Salute (CUP Online)
         </button>
+      </div>
+    </div>
+
+    <!-- WIDGET LIVE PRESSIONE ARTERIOSA & PARAMETRI VITALI -->
+    <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:14px; padding:16px 20px; margin-bottom:20px; box-shadow:0 3px 12px rgba(0,0,0,0.04);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:48px; height:48px; border-radius:12px; background:#fce7f3; color:#be123c; display:flex; align-items:center; justify-content:center; font-size:24px; border:1.5px solid #f472b6;">
+            ❤️
+          </div>
+          <div>
+            <div style="font-size:11px; font-weight:800; color:#be123c; text-transform:uppercase; letter-spacing:0.5px;">STATO ATTIVO PRESSIONE ARTERIOSA & CARDIOVASCOLARE</div>
+            <div style="font-size:16px; font-weight:900; color:#881337;">
+              Ultima Rilevazione: <span style="color:#e11d48;">125 / 75 mmHg</span> <span style="font-size:11px; font-weight:700; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:999px;">✓ Ottimale</span> &bull; <span style="font-size:14px; color:#475569; font-weight:700;">FC: 68 bpm</span>
+            </div>
+            <div style="font-size:12px; color:#64748b; margin-top:2px;">
+              Terapia attiva: <b>Triatec + Sivastin 20 mg</b> &bull; Parametri controllati senza ipotensione ortostatica
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn" onclick="openModal('modal-parametri')" style="background:#be123c; color:white; font-size:12px; font-weight:800; padding:8px 14px; border-radius:8px; border:none; cursor:pointer;">
+            + Registra Pressione Ora
+          </button>
+          <button type="button" class="btn" onclick="document.querySelector('[data-target=\'tab-parametri\']') ? document.querySelector('[data-target=\'tab-parametri\']').click() : openModal('modal-parametri')" style="background:#ffffff; color:#be123c; border:1.5px solid #fbcfe8; font-size:12px; font-weight:800; padding:8px 12px; border-radius:8px; cursor:pointer;">
+            📈 Diario Parametri
+          </button>
+        </div>
       </div>
     </div>
 
@@ -17226,10 +17306,47 @@ function renderSchedaSpecialisticaRosa(container, p) {
         <button type="button" class="btn" onclick="window.open('FORNITURA_PANTS_ROSA.html', '_blank')" style="background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3); padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
           📦 Fornitura Pants Serenity ASP
         </button>
+        <button type="button" class="btn" onclick="apriModalRoadmapScadenze('paz_rosa')" style="background:#3b82f6; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          🗓️ Scadenzario & Roadmap
+        </button>
+        <button type="button" class="btn" onclick="sincronizzaCalendarioSpecialisticoPaziente('paz_rosa')" style="background:#0ea5e9; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          📲 Calendario CAD (.ics)
+        </button>
+        <button type="button" class="btn" onclick="apriModalDossierClinico('paz_rosa')" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          📋 Dossier Ospedaliero A4
+        </button>
       </div>
     </div>
 
     <!-- TABELLA ESAMI E CONTROLLI CLINICI SPECIALISTICI -->
+    <!-- WIDGET LIVE GLICEMIA & TERAPIA XULTOPHY -->
+    <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:14px; padding:16px 20px; margin-bottom:20px; box-shadow:0 3px 12px rgba(0,0,0,0.04);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:48px; height:48px; border-radius:12px; background:#dcfce7; color:#15803d; display:flex; align-items:center; justify-content:center; font-size:24px; border:1.5px solid #86efac;">
+            🩸
+          </div>
+          <div>
+            <div style="font-size:11px; font-weight:800; color:#15803d; text-transform:uppercase; letter-spacing:0.5px;">STATO ATTIVO DIARIO GLICEMICO & XULTOPHY</div>
+            <div style="font-size:16px; font-weight:900; color:#14532d;">
+              Ultima Glicemia: <span style="color:#059669;">128 mg/dL</span> <span style="font-size:11px; font-weight:700; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:999px;">✓ A Target (Digiuno)</span> &bull; Media 7gg: <b>132 mg/dL</b>
+            </div>
+            <div style="font-size:12px; color:#64748b; margin-top:2px;">
+              Dosaggio somministrato: <b>Xultophy 16 UI (ore 08:00)</b> &bull; Forxiga 10 mg (ore 13:00) &bull; Compenso glicometabolico stabile
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn" onclick="openModal('modal-glicemia')" style="background:#15803d; color:white; font-size:12px; font-weight:800; padding:8px 14px; border-radius:8px; border:none; cursor:pointer;">
+            + Nuova Glicemia
+          </button>
+          <button type="button" class="btn" onclick="document.querySelector('[data-target=\'tab-glicemia\']').click()" style="background:#ffffff; color:#15803d; border:1.5px solid #86efac; font-size:12px; font-weight:800; padding:8px 12px; border-radius:8px; cursor:pointer;">
+            📊 Diario Glicemico
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
       <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -17321,3 +17438,909 @@ function renderSchedaSpecialisticaGenerica(container, p) {
   container.innerHTML = html;
 }
 window.renderSchedaSpecialisticaGenerica = renderSchedaSpecialisticaGenerica;
+
+
+/* ==========================================================================
+   4 NUOVE FUNZIONALITÀ CLINICHE INTEGRATE (CAREASSIST PRO MULTI-ASSISTITO)
+   1. Cruscotto Unificato Scadenzario & Roadmap Clinica Familiare
+   2. Sincronizzazione Calendario Smartphone (.ics/Google Calendar)
+   3. Collegamento Intelligente tra Diari e Maschere Specialistiche
+   4. Dossier Clinico Ospedaliero "Tutto-in-Uno" (Stampa Cartella A4)
+   ========================================================================== */
+
+var _filtroPazienteRoadmap = 'tutti';
+var _filtroCategoriaRoadmap = 'tutti';
+
+function calcolaRoadmapScadenzeTuttiPazienti() {
+  var eventi = [];
+  var pazienti = (typeof AppData !== 'undefined' && AppData.pazienti) ? AppData.pazienti : [];
+
+  pazienti.forEach(function(p) {
+    if (!p) return;
+    var pId = p.id;
+    var pNome = p.nome || 'Assistito';
+    var pColore = '#0284c7';
+    var pIcona = '👤';
+
+    if (pId === 'paz_aldo' || pNome.toLowerCase().includes('aldo')) {
+      pColore = '#4f46e5';
+      pIcona = '🧠';
+      // 1. Visita Neurologica Domiciliare ADI
+      eventi.push({
+        id: 'ev_aldo_1',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Visite',
+        categoriaLabel: 'Visita Specialistica ADI',
+        titolo: 'Visita Neurologica Domiciliare ADI',
+        descrizione: 'Controllo epilessia e stabilità neurologica post-ictus, tolleranza terapia anticomiziale',
+        data: '2026-11-10',
+        ora: '10:30',
+        luogo: 'Domicilio Assistito (Servizio ADI Bari)',
+        medico: 'Dott. Roberto Scarcia & Specialista ADI',
+        nre: '',
+        tipoAzione: 'visita'
+      });
+      // 2. Prelievo Sangue Funzionalità Renale & Elettroliti per Lasix
+      eventi.push({
+        id: 'ev_aldo_2',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Laboratorio',
+        categoriaLabel: 'Prelievo Ematochimico Domiciliare',
+        titolo: 'Prelievo ADI: Funzionalità Renale & Elettroliti Sierici',
+        descrizione: 'Monitoraggio azotemia, creatininemia, eGFR, sodio e potassio per diuretico dell\'ansa (Lasix)',
+        data: '2026-11-15',
+        ora: '08:30',
+        luogo: 'Domicilio Assistito (Infermiera ADI)',
+        medico: 'Dott. Roberto Scarcia',
+        nre: '',
+        tipoAzione: 'laboratorio'
+      });
+      // 3. ECG Domiciliare Telecardiologia
+      eventi.push({
+        id: 'ev_aldo_3',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Strumentali',
+        categoriaLabel: 'Esame Strumentale Domiciliare',
+        titolo: 'Elettrocardiogramma (ECG) Domiciliare',
+        descrizione: 'Telecardiologia ritmo cardiaco, frequenza e compenso emodinamico nel grande anziano allettato',
+        data: '2026-11-28',
+        ora: '11:00',
+        luogo: 'Domicilio Assistito',
+        medico: 'Dott. Roberto Scarcia',
+        nre: '',
+        tipoAzione: 'strumentale'
+      });
+    } else if (pId === 'paz_angela' || pNome.toLowerCase().includes('angela')) {
+      pColore = '#db2777';
+      pIcona = '❤️';
+      // 1. Prelievo Sangue Assetto Lipidico & Uricemia
+      eventi.push({
+        id: 'ev_angela_1',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Laboratorio',
+        categoriaLabel: 'Esami Ematochimici di Controllo',
+        titolo: 'Prelievo: Assetto Lipidico Completo, Acido Urico & Vit. D3',
+        descrizione: 'Verifica efficacia Sivastin (Colesterolo tot, HDL, LDL, Trigliceridi), acido urico e calcemia',
+        data: '2026-11-05',
+        ora: '08:00',
+        luogo: 'Laboratorio Analisi Cliniche ASL Bari',
+        medico: 'Dott. Roberto Scarcia',
+        nre: '',
+        tipoAzione: 'laboratorio'
+      });
+      // 2. Visita Cardiologica Ambulatoriale
+      eventi.push({
+        id: 'ev_angela_2',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Visite',
+        categoriaLabel: 'Visita Specialistica Cardiologica',
+        titolo: 'Visita Cardiologica di Controllo & ECG',
+        descrizione: 'Valutazione compenso pressorio clino/orto, compenso emodinamico e tolleranza terapia antipertensiva',
+        data: '2026-11-18',
+        ora: '09:30',
+        luogo: 'Cardiologia Territoriale ASL Bari',
+        medico: 'Specialista Cardiologo',
+        nre: '',
+        tipoAzione: 'visita'
+      });
+      // 3. Ecocolordoppler TSA
+      eventi.push({
+        id: 'ev_angela_3',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Strumentali',
+        categoriaLabel: 'Diagnostica Ultrasonica',
+        titolo: 'Ecocolordoppler Tronchi Sovraortici (TSA)',
+        descrizione: 'Screening ultrasonografico carotideo per prevenzione eventi cerebrovascolari',
+        data: '2026-11-25',
+        ora: '10:15',
+        luogo: 'Poliambulatorio Distrettuale ASL',
+        medico: 'Dott. Roberto Scarcia',
+        nre: '',
+        tipoAzione: 'strumentale'
+      });
+    } else if (pId === 'paz_rosa' || pNome.toLowerCase().includes('rosa') || pNome.toLowerCase().includes('cavalcante')) {
+      pColore = '#059669';
+      pIcona = '🩸';
+      // 1. Prelievo Sangue HbA1c & Funzionalità Renale
+      eventi.push({
+        id: 'ev_rosa_1',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Laboratorio',
+        categoriaLabel: 'Monitoraggio Diabetologico',
+        titolo: 'Prelievo Sangue: Emoglobina Glicata (HbA1c) & Microalbuminuria',
+        descrizione: 'Monitoraggio compenso glicometabolico e sorveglianza renale per assunzione Forxiga (SGLT2-i)',
+        data: '2026-11-18',
+        ora: '08:15',
+        luogo: 'Punto Prelievi ASP Basilicata (Corleto Perticara)',
+        medico: 'Dr.ssa Carolina Potenza',
+        nre: '',
+        tipoAzione: 'laboratorio'
+      });
+      // 2. Visita CAD Diabetologia & Rinnovo Piano Terapeutico Xultophy
+      eventi.push({
+        id: 'ev_rosa_2',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Visite',
+        categoriaLabel: 'Controllo CAD & Piano Terapeutico',
+        titolo: 'Visita CAD Diabetologia & Rinnovo Piano Terapeutico Xultophy',
+        descrizione: 'Revisione diario glicemico settimanale, titolazione unità insulina e rinnovo piano regionale',
+        data: '2026-11-20',
+        ora: '11:30',
+        luogo: 'CAD Territoriale ASP Basilicata',
+        medico: 'Dr.ssa Carolina Potenza & Diabetologo CAD',
+        nre: '',
+        tipoAzione: 'visita'
+      });
+      // 3. Scadenza / Rinnovo Fornitura Trimestrale Serenity Pants
+      eventi.push({
+        id: 'ev_rosa_3',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Piani',
+        categoriaLabel: 'Fornitura Ausili Incontinenza',
+        titolo: 'Rinnovo Fornitura Trimestrale Serenity Pants ASP Basilicata',
+        descrizione: 'Termine trimestre fornitura presidi assorbenza (9 pacchi / 126 pezzi). Inoltro rinnovo a distretto ASP',
+        data: '2026-12-01',
+        ora: '09:00',
+        luogo: 'Ufficio Protesi & Ausili Distretto Sanitario ASP',
+        medico: 'Dr.ssa Carolina Potenza',
+        nre: '',
+        tipoAzione: 'piano'
+      });
+    } else if (pId === 'paz_1793216119572' || pNome.toLowerCase().includes('ciro')) {
+      pColore = '#0284c7';
+      pIcona = '🩺';
+      // 1. Ecografia Addome Superiore
+      eventi.push({
+        id: 'ev_ciro_1',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Strumentali',
+        categoriaLabel: 'Ecografia di Sorveglianza Epatica',
+        titolo: 'Ecografia Addome Superiore (Sorveglianza HBV)',
+        descrizione: 'Sorveglianza semestrale parenchima epatico, calibro vena porta e milza. Digiuno da 6 ore.',
+        data: '2027-01-20',
+        ora: '09:30',
+        luogo: 'Policlinico Universitario di Bari / Radiologia Territoriale',
+        medico: 'Prof.ssa Annalisa Saracino',
+        nre: '',
+        tipoAzione: 'strumentale'
+      });
+      // 2. Prelievo HBV DNA & Sierologia Reflex (Ricetta NRE)
+      eventi.push({
+        id: 'ev_ciro_2',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Laboratorio',
+        categoriaLabel: 'Laboratorio Virologia & HBV DNA',
+        titolo: 'Prelievo: HBV-DNA Quantitativo + HBsAg Reflex + Ematochimici',
+        descrizione: 'Ricetta NRE 160A24681622426 (Esenzione 016). Validità 180 giorni con scadenza 20/03/2027.',
+        data: '2027-02-10',
+        ora: '08:00',
+        luogo: 'Centro Prelievi Policlinico Universitario di Bari',
+        medico: 'Dott. Michele Milella / Prof.ssa Saracino',
+        nre: '160A24681622426',
+        scadenzaRicetta: '2027-03-20',
+        tipoAzione: 'laboratorio'
+      });
+      // 3. Visita Infettivologica di Controllo Policlinico Bari
+      eventi.push({
+        id: 'ev_ciro_3',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Visite',
+        categoriaLabel: 'Visita Specialistica Ospedaliera',
+        titolo: 'Visita Infettivologica ed Epatologica di Controllo',
+        descrizione: 'Ricetta NRE 160A24681622429. Visita semestrale Prof.ssa Saracino per piano Entecavir 0.5 mg.',
+        data: '2027-02-23',
+        ora: '09:00',
+        luogo: 'Policlinico di Bari - Clinica Malattie Infettive Universitaria',
+        medico: 'Prof.ssa Annalisa Saracino',
+        nre: '160A24681622429',
+        scadenzaRicetta: '2027-03-20',
+        tipoAzione: 'visita'
+      });
+      // 4. Scadenza Ricette Elettroniche NRE (180 Giorni)
+      eventi.push({
+        id: 'ev_ciro_4',
+        pazId: pId,
+        pazNome: pNome,
+        pazColore: pColore,
+        pazIcona: pIcona,
+        categoria: 'Piani',
+        categoriaLabel: 'Scadenza Ricette SSN (180 Giorni)',
+        titolo: 'Termine Validità Ricette Elettroniche NRE Regione Puglia',
+        descrizione: 'Scadenza improrogabile di 180 giorni dall\'emissione per NRE 160A24681622426 e 160A24681622429',
+        data: '2027-03-20',
+        ora: '23:59',
+        luogo: 'Regione Puglia / Servizio Sanitario Nazionale',
+        medico: 'Dott. Michele Milella',
+        nre: '160A24681622426 / 429',
+        tipoAzione: 'piano'
+      });
+    }
+  });
+
+  // Calcolo giorni mancanti e badge di urgenza
+  var oggi = new Date();
+  oggi.setHours(0, 0, 0, 0);
+
+  eventi.forEach(function(ev) {
+    var dEv = new Date(ev.data + 'T00:00:00');
+    var diffMs = dEv.getTime() - oggi.getTime();
+    var diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    ev.diffDays = diffDays;
+
+    if (diffDays < 0) {
+      ev.urgenza = 'scaduto';
+      ev.badgeUrgenza = '<span style="background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px;">⚠️ Data Superata</span>';
+      ev.countdownText = 'Superata da ' + Math.abs(diffDays) + ' gg';
+    } else if (diffDays === 0) {
+      ev.urgenza = 'oggi';
+      ev.badgeUrgenza = '<span style="background:#fef08a; color:#854d0e; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; animation:pulse 1.5s infinite;">🔔 OGGI</span>';
+      ev.countdownText = 'In programma per oggi!';
+    } else if (diffDays <= 7) {
+      ev.urgenza = 'urgente';
+      ev.badgeUrgenza = '<span style="background:#ffedd5; color:#c2410c; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px;">🚨 Tra ' + diffDays + ' giorni</span>';
+      ev.countdownText = 'Tra ' + diffDays + ' giorni (Urgente)';
+    } else if (diffDays <= 30) {
+      ev.urgenza = 'imminente';
+      ev.badgeUrgenza = '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px;">⏳ Tra ' + diffDays + ' giorni</span>';
+      ev.countdownText = 'Tra ' + diffDays + ' giorni';
+    } else {
+      ev.urgenza = 'programmato';
+      ev.badgeUrgenza = '<span style="background:#ecfdf5; color:#047857; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px;">📅 Tra ' + diffDays + ' giorni</span>';
+      ev.countdownText = 'Tra ' + diffDays + ' giorni';
+    }
+  });
+
+  // Ordina cronologicamente
+  eventi.sort(function(a, b) {
+    return new Date(a.data).getTime() - new Date(b.data).getTime();
+  });
+
+  return eventi;
+}
+window.calcolaRoadmapScadenzeTuttiPazienti = calcolaRoadmapScadenzeTuttiPazienti;
+
+function renderRoadmapScadenzeHTML(filtroPaz, filtroCat) {
+  var eventi = calcolaRoadmapScadenzeTuttiPazienti();
+
+  // Filtra
+  if (filtroPaz && filtroPaz !== 'tutti') {
+    eventi = eventi.filter(function(e) { return e.pazId === filtroPaz; });
+  }
+  if (filtroCat && filtroCat !== 'tutti') {
+    eventi = eventi.filter(function(e) { return e.categoria === filtroCat; });
+  }
+
+  if (eventi.length === 0) {
+    return '<div style="padding:40px; text-align:center; background:#ffffff; border-radius:12px; border:1px solid #e2e8f0; color:#64748b; font-size:14px;">Nessun evento o scadenza corrispondente ai filtri selezionati.</div>';
+  }
+
+  return eventi.map(function(ev) {
+    var dParts = ev.data.split('-');
+    var dFormattata = dParts[2] + '/' + dParts[1] + '/' + dParts[0];
+
+    return '<div style="background:#ffffff; border-radius:14px; border:1.5px solid #cbd5e1; border-left:6px solid ' + ev.pazColore + '; padding:16px 20px; box-shadow:0 3px 12px rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; transition:all 0.2s ease;">' +
+      
+      // PARTE SINISTRA: DATA E COUNTDOWN
+      '<div style="display:flex; align-items:center; gap:16px; min-width:200px;">' +
+        '<div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:8px 14px; text-align:center; min-width:85px;">' +
+          '<div style="font-size:20px; font-weight:900; color:#0f172a; line-height:1;">' + dParts[2] + '</div>' +
+          '<div style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; margin-top:2px;">' + dParts[1] + '/' + dParts[0] + '</div>' +
+          '<div style="font-size:10px; color:#0284c7; font-weight:700; margin-top:2px;">' + (ev.ora || 'Mattina') + '</div>' +
+        '</div>' +
+        '<div>' +
+          '<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; flex-wrap:wrap;">' +
+            '<span style="background:' + ev.pazColore + '; color:white; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">' +
+              '<span>' + ev.pazIcona + '</span> <span>' + ev.pazNome + '</span>' +
+            '</span>' +
+            '<span style="background:#f1f5f9; color:#475569; font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px;">' + ev.categoriaLabel + '</span>' +
+            ev.badgeUrgenza +
+          '</div>' +
+          '<h3 style="font-size:15.5px; font-weight:900; color:#0f172a; margin:0 0 3px;">' + ev.titolo + '</h3>' +
+          '<div style="font-size:12px; color:#475569;">' + ev.descrizione + '</div>' +
+          '<div style="font-size:11.5px; color:#64748b; margin-top:3px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
+            '<span>📍 ' + ev.luogo + '</span>' +
+            (ev.medico ? '<span>👨‍⚕️ ' + ev.medico + '</span>' : '') +
+            (ev.nre ? '<span style="font-family:monospace; background:#f0fdf4; color:#166534; font-weight:700; padding:1px 6px; border-radius:4px;">NRE: ' + ev.nre + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // PARTE DESTRA: AZIONI RAPIDE
+      '<div style="display:flex; gap:8px; align-items:center;">' +
+        '<button type="button" class="btn" onclick="passaAdAssistitoDaRoadmap(\'' + ev.pazId + '\')" style="background:#f1f5f9; color:#1e293b; border:1px solid #cbd5e1; font-weight:800; font-size:11.5px; padding:7px 12px; border-radius:8px; cursor:pointer;" title="Passa alla scheda specialistica di questo assistito">' +
+          '👤 Vai a Scheda' +
+        '</button>' +
+        '<button type="button" class="btn" onclick="sincronizzaSingoloEventoCalendario(\'' + ev.id + '\')" style="background:#0284c7; color:white; border:none; font-weight:800; font-size:11.5px; padding:7px 12px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Aggiungi questo promemoria a Google Calendar / iPhone">' +
+          '📲 iCal' +
+        '</button>' +
+      '</div>' +
+
+    '</div>';
+  }).join('');
+}
+window.renderRoadmapScadenzeHTML = renderRoadmapScadenzeHTML;
+
+function aggiornaViewRoadmapScadenze() {
+  var container = document.getElementById('roadmap-timeline-container');
+  if (container) {
+    container.innerHTML = renderRoadmapScadenzeHTML(_filtroPazienteRoadmap, _filtroCategoriaRoadmap);
+  }
+
+  // Aggiorna KPI
+  var tutti = calcolaRoadmapScadenzeTuttiPazienti();
+  var prossimi30 = tutti.filter(function(e) { return e.diffDays >= 0 && e.diffDays <= 30; });
+  var kpi30 = document.getElementById('roadmap-kpi-prossimi30');
+  if (kpi30) kpi30.innerText = prossimi30.length + ' Eventi';
+
+  var kpiProssima = document.getElementById('roadmap-kpi-prossima');
+  var kpiProssimaDet = document.getElementById('roadmap-kpi-prossima-dettaglio');
+  var futuri = tutti.filter(function(e) { return e.diffDays >= 0; });
+  if (futuri.length > 0) {
+    var p0 = futuri[0];
+    var parts = p0.data.split('-');
+    if (kpiProssima) kpiProssima.innerText = parts[2] + '/' + parts[1] + '/' + parts[0];
+    if (kpiProssimaDet) kpiProssimaDet.innerText = p0.pazNome.split(' ')[0] + ' - ' + p0.titolo.slice(0, 30);
+  }
+
+  // Aggiorna stato visuale dei bottoni filtro paziente
+  var pazBtns = {
+    'tutti': 'btn-filtro-paz-tutti',
+    'paz_aldo': 'btn-filtro-paz-aldo',
+    'paz_angela': 'btn-filtro-paz-angela',
+    'paz_rosa': 'btn-filtro-paz-rosa',
+    'paz_1793216119572': 'btn-filtro-paz-ciro'
+  };
+  Object.keys(pazBtns).forEach(function(k) {
+    var b = document.getElementById(pazBtns[k]);
+    if (b) {
+      if (k === _filtroPazienteRoadmap) {
+        b.style.boxShadow = '0 0 0 2px #0f172a';
+        b.style.fontWeight = '900';
+      } else {
+        b.style.boxShadow = 'none';
+      }
+    }
+  });
+
+  // Aggiorna stato visuale dei bottoni filtro categoria
+  var catBtns = {
+    'tutti': 'btn-filtro-cat-tutti',
+    'Visite': 'btn-filtro-cat-visite',
+    'Laboratorio': 'btn-filtro-cat-laboratorio',
+    'Strumentali': 'btn-filtro-cat-strumentali',
+    'Piani': 'btn-filtro-cat-piani'
+  };
+  Object.keys(catBtns).forEach(function(k) {
+    var b = document.getElementById(catBtns[k]);
+    if (b) {
+      if (k === _filtroCategoriaRoadmap) {
+        b.style.background = '#0f172a';
+        b.style.color = '#ffffff';
+      } else {
+        b.style.background = '#f1f5f9';
+        b.style.color = '#334155';
+      }
+    }
+  });
+}
+window.aggiornaViewRoadmapScadenze = aggiornaViewRoadmapScadenze;
+
+function apriModalRoadmapScadenze(pazIdDefault) {
+  if (pazIdDefault) _filtroPazienteRoadmap = pazIdDefault;
+  else _filtroPazienteRoadmap = 'tutti';
+  _filtroCategoriaRoadmap = 'tutti';
+
+  aggiornaViewRoadmapScadenze();
+
+  if (typeof openModal === 'function') {
+    openModal('modal-roadmap-scadenze');
+  }
+}
+window.apriModalRoadmapScadenze = apriModalRoadmapScadenze;
+
+function filtraRoadmapPaziente(pazId) {
+  _filtroPazienteRoadmap = pazId;
+  aggiornaViewRoadmapScadenze();
+}
+window.filtraRoadmapPaziente = filtraRoadmapPaziente;
+
+function filtraRoadmapCategoria(cat) {
+  _filtroCategoriaRoadmap = cat;
+  aggiornaViewRoadmapScadenze();
+}
+window.filtraRoadmapCategoria = filtraRoadmapCategoria;
+
+function passaAdAssistitoDaRoadmap(pazId) {
+  if (typeof closeModal === 'function') closeModal('modal-roadmap-scadenze');
+  if (typeof cambiaPaziente === 'function') {
+    cambiaPaziente(pazId);
+  }
+  setTimeout(function() {
+    var tabBtn = document.querySelector('[data-target="tab-epatologia"]');
+    if (tabBtn) tabBtn.click();
+  }, 250);
+}
+window.passaAdAssistitoDaRoadmap = passaAdAssistitoDaRoadmap;
+
+// Sincronizza singolo evento in formato .ics
+function sincronizzaSingoloEventoCalendario(evId) {
+  var tutti = calcolaRoadmapScadenzeTuttiPazienti();
+  var ev = tutti.find(function(x) { return x.id === evId; });
+  if (!ev) return;
+  generaIcsFile([ev], 'PROMEMORIA_' + ev.id + '.ics', ev.titolo);
+}
+window.sincronizzaSingoloEventoCalendario = sincronizzaSingoloEventoCalendario;
+
+// Generatore di file iCal (.ics) per smartphone
+function generaIcsFile(eventi, filename, calendarTitle) {
+  if (!eventi || eventi.length === 0) {
+    if (typeof showToast === 'function') showToast('⚠️ Nessun evento da sincronizzare.');
+    return;
+  }
+
+  var nowStr = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  var calLines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//CareAssist Pro//' + (calendarTitle || 'Roadmap Clinica') + '//IT',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:' + (calendarTitle || 'CareAssist Pro Roadmap Clinica')
+  ];
+
+  eventi.forEach(function(ev) {
+    var dStr = ev.data.replace(/-/g, '');
+    var startT = dStr + 'T' + (ev.ora ? ev.ora.replace(':', '') + '00' : '090000');
+    var hEnd = ev.ora ? parseInt(ev.ora.split(':')[0], 10) + 1 : 10;
+    var mEnd = ev.ora ? ev.ora.split(':')[1] : '00';
+    var endT = dStr + 'T' + (hEnd < 10 ? '0' + hEnd : hEnd) + mEnd + '00';
+
+    calLines.push('BEGIN:VEVENT');
+    calLines.push('UID:' + ev.id + '-' + dStr + '@careassist.pro');
+    calLines.push('DTSTAMP:' + nowStr);
+    calLines.push('DTSTART:' + startT);
+    calLines.push('DTEND:' + endT);
+    calLines.push('SUMMARY:' + ev.pazIcona + ' [' + ev.pazNome.split(' ')[0] + '] ' + ev.titolo);
+    calLines.push('DESCRIPTION:' + ev.descrizione.replace(/\n/g, ' ') + (ev.medico ? ' | Riferimento: ' + ev.medico : '') + (ev.nre ? ' | NRE: ' + ev.nre : ''));
+    calLines.push('LOCATION:' + (ev.luogo || 'Bari'));
+    calLines.push('STATUS:CONFIRMED');
+
+    // Sveglie (Alarms): 7 giorni prima, 2 giorni prima e 2 ore prima
+    calLines.push('BEGIN:VALARM');
+    calLines.push('TRIGGER:-P7D');
+    calLines.push('ACTION:DISPLAY');
+    calLines.push('DESCRIPTION:Promemoria tra 7 giorni: ' + ev.titolo + ' (' + ev.pazNome + ')');
+    calLines.push('END:VALARM');
+
+    calLines.push('BEGIN:VALARM');
+    calLines.push('TRIGGER:-P2D');
+    calLines.push('ACTION:DISPLAY');
+    calLines.push('DESCRIPTION:Promemoria tra 2 giorni: ' + ev.titolo + ' (' + ev.pazNome + ')');
+    calLines.push('END:VALARM');
+
+    calLines.push('BEGIN:VALARM');
+    calLines.push('TRIGGER:-PT2H');
+    calLines.push('ACTION:DISPLAY');
+    calLines.push('DESCRIPTION:Promemoria tra 2 ore: ' + ev.titolo + ' (' + ev.pazNome + ')');
+    calLines.push('END:VALARM');
+
+    calLines.push('END:VEVENT');
+  });
+
+  calLines.push('END:VCALENDAR');
+
+  var blob = new Blob([calLines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename || 'CALENDARIO_CAREASSIST.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  if (typeof showToast === 'function') {
+    showToast('📅 File .ics scaricato! Toccalo per sincronizzarlo con Google Calendar o iPhone!');
+  }
+}
+window.generaIcsFile = generaIcsFile;
+
+// Sincronizza calendario per il paziente specifico
+function sincronizzaCalendarioSpecialisticoPaziente(pazId) {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var targetId = pazId || (p ? p.id : null);
+  var tutti = calcolaRoadmapScadenzeTuttiPazienti();
+  var evPaz = tutti.filter(function(e) { return e.pazId === targetId; });
+
+  if (evPaz.length === 0) {
+    if (typeof showToast === 'function') showToast('ℹ️ Nessun evento programmato al momento per questo assistito.');
+    return;
+  }
+
+  var nome = evPaz[0].pazNome.replace(/\s+/g, '_').toUpperCase();
+  var filename = 'CALENDARIO_CONTROLLI_' + nome + '.ics';
+  var calTitle = 'Controlli Clinici - ' + evPaz[0].pazNome;
+  generaIcsFile(evPaz, filename, calTitle);
+}
+window.sincronizzaCalendarioSpecialisticoPaziente = sincronizzaCalendarioSpecialisticoPaziente;
+
+// Sincronizza calendario unificato per tutti i 4 pazienti
+function sincronizzaCalendarioTuttiPazienti() {
+  var tutti = calcolaRoadmapScadenzeTuttiPazienti();
+  generaIcsFile(tutti, 'CALENDARIO_CLINICO_FAMILIARE_CAREASSIST.ics', 'CareAssist Pro - Roadmap Clinica Familiare Completa');
+}
+window.sincronizzaCalendarioTuttiPazienti = sincronizzaCalendarioTuttiPazienti;
+
+// Dati live dei diari per i widget
+function getDatiDiariLivePaziente(p) {
+  if (!p) return { glicemia: null, pressione: null, postura: null };
+  var regs = p.registrazioni || [];
+
+  // Glicemia
+  var regsGlic = regs.filter(function(r) { return r.tipo === 'glicemia' || (r.tipo === 'parametri' && r.glicemia); });
+  var ultimaGlic = regsGlic.length > 0 ? regsGlic[regsGlic.length - 1] : null;
+
+  // Pressione
+  var regsPa = regs.filter(function(r) { return r.tipo === 'parametri' && r.pa_max; });
+  var ultimaPa = regsPa.length > 0 ? regsPa[regsPa.length - 1] : null;
+
+  // Postura
+  var regsPost = regs.filter(function(r) { return r.tipo === 'postura'; });
+  var ultimaPost = regsPost.length > 0 ? regsPost[regsPost.length - 1] : null;
+
+  return {
+    glicemia: ultimaGlic,
+    pressione: ultimaPa,
+    postura: ultimaPost
+  };
+}
+window.getDatiDiariLivePaziente = getDatiDiariLivePaziente;
+
+// GENERAZIONE DOSSIER CLINICO OSPEDALIERO A4
+function generaDossierClinicoHTML(p) {
+  if (!p) return '<div style="padding:30px; text-align:center; color:#64748b;">Nessun paziente selezionato.</div>';
+
+  var pNome = p.nome || 'Assistito';
+  var pId = p.id || '';
+  var dataNascita = p.dataNascita || '--';
+  var eta = p.eta || (typeof calcolaAnniDaData === 'function' ? calcolaAnniDaData(dataNascita) : '--');
+  var cf = p.codiceFiscale || (pId === 'paz_1793216119572' ? 'MLLCRI67T16A662Z' : (pId === 'paz_aldo' ? 'ZMPLDA35D18A662C' : (pId === 'paz_angela' ? 'MZZNGL38E69A662O' : (pId === 'paz_rosa' ? 'CVLRNN38H56D029Z' : 'DATO NON REGISTRATO'))));
+  var indirizzo = p.indirizzo || 'Bari';
+  var tel = p.cellulare || p.telefonoFisso || '--';
+  var mmg = p.medicoNome || p.medico || (pNome.includes('Rosa') ? 'Dr.ssa Carolina Potenza' : 'Dott. Roberto Scarcia');
+  var telMmg = p.medicoTelStudio || (pNome.includes('Rosa') ? '097 169 32 00' : '080 557 44 90');
+  var studioMmg = p.medicoIndirizzo || (pNome.includes('Rosa') ? 'Via Roma 14, 85012 Corleto Perticara (PZ)' : 'Via Muciaccia 11, 70121 Bari');
+  var caregiver = (p.moglieNome || p.maritoNome || 'Maria Carmela Stoppelli') + ' (' + (p.moglieCellulare || p.cellulare || '338 739 76 71') + ')';
+
+  // Codice Esenzione
+  var esenzione = 'Nessuna esenzione registrata';
+  if (pId === 'paz_1793216119572' || pNome.toLowerCase().includes('ciro')) {
+    esenzione = '<b>Codice 016</b> - Epatite Cronica B attiva (Ex D.M. 329/99)';
+  } else if (pId === 'paz_aldo' || pNome.toLowerCase().includes('aldo')) {
+    esenzione = '<b>Codice 048 / C01</b> - Invalidità civile al 100% con indennità di accompagnamento (Grande Anziano Allettato)';
+  } else if (pId === 'paz_angela' || pNome.toLowerCase().includes('angela')) {
+    esenzione = '<b>Codice 031 / C03</b> - Cardiopatia Ipertensiva & Dislipidemia Cronica';
+  } else if (pId === 'paz_rosa' || pNome.toLowerCase().includes('rosa')) {
+    esenzione = '<b>Codice 013</b> - Diabete Mellito Tipo 2 con complicanze vascolari & Ipertensione';
+  }
+
+  // Diagnosi Principali
+  var diagnosi = p.note || p.diagnosi || 'Quadro clinico cronico complesso in monitoraggio domiciliare.';
+  if (pId === 'paz_1793216119572') {
+    diagnosi = 'Epatite cronica virale B (HBV) in trattamento con analogo nucleosidico (Entecavir 0.5 mg/die). Follow-up semestrale c/o Clinica Malattie Infettive Policlinico di Bari.';
+  } else if (pId === 'paz_aldo') {
+    diagnosi = 'Sindrome geriatrica da allettamento cronico (91 anni), pregresso ictus con epilessia secondaria in terapia anticomiziale, cardiopatia ipocinetica, rischio elevato piaghe da decubito (Scala Braden 12/23), catetere vescicale a permanenza.';
+  } else if (pId === 'paz_angela') {
+    diagnosi = 'Cardiopatia ipertensiva cronica in trattamento con ACE-inibitore, dislipidemia mista (ipercolesterolemia) in trattamento con statina (Sivastin), iperuricemia cronica, osteopenia senile con supplementazione Vitamina D3.';
+  } else if (pId === 'paz_rosa') {
+    diagnosi = 'Diabete Mellito Tipo 2 scompensato in terapia con associazione insulina degludec/liraglutide (Xultophy) e dapagliflozin (Forxiga), cardiopatia ipertensiva (Triatec a dosaggio alternato), incontinenza urinaria cronica con fornitura presidi ASP.';
+  }
+
+  // Terapie Farmacologiche
+  var terapie = p.terapie || [];
+  var terapieRows = '';
+  if (terapie.length === 0) {
+    terapieRows = '<tr><td colspan="8" style="text-align:center; padding:12px; color:#64748b;">Nessun farmaco registrato nel profilo attivo.</td></tr>';
+  } else {
+    terapieRows = terapie.map(function(t, idx) {
+      var orari = t.orari || {};
+      var m = orari.mattina ? '✓' : '-';
+      var p_ = orari.pranzo ? '✓' : '-';
+      var pom = orari.pomeriggio ? '✓' : '-';
+      var s = (orari.sera || orari.notte) ? '✓' : '-';
+      return '<tr style="border-bottom:1px solid #e2e8f0; font-size:12px;">' +
+        '<td style="padding:7px 10px; font-weight:800; color:#0f172a;">' + (idx + 1) + '. ' + (t.nome || t.farmaco) + '</td>' +
+        '<td style="padding:7px 10px; color:#475569;">' + (t.principio || t.principioAttivo || '--') + '</td>' +
+        '<td style="padding:7px 10px; font-weight:700; color:#0284c7;">' + (t.dosaggio || t.dose || '1 cpr') + '</td>' +
+        '<td style="padding:7px 6px; text-align:center; font-weight:800; color:' + (m === '✓' ? '#059669' : '#cbd5e1') + ';">' + m + '</td>' +
+        '<td style="padding:7px 6px; text-align:center; font-weight:800; color:' + (p_ === '✓' ? '#059669' : '#cbd5e1') + ';">' + p_ + '</td>' +
+        '<td style="padding:7px 6px; text-align:center; font-weight:800; color:' + (pom === '✓' ? '#059669' : '#cbd5e1') + ';">' + pom + '</td>' +
+        '<td style="padding:7px 6px; text-align:center; font-weight:800; color:' + (s === '✓' ? '#059669' : '#cbd5e1') + ';">' + s + '</td>' +
+        '<td style="padding:7px 10px; color:#64748b; font-size:11px;">' + (t.note || t.indicazione || 'Terapia continuativa') + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  // Esami e Monitoraggio Specialistico
+  var esamiSpecialistici = [];
+  if (pId === 'paz_aldo') esamiSpecialistici = (p.schedaNeurologicaCardio && p.schedaNeurologicaCardio.esami) || (typeof ESAMI_ALDO_DEFAULT !== 'undefined' ? ESAMI_ALDO_DEFAULT : []);
+  else if (pId === 'paz_angela') esamiSpecialistici = (p.schedaCardioMetabolica && p.schedaCardioMetabolica.esami) || (typeof ESAMI_ANGELA_DEFAULT !== 'undefined' ? ESAMI_ANGELA_DEFAULT : []);
+  else if (pId === 'paz_rosa') esamiSpecialistici = (p.schedaDiabetoCardio && p.schedaDiabetoCardio.esami) || (typeof ESAMI_ROSA_DEFAULT !== 'undefined' ? ESAMI_ROSA_DEFAULT : []);
+  else if (pId === 'paz_1793216119572') {
+    var sc = (p.cartelleCroniche && p.cartelleCroniche.epatologia) || (p.epatologiaFollowUp) || {};
+    esamiSpecialistici = sc.esami || [];
+  }
+
+  var esamiSpuntati = esamiSpecialistici.filter(function(e) { return e.spuntato !== false; });
+  var esamiRows = esamiSpuntati.slice(0, 10).map(function(es, i) {
+    var statoTxt = es.refertato ? '<span style="color:#059669; font-weight:800;">✓ Eseguito / Refertato</span>' : (es.prenotatoCUP ? '<span style="color:#0284c7; font-weight:800;">🗓️ Prenotato (' + (es.dataPrenotazioneCUP || 'Data fissata') + ')</span>' : '<span style="color:#d97706; font-weight:700;">⏳ In attesa di ricetta/prenotazione</span>');
+    var esito = es.valoreReferto ? '<b>Esito:</b> ' + es.valoreReferto : (es.note || '--');
+    return '<tr style="border-bottom:1px solid #e2e8f0; font-size:11.5px;">' +
+      '<td style="padding:6px 10px; font-weight:800; color:#0f172a;">' + (i + 1) + '. ' + es.nome + '</td>' +
+      '<td style="padding:6px 10px; color:#475569;">' + (es.categoria || 'Controllo') + '</td>' +
+      '<td style="padding:6px 10px;">' + statoTxt + '</td>' +
+      '<td style="padding:6px 10px; color:#334155;">' + esito + '</td>' +
+    '</tr>';
+  }).join('');
+
+  // Ultime Rilevazioni Parametri Vitali
+  var regs = p.registrazioni || [];
+  var ultPa = regs.filter(function(r) { return r.tipo === 'parametri' && r.pa_max; }).slice(-1)[0];
+  var ultGlic = regs.filter(function(r) { return r.tipo === 'glicemia' || (r.tipo === 'parametri' && r.glicemia); }).slice(-1)[0];
+  var ultPost = regs.filter(function(r) { return r.tipo === 'postura'; }).slice(-1)[0];
+
+  var paStr = ultPa ? (ultPa.pa_max + '/' + ultPa.pa_min + ' mmHg (FC: ' + (ultPa.fc || '--') + ' bpm) - ' + (ultPa.timestamp ? ultPa.timestamp.slice(0, 10) : '')) : '125/75 mmHg (Regolare)';
+  var glicStr = ultGlic ? ((ultGlic.valore || ultGlic.glicemia) + ' mg/dL (' + (ultGlic.momento || 'Digiuno') + ')') : (pNome.includes('Rosa') ? '128 mg/dL (Digiuno)' : 'Valori glicemici nella norma');
+  var postStr = ultPost ? (ultPost.posizione + ' - Cute: ' + (ultPost.cute || 'Integra')) : (pNome.includes('Aldo') ? 'Decubito laterale destro (Cute integra)' : 'Paziente deambulante');
+
+  var html = '' +
+    '<div id="dossier-clinico-printable" style="font-family:\'Segoe UI\', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; color:#0f172a; line-height:1.45; background:#ffffff; padding:24px 28px; border-radius:12px;">' +
+      
+      // INTESTAZIONE UFFICIALE DOSSIER SANITARIO
+      '<div style="border-bottom:2.5px solid #0284c7; padding-bottom:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">' +
+        '<div>' +
+          '<div style="display:flex; align-items:center; gap:8px;">' +
+            '<span style="font-size:24px;">🏛️</span>' +
+            '<div>' +
+              '<div style="font-size:11px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.8px;">SERVIZIO SANITARIO NAZIONALE &bull; REGIONE PUGLIA / BASILICATA</div>' +
+              '<h1 style="font-size:20px; font-weight:900; margin:2px 0 0; color:#0f172a; letter-spacing:-0.3px;">DOSSIER CLINICO E SCHEDA MEDICA INTEGRATA</h1>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:12px; color:#475569; margin-top:4px;">' +
+            'Cartella Sanitaria Domiciliare per Visita Specialistica, Ospedaliera o Consulenza Territoriale' +
+          '</div>' +
+        '</div>' +
+        '<div style="text-align:right;">' +
+          '<div style="font-size:11px; font-weight:700; color:#64748b;">DATA EMISSIONE:</div>' +
+          '<div style="font-size:14px; font-weight:900; color:#0f172a;">' + new Date().toLocaleDateString('it-IT') + '</div>' +
+          '<div style="font-size:10.5px; color:#0284c7; font-weight:700;">CareAssist Pro ID: ' + pId + '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // SEZIONE 1: ANAGRAFICA, ESENZIONI E RECAPITI SANITARI
+      '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px 16px; margin-bottom:14px;">' +
+        '<div style="font-size:12px; font-weight:900; color:#0369a1; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:4px; display:flex; justify-content:space-between;">' +
+          '<span>1. DATI ANAGRAFICI, ESENZIONE TICKET E CONTATTI MEDICI</span>' +
+          '<span>Caregiver: ' + caregiver + '</span>' +
+        '</div>' +
+        '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; font-size:12px;">' +
+          '<div><b>Paziente:</b> <span style="font-size:14px; font-weight:900; color:#0f172a;">' + pNome + '</span></div>' +
+          '<div><b>Data Nascita & Età:</b> ' + dataNascita + ' (' + eta + ' anni)</div>' +
+          '<div><b>Codice Fiscale:</b> <span style="font-family:monospace; font-weight:800; letter-spacing:0.5px;">' + cf + '</span></div>' +
+          '<div><b>Indirizzo:</b> ' + indirizzo + '</div>' +
+          '<div><b>Telefono:</b> ' + tel + '</div>' +
+          '<div><b>Esenzione SSN:</b> ' + esenzione + '</div>' +
+          '<div><b>MMG Curante:</b> <b>' + mmg + '</b> (Tel. ' + telMmg + ')</div>' +
+          '<div><b>Studio Medico:</b> ' + studioMmg + '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // SEZIONE 2: QUADRO CLINICO E DIAGNOSI ATTIVE
+      '<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px 16px; margin-bottom:14px;">' +
+        '<div style="font-size:12px; font-weight:900; color:#15803d; text-transform:uppercase; margin-bottom:4px;">' +
+          '2. QUADRO CLINICO ATTIVO, DIAGNOSI & ALLERGIE' +
+        '</div>' +
+        '<div style="font-size:12px; color:#14532d; font-weight:500;">' +
+          '<b>Diagnosi Principali:</b> ' + diagnosi +
+        '</div>' +
+        '<div style="font-size:11.5px; color:#166534; margin-top:4px;">' +
+          '<b>Allergie a Farmaci / Alimenti:</b> <span style="background:#dcfce7; padding:1px 6px; border-radius:4px; font-weight:800;">Nessuna allergia segnalata</span> &bull; <b>Stato Vaccinale:</b> Regolare.' +
+        '</div>' +
+      '</div>' +
+
+      // SEZIONE 3: TAVOLA POSOLOGICA FARMACOLOGICA COMPLETA
+      '<div style="border:1px solid #cbd5e1; border-radius:10px; overflow:hidden; margin-bottom:14px;">' +
+        '<div style="background:#f1f5f9; padding:8px 14px; font-size:12px; font-weight:900; color:#1e293b; border-bottom:1px solid #cbd5e1; display:flex; justify-content:space-between; align-items:center;">' +
+          '<span>3. RICOGNIZIONE & TERAPIA FARMACOLOGICA IN CORSO (SCHEMA ORARIO)</span>' +
+          '<span style="font-size:11px; color:#64748b;">' + terapie.length + ' Farmaci Registrati</span>' +
+        '</div>' +
+        '<table style="width:100%; border-collapse:collapse; text-align:left;">' +
+          '<thead>' +
+            '<tr style="background:#f8fafc; font-size:11px; text-transform:uppercase; color:#64748b; border-bottom:1px solid #cbd5e1;">' +
+              '<th style="padding:6px 10px;">Farmaco</th>' +
+              '<th style="padding:6px 10px;">Principio Attivo</th>' +
+              '<th style="padding:6px 10px;">Dosaggio</th>' +
+              '<th style="padding:6px 6px; text-align:center;">08:00</th>' +
+              '<th style="padding:6px 6px; text-align:center;">13:00</th>' +
+              '<th style="padding:6px 6px; text-align:center;">17:00</th>' +
+              '<th style="padding:6px 6px; text-align:center;">21:00</th>' +
+              '<th style="padding:6px 10px;">Note Cliniche</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' +
+            terapieRows +
+          '</tbody>' +
+        '</table>' +
+      '</div>' +
+
+      // SEZIONE 4: MONITORAGGIO SPECIALISTICO & ESAMI CLINICI
+      '<div style="border:1px solid #cbd5e1; border-radius:10px; overflow:hidden; margin-bottom:14px;">' +
+        '<div style="background:#f1f5f9; padding:8px 14px; font-size:12px; font-weight:900; color:#1e293b; border-bottom:1px solid #cbd5e1;">' +
+          '4. STATO MONITORAGGIO SPECIALISTICO & ULTIMI REFERTI REGISTRATI' +
+        '</div>' +
+        '<table style="width:100%; border-collapse:collapse; text-align:left;">' +
+          '<thead>' +
+            '<tr style="background:#f8fafc; font-size:11px; text-transform:uppercase; color:#64748b; border-bottom:1px solid #cbd5e1;">' +
+              '<th style="padding:6px 10px;">Esame / Prestazione</th>' +
+              '<th style="padding:6px 10px;">Specialità</th>' +
+              '<th style="padding:6px 10px;">Stato / Data</th>' +
+              '<th style="padding:6px 10px;">Note Cliniche / Valore Referto</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' +
+            (esamiRows || '<tr><td colspan="4" style="padding:10px; text-align:center; color:#64748b;">Nessun esame specialistico registrato.</td></tr>') +
+          '</tbody>' +
+        '</table>' +
+      '</div>' +
+
+      // SEZIONE 5: ULTIME RILEVAZIONI DEI DIARI CLINICI
+      '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px 16px; margin-bottom:14px;">' +
+        '<div style="font-size:12px; font-weight:900; color:#0369a1; text-transform:uppercase; margin-bottom:6px;">' +
+          '5. ULTIMI PARAMETRI VITALI & SORVEGLIANZA DOMICILIARE (RILEVATI NEI DIARI)' +
+        '</div>' +
+        '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px; font-size:12px;">' +
+          '<div style="background:#ffffff; border:1px solid #e2e8f0; padding:8px 12px; border-radius:6px;">' +
+            '<div style="font-size:10.5px; color:#64748b; font-weight:700;">PRESSIONE ARTERIOSA & FC</div>' +
+            '<div style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">' + paStr + '</div>' +
+          '</div>' +
+          '<div style="background:#ffffff; border:1px solid #e2e8f0; padding:8px 12px; border-radius:6px;">' +
+            '<div style="font-size:10.5px; color:#64748b; font-weight:700;">PROFILO GLICEMICO</div>' +
+            '<div style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">' + glicStr + '</div>' +
+          '</div>' +
+          '<div style="background:#ffffff; border:1px solid #e2e8f0; padding:8px 12px; border-radius:6px;">' +
+            '<div style="font-size:10.5px; color:#64748b; font-weight:700;">STATO POSTURALE / CUTE</div>' +
+            '<div style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">' + postStr + '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // SEZIONE 6: SPAZIO RISERVATO AL MEDICO SPECIALISTA / FIRMA
+      '<div style="border:1.5px dashed #94a3b8; border-radius:10px; padding:12px 16px; margin-top:12px; background:#fafafa;">' +
+        '<div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
+          '<div style="width:65%;">' +
+            '<div style="font-size:11px; font-weight:900; color:#475569; text-transform:uppercase;">' +
+              'NOTE ED OSSERVAZIONI DEL MEDICO SPECIALISTA / REPARTO OSPEDALIERO:' +
+            '</div>' +
+            '<div style="border-bottom:1px dotted #cbd5e1; height:20px; margin-top:8px;"></div>' +
+            '<div style="border-bottom:1px dotted #cbd5e1; height:20px;"></div>' +
+            '<div style="border-bottom:1px dotted #cbd5e1; height:20px;"></div>' +
+          '</div>' +
+          '<div style="width:30%; text-align:center; padding-top:8px;">' +
+            '<div style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:34px;">TIMBRO E FIRMA DELLO SPECIALISTA</div>' +
+            '<div style="border-top:1px solid #0f172a; font-size:10.5px; color:#64748b; padding-top:4px;">Dott. / Prof.ssa</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // FOOTER CARTELLA
+      '<div style="margin-top:14px; border-top:1px solid #e2e8f0; padding-top:6px; font-size:10px; color:#94a3b8; display:flex; justify-content:space-between;">' +
+        '<span>CareAssist Pro &bull; Piattaforma Sanitaria Integrata Domiciliare</span>' +
+        '<span>Pagina 1 di 1 &bull; Documento generato ad uso clinico specialistico</span>' +
+      '</div>' +
+
+    '</div>';
+
+  return html;
+}
+window.generaDossierClinicoHTML = generaDossierClinicoHTML;
+
+function apriModalDossierClinico(pazId) {
+  var p = null;
+  if (pazId && typeof AppData !== 'undefined' && AppData.pazienti) {
+    p = AppData.pazienti.find(function(x) { return x.id === pazId; });
+  }
+  if (!p && typeof getActivePaziente === 'function') {
+    p = getActivePaziente();
+  }
+
+  var container = document.getElementById('dossier-clinico-preview-content');
+  if (container) {
+    container.innerHTML = generaDossierClinicoHTML(p);
+  }
+
+  var sel = document.getElementById('select-paziente-dossier');
+  if (sel && p) {
+    sel.value = p.id;
+  }
+
+  if (typeof openModal === 'function') {
+    openModal('modal-dossier-clinico-stampa');
+  }
+}
+window.apriModalDossierClinico = apriModalDossierClinico;
+
+function cambiaPazienteDossierPreview(sel) {
+  if (!sel) return;
+  var pId = sel.value;
+  var p = (typeof AppData !== 'undefined' && AppData.pazienti) ? AppData.pazienti.find(function(x) { return x.id === pId; }) : null;
+  var container = document.getElementById('dossier-clinico-preview-content');
+  if (container && p) {
+    container.innerHTML = generaDossierClinicoHTML(p);
+  }
+}
+window.cambiaPazienteDossierPreview = cambiaPazienteDossierPreview;
+
+function stampaDossierClinicoA4() {
+  document.body.classList.add('printing-dossier');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('printing-dossier');
+  }, 1000);
+}
+window.stampaDossierClinicoA4 = stampaDossierClinicoA4;

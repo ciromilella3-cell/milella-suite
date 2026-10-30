@@ -243,6 +243,15 @@
         🏠 Torna al Menu
       </button>
 
+      
+      <button class="btn" onclick="apriModalDossierClinico()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(2,132,199,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Genera e Stampa il Dossier Ospedaliero Clinico A4 dell'Assistito">
+        📋 Dossier Clinico A4
+      </button>
+
+      <button class="btn" onclick="apriModalRoadmapScadenze()" style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#fff; font-weight:800; border-radius:12px; padding:8px 14px; border:1px solid rgba(255,255,255,0.3); box-shadow:0 2px 8px rgba(79,70,229,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Apri il Cruscotto Unificato Scadenzario & Roadmap Clinica Familiare">
+        🗓️ Roadmap Scadenze
+      </button>
+  
       <button class="btn btn-stampa-rapida" onclick="stampaReport()" title="Stampa il diario clinico giornaliero dell'assistito">
         📄 Stampa Diario
       </button>
@@ -266,6 +275,17 @@
         </button>
         <div class="tools-dropdown-menu" id="tools-dropdown-panel">
           <div class="dropdown-section-title">Strumenti Assistenza</div>
+
+          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalRoadmapScadenze()">
+            <span>🗓️</span> Roadmap Scadenze Familiare (4 Pazienti)
+          </button>
+          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalDossierClinico()">
+            <span>📋</span> Dossier Clinico Ospedaliero (A4)
+          </button>
+          <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); sincronizzaCalendarioTuttiPazienti()">
+            <span>📅</span> Sincronizza Calendari Familiari (.ics)
+          </button>
+  
           <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalSOSProntoSoccorso()">
             <span>🚨</span> SOS Guida Emergenze 118
           </button>
@@ -4602,5 +4622,195 @@
   <script src="./suite_security_gate.js"></script>
   <script src="/suite_nav.js"></script>
   <script src="./suite_nav.js"></script>
+
+  <!-- STILE SPECIFICO PER STAMPA DOSSIER CLINICO A4 -->
+  <style>
+    @media print {
+      body.printing-dossier {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      body.printing-dossier .app-header,
+      body.printing-dossier .nav-bar,
+      body.printing-dossier .quick-tiles,
+      body.printing-dossier .container,
+      body.printing-dossier .bottom-nav,
+      body.printing-dossier .modal-overlay:not(#modal-dossier-clinico-stampa),
+      body.printing-dossier .no-print-dossier {
+        display: none !important;
+      }
+      body.printing-dossier #modal-dossier-clinico-stampa {
+        display: block !important;
+        position: static !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      body.printing-dossier #modal-dossier-clinico-stampa .modal-card {
+        max-width: 100% !important;
+        width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      body.printing-dossier #dossier-clinico-printable {
+        display: block !important;
+        width: 100% !important;
+        padding: 8mm !important;
+        box-sizing: border-box !important;
+      }
+    }
+  </style>
+
+  <!-- MODAL ROADMAP CLINICA & SCADENZARIO FAMILIARE UNIFICATO -->
+  <div class="modal-overlay" id="modal-roadmap-scadenze" style="z-index: 10040;">
+    <div class="modal-card" style="max-width: 980px; width: 95%; max-height: 92vh; display: flex; flex-direction: column;">
+      
+      <!-- HEADER ROADMAP -->
+      <div class="modal-header" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #ffffff; padding: 18px 24px; border-bottom: 2px solid #818cf8; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1.5px solid #a5b4fc;">
+            🗓️
+          </div>
+          <div>
+            <div style="font-size: 11px; font-weight: 800; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.6px;">CRUSCOTTO COORDINAMENTO CLINICO DOMICILIARE</div>
+            <h2 style="font-size: 20px; font-weight: 900; margin: 2px 0 0; color: #ffffff;">Roadmap Clinica & Scadenzario Familiare Unificato</h2>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button type="button" class="btn" onclick="sincronizzaCalendarioTuttiPazienti()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(16,185,129,0.35);">
+            📅 Esporta Tutto (.ics)
+          </button>
+          <button class="btn btn-outline" onclick="closeModal('modal-roadmap-scadenze')" style="color: #ffffff; border-color: rgba(255,255,255,0.4);">✕</button>
+        </div>
+      </div>
+
+      <!-- BODY ROADMAP -->
+      <div class="modal-body" style="padding: 20px; overflow-y: auto; flex: 1; background: #f8fafc;">
+        
+        <!-- KPI METRICS SUMMARY -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+            <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Assistiti in Monitoraggio</div>
+            <div style="font-size: 24px; font-weight: 900; color: #1e1b4b; margin-top: 2px;">4 Pazienti</div>
+            <div style="font-size: 11px; color: #0284c7; font-weight: 600;">Aldo, Angela, Rosa, Ciro</div>
+          </div>
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+            <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Prossima Scadenza Imminente</div>
+            <div id="roadmap-kpi-prossima" style="font-size: 20px; font-weight: 900; color: #dc2626; margin-top: 2px;">05/11/2026</div>
+            <div id="roadmap-kpi-prossima-dettaglio" style="font-size: 11px; color: #475569; font-weight: 600;">Prelievo Angela Mazzicone</div>
+          </div>
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+            <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Controlli Prossimi 30 Giorni</div>
+            <div id="roadmap-kpi-prossimi30" style="font-size: 24px; font-weight: 900; color: #d97706; margin-top: 2px;">6 Eventi</div>
+            <div style="font-size: 11px; color: #166534; font-weight: 600;">Visite ADI, CAD & Prelievi</div>
+          </div>
+        </div>
+
+        <!-- BARRA FILTRI PAZIENTE & CATEGORIA -->
+        <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;">
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Filtro Pazienti -->
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 11.5px; font-weight: 800; color: #475569; text-transform: uppercase; min-width: 70px;">Assistito:</span>
+              <button type="button" class="btn btn-sm btn-filter-paz" id="btn-filtro-paz-tutti" onclick="filtraRoadmapPaziente('tutti')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #1e1b4b; color: white;">Tutti (4)</button>
+              <button type="button" class="btn btn-sm btn-filter-paz" id="btn-filtro-paz-aldo" onclick="filtraRoadmapPaziente('paz_aldo')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #e0e7ff; color: #3730a3;">🧠 Aldo Zamparino</button>
+              <button type="button" class="btn btn-sm btn-filter-paz" id="btn-filtro-paz-angela" onclick="filtraRoadmapPaziente('paz_angela')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #fce7f3; color: #9d174d;">❤️ Angela Mazzicone</button>
+              <button type="button" class="btn btn-sm btn-filter-paz" id="btn-filtro-paz-rosa" onclick="filtraRoadmapPaziente('paz_rosa')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #dcfce7; color: #166534;">🩸 Rosa Cavalcante</button>
+              <button type="button" class="btn btn-sm btn-filter-paz" id="btn-filtro-paz-ciro" onclick="filtraRoadmapPaziente('paz_1793216119572')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 12px; background: #e0f2fe; color: #0369a1;">🩺 Ciro Milella</button>
+            </div>
+            <!-- Filtro Categorie -->
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border-top: 1px solid #f1f5f9; padding-top: 8px;">
+              <span style="font-size: 11.5px; font-weight: 800; color: #475569; text-transform: uppercase; min-width: 70px;">Tipo:</span>
+              <button type="button" class="btn btn-sm btn-filter-cat" id="btn-filtro-cat-tutti" onclick="filtraRoadmapCategoria('tutti')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 10px; background: #0f172a; color: white;">Tutti</button>
+              <button type="button" class="btn btn-sm btn-filter-cat" id="btn-filtro-cat-visite" onclick="filtraRoadmapCategoria('Visite')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 10px; background: #f1f5f9; color: #334155;">🏥 Visite Specialistiche</button>
+              <button type="button" class="btn btn-sm btn-filter-cat" id="btn-filtro-cat-laboratorio" onclick="filtraRoadmapCategoria('Laboratorio')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 10px; background: #f1f5f9; color: #334155;">🩸 Esami del Sangue</button>
+              <button type="button" class="btn btn-sm btn-filter-cat" id="btn-filtro-cat-strumentali" onclick="filtraRoadmapCategoria('Strumentali')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 10px; background: #f1f5f9; color: #334155;">🔬 Diagnostica & Eco</button>
+              <button type="button" class="btn btn-sm btn-filter-cat" id="btn-filtro-cat-piani" onclick="filtraRoadmapCategoria('Piani')" style="border-radius: 999px; font-weight: 800; font-size: 11.5px; padding: 4px 10px; background: #f1f5f9; color: #334155;">📦 Piani, NRE & Forniture</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- LISTA CARDS TIMELINE CRONOLOGICA -->
+        <div id="roadmap-timeline-container" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Inserito dinamicamente da renderRoadmapScadenzeHTML() -->
+        </div>
+
+      </div>
+
+      <!-- FOOTER ROADMAP -->
+      <div class="modal-footer" style="background: #ffffff; border-top: 1.5px solid #cbd5e1; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="font-size: 12px; color: #64748b;">
+          💡 <i>Tocca "Passa ad Assistito" per entrare nella cartella specialistica dedicata o scarica il promemoria iCal per il tuo telefono.</i>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn" onclick="sincronizzaCalendarioTuttiPazienti()" style="background: #059669; color: white; font-weight: 800; font-size: 12.5px; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;">
+            📲 Scarica Calendario Completo (.ics)
+          </button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-roadmap-scadenze')">Chiudi</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL DOSSIER CLINICO OSPEDALIERO TUTTO-IN-UNO (STAMPA CARTELLA A4) -->
+  <div class="modal-overlay" id="modal-dossier-clinico-stampa" style="z-index: 10045;">
+    <div class="modal-card" style="max-width: 1020px; width: 96%; max-height: 94vh; display: flex; flex-direction: column; background: #e2e8f0;">
+      
+      <!-- HEADER DOSSIER (NO PRINT) -->
+      <div class="modal-header no-print-dossier" style="background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%); color: #ffffff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="font-size: 28px;">📋</div>
+          <div>
+            <div style="font-size: 11px; font-weight: 800; color: #bae6fd; text-transform: uppercase;">ANTEPRIMA CARTELLA CLINICA PER VISITA MEDICA O RICOVERO</div>
+            <h2 style="font-size: 18px; font-weight: 900; margin: 0; color: #ffffff;">Dossier Clinico Ospedaliero "Tutto-in-Uno" (Formato A4)</h2>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <!-- Selettore Paziente nel Dossier -->
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <label style="font-size: 11.5px; font-weight: 700; color: #ffffff;">Assistito:</label>
+            <select id="select-paziente-dossier" onchange="cambiaPazienteDossierPreview(this)" style="background: #ffffff; color: #0f172a; font-weight: 800; font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid #38bdf8; cursor: pointer;">
+              <option value="paz_aldo">🧠 Aldo Zamparino (91 a)</option>
+              <option value="paz_angela">❤️ Angela Mazzicone (88 a)</option>
+              <option value="paz_rosa">🩸 Rosa Cavalcante (88 a)</option>
+              <option value="paz_1793216119572">🩺 Ciro Milella (58 a)</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn" onclick="stampaDossierClinicoA4()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(16,185,129,0.35);">
+            🖨️ Stampa Cartella A4
+          </button>
+          <button class="btn btn-outline" onclick="closeModal('modal-dossier-clinico-stampa')" style="color: #ffffff; border-color: rgba(255,255,255,0.4);">✕</button>
+        </div>
+      </div>
+
+      <!-- BODY DOSSIER (PRINTABLE) -->
+      <div class="modal-body" style="padding: 20px; overflow-y: auto; flex: 1; background: #e2e8f0; display: flex; justify-content: center;">
+        <div id="dossier-clinico-preview-content" style="max-width: 900px; width: 100%; box-shadow: 0 4px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+          <!-- Generato dinamicamente da generaDossierClinicoHTML(p) -->
+        </div>
+      </div>
+
+      <!-- FOOTER DOSSIER (NO PRINT) -->
+      <div class="modal-footer no-print-dossier" style="background: #ffffff; border-top: 1px solid #cbd5e1; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 11.5px; color: #64748b;">
+          📄 <i>Il dossier contiene: anagrafica, esenzione, MMG curante, ricognizione farmaci oraria, ultimi esami specialistici e parametri vitali.</i>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn" onclick="stampaDossierClinicoA4()" style="background: #0284c7; color: white; font-weight: 800; font-size: 12.5px; padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer;">
+            🖨️ Stampa Ora (PDF / Cartaceo)
+          </button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-dossier-clinico-stampa')">Chiudi</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  
 </body>
 </html>
