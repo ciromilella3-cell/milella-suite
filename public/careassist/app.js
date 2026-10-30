@@ -14552,26 +14552,102 @@ function renderEpatologiaView() {
         </div>
       </div>
 
-      <!-- COLONNA DESTRA: TERAPIE ATTIVE CORRELATE & RECAPITI -->
+      <!-- COLONNA DESTRA: PIANO TERAPEUTICO ANNUALE DPC, SCALARE SCATOLE & COINCIDENZA VISITA -->
       <div style="display:flex; flex-direction:column; gap:18px;">
-        <div class="card" style="border:1.5px solid #86efac; background:#f0fdf4; border-radius:16px; padding:18px;">
-          <div style="font-size:11.5px; font-weight:900; color:#15803d; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:8px;">
-            💊 Terapie Correlate alla Patologia
-          </div>
-          <div style="font-size:12.5px; color:#1e293b; line-height:1.45;">
-            Le prestazioni di controllo sono sincronizzate con lo schema posologico del paziente. I farmaci assunti alimentano in tempo reale gli alert e le scadenze.
-          </div>
-        </div>
+        ${(() => {
+          var sync = window.calcolaSincronizzazionePianoVisita ? window.calcolaSincronizzazionePianoVisita() : null;
+          var pt = window.getPianoTerapeuticoAttivo ? window.getPianoTerapeuticoAttivo(p) : null;
+          if (!sync || !pt) return '';
 
-        <div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:18px; background:#ffffff;">
-          <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin-bottom:8px;">
-            🏥 Centro di Cura & Contatti
-          </div>
-          <div style="font-size:12px; color:#475569; line-height:1.5;">
-            📍 <b>Struttura:</b> ${proto.centro}<br>
-            ✉️ <b>Email Prenotazioni/Piani:</b> <a href="mailto:${proto.emailCentro}" style="color:#0284c7; font-weight:700; text-decoration:none;">${proto.emailCentro}</a>
-          </div>
-        </div>
+          var percPianoConsumato = Math.round((pt.scatoleRitirateTotali / pt.scatoleSpettantiAnno) * 100);
+
+          return `
+            <!-- CARD 1: CONTROLLO ANNUALE PIANO TERAPEUTICO EX-OSP2-H -->
+            <div class="card" style="border:2px solid #0284c7; background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius:16px; padding:18px; box-shadow:0 4px 18px rgba(2,132,199,0.12);">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:22px;">📜</span>
+                  <div>
+                    <div style="font-size:11px; font-weight:900; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px;">PIANO TERAPEUTICO DPC ANNUALE</div>
+                    <div style="font-size:15px; font-weight:900; color:#0f172a;">${pt.farmacoNome}</div>
+                  </div>
+                </div>
+                <span style="background:#0284c7; color:#fff; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">ID: ${pt.idPrescrizione}</span>
+              </div>
+
+              <div style="font-size:12px; color:#334155; line-height:1.45; margin-bottom:12px; background:rgba(255,255,255,0.7); padding:8px 10px; border-radius:8px; border:1px solid #bae6fd;">
+                👨‍⚕️ <b>Prescrittore:</b> ${pt.medicoPrescrittore}<br>
+                🏥 <b>Ente:</b> ${pt.strutturaPrescrittrice}<br>
+                📋 <b>Diagnosi AIFA:</b> ${pt.diagnosiAifa.slice(0, 48)}...<br>
+                📅 <b>Validità:</b> Dal ${new Date(pt.dataPrescrizioneInizio).toLocaleDateString('it-IT')} al ${sync.dataScadenzaAnnoStr} (1 Anno)
+              </div>
+
+              <!-- CONTATORE SCATOLE SCALARI SPETTANTI NELL'ANNO -->
+              <div style="background:#ffffff; border:1.5px solid #38bdf8; border-radius:12px; padding:12px 14px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-size:12px; font-weight:800; color:#0369a1;">📦 Scatole Annuali Spettanti: <b>${pt.scatoleSpettantiAnno} Confezioni</b></span>
+                  <span style="font-size:12px; font-weight:900; color:#0284c7;">${pt.scatoleRitirateTotali} / ${pt.scatoleSpettantiAnno} Ritirate</span>
+                </div>
+                <div style="width:100%; height:8px; background:#e2e8f0; border-radius:999px; overflow:hidden; margin-bottom:8px;">
+                  <div style="width:${percPianoConsumato}%; height:100%; background:linear-gradient(90deg, #38bdf8 0%, #0284c7 100%); border-radius:999px;"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#475569;">
+                  <span>🏠 A casa: <b style="color:#15803d;">${sync.scortaCasa} cpr</b> (~${sync.giorniCasa} gg)</span>
+                  <span>⏳ Rimaste da ritirare: <b style="color:#b45309;">${sync.scatoleResidue} scatole</b></span>
+                </div>
+              </div>
+
+              <!-- PULSANTE REGISTRA RITIRO DALLA FARMACIA TERRITORIALE -->
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="btn" onclick="registraRitiroScatoleTerritoriale()" style="flex:1; background:#10b981; color:white; border:none; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+                  <span>📥</span> Registra Ritiro Farmacia
+                </button>
+                <button type="button" class="btn btn-outline" onclick="apriDocumentiPianoVisitaOriginali('piano')" style="padding:8px 10px; font-size:11.5px; font-weight:700; border-color:#0284c7; color:#0369a1; background:#ffffff; border-radius:8px;" title="Vedi scansione documento originale">
+                  📄 Scheda
+                </button>
+              </div>
+            </div>
+
+            <!-- CARD 2: COINCIDENZA VISITA SPECIALISTICA & RINNOVO PIANO TERAPEUTICO -->
+            <div class="card" style="border:1.5px solid ${sync.avvisoRinnovo ? '#ea580c' : '#10b981'}; background:${sync.avvisoRinnovo ? '#fff7ed' : '#f0fdf4'}; border-radius:16px; padding:18px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <span style="font-size:22px;">${sync.avvisoRinnovo ? '⚠️' : '🎯'}</span>
+                <div>
+                  <div style="font-size:11px; font-weight:900; color:${sync.avvisoRinnovo ? '#c2410c' : '#15803d'}; text-transform:uppercase; letter-spacing:0.4px;">
+                    ALLINEAMENTO VISITA & RINNOVO PIANO
+                  </div>
+                  <div style="font-size:15px; font-weight:900; color:#0f172a;">
+                    Controllo Policlinico: ${sync.dataVisitaStr}
+                  </div>
+                </div>
+              </div>
+
+              <div style="font-size:12px; color:#334155; line-height:1.45; margin-bottom:10px;">
+                Mancano <b>${sync.giorniAllaVisita} giorni</b> alla visita con l'infettivologo.<br>
+                💡 <b>Obiettivo Clinico:</b> Le scatole rimanenti (${sync.scatoleResidue} scatole + scorta casa) coprono esattamente il fabbisogno fino alla visita, consentendo di <b>richiedere il rinnovo del Piano Terapeutico contestualmente alla visita specialistica</b>!
+              </div>
+
+              <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.1); border-radius:8px; padding:8px 10px; font-size:11.5px; color:#1e293b; display:flex; justify-content:space-between; align-items:center;">
+                <span>Documento Prossimo Controllo:</span>
+                <button type="button" class="btn btn-sm btn-outline" onclick="apriDocumentiPianoVisitaOriginali('visita')" style="padding:3px 8px; font-size:11px; font-weight:700;">
+                  📄 Vedi Foglio 2026
+                </button>
+              </div>
+            </div>
+
+            <!-- CARD 3: CENTRO DI CURA POLICLINICO DI BARI -->
+            <div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:16px; background:#ffffff;">
+              <div style="font-size:13px; font-weight:800; color:#0f172a; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+                <span>🏥</span> Policlinico di Bari - Malattie Infettive
+              </div>
+              <div style="font-size:11.5px; color:#475569; line-height:1.45;">
+                📍 <b>Sede:</b> Piazza Giulio Cesare, 11 (Bari)<br>
+                📞 <b>Segreteria:</b> 080 559 3222 &bull; 080 559 2473<br>
+                ✉️ <b>Email:</b> <a href="mailto:epatologia.malinf@policlinico.ba.it" style="color:#0284c7; font-weight:700; text-decoration:none;">epatologia.malinf@policlinico.ba.it</a>
+              </div>
+            </div>
+          `;
+        })()}
       </div>
     </div>
   `;
@@ -14605,3 +14681,132 @@ function aggiornaVisibilitaTabEpatologia() {
     if (dashBtn) dashBtn.click();
   }
 }
+
+
+// ==============================================================================
+// GESTIONE CLINICA PIANO TERAPEUTICO ANNUALE OSPEDALIERO (EX-OSP2-H) & SCORTE SCALARI
+// Connessione Automatica tra Scatole Spettanti, Scarico Farmacia Territoriale e Visita Specialistica
+// ==============================================================================
+
+function getPianoTerapeuticoAttivo(paziente) {
+  var p = paziente || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
+  if (!p) return null;
+
+  if (!p.pianoTerapeuticoDpc) {
+    p.pianoTerapeuticoDpc = {
+      idPrescrizione: "011BQ1X145RHL",
+      nRegistrazioneRicetta: "630889604",
+      strutturaPrescrittrice: "AO CONS. POLICLINICO - BARI - MALATTIE INFETTIVE UNIVERSITARIA",
+      medicoPrescrittore: "Dr. Michele MILELLA (Cod. 640631)",
+      direttoreUO: "Prof.ssa Annalisa SARACINO",
+      diagnosiAifa: "07032 EPATITE VIRALE B CRONICA SENZA MENZIONE DI COMA EPATICO, SENZA MENZIONE DI EPATITE DELTA",
+      codiceEsenzione: "TOT04",
+      farmacoNome: "ENTACAVIR SUN 0,5 MG (30 CPR)",
+      formaFarmaceutica: "Compresse rivestite",
+      posologia: "1 cpr / die (a digiuno)",
+      cprPerConfezione: 30,
+      scatoleSpettantiAnno: 12,
+      dataPrescrizioneInizio: "2026-02-23",
+      dataScadenzaAnno: "2027-02-22",
+      prossimaVisitaAmbulatoriale: "2026-09-21",
+      scatoleRitirateTotali: 3,
+      scatoleResidueDaRitirare: 9,
+      storicoRitiri: [
+        { data: "2026-02-23", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", operatore: "Ciro Milella" }
+      ]
+    };
+    saveDb();
+  }
+  return p.pianoTerapeuticoDpc;
+}
+window.getPianoTerapeuticoAttivo = getPianoTerapeuticoAttivo;
+
+function calcolaSincronizzazionePianoVisita() {
+  var p = getActivePaziente();
+  var pt = getPianoTerapeuticoAttivo(p);
+  if (!pt) return null;
+
+  // Calcola compresse e autonomia
+  var terapieCiro = (p.terapie || []).find(function(t) { return (t.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
+  var scortaCompresseCasa = terapieCiro ? (terapieCiro.scorta || 41) : 41;
+  var giorniCasa = scortaCompresseCasa; // 1 cpr al giorno
+
+  // Calcola data esaurimento scorte casa
+  var dOggi = new Date();
+  var dFineScortaCasa = new Date();
+  dFineScortaCasa.setDate(dOggi.getDate() + giorniCasa);
+
+  // Calcola data esaurimento totale delle 12 scatole dell'anno
+  var scatoleTotaliSpettanti = pt.scatoleSpettantiAnno || 12;
+  var scatoleRimanentiTerritoriale = Math.max(0, scatoleTotaliSpettanti - pt.scatoleRitirateTotali);
+  var giorniTotaliRimanenti = (scatoleRimanentiTerritoriale * 30) + scortaCompresseCasa;
+  
+  var dFineTotaleAnno = new Date();
+  dFineTotaleAnno.setDate(dOggi.getDate() + giorniTotaliRimanenti);
+
+  // Prossima visita ambulatoriale
+  var dVisita = new Date(pt.prossimaVisitaAmbulatoriale || '2026-09-21');
+  var giorniAllaVisita = Math.ceil((dVisita - dOggi) / (1000 * 60 * 60 * 24));
+
+  // Verifica coincidenza: il nuovo piano terapeutico va richiesto durante la visita del 21/09/2026!
+  var coincidenzaPerfetta = Math.abs(giorniAllaVisita - giorniTotaliRimanenti) <= 45;
+
+  return {
+    scortaCasa: scortaCompresseCasa,
+    giorniCasa: giorniCasa,
+    dataFineCasa: dFineScortaCasa.toLocaleDateString('it-IT'),
+    scatoleRitirate: pt.scatoleRitirateTotali,
+    scatoleResidue: scatoleRimanentiTerritoriale,
+    scatoleTotali: scatoleTotaliSpettanti,
+    giorniAllaVisita: giorniAllaVisita,
+    dataVisitaStr: dVisita.toLocaleDateString('it-IT'),
+    dataScadenzaAnnoStr: new Date(pt.dataScadenzaAnno).toLocaleDateString('it-IT'),
+    coincidenzaPerfetta: coincidenzaPerfetta,
+    avvisoRinnovo: (giorniAllaVisita <= 30 || scatoleRimanentiTerritoriale <= 2)
+  };
+}
+window.calcolaSincronizzazionePianoVisita = calcolaSincronizzazionePianoVisita;
+
+function registraRitiroScatoleTerritoriale() {
+  var p = getActivePaziente();
+  var pt = getPianoTerapeuticoAttivo(p);
+  if (!pt) return;
+
+  var scatoleInput = prompt('Quante scatole di Entecavir hai ritirato presso la Farmacia Territoriale Ex CTO?', '3');
+  if (scatoleInput !== null) {
+    var qta = parseInt(scatoleInput) || 0;
+    if (qta > 0) {
+      pt.scatoleRitirateTotali = (pt.scatoleRitirateTotali || 0) + qta;
+      pt.scatoleResidueDaRitirare = Math.max(0, (pt.scatoleSpettantiAnno || 12) - pt.scatoleRitirateTotali);
+
+      if (!pt.storicoRitiri) pt.storicoRitiri = [];
+      pt.storicoRitiri.unshift({
+        data: new Date().toISOString().slice(0, 10),
+        scatole: qta,
+        puntoRitiro: 'Farmacia Territoriale ASL Bari Ex CTO',
+        operatore: p.nome || 'Assistito'
+      });
+
+      // Aggiungi anche le compresse alle scorte di casa
+      var t = (p.terapie || []).find(function(item) { return (item.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
+      if (t) {
+        t.scorta = (t.scorta || 0) + (qta * 30);
+        t.ultimoRitiro = new Date().toISOString().slice(0, 10);
+      }
+
+      saveDb();
+      renderAll();
+      showToast('📦 Registrato ritiro di ' + qta + ' scatole (' + (qta * 30) + ' compresse)! Piano aggiornato.');
+    }
+  }
+}
+window.registraRitiroScatoleTerritoriale = registraRitiroScatoleTerritoriale;
+
+function apriDocumentiPianoVisitaOriginali(tipo) {
+  if (tipo === 'piano') {
+    window.open('/careassist/assets/img/piano_terapeutico_entecavir.jpg', '_blank');
+  } else {
+    window.open('/careassist/assets/img/visita_controllo_2026.jpg', '_blank');
+  }
+}
+window.apriDocumentiPianoVisitaOriginali = apriDocumentiPianoVisitaOriginali;
