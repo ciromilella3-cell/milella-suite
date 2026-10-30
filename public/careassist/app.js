@@ -1678,11 +1678,11 @@ function renderPazientiSelector() {
     const mapsLink = (addr) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const mapsDirLink = (addr) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`;
 
-    // 1. INDIRIZZO RESIDENZA CON GOOGLE MAPS E NAVIGATORE GPS (STILE GROUPED CONTACT ROW)
+    // 1. INDIRIZZO RESIDENZA CON GOOGLE MAPS E NAVIGATORE GPS (CARD ELEGANTE EXECUTIVE)
     const ind = activeP.indirizzo ? `
       <div class="patient-contact-row" onmouseenter="mostraLenteClinica('Residenza & Domicilio Assistito', '${activeP.indirizzo.replace(/'/g, "\\'")}', '📍')" onmouseleave="nascondiLenteClinica()">
         <div class="patient-contact-info">
-          <span class="contact-icon">📍</span>
+          <span class="contact-icon" style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); color:#0369a1; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; border:1px solid #7dd3fc; box-shadow:0 2px 6px rgba(2,132,199,0.15);">📍</span>
           <div class="contact-text-group">
             <span class="contact-label">Residenza & Domicilio</span>
             <a href="${mapsLink(activeP.indirizzo)}" target="_blank" class="contact-value-link" title="Apri su Google Maps">
@@ -1695,98 +1695,69 @@ function renderPazientiSelector() {
         </a>
       </div>` : '';
 
-    // 2. TELEFONO FISSO CASA (CHIAMATA & WHATSAPP)
+    // 2. TELEFONO FISSO CASA (CARD ELEGANTE CON CHIAMATA & WHATSAPP)
     const tel = activeP.telefonoFisso ? `
       <div class="patient-contact-row" onmouseenter="mostraLenteClinica('Telefono Abitazione / Fisso', '${activeP.telefonoFisso}', '☎️')" onmouseleave="nascondiLenteClinica()">
         <div class="patient-contact-info">
-          <span class="contact-icon">☎️</span>
+          <span class="contact-icon" style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color:#15803d; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; border:1px solid #86efac; box-shadow:0 2px 6px rgba(22,101,52,0.15);">☎️</span>
           <div class="contact-text-group">
             <span class="contact-label">Abitazione / Fisso</span>
             <span class="contact-value nowrap-num">${activeP.telefonoFisso}</span>
           </div>
         </div>
-        <div class="contact-actions-cluster">
-          <a href="tel:${cleanNum(activeP.telefonoFisso)}" class="action-icon-btn call" title="Chiama Casa">📞</a>
-          <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.telefonoFisso)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con Telefono Casa">💬</a>
+        <div class="contact-actions-cluster" style="display:flex; align-items:center; gap:6px;">
+          <a href="tel:${cleanNum(activeP.telefonoFisso)}" class="action-icon-btn call" title="Chiama Telefono Casa" style="width:36px; height:36px; border-radius:10px; background:#10b981; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:16px; box-shadow:0 2px 6px rgba(16,185,129,0.3);">📞</a>
+          <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.telefonoFisso)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp col Telefono Casa" style="width:36px; height:36px; border-radius:10px; background:#25d366; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:16px; box-shadow:0 2px 6px rgba(37,211,102,0.3);">💬</a>
         </div>
       </div>` : '';
 
-    // 3. CELLULARE ASSISTITO (CHIAMATA, SMS, WHATSAPP)
+    // 3. CELLULARE ASSISTITO (CARD ELEGANTE CON CHIAMATA, SMS, WHATSAPP)
     const cell = activeP.cellulare ? `
-      <div class="patient-contact-row" onmouseenter="mostraLenteClinica('Cellulare Assistito (${activeP.nome})', '${activeP.cellulare}', '📱')" onmouseleave="nascondiLenteClinica()">
+      <div class="patient-contact-row" onmouseenter="mostraLenteClinica('Cellulare Personale Assistito', '${activeP.cellulare}', '📱')" onmouseleave="nascondiLenteClinica()">
         <div class="patient-contact-info">
-          <span class="contact-icon">📱</span>
+          <span class="contact-icon" style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); color:#4338ca; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; border:1px solid #a5b4fc; box-shadow:0 2px 6px rgba(67,56,202,0.15);">📱</span>
           <div class="contact-text-group">
-            <span class="contact-label">Cellulare Assistito</span>
+            <span class="contact-label">Cellulare Personale</span>
             <span class="contact-value nowrap-num">${activeP.cellulare}</span>
           </div>
         </div>
-        <div class="contact-actions-cluster">
-          <a href="tel:${cleanNum(activeP.cellulare)}" class="action-icon-btn call" title="Chiama ${activeP.nome}">📞</a>
-          <a href="sms:${cleanNum(activeP.cellulare)}" class="action-icon-btn sms" title="Invia SMS a ${activeP.nome}">✉️</a>
-          <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.cellulare)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con ${activeP.nome}">💬</a>
+        <div class="contact-actions-cluster" style="display:flex; align-items:center; gap:6px;">
+          <a href="tel:${cleanNum(activeP.cellulare)}" class="action-icon-btn call" title="Chiama Cellulare Assistito" style="width:36px; height:36px; border-radius:10px; background:#10b981; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:16px; box-shadow:0 2px 6px rgba(16,185,129,0.3);">📞</a>
+          <a href="sms:${cleanNum(activeP.cellulare)}" class="action-icon-btn sms" title="Invia SMS" style="width:36px; height:36px; border-radius:10px; background:#0284c7; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:16px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">✉️</a>
+          <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.cellulare)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp col Cellulare Assistito" style="width:36px; height:36px; border-radius:10px; background:#25d366; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:16px; box-shadow:0 2px 6px rgba(37,211,102,0.3);">💬</a>
         </div>
       </div>` : '';
 
-    // 4. CONTATTO DI RIFERIMENTO / CAREGIVER / FAMIGLIA (LAYOUT DEDICATO ANTI-SQUASH CON CHIP E PULSANTI TOUCH)
-    const parenteCell = activeP.moglieCellulare || '';
-    const parenteNome = activeP.moglieNome || '';
-    const parenteEmail = activeP.caregiverEmail || activeP.moglieEmail || '';
-    const parentePec = activeP.caregiverPec || activeP.mogliePec || '';
-
-    const moglie = parenteNome ? `
-      <div class="caregiver-card clinica-zoom-item" style="cursor:pointer;" onmouseenter="mostraLenteClinica('Contatto di Riferimento / Caregiver', '${parenteNome.replace(/'/g, "\\'")} - Tel: ${parenteCell}${parenteEmail ? ' - Email: ' + parenteEmail : ''}', '👥')" onmouseleave="nascondiLenteClinica()">
-        <div class="caregiver-header">
-          <div class="cg-title-box">
-            <span class="cg-icon">👥</span>
-            <span class="cg-badge">Caregiver & Famiglia</span>
-            <b class="cg-name">${parenteNome}</b>
+    // 4. CAREGIVER & FAMIGLIA (CARD DEDICATA MODERNA ED ELEGANTE)
+    const moglie = activeP.moglieNome ? `
+      <div class="caregiver-card-modern">
+        <div class="caregiver-header-row">
+          <div class="caregiver-badge-title">
+            <span style="font-size:16px;">👥</span>
+            <span>Caregiver & Famiglia</span>
           </div>
+          <span class="caregiver-name-val">${activeP.moglieNome}</span>
         </div>
-        <div class="cg-details">
-          ${parenteCell ? `
-            <div class="cg-pill cg-phone-pill">
-              <div class="cg-pill-left">
-                <span>📱</span>
-                <span class="cg-pill-label">Cell:</span>
-                <b class="nowrap-num cg-pill-val">${parenteCell}</b>
-              </div>
-              <div class="cg-actions">
-                <a href="tel:${cleanNum(parenteCell)}" class="action-icon-btn call" title="Chiama Caregiver / Familiare">📞</a>
-                <a href="sms:${cleanNum(parenteCell)}" class="action-icon-btn sms" title="Invia SMS al Caregiver">✉️</a>
-                <a href="https://api.whatsapp.com/send?phone=${waNum(parenteCell)}" target="_blank" class="action-icon-btn wa" title="Chat WhatsApp con Caregiver">💬</a>
+        <div class="caregiver-body-row">
+          ${activeP.moglieTel ? `
+            <div class="caregiver-phone-chip">
+              <span class="caregiver-phone-icon">📱</span>
+              <span class="caregiver-phone-label">Cell:</span>
+              <span class="caregiver-phone-num nowrap-num">${activeP.moglieTel}</span>
+              <div class="caregiver-btn-group">
+                <a href="tel:${cleanNum(activeP.moglieTel)}" class="caregiver-quick-btn call" title="Chiama Caregiver">📞</a>
+                <a href="sms:${cleanNum(activeP.moglieTel)}" class="caregiver-quick-btn sms" title="Invia SMS a Caregiver">✉️</a>
+                <a href="https://api.whatsapp.com/send?phone=${waNum(activeP.moglieTel)}" target="_blank" class="caregiver-quick-btn wa" title="Chat WhatsApp con Caregiver">💬</a>
               </div>
             </div>
           ` : ''}
-          ${parenteEmail ? `
-            <div class="cg-pill cg-email-pill">
-              <div class="cg-pill-left">
-                <span class="cg-tag-badge email">EMAIL</span>
-                <a href="mailto:${parenteEmail}?subject=Comunicazione%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="smart-link cg-email-link" title="Invia Email al Caregiver">
-                  <b>${parenteEmail}</b>
-                </a>
-              </div>
-              <div class="cg-actions">
-                <a href="mailto:${parenteEmail}?subject=Comunicazione%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="action-icon-btn mail" title="Invia Email al Caregiver">✉️</a>
-              </div>
-            </div>
-          ` : ''}
-          ${parentePec ? `
-            <div class="cg-pill cg-pec-pill">
-              <div class="cg-pill-left">
-                <span class="cg-tag-badge pec">PEC</span>
-                <a href="mailto:${parentePec}?subject=Comunicazione%20Ufficiale%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="smart-link cg-pec-link" title="Invia PEC al Caregiver">
-                  <b>${parentePec}</b>
-                </a>
-              </div>
-              <div class="cg-actions">
-                <a href="mailto:${parentePec}?subject=Comunicazione%20Ufficiale%20CareAssist%20Pro%20per%20${encodeURIComponent(activeP.nome || 'Assistito')}" class="action-icon-btn pec" title="Invia PEC al Caregiver">🔒</a>
-              </div>
+          ${activeP.caregiverNote ? `
+            <div class="caregiver-note-chip">
+              <span>ℹ️</span> <span>${activeP.caregiverNote}</span>
             </div>
           ` : ''}
         </div>
       </div>` : '';
-    
     // 5. BADGE MEDICO CURANTE (LAYOUT CLINICO ELEGANTE & OTTIMIZZATO PER MOBILE)
     const medicoNome = activeP.medicoNome || activeP.medico || 'Dott. di Famiglia';
     const medCell = activeP.medicoTel || activeP.telMedico || '';
@@ -2129,22 +2100,22 @@ function renderPazientiSelector() {
     const avatarInfo = getDettagliAvatarPaziente(activeP);
 
     badgeInfo.innerHTML = `
-      <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
-        <!-- RIGA 1: TESTATA PROFILO CLINICO CON IDENTITÀ, BADGE CHIAVE E AZIONI RAPIDE SALVAVITA -->
-        <div class="patient-hero-top-wrapper" style="display:flex; flex-direction:column; gap:12px; border-bottom:1.5px solid #e2e8f0; padding-bottom:12px; width:100%;">
+      <div style="display:flex; flex-direction:column; gap:14px; width:100%;">
+        
+        <!-- RIGA 1: TESTATA IDENTITÀ ASSISTITO & CHIPS DI STATO -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; border-bottom:1.5px solid #e2e8f0; padding-bottom:14px;">
           
-          <!-- BLOCCO A: IDENTITÀ (AVATAR GENERE UOMO/DONNA + NOME ORIZZONTALE + BADGE) -->
-          <div class="patient-hero-identity" style="display:flex; align-items:center; gap:14px; width:100%;">
-            <span class="patient-avatar-badge-modern ${avatarInfo.isFemmina ? 'avatar-femmina' : 'avatar-maschio'}" style="position:relative; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="apriModificaAnagrafica()" title="Cartella Assistito • ${avatarInfo.labelGenere}">
-              <span style="font-size:28px; line-height:1; display:inline-block; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.25));">${avatarInfo.emoji}</span>
-              <span style="position:absolute; bottom:-4px; right:-4px; width:20px; height:20px; border-radius:50%; background:#ffffff; border:1.5px solid ${avatarInfo.isFemmina ? '#ec4899' : '#0284c7'}; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; box-shadow:0 2px 5px rgba(0,0,0,0.25);" title="${avatarInfo.labelGenere}">
+          <!-- BLOCCO A: IDENTITÀ (AVATAR ELEGANTE + NOME + BADGE CHIAVE) -->
+          <div class="patient-hero-identity" style="display:flex; align-items:center; gap:16px;">
+            <span class="patient-avatar-badge-modern ${avatarInfo.isFemmina ? 'avatar-femmina' : 'avatar-maschio'}" style="position:relative; width:56px; height:56px; border-radius:16px; background:${avatarInfo.isFemmina ? 'linear-gradient(135deg, #f472b6 0%, #db2777 100%)' : 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)'}; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 6px 16px ${avatarInfo.isFemmina ? 'rgba(219,39,119,0.3)' : 'rgba(2,132,199,0.3)'}; border:2px solid #ffffff;" onclick="apriModificaAnagrafica()" title="Cartella Assistito • ${avatarInfo.labelGenere}">
+              <span style="font-size:32px; line-height:1; display:inline-block; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.25));">${avatarInfo.emoji}</span>
+              <span style="position:absolute; bottom:-3px; right:-3px; width:22px; height:22px; border-radius:50%; background:#ffffff; border:2px solid ${avatarInfo.isFemmina ? '#ec4899' : '#0284c7'}; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; box-shadow:0 2px 5px rgba(0,0,0,0.25);" title="${avatarInfo.labelGenere}">
                 ${avatarInfo.simboloGenere}
               </span>
             </span>
-            <div class="patient-hero-text" style="flex:1; min-width:0;">
-              <div class="patient-hero-title-row" style="margin-bottom:4px;">
-                <h2 class="patient-hero-fullname" title="${activeP.nome}">${activeP.nome}</h2>
-              </div>
+
+            <div class="patient-hero-text" style="display:flex; flex-direction:column; gap:4px;">
+              <h2 class="patient-hero-fullname" title="${activeP.nome}">${activeP.nome}</h2>
               <div class="patient-hero-chips-row" style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                 <span class="badge clinica-zoom-item" style="${avatarInfo.badgeColore} font-size:11.5px; font-weight:800; padding:3px 9px; border-radius:8px; cursor:pointer;" title="Genere assistito: ${avatarInfo.labelGenere}">
                   ${avatarInfo.simboloGenere} ${avatarInfo.isFemmina ? 'Donna' : 'Uomo'}
@@ -2162,48 +2133,52 @@ function renderPazientiSelector() {
             </div>
           </div>
           
-          <!-- BLOCCO B: RECAPITI DOMICILIO ASSISTITO (INDIRIZZO, FISSO, CELLULARE) RAGGRUPPATI APPLE HEALTH -->
-          <div class="patient-contacts-card" style="width:100%;">
-            ${ind}
-            ${tel}
-            ${cell}
-          </div>
-
-          <!-- BLOCCO C: PULSANTIERA AZIONI RAPIDE SALVAVITA (118, SOS GUIDA, CONSEGNA VOCALE, REPORT WHATSAPP, MODIFICA) & STATO -->
-          <div class="patient-hero-actions-container" style="display:flex; flex-direction:column; gap:8px; width:100%; z-index:2;">
-            <div class="hero-quick-actions-bar" style="width:100%;">
-              <button id="btn-scheda-118" class="btn-hero-action btn-hero-118" onclick="apriModalScheda118()" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
-                <span>🚨</span> <span>Scheda 118</span>
-              </button>
-              <button class="btn-hero-action" onclick="apriModalSOSProntoSoccorso()" style="background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%) !important; color:#fff !important; border:1px solid #fca5a5 !important;" title="Pronto Soccorso Domiciliare & Emergenze con Voce Calma">
-                <span>🆘</span> <span>SOS Guida</span>
-              </button>
-              <button class="btn-hero-action" onclick="apriModalConsegnaVocale()" style="background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important; color:#fff !important; border:1px solid #c7d2fe !important;" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
-                <span>🎙️</span> <span>Consegna</span>
-              </button>
-              <button id="btn-report-whatsapp" class="btn-hero-action btn-hero-wa" onclick="apriModalReportWhatsApp()" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
-                <span>💬</span> <span>Report WA</span>
-              </button>
-              <button class="btn-hero-action btn-hero-edit" onclick="apriModificaAnagrafica()" title="Modifica dati anagrafici e clinici dell'assistito">
-                <span>✏️</span> <span>Modifica</span>
-              </button>
-            </div>
-            
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
-              <span class="hero-status-pill" style="background:#eff6ff; color:#1e40af; border-color:#bfdbfe;">
-                📅 <b>${dataOggiStr}</b>
-              </span>
-              <span class="hero-status-pill" style="background:#ecfdf5; color:#065f46; border-color:#a7f3d0;">
-                <span style="color:#10b981;">●</span> Monitoraggio Attivo
-              </span>
-            </div>
+          <!-- LIVE STATUS & DATA OGGI (INTEGRATO IN ALTO A DESTRA CON STILE DISCRETO) -->
+          <div class="hero-status-group">
+            <span class="hero-status-pill date-pill">
+              📅 <b>${dataOggiStr}</b>
+            </span>
+            <span class="hero-status-pill active-pill">
+              <span class="status-pulse-dot"></span> Monitoraggio Attivo
+            </span>
           </div>
         </div>
 
-        <!-- RIGA 2: CAREGIVER & FAMIGLIA DI RIFERIMENTO (LAYOUT DEDICATO ANTI-SQUASH) -->
+        <!-- RIGA 2: RECAPITI DOMICILIO & TELEFONI (GRIGLIA BILANCIATA A 2 CARD PIENE - NO LINEE VUOTE) -->
+        <div class="patient-contacts-card">
+          ${ind}
+          ${tel}
+          ${cell}
+        </div>
+
+        <!-- RIGA 3: PULSANTIERA COMANDI CLINICI SALVAVITA (UNIFICATA & ARMONIOSA) -->
+        <div class="hero-command-bar">
+          <div class="hero-quick-actions-bar">
+            <button id="btn-scheda-118" class="btn-hero-action btn-hero-118" onclick="apriModalScheda118()" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
+              <span>🚨</span> <span>Scheda 118</span>
+            </button>
+            <button class="btn-hero-action btn-hero-sos" onclick="apriModalSOSProntoSoccorso()" title="Pronto Soccorso Domiciliare & Emergenze con Voce Calma">
+              <span>🆘</span> <span>SOS Guida</span>
+            </button>
+            <button class="btn-hero-action btn-hero-consegna" onclick="apriModalConsegnaVocale()" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
+              <span>🎙️</span> <span>Consegna</span>
+            </button>
+            <button id="btn-report-whatsapp" class="btn-hero-action btn-hero-wa" onclick="apriModalReportWhatsApp()" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
+              <span>💬</span> <span>Report WA</span>
+            </button>
+            <button class="btn-hero-action btn-hero-edit" onclick="apriModificaAnagrafica()" title="Modifica dati anagrafici e clinici dell'assistito">
+              <span>✏️</span> <span>Modifica</span>
+            </button>
+          </div>
+          <div style="font-size:12px; color:#64748b; font-weight:600; display:flex; align-items:center; gap:6px;">
+            <span>🛡️</span> <span>Cartella Clinica &bull; CareAssist Pro</span>
+          </div>
+        </div>
+
+        <!-- RIGA 4: CAREGIVER & FAMIGLIA DI RIFERIMENTO -->
         ${moglie}
 
-        <!-- RIGA 3: DUE CARD CLINICHE PROFESSIONALI AFFIANCATE (MEDICO MMG & FARMACIA TERRITORIALE) -->
+        <!-- RIGA 5: DUE CARD CLINICHE PROFESSIONALI AFFIANCATE (MEDICO MMG & FARMACIA TERRITORIALE) -->
         <div class="hero-clinica-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap:12px; margin-top:2px;">
           <!-- CARD MEDICO CURANTE MMG -->
           ${medicoBadge}
