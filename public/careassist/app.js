@@ -14880,7 +14880,14 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
       // Link diretto Puglia Salute per esami strumentali e radiologici (Ecografia, TAC, RMN, ECG, Fibroscan)
       var pugliaSaluteBtn = '';
       var isStrumentaleORadiologico = es.categoria.includes('STRUMENTALI') || es.categoria.includes('RADIOLOGICI') || (es.nome && (es.nome.includes('Ecografia') || es.nome.includes('T.A.C.') || es.nome.includes('RMN') || es.nome.includes('ECG') || es.nome.includes('Fibroscan')));
-      if (isStrumentaleORadiologico && !es.rigaVuota) {
+      if (es.id === 'str_3' || (es.nome && es.nome.toLowerCase().includes('ecografia addome'))) {
+        pugliaSaluteBtn = '<span onclick="event.stopPropagation(); apriFoglioPrenotazioneEcografiaCiro()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-size:9px; font-weight:900; padding:1.5px 7px; border-radius:4px; margin-left:4px; cursor:pointer; flex-shrink:0; display:inline-flex; align-items:center; gap:3px; box-shadow:0 1px 4px rgba(2,132,199,0.3);" title="PRENOTAZIONE CONFERMATA CUP: 1588303 - Martedì 08/06/2027 ore 09:15 c/o Ospedale San Paolo (Gastroenterologia, Piano 5° Est) - Clicca per vedere il modulo originale">' +
+          '<span>🗓️ 08/06/2027 ore 09:15 (PO S. Paolo)</span>' +
+        '</span>' +
+        '<span onclick="event.stopPropagation(); apriFoglioPrenotazioneEcografiaCiro()" style="background:#059669; color:#ffffff; font-size:8.5px; font-weight:800; padding:1.5px 5px; border-radius:4px; margin-left:2px; cursor:pointer; flex-shrink:0;" title="Ricetta Elettronica NRE 160A24681691013 - Clicca per vedere">' +
+          '📜 NRE 160A24681691013' +
+        '</span>';
+      } else if (isStrumentaleORadiologico && !es.rigaVuota) {
         pugliaSaluteBtn = '<span onclick="event.stopPropagation(); apriPrenotazionePugliaSalute(\'' + encodeURIComponent(es.nome) + '\')" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-size:9px; font-weight:800; padding:1px 6px; border-radius:4px; margin-left:4px; cursor:pointer; flex-shrink:0; display:inline-flex; align-items:center; gap:2px;" title="Prenota ' + es.nome + ' su Puglia Salute (CUP Online)">🌐 Puglia Salute</span>';
       }
 
@@ -15241,23 +15248,37 @@ function sincronizzaTuttoCalendarioEpatologia() {
     'END:VALARM',
     'END:VEVENT',
 
-    // EVENTO 3: ECOGRAFIA ADDOME SUPERIORE
+    // EVENTO 3: ECOGRAFIA ADDOME SUPERIORE (PRENOTAZIONE CUP 1588303)
     'BEGIN:VEVENT',
-    'UID:eco-addome-20270120@careassist.pro',
+    'UID:eco-addome-20270608-1588303@careassist.pro',
     'DTSTAMP:' + nowStr,
-    'DTSTART:20270120T093000',
-    'DTEND:20270120T103000',
-    'SUMMARY:📸 ECOGRAFIA ADDOME SUPERIORE - Ciro Milella',
-    'DESCRIPTION:Sorveglianza semestrale parenchima epatico. Digiuno da almeno 6 ore. Portare il referto alla visita del 23/02/2027.',
-    'LOCATION:Policlinico di Bari / Diagnostica Territoriale',
+    'DTSTART:20270608T091500',
+    'DTEND:20270608T103000',
+    'SUMMARY:📸 ECOGRAFIA ADDOME SUPERIORE - Ospedale San Paolo Bari (Ciro Milella)',
+    'DESCRIPTION:Prenotazione CUP N. 1588303. Ricetta NRE: 160A24681691013 (Esenzione 016). Sede: Ospedale San Paolo Bari - Via Caposcardicchio, Gastroenterologia Piano 5° Lato Est. Presentarsi a digiuno da almeno 8 ore. Portare ecografie precedenti. Disdetta eventuale entro le 9:15 del 04/06/2027.',
+    'LOCATION:Ospedale San Paolo Bari - Via Caposcardicchio (Piano 5° Lato Est)',
     'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-P7D',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Promemoria tra 7 giorni: Ecografia Addome Superiore all\'Ospedale San Paolo',
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-P4D',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Promemoria: termine ultimo per eventuale disdetta CUP San Paolo (entro le 9:15 del 04/06)',
+    'END:VALARM',
     'BEGIN:VALARM',
     'TRIGGER:-P1D',
     'ACTION:DISPLAY',
-    'DESCRIPTION:Domani Ecografia Addome Superiore: ricordare digiuno',
+    'DESCRIPTION:Domani ore 09:15 Ecografia Addome Superiore al San Paolo: digiuno 8 ore e portare ecografie precedenti',
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT2H',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Oggi ore 09:15 Ecografia PO San Paolo Bari',
     'END:VALARM',
     'END:VEVENT',
-
     'END:VCALENDAR'
   ].join('\r\n');
 
@@ -15996,6 +16017,36 @@ function renderEpatologiaInfettiviCiro(container, p) {
           </div>
         </div>
 
+      
+        <!-- FASE 3: ECOGRAFIA ADDOME CONFERMATA SAN PAOLO -->
+        <div style="background:rgba(15,23,42,0.55); border:1.5px solid #38bdf8; border-radius:12px; padding:16px; position:relative; backdrop-filter:blur(6px);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:20px;">📸</span>
+              <span style="font-size:12px; font-weight:900; color:#38bdf8; text-transform:uppercase;">ECOGRAFIA PRENOTATA (CUP 1588303)</span>
+            </div>
+            <span style="background:#0284c7; color:#ffffff; font-size:11px; font-weight:900; padding:2px 8px; border-radius:999px;">08/06/2027 ORE 09:15</span>
+          </div>
+
+          <div style="font-size:15px; font-weight:900; color:#ffffff; margin-bottom:4px;">
+            Ecografia dell'Addome Superiore - Controllo
+          </div>
+          <div style="font-size:12px; color:#cbd5e1; line-height:1.4; margin-bottom:10px;">
+            <b>Sede:</b> Ospedale "San Paolo" Bari &bull; Via Caposcardicchio.<br>
+            <b>Ubicazione:</b> Gastroenterologia - Piano 5° Lato Est (Agenda GAN474).<br>
+            <b>Ricetta Elettronica:</b> NRE <span style="font-family:monospace; color:#38bdf8; font-weight:800;">160A24681691013</span> (Esenzione 016).<br>
+            <b>Avvertenze:</b> Digiuno da almeno 8 ore &bull; Portare ecografie precedenti.
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px; flex-wrap:wrap; gap:8px;">
+            <div style="font-size:11px; color:#fde047;">
+              ⚠️ Eventuale disdetta entro le 9:15 del 04/06/2027
+            </div>
+            <button type="button" class="btn btn-sm" onclick="apriFoglioPrenotazioneEcografiaCiro()" style="background:#0284c7; color:#ffffff; font-weight:800; font-size:11.5px; padding:6px 12px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+              📄 Mostra Modulo CUP
+            </button>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -16563,6 +16614,8 @@ function apriDocumentiPianoVisitaOriginali(tipo) {
     window.open('/careassist/assets/img/ricetta_infettivologo_esami_2026.jpg', '_blank');
   } else if (tipo === 'ricetta_visita') {
     window.open('/careassist/assets/img/ricetta_infettivologo_visita_2026.jpg', '_blank');
+  } else if (tipo === 'prenotazione_ecografia' || tipo === 'eco') {
+    window.open('/careassist/assets/img/prenotazione_ecografia_san_paolo.jpg', '_blank');
   } else {
     window.open('/careassist/assets/img/visita_controllo_2026.jpg', '_blank');
   }
@@ -17793,7 +17846,7 @@ function calcolaRoadmapScadenzeTuttiPazienti() {
     } else if (pId === 'paz_1793216119572' || pNome.toLowerCase().includes('ciro')) {
       pColore = '#0284c7';
       pIcona = '🩺';
-      // 1. Ecografia Addome Superiore
+      // 1. Ecografia Addome Superiore (Prenotazione Ufficiale CUP 1588303)
       eventi.push({
         id: 'ev_ciro_1',
         pazId: pId,
@@ -17802,13 +17855,14 @@ function calcolaRoadmapScadenzeTuttiPazienti() {
         pazIcona: pIcona,
         categoria: 'Strumentali',
         categoriaLabel: 'Ecografia di Sorveglianza Epatica',
-        titolo: 'Ecografia Addome Superiore (Sorveglianza HBV)',
-        descrizione: 'Sorveglianza semestrale parenchima epatico, calibro vena porta e milza. Digiuno da 6 ore.',
-        data: '2027-01-20',
-        ora: '09:30',
-        luogo: 'Policlinico Universitario di Bari / Radiologia Territoriale',
-        medico: 'Prof.ssa Annalisa Saracino',
-        nre: '',
+        titolo: 'Ecografia Addome Superiore - Controllo (PO San Paolo)',
+        descrizione: 'Prenotazione CUP N. 1588303. Ricetta NRE: 160A24681691013 (Esenzione 016). Digiuno da 8 ore. Portare ecografie precedenti. Disdetta entro le ore 9:15 del 04/06/2027.',
+        data: '2027-06-08',
+        ora: '09:15',
+        luogo: 'Ospedale San Paolo Bari - Via Caposcardicchio (Gastroenterologia, Piano 5° Lato Est)',
+        medico: 'Equipe Gastroenterologia PO San Paolo',
+        nre: '160A24681691013',
+        numeroPrenotazione: '1588303',
         tipoAzione: 'strumentale'
       });
       // 2. Prelievo HBV DNA & Sierologia Reflex (Ricetta NRE)
@@ -18560,3 +18614,9 @@ function inviaPromemoriaWhatsAppPrelievoCiro() {
   window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(testo), '_blank');
 }
 window.inviaPromemoriaWhatsAppPrelievoCiro = inviaPromemoriaWhatsAppPrelievoCiro;
+
+
+function apriFoglioPrenotazioneEcografiaCiro() {
+  window.open('/careassist/assets/img/prenotazione_ecografia_san_paolo.jpg', '_blank');
+}
+window.apriFoglioPrenotazioneEcografiaCiro = apriFoglioPrenotazioneEcografiaCiro;
