@@ -6098,3 +6098,15 @@ textarea.form-control {
   transform: translateY(-1px) !important;
   box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25) !important;
 }
+
+.btn-notifiche {
+  background: rgba(245, 158, 11, 0.18) !important;
+  border-color: rgba(245, 158, 11, 0.45) !important;
+  color: #fef08a !important;
+}
+.btn-notifiche:hover {
+  background: rgba(245, 158, 11, 0.35) !important;
+  border-color: rgba(250, 204, 21, 0.7) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3) !important;
+}

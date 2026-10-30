@@ -12309,6 +12309,7 @@ function abilitaNotificheEAudioSmartphone() {
     showToast('Audio sbloccato con successo! 🔔', 'success');
   }
 }
+window.abilitaNotificheEAudioSmartphone = abilitaNotificheEAudioSmartphone;
 
 function sbloccaAudioSilenziosoAlPrimoGesto() {
   try {

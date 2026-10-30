@@ -243,6 +243,9 @@
         <button class="btn btn-header-utility btn-menu-home" onclick="window.location.href='/launcher.html'" title="Torna al Portale Aziendale">
           <span>🏠</span> <span>Torna al Menu</span>
         </button>
+        <button class="btn btn-header-utility btn-notifiche" id="header-btn-notifiche" onclick="abilitaNotificheEAudioSmartphone()" title="Attiva o testa notifiche push, allarmi sonori e vibrazione per farmaci e visite">
+          <span>🔔</span> <span>Notifiche</span>
+        </button>
 
         <!-- MENU A COMPARSA STRUMENTI / OPZIONI AVANZATE -->
         <div class="dropdown-tools-wrapper" id="dropdown-tools-container">
@@ -251,6 +254,9 @@
           </button>
           <div class="tools-dropdown-menu" id="tools-dropdown-panel">
             <div class="dropdown-section-title">Strumenti Assistenza</div>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); abilitaNotificheEAudioSmartphone()">
+              <span>🔔</span> Attiva Notifiche Push & Audio Allarmi
+            </button>
 
             <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalRoadmapScadenze()">
               <span>🗓️</span> Roadmap Scadenze Familiare (4 Pazienti)
