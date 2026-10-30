@@ -14848,7 +14848,8 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
       var badgeCod = '';
       if (isPennarello) {
         var cod = es.codicePrestazione || (es.id === 'feg_13' ? '88606' : (es.id === 'rad_4' ? '96101' : '88301'));
-        badgeCod = '<span style="background:#0284c7; color:#fff; font-size:9.5px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px;">' + cod + '</span>';
+        badgeCod = '<span style="background:#0284c7; color:#fff; font-size:9.5px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px;">' + cod + '</span>' +
+                   '<span onclick="event.stopPropagation(); apriDocumentiPianoVisitaOriginali(\'ricetta_esami\')" style="background:#059669; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px; cursor:pointer;" title="Ricetta Elettronica NRE 160A24681622426 emessa dal Dr. Michele Milella - Clicca per vedere">📜 NRE 160A24681622426</span>';
       }
 
       var puntiniHtml = es.haPuntini ? '<span style="letter-spacing:1px; font-family:monospace; font-size:9.5px; color:#cbd5e1; flex:1; margin-left:3px; overflow:hidden; white-space:nowrap;">..................</span>' : '';
@@ -15843,14 +15844,22 @@ function renderEpatologiaView() {
             <!-- LE 4 COLONNE ESATTE DEL PRESTAMPATO -->
             ${buildPrestampatoColonneHtml(esami, esamiSpuntati)}
 
-            <!-- PIEDE DELLA SCHEDA CARTACEA CON PRESCRIZIONE VISITA E RECAPITI -->
+            <!-- PIEDE DELLA SCHEDA CARTACEA CON PRESCRIZIONE VISITA, NRE E RECAPITI -->
             <div style="margin-top:14px; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-              <div style="font-size:12px; color:#1e293b; line-height:1.45;">
+              <div style="font-size:12px; color:#1e293b; line-height:1.5;">
                 📅 <b>Tornare a controllo il:</b> <span style="font-size:13.5px; font-weight:900; color:#0284c7; background:#e0f2fe; padding:2px 8px; border-radius:6px;">22-3-2027</span><br>
-                📋 Con l'esito degli esami contrassegnati, <b>visita infettivologica programmata di reparto</b> &bull; Tel: <b>080 559 3222</b>
+                📜 <b>Visita Infettivologica di Controllo:</b> Ricetta NRE <b style="color:#059669; font-family:monospace; background:#ecfdf5; padding:2px 6px; border-radius:4px; border:1px solid #a7f3d0; cursor:pointer;" onclick="apriDocumentiPianoVisitaOriginali('ricetta_visita')" title="Clicca per aprire la ricetta elettronica originale">160A24681622429</b> (Dr. Michele Milella - Esenzione 016)<br>
+                📞 Segreteria / Prenotazioni: <b>080 559 3222</b> &bull; Email: <b>epatologia.malinf@policlinico.ba.it</b>
               </div>
-              <div style="text-align:right;">
-                <span style="font-size:11.5px; color:#475569;">Email reparto: <b>epatologia.malinf@policlinico.ba.it</b></span><br>
+              <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+                <div style="display:flex; gap:6px;">
+                  <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_esami')" style="background:#059669; color:#fff; font-weight:800; font-size:11px; padding:4px 8px; border-radius:6px; border:none; cursor:pointer;">
+                    📜 NRE Esami (88301/85752)
+                  </button>
+                  <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_visita')" style="background:#059669; color:#fff; font-weight:800; font-size:11px; padding:4px 8px; border-radius:6px; border:none; cursor:pointer;">
+                    📜 NRE Visita (12197)
+                  </button>
+                </div>
                 <span style="font-size:10px; color:#94a3b8;">Mod. 1/Al/Cl-1 - Cod. 5009 (06/2013) Tip. Pubblidea Policoro MT</span>
               </div>
             </div>
@@ -15889,6 +15898,67 @@ function renderEpatologiaView() {
           var percPianoConsumato = Math.round((pt.scatoleRitirateTotali / pt.scatoleSpettantiAnno) * 100);
 
           return `
+            <!-- CARD SPECIALE: RICETTE ELETTRONICHE SSN (NRE) EMESSE DALL'INFETTIVOLOGO -->
+            <div class="card" style="border:2px solid #059669; background:linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border-radius:16px; padding:18px; box-shadow:0 4px 18px rgba(5,150,105,0.12);">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:24px;">📜</span>
+                  <div>
+                    <div style="font-size:11px; font-weight:900; color:#047857; text-transform:uppercase; letter-spacing:0.5px;">RICETTE SPECIALISTICHE SSN (NRE)</div>
+                    <div style="font-size:15px; font-weight:900; color:#0f172a;">Emesse dal Dr. Michele Milella</div>
+                  </div>
+                </div>
+                <span style="background:#059669; color:#fff; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Esenzione 016</span>
+              </div>
+
+              <div style="font-size:12px; color:#334155; line-height:1.45; margin-bottom:12px; background:rgba(255,255,255,0.85); padding:10px 12px; border-radius:10px; border:1px solid #a7f3d0;">
+                👨‍⚕️ <b>Medico:</b> Dr. Michele Milella (Malattie Infettive)<br>
+                📅 <b>Data Emissione:</b> 21/09/2026 &bull; Validità: 180 giorni<br>
+                📋 <b>Diagnosi:</b> 07032N Epatite virale B cronica
+              </div>
+
+              <!-- RICETTA 1: ESAMI VIROLOGICI ED EMATICI -->
+              <div style="background:#ffffff; border:1.5px solid #10b981; border-radius:12px; padding:12px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:11px; font-weight:900; color:#065f46; text-transform:uppercase;">1. Esami Virologici di Reparto</span>
+                  <span style="font-size:10.5px; font-weight:900; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-family:monospace;">NRE: 160A24681622426</span>
+                </div>
+                <div style="font-size:11.5px; color:#334155; line-height:1.4; margin-bottom:8px;">
+                  • <b>HBV-DNA Acidi Nucleici</b> (Cod. 88301 - 91.17.4)<br>
+                  • <b>HBsAg Reflex + Anticorpi</b> (Cod. 85752 - 91.18.6)<br>
+                  • <b>Prelievo Sangue Venoso</b> (Cod. 96101 - 91.49.2)
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_esami')" style="flex:1; background:#059669; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;">
+                    🔍 Vedi Promemoria
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline" onclick="apriPrenotazionePugliaSalute('Esami Virologici NRE 160A24681622426')" style="font-size:11px; font-weight:800; border-color:#0284c7; color:#0369a1; padding:6px 10px; border-radius:6px;">
+                    🌐 Puglia Salute
+                  </button>
+                </div>
+              </div>
+
+              <!-- RICETTA 2: VISITA INFETTIVOLOGICA DI CONTROLLO -->
+              <div style="background:#ffffff; border:1.5px solid #10b981; border-radius:12px; padding:12px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:11px; font-weight:900; color:#065f46; text-transform:uppercase;">2. Visita Infettivologica Reparto</span>
+                  <span style="font-size:10.5px; font-weight:900; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-family:monospace;">NRE: 160A24681622429</span>
+                </div>
+                <div style="font-size:11.5px; color:#334155; line-height:1.4; margin-bottom:8px;">
+                  • <b>Visita Infettivologica di Controllo</b> (Cod. 12197 - 89.01)<br>
+                  • Controllo fissato per il: <b>22/03/2027</b>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_visita')" style="flex:1; background:#059669; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;">
+                    🔍 Vedi Promemoria
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline" onclick="window.location.href='tel:0805593222'" style="font-size:11px; font-weight:800; border-color:#0284c7; color:#0369a1; padding:6px 10px; border-radius:6px;">
+                    📞 Reparto 080 559 3222
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- CARD 1: CONTROLLO ANNUALE PIANO TERAPEUTICO EX-OSP2-H -->
             <div class="card" style="border:2px solid #0284c7; background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius:16px; padding:18px; box-shadow:0 4px 18px rgba(2,132,199,0.12);">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
@@ -16276,6 +16346,10 @@ window.registraRitiroScatoleTerritoriale = registraRitiroScatoleTerritoriale;
 function apriDocumentiPianoVisitaOriginali(tipo) {
   if (tipo === 'piano') {
     window.open('/careassist/assets/img/piano_terapeutico_entecavir.jpg', '_blank');
+  } else if (tipo === 'ricetta_esami') {
+    window.open('/careassist/assets/img/ricetta_infettivologo_esami_2026.jpg', '_blank');
+  } else if (tipo === 'ricetta_visita') {
+    window.open('/careassist/assets/img/ricetta_infettivologo_visita_2026.jpg', '_blank');
   } else {
     window.open('/careassist/assets/img/visita_controllo_2026.jpg', '_blank');
   }
