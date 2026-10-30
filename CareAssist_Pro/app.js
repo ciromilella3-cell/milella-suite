@@ -1169,6 +1169,87 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       rosaFoto.patologie.push('Dislipidemia / Ipercolesterolemia (Sivastin)');
     }
   }
+  // SINCRONIZZAZIONE CLINICA AUTOMATICA: ROSA ANNUNZIATA - SCHEMA SINEMET MULTI-TEMPO & XULTOPHY (30/10/2026)
+  if (rosaFoto && (!AppData.rosaSinemetMultiTempo20261030_v2)) {
+    AppData.rosaSinemetMultiTempo20261030_v2 = true;
+    
+    // Aggiorna Sinemet a 2 tempi (ore 08:00 e 20:00 con 2 cpr ciascuno e scorta condivisa 82)
+    rosaFoto.terapie = (rosaFoto.terapie || []).filter(t => !(t.farmaco || '').toUpperCase().includes('SINEMET'));
+    
+    const grpSinemet = 'grp_sinemet_100_25_mg';
+    const scortaSinemet = 82;
+    const modoSinemet = '30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico';
+
+    rosaFoto.terapie.push({
+      id: 301,
+      gruppoFarmacoId: grpSinemet,
+      ora: '08:00',
+      fascia: 'Mattina (Colazione)',
+      farmaco: 'SINEMET 100+25 mg (1ª dose: 2 cpr - ore 08:00)',
+      principio: 'Levodopa + Carbidopa',
+      dosaggio: '100/25 mg (2 cpr)',
+      quantitaQuota: 2,
+      modo: modoSinemet,
+      cprPerScatola: 50,
+      scorta: scortaSinemet,
+      giorniAlert: 7,
+      farmacia: 'Farmacia Girasole Picconi',
+      fattoOggi: false,
+      ultimaDoseSomministrata: 2,
+      ultimaModificaClinica: {
+        data: '30/10/2026',
+        fonte: 'Visita Specialistica',
+        medico: 'Neurologo',
+        motivo: 'Schema 2 somministrazioni al die (ore 08:00 e 20:00 da 2 cpr - Scorta Condivisa 82 cpr)'
+      }
+    });
+
+    rosaFoto.terapie.push({
+      id: 311,
+      gruppoFarmacoId: grpSinemet,
+      ora: '20:00',
+      fascia: 'Sera (Cena)',
+      farmaco: 'SINEMET 100+25 mg (2ª dose: 2 cpr - ore 20:00)',
+      principio: 'Levodopa + Carbidopa',
+      dosaggio: '100/25 mg (2 cpr)',
+      quantitaQuota: 2,
+      modo: modoSinemet,
+      cprPerScatola: 50,
+      scorta: scortaSinemet,
+      giorniAlert: 7,
+      farmacia: 'Farmacia Girasole Picconi',
+      fattoOggi: false,
+      ultimaDoseSomministrata: 2,
+      ultimaModificaClinica: {
+        data: '30/10/2026',
+        fonte: 'Visita Specialistica',
+        medico: 'Neurologo',
+        motivo: 'Schema 2 somministrazioni al die (ore 08:00 e 20:00 da 2 cpr - Scorta Condivisa 82 cpr)'
+      }
+    });
+
+    // Assicura anche che Xultophy sia configurato correttamente come Penna
+    var xultoRosa = (rosaFoto.terapie || []).find(t => (t.farmaco || '').toUpperCase().includes('XULTO'));
+    if (xultoRosa) {
+      xultoRosa.tipoFormulazione = 'penna';
+      xultoRosa.dosaggio = '16 Unità (sottocute)';
+      xultoRosa.unitaDoseDie = 16;
+      xultoRosa.unitaPerPenna = 300;
+      xultoRosa.penneScorta = 2;
+      xultoRosa.pennePerScatola = 3;
+      xultoRosa.scorta = 2;
+      xultoRosa.giorniAlert = 15;
+    }
+
+    if (typeof comparaOrariTerapie === 'function') {
+      rosaFoto.terapie.sort(comparaOrariTerapie);
+    }
+    try {
+      localStorage.setItem(DB_KEY, JSON.stringify(AppData));
+    } catch(err) {}
+    console.log('Scheda di Rosa Annunziata Cavalcante aggiornata con successo su Sinemet e Xultophy!');
+  }
+
   // Sincronizzazione una-tantum Ausilio PANTS per Rosa (17/10/2026)
   if (rosaFoto && !AppData.rosaPants20261017) {
     AppData.rosaPants20261017 = true;
