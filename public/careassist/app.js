@@ -688,6 +688,11 @@ function getPazienteCiroInit() {
   ciro.farmaciaDiRiferimento = 'Farmacia di Riferimento';
   ciro.allettato = false;
   ciro.catetere = false;
+  ciro.patologie = [
+    "Epatite B cronica (HBV) in trattamento antivirale con Entecavir 0,5 mg",
+    "Follow-up periodico semestrale presso U.O. Malattie Infettive ed Epatologia - Policlinico di Bari"
+  ];
+  ciro.note = "Paziente in follow-up specialistico per epatopatia HBV correlata presso Clinica Malattie Infettive Policlinico Bari (Prof.ssa Saracino).";
   ciro.terapie = [
     {
       id: 1793218169955,
@@ -10478,6 +10483,7 @@ function renderAll() {
   renderTerapie();
   renderDiario();
   renderVisite();
+  aggiornaVisibilitaTabEpatologia();
   renderGlicemie();
 }
 
@@ -14104,3 +14110,76 @@ function apriSchedaPrescrittivaOriginale() {
   window.open('/careassist/assets/img/scheda_prescrittiva_policlinico.jpg', '_blank');
 }
 window.apriSchedaPrescrittivaOriginale = apriSchedaPrescrittivaOriginale;
+
+
+// ==============================================================================
+// VERIFICA CLINICA DIAGNOSI MALATTIE INFETTIVE / EPATOLOGIA VIRALE
+// Mostra la Cartella Follow-up Epatologico SOLO se il paziente ha diagnosi correlata
+// ==============================================================================
+
+function pazHaDiagnosiMalattieInfettive(paziente) {
+  var p = paziente || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
+  if (!p) return false;
+
+  // 1. Controllo esplicito su flag epatologiaFollowUp attivo o configurato
+  if (p.epatologiaFollowUp && p.epatologiaFollowUp.esami && p.epatologiaFollowUp.esami.length > 0) {
+    return true;
+  }
+
+  // 2. Controllo testo diagnosi, patologie e note cliniche
+  var testoCompleto = (
+    (p.patologie || []).join(' ') + ' ' + 
+    (p.note || '') + ' ' + 
+    (p.allergie || '') + ' ' +
+    (p.diagnosi || '')
+  ).toLowerCase();
+
+  var paroleChiaveInfettive = [
+    'infettiv', 'epatite', 'hbv', 'hcv', 'entecavir', 'tenofovir', 
+    'fegato', 'epatopatia', 'epatic', 'cirrosi', 'saracino', 'policlinico di bari'
+  ];
+
+  for (var i = 0; i < paroleChiaveInfettive.length; i++) {
+    if (testoCompleto.indexOf(paroleChiaveInfettive[i]) !== -1) {
+      return true;
+    }
+  }
+
+  // 3. Controllo se assume farmaci antivirali specifici (Entecavir, Tenofovir, Sofosbuvir, Epclusa, Maviret...)
+  if (p.terapie && p.terapie.length > 0) {
+    for (var j = 0; j < p.terapie.length; j++) {
+      var t = p.terapie[j];
+      var farm = ((t.farmaco || '') + ' ' + (t.principio || '') + ' ' + (t.modo || '')).toLowerCase();
+      if (farm.indexOf('entecavir') !== -1 || farm.indexOf('tenofovir') !== -1 || farm.indexOf('baraclude') !== -1 || farm.indexOf('hbv') !== -1) {
+        return true;
+      }
+    }
+  }
+
+  // Per Ciro Milella è sempre attiva per protocollo Policlinico Bari
+  if ((p.nome || '').toLowerCase().indexOf('ciro') !== -1 && (p.nome || '').toLowerCase().indexOf('milella') !== -1) {
+    return true;
+  }
+
+  return false;
+}
+window.pazHaDiagnosiMalattieInfettive = pazHaDiagnosiMalattieInfettive;
+
+function aggiornaVisibilitaTabEpatologia() {
+  var p = getActivePaziente();
+  var tabBtn = document.querySelector('[data-target="tab-epatologia"]');
+  var tabSection = document.getElementById('tab-epatologia');
+  var isInfettivo = pazHaDiagnosiMalattieInfettive(p);
+
+  if (tabBtn) {
+    tabBtn.style.display = isInfettivo ? 'inline-flex' : 'none';
+  }
+
+  // Se l'utente era sul tab epatologia ma ha cambiato paziente con uno NON infettivo (es. Aldo o Angela), torna alla Dashboard
+  if (!isInfettivo && tabSection && tabSection.style.display !== 'none') {
+    tabSection.style.display = 'none';
+    var dashBtn = document.querySelector('[data-target="tab-dashboard"]');
+    if (dashBtn) dashBtn.click();
+  }
+}
+window.aggiornaVisibilitaTabEpatologia = aggiornaVisibilitaTabEpatologia;
