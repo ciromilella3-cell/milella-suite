@@ -607,21 +607,6 @@
       "note": "Paziente di 88 anni. Cardiopatia ipertensiva in buon compenso, osteoartrosi diffusa e insufficienza venosa periferica.",
       "terapie": [
         {
-          "id": 301,
-          "ora": "07:30",
-          "fascia": "Mattina (Digiuno)",
-          "farmaco": "SINEMET 100+25 mg (1ª dose)",
-          "principio": "Levodopa + Carbidopa",
-          "dosaggio": "100/25 mg (1 cpr)",
-          "modo": "30 min prima di colazione (Parkinson) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 50,
-          "scorta": 89,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false,
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-10-29T05:20:23.702Z"
-        },
-        {
           "id": 305,
           "ora": "08:00",
           "fascia": "Mattina (Colazione)",
@@ -722,20 +707,6 @@
           "ultimaDoseSomministrata": 1
         },
         {
-          "id": 308,
-          "ora": "12:30",
-          "fascia": "Pranzo",
-          "farmaco": "SINEMET 100+25 mg (2ª dose)",
-          "principio": "Levodopa + Carbidopa",
-          "dosaggio": "100/25 mg (1 cpr)",
-          "modo": "30 min prima di pranzo (Parkinson) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 50,
-          "scorta": 40,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false,
-          "ultimaDoseSomministrata": 1
-        },
-        {
           "id": 314,
           "ora": "13:00",
           "fascia": "Pranzo",
@@ -780,20 +751,6 @@
           "ultimaDoseSomministrata": 1
         },
         {
-          "id": 311,
-          "ora": "19:30",
-          "fascia": "Sera (Cena)",
-          "farmaco": "SINEMET 100+25 mg (3ª dose)",
-          "principio": "Levodopa + Carbidopa",
-          "dosaggio": "100/25 mg (1 cpr)",
-          "modo": "30 min prima di cena (Parkinson) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 50,
-          "scorta": 42,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false,
-          "ultimaDoseSomministrata": 1
-        },
-        {
           "id": 313,
           "ora": "21:00",
           "fascia": "Notte (Prima di dormire)",
@@ -821,6 +778,40 @@
           "scorta": 10,
           "farmacia": "Farmacia Girasole Picconi",
           "fattoOggi": false
+        },
+        {
+          "id": 301,
+          "gruppoFarmacoId": "grp_sinemet_100_25_mg",
+          "ora": "08:00",
+          "fascia": "Mattina (Colazione)",
+          "farmaco": "SINEMET 100+25 mg (1ª dose: 2 cpr - ore 08:00)",
+          "principio": "Levodopa + Carbidopa",
+          "dosaggio": "100/25 mg (2 cpr)",
+          "quantitaQuota": 2,
+          "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson)",
+          "cprPerScatola": 50,
+          "scorta": 82,
+          "giorniAlert": 7,
+          "farmacia": "Farmacia Girasole Picconi",
+          "fattoOggi": false,
+          "ultimaDoseSomministrata": 2
+        },
+        {
+          "id": 311,
+          "gruppoFarmacoId": "grp_sinemet_100_25_mg",
+          "ora": "20:00",
+          "fascia": "Sera (Cena)",
+          "farmaco": "SINEMET 100+25 mg (2ª dose: 2 cpr - ore 20:00)",
+          "principio": "Levodopa + Carbidopa",
+          "dosaggio": "100/25 mg (2 cpr)",
+          "quantitaQuota": 2,
+          "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson)",
+          "cprPerScatola": 50,
+          "scorta": 82,
+          "giorniAlert": 7,
+          "farmacia": "Farmacia Girasole Picconi",
+          "fattoOggi": false,
+          "ultimaDoseSomministrata": 2
         }
       ],
       "registrazioni": [

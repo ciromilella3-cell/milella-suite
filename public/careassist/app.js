@@ -1,4 +1,75 @@
 
+// ==============================================================
+// MOTORE CLINICO AUTOMATICO FARMACO MULTI-TEMPO & SCORTA CONDIVISA
+// ==============================================================
+function getNomeBaseFarmaco(t) {
+  if (!t || !t.farmaco) return '';
+  return (t.farmaco || '')
+    .replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '')
+    .replace(/\s*\(tempo\s*\d+[^)]*\)/gi, '')
+    .trim().toLowerCase();
+}
+
+function getDatiFarmacoMultiTempo(t, tutteTerapie) {
+  if (!t) return null;
+  var terapie = tutteTerapie;
+  if (!terapie) {
+    var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+    terapie = p ? (p.terapie || []) : [];
+  }
+  
+  var cleanNome = getNomeBaseFarmaco(t);
+  if (!cleanNome || cleanNome.length < 2) return null;
+
+  var gemelle = terapie.filter(function(item) {
+    if (t.gruppoFarmacoId && item.gruppoFarmacoId) {
+      return item.gruppoFarmacoId === t.gruppoFarmacoId;
+    }
+    var itemClean = getNomeBaseFarmaco(item);
+    return itemClean === cleanNome || cleanNome.indexOf(itemClean) >= 0 || itemClean.indexOf(cleanNome) >= 0;
+  });
+
+  if (gemelle.length <= 1) return null;
+
+  // Ordina cronologicamente
+  if (typeof comparaOrariTerapie === 'function') {
+    gemelle.sort(comparaOrariTerapie);
+  }
+
+  var consumoTotaleDie = 0;
+  gemelle.forEach(function(item) {
+    var q = parseFloat(item.quantitaQuota);
+    if (isNaN(q) || q <= 0) {
+      var m = (item.dosaggio || item.farmaco || '').match(/(\d+(?:[.,]\d+)?)\s*(?:cpr|compresse)/i);
+      q = m ? parseFloat(m[1].replace(',', '.')) : 1.0;
+    }
+    consumoTotaleDie += q;
+  });
+
+  // La scorta reale a casa è condivisa (prendi il valore della terapia corrente)
+  var scorta = parseFloat(t.scorta) || 0;
+  var giorniAutonomia = (consumoTotaleDie > 0 && scorta > 0) ? Math.floor(scorta / consumoTotaleDie) : 0;
+
+  var dTermine = new Date();
+  dTermine.setDate(dTermine.getDate() + giorniAutonomia);
+  var dataTermineStr = (giorniAutonomia > 0) ? dTermine.toLocaleDateString('it-IT') : 'Esaurito';
+
+  var indiceTempo = gemelle.findIndex(function(item) { return item.id === t.id; }) + 1;
+  var orariStr = gemelle.map(function(item) { return item.ora; }).join(' e ');
+
+  return {
+    numTempi: gemelle.length,
+    indiceTempo: indiceTempo > 0 ? indiceTempo : 1,
+    consumoTotaleDie: consumoTotaleDie,
+    scortaCondivisa: scorta,
+    giorniAutonomia: giorniAutonomia,
+    dataTermineStr: dataTermineStr,
+    orariStr: orariStr,
+    gemelle: gemelle
+  };
+}
+
+
 // ==========================================
 // MOTORE CLINICO AUTOMATICO PENNE & INSULINA
 // ==========================================
@@ -4184,6 +4255,13 @@ function renderTerapie() {
           <div class="audit-pill-clickable" onclick="mostraAuditFarmaco(${t.id})" title="Clicca per aprire la tracciabilità e la cronologia">
             <b style="color:var(--primary); font-size:14.5px; text-decoration: underline; text-decoration-color: rgba(37,99,235,0.4);">${t.farmaco}</b>
             <span style="font-size:11px; margin-left:4px;" title="Storico">🔍</span>
+            ${(() => {
+              const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, terapieFiltrate) : null;
+              if (mt) {
+                return '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1px solid #7dd3fc; font-size:10px; padding:2px 7px; border-radius:6px; margin-left:4px; display:inline-block;" title="Terapia a ' + mt.numTempi + ' somministrazioni orarie al giorno (Scorta Condivisa)">⏱️ Tempo ' + mt.indiceTempo + ' di ' + mt.numTempi + ' (' + t.ora + ')</span>';
+              }
+              return '';
+            })()}
             ${t.ultimaModificaClinica ? `<span style="display:inline-block; font-size:10px; font-weight:800; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:1px 6px; border-radius:6px; margin-left:4px;" title="${t.ultimaModificaClinica.motivo || ''}">🩺 Agg. ${t.ultimaModificaClinica.fonte || 'Medico'} (${t.ultimaModificaClinica.data || ''})</span>` : ''}
             ${t.principio ? `<br><small style="color:#64748b;">Principio: ${t.principio}</small>` : ''}
           </div>
@@ -4248,6 +4326,34 @@ function renderTerapie() {
                 </div>
                 <div style="background:${dPen.richiediSubito ? '#fef2f2' : '#ecfdf5'}; border:1px solid ${dPen.richiediSubito ? '#ef4444' : '#a7f3d0'}; border-radius:6px; padding:3px 8px; margin-top:4px; display:inline-block;">
                   <span style="font-size:10px; color:${dPen.richiediSubito ? '#991b1b' : '#065f46'}; font-weight:800;">📅 Richiedi ricetta entro: <b>${dPen.dataRichiestaMMGStr}</b></span>
+                </div>
+                ${ritiroInfo}
+              `;
+            }
+            const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, terapieFiltrate) : null;
+            if (mt) {
+              const mtAutonomia = mt.giorniAutonomia;
+              const mtTermine = mt.dataTermineStr;
+              let mtBadge = '';
+              if (mt.scortaCondivisa <= 0) {
+                mtBadge = '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#b91c1c; color:#fff;">🔴 SCORTA ZERO</span>';
+              } else if (mtAutonomia <= sogliaAlert) {
+                mtBadge = '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#ea580c; color:#fff; border:1px solid #c2410c;">🚨 ALLERTA SCORTA (≤' + sogliaAlert + 'gg)</span>';
+              } else {
+                mtBadge = '<span class="badge badge-success" style="font-weight:800; font-size:11px; background:#16a34a; color:#fff;">🟢 SCORTA SUFFICIENTE</span>';
+              }
+              return `
+                ${mtBadge}
+                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:8px; padding:3px 7px; margin-top:4px; display:inline-block;">
+                  <span style="font-size:10px; font-weight:800; color:#1e3a8a;">🔗 SCORTA CONDIVISA (${mt.numTempi} TEMPI)</span>
+                  <div style="font-size:9.5px; color:#475569;">Consumo totale: <b>${mt.consumoTotaleDie} cpr/die</b> (ore ${mt.orariStr})</div>
+                </div>
+                <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin-top:2px;">
+                  📦 ${mt.scortaCondivisa} compresse a casa
+                </div>
+                <div style="font-size:10.5px; color:#1e40af; font-weight:700;">Autonomia Reale: <b>~${mtAutonomia} giorni</b></div>
+                <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:2px 6px; margin-top:4px; display:inline-block;">
+                  <span style="font-size:10px; color:#1e40af; font-weight:700;">⏳ Fine Scorta: <b>${mtTermine}</b></span>
                 </div>
                 ${ritiroInfo}
               `;
@@ -4918,8 +5024,16 @@ async function toggleFarmacoConScarico(id) {
         t.penneScorta = Math.max(0, Math.round((t.penneScorta - frazPenna) * 100) / 100);
         t.scorta = t.penneScorta;
       }
-    } else if (t.scorta > 0) {
-      t.scorta = Math.max(0, Math.round((t.scorta - quantitaDoseScarico) * 100) / 100);
+    } else {
+      var mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
+      var nuovaScorta = Math.max(0, Math.round((t.scorta - quantitaDoseScarico) * 100) / 100);
+      if (mt && mt.gemelle && mt.gemelle.length > 1) {
+        mt.gemelle.forEach(function(item) {
+          item.scorta = nuovaScorta;
+        });
+      } else if (t.scorta > 0) {
+        t.scorta = nuovaScorta;
+      }
     }
     t.ultimaDoseSomministrata = quantitaDoseScarico;
 
@@ -5370,9 +5484,17 @@ async function caricaScatolaRapida(farmacoId) {
   );
 
   if (ok) {
-    t.scorta += cprDaAggiungere;
     const now = new Date();
-    t.ultimoRitiro = now.toISOString();
+    const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
+    if (mt && mt.gemelle && mt.gemelle.length > 1) {
+      mt.gemelle.forEach(function(item) {
+        item.scorta = (parseFloat(item.scorta) || 0) + cprDaAggiungere;
+        item.ultimoRitiro = now.toISOString();
+      });
+    } else {
+      t.scorta += cprDaAggiungere;
+      t.ultimoRitiro = now.toISOString();
+    }
 
     p.registrazioni.push({
       id: 'log_' + Date.now(),
@@ -8949,11 +9071,15 @@ function calcolaConsumoGiornalieroFarmaco(t) {
   return 1;
 }
 
-function calcolaGiorniAutonomiaFarmaco(t) {
+function calcolaGiorniAutonomiaFarmaco(t, tutteTerapie) {
   if (!t || typeof t.scorta === 'undefined') return 0;
   if (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) {
     var dp = calcolaDatiPennaIniettabile(t);
     return dp.giorniAutonomia;
+  }
+  if (typeof getDatiFarmacoMultiTempo === 'function') {
+    var mt = getDatiFarmacoMultiTempo(t, tutteTerapie);
+    if (mt) return mt.giorniAutonomia;
   }
   var scorta = parseFloat(t.scorta) || 0;
   if (scorta <= 0) return 0;
@@ -12068,7 +12194,7 @@ function selezionaFrequenzaCapsula(freq) {
     ];
   } else if (freq === 2) {
     dosi = [
-      { ora: '08:00', fascia: 'Mattina (Colazione)', quota: 0.5 },
+      { ora: '08:00', fascia: 'Mattina (Colazione)', quota: 1.0 },
       { ora: '20:00', fascia: 'Sera (Cena)', quota: 1.0 }
     ];
   } else if (freq === 3) {
@@ -12129,7 +12255,7 @@ function renderDosiCards() {
     html += '<div class="dose-card-item" id="dose-card-' + idx + '">' +
       '<div class="dose-card-header">' +
         '<span class="dose-card-badge">' +
-          '<span>💊</span> <b>' + doseNum + 'ª Somministrazione</b>' +
+          '<span>⏰</span> <b>Tempo ' + doseNum + ' di ' + _capsulaCurrentDosi.length + ' (' + (d.ora || '08:00') + ')</b>' +
         '</span>' +
         (_capsulaCurrentDosi.length > 1 ? '<button type="button" class="btn-remove-dose-card" onclick="rimuoviDoseCard(' + idx + ')" title="Rimuovi questa dose">✕</button>' : '') +
       '</div>' +
