@@ -693,13 +693,19 @@
           "fascia": "Mattina (Colazione)",
           "farmaco": "XULTOPHY penna",
           "principio": "Insulina degludec + Liraglutide",
-          "dosaggio": "___ unità (sottocute)",
-          "modo": "Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete) ⚠️ Orario/dose da confermare col medico",
+          "dosaggio": "16 Unità (sottocute)",
+          "modo": "Iniezione sottocute 1 volta al giorno ore 08:00 (Diabete - confermato dal diabetologo)",
           "cprPerScatola": 15,
-          "scorta": 4,
+          "scorta": 2,
           "farmacia": "Farmacia Girasole Picconi",
           "fattoOggi": false,
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "tipoFormulazione": "penna",
+          "unitaDoseDie": 16,
+          "unitaPerPenna": 300,
+          "penneScorta": 2,
+          "pennePerScatola": 3,
+          "giorniAlert": 15
         },
         {
           "id": 307,

@@ -1,3 +1,147 @@
+
+// ==========================================
+// MOTORE CLINICO AUTOMATICO PENNE & INSULINA
+// ==========================================
+function isFarmacoPennaIniettabile(t) {
+  if (!t) return false;
+  if (t.tipoFormulazione === 'penna') return true;
+  var str = ((t.farmaco || '') + ' ' + (t.principio || '') + ' ' + (t.dosaggio || '') + ' ' + (t.modo || '')).toLowerCase();
+  return (
+    str.indexOf('penna') >= 0 ||
+    str.indexOf('insulina') >= 0 ||
+    str.indexOf('xultophy') >= 0 ||
+    str.indexOf('tresiba') >= 0 ||
+    str.indexOf('lantus') >= 0 ||
+    str.indexOf('toujeo') >= 0 ||
+    str.indexOf('novorapid') >= 0 ||
+    str.indexOf('humalog') >= 0 ||
+    str.indexOf('fiasp') >= 0 ||
+    str.indexOf('ozempic') >= 0 ||
+    str.indexOf('victoza') >= 0 ||
+    str.indexOf('trulicity') >= 0 ||
+    str.indexOf('mounjaro') >= 0 ||
+    str.indexOf('saxenda') >= 0 ||
+    str.indexOf('soliqua') >= 0 ||
+    str.indexOf('suliqua') >= 0 ||
+    str.indexOf('byetta') >= 0 ||
+    str.indexOf('levemir') >= 0 ||
+    str.indexOf('degludec') >= 0 ||
+    str.indexOf('glargina') >= 0 ||
+    str.indexOf('aspart') >= 0 ||
+    str.indexOf('lispro') >= 0 ||
+    str.indexOf('sottocute') >= 0
+  );
+}
+
+function calcolaDatiPennaIniettabile(t) {
+  var unitaTotaliPenna = parseInt(t.unitaPerPenna) || 300;
+  var doseDie = parseFloat(t.unitaDoseDie);
+  if (isNaN(doseDie) || doseDie <= 0) {
+    var m = (t.dosaggio || '').match(/(\d+(?:[.,]\d+)?)\s*(?:unità|ui|u\b|scatti)/i);
+    if (m) {
+      doseDie = parseFloat(m[1].replace(',', '.'));
+    } else {
+      doseDie = 16;
+    }
+  }
+  var giorniPerPenna = Math.max(1, Math.floor(unitaTotaliPenna / doseDie));
+  var penne = (typeof t.penneScorta !== 'undefined') ? parseFloat(t.penneScorta) : (parseFloat(t.scorta) || 2);
+  var giorniAutonomia = Math.max(0, Math.floor(penne * giorniPerPenna));
+
+  var dataEsaurimento = new Date();
+  dataEsaurimento.setDate(dataEsaurimento.getDate() + giorniAutonomia);
+  var dataEsaurimentoStr = dataEsaurimento.toLocaleDateString('it-IT');
+
+  var giorniAnticipo = Math.max(0, Math.floor((penne - 1) * giorniPerPenna));
+  var dataRichiestaMMG = new Date();
+  dataRichiestaMMG.setDate(dataRichiestaMMG.getDate() + (giorniAnticipo > 0 ? giorniAnticipo : 0));
+  var dataRichiestaMMGStr = dataRichiestaMMG.toLocaleDateString('it-IT');
+
+  return {
+    unitaTotaliPenna: unitaTotaliPenna,
+    doseDie: doseDie,
+    giorniPerPenna: giorniPerPenna,
+    penne: penne,
+    giorniAutonomia: giorniAutonomia,
+    dataEsaurimentoStr: dataEsaurimentoStr,
+    dataRichiestaMMGStr: dataRichiestaMMGStr,
+    richiediSubito: (penne <= 1 || giorniAutonomia <= 15)
+  };
+}
+
+window._currentFormatoModal = 'compressa';
+
+function impostaFormatoFarmacoModal(formato, skipCalc) {
+  window._currentFormatoModal = formato;
+  var btnComp = document.getElementById('btn-formato-compressa');
+  var btnPen = document.getElementById('btn-formato-penna');
+  var btnGocce = document.getElementById('btn-formato-gocce');
+  var boxPen = document.getElementById('box-scorte-penna');
+
+  if (btnComp) {
+    btnComp.style.background = (formato === 'compressa') ? '#0284c7' : '#ffffff';
+    btnComp.style.color = (formato === 'compressa') ? '#ffffff' : '#334155';
+    btnComp.style.borderColor = (formato === 'compressa') ? '#0284c7' : '#cbd5e1';
+  }
+  if (btnPen) {
+    btnPen.style.background = (formato === 'penna') ? '#2563eb' : '#ffffff';
+    btnPen.style.color = (formato === 'penna') ? '#ffffff' : '#334155';
+    btnPen.style.borderColor = (formato === 'penna') ? '#2563eb' : '#cbd5e1';
+  }
+  if (btnGocce) {
+    btnGocce.style.background = (formato === 'gocce') ? '#0284c7' : '#ffffff';
+    btnGocce.style.color = (formato === 'gocce') ? '#ffffff' : '#334155';
+    btnGocce.style.borderColor = (formato === 'gocce') ? '#0284c7' : '#cbd5e1';
+  }
+
+  if (boxPen) {
+    boxPen.style.display = (formato === 'penna') ? 'block' : 'none';
+  }
+
+  var iconHeader = document.querySelector('#modal-modifica-farmaco .modal-header span');
+  if (iconHeader) {
+    iconHeader.textContent = (formato === 'penna') ? '💉' : (formato === 'gocce' ? '💧' : '💊');
+  }
+
+  if (!skipCalc && typeof ricalcolaRiepilogoCapsula === 'function') {
+    ricalcolaRiepilogoCapsula();
+  }
+}
+
+function autoRilevaFormatoFarmaco(nome) {
+  if (!nome) return;
+  var isP = isFarmacoPennaIniettabile({ farmaco: nome });
+  var badge = document.getElementById('badge-auto-rilevato-formato');
+  if (isP) {
+    impostaFormatoFarmacoModal('penna');
+    if (badge) {
+      badge.style.display = 'inline-block';
+      badge.textContent = '💉 Penna Auto-Rilevata!';
+    }
+    // Aggiorna suggerimento modo se vuoto
+    var modoEl = document.getElementById('edit-farm-modo');
+    if (modoEl && (!modoEl.value || modoEl.value.includes('prima dei pasti'))) {
+      modoEl.value = 'Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete)';
+    }
+    var dosEl = document.getElementById('edit-farm-dosaggio');
+    if (dosEl && (!dosEl.value || dosEl.value === '1 cpr')) {
+      dosEl.value = '16 Unità (sottocute)';
+    }
+  } else {
+    if (badge) badge.style.display = 'none';
+  }
+}
+
+function sincronizzaCampiPenna() {
+  var penne = parseFloat(document.getElementById('edit-penna-scorta') ? document.getElementById('edit-penna-scorta').value : 2) || 2;
+  var dose = parseFloat(document.getElementById('edit-penna-dose-die') ? document.getElementById('edit-penna-dose-die').value : 16) || 16;
+  var scat = parseInt(document.getElementById('edit-penna-per-scatola') ? document.getElementById('edit-penna-per-scatola').value : 3) || 3;
+
+  if (document.getElementById('edit-farm-scorta')) document.getElementById('edit-farm-scorta').value = penne;
+  if (document.getElementById('edit-farm-cpr-scatola')) document.getElementById('edit-farm-cpr-scatola').value = scat;
+  if (document.getElementById('edit-farm-dosaggio')) document.getElementById('edit-farm-dosaggio').value = dose + ' Unità (sottocute)';
+}
+
 // CareAssist Pro - Core Engine Multi-Paziente con Gestione Farmacia & Scarico Automatico
 
 // Gestione Menu Strumenti / Opzioni Dropdown
@@ -4084,21 +4228,60 @@ function renderTerapie() {
           })()}
         </td>
         <td style="text-align: center;">
-          ${statusBadge}
-          <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:4px;">
-            📦 ${t.scorta} compresse
-          </div>
-          <div style="font-size:10.5px; color:#64748b;">Autonomia: <b>~${giorniAutonomia} giorni</b></div>
-          <div style="font-size:9.5px; color:#d97706; font-weight:700;" title="Giorni di preavviso allerta configurabili da 1 a 30">🔔 Alert impostato: <b>${sogliaAlert} gg</b></div>
-          <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:2px 6px; margin-top:4px; display:inline-block;">
-            <span style="font-size:10px; color:#1e40af; font-weight:700;">⏳ Fine Scorta: <b>${dataTermineStr}</b></span>
-          </div>
-          ${ritiroInfo}
+          ${(() => {
+            const isPenna = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+            if (isPenna) {
+              const dPen = calcolaDatiPennaIniettabile(t);
+              const pBadge = (dPen.penne <= 0)
+                ? '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#b91c1c; color:#fff;">🔴 PENNE ESAURITE</span>'
+                : (dPen.richiediSubito 
+                    ? '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#dc2626; color:#fff; border:1px solid #991b1b; padding:2px 7px; border-radius:6px; box-shadow:0 2px 6px rgba(220,38,38,0.25);">🚨 RICHIEDI RICETTA MMG (Ultima penna!)</span>'
+                    : '<span class="badge badge-success" style="font-weight:800; font-size:11px; background:#16a34a; color:#fff;">🟢 PENNE DISPONIBILI</span>');
+              return `
+                ${pBadge}
+                <div style="font-size:13.5px; font-weight:800; color:#0369a1; margin-top:4px;">
+                  💉 ${dPen.penne} Penne in Frigorifero
+                </div>
+                <div style="font-size:10.5px; color:#64748b;">Autonomia: <b>~${dPen.giorniAutonomia} giorni</b> (~${Math.round(dPen.penne * dPen.unitaTotaliPenna)} UI)</div>
+                <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:2px 6px; margin-top:4px; display:inline-block;">
+                  <span style="font-size:10px; color:#1e40af; font-weight:700;">⏳ Fine Scorta: <b>${dPen.dataEsaurimentoStr}</b></span>
+                </div>
+                <div style="background:${dPen.richiediSubito ? '#fef2f2' : '#ecfdf5'}; border:1px solid ${dPen.richiediSubito ? '#ef4444' : '#a7f3d0'}; border-radius:6px; padding:3px 8px; margin-top:4px; display:inline-block;">
+                  <span style="font-size:10px; color:${dPen.richiediSubito ? '#991b1b' : '#065f46'}; font-weight:800;">📅 Richiedi ricetta entro: <b>${dPen.dataRichiestaMMGStr}</b></span>
+                </div>
+                ${ritiroInfo}
+              `;
+            }
+            return `
+              ${statusBadge}
+              <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:4px;">
+                📦 ${t.scorta} compresse
+              </div>
+              <div style="font-size:10.5px; color:#64748b;">Autonomia: <b>~${giorniAutonomia} giorni</b></div>
+              <div style="font-size:9.5px; color:#d97706; font-weight:700;" title="Giorni di preavviso allerta configurabili da 1 a 30">🔔 Alert impostato: <b>${sogliaAlert} gg</b></div>
+              <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:2px 6px; margin-top:4px; display:inline-block;">
+                <span style="font-size:10px; color:#1e40af; font-weight:700;">⏳ Fine Scorta: <b>${dataTermineStr}</b></span>
+              </div>
+              ${ritiroInfo}
+            `;
+          })()}
         </td>
         <td style="text-align: center;">
-          <button class="btn btn-outline" style="padding:6px 10px; font-size:11.5px; font-weight:700; border-color:#10b981; color:#047857; background:#ecfdf5; border-radius:8px;" onclick="caricaScatolaRapida(${t.id})" title="Aggiungi automaticamente 1 scatola intera ritirata (+${t.cprPerScatola || 28} cpr)">
-            +1 Scatola (${t.cprPerScatola || 28} cpr)
-          </button>
+          ${(() => {
+            const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+            if (isPen) {
+              return `
+                <button class="btn btn-outline" style="padding:6px 10px; font-size:11.5px; font-weight:700; border-color:#0284c7; color:#0369a1; background:#f0f9ff; border-radius:8px;" onclick="caricaScatolaRapida(${t.id})" title="Aggiungi automaticamente 1 confezione ritirata (+${t.pennePerScatola || 3} penne)">
+                  +1 Confezione (${t.pennePerScatola || 3} penne)
+                </button>
+              `;
+            }
+            return `
+              <button class="btn btn-outline" style="padding:6px 10px; font-size:11.5px; font-weight:700; border-color:#10b981; color:#047857; background:#ecfdf5; border-radius:8px;" onclick="caricaScatolaRapida(${t.id})" title="Aggiungi automaticamente 1 scatola intera ritirata (+${t.cprPerScatola || 28} cpr)">
+                +1 Scatola (${t.cprPerScatola || 28} cpr)
+              </button>
+            `;
+          })()}
         </td>
         <td style="text-align: center;">
           ${(() => {
@@ -4114,7 +4297,10 @@ function renderTerapie() {
               `;
             }
             if (t.fattoOggi) {
-              return `<button class="btn btn-success" style="min-width: 120px;" onclick="toggleFarmacoConScarico(${t.id})">✓ Assunto Oggi</button>` + (isBisogno ? `<div style="font-size:10px; color:#15803d; font-weight:700; margin-top:3px;">⚡ Assunto al bisogno</div>` : '');
+              return `${(() => {
+              const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+              return `<button class="btn btn-success" style="min-width: 120px;" onclick="toggleFarmacoConScarico(${t.id})">✓ ${isPen ? 'Iniettato Oggi' : 'Assunto Oggi'}</button>`;
+            })()}` + (isBisogno ? `<div style="font-size:10px; color:#15803d; font-weight:700; margin-top:3px;">⚡ Assunto al bisogno</div>` : '');
             }
             if (t.saltatoOggi) {
               return `
@@ -4725,7 +4911,14 @@ async function toggleFarmacoConScarico(id) {
       infoDoseDettaglio = quantitaDoseScarico === 0.5 ? '½ compressa (0,5 cpr)' : (quantitaDoseScarico + ' cpr');
     }
 
-    if (t.scorta > 0) {
+    if (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) {
+      var dPen = calcolaDatiPennaIniettabile(t);
+      var frazPenna = 1 / dPen.giorniPerPenna;
+      if (t.penneScorta > 0) {
+        t.penneScorta = Math.max(0, Math.round((t.penneScorta - frazPenna) * 100) / 100);
+        t.scorta = t.penneScorta;
+      }
+    } else if (t.scorta > 0) {
       t.scorta = Math.max(0, Math.round((t.scorta - quantitaDoseScarico) * 100) / 100);
     }
     t.ultimaDoseSomministrata = quantitaDoseScarico;
@@ -5136,6 +5329,38 @@ async function caricaScatolaRapida(farmacoId) {
   if (!p) return;
   const t = p.terapie.find(item => item.id === farmacoId);
   if (!t) return;
+
+  if (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) {
+    const penneDaAggiungere = t.pennePerScatola || 3;
+    const ok = await customConfirm(
+      'Conferma Ritiro Confezione Penne Farmacia / DPC',
+      'Vuoi caricare 1 nuova confezione di "' + t.farmaco + '" (+' + penneDaAggiungere + ' penne preriempite) ritirata oggi dalla farmacia?',
+      '💉'
+    );
+    if (ok) {
+      t.penneScorta = (parseFloat(t.penneScorta) || 0) + penneDaAggiungere;
+      t.scorta = t.penneScorta;
+      const now = new Date();
+      t.ultimoRitiro = now.toISOString();
+
+      p.registrazioni.push({
+        id: 'log_' + Date.now(),
+        tipo: 'scorta',
+        farmacoId: t.id,
+        farmaco: t.farmaco,
+        azione: 'carico_farmacia',
+        numScatole: 1,
+        penneAggiunte: penneDaAggiungere,
+        timestamp: now.toISOString(),
+        desc: 'Carico DPC Farmacia: Ritiro di 1 confezione di ' + t.farmaco + ' (+' + penneDaAggiungere + ' penne). Nuova scorta: ' + t.penneScorta + ' penne.',
+        operatore: 'Operatore OSS / Famiglia'
+      });
+      saveDb();
+      renderTerapie();
+      showToast('Caricate +' + penneDaAggiungere + ' penne di ' + t.farmaco + ' con successo! 💉');
+    }
+    return;
+  }
 
   const cprDaAggiungere = t.cprPerScatola || 28;
   const ok = await customConfirm(
@@ -8726,6 +8951,10 @@ function calcolaConsumoGiornalieroFarmaco(t) {
 
 function calcolaGiorniAutonomiaFarmaco(t) {
   if (!t || typeof t.scorta === 'undefined') return 0;
+  if (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) {
+    var dp = calcolaDatiPennaIniettabile(t);
+    return dp.giorniAutonomia;
+  }
   var scorta = parseFloat(t.scorta) || 0;
   if (scorta <= 0) return 0;
   var consumoDie = calcolaConsumoGiornalieroFarmaco(t);
@@ -8906,6 +9135,24 @@ function apriModificaFarmaco(farmacoId) {
   var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
 
   var titleEl = document.getElementById('edit-farm-modal-title');
+  var isPenna = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+  if (isPenna) {
+    if (typeof impostaFormatoFarmacoModal === 'function') impostaFormatoFarmacoModal('penna', true);
+    var dPen = calcolaDatiPennaIniettabile(t);
+    if (document.getElementById('edit-penna-scorta')) document.getElementById('edit-penna-scorta').value = dPen.penne;
+    if (document.getElementById('edit-penna-dose-die')) document.getElementById('edit-penna-dose-die').value = dPen.doseDie;
+    if (document.getElementById('edit-penna-unita-totali')) document.getElementById('edit-penna-unita-totali').value = dPen.unitaTotaliPenna;
+    if (document.getElementById('edit-penna-per-scatola')) document.getElementById('edit-penna-per-scatola').value = t.pennePerScatola || 3;
+    var badgeFormato = document.getElementById('badge-auto-rilevato-formato');
+    if (badgeFormato) {
+      badgeFormato.style.display = 'inline-block';
+      badgeFormato.textContent = '💉 Penna Auto-Rilevata';
+    }
+  } else {
+    if (typeof impostaFormatoFarmacoModal === 'function') impostaFormatoFarmacoModal('compressa', true);
+    var badgeFormato = document.getElementById('badge-auto-rilevato-formato');
+    if (badgeFormato) badgeFormato.style.display = 'none';
+  }
   if (titleEl) titleEl.innerHTML = '✏️ Scheda Capsula: <span id="edit-farm-header-nome" style="color:#fef08a;">' + (cleanNome || 'Farmaco') + '</span>';
 
   var elPaziente = document.getElementById('edit-farm-header-paziente');
@@ -9030,20 +9277,31 @@ function salvaModificaFarmaco(e) {
       farmacoNomeFinal = cleanNome + ' (' + (idx + 1) + 'ª dose: ' + quotaLabel + ' - ore ' + oraVal + ')';
     }
 
+    var isFormatoPenna = (window._currentFormatoModal === 'penna');
+    var pScorta = isFormatoPenna ? (parseFloat(document.getElementById('edit-penna-scorta') ? document.getElementById('edit-penna-scorta').value : 2) || 2) : scorta;
+    var pDoseDie = isFormatoPenna ? (parseFloat(document.getElementById('edit-penna-dose-die') ? document.getElementById('edit-penna-dose-die').value : 16) || 16) : 1;
+    var pUnitaTot = isFormatoPenna ? (parseInt(document.getElementById('edit-penna-unita-totali') ? document.getElementById('edit-penna-unita-totali').value : 300) || 300) : 300;
+    var pScatola = isFormatoPenna ? (parseInt(document.getElementById('edit-penna-per-scatola') ? document.getElementById('edit-penna-per-scatola').value : 3) || 3) : cprPerScatola;
+
     p.terapie.push({
       id: Date.now() + idx * 311,
       ora: oraVal,
       fascia: fasciaVal,
       farmaco: farmacoNomeFinal,
       principio: principio,
-      dosaggio: dosaggioBase + ' (' + quotaLabel + ')',
+      dosaggio: isFormatoPenna ? (pDoseDie + ' Unità (sottocute)') : (dosaggioBase + ' (' + quotaLabel + ')'),
       quantitaQuota: quotaVal,
       modo: modoBase,
-      cprPerScatola: cprPerScatola,
-      scorta: scorta,
+      cprPerScatola: pScatola,
+      scorta: pScorta,
       giorniAlert: giorniAlert,
       cadenzaTipo: cadenza,
       fattoOggi: false,
+      tipoFormulazione: isFormatoPenna ? 'penna' : 'compressa',
+      penneScorta: pScorta,
+      unitaDoseDie: pDoseDie,
+      unitaPerPenna: pUnitaTot,
+      pennePerScatola: pScatola,
       ultimaModificaClinica: ultimaMod
     });
   });
@@ -12035,6 +12293,43 @@ function ricalcolaRiepilogoCapsula() {
   var box = document.getElementById('box-capsula-riepilogo');
   if (!box) return;
 
+  if (window._currentFormatoModal === 'penna') {
+    var penneScorta = parseFloat(document.getElementById('edit-penna-scorta') ? document.getElementById('edit-penna-scorta').value : 2) || 2;
+    var unitaDoseDie = parseFloat(document.getElementById('edit-penna-dose-die') ? document.getElementById('edit-penna-dose-die').value : 16) || 16;
+    var unitaTotaliPenna = parseInt(document.getElementById('edit-penna-unita-totali') ? document.getElementById('edit-penna-unita-totali').value : 300) || 300;
+    
+    var ggPerPenna = Math.max(1, Math.floor(unitaTotaliPenna / unitaDoseDie));
+    var ggAutonomia = Math.max(0, Math.floor(penneScorta * ggPerPenna));
+    var dFine = new Date();
+    dFine.setDate(dFine.getDate() + ggAutonomia);
+    var dFineStr = dFine.toLocaleDateString('it-IT');
+
+    var ggAnticipo = Math.max(0, Math.floor((penneScorta - 1) * ggPerPenna));
+    var dMMG = new Date();
+    dMMG.setDate(dMMG.getDate() + (ggAnticipo > 0 ? ggAnticipo : 0));
+    var dMMGStr = dMMG.toLocaleDateString('it-IT');
+    var richiediSubito = (penneScorta <= 1 || ggAutonomia <= 15);
+
+    box.innerHTML = 
+      '<div class="capsula-summary-title" style="color:#1e40af;">' +
+        '<span>💉</span> Piano Iniettabile: 1 Iniezione Sottocute al Giorno' +
+      '</div>' +
+      '<div class="capsula-summary-desc" style="font-weight:700; color:#0369a1; margin-bottom:8px;">' +
+        'Dose prescritta: <b>' + unitaDoseDie + ' Unità (UI)</b> sempre alla stessa ora' +
+      '</div>' +
+      '<div class="capsula-summary-metrics" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px;">' +
+        '<div><b>💧 Capacità Penna:</b> <span style="color:#0369a1; font-weight:800;">' + unitaTotaliPenna + ' UI (~' + ggPerPenna + ' gg/penna)</span></div>' +
+        '<div><b>❄️ Penne in Frigo:</b> <span style="color:#15803d; font-weight:800;">' + penneScorta + ' penne (~' + ggAutonomia + ' giorni)</span></div>' +
+        '<div><b>⏳ Esaurimento Scorta:</b> <span style="color:#0f172a; font-weight:800;">' + dFineStr + '</span></div>' +
+        '<div style="grid-column: 1 / -1; background:' + (richiediSubito ? '#fef2f2' : '#ecfdf5') + '; border:1.5px solid ' + (richiediSubito ? '#ef4444' : '#10b981') + '; padding:8px 12px; border-radius:8px; color:' + (richiediSubito ? '#991b1b' : '#065f46') + ';">' +
+          (richiediSubito 
+            ? '<b>🚨 RICHIEDI SUBITO LA RICETTA AL MMG:</b> Sei già all\'ultima penna in frigorifero o hai meno di 15 giorni di scorta!' 
+            : '<b>📅 DATA SUGGERITA RICHIESTA RICETTA MMG:</b> entro il <b>' + dMMGStr + '</b> (il giorno esatto in cui aprirai l\'ultima penna in frigo)') +
+        '</div>' +
+      '</div>';
+    return;
+  }
+
   var totCprDie = 0;
   var descParti = [];
 
@@ -12082,6 +12377,13 @@ function applicaModoRapido(testo) {
 function apriMascheraNuovoFarmaco() {
   var p = getActivePaziente();
   if (!p) return;
+  if (typeof impostaFormatoFarmacoModal === 'function') impostaFormatoFarmacoModal('compressa', true);
+  if (document.getElementById('edit-penna-scorta')) document.getElementById('edit-penna-scorta').value = '2';
+  if (document.getElementById('edit-penna-dose-die')) document.getElementById('edit-penna-dose-die').value = '16';
+  if (document.getElementById('edit-penna-unita-totali')) document.getElementById('edit-penna-unita-totali').value = '300';
+  if (document.getElementById('edit-penna-per-scatola')) document.getElementById('edit-penna-per-scatola').value = '3';
+  var badgeF = document.getElementById('badge-auto-rilevato-formato');
+  if (badgeF) badgeF.style.display = 'none';
 
   var titleEl = document.getElementById('edit-farm-modal-title');
   if (titleEl) titleEl.innerHTML = '💊 Nuova Capsula / Farmaco & Piano Posologico';
