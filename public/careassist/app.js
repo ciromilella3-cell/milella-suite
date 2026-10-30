@@ -14552,7 +14552,7 @@ function eseguiArchiviazioneEAttivaNuovoControllo() {
   var inputDataPrescr = document.getElementById('input-data-rilascio-prescrizione');
   var inputNote = document.getElementById('input-nuove-note-controllo');
 
-  var nuovaDataControllo = (inputData && inputData.value) ? inputData.value : '2027-03-22';
+  var nuovaDataControllo = (inputData && inputData.value) ? inputData.value : '2027-02-23';
   var nuovoMedico = (inputMedico && inputMedico.value) ? inputMedico.value : 'Dr. Michele Milella - Clinica Malattie Infettive Policlinico Bari';
   var dataPrescr = (inputDataPrescr && inputDataPrescr.value) ? inputDataPrescr.value : '2026-02-23';
   var noteNuove = (inputNote && inputNote.value) ? inputNote.value : 'Prenotazione allo 080 559 3222';
@@ -15175,11 +15175,11 @@ function richiediTutteRicetteAlMedicoMMG() {
   }).join('\n');
 
   var msg = 'Gentile Dott. Roberto Scarcia (MMG),\n\n' +
-    'in vista del controllo specialistico programmato per il Sig. Ciro Milella presso la Clinica delle Malattie Infettive ed Epatologia del Policlinico di Bari (fissato per il 22/03/2027), si richiede l\'emissione delle relative ricette dematerializzate (NRE) per le prestazioni di competenza del Medico Curante:\n\n' +
+    'in vista del controllo specialistico programmato per il Sig. Ciro Milella presso la Clinica delle Malattie Infettive ed Epatologia del Policlinico di Bari (fissato per il 23/02/2027), si richiede l\'emissione delle relative ricette dematerializzate (NRE) per le prestazioni di competenza del Medico Curante:\n\n' +
     '📋 PRESTAZIONI DA RICETTARE (SPUNTATE A PENNA SUL MODULO):\n' +
     listaNomiMMG + '\n\n' +
     '📌 NOTA SULLA VISITA SPECIALISTICA & PRESTAZIONI DIRETTE AMBULATORIO INFITTI:\n' +
-    '• La "Visita Infettivologica di Controllo" è già stata programmata e prescritta direttamente dall\'Infettivologo di reparto (fissata per il 22/03/2027), pertanto non è necessaria impegnativa per la visita.\n' +
+    '• La "Visita Infettivologica di Controllo" è già stata programmata e prescritta direttamente dall\'Infettivologo di reparto (fissata per il 23/02/2027), pertanto non è necessaria impegnativa per la visita.\n' +
     '• Le prestazioni virologiche HBsAg (Cod. 88.60.6) e HBV-DNA Quantitativo Real Time PCR (Cod. 88.30.1), evidenziate con pennarello celeste sul modulo originale, unitamente al Prelievo (Cod. 96.10.1), vengono gestite ed emesse DIRETTAMENTE dall\'Ambulatorio Malattie Infettive del Policlinico di Bari (non necessitano di ricetta MMG).\n\n' +
     'In allegato e a disposizione la scheda prescrittiva originale dell\'U.O. Malattie Infettive.\n' +
     'Ringraziando cordialmente,\nCiro Milella (Cell: 366 460 7396)';
@@ -16082,9 +16082,174 @@ function renderEpatologiaInfettiviCiro(container, p) {
 
     </div>
 
-    <!-- CORPO AMBULATORIALE: VISTA 4 COLONNE O TABELLA CLINICA -->
-    <div style="display:grid; grid-template-columns: 2.2fr 1fr; gap:20px; align-items:flex-start;">
-      <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff;">
+    <!-- SEZIONE WIDGET OPERATIVI SPECIALISTICI (DISPOSTI IN 3 COLONNE ORIZZONTALI - ERGONOMICO & COMPATTO) -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px; margin-bottom:20px; align-items:stretch;">
+      ${(() => {
+        var sync = window.calcolaSincronizzazionePianoVisita ? window.calcolaSincronizzazionePianoVisita() : null;
+        var pt = window.getPianoTerapeuticoAttivo ? window.getPianoTerapeuticoAttivo(p) : null;
+        if (!sync || !pt) return '';
+
+        var percPianoConsumato = Math.round((pt.scatoleRitirateTotali / pt.scatoleSpettantiAnno) * 100);
+
+        return `
+          <!-- WIDGET 1: RICETTE SPECIALISTICHE SSN (NRE) EMESSE DALL'INFETTIVOLOGO -->
+          <div class="card" style="border:2px solid #059669; background:linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border-radius:16px; padding:18px; box-shadow:0 4px 18px rgba(5,150,105,0.12); display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:24px;">📜</span>
+                  <div>
+                    <div style="font-size:11px; font-weight:900; color:#047857; text-transform:uppercase; letter-spacing:0.5px;">RICETTE SPECIALISTICHE SSN (NRE)</div>
+                    <div style="font-size:15px; font-weight:900; color:#0f172a;">Clinica Malattie Infettive</div>
+                  </div>
+                </div>
+                <span style="background:#059669; color:#fff; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Esenzione 016</span>
+              </div>
+
+              <div style="font-size:11.5px; color:#334155; line-height:1.45; margin-bottom:12px; background:rgba(255,255,255,0.85); padding:9px 11px; border-radius:10px; border:1px solid #a7f3d0;">
+                👨‍⚕️ <b>Prescrittore:</b> Dr. Michele Milella &bull; <b>Emissione:</b> 21/09/2026<br>
+                ⏳ <b>Validità Ricette (180 gg):</b> Fino al <b>20/03/2027</b><br>
+                <span style="color:#15803d; font-weight:800;">✓ Pienamente valide per la visita programmata del 23/02/2027</span>
+              </div>
+
+              <!-- RICETTA 1: ESAMI VIROLOGICI ED EMATICI -->
+              <div style="background:#ffffff; border:1.5px solid #10b981; border-radius:12px; padding:11px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:11px; font-weight:900; color:#065f46; text-transform:uppercase;">1. Prelievo Virologico HBV</span>
+                  <span style="font-size:10.5px; font-weight:900; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-family:monospace;">NRE: 160A24681622426</span>
+                </div>
+                <div style="font-size:11px; color:#334155; line-height:1.4; margin-bottom:8px;">
+                  • HBV-DNA Ibridazione (88301) + HBsAg Reflex (85752) + Prelievo (96101)<br>
+                  • Da eseguire entro il <b>08/02/2027</b> (T-15 giorni prima della visita)
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_esami')" style="flex:1; background:#059669; color:#fff; border:none; padding:5px 8px; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;">
+                    🔍 Promemoria NRE
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline" onclick="apriPrenotazionePugliaSalute('Esami Virologici NRE 160A24681622426')" style="font-size:11px; font-weight:800; border-color:#0284c7; color:#0369a1; padding:5px 8px; border-radius:6px;">
+                    🌐 Puglia Salute
+                  </button>
+                </div>
+              </div>
+
+              <!-- RICETTA 2: VISITA INFETTIVOLOGICA DI CONTROLLO -->
+              <div style="background:#ffffff; border:1.5px solid #10b981; border-radius:12px; padding:11px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:11px; font-weight:900; color:#065f46; text-transform:uppercase;">2. Visita Infettivologica</span>
+                  <span style="font-size:10.5px; font-weight:900; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-family:monospace;">NRE: 160A24681622429</span>
+                </div>
+                <div style="font-size:11px; color:#334155; line-height:1.4; margin-bottom:8px;">
+                  • Visita Infettivologica di Controllo (Cod. 89.01)<br>
+                  • Fissata per: <b>23/02/2027 ore 09:00</b> con Prof.ssa Annalisa Saracino
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_visita')" style="flex:1; background:#059669; color:#fff; border:none; padding:5px 8px; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;">
+                    🔍 Promemoria NRE
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline" onclick="window.location.href='tel:0805593222'" style="font-size:11px; font-weight:800; border-color:#0284c7; color:#0369a1; padding:5px 8px; border-radius:6px;">
+                    📞 Reparto 080 559 3222
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 2: PIANO TERAPEUTICO DPC ANNUALE (ENTECAVIR SUN 0,5 MG) -->
+          <div class="card" style="border:2px solid #0284c7; background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius:16px; padding:18px; box-shadow:0 4px 18px rgba(2,132,199,0.12); display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:22px;">📜</span>
+                  <div>
+                    <div style="font-size:11px; font-weight:900; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px;">PIANO TERAPEUTICO DPC ANNUALE</div>
+                    <div style="font-size:15px; font-weight:900; color:#0f172a;">${pt.farmacoNome}</div>
+                  </div>
+                </div>
+                <span style="background:#0284c7; color:#fff; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">ID: ${pt.idPrescrizione}</span>
+              </div>
+
+              <div style="font-size:11.5px; color:#334155; line-height:1.45; margin-bottom:12px; background:rgba(255,255,255,0.7); padding:8px 10px; border-radius:8px; border:1px solid #bae6fd;">
+                👨‍⚕️ <b>Prescrittore:</b> ${pt.medicoPrescrittore}<br>
+                🏥 <b>Ente:</b> ${pt.strutturaPrescrittrice}<br>
+                💊 <b>Posologia:</b> ${pt.posologia} &bull; <b>Punto Ritiro:</b> ${pt.puntoRitiro}<br>
+                📅 <b>Validità:</b> Fino al <b>${sync.dataScadenzaAnnoStr}</b> (1 Anno)
+              </div>
+
+              <!-- STATO SCATOLE E CONSUMO ANNUALE -->
+              <div style="background:#ffffff; border-radius:12px; padding:12px; margin-bottom:12px; border:1px solid #bae6fd;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-size:11.5px; font-weight:800; color:#0f172a;">Avanzamento Ritiro Farmacia ASL:</span>
+                  <span style="font-size:12px; font-weight:900; color:#0284c7;">${pt.scatoleRitirateTotali} di ${pt.scatoleSpettantiAnno} Scatole (${percPianoConsumato}%)</span>
+                </div>
+                <div style="width:100%; height:9px; background:#e2e8f0; border-radius:999px; overflow:hidden; margin-bottom:6px;">
+                  <div style="width:${percPianoConsumato}%; height:100%; background:linear-gradient(90deg, #0284c7 0%, #10b981 100%); border-radius:999px;"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; color:#64748b;">
+                  <span><b>${sync.scatoleResidue} scatole residue</b> da ritirare</span>
+                  <span>Scorte a casa: <b style="color:#059669;">${sync.giorniCasa} giorni</b></span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn" onclick="apriModalRegistraRitiroFarmaco()" style="flex:1; background:#0284c7; color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:800; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                📦 Registra Ritiro Farmacia
+              </button>
+              <button type="button" class="btn btn-outline" onclick="apriDocumentiPianoVisitaOriginali('piano')" style="padding:8px 10px; font-size:11.5px; font-weight:700; border-color:#0284c7; color:#0369a1; background:#ffffff; border-radius:8px;" title="Vedi scansione documento originale">
+                📄 Scheda
+              </button>
+            </div>
+          </div>
+
+          <!-- WIDGET 3: CONTROLLO CLINICO & CONTATTI CLINICA MALATTIE INFETTIVE -->
+          <div class="card" style="border:2px solid #9333ea; background:linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); border-radius:16px; padding:18px; box-shadow:0 4px 18px rgba(147,51,234,0.12); display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:22px;">🎯</span>
+                  <div>
+                    <div style="font-size:11px; font-weight:900; color:#7e22ce; text-transform:uppercase; letter-spacing:0.4px;">
+                      CONTROLLO CLINICO & RINNOVO
+                    </div>
+                    <div style="font-size:15px; font-weight:900; color:#0f172a;">
+                      23/02/2027 &bull; Ore 09:00
+                    </div>
+                  </div>
+                </div>
+                <span style="background:#9333ea; color:#fff; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Prof.ssa Saracino</span>
+              </div>
+
+              <div style="font-size:11.5px; color:#334155; line-height:1.45; margin-bottom:12px; background:rgba(255,255,255,0.85); padding:10px 12px; border-radius:10px; border:1px solid #d8b4fe;">
+                Mancano <b>${sync.giorniAllaVisita} giorni</b> alla visita specialistica.<br>
+                💡 <b>Allineamento Clinico:</b> Le scorte a casa e le scatole residue coprono il fabbisogno fino alla visita, consentendo il <b>rinnovo del Piano Terapeutico contestuale al controllo specialistico</b>.
+              </div>
+
+              <!-- RECAPITI POLICLINICO -->
+              <div style="background:#ffffff; border:1px solid #d8b4fe; border-radius:10px; padding:10px 12px; font-size:11.5px; color:#334155; line-height:1.45; margin-bottom:12px;">
+                🏥 <b>Clinica Malattie Infettive - Policlinico di Bari</b><br>
+                📍 <b>Sede:</b> Piazza Giulio Cesare 11, Bari<br>
+                📞 <b>Segreteria:</b> <a href="tel:0805593222" style="color:#7e22ce; font-weight:800; text-decoration:none;">080 559 3222</a> &bull; 080 559 2473<br>
+                ✉️ <b>Email:</b> <a href="mailto:epatologia.malinf@policlinico.ba.it" style="color:#0284c7; font-weight:700; text-decoration:none;">epatologia.malinf@policlinico.ba.it</a>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:6px;">
+              <a href="tel:0805593222" class="btn" style="flex:1; background:#7e22ce; color:#ffffff; font-weight:800; font-size:11.5px; padding:8px 12px; border-radius:8px; text-decoration:none; text-align:center; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                📞 Chiama Segreteria
+              </a>
+              <button type="button" class="btn btn-outline" onclick="apriDocumentiPianoVisitaOriginali('visita')" style="padding:8px 10px; font-size:11px; font-weight:700; border-color:#9333ea; color:#7e22ce; background:#ffffff; border-radius:8px;">
+                📄 Scheda Visita
+              </button>
+            </div>
+          </div>
+        `;
+      })()}
+    </div>
+
+    <!-- SEZIONE MODULO PRESTAMPATO POLICLINICO A TUTTA LARGHEZZA (100% FULL WIDTH) -->
+    ${(() => {
+      return `
+        <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; width:100%; margin-top:20px;">
         
         <!-- HEADER DELLA SCHEDA CON SELETTORE VISTA -->
         <div class="card-header" style="background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-bottom:1.5px solid #cbd5e1; border-radius:16px 16px 0 0; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -16149,7 +16314,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
               </div>
               <div style="text-align:right;">
                 <div style="font-size:14px; font-weight:900; color:#0284c7;">Sig. <u>${p.nome.toUpperCase()}</u></div>
-                <div style="font-size:11.5px; color:#15803d; font-weight:800;">Tornare a controllo il: <b>22/03/2027</b></div>
+                <div style="font-size:11.5px; color:#15803d; font-weight:800;">Tornare a controllo il: <b>23/02/2027</b></div>
               </div>
             </div>
 
@@ -16199,176 +16364,11 @@ function renderEpatologiaInfettiviCiro(container, p) {
           </div>
         `}
       </div>
-
-      <!-- COLONNA DESTRA: PIANO TERAPEUTICO ANNUALE DPC, SCALARE SCATOLE & COINCIDENZA VISITA -->
-      <div style="display:flex; flex-direction:column; gap:18px;">
-        ${(() => {
-          var sync = window.calcolaSincronizzazionePianoVisita ? window.calcolaSincronizzazionePianoVisita() : null;
-          var pt = window.getPianoTerapeuticoAttivo ? window.getPianoTerapeuticoAttivo(p) : null;
-          if (!sync || !pt) return '';
-
-          var percPianoConsumato = Math.round((pt.scatoleRitirateTotali / pt.scatoleSpettantiAnno) * 100);
-
-          return `
-            <!-- CARD SPECIALE: RICETTE ELETTRONICHE SSN (NRE) EMESSE DALL'INFETTIVOLOGO -->
-            <div class="card" style="border:2px solid #059669; background:linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border-radius:16px; padding:18px; box-shadow:0 4px 18px rgba(5,150,105,0.12);">
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:24px;">📜</span>
-                  <div>
-                    <div style="font-size:11px; font-weight:900; color:#047857; text-transform:uppercase; letter-spacing:0.5px;">RICETTE SPECIALISTICHE SSN (NRE)</div>
-                    <div style="font-size:15px; font-weight:900; color:#0f172a;">Emesse dal Dr. Michele Milella</div>
-                  </div>
-                </div>
-                <span style="background:#059669; color:#fff; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">Esenzione 016</span>
-              </div>
-
-              <div style="font-size:12px; color:#334155; line-height:1.45; margin-bottom:12px; background:rgba(255,255,255,0.85); padding:10px 12px; border-radius:10px; border:1px solid #a7f3d0;">
-                👨‍⚕️ <b>Medico:</b> Dr. Michele Milella (Malattie Infettive)<br>
-                ${(function() {
-                  var nre = getDettagliScadenzaRicetteNRE();
-                  return `
-                    📅 <b>Data Emissione:</b> 21/09/2026 &bull; <b>Validità Ricetta:</b> 180 giorni<br>
-                    ⏳ <b>Scadenza NRE:</b> <b style="color:${nre.colore}; background:${nre.bg}; padding:1px 6px; border-radius:4px; border:1px solid ${nre.border}; font-size:12px;">${nre.giorniRimanenti} Giorni Rimanenti (Scadenza: ${nre.dataScadenzaStr})</b><br>
-                    ⚠️ <i>Attenzione: le ricette scadono 2 gg prima della visita del ${nre.dataVisitaStr}. Eseguire il prelievo prima del 20/03/2027!</i><br>
-                    📋 <b>Diagnosi:</b> 07032N Epatite virale B cronica
-                  `;
-                })()}
-              </div>
-
-              <!-- RICETTA 1: ESAMI VIROLOGICI ED EMATICI -->
-              <div style="background:#ffffff; border:1.5px solid #10b981; border-radius:12px; padding:12px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                  <span style="font-size:11px; font-weight:900; color:#065f46; text-transform:uppercase;">1. Esami Virologici di Reparto</span>
-                  <span style="font-size:10.5px; font-weight:900; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-family:monospace;">NRE: 160A24681622426</span>
-                </div>
-                <div style="font-size:11.5px; color:#334155; line-height:1.4; margin-bottom:8px;">
-                  • <b>HBV-DNA Acidi Nucleici</b> (Cod. 88301 - 91.17.4)<br>
-                  • <b>HBsAg Reflex + Anticorpi</b> (Cod. 85752 - 91.18.6)<br>
-                  • <b>Prelievo Sangue Venoso</b> (Cod. 96101 - 91.49.2)
-                </div>
-                <div style="display:flex; gap:6px;">
-                  <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_esami')" style="flex:1; background:#059669; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;">
-                    🔍 Vedi Promemoria
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline" onclick="apriPrenotazionePugliaSalute('Esami Virologici NRE 160A24681622426')" style="font-size:11px; font-weight:800; border-color:#0284c7; color:#0369a1; padding:6px 10px; border-radius:6px;">
-                    🌐 Puglia Salute
-                  </button>
-                </div>
-              </div>
-
-              <!-- RICETTA 2: VISITA INFETTIVOLOGICA DI CONTROLLO -->
-              <div style="background:#ffffff; border:1.5px solid #10b981; border-radius:12px; padding:12px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                  <span style="font-size:11px; font-weight:900; color:#065f46; text-transform:uppercase;">2. Visita Infettivologica Reparto</span>
-                  <span style="font-size:10.5px; font-weight:900; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-family:monospace;">NRE: 160A24681622429</span>
-                </div>
-                <div style="font-size:11.5px; color:#334155; line-height:1.4; margin-bottom:8px;">
-                  • <b>Visita Infettivologica di Controllo</b> (Cod. 12197 - 89.01)<br>
-                  • Controllo fissato per il: <b>22/03/2027</b>
-                </div>
-                <div style="display:flex; gap:6px;">
-                  <button type="button" class="btn btn-sm" onclick="apriDocumentiPianoVisitaOriginali('ricetta_visita')" style="flex:1; background:#059669; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;">
-                    🔍 Vedi Promemoria
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline" onclick="window.location.href='tel:0805593222'" style="font-size:11px; font-weight:800; border-color:#0284c7; color:#0369a1; padding:6px 10px; border-radius:6px;">
-                    📞 Reparto 080 559 3222
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- CARD 1: CONTROLLO ANNUALE PIANO TERAPEUTICO EX-OSP2-H -->
-            <div class="card" style="border:2px solid #0284c7; background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius:16px; padding:18px; box-shadow:0 4px 18px rgba(2,132,199,0.12);">
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:22px;">📜</span>
-                  <div>
-                    <div style="font-size:11px; font-weight:900; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px;">PIANO TERAPEUTICO DPC ANNUALE</div>
-                    <div style="font-size:15px; font-weight:900; color:#0f172a;">${pt.farmacoNome}</div>
-                  </div>
-                </div>
-                <span style="background:#0284c7; color:#fff; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px;">ID: ${pt.idPrescrizione}</span>
-              </div>
-
-              <div style="font-size:12px; color:#334155; line-height:1.45; margin-bottom:12px; background:rgba(255,255,255,0.7); padding:8px 10px; border-radius:8px; border:1px solid #bae6fd;">
-                👨‍⚕️ <b>Prescrittore:</b> ${pt.medicoPrescrittore}<br>
-                🏥 <b>Ente:</b> ${pt.strutturaPrescrittrice}<br>
-                📋 <b>Diagnosi AIFA:</b> ${pt.diagnosiAifa.slice(0, 48)}...<br>
-                📅 <b>Validità:</b> Dal ${new Date(pt.dataPrescrizioneInizio).toLocaleDateString('it-IT')} al ${sync.dataScadenzaAnnoStr} (1 Anno)
-              </div>
-
-              <!-- CONTATORE SCATOLE SCALARI SPETTANTI NELL'ANNO -->
-              <div style="background:#ffffff; border:1.5px solid #38bdf8; border-radius:12px; padding:12px 14px; margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                  <span style="font-size:12px; font-weight:800; color:#0369a1;">📦 Scatole Annuali Spettanti: <b>${pt.scatoleSpettantiAnno} Confezioni</b></span>
-                  <span style="font-size:12px; font-weight:900; color:#0284c7;">${pt.scatoleRitirateTotali} / ${pt.scatoleSpettantiAnno} Ritirate</span>
-                </div>
-                <div style="width:100%; height:8px; background:#e2e8f0; border-radius:999px; overflow:hidden; margin-bottom:8px;">
-                  <div style="width:${percPianoConsumato}%; height:100%; background:linear-gradient(90deg, #38bdf8 0%, #0284c7 100%); border-radius:999px;"></div>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#475569;">
-                  <span>🏠 A casa: <b style="color:#15803d;">${sync.scortaCasa} cpr</b> (~${sync.giorniCasa} gg)</span>
-                  <span>⏳ Rimaste da ritirare: <b style="color:#b45309;">${sync.scatoleResidue} scatole</b></span>
-                </div>
-              </div>
-
-              <!-- PULSANTE REGISTRA RITIRO DALLA FARMACIA TERRITORIALE -->
-              <div style="display:flex; gap:8px;">
-                <button type="button" class="btn" onclick="registraRitiroScatoleTerritoriale()" style="flex:1; background:#10b981; color:white; border:none; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
-                  <span>📥</span> Registra Ritiro Farmacia
-                </button>
-                <button type="button" class="btn btn-outline" onclick="apriDocumentiPianoVisitaOriginali('piano')" style="padding:8px 10px; font-size:11.5px; font-weight:700; border-color:#0284c7; color:#0369a1; background:#ffffff; border-radius:8px;" title="Vedi scansione documento originale">
-                  📄 Scheda
-                </button>
-              </div>
-            </div>
-
-            <!-- CARD 2: COINCIDENZA VISITA SPECIALISTICA & RINNOVO PIANO TERAPEUTICO -->
-            <div class="card" style="border:1.5px solid ${sync.avvisoRinnovo ? '#ea580c' : '#10b981'}; background:${sync.avvisoRinnovo ? '#fff7ed' : '#f0fdf4'}; border-radius:16px; padding:18px;">
-              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                <span style="font-size:22px;">${sync.avvisoRinnovo ? '⚠️' : '🎯'}</span>
-                <div>
-                  <div style="font-size:11px; font-weight:900; color:${sync.avvisoRinnovo ? '#c2410c' : '#15803d'}; text-transform:uppercase; letter-spacing:0.4px;">
-                    ALLINEAMENTO VISITA & RINNOVO PIANO
-                  </div>
-                  <div style="font-size:15px; font-weight:900; color:#0f172a;">
-                    Controllo Policlinico: ${sync.dataVisitaStr}
-                  </div>
-                </div>
-              </div>
-
-              <div style="font-size:12px; color:#334155; line-height:1.45; margin-bottom:10px;">
-                Mancano <b>${sync.giorniAllaVisita} giorni</b> alla visita con l'infettivologo.<br>
-                💡 <b>Obiettivo Clinico:</b> Le scatole rimanenti (${sync.scatoleResidue} scatole + scorta casa) coprono esattamente il fabbisogno fino alla visita, consentendo di <b>richiedere il rinnovo del Piano Terapeutico contestualmente alla visita specialistica</b>!
-              </div>
-
-              <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.1); border-radius:8px; padding:8px 10px; font-size:11.5px; color:#1e293b; display:flex; justify-content:space-between; align-items:center;">
-                <span>Documento Prossimo Controllo:</span>
-                <button type="button" class="btn btn-sm btn-outline" onclick="apriDocumentiPianoVisitaOriginali('visita')" style="padding:3px 8px; font-size:11px; font-weight:700;">
-                  📄 Vedi Foglio 2026
-                </button>
-              </div>
-            </div>
-
-            <!-- CARD 3: CENTRO DI CURA POLICLINICO DI BARI -->
-            <div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:16px; background:#ffffff;">
-              <div style="font-size:13px; font-weight:800; color:#0f172a; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
-                <span>🏥</span> Policlinico di Bari - Malattie Infettive
-              </div>
-              <div style="font-size:11.5px; color:#475569; line-height:1.45;">
-                📍 <b>Sede:</b> Piazza Giulio Cesare, 11 (Bari)<br>
-                📞 <b>Segreteria:</b> 080 559 3222 &bull; 080 559 2473<br>
-                ✉️ <b>Email:</b> <a href="mailto:epatologia.malinf@policlinico.ba.it" style="color:#0284c7; font-weight:700; text-decoration:none;">epatologia.malinf@policlinico.ba.it</a>
-              </div>
-            </div>
-          `;
-        })()}
-      </div>
-    </div>
+      `;
+    })()}
   `;
 
-  container.innerHTML = fullHtml;
+    container.innerHTML = fullHtml;
 }
 
 
@@ -16406,7 +16406,7 @@ function getPianoTerapeuticoAttivo(paziente) {
         scatoleSpettantiAnno: 12,
         dataPrescrizioneInizio: "2026-02-23",
         dataScadenzaAnno: "2027-02-22",
-        prossimaVisitaAmbulatoriale: "2027-03-22",
+        prossimaVisitaAmbulatoriale: "2027-02-23",
         scatoleRitirateTotali: 9,
         scatoleResidueDaRitirare: 3,
         puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO",
@@ -16579,7 +16579,7 @@ function calcolaSincronizzazionePianoVisita() {
   var dFineTotaleAnno = new Date();
   dFineTotaleAnno.setDate(dOggi.getDate() + giorniTotaliRimanenti);
 
-  var dVisita = new Date(pt.prossimaVisitaAmbulatoriale || '2027-03-22');
+  var dVisita = new Date(pt.prossimaVisitaAmbulatoriale || '2027-02-23');
   var giorniAllaVisita = Math.ceil((dVisita - dOggi) / (1000 * 60 * 60 * 24));
 
   var alertRitiroScatole = (giorniCasa <= 14);
@@ -16688,7 +16688,7 @@ function getDettagliScadenzaRicetteNRE() {
   return {
     dataEmissioneStr: '21/09/2026',
     dataScadenzaStr: '20/03/2027',
-    dataVisitaStr: '22/03/2027',
+    dataVisitaStr: '23/02/2027',
     giorniRimanenti: diffGiorni,
     giorniAllaVisita: diffVisita,
     colore: colStato,
@@ -16753,7 +16753,7 @@ function apriModalPromemoriaMMG() {
     <!-- MOTIVAZIONE CLINICA -->
     <div style="background:#f8fafc; border-left:4px solid #0284c7; padding:10px 14px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:12px; color:#334155; line-height:1.45;">
       <b>Quesito Diagnostico:</b> <i>07032N Epatite virale B cronica senza menzione di coma epatico</i><br>
-      <b>Motivo:</b> Follow-up specialistico programmato presso la Clinica delle Malattie Infettive Universitaria - Policlinico di Bari (Prof.ssa A. Saracino / Dott. M. Milella). Controllo fissato per il <b>22/03/2027</b>.
+      <b>Motivo:</b> Follow-up specialistico programmato presso la Clinica delle Malattie Infettive Universitaria - Policlinico di Bari (Prof.ssa A. Saracino / Dott. M. Milella). Controllo fissato per il <b>23/02/2027</b>.
     </div>
 
     <!-- TABELLA ESAMI RICHIESTI AL MEDICO CURANTE -->
