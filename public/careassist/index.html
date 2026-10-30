@@ -3418,6 +3418,142 @@
     </div>
   </div>
 
+  <!-- MODAL: PROMEMORIA RICHIESTA IMPEGNATIVE MMG (A4 & WHATSAPP) -->
+<div class="modal-overlay" id="modal-promemoria-mmg" style="z-index:9999999; background:rgba(15, 23, 42, 0.88); backdrop-filter:blur(8px);">
+  <div class="modal-card" style="max-width:820px; width:95%; max-height:92vh; display:flex; flex-direction:column; border-radius:18px; overflow:hidden; border:2px solid #10b981; box-shadow:0 12px 45px rgba(0,0,0,0.6); background:#ffffff;">
+    
+    <!-- HEADER MODALE -->
+    <div class="modal-header" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:white; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:26px;">🖨️</span>
+        <div>
+          <h3 style="margin:0; font-size:16.5px; font-weight:900;">Promemoria Richiesta Impegnative per il Medico di Famiglia (MMG)</h3>
+          <p style="margin:2px 0 0; font-size:11.5px; color:#d1fae5;">Riepilogo esatto delle sole prestazioni a carico del MMG &bull; Formato A4 Stampa & Condivisione</p>
+        </div>
+      </div>
+      <button class="modal-close" style="color:white; font-size:24px; cursor:pointer; background:none; border:none;" onclick="closeModal('modal-promemoria-mmg')">&times;</button>
+    </div>
+
+    <!-- CORPO MODALE CON ANTEPRIMA DEL FOGLIO A4 -->
+    <div class="modal-body" style="padding:16px 20px; overflow-y:auto; flex:1; background:#f1f5f9;">
+      <div id="promemoria-mmg-foglio-a4" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:24px 28px; box-shadow:0 2px 8px rgba(0,0,0,0.06); font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color:#0f172a;">
+        <!-- Contenuto compilato dinamicamente da app.js -->
+      </div>
+    </div>
+
+    <!-- FOOTER AZIONI -->
+    <div class="modal-footer" style="padding:12px 20px; background:#ffffff; border-top:1.5px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div style="font-size:11.5px; color:#64748b;">
+        💡 <b>Consiglio:</b> Puoi stampare il foglio A4 o copiare il testo direttamente su WhatsApp per la segreteria del Dott. Scarcia.
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button type="button" class="btn" onclick="copiaPromemoriaMMGWhatsApp()" style="background:#25d366; color:white; font-weight:800; font-size:12px; padding:8px 14px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+          <span>💬</span> Copia per WhatsApp
+        </button>
+        <button type="button" class="btn" onclick="inviaMailMMGDirect()" style="background:#0284c7; color:white; font-weight:800; font-size:12px; padding:8px 14px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+          <span>✉️</span> Invia Email al Medico
+        </button>
+        <button type="button" class="btn" onclick="stampaPromemoriaMMGA4()" style="background:#059669; color:white; font-weight:800; font-size:12px; padding:8px 16px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(5,150,105,0.3);">
+          <span>🖨️</span> Stampa Foglio A4
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: GESTIONE & ALLEGATO REFERTO DIGITALE (FOTO O PDF) -->
+<div class="modal-overlay" id="modal-allegato-referto" style="z-index:9999999; background:rgba(15, 23, 42, 0.88); backdrop-filter:blur(8px);">
+  <div class="modal-card" style="max-width:580px; width:95%; border-radius:18px; overflow:hidden; border:2px solid #0284c7; box-shadow:0 12px 45px rgba(0,0,0,0.6); background:#ffffff;">
+    
+    <div class="modal-header" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:white; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:26px;">📎</span>
+        <div>
+          <h3 style="margin:0; font-size:16.5px; font-weight:900;" id="allegato-titolo-esame">Allegato Referto Esame</h3>
+          <p style="margin:2px 0 0; font-size:11.5px; color:#bae6fd;">Archiviazione digitale foto referto cartaceo o PDF</p>
+        </div>
+      </div>
+      <button class="modal-close" style="color:white; font-size:24px; cursor:pointer; background:none; border:none;" onclick="closeModal('modal-allegato-referto')">&times;</button>
+    </div>
+
+    <div class="modal-body" style="padding:18px 22px;">
+      <input type="hidden" id="allegato-esame-id">
+
+      <!-- VALORE SINTETICO REFERTO -->
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label" style="font-weight:800; font-size:12.5px; color:#1e293b; margin-bottom:4px; display:block;">📝 Esito / Valore Referto</label>
+        <input type="text" id="allegato-valore-testo" class="form-control" placeholder="Es. Nella norma, HBV-DNA Non rilevabile, Ecografia negativa per lesioni..." style="font-size:13px; padding:8px 12px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-bottom:14px;">
+        <div class="form-group" style="flex:1;">
+          <label class="form-label" style="font-weight:800; font-size:12.5px; color:#1e293b; margin-bottom:4px; display:block;">📅 Data Esecuzione / Referto</label>
+          <input type="date" id="allegato-data-referto" class="form-control" style="font-size:12.5px; padding:7px 10px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label class="form-label" style="font-weight:800; font-size:12.5px; color:#1e293b; margin-bottom:4px; display:block;">🏥 Centro / Laboratorio</label>
+          <input type="text" id="allegato-centro-esecutore" class="form-control" placeholder="Es. Policlinico di Bari / Lab. Analisi" style="font-size:12.5px; padding:7px 10px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+        </div>
+      </div>
+
+      <!-- CARICAMENTO FILE / SCATTA FOTO -->
+      <div style="margin-bottom:14px;">
+        <label class="form-label" style="font-weight:800; font-size:12.5px; color:#1e293b; margin-bottom:6px; display:block;">📸 Allega Immagine Referto o Scansione PDF</label>
+        
+        <div style="border:2px dashed #0284c7; border-radius:12px; padding:16px; text-align:center; background:#f0f9ff; cursor:pointer;" onclick="document.getElementById('input-file-referto').click()">
+          <span style="font-size:32px;">📷</span>
+          <div style="font-size:13px; font-weight:800; color:#0369a1; margin-top:4px;">Tocca qui per scattare una foto o scegliere un file</div>
+          <div style="font-size:11px; color:#64748b; margin-top:2px;">Supporta foto fotocamera, immagini JPG/PNG e documenti</div>
+          <input type="file" id="input-file-referto" accept="image/*,application/pdf" style="display:none;" onchange="gestisciUploadAllegatoReferto(event)">
+        </div>
+
+        <div id="allegato-preview-container" style="display:none; margin-top:12px; text-align:center; background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:10px;">
+          <img id="allegato-preview-img" src="" alt="Anteprima Referto" style="max-height:180px; max-width:100%; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:8px; display:none;">
+          <div id="allegato-preview-fileinfo" style="font-size:12px; font-weight:800; color:#0369a1;"></div>
+          <button type="button" class="btn btn-sm btn-outline text-danger" onclick="rimuoviAllegatoSelezionato()" style="margin-top:6px; font-size:11px; padding:3px 8px;">✕ Rimuovi file</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer" style="padding:12px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+      <button type="button" class="btn btn-outline" onclick="closeModal('modal-allegato-referto')" style="font-size:12px; font-weight:700;">Annulla</button>
+      <div style="display:flex; gap:8px;">
+        <button type="button" id="btn-elimina-referto-esistente" class="btn text-danger" onclick="eliminaRefertoDefinitivo()" style="display:none; font-size:12px; font-weight:700; background:#fee2e2; border:1px solid #fca5a5; border-radius:8px; padding:7px 12px;">🗑️ Elimina</button>
+        <button type="button" class="btn btn-primary" onclick="salvaAllegatoReferto()" style="font-size:12.5px; font-weight:800; background:#0284c7; border:none; border-radius:8px; padding:8px 18px; color:white; cursor:pointer;">💾 Salva Referto</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: ANTEPRIMA A TUTTO SCHERMO REFERTO SCANSIONATO CON ZOOM -->
+<div class="modal-overlay" id="modal-anteprima-referto-zoom" style="z-index:99999999; background:rgba(15, 23, 42, 0.94); backdrop-filter:blur(10px);">
+  <div style="position:relative; width:96%; height:94vh; max-width:1100px; margin:auto; display:flex; flex-direction:column; background:#0f172a; border-radius:16px; overflow:hidden; border:1.5px solid rgba(255,255,255,0.2); box-shadow:0 15px 50px rgba(0,0,0,0.8);">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background:rgba(30,41,59,0.95); border-bottom:1px solid rgba(255,255,255,0.1); color:white;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:22px;">📄</span>
+        <div>
+          <div id="zoom-titolo-esame" style="font-size:15px; font-weight:900; color:#f8fafc;">Visualizzazione Referto</div>
+          <div id="zoom-meta-esame" style="font-size:11.5px; color:#94a3b8;">Fascicolo Sanitario Assistito</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button type="button" class="btn btn-sm" onclick="scaricaRefertoZoomCorrente()" style="background:#0284c7; color:white; border:none; padding:6px 12px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">💾 Scarica</button>
+        <button type="button" class="btn btn-sm" onclick="closeModal('modal-anteprima-referto-zoom')" style="background:rgba(255,255,255,0.2); color:white; border:none; padding:6px 12px; border-radius:6px; font-size:14px; font-weight:900; cursor:pointer;">✕</button>
+      </div>
+    </div>
+
+    <div style="flex:1; overflow:auto; display:flex; justify-content:center; align-items:center; padding:16px; background:#020617;">
+      <img id="zoom-immagine-referto" src="" alt="Referto a tutto schermo" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.5);">
+    </div>
+
+  </div>
+</div>
+
+
   <!-- MODAL: COMPILAZIONE AUTOMATICA MODULO PRENOTAZIONE FARMACI EX-CTO ASL BARI -->
   <div class="modal-overlay" id="modal-prenotazione-cto" style="z-index:9999999; background:rgba(15, 23, 42, 0.88); backdrop-filter:blur(8px);">
     <div class="modal-card" style="max-width:680px; width:95%; border-radius:18px; overflow:hidden; border:2px solid #0284c7; box-shadow:0 12px 45px rgba(0,0,0,0.6);">

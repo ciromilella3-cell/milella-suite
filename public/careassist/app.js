@@ -3719,12 +3719,7 @@ function initTabs() {
       document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
       
       const target = tab.getAttribute('data-target');
-      if (target === 'tab-epatologia') {
-        const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
-        if (typeof pazHaDiagnosiMalattieInfettive === 'function' && !pazHaDiagnosiMalattieInfettive(p)) {
-          return;
-        }
-      }
+
       tabs.forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
       tab.classList.add('active');
@@ -14871,10 +14866,12 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
       if (isPennarello) {
         var cod = es.codicePrestazione || (es.id === 'feg_13' ? '88606' : (es.id === 'rad_4' ? '96101' : '88301'));
         badgeCod = '<span style="background:#0284c7; color:#fff; font-size:9.5px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px;">' + cod + '</span>' +
-                   '<span onclick="event.stopPropagation(); apriDocumentiPianoVisitaOriginali(\'ricetta_esami\')" style="background:#059669; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px; cursor:pointer;" title="Ricetta Elettronica NRE 160A24681622426 emessa dal Dr. Michele Milella - Clicca per vedere">📜 NRE 160A24681622426</span>';
+                   '<span onclick="event.stopPropagation(); apriDocumentiPianoVisitaOriginali(\'ricetta_esami\')" style="background:#059669; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px; cursor:pointer;" title="Ricetta Elettronica NRE 160A24681622426 emessa dal Dr. Michele Milella - Clicca per vedere">📜 NRE 160A24681622426</span>' +
+                   (es.allegatoDataUrl ? '<span onclick="event.stopPropagation(); visualizzaAllegatoReferto(\'' + es.id + '\')" style="background:#0284c7; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px; cursor:pointer;" title="Vedi referto allegato">📎 Referto</span>' : '<span onclick="event.stopPropagation(); apriModalAllegatoReferto(\'' + es.id + '\')" style="background:#f1f5f9; color:#64748b; font-size:8.5px; font-weight:700; padding:1px 4px; border-radius:3px; margin-left:4px; cursor:pointer;" title="Allega referto (Foto/PDF)">📎</span>');
       }
 
       var puntiniHtml = es.haPuntini ? '<span style="letter-spacing:1px; font-family:monospace; font-size:9.5px; color:#cbd5e1; flex:1; margin-left:3px; overflow:hidden; white-space:nowrap;">..................</span>' : '';
+      var badgeAllegatoStandard = (!isPennarello && isSpuntato) ? (es.allegatoDataUrl ? '<span onclick="event.stopPropagation(); visualizzaAllegatoReferto(\'' + es.id + '\')" style="background:#059669; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:3px; cursor:pointer;" title="Vedi referto scansionato">📎 Referto</span>' : '<span onclick="event.stopPropagation(); apriModalAllegatoReferto(\'' + es.id + '\')" style="background:#f1f5f9; color:#64748b; font-size:8.5px; font-weight:700; padding:1px 4px; border-radius:3px; margin-left:3px; cursor:pointer;" title="Allega foto o PDF referto">📎</span>') : '';
       
       // Link diretto Puglia Salute per esami strumentali e radiologici (Ecografia, TAC, RMN, ECG, Fibroscan)
       var pugliaSaluteBtn = '';
@@ -14944,7 +14941,10 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
       '</div>' +
     '</div>' +
 
-    '<div>' +
+    '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
+      '<button type="button" class="btn btn-sm" onclick="apriModalPromemoriaMMG()" style="background:#10b981; color:#ffffff; font-weight:900; font-size:12px; padding:7px 14px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(16,185,129,0.35);" title="Stampa A4 o copia WhatsApp per il Dott. Scarcia">' +
+        '<span>🖨️</span> Promemoria MMG (A4 / WhatsApp)' +
+      '</button>' +
       '<button type="button" class="btn btn-sm" onclick="apriPrenotazionePugliaSalute()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:900; font-size:12px; padding:7px 14px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(2,132,199,0.35);">' +
         '<span>🌐</span> Prenota su PUGLIA SALUTE (CUP Online)' +
       '</button>' +
@@ -15285,25 +15285,31 @@ function aggiornaVisibilitaTabEpatologia() {
   var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
   var tabBtn = document.querySelector('[data-target="tab-epatologia"]');
   var tabSection = document.getElementById('tab-epatologia');
-  var isInfettivo = pazHaDiagnosiMalattieInfettive(p);
+  if (!p || !tabBtn) return;
 
-  if (tabBtn) {
-    tabBtn.style.display = isInfettivo ? 'inline-flex' : 'none';
-    if (isInfettivo) {
-      tabBtn.innerHTML = '🩺 Malattie Infettive (Policlinico)';
-      tabBtn.title = 'Cartella Ambulatoriale Follow-up Malattie Infettive & Epatologia - Policlinico di Bari';
-    }
+  var pNome = (p.nome || '').toLowerCase();
+  var pId = p.id || '';
+  var isInfettivo = (typeof pazHaDiagnosiMalattieInfettive === 'function') && pazHaDiagnosiMalattieInfettive(p);
+
+  tabBtn.style.display = 'inline-flex';
+
+  if (isInfettivo) {
+    tabBtn.innerHTML = '🩺 Malattie Infettive (Policlinico)';
+    tabBtn.title = 'Cartella Ambulatoriale Follow-up Malattie Infettive & Epatologia - Policlinico di Bari';
+  } else if (pId === 'paz_aldo' || pNome.includes('aldo')) {
+    tabBtn.innerHTML = '🧠 Neurologia & Cardiologia';
+    tabBtn.title = 'Cartella Monitoraggio Specialistico Geriatrico & Decubito - Aldo Zamparino';
+  } else if (pId === 'paz_angela' || pNome.includes('angela')) {
+    tabBtn.innerHTML = '❤️ Cardiologia & Metabolica';
+    tabBtn.title = 'Cartella Monitoraggio Cardiometabolico & Ipertensione - Angela Mazzicone';
+  } else {
+    tabBtn.innerHTML = '🩺 Follow-up Specialistico';
+    tabBtn.title = 'Cartella Clinica Specialistica & Follow-up';
   }
 
-  // Se l'utente era sul tab epatologia ma l'assistito attivo NON è infettivo (es. Aldo o Angela), torna subito alla Dashboard
-  if (!isInfettivo && tabSection && (tabSection.style.display === 'block' || tabSection.style.display === 'flex' || tabSection.offsetParent !== null)) {
-    tabSection.style.display = 'none';
-    var tabs = document.querySelectorAll('.nav-tab');
-    tabs.forEach(function(t) { t.classList.remove('active'); });
-    var dashBtn = document.querySelector('[data-target="tab-dashboard"]');
-    var dashSection = document.getElementById('tab-dashboard');
-    if (dashBtn) dashBtn.classList.add('active');
-    if (dashSection) dashSection.style.display = 'block';
+  // Se il tab è attualmente visualizzato, aggiorna il render per il nuovo assistito
+  if (tabSection && (tabSection.style.display === 'block' || tabSection.style.display === 'flex')) {
+    if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
   }
 }
 window.aggiornaVisibilitaTabEpatologia = aggiornaVisibilitaTabEpatologia;
@@ -15547,18 +15553,22 @@ function renderEpatologiaView() {
   var container = document.getElementById('tab-epatologia');
   if (!container || !p) return;
 
-  // SICUREZZA ASSOLUTA: Il modulo Policlinico di Bari Malattie Infettive è ESCLUSIVO per pazienti infettivi (Ciro Milella)
-  if (!pazHaDiagnosiMalattieInfettive(p)) {
-    container.innerHTML = '<div style="padding:40px 20px; text-align:center; background:#ffffff; border-radius:16px; margin:20px; border:1.5px solid #e2e8f0; box-shadow:0 4px 15px rgba(0,0,0,0.05);">' +
-      '<div style="font-size:48px; margin-bottom:12px;">🩺</div>' +
-      '<h3 style="font-size:18px; font-weight:800; color:#1e293b; margin-bottom:8px;">Nessuna Cartella di Malattie Infettive per ' + (p.nome || 'questo assistito') + '</h3>' +
-      '<p style="font-size:13.5px; color:#64748b; max-width:500px; margin:0 auto 16px; line-height:1.5;">' +
-        'Il modulo prestampato del Policlinico di Bari e le relative prescrizioni specialistiche sono riservati esclusivamente al follow-up delle malattie infettive/epatologiche.' +
-      '</p>' +
-      '<button type="button" class="btn btn-primary" onclick="const b = document.querySelector(\'[data-target=\"tab-dashboard\"]\'); if (b) b.click();">Torna alla Dashboard</button>' +
-    '</div>';
-    return;
+  var pNome = (p.nome || '').toLowerCase();
+  var pId = p.id || '';
+
+  if (typeof pazHaDiagnosiMalattieInfettive === 'function' && pazHaDiagnosiMalattieInfettive(p)) {
+    renderEpatologiaInfettiviCiro(container, p);
+  } else if (pId === 'paz_aldo' || pNome.includes('aldo')) {
+    renderSchedaSpecialisticaAldo(container, p);
+  } else if (pId === 'paz_angela' || pNome.includes('angela')) {
+    renderSchedaSpecialisticaAngela(container, p);
+  } else {
+    renderSchedaSpecialisticaAldo(container, p);
   }
+}
+window.renderEpatologiaView = renderEpatologiaView;
+
+function renderEpatologiaInfettiviCiro(container, p) {
 
   var croniche = rilevaMalattieCronicheDaiFarmaci(p);
   if (croniche.length === 0) {
@@ -15797,8 +15807,11 @@ function renderEpatologiaView() {
 
       <!-- AZIONI RAPIDE DEL PROTOCOLLO -->
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; position:relative; z-index:2;">
+        <button type="button" class="btn" onclick="apriModalPromemoriaMMG()" style="background:#059669; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(5,150,105,0.3);" title="Stampa il promemoria in formato A4 o copialo per WhatsApp">
+          <span>🖨️</span> Stampa Promemoria MMG (A4 / WhatsApp)
+        </button>
         <button type="button" class="btn" onclick="richiediTutteRicetteAlMedicoMMG()" style="background:#10b981; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(16,185,129,0.3);">
-          <span>✉️</span> Invia Richiesta Impegnative (MMG)
+          <span>✉️</span> Invia Email al Dott. Scarcia
         </button>
         <button type="button" class="btn" onclick="apriModalNuovoControlloFoto()" style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 3px 10px rgba(5,150,105,0.3);">
           <span>📷</span> Nuovo Controllo da Foto (Archivia Precedente)
@@ -15958,8 +15971,15 @@ function renderEpatologiaView() {
 
               <div style="font-size:12px; color:#334155; line-height:1.45; margin-bottom:12px; background:rgba(255,255,255,0.85); padding:10px 12px; border-radius:10px; border:1px solid #a7f3d0;">
                 👨‍⚕️ <b>Medico:</b> Dr. Michele Milella (Malattie Infettive)<br>
-                📅 <b>Data Emissione:</b> 21/09/2026 &bull; Validità: 180 giorni<br>
-                📋 <b>Diagnosi:</b> 07032N Epatite virale B cronica
+                ${(function() {
+                  var nre = getDettagliScadenzaRicetteNRE();
+                  return `
+                    📅 <b>Data Emissione:</b> 21/09/2026 &bull; <b>Validità Ricetta:</b> 180 giorni<br>
+                    ⏳ <b>Scadenza NRE:</b> <b style="color:${nre.colore}; background:${nre.bg}; padding:1px 6px; border-radius:4px; border:1px solid ${nre.border}; font-size:12px;">${nre.giorniRimanenti} Giorni Rimanenti (Scadenza: ${nre.dataScadenzaStr})</b><br>
+                    ⚠️ <i>Attenzione: le ricette scadono 2 gg prima della visita del ${nre.dataVisitaStr}. Eseguire il prelievo prima del 20/03/2027!</i><br>
+                    📋 <b>Diagnosi:</b> 07032N Epatite virale B cronica
+                  `;
+                })()}
               </div>
 
               <!-- RICETTA 1: ESAMI VIROLOGICI ED EMATICI -->
@@ -16376,3 +16396,725 @@ function apriDocumentiPianoVisitaOriginali(tipo) {
   }
 }
 window.apriDocumentiPianoVisitaOriginali = apriDocumentiPianoVisitaOriginali;
+
+
+// ==============================================================================
+// MODULO CLINICO AVANZATO: MONITORAGGIO NRE 180GG, STAMPA MMG, ALLEGATI REFERTI
+// & SCHEDE SPECIALISTICHE DEDICATE (ALDO ZAMPARINO & ANGELA MAZZICONE)
+// ==============================================================================
+
+// 1. MONITORAGGIO SCADENZA RICETTE ELETTRONICHE NRE (180 GIORNI)
+function getDettagliScadenzaRicetteNRE() {
+  var dEmissione = new Date('2026-09-21T00:00:00');
+  var dScadenza = new Date('2027-03-20T23:59:59'); // 180 giorni esatti da emissione
+  var dVisita = new Date('2027-03-22T09:00:00');
+  var now = new Date();
+  var diffGiorni = Math.max(0, Math.ceil((dScadenza - now) / (1000 * 60 * 60 * 24)));
+  var diffVisita = Math.max(0, Math.ceil((dVisita - now) / (1000 * 60 * 60 * 24)));
+
+  var colStato = '#16a34a';
+  var bgStato = '#f0fdf4';
+  var borderStato = '#86efac';
+  var labelStato = 'VALIDA';
+
+  if (diffGiorni <= 30) {
+    colStato = '#dc2626';
+    bgStato = '#fef2f2';
+    borderStato = '#fca5a5';
+    labelStato = 'IN SCADENZA (<30 GG)';
+  } else if (diffGiorni <= 60) {
+    colStato = '#ea580c';
+    bgStato = '#fff7ed';
+    borderStato = '#fdba74';
+    labelStato = 'ATTENZIONE (<60 GG)';
+  }
+
+  return {
+    dataEmissioneStr: '21/09/2026',
+    dataScadenzaStr: '20/03/2027',
+    dataVisitaStr: '22/03/2027',
+    giorniRimanenti: diffGiorni,
+    giorniAllaVisita: diffVisita,
+    colore: colStato,
+    bg: bgStato,
+    border: borderStato,
+    labelStato: labelStato,
+    nreEsami: '160A24681622426',
+    nreVisita: '160A24681622429',
+    medicoPrescrittore: 'Dr. Michele Milella'
+  };
+}
+window.getDettagliScadenzaRicetteNRE = getDettagliScadenzaRicetteNRE;
+
+// 2. PROMEMORIA MMG A4 (STAMPA & WHATSAPP)
+function apriModalPromemoriaMMG() {
+  var p = getActivePaziente();
+  if (!p) return;
+
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  var esami = (scheda && scheda.esami) ? scheda.esami : [];
+
+  // Filtra SOLO gli esami contrassegnati a penna da richiedere al MMG (esclude quelli automatici reparto con NRE)
+  var esamiMMG = esami.filter(function(es) {
+    if (es.spuntato === false) return false;
+    if (es.emessoDaAmbulatorio || es.evidenziatoPennarello) return false;
+    if (es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4' || es.id === 'ep_3' || es.id === 'ep_4') return false;
+    return true;
+  });
+
+  var containerA4 = document.getElementById('promemoria-mmg-foglio-a4');
+  if (!containerA4) return;
+
+  var righeHtml = esamiMMG.map(function(es, idx) {
+    var catBadge = es.categoria ? (' <span style="font-size:10px; color:#64748b; background:#f1f5f9; padding:1px 6px; border-radius:4px;">[' + es.categoria + ']</span>') : '';
+    return '<tr style="border-bottom:1px solid #e2e8f0;">' +
+      '<td style="padding:7px 10px; font-weight:800; color:#0f172a; width:35px; text-align:center;">' + (idx + 1) + '.</td>' +
+      '<td style="padding:7px 10px; font-weight:700; color:#1e293b; font-size:13px;">' + es.nome + catBadge + '</td>' +
+      '<td style="padding:7px 10px; font-size:11.5px; color:#475569;">' + (es.note || 'Richiesta impegnativa SSN') + '</td>' +
+      '<td style="padding:7px 10px; text-align:center; font-size:12px; font-weight:700; color:#0369a1;">' + (es.richiestoMMG ? '✓ Già richiesta' : '⚪ Da emettere') + '</td>' +
+    '</tr>';
+  }).join('');
+
+  var htmlA4 = `
+    <!-- INTESTAZIONE UFFICIALE A4 -->
+    <div style="border-bottom:2px solid #0284c7; padding-bottom:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <div style="font-size:11px; font-weight:900; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px;">SERVIZIO SANITARIO REGIONALE &bull; REGIONE PUGLIA</div>
+        <div style="font-size:17px; font-weight:900; color:#0f172a; margin-top:2px;">PROMEMORIA RICHIESTA IMPEGNATIVE SSN</div>
+        <div style="font-size:12px; color:#475569; margin-top:2px;">Al Medico di Medicina Generale: <b>Dott. Roberto SCARCIA</b></div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:13.5px; font-weight:900; color:#0284c7;">Sig. CIRO MILELLA</div>
+        <div style="font-size:11px; color:#64748b;">Nato il: <b>15/12/1967</b> (Bari)</div>
+        <div style="font-size:11px; color:#64748b;">C.F.: <b style="font-family:monospace;">MLLCRI67T16A662Z</b></div>
+        <div style="font-size:11px; color:#15803d; font-weight:800;">Codice Esenzione: <b>016</b> (Epatite Cronica)</div>
+      </div>
+    </div>
+
+    <!-- MOTIVAZIONE CLINICA -->
+    <div style="background:#f8fafc; border-left:4px solid #0284c7; padding:10px 14px; margin-bottom:16px; border-radius:0 8px 8px 0; font-size:12px; color:#334155; line-height:1.45;">
+      <b>Quesito Diagnostico:</b> <i>07032N Epatite virale B cronica senza menzione di coma epatico</i><br>
+      <b>Motivo:</b> Follow-up specialistico programmato presso la Clinica delle Malattie Infettive Universitaria - Policlinico di Bari (Prof.ssa A. Saracino / Dott. M. Milella). Controllo fissato per il <b>22/03/2027</b>.
+    </div>
+
+    <!-- TABELLA ESAMI RICHIESTI AL MEDICO CURANTE -->
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12.5px; font-weight:900; color:#0f172a; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span>ELENCO PRESTAZIONI DA PRESCRIVERE CON IMPEGNATIVA (${esamiMMG.length} Prescrizioni):</span>
+        <span style="font-size:11px; color:#15803d; font-weight:800;">Tutte in Esenzione 016</span>
+      </div>
+      <table style="width:100%; border-collapse:collapse; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; overflow:hidden;">
+        <thead>
+          <tr style="background:#f1f5f9; color:#475569; font-size:11px; text-transform:uppercase;">
+            <th style="padding:8px 10px; width:35px; text-align:center;">#</th>
+            <th style="padding:8px 10px; text-align:left;">Prestazione / Esame</th>
+            <th style="padding:8px 10px; text-align:left;">Note Cliniche</th>
+            <th style="padding:8px 10px; width:110px; text-align:center;">Stato</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${righeHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- BOX DI CHIARIMENTO SULLE PRESCRIZIONI GIÀ DISPOSTE DAL REPARTO -->
+    <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:8px; padding:10px 14px; font-size:11.5px; color:#166534; line-height:1.45; margin-bottom:14px;">
+      <b>⚠️ NOTA PER LO STUDIO MEDICO (Prestazioni già emesse d'ufficio dal Reparto):</b><br>
+      Si specifica che le seguenti prestazioni <b>NON devono essere prescritte dal Medico Curante</b>, poiché già emesse direttamente dall'infettivologo Dott. Michele Milella con ricette elettroniche dematerializzate:<br>
+      • <b>HBV-DNA Quantitativo (88301) + HBsAg Reflex (88606) + Prelievo (96101):</b> Ricetta NRE <b>160A24681622426</b><br>
+      • <b>Visita Infettivologica di Controllo (12197):</b> Ricetta NRE <b>160A24681622429</b>
+    </div>
+
+    <!-- FIRMA E DATA -->
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; padding-top:10px; font-size:12px; color:#475569;">
+      <div>Data stampa: <b>${new Date().toLocaleDateString('it-IT')}</b></div>
+      <div style="text-align:right;">
+        Firma Assistito: __________________________<br>
+        <span style="font-size:10.5px; color:#94a3b8;">Ciro Milella (Tel. 366 460 7396)</span>
+      </div>
+    </div>
+  `;
+
+  containerA4.innerHTML = htmlA4;
+  openModal('modal-promemoria-mmg');
+}
+window.apriModalPromemoriaMMG = apriModalPromemoriaMMG;
+
+function stampaPromemoriaMMGA4() {
+  var elemento = document.getElementById('promemoria-mmg-foglio-a4');
+  if (!elemento) return;
+
+  var finestra = window.open('', '_blank', 'width=850,height=900');
+  finestra.document.write('<!DOCTYPE html><html><head><title>Promemoria Impegnative MMG - Ciro Milella</title>');
+  finestra.document.write('<style>body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 30px; margin: 0; color: #0f172a; } @media print { @page { margin: 15mm; size: A4 portrait; } body { padding: 0; } }</style>');
+  finestra.document.write('</head><body>');
+  finestra.document.write(elemento.innerHTML);
+  finestra.document.write('</body></html>');
+  finestra.document.close();
+  finestra.focus();
+  setTimeout(function() {
+    finestra.print();
+    finestra.close();
+  }, 350);
+}
+window.stampaPromemoriaMMGA4 = stampaPromemoriaMMGA4;
+
+function copiaPromemoriaMMGWhatsApp() {
+  var p = getActivePaziente();
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  var esami = (scheda && scheda.esami) ? scheda.esami : [];
+
+  var esamiMMG = esami.filter(function(es) {
+    if (es.spuntato === false) return false;
+    if (es.emessoDaAmbulatorio || es.evidenziatoPennarello) return false;
+    if (es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4' || es.id === 'ep_3' || es.id === 'ep_4') return false;
+    return true;
+  });
+
+  var testo = "Gentile Dott. Scarcia,\n" +
+    "in vista del controllo per Sig. Ciro Milella (CF: MLLCRI67T16A662Z - Esenzione 016) presso Malattie Infettive Policlinico di Bari, Le trasmetto il promemoria delle impegnative SSN necessarie:\n\n" +
+    esamiMMG.map(function(es, i) { return (i + 1) + ") " + es.nome; }).join("\n") +
+    "\n\n*Nota:* HBV-DNA, HBsAg, Prelievo e Visita Infettivologica sono già stati emessi dall'ospedale con ricette NRE 160A24681622426 e 160A24681622429.\n\nGrazie cordialmente,\nCiro Milella (Cell: 366 460 7396)";
+
+  navigator.clipboard.writeText(testo).then(function() {
+    showToast("📋 Promemoria copiato! Pronto da incollare su WhatsApp o via messaggio.");
+  }).catch(function() {
+    prompt("Copia il testo:", testo);
+  });
+}
+window.copiaPromemoriaMMGWhatsApp = copiaPromemoriaMMGWhatsApp;
+
+function inviaMailMMGDirect() {
+  var p = getActivePaziente();
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  var esami = (scheda && scheda.esami) ? scheda.esami : [];
+
+  var esamiMMG = esami.filter(function(es) {
+    if (es.spuntato === false) return false;
+    if (es.emessoDaAmbulatorio || es.evidenziatoPennarello) return false;
+    if (es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4' || es.id === 'ep_3' || es.id === 'ep_4') return false;
+    return true;
+  });
+
+  var mail = (p && p.medicoEmail) ? p.medicoEmail : 'scarcia.roberto@alice.it';
+  var subject = "Richiesta Impegnative Follow-up Policlinico - Sig. Ciro Milella (Esenzione 016)";
+  var body = "Gentile Dott. Scarcia,\n\n" +
+    "in vista del controllo programmato per il Sig. Ciro Milella (C.F. MLLCRI67T16A662Z) presso la Clinica delle Malattie Infettive del Policlinico di Bari, Le richiedo gentilmente l'emissione delle seguenti impegnative in esenzione 016:\n\n" +
+    esamiMMG.map(function(es, i) { return (i + 1) + ". " + es.nome; }).join("\n") +
+    "\n\n(Si precisa che HBV-DNA, HBsAg e la Visita di controllo sono già stati prescritti direttamente dall'Ambulatorio Infettivi con NRE 160A24681622426 e 160A24681622429).\n\nRingraziando cordialmente,\nCiro Milella - Tel. 366 460 7396";
+
+  window.location.href = "mailto:" + mail + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+}
+window.inviaMailMMGDirect = inviaMailMMGDirect;
+
+// 3. GESTIONE ALLEGATI REFERTI CLINICI (FOTO / PDF)
+var _allegatoCorrenteEsameId = null;
+var _allegatoTempDataUrl = null;
+var _allegatoTempNome = null;
+
+function apriModalAllegatoReferto(esameId) {
+  _allegatoCorrenteEsameId = esameId;
+  _allegatoTempDataUrl = null;
+  _allegatoTempNome = null;
+
+  var p = getActivePaziente();
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === esameId; }) : null;
+  if (!es) return;
+
+  var elTitolo = document.getElementById('allegato-titolo-esame');
+  var inputId = document.getElementById('allegato-esame-id');
+  var inputValore = document.getElementById('allegato-valore-testo');
+  var inputData = document.getElementById('allegato-data-referto');
+  var inputCentro = document.getElementById('allegato-centro-esecutore');
+  var previewContainer = document.getElementById('allegato-preview-container');
+  var previewImg = document.getElementById('allegato-preview-img');
+  var previewInfo = document.getElementById('allegato-preview-fileinfo');
+  var btnElimina = document.getElementById('btn-elimina-referto-esistente');
+
+  if (elTitolo) elTitolo.textContent = '📎 Referto: ' + es.nome;
+  if (inputId) inputId.value = es.id;
+  if (inputValore) inputValore.value = es.valoreReferto || '';
+  if (inputData) inputData.value = es.dataReferto || new Date().toISOString().slice(0, 10);
+  if (inputCentro) inputCentro.value = es.centroReferto || 'Policlinico di Bari';
+
+  if (es.allegatoDataUrl) {
+    _allegatoTempDataUrl = es.allegatoDataUrl;
+    _allegatoTempNome = es.allegatoNome || 'referto.jpg';
+    if (previewContainer) previewContainer.style.display = 'block';
+    if (previewImg) {
+      if (_allegatoTempDataUrl.startsWith('data:image')) {
+        previewImg.src = _allegatoTempDataUrl;
+        previewImg.style.display = 'block';
+      } else {
+        previewImg.style.display = 'none';
+      }
+    }
+    if (previewInfo) previewInfo.textContent = '📄 ' + _allegatoTempNome;
+    if (btnElimina) btnElimina.style.display = 'inline-flex';
+  } else {
+    if (previewContainer) previewContainer.style.display = 'none';
+    if (btnElimina) btnElimina.style.display = 'none';
+  }
+
+  openModal('modal-allegato-referto');
+}
+window.apriModalAllegatoReferto = apriModalAllegatoReferto;
+
+function gestisciUploadAllegatoReferto(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+
+  _allegatoTempNome = file.name;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _allegatoTempDataUrl = e.target.result;
+    var previewContainer = document.getElementById('allegato-preview-container');
+    var previewImg = document.getElementById('allegato-preview-img');
+    var previewInfo = document.getElementById('allegato-preview-fileinfo');
+
+    if (previewContainer) previewContainer.style.display = 'block';
+    if (previewImg) {
+      if (_allegatoTempDataUrl.startsWith('data:image')) {
+        previewImg.src = _allegatoTempDataUrl;
+        previewImg.style.display = 'block';
+      } else {
+        previewImg.style.display = 'none';
+      }
+    }
+    if (previewInfo) previewInfo.textContent = '✓ ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+    showToast('📸 File caricato! Premi "Salva Referto" per archiviare.');
+  };
+  reader.readAsDataURL(file);
+}
+window.gestisciUploadAllegatoReferto = gestisciUploadAllegatoReferto;
+
+function rimuoviAllegatoSelezionato() {
+  _allegatoTempDataUrl = null;
+  _allegatoTempNome = null;
+  var previewContainer = document.getElementById('allegato-preview-container');
+  if (previewContainer) previewContainer.style.display = 'none';
+  var inputFile = document.getElementById('input-file-referto');
+  if (inputFile) inputFile.value = '';
+}
+window.rimuoviAllegatoSelezionato = rimuoviAllegatoSelezionato;
+
+function salvaAllegatoReferto() {
+  if (!_allegatoCorrenteEsameId) return;
+
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === _allegatoCorrenteEsameId; }) : null;
+  if (!es) return;
+
+  var inputValore = document.getElementById('allegato-valore-testo');
+  var inputData = document.getElementById('allegato-data-referto');
+  var inputCentro = document.getElementById('allegato-centro-esecutore');
+
+  var val = inputValore ? inputValore.value.trim() : '';
+  es.valoreReferto = val || 'Refertato';
+  es.dataReferto = inputData ? inputData.value : new Date().toISOString().slice(0, 10);
+  es.centroReferto = inputCentro ? inputCentro.value.trim() : '';
+  es.refertato = true;
+
+  if (_allegatoTempDataUrl) {
+    es.allegatoDataUrl = _allegatoTempDataUrl;
+    es.allegatoNome = _allegatoTempNome || 'referto.jpg';
+  }
+
+  saveDb();
+  closeModal('modal-allegato-referto');
+  renderEpatologiaView();
+  showToast('✓ Referto di ' + es.nome + ' archiviato con successo nel Fascicolo Digitale!');
+}
+window.salvaAllegatoReferto = salvaAllegatoReferto;
+
+function eliminaRefertoDefinitivo() {
+  if (!_allegatoCorrenteEsameId) return;
+
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === _allegatoCorrenteEsameId; }) : null;
+  if (!es) return;
+
+  es.allegatoDataUrl = null;
+  es.allegatoNome = null;
+  es.valoreReferto = '';
+  es.refertato = false;
+
+  saveDb();
+  closeModal('modal-allegato-referto');
+  renderEpatologiaView();
+  showToast('🗑️ Referto rimosso.');
+}
+window.eliminaRefertoDefinitivo = eliminaRefertoDefinitivo;
+
+var _zoomRefertoDataUrl = null;
+function visualizzaAllegatoReferto(esameId) {
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === esameId; }) : null;
+  if (!es || !es.allegatoDataUrl) return;
+
+  _zoomRefertoDataUrl = es.allegatoDataUrl;
+  var elTitolo = document.getElementById('zoom-titolo-esame');
+  var elMeta = document.getElementById('zoom-meta-esame');
+  var imgZoom = document.getElementById('zoom-immagine-referto');
+
+  if (elTitolo) elTitolo.textContent = '📄 ' + es.nome;
+  if (elMeta) elMeta.textContent = 'Esito: ' + (es.valoreReferto || 'Refertato') + ' &bull; Data: ' + (es.dataReferto || '--');
+  if (imgZoom) imgZoom.src = es.allegatoDataUrl;
+
+  openModal('modal-anteprima-referto-zoom');
+}
+window.visualizzaAllegatoReferto = visualizzaAllegatoReferto;
+
+function scaricaRefertoZoomCorrente() {
+  if (!_zoomRefertoDataUrl) return;
+  var a = document.createElement('a');
+  a.href = _zoomRefertoDataUrl;
+  a.download = 'referto_careassist.jpg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+window.scaricaRefertoZoomCorrente = scaricaRefertoZoomCorrente;
+
+
+// ==============================================================================
+// SCHEDE SPECIALISTICHE DEDICATE: ALDO ZAMPARINO & ANGELA MAZZICONE
+// ==============================================================================
+
+const ESAMI_ALDO_DEFAULT = [
+  { id: 'aldo_1', nome: 'Visita Neurologica Domiciliare', categoria: 'Neurologia', note: 'Monitoraggio epilessia e terapia anticomiziale', spuntato: true, richiestoMMG: true, prenotatoCUP: true, dataPrenotazioneCUP: '2026-11-10', luogoPrenotazione: 'Visita Domiciliare ADI' },
+  { id: 'aldo_2', nome: 'Elettrocardiogramma (ECG) Domiciliare', categoria: 'Cardiologia', note: 'Telecardiologia ritmo cardiaco e terapia', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+  { id: 'aldo_3', nome: 'Elettroliti Sierici (Sodio, Potassio, Cloro)', categoria: 'Laboratorio', note: 'Monitoraggio equilibrio per diuretico Lasix', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+  { id: 'aldo_4', nome: 'Funzionalità Renale (Azotemia, Creatininemia, eGFR)', categoria: 'Laboratorio', note: 'Clearance e dosaggio farmaci nel grande anziano', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+  { id: 'aldo_5', nome: 'Emocromo Completo con Formula & Sideremia', categoria: 'Laboratorio', note: 'Sorveglianza e prevenzione anemia da allettamento', spuntato: true, richiestoMMG: false, prenotatoCUP: false },
+  { id: 'aldo_6', nome: 'Esame Urine & Urinocultura con Antibiogramma', categoria: 'Laboratorio', note: 'Sorveglianza vie urinarie e gestione catetere/incontinenza', spuntato: true, richiestoMMG: false, prenotatoCUP: false },
+  { id: 'aldo_7', nome: 'Valutazione Rischio Lesioni da Decubito (Scala Braden)', categoria: 'Infermieristica ADI', note: 'Scarico pressorio e rotazione posturale q2h', spuntato: true, richiestoMMG: true, refertato: true, valoreReferto: 'Rischio Moderato - Cute Integra' },
+  { id: 'aldo_8', nome: 'Visita Fisiatrica Domiciliare (Mobilizzazione Passiva)', categoria: 'Riabilitazione', note: 'Prevenzione retrazioni articolari e ipomobilità', spuntato: true, richiestoMMG: false, prenotatoCUP: false }
+];
+
+const ESAMI_ANGELA_DEFAULT = [
+  { id: 'angela_1', nome: 'Visita Cardiologica di Controllo & ECG', categoria: 'Cardiologia', note: 'Valutazione funzione cardiaca e compenso pressorio', spuntato: true, richiestoMMG: true, prenotatoCUP: true, dataPrenotazioneCUP: '2026-11-18', luogoPrenotazione: 'Cardiologia Territoriale' },
+  { id: 'angela_2', nome: 'Monitoraggio Pressione Arteriosa (Diario PA)', categoria: 'Cardiologia', note: 'Controllo settimanale valori pressori clino/orto', spuntato: true, richiestoMMG: true, refertato: true, valoreReferto: 'Media PA: 125/75 mmHg' },
+  { id: 'angela_3', nome: 'Dosaggio Acido Urico / Uricemia', categoria: 'Laboratorio', note: 'Verifica efficacia terapia uricosurica', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+  { id: 'angela_4', nome: 'Assetto Lipidico Completo (Colesterolo Tot, HDL, LDL, Trigliceridi)', categoria: 'Laboratorio', note: 'Monitoraggio dislipidemia e target cardiovascolare', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+  { id: 'angela_5', nome: 'Dosaggio 25-OH Vitamina D3 & Calcemia', categoria: 'Laboratorio', note: 'Salute osteo-articolare e integrazione vit. D3', spuntato: true, richiestoMMG: true, prenotatoCUP: false },
+  { id: 'angela_6', nome: 'Creatininemia, Azotemia ed Elettroliti (K+, Na+)', categoria: 'Laboratorio', note: 'Funzione renale in terapia antipertensiva combinata', spuntato: true, richiestoMMG: false, prenotatoCUP: false },
+  { id: 'angela_7', nome: 'Glicemia a Digiuno & Profilo Glucidico', categoria: 'Laboratorio', note: 'Sorveglianza metabolica periodica', spuntato: true, richiestoMMG: false, prenotatoCUP: false },
+  { id: 'angela_8', nome: 'Eco-Color-Doppler Tronchi Sovraaortici (TSA)', categoria: 'Strumentale', note: 'Screening vascolare carotideo e cerebrale', spuntato: true, richiestoMMG: false, prenotatoCUP: false }
+];
+
+function getSchedaSpecialisticaAldo(p) {
+  if (!p) return null;
+  if (!p.schedaNeurologicaCardio) {
+    p.schedaNeurologicaCardio = {
+      dataProssimoControllo: '2026-11-10',
+      medicoCurante: 'Dott. Roberto Scarcia',
+      centroRiferimento: 'Distretto Socio-Sanitario Bari & ADI Domiciliare',
+      esami: JSON.parse(JSON.stringify(ESAMI_ALDO_DEFAULT))
+    };
+    saveDb();
+  }
+  return p.schedaNeurologicaCardio;
+}
+
+function getSchedaSpecialisticaAngela(p) {
+  if (!p) return null;
+  if (!p.schedaCardioMetabolica) {
+    p.schedaCardioMetabolica = {
+      dataProssimoControllo: '2026-11-18',
+      medicoCurante: 'Dott. Roberto Scarcia',
+      centroRiferimento: 'Cardiologia Territoriale ASL Bari',
+      esami: JSON.parse(JSON.stringify(ESAMI_ANGELA_DEFAULT))
+    };
+    saveDb();
+  }
+  return p.schedaCardioMetabolica;
+}
+
+function renderTabellaEsamiSpecialisticiGenerica(esami, isAldo) {
+  return esami.map(function(es) {
+    var isSpuntato = (es.spuntato !== false);
+    var rowStyle = isSpuntato ? 'border-bottom:1px solid #f1f5f9; background:#ffffff;' : 'border-bottom:1px solid #f1f5f9; background:#ffffff; opacity:0.65;';
+
+    // Badge categoria
+    var catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#f1f5f9; color:#475569;">' + es.categoria + '</span>';
+    if (es.categoria.includes('Neurologia')) catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#ede9fe; color:#6d28d9; border:1px solid #c4b5fd;">🧠 Neurologia</span>';
+    else if (es.categoria.includes('Cardiologia')) catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;">🫀 Cardiologia</span>';
+    else if (es.categoria.includes('Laboratorio')) catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc;">🔬 Laboratorio</span>';
+    else if (es.categoria.includes('Strumentale')) catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#fef3c7; color:#b45309; border:1px solid #fde047;">📸 Strumentale</span>';
+    else if (es.categoria.includes('Infermieristica')) catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">🩺 ADI Domiciliare</span>';
+
+    // Richiesta MMG
+    var cellRichiesto = es.richiestoMMG 
+      ? '<span style="color:#16a34a; font-weight:800; font-size:11.5px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta</span>' 
+      : '<button class="btn btn-sm" style="font-size:10.5px; padding:2px 7px; background:#fff; border:1px solid #cbd5e1; color:#64748b; border-radius:6px;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')">⚪ Da richiedere</button>';
+
+    // Prenotazione CUP / ADI
+    var cellPrenotato = '';
+    var btnPuglia = (es.categoria.includes('Strumentale') || es.categoria.includes('Cardiologia'))
+      ? '<button class="btn btn-sm" style="font-size:9.5px; padding:2px 6px; background:#0284c7; color:#fff; border:none; border-radius:4px; font-weight:800; margin-top:2px; cursor:pointer;" onclick="apriPrenotazionePugliaSalute(\'' + encodeURIComponent(es.nome) + '\')">🌐 Puglia Salute</button>'
+      : '';
+
+    if (es.prenotatoCUP && es.dataPrenotazioneCUP) {
+      cellPrenotato = '<div style="font-size:11.5px; font-weight:800; color:#0284c7; cursor:pointer;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')">📅 ' + es.dataPrenotazioneCUP + '</div><div style="font-size:9.5px; color:#64748b;">' + (es.luogoPrenotazione || 'CUP') + '</div>' + btnPuglia;
+    } else {
+      cellPrenotato = '<div style="display:flex; flex-direction:column; align-items:center; gap:2px;"><button class="btn btn-sm" style="font-size:10.5px; padding:3px 7px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; border-radius:6px; font-weight:700;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')">+ Data</button>' + btnPuglia + '</div>';
+    }
+
+    // Referto & Allegato
+    var badgeAllegato = es.allegatoDataUrl 
+      ? '<span onclick="event.stopPropagation(); visualizzaAllegatoReferto(\'' + es.id + '\')" style="background:#059669; color:#fff; font-size:9.5px; font-weight:900; padding:1.5px 6px; border-radius:4px; cursor:pointer; margin-left:4px;" title="Vedi referto scansionato">📎 Referto</span>' 
+      : '';
+
+    var cellReferto = '';
+    if (es.refertato) {
+      cellReferto = '<div style="font-size:11.5px; font-weight:800; color:#16a34a; cursor:pointer;" onclick="apriModalAllegatoReferto(\'' + es.id + '\')">✓ ' + (es.valoreReferto || 'Normale') + badgeAllegato + '</div>';
+    } else {
+      cellReferto = '<button class="btn btn-sm" style="font-size:10.5px; padding:3px 7px; background:#fff; border:1px dashed #94a3b8; color:#475569; border-radius:6px;" onclick="apriModalAllegatoReferto(\'' + es.id + '\')">📝 Registra / 📎 Allega</button>';
+    }
+
+    // Badge stato
+    var statusBadge = es.refertato
+      ? '<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; font-size:10px; border:1px solid #86efac;">COMPLETO</span>'
+      : (es.prenotatoCUP
+        ? '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:10px; border:1px solid #7dd3fc;">PRENOTATO</span>'
+        : '<span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; font-size:10px; border:1px solid #fde047;">DA PIANIFICARE</span>');
+
+    return '<tr style="' + rowStyle + '">' +
+      '<td style="padding:10px 10px; text-align:center;">' +
+        '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' onchange="toggleSpuntaEsameModulo(\'' + es.id + '\')" style="width:18px; height:18px; accent-color:#0284c7; cursor:pointer;">' +
+      '</td>' +
+      '<td style="padding:10px 14px;">' +
+        '<div style="font-weight:800; font-size:13px; color:#0f172a;">' + es.nome + '</div>' +
+        '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>' +
+      '</td>' +
+      '<td style="padding:10px 10px; text-align:center;">' + catBadge + '</td>' +
+      '<td style="padding:10px 10px; text-align:center;">' + cellRichiesto + '</td>' +
+      '<td style="padding:10px 10px; text-align:center;">' + cellPrenotato + '</td>' +
+      '<td style="padding:10px 10px; text-align:center;">' + cellReferto + '</td>' +
+      '<td style="padding:10px 12px; text-align:center;">' + statusBadge + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+// RENDER SCHEDA ALDO ZAMPARINO (NEUROLOGIA & CARDIOLOGIA GERIATRICA)
+function renderSchedaSpecialisticaAldo(container, p) {
+  var scheda = getSchedaSpecialisticaAldo(p);
+  var esami = scheda.esami || [];
+
+  var completati = esami.filter(e => e.refertato).length;
+  var perc = esami.length > 0 ? Math.round((completati / esami.length) * 100) : 0;
+
+  var html = `
+    <!-- BANNER CLINICO GERIATRICO DEDICATO AD ALDO ZAMPARINO -->
+    <div style="background:linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(30,27,75,0.35); border:2px solid #818cf8; position:relative; overflow:hidden;">
+      <div style="position:absolute; right:-20px; top:-20px; font-size:120px; opacity:0.07; pointer-events:none;">🧠</div>
+      
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; position:relative; z-index:2;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:64px; height:64px; border-radius:16px; background:rgba(255,255,255,0.12); border:2px solid #a5b4fc; display:flex; align-items:center; justify-content:center; font-size:32px;">
+            🧠
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="background:#a5b4fc; color:#1e1b4b; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px;">MONITORAGGIO SPECIALISTICO GERIATRICO</span>
+              <span style="background:rgba(255,255,255,0.15); color:#ffffff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">ASSISTITO ALLETTATO (91 ANNI)</span>
+            </div>
+            <h2 style="font-size:22px; font-weight:900; margin:4px 0 2px; color:#ffffff; letter-spacing:-0.4px;">
+              Protocollo Neurologia, Cardiologia & Prevenzione Decubito
+            </h2>
+            <div style="font-size:13px; color:#c7d2fe; font-weight:500;">
+              Assistito: <b>Aldo Zamparino</b> &bull; MMG Curante: <b>Dott. Roberto Scarcia</b> &bull; Servizio ADI Territoriale
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(15,23,42,0.65); border:1.5px solid #d4af37; border-radius:14px; padding:12px 18px; text-align:right; backdrop-filter:blur(6px);">
+          <div style="font-size:11px; color:#fde047; font-weight:800; text-transform:uppercase; letter-spacing:0.4px;">Prossimo Controllo Medico:</div>
+          <div style="font-size:22px; font-weight:900; color:#ffffff; margin:2px 0;">10/11/2026</div>
+          <div style="font-size:11.5px; color:#a5b4fc; font-weight:600;">Controllo Domiciliare Programmato</div>
+        </div>
+      </div>
+
+      <!-- AVANZAMENTO ESAMI E CONTROLLI -->
+      <div style="margin-top:20px; background:rgba(255,255,255,0.1); border-radius:12px; padding:14px 18px; position:relative; z-index:2; border:1px solid rgba(255,255,255,0.15);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:12.5px; font-weight:800; color:#f8fafc;">
+            📈 Avanzamento Controlli Clinici: <span style="color:#a5b4fc;">${perc}%</span>
+          </span>
+          <span style="font-size:11.5px; color:#cbd5e1;">${completati} di ${esami.length} controlli registrati</span>
+        </div>
+        <div style="width:100%; height:10px; background:rgba(0,0,0,0.3); border-radius:999px; overflow:hidden;">
+          <div style="width:${perc}%; height:100%; background:linear-gradient(90deg, #818cf8 0%, #10b981 100%); border-radius:999px; transition:width 0.4s ease;"></div>
+        </div>
+      </div>
+
+      <!-- AZIONI RAPIDE PER ALDO -->
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; position:relative; z-index:2;">
+        <button type="button" class="btn" onclick="richiediTutteRicetteAlMedicoMMG()" style="background:#10b981; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          ✉️ Invia Richiesta al Dott. Scarcia
+        </button>
+        <button type="button" class="btn" onclick="openModal('modal-braden')" style="background:#6366f1; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          🛡️ Valuta Scala Braden & Decubito
+        </button>
+        <button type="button" class="btn" onclick="openModal('modal-postura')" style="background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3); padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          🔄 Registra Cambio Postura (q2h)
+        </button>
+      </div>
+    </div>
+
+    <!-- TABELLA ESAMI E CONTROLLI CLINICI SPECIALISTICI -->
+    <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
+      <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Monitoraggio Clinico Specialistico - Aldo Zamparino</div>
+          <div style="font-size:12px; color:#64748b;">Tracciamento integrato: Richieste al Curante &bull; Visite Domiciliari &bull; Referti</div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="custom-table" style="margin:0; width:100%;">
+          <thead>
+            <tr style="background:#f1f5f9; color:#475569; font-size:11.5px; text-transform:uppercase;">
+              <th style="padding:10px 10px; width:45px; text-align:center;">Spunta</th>
+              <th style="padding:10px 14px; text-align:left;">Prestazione / Esame</th>
+              <th style="padding:10px 10px; text-align:center;">Specialità</th>
+              <th style="padding:10px 10px; text-align:center;">1. Richiesta MMG</th>
+              <th style="padding:10px 10px; text-align:center;">2. Prenotazione ADI/CUP</th>
+              <th style="padding:10px 10px; text-align:center;">3. Referto & 📎 Allegato</th>
+              <th style="padding:10px 12px; text-align:center;">Stato</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${renderTabellaEsamiSpecialisticiGenerica(esami, true)}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+// RENDER SCHEDA ANGELA MAZZICONE (CARDIOLOGIA, IPERTENSIONE & METABOLICA)
+function renderSchedaSpecialisticaAngela(container, p) {
+  var scheda = getSchedaSpecialisticaAngela(p);
+  var esami = scheda.esami || [];
+
+  var completati = esami.filter(e => e.refertato).length;
+  var perc = esami.length > 0 ? Math.round((completati / esami.length) * 100) : 0;
+
+  var html = `
+    <!-- BANNER CLINICO CARDIOLOGICO DEDICATO AD ANGELA MAZZICONE -->
+    <div style="background:linear-gradient(135deg, #831843 0%, #9d174d 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(131,24,67,0.35); border:2px solid #f472b6; position:relative; overflow:hidden;">
+      <div style="position:absolute; right:-20px; top:-20px; font-size:120px; opacity:0.07; pointer-events:none;">❤️</div>
+      
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; position:relative; z-index:2;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:64px; height:64px; border-radius:16px; background:rgba(255,255,255,0.12); border:2px solid #fbcfe8; display:flex; align-items:center; justify-content:center; font-size:32px;">
+            ❤️
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="background:#fbcfe8; color:#831843; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px;">MONITORAGGIO SPECIALISTICO AMBULATORIALE</span>
+              <span style="background:rgba(255,255,255,0.15); color:#ffffff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">ASSISTITA (88 ANNI)</span>
+            </div>
+            <h2 style="font-size:22px; font-weight:900; margin:4px 0 2px; color:#ffffff; letter-spacing:-0.4px;">
+              Protocollo Cardiologia, Ipertensione & Metabolica
+            </h2>
+            <div style="font-size:13px; color:#fce7f3; font-weight:500;">
+              Assistita: <b>Angela Mazzicone</b> &bull; MMG Curante: <b>Dott. Roberto Scarcia</b> &bull; Cardiologia Territoriale ASL Bari
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(15,23,42,0.65); border:1.5px solid #d4af37; border-radius:14px; padding:12px 18px; text-align:right; backdrop-filter:blur(6px);">
+          <div style="font-size:11px; color:#fde047; font-weight:800; text-transform:uppercase; letter-spacing:0.4px;">Prossima Visita di Controllo:</div>
+          <div style="font-size:22px; font-weight:900; color:#ffffff; margin:2px 0;">18/11/2026</div>
+          <div style="font-size:11.5px; color:#fbcfe8; font-weight:600;">Controllo Specialistico Programmato</div>
+        </div>
+      </div>
+
+      <!-- AVANZAMENTO ESAMI E CONTROLLI -->
+      <div style="margin-top:20px; background:rgba(255,255,255,0.1); border-radius:12px; padding:14px 18px; position:relative; z-index:2; border:1px solid rgba(255,255,255,0.15);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:12.5px; font-weight:800; color:#f8fafc;">
+            📈 Avanzamento Controlli & Esami: <span style="color:#f472b6;">${perc}%</span>
+          </span>
+          <span style="font-size:11.5px; color:#cbd5e1;">${completati} di ${esami.length} controlli completati</span>
+        </div>
+        <div style="width:100%; height:10px; background:rgba(0,0,0,0.3); border-radius:999px; overflow:hidden;">
+          <div style="width:${perc}%; height:100%; background:linear-gradient(90deg, #f472b6 0%, #10b981 100%); border-radius:999px; transition:width 0.4s ease;"></div>
+        </div>
+      </div>
+
+      <!-- AZIONI RAPIDE PER ANGELA -->
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; position:relative; z-index:2;">
+        <button type="button" class="btn" onclick="richiediTutteRicetteAlMedicoMMG()" style="background:#10b981; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          ✉️ Invia Richiesta al Dott. Scarcia
+        </button>
+        <button type="button" class="btn" onclick="openModal('modal-parametri')" style="background:#be185d; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          🩸 Registra Pressione & Parametri
+        </button>
+        <button type="button" class="btn" onclick="apriPrenotazionePugliaSalute('Visita Cardiologica')" style="background:#0284c7; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          🌐 Prenota su Puglia Salute (CUP Online)
+        </button>
+      </div>
+    </div>
+
+    <!-- TABELLA ESAMI E CONTROLLI CLINICI SPECIALISTICI -->
+    <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
+      <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Sorveglianza Cardiometabolica - Angela Mazzicone</div>
+          <div style="font-size:12px; color:#64748b;">Monitoraggio: Ipertensione &bull; Assetto Lipidico &bull; Acido Urico &bull; Vitamina D3</div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="custom-table" style="margin:0; width:100%;">
+          <thead>
+            <tr style="background:#f1f5f9; color:#475569; font-size:11.5px; text-transform:uppercase;">
+              <th style="padding:10px 10px; width:45px; text-align:center;">Spunta</th>
+              <th style="padding:10px 14px; text-align:left;">Prestazione / Esame</th>
+              <th style="padding:10px 10px; text-align:center;">Specialità</th>
+              <th style="padding:10px 10px; text-align:center;">1. Richiesta MMG</th>
+              <th style="padding:10px 10px; text-align:center;">2. Prenotazione CUP</th>
+              <th style="padding:10px 10px; text-align:center;">3. Referto & 📎 Allegato</th>
+              <th style="padding:10px 12px; text-align:center;">Stato</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${renderTabellaEsamiSpecialisticiGenerica(esami, false)}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
