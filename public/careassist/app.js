@@ -17,11 +17,11 @@ function getDatiFarmacoMultiTempo(t, tutteTerapie) {
     var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
     terapie = p ? (p.terapie || []) : [];
   }
-  
+
   var cleanNome = getNomeBaseFarmaco(t);
   if (!cleanNome || cleanNome.length < 2) return null;
 
-  var gemelle = terapie.filter(function(item) {
+  var gemelle = terapie.filter(function (item) {
     if (t.gruppoFarmacoId && item.gruppoFarmacoId) {
       return item.gruppoFarmacoId === t.gruppoFarmacoId;
     }
@@ -37,7 +37,7 @@ function getDatiFarmacoMultiTempo(t, tutteTerapie) {
   }
 
   var consumoTotaleDie = 0;
-  gemelle.forEach(function(item) {
+  gemelle.forEach(function (item) {
     var q = parseFloat(item.quantitaQuota);
     if (isNaN(q) || q <= 0) {
       var m = (item.dosaggio || item.farmaco || '').match(/(\d+(?:[.,]\d+)?)\s*(?:cpr|compresse)/i);
@@ -54,8 +54,8 @@ function getDatiFarmacoMultiTempo(t, tutteTerapie) {
   dTermine.setDate(dTermine.getDate() + giorniAutonomia);
   var dataTermineStr = (giorniAutonomia > 0) ? dTermine.toLocaleDateString('it-IT') : 'Esaurito';
 
-  var indiceTempo = gemelle.findIndex(function(item) { return item.id === t.id; }) + 1;
-  var orariStr = gemelle.map(function(item) { return item.ora; }).join(' e ');
+  var indiceTempo = gemelle.findIndex(function (item) { return item.id === t.id; }) + 1;
+  var orariStr = gemelle.map(function (item) { return item.ora; }).join(' e ');
 
   return {
     numTempi: gemelle.length,
@@ -263,7 +263,7 @@ function chiudiMenuStrumenti() {
 }
 
 // Chiudi dropdown al clic esterno
-window.addEventListener('click', function(e) {
+window.addEventListener('click', function (e) {
   const container = document.getElementById('dropdown-tools-container');
   if (container && !container.contains(e.target)) {
     chiudiMenuStrumenti();
@@ -325,7 +325,7 @@ function formattaDataNascitaItaliana(dataStr, conMeseEsteso = false) {
     if (!isNaN(d.getTime())) {
       return d.toLocaleDateString('it-IT');
     }
-  } catch (e) {}
+  } catch (e) { }
   return dataStr;
 }
 window.formattaDataNascitaItaliana = formattaDataNascitaItaliana;
@@ -530,7 +530,7 @@ function getDettagliAvatarPaziente(p) {
   let labelGenere = isFemmina ? 'Donna (Femminile)' : 'Uomo (Maschile)';
   let simboloGenere = isFemmina ? '♀️' : '♂️';
   let badgeColore = isFemmina ? 'background:#fdf2f8; color:#9d174d; border:1px solid #f472b6;' : 'background:#eff6ff; color:#1e40af; border:1px solid #93c5fd;';
-  let avatarGradiente = isFemmina 
+  let avatarGradiente = isFemmina
     ? 'background:linear-gradient(135deg, #ec4899 0%, #be185d 100%) !important; border:2.5px solid #fbcfe8 !important; box-shadow:0 4px 14px rgba(236,72,153,0.35) !important;'
     : 'background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; border:2.5px solid #bae6fd !important; box-shadow:0 4px 14px rgba(2,132,199,0.35) !important;';
 
@@ -615,7 +615,7 @@ function getPazienteAldoInit() {
       scorta: 28,
       fattoOggi: false
     },
-        {
+    {
       id: 103,
       ora: '08:30',
       fascia: 'Mattina (Colazione)',
@@ -662,7 +662,7 @@ function getPazienteAldoInit() {
       cprPerScatola: 56,
       scorta: 56,
       fattoOggi: false
-    },    {
+    }, {
       id: 106,
       ora: '21:30',
       fascia: 'Notte (Prima di dormire)',
@@ -988,7 +988,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
   // Sincronizza i dati di Aldo Zamparino se già presenti
   // PULIZIA CLINICA: Rimuove eventuali cartelle epatologiche/infettive accidentalmente assegnate ad assistiti non infettivi
   if (Array.isArray(AppData.pazienti)) {
-    AppData.pazienti.forEach(function(pt) {
+    AppData.pazienti.forEach(function (pt) {
       if (typeof pazHaDiagnosiMalattieInfettive === 'function' && !pazHaDiagnosiMalattieInfettive(pt)) {
         delete pt.epatologiaFollowUp;
         if (pt.cartelleCroniche && pt.cartelleCroniche.epatologia) {
@@ -1103,9 +1103,9 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       angelaEx.visite = getPazienteAngelaInit().visite;
     }
     // Se non ha le terapie della foto o sono vuote, assegna quelle complete
-        // Aggiornamento specifico DIBASE: cadenza ogni 15 giorni (il 15 e il 30 del mese)
+    // Aggiornamento specifico DIBASE: cadenza ogni 15 giorni (il 15 e il 30 del mese)
     if (angelaEx && angelaEx.terapie) {
-      var dibase = angelaEx.terapie.find(function(item) { return (item.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0; });
+      var dibase = angelaEx.terapie.find(function (item) { return (item.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0; });
       if (dibase) {
         dibase.cadenzaTipo = 'quindicinale_15_30';
         dibase.fascia = 'Mattina (Dose Periodica)';
@@ -1121,7 +1121,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     }
   }
 
-    // Inizializzazione una-tantum o inserimento di Rosa Annunziata Cavalcante
+  // Inizializzazione una-tantum o inserimento di Rosa Annunziata Cavalcante
   const rosaEx = AppData.pazienti.find(p => p.id === 'paz_rosa');
   if (!rosaEx) {
     AppData.pazienti.push(getPazienteRosaInit());
@@ -1173,7 +1173,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
   // Configurazione automatica schema alternato Triatec per Rosa Annunziata
   if (rosaFoto && !AppData.rosaTriatecAlternato20261022) {
     AppData.rosaTriatecAlternato20261022 = true;
-    var triatecRosa = (rosaFoto.terapie || []).find(function(t) { return (t.farmaco || '').toUpperCase().indexOf('TRIATEC') >= 0; });
+    var triatecRosa = (rosaFoto.terapie || []).find(function (t) { return (t.farmaco || '').toUpperCase().indexOf('TRIATEC') >= 0; });
     if (triatecRosa) {
       triatecRosa.cadenzaTipo = 'alternata_mezza_intera';
       triatecRosa.quantitaQuota = 0.5;
@@ -1204,67 +1204,67 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
   if (rosaFoto && (!AppData.rosaFornitureDiabete20261030)) {
     AppData.rosaFornitureDiabete20261030 = true;
     rosaFoto.ausili = rosaFoto.ausili || [];
-    rosaFoto.ausili = rosaFoto.ausili.filter(function(a) {
+    rosaFoto.ausili = rosaFoto.ausili.filter(function (a) {
       var t = (a.tipo || '').toUpperCase();
       return t.indexOf('GLUCOMEN') === -1 && t.indexOf('GLUCOJECT') === -1;
     });
 
     rosaFoto.ausili.push({
-    "tipo": "Sensori Glicemia - GlucoMen areo Sensor",
-    "marca": "A. Menarini Diagnostics - GlucoMen areo Sensor (25 sensori)",
-    "utilizzo": "Sensori reattivi per l'autocontrollo della glicemia con glucometro linea GlucoMen areo (Diabete mellito in terapia con Xultophy)",
-    "cartoni": "1 confezione (25 sensori)",
-    "scortaPacchi": 1,
-    "pezziPerPacco": 25,
-    "pezziTotali": 25,
-    "dataRifornimento": "2026-10-30",
-    "prossimaRichiesta": "2026-11-24",
-    "dataScadenza": "2026-11-24",
-    "giorniAlert": 7,
-    "stato": "In uso attivo regolare",
-    "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
-    "fabbisogno": "Autocontrollo glicemico domiciliare pre-colazione e monitoraggio terapia insulinica"
-});
+      "tipo": "Sensori Glicemia - GlucoMen areo Sensor",
+      "marca": "A. Menarini Diagnostics - GlucoMen areo Sensor (25 sensori)",
+      "utilizzo": "Sensori reattivi per l'autocontrollo della glicemia con glucometro linea GlucoMen areo (Diabete mellito in terapia con Xultophy)",
+      "cartoni": "1 confezione (25 sensori)",
+      "scortaPacchi": 1,
+      "pezziPerPacco": 25,
+      "pezziTotali": 25,
+      "dataRifornimento": "2026-10-30",
+      "prossimaRichiesta": "2026-11-24",
+      "dataScadenza": "2026-11-24",
+      "giorniAlert": 7,
+      "stato": "In uso attivo regolare",
+      "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
+      "fabbisogno": "Autocontrollo glicemico domiciliare pre-colazione e monitoraggio terapia insulinica"
+    });
     rosaFoto.ausili.push({
-    "tipo": "Lancette Pungidito - Glucoject Lancets Extra 33G",
-    "marca": "A. Menarini Diagnostics - Glucoject Lancets Extra 33G (25 lancette)",
-    "utilizzo": "Lancette sterili monouso calibro 33G (extra-sottili) per dispositivo pungidito per prelievo capillare glicemia",
-    "cartoni": "1 confezione (25 lancette)",
-    "scortaPacchi": 1,
-    "pezziPerPacco": 25,
-    "pezziTotali": 25,
-    "dataRifornimento": "2026-10-30",
-    "prossimaRichiesta": "2026-11-24",
-    "dataScadenza": "2026-11-24",
-    "giorniAlert": 7,
-    "stato": "In uso attivo regolare",
-    "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
-    "fabbisogno": "1 lancetta monouso per ciascun controllo glicemico"
-});
+      "tipo": "Lancette Pungidito - Glucoject Lancets Extra 33G",
+      "marca": "A. Menarini Diagnostics - Glucoject Lancets Extra 33G (25 lancette)",
+      "utilizzo": "Lancette sterili monouso calibro 33G (extra-sottili) per dispositivo pungidito per prelievo capillare glicemia",
+      "cartoni": "1 confezione (25 lancette)",
+      "scortaPacchi": 1,
+      "pezziPerPacco": 25,
+      "pezziTotali": 25,
+      "dataRifornimento": "2026-10-30",
+      "prossimaRichiesta": "2026-11-24",
+      "dataScadenza": "2026-11-24",
+      "giorniAlert": 7,
+      "stato": "In uso attivo regolare",
+      "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
+      "fabbisogno": "1 lancetta monouso per ciascun controllo glicemico"
+    });
 
     try {
       localStorage.setItem(DB_KEY, JSON.stringify(AppData));
-    } catch(err) {}
+    } catch (err) { }
     console.log('Forniture diabete (GlucoMen & Glucoject) integrate nella cartella di Rosa Annunziata!');
   }
 
   // PULIZIA AUTOMATICA AVVISI RITARDO TEST: ROSA ANNUNZIATA (30/10/2026)
   if (rosaFoto && !AppData.rosaPuliziaRitardiTest20261030) {
     AppData.rosaPuliziaRitardiTest20261030 = true;
-    rosaFoto.registrazioni = (rosaFoto.registrazioni || []).filter(function(r) { return r.tipo !== 'farmaco_ritardo'; });
+    rosaFoto.registrazioni = (rosaFoto.registrazioni || []).filter(function (r) { return r.tipo !== 'farmaco_ritardo'; });
     try {
       localStorage.setItem(DB_KEY, JSON.stringify(AppData));
-    } catch(err) {}
+    } catch (err) { }
     console.log('Avvisi ritardo test cancellati da Rosa Annunziata!');
   }
 
   // SINCRONIZZAZIONE CLINICA AUTOMATICA: ROSA ANNUNZIATA - SCHEMA SINEMET MULTI-TEMPO & XULTOPHY (30/10/2026)
   if (rosaFoto && (!AppData.rosaSinemetMultiTempo20261030_v2)) {
     AppData.rosaSinemetMultiTempo20261030_v2 = true;
-    
+
     // Aggiorna Sinemet a 2 tempi (ore 08:00 e 20:00 con 2 cpr ciascuno e scorta condivisa 82)
     rosaFoto.terapie = (rosaFoto.terapie || []).filter(t => !(t.farmaco || '').toUpperCase().includes('SINEMET'));
-    
+
     const grpSinemet = 'grp_sinemet_100_25_mg';
     const scortaSinemet = 82;
     const modoSinemet = '30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico';
@@ -1335,7 +1335,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     }
     try {
       localStorage.setItem(DB_KEY, JSON.stringify(AppData));
-    } catch(err) {}
+    } catch (err) { }
     console.log('Scheda di Rosa Annunziata Cavalcante aggiornata con successo su Sinemet e Xultophy!');
   }
 
@@ -1507,23 +1507,23 @@ function showAdminSyncToast(msg, isHighlight) {
 
   var existing = document.getElementById('careassist-admin-sync-toast');
   if (existing) existing.remove();
-  
+
   var toast = document.createElement('div');
   toast.id = 'careassist-admin-sync-toast';
   toast.style.cssText = 'position:fixed; top:16px; left:50%; transform:translateX(-50%); width:calc(100% - 32px); max-width:440px; box-sizing:border-box; background:linear-gradient(135deg, rgba(15, 23, 42, 0.97) 0%, rgba(30, 41, 59, 0.97) 100%); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); color:#ffffff; border:1.5px solid ' + (isHighlight ? '#38bdf8' : '#10b981') + '; padding:10px 18px; border-radius:24px; font-size:12.5px; font-weight:700; line-height:1.35; z-index:9999999; box-shadow:0 12px 35px rgba(0,0,0,0.65), 0 0 16px ' + (isHighlight ? 'rgba(56,189,248,0.35)' : 'rgba(16,185,129,0.35)') + '; display:flex; align-items:center; justify-content:center; gap:10px; text-align:center; pointer-events:none; transition:all 0.35s cubic-bezier(0.16, 1, 0.3, 1);';
-  
+
   var iconSvg = isHighlight
     ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/><path d="m9 9 2 2 4-4"/></svg>'
     : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><polyline points="10 13 12 15 16 10"/></svg>';
-  
+
   var cleanMsg = msg.replace(/\?\?/g, '').trim();
   toast.innerHTML = iconSvg + ' <span>' + cleanMsg + '</span>';
   document.body.appendChild(toast);
-  
-  setTimeout(function() {
+
+  setTimeout(function () {
     toast.style.opacity = '0';
     toast.style.transform = 'translateX(-50%) translateY(-14px)';
-    setTimeout(function() { toast.remove(); }, 380);
+    setTimeout(function () { toast.remove(); }, 380);
   }, 4800);
 }
 
@@ -1535,10 +1535,10 @@ function showSyncToast(msg, isSuccess) {
   toast.style.cssText = 'position:fixed; bottom:75px; left:50%; transform:translateX(-50%); background:' + (isSuccess ? 'rgba(16, 185, 129, 0.95)' : 'rgba(14, 165, 233, 0.95)') + '; color:#fff; padding:9px 18px; border-radius:25px; font-size:12.5px; font-weight:700; z-index:999999; box-shadow:0 8px 24px rgba(0,0,0,0.4); display:flex; align-items:center; gap:8px; pointer-events:none; transition:all 0.3s;';
   toast.innerHTML = (isSuccess ? '✓ ' : '🔄 ') + msg;
   document.body.appendChild(toast);
-  setTimeout(function() {
+  setTimeout(function () {
     toast.style.opacity = '0';
     toast.style.transform = 'translateX(-50%) translateY(10px)';
-    setTimeout(function() { toast.remove(); }, 350);
+    setTimeout(function () { toast.remove(); }, 350);
   }, 3200);
 }
 
@@ -1604,33 +1604,33 @@ function inviaModificheAlServer(onSuccess) {
       headers: reqHeaders,
       body: sendData,
       cache: 'no-store'
-    }).then(function(res) {
+    }).then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
-    }).then(function(data) {
+    }).then(function (data) {
       localStorage.removeItem('careassist_pending_sync');
       if (onSuccess) onSuccess(data);
-    }).catch(function() {
+    }).catch(function () {
       // Se il Cloud o la connessione primaria fallisce, prova con il server locale su porta 3000
       fetch('http://127.0.0.1:3000/api/save-db', {
         method: 'POST',
         headers: reqHeaders,
         body: sendData,
         cache: 'no-store'
-      }).then(function(r) { return r.json(); }).then(function(data) {
+      }).then(function (r) { return r.json(); }).then(function (data) {
         localStorage.removeItem('careassist_pending_sync');
         if (onSuccess) onSuccess(data);
-      }).catch(function() {
+      }).catch(function () {
         // Fallback finale Wi-Fi locale
         fetch('http://192.168.1.5:3000/api/save-db', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: sendData,
           cache: 'no-store'
-        }).then(function(r) { return r.json(); }).then(function(data) {
+        }).then(function (r) { return r.json(); }).then(function (data) {
           localStorage.removeItem('careassist_pending_sync');
           if (onSuccess) onSuccess(data);
-        }).catch(function() {
+        }).catch(function () {
           console.log('Server Cloud/Locale non raggiungibile: modifiche conservate in locale per il prossimo allineamento.');
         });
       });
@@ -1650,7 +1650,7 @@ function sincronizzaDbDalServer(callback) {
     var primaryBase = getCareAssistSyncBase();
     var getUrl = (primaryBase ? primaryBase : '') + '/api/get-db?_t=' + Date.now();
 
-    var reconcileData = function(serverData) {
+    var reconcileData = function (serverData) {
       if (serverData && serverData.pazienti && serverData.pazienti.length > 0) {
         var localTime = Number(AppData.lastModified) || 0;
         var serverTime = Number(serverData.lastModified) || 0;
@@ -1659,9 +1659,9 @@ function sincronizzaDbDalServer(callback) {
         // Unione sicura dei profili: garantisce che nessun assistito creato nel Cloud o in locale vada mai perso
         var deletedIds = new Set([].concat(AppData._deletedPazienti || [], serverData._deletedPazienti || []));
         var addedFromServer = false;
-        (serverData.pazienti || []).forEach(function(sp) {
+        (serverData.pazienti || []).forEach(function (sp) {
           if (sp && sp.id && !deletedIds.has(sp.id)) {
-            var existsLocal = (AppData.pazienti || []).some(function(lp) {
+            var existsLocal = (AppData.pazienti || []).some(function (lp) {
               return lp.id === sp.id || ((lp.nome || '').trim().toLowerCase() === (sp.nome || '').trim().toLowerCase());
             });
             if (!existsLocal) {
@@ -1670,9 +1670,9 @@ function sincronizzaDbDalServer(callback) {
             }
           }
         });
-        (AppData.pazienti || []).forEach(function(lp) {
+        (AppData.pazienti || []).forEach(function (lp) {
           if (lp && lp.id && !deletedIds.has(lp.id)) {
-            var existsServer = (serverData.pazienti || []).some(function(sp) {
+            var existsServer = (serverData.pazienti || []).some(function (sp) {
               return sp.id === lp.id || ((sp.nome || '').trim().toLowerCase() === (lp.nome || '').trim().toLowerCase());
             });
             if (!existsServer) {
@@ -1688,7 +1688,7 @@ function sincronizzaDbDalServer(callback) {
             localStorage.setItem(DB_KEY, JSON.stringify(AppData));
             renderAll();
           }
-          inviaModificheAlServer(function() {
+          inviaModificheAlServer(function () {
             showSyncToast('Cloud aggiornato con le ultime modifiche!', true);
           });
         }
@@ -1697,7 +1697,7 @@ function sincronizzaDbDalServer(callback) {
           console.log('Rilevate modifiche più recenti sul Cloud. Aggiornamento interfaccia...');
           var prevActiveId = AppData.activePazienteId;
           AppData = serverData;
-          if (prevActiveId && AppData.pazienti.some(function(p) { return p.id === prevActiveId; })) {
+          if (prevActiveId && AppData.pazienti.some(function (p) { return p.id === prevActiveId; })) {
             AppData.activePazienteId = prevActiveId;
           }
           localStorage.setItem(DB_KEY, JSON.stringify(AppData));
@@ -1735,30 +1735,30 @@ function sincronizzaDbDalServer(callback) {
     if (gPin) getHeaders['x-pin'] = gPin;
 
     fetch(getUrl, { headers: getHeaders, cache: 'no-store' })
-      .then(function(res) {
+      .then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
       })
-      .then(function(serverData) {
+      .then(function (serverData) {
         reconcileData(serverData);
       })
-      .catch(function() {
+      .catch(function () {
         // Fallback secondario su server locale porta 3000
         fetch('http://127.0.0.1:3000/api/get-db?_t=' + Date.now(), { cache: 'no-store' })
-          .then(function(r) { return r.json(); })
-          .then(function(data) { reconcileData(data); })
-          .catch(function() {
+          .then(function (r) { return r.json(); })
+          .then(function (data) { reconcileData(data); })
+          .catch(function () {
             // Fallback terziario su IP Wi-Fi
             fetch('http://192.168.1.5:3000/api/get-db?_t=' + Date.now(), { cache: 'no-store' })
-              .then(function(r) { return r.json(); })
-              .then(function(data) { reconcileData(data); })
-              .catch(function() {
+              .then(function (r) { return r.json(); })
+              .then(function (data) { reconcileData(data); })
+              .catch(function () {
                 _isSyncingInProgress = false;
                 aggiornaBadgeStatoSync(false);
               });
           });
       });
-  } catch(e) {
+  } catch (e) {
     _isSyncingInProgress = false;
     aggiornaBadgeStatoSync(false);
     console.warn('Get-db sync error:', e);
@@ -1803,7 +1803,7 @@ function aggiornaBadgeStatoSync(isOnline) {
 function forzaSincronizzazioneCloudManuale() {
   var txt = document.getElementById('sync-status-text');
   if (txt) txt.textContent = 'Sincronizzazione in corso...';
-  sincronizzaDbDalServer(function() {
+  sincronizzaDbDalServer(function () {
     showSyncToast('Allineamento Cloud completato con successo!', true);
   });
 }
@@ -1818,7 +1818,7 @@ function getPazientiAccessibili() {
       localStorage.setItem('milella_last_authenticated_role', 'admin');
       localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
     }
-  } catch(e) {}
+  } catch (e) { }
 
   const adminPin = localStorage.getItem('milella_admin_pin') || sessionStorage.getItem('milella_admin_pin') || '';
   const lastPin = localStorage.getItem('milella_last_authenticated_pin') || '';
@@ -1834,7 +1834,7 @@ function getPazientiAccessibili() {
   let pazAbilitati = [];
   try {
     pazAbilitati = JSON.parse(localStorage.getItem('milella_paz_abilitati') || '[]');
-  } catch(e) {
+  } catch (e) {
     pazAbilitati = [];
   }
 
@@ -2023,7 +2023,7 @@ function renderPazientiSelector() {
 
   const lista = getPazientiAccessibili();
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
-  
+
   // Se l'operatore non è admin, nascondi il tasto "Nuovo Assistito"
   const btnNuovo = document.querySelector('.btn-new-patient');
   if (btnNuovo) {
@@ -2162,7 +2162,7 @@ function renderPazientiSelector() {
     const medEmail = activeP.medicoEmail || '';
     const medPec = activeP.medicoPec || '';
     const infoStudio = getInfoStudioOggi(activeP);
-    
+
     let sediStudioPulite = activeP.medicoIndirizzo || '';
     if (!sediStudioPulite && activeP.medicoStudio && activeP.medicoStudio.includes('Sarconi')) {
       sediStudioPulite = activeP.medicoStudio;
@@ -2273,7 +2273,7 @@ function renderPazientiSelector() {
           ` : ''}
         </div>
       </div>`;
-    
+
     // 6. BADGE FARMACIA TERRITORIALE PROFESSIONALE - CARD GEMELLA ALLINEATA
     const farmNome = activeP.farmaciaDiRiferimento || 'Farmacia Territoriale';
     const farmInd = activeP.farmaciaIndirizzo || '';
@@ -2461,9 +2461,9 @@ function renderPazientiSelector() {
     }
 
     // 9. STATO ALLERGIE & INTOLLERANZE FARMACOLOGICHE (SICUREZZA CLINICA & 118)
-    const haAllergie = activeP.allergie && 
-      !activeP.allergie.toLowerCase().includes('nessun') && 
-      activeP.allergie.trim() !== '' && 
+    const haAllergie = activeP.allergie &&
+      !activeP.allergie.toLowerCase().includes('nessun') &&
+      activeP.allergie.trim() !== '' &&
       activeP.allergie.trim() !== '-';
 
     const allergieBadge = haAllergie ? `
@@ -2618,8 +2618,8 @@ function mostraLenteMedicoCurante() {
       ${infoStudio.testoOggi ? `<div style="background:rgba(34, 197, 94, 0.15); border:1px solid #22c55e; border-radius:8px; padding:6px 12px; color:#86efac; font-weight:700;">⏰ ${infoStudio.testoOggi}</div>` : ''}
       <div style="display:flex; flex-direction:column; gap:6px; background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:10px;">
         ${sediStudioPulite ? `<div>📍 <b style="color:#e2e8f0;">Sedi Studi:</b> ${sediStudioPulite}</div>` : ''}
-        ${telFissoStudio ? `<div>☎️ <b style="color:#e2e8f0;">Tel. Studio:</b> <a href="tel:${telFissoStudio.replace(/\s+/g,'')}" style="color:#38bdf8; text-decoration:none; font-weight:700; margin-left:4px;">${telFissoStudio}</a></div>` : ''}
-        ${medCell ? `<div>📱 <b style="color:#e2e8f0;">Cellulare / WhatsApp:</b> <a href="tel:${medCell.replace(/\s+/g,'')}" style="color:#38bdf8; text-decoration:none; font-weight:700; margin-left:4px;">${medCell}</a> <a href="https://wa.me/${medCell.replace(/[^0-9]/g,'')}" target="_blank" style="margin-left:8px; background:#16a34a; color:#fff; padding:3px 8px; border-radius:6px; font-size:11.5px; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:3px;">💬 WhatsApp</a></div>` : ''}
+        ${telFissoStudio ? `<div>☎️ <b style="color:#e2e8f0;">Tel. Studio:</b> <a href="tel:${telFissoStudio.replace(/\s+/g, '')}" style="color:#38bdf8; text-decoration:none; font-weight:700; margin-left:4px;">${telFissoStudio}</a></div>` : ''}
+        ${medCell ? `<div>📱 <b style="color:#e2e8f0;">Cellulare / WhatsApp:</b> <a href="tel:${medCell.replace(/\s+/g, '')}" style="color:#38bdf8; text-decoration:none; font-weight:700; margin-left:4px;">${medCell}</a> <a href="https://wa.me/${medCell.replace(/[^0-9]/g, '')}" target="_blank" style="margin-left:8px; background:#16a34a; color:#fff; padding:3px 8px; border-radius:6px; font-size:11.5px; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:3px;">💬 WhatsApp</a></div>` : ''}
         ${medEmail ? `<div>✉️ <b style="color:#e2e8f0;">Email:</b> <a href="mailto:${medEmail}" style="color:#38bdf8; text-decoration:none; margin-left:4px;">${medEmail}</a></div>` : ''}
         ${p.medicoPec ? `<div>🔒 <b style="color:#fde68a;">PEC:</b> <a href="mailto:${p.medicoPec}" style="color:#fde68a; text-decoration:none; margin-left:4px;">${p.medicoPec}</a></div>` : ''}
       </div>
@@ -2647,7 +2647,7 @@ function mostraLenteFarmacia() {
       </div>
       <div style="display:flex; flex-direction:column; gap:6px; background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:10px;">
         ${farmInd ? `<div>📍 <b style="color:#e2e8f0;">Indirizzo Farmacia:</b> ${farmInd}</div>` : ''}
-        ${farmTel ? `<div>📞 <b style="color:#e2e8f0;">Telefono / WhatsApp:</b> <a href="tel:${farmTel.replace(/\s+/g,'')}" style="color:#4ade80; text-decoration:none; font-weight:700; margin-left:4px;">${farmTel}</a></div>` : ''}
+        ${farmTel ? `<div>📞 <b style="color:#e2e8f0;">Telefono / WhatsApp:</b> <a href="tel:${farmTel.replace(/\s+/g, '')}" style="color:#4ade80; text-decoration:none; font-weight:700; margin-left:4px;">${farmTel}</a></div>` : ''}
       </div>
       <div style="font-size:13px; color:#94a3b8; font-style:italic;">
         Presidio farmaceutico convenzionato per ritiro ricette e dispensazione piano terapeutico.
@@ -2862,12 +2862,12 @@ function customConfirm(titolo, testo, icona = '💊', okLabel) {
 const CESTINO_GIORNI = 60;
 const CESTINO_MAX = 300;
 const CESTINO_TIPI = {
-  terapia:     { icona: '💊', nome: 'Terapia' },
-  visita:      { icona: '📅', nome: 'Visita' },
-  ausilio:     { icona: '🦽', nome: 'Ausilio' },
+  terapia: { icona: '💊', nome: 'Terapia' },
+  visita: { icona: '📅', nome: 'Visita' },
+  ausilio: { icona: '🦽', nome: 'Ausilio' },
   annotazione: { icona: '📝', nome: 'Annotazioni diario' },
-  glicemia:    { icona: '🩸', nome: 'Glicemia' },
-  paziente:    { icona: '👤', nome: 'Cartella assistito' }
+  glicemia: { icona: '🩸', nome: 'Glicemia' },
+  paziente: { icona: '👤', nome: 'Cartella assistito' }
 };
 
 function cestinoEsc(s) {
@@ -2933,16 +2933,16 @@ function renderCestino() {
     return '<div class="cestino-item">' +
       '<div class="cestino-item-ico">' + t.icona + '</div>' +
       '<div class="cestino-item-body">' +
-        '<div class="cestino-item-titolo">' + cestinoEsc(e.etichetta) + '</div>' +
-        '<div class="cestino-item-meta"><span class="cestino-tag">' + cestinoEsc(t.nome) + '</span>' +
-          (e.pazienteNome && e.tipo !== 'paziente' ? '<span>👤 ' + cestinoEsc(e.pazienteNome) + '</span>' : '') +
-          '<span>🕒 ' + quando + '</span>' +
-          '<span class="' + (giorniRimasti <= 7 ? 'cestino-scade' : '') + '">⏳ ' + giorniRimasti + ' gg</span></div>' +
-        (e.dettaglio ? '<div class="cestino-item-dett">' + cestinoEsc(e.dettaglio) + '</div>' : '') +
+      '<div class="cestino-item-titolo">' + cestinoEsc(e.etichetta) + '</div>' +
+      '<div class="cestino-item-meta"><span class="cestino-tag">' + cestinoEsc(t.nome) + '</span>' +
+      (e.pazienteNome && e.tipo !== 'paziente' ? '<span>👤 ' + cestinoEsc(e.pazienteNome) + '</span>' : '') +
+      '<span>🕒 ' + quando + '</span>' +
+      '<span class="' + (giorniRimasti <= 7 ? 'cestino-scade' : '') + '">⏳ ' + giorniRimasti + ' gg</span></div>' +
+      (e.dettaglio ? '<div class="cestino-item-dett">' + cestinoEsc(e.dettaglio) + '</div>' : '') +
       '</div>' +
       '<div class="cestino-item-azioni">' +
-        '<button class="btn cestino-btn-ripristina" onclick="cestinoRipristina(\'' + e.id + '\')">↩️ Ripristina</button>' +
-        '<button class="btn cestino-btn-elimina" onclick="cestinoEliminaDefinitivo(\'' + e.id + '\')" title="Elimina per sempre">✖</button>' +
+      '<button class="btn cestino-btn-ripristina" onclick="cestinoRipristina(\'' + e.id + '\')">↩️ Ripristina</button>' +
+      '<button class="btn cestino-btn-elimina" onclick="cestinoEliminaDefinitivo(\'' + e.id + '\')" title="Elimina per sempre">✖</button>' +
       '</div></div>';
   }).join('');
 }
@@ -3181,7 +3181,7 @@ function aggiungiPatologiaPersonalizzata() {
     const nuovoChip = document.createElement('span');
     nuovoChip.className = 'chip-patologia selezionato';
     nuovoChip.textContent = '✓ ' + nuovaPatologia;
-    nuovoChip.onclick = function() {
+    nuovoChip.onclick = function () {
       togglePatologiaChip(this, nuovaPatologia);
     };
     containerChip.appendChild(nuovoChip);
@@ -3215,7 +3215,7 @@ window.aggiungiAllergiaRapida = aggiungiAllergiaRapida;
 function salvaNuovoPaziente(e) {
   e.preventDefault();
   const nome = (document.getElementById('nuovo-paz-nome')?.value || '').trim();
-  
+
   // Sincronizza sempre la data dai select a cascata prima del salvataggio
   sincronizzaDataDaSelects('nuovo');
   let dataNascita = (document.getElementById('nuovo-paz-nascita')?.value || '').trim();
@@ -3675,7 +3675,7 @@ function apriModificaAnagrafica() {
   const telStudioVal = (p.medicoTelStudio || (p.medicoStudio && !p.medicoStudio.includes('Sarconi') && !p.medicoStudio.includes('Via') ? p.medicoStudio : ''));
   document.getElementById('edit-paz-medico-studio').value = formattaNumeroTelefonico(telStudioVal);
   document.getElementById('edit-paz-medico-tel').value = formattaNumeroTelefonico(p.medicoTel || p.telMedico || '');
-  
+
   // Assegnazione Email Ordinaria e PEC separata
   const elMedEmail = document.getElementById('edit-paz-medico-email');
   if (elMedEmail) {
@@ -4036,9 +4036,9 @@ function renderCatalogoAusiliForm(containerId, ausiliEsistenti = []) {
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0;">
             <div id="${prefix}-tempi-badge-${index}" style="font-size:11.5px; font-weight:800;">
               ${dataScad ? (() => {
-                const info = calcolaStatoScadenzaAusilio(dataScad, giorniAlert);
-                return `<span style="color:${info.coloreTesto || '#0369a1'};">⏳ ${info.testo}</span>`;
-              })() : '<span style="color:#64748b;">⏳ Inserisci la data di rinnovo per calcolare i tempi rimanenti</span>'}
+        const info = calcolaStatoScadenzaAusilio(dataScad, giorniAlert);
+        return `<span style="color:${info.coloreTesto || '#0369a1'};">⏳ ${info.testo}</span>`;
+      })() : '<span style="color:#64748b;">⏳ Inserisci la data di rinnovo per calcolare i tempi rimanenti</span>'}
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
               <label style="font-size:11px; color:#c2410c; font-weight:700; margin-bottom:0;">🔔 Preavviso Alert:</label>
@@ -4287,7 +4287,7 @@ function initTabs() {
     tab.addEventListener('click', () => {
       tabs.forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-      
+
       const target = tab.getAttribute('data-target');
 
       tabs.forEach(t => t.classList.remove('active'));
@@ -4330,14 +4330,14 @@ function checkAlvoAlarm() {
   const diffDays = Math.floor(diffHours / 24);
 
   if (diffHours >= 72) {
-    const waAlvoMsg = `🚨 ALLARME CLINICO CAREASSIST PRO\nPaziente: ${p.nome}\nMotivo: NESSUNA EVACUAZIONE DA ${diffDays} GIORNI (${diffHours} ORE).\nUltima evacuazione: ${lastEvac.toLocaleDateString('it-IT')} ore ${lastEvac.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}.\nRischio occlusione/fecaloma: Si richiede consulto immediato con Medico Curante.`;
+    const waAlvoMsg = `🚨 ALLARME CLINICO CAREASSIST PRO\nPaziente: ${p.nome}\nMotivo: NESSUNA EVACUAZIONE DA ${diffDays} GIORNI (${diffHours} ORE).\nUltima evacuazione: ${lastEvac.toLocaleDateString('it-IT')} ore ${lastEvac.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}.\nRischio occlusione/fecaloma: Si richiede consulto immediato con Medico Curante.`;
     const waAlvoUrl = `https://wa.me/?text=${encodeURIComponent(waAlvoMsg)}`;
 
     alertContainer.innerHTML = `
       <div class="alert-banner">
         <div>
           <div class="alert-title">🚨 ALLARME ALVO (${p.nome}): NESSUNA EVACUAZIONE DA ${diffDays} GIORNI (${diffHours} ORE)</div>
-          <div class="alert-desc">Ultima evacuazione: <b>${lastEvac.toLocaleDateString('it-IT')} ore ${lastEvac.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}</b> (${alvoLogs[0].consistenza || 'Normale'}).<br>Rischio occlusione/fecaloma: consultare il Medico Curante per valutare clisma o lassativo!</div>
+          <div class="alert-desc">Ultima evacuazione: <b>${lastEvac.toLocaleDateString('it-IT')} ore ${lastEvac.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</b> (${alvoLogs[0].consistenza || 'Normale'}).<br>Rischio occlusione/fecaloma: consultare il Medico Curante per valutare clisma o lassativo!</div>
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
           <a href="${waAlvoUrl}" target="_blank" class="btn btn-outline" style="background:#25d366; color:#0b0f19; font-weight:800; border:none; text-decoration:none; padding:8px 14px; border-radius:8px; display:inline-flex; align-items:center; gap:6px;">
@@ -4365,7 +4365,7 @@ function checkAlvoAlarm() {
       <div class="alert-banner warning">
         <div>
           <div class="alert-title">⚠️ ATTENZIONE ALVO (${p.nome}): Nessuna evacuazione da 2 giorni (${diffHours} ore)</div>
-          <div class="alert-desc">Ultima evacuazione: <b>${lastEvac.toLocaleDateString('it-IT')} alle ${lastEvac.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}</b>. Rischio stipsi ostinata: stimolare idratazione.</div>
+          <div class="alert-desc">Ultima evacuazione: <b>${lastEvac.toLocaleDateString('it-IT')} alle ${lastEvac.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</b>. Rischio stipsi ostinata: stimolare idratazione.</div>
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
           <button class="btn btn-success" style="background:#059669; font-weight:800; padding:6px 12px;" onclick="registraEvacuazioneRapida1Click('Regolare / Formata', 'Evacuazione regolare')">
@@ -4379,7 +4379,7 @@ function checkAlvoAlarm() {
       <div class="alert-banner good">
         <div>
           <div class="alert-title">✅ ALVO REGOLARE (${p.nome})</div>
-          <div class="alert-desc">Ultima evacuazione: <b>${lastEvac.toLocaleDateString('it-IT')} alle ${lastEvac.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}</b> (${alvoLogs[0].consistenza || 'Normale'}).</div>
+          <div class="alert-desc">Ultima evacuazione: <b>${lastEvac.toLocaleDateString('it-IT')} alle ${lastEvac.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</b> (${alvoLogs[0].consistenza || 'Normale'}).</div>
         </div>
         <button class="btn btn-success" onclick="openModal('modal-alvo')">+ Nuova Evacuazione</button>
       </div>`;
@@ -4564,7 +4564,7 @@ function renderTerapie() {
       t.quantitaQuota = 1;
       delete t.penneScorta; delete t.unitaPerPenna; delete t.unitaDoseDie; delete t.kitGlicemiaAssociato;
       if (typeof t.scorta === 'number' && t.scorta % 1 !== 0) t.scorta = Math.round(t.scorta);
-      if (typeof saveDb === 'function') { setTimeout(function () { try { saveDb(); } catch (e) {} }, 300); }
+      if (typeof saveDb === 'function') { setTimeout(function () { try { saveDb(); } catch (e) { } }, 300); }
     }
   });
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
@@ -4580,78 +4580,78 @@ function renderTerapie() {
   const html = (terapieFiltrate.length === 0)
     ? '<tr><td colspan="8" style="text-align:center; padding:28px 16px; color:#64748b; font-size:13px;">Nessuna terapia programmata per la fascia <b>' + activeFascia.toUpperCase() + '</b>.<br><a href="javascript:void(0)" onclick="filtraFasciaTerapia(\'tutte\')" style="color:#0284c7; font-weight:800; display:inline-block; margin-top:8px;">Mostra tutte le terapie</a></td></tr>'
     : terapieFiltrate.map(t => {
-    // Calcolo giorni autonomia e data presunta termine scorta considerando dosi frazionate/alternate
-    const giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
-    const consumoGiornaliero = calcolaConsumoGiornalieroFarmaco(t);
-    
-    // Calcolo Data Presunta Termine Capsule esatta
-    let dataTermineStr = 'Esaurito';
-    if (giorniAutonomia > 0) {
-      const dataTermine = new Date();
-      dataTermine.setDate(dataTermine.getDate() + giorniAutonomia);
-      dataTermineStr = dataTermine.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    }
+      // Calcolo giorni autonomia e data presunta termine scorta considerando dosi frazionate/alternate
+      const giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
+      const consumoGiornaliero = calcolaConsumoGiornalieroFarmaco(t);
 
-    // Soglia Alert Personalizzata (1-30 giorni, predefinito 7)
-    const sogliaAlert = Math.min(30, Math.max(1, parseInt(t.giorniAlert) || 7));
-    
-    // Stato Visivo Scorta: CARICATO / ALLERTA SCORTA / MANCANTE
-    let statusBadge = '';
-    if (t.scorta <= 0) {
-      statusBadge = '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#b91c1c; color:#fff;">🔴 SCORTA ZERO / MANCANTE</span>';
-    } else if (giorniAutonomia <= sogliaAlert) {
-      statusBadge = `<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#ea580c; color:#fff; border:1px solid #c2410c;" title="Allerta configurata a ${sogliaAlert} giorni di preavviso">🚨 ALLERTA SCORTA (≤${sogliaAlert}gg)</span>`;
-    } else if (giorniAutonomia <= sogliaAlert + 5) {
-      statusBadge = `<span class="badge badge-warning" style="font-weight:800; font-size:11px; background:#fef08a; color:#854d0e; border:1px solid #facc15;" title="Autonomia rimanente: ${giorniAutonomia} giorni">🟡 SCORTA IN CALO</span>`;
-    } else {
-      statusBadge = '<span class="badge badge-success" style="font-weight:800; font-size:11px; background:#16a34a; color:#fff;">🟢 FARMACIA CARICATA</span>';
-    }
+      // Calcolo Data Presunta Termine Capsule esatta
+      let dataTermineStr = 'Esaurito';
+      if (giorniAutonomia > 0) {
+        const dataTermine = new Date();
+        dataTermine.setDate(dataTermine.getDate() + giorniAutonomia);
+        dataTermineStr = dataTermine.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
 
-    // Informazioni ultimo ritiro
-    const farmaciaNome = t.farmacia || p.farmaciaDiRiferimento || 'Farmacia MACARIO';
-    const ritiroInfo = t.ultimoRitiro 
-      ? `<div style="font-size:10px; color:#0369a1; font-weight:700; margin-top:3px;">📅 Ritirato: <b>${new Date(t.ultimoRitiro).toLocaleDateString('it-IT')}</b></div><div style="font-size:9.5px; color:#047857; font-weight:600;">🏥 ${farmaciaNome}</div>`
-      : `<div style="font-size:10px; color:#64748b; margin-top:3px;">Prescrizione Attiva</div><div style="font-size:9.5px; color:#64748b;">${farmaciaNome}</div>`;
+      // Soglia Alert Personalizzata (1-30 giorni, predefinito 7)
+      const sogliaAlert = Math.min(30, Math.max(1, parseInt(t.giorniAlert) || 7));
 
-    return `
+      // Stato Visivo Scorta: CARICATO / ALLERTA SCORTA / MANCANTE
+      let statusBadge = '';
+      if (t.scorta <= 0) {
+        statusBadge = '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#b91c1c; color:#fff;">🔴 SCORTA ZERO / MANCANTE</span>';
+      } else if (giorniAutonomia <= sogliaAlert) {
+        statusBadge = `<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#ea580c; color:#fff; border:1px solid #c2410c;" title="Allerta configurata a ${sogliaAlert} giorni di preavviso">🚨 ALLERTA SCORTA (≤${sogliaAlert}gg)</span>`;
+      } else if (giorniAutonomia <= sogliaAlert + 5) {
+        statusBadge = `<span class="badge badge-warning" style="font-weight:800; font-size:11px; background:#fef08a; color:#854d0e; border:1px solid #facc15;" title="Autonomia rimanente: ${giorniAutonomia} giorni">🟡 SCORTA IN CALO</span>`;
+      } else {
+        statusBadge = '<span class="badge badge-success" style="font-weight:800; font-size:11px; background:#16a34a; color:#fff;">🟢 FARMACIA CARICATA</span>';
+      }
+
+      // Informazioni ultimo ritiro
+      const farmaciaNome = t.farmacia || p.farmaciaDiRiferimento || 'Farmacia MACARIO';
+      const ritiroInfo = t.ultimoRitiro
+        ? `<div style="font-size:10px; color:#0369a1; font-weight:700; margin-top:3px;">📅 Ritirato: <b>${new Date(t.ultimoRitiro).toLocaleDateString('it-IT')}</b></div><div style="font-size:9.5px; color:#047857; font-weight:600;">🏥 ${farmaciaNome}</div>`
+        : `<div style="font-size:10px; color:#64748b; margin-top:3px;">Prescrizione Attiva</div><div style="font-size:9.5px; color:#64748b;">${farmaciaNome}</div>`;
+
+      return `
       <tr id="terapia-row-${t.id}" class="terapia-row-item" data-farmaco-id="${t.id}">
         <td>
   ${(() => {
-    if (t.cadenzaTipo === 'alternata_mezza_intera') {
-      const doseAlt = getDoseOdiernaAlternata(t);
-      const bgDose = doseAlt.isMezza ? '#fef3c7' : '#dcfce7';
-      const colDose = doseAlt.isMezza ? '#b45309' : '#15803d';
-      const iconDose = doseAlt.isMezza ? '🌓' : '🌕';
-      return `<span class="badge" style="background:${bgDose}; color:${colDose}; font-weight:800; border:1px solid ${colDose};">${iconDose} OGGI: ${doseAlt.testo}</span> <b>${t.ora}</b>`;
-    }
-    if (t.cadenzaTipo === 'alterni') {
-      if (!isTerapiaPrevistaOggi(t)) {
-        return `<span class="badge" style="background:#e2e8f0; color:#475569; font-weight:700;">🔁 Giorni alterni</span><br><small style="color:#64748b; font-size:10.5px;">Non prevista oggi (tocca domani)</small>`;
-      }
-      return `<span class="badge badge-warning" style="background:#fef08a; color:#854d0e; font-weight:800; border:1px solid #facc15;">🔁 OGGI TOCCA (alterni)</span> <b>${t.ora}</b>`;
-    }
-    if (t.cadenzaTipo === 'quindicinale_15_30' || ((t.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0 && (t.modo || '').indexOf('15') >= 0)) {
-      const previstaOggi = isTerapiaPrevistaOggi(t);
-      if (!previstaOggi) {
-        return `<span class="badge" style="background:#e2e8f0; color:#475569; font-weight:700;">📅 Ogni 15gg (15 e 30)</span><br><small style="color:#64748b; font-size:10.5px;">Non prevista oggi</small>`;
-      } else {
-        return `<span class="badge badge-warning" style="background:#fef08a; color:#854d0e; font-weight:800; border:1px solid #facc15;">🌟 OGGI È IL GIORNO (15 o 30)!</span> <b>${t.ora}</b>`;
-      }
-    }
-    return `<span class="badge badge-primary">${t.fascia}</span> <b>${t.ora}</b>`;
-  })()}
+          if (t.cadenzaTipo === 'alternata_mezza_intera') {
+            const doseAlt = getDoseOdiernaAlternata(t);
+            const bgDose = doseAlt.isMezza ? '#fef3c7' : '#dcfce7';
+            const colDose = doseAlt.isMezza ? '#b45309' : '#15803d';
+            const iconDose = doseAlt.isMezza ? '🌓' : '🌕';
+            return `<span class="badge" style="background:${bgDose}; color:${colDose}; font-weight:800; border:1px solid ${colDose};">${iconDose} OGGI: ${doseAlt.testo}</span> <b>${t.ora}</b>`;
+          }
+          if (t.cadenzaTipo === 'alterni') {
+            if (!isTerapiaPrevistaOggi(t)) {
+              return `<span class="badge" style="background:#e2e8f0; color:#475569; font-weight:700;">🔁 Giorni alterni</span><br><small style="color:#64748b; font-size:10.5px;">Non prevista oggi (tocca domani)</small>`;
+            }
+            return `<span class="badge badge-warning" style="background:#fef08a; color:#854d0e; font-weight:800; border:1px solid #facc15;">🔁 OGGI TOCCA (alterni)</span> <b>${t.ora}</b>`;
+          }
+          if (t.cadenzaTipo === 'quindicinale_15_30' || ((t.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0 && (t.modo || '').indexOf('15') >= 0)) {
+            const previstaOggi = isTerapiaPrevistaOggi(t);
+            if (!previstaOggi) {
+              return `<span class="badge" style="background:#e2e8f0; color:#475569; font-weight:700;">📅 Ogni 15gg (15 e 30)</span><br><small style="color:#64748b; font-size:10.5px;">Non prevista oggi</small>`;
+            } else {
+              return `<span class="badge badge-warning" style="background:#fef08a; color:#854d0e; font-weight:800; border:1px solid #facc15;">🌟 OGGI È IL GIORNO (15 o 30)!</span> <b>${t.ora}</b>`;
+            }
+          }
+          return `<span class="badge badge-primary">${t.fascia}</span> <b>${t.ora}</b>`;
+        })()}
 </td>
         <td>
           <div class="audit-pill-clickable" onclick="mostraAuditFarmaco(${t.id})" title="Clicca per aprire la tracciabilità e la cronologia">
             <b style="color:var(--primary); font-size:14.5px; text-decoration: underline; text-decoration-color: rgba(37,99,235,0.4);">${t.farmaco}</b>
             <span style="font-size:11px; margin-left:4px;" title="Storico">🔍</span>
             ${(() => {
-              const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, terapieFiltrate) : null;
-              if (mt) {
-                return '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1px solid #7dd3fc; font-size:10px; padding:2px 7px; border-radius:6px; margin-left:4px; display:inline-block;" title="Terapia a ' + mt.numTempi + ' somministrazioni orarie al giorno (Scorta Condivisa)">⏱️ Tempo ' + mt.indiceTempo + ' di ' + mt.numTempi + ' (' + t.ora + ')</span>';
-              }
-              return '';
-            })()}
+          const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, terapieFiltrate) : null;
+          if (mt) {
+            return '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1px solid #7dd3fc; font-size:10px; padding:2px 7px; border-radius:6px; margin-left:4px; display:inline-block;" title="Terapia a ' + mt.numTempi + ' somministrazioni orarie al giorno (Scorta Condivisa)">⏱️ Tempo ' + mt.indiceTempo + ' di ' + mt.numTempi + ' (' + t.ora + ')</span>';
+          }
+          return '';
+        })()}
             ${t.ultimaModificaClinica ? `<span style="display:inline-block; font-size:10px; font-weight:800; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:1px 6px; border-radius:6px; margin-left:4px;" title="${t.ultimaModificaClinica.motivo || ''}">🩺 Agg. ${t.ultimaModificaClinica.fonte || 'Medico'} (${t.ultimaModificaClinica.data || ''})</span>` : ''}
             ${t.principio ? `<br><small style="color:#64748b;">Principio: ${t.principio}</small>` : ''}
           </div>
@@ -4659,68 +4659,68 @@ function renderTerapie() {
         <td>
           <b>${t.dosaggio}</b>
           ${(() => {
-            const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
-            if (isPen) {
-              const dPen = calcolaDatiPennaIniettabile(t);
-              return `<br><span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1.5px solid #7dd3fc; font-size:11px; margin-top:4px; display:inline-block; border-radius:7px; padding:3px 8px; box-shadow:0 1px 3px rgba(3,105,161,0.08);">💉 INIETTA: ${dPen.doseDie} UI (Sottocute)</span>`;
-            }
-            const q = parseFloat(t.quantitaQuota);
-            if (q === 0.25) {
-              return '<br><span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; border:1px solid #f59e0b; font-size:11px; margin-top:3px; display:inline-block;">¼ PRENDI: ¼ DOSE (Un quarto cpr)</span>';
-            } else if (q === 0.5 || (t.dosaggio && t.dosaggio.includes('½')) || (t.farmaco && t.farmaco.includes('½ cpr'))) {
-              return '<br><span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; border:1px solid #f59e0b; font-size:11px; margin-top:3px; display:inline-block;">🌓 PRENDI: ½ DOSE (Mezza cpr)</span>';
-            } else if (q === 1 || (t.dosaggio && t.dosaggio.includes('1 cpr'))) {
-              return '<br><span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; border:1px solid #86efac; font-size:11px; margin-top:3px; display:inline-block;">🌕 PRENDI: 1 DOSE INTERA (1 cpr)</span>';
-            } else if (q === 1.5) {
-              return '<br><span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1px solid #7dd3fc; font-size:11px; margin-top:3px; display:inline-block;">💊🌓 PRENDI: 1½ DOSE (1,5 cpr)</span>';
-            } else if (q === 2) {
-              return '<br><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:800; border:1px solid #818cf8; font-size:11px; margin-top:3px; display:inline-block;">💊💊 PRENDI: 2 COMPRESSE (2 cpr)</span>';
-            } else if (q === 2.5) {
-              return '<br><span class="badge" style="background:#ede9fe; color:#6b21a8; font-weight:800; border:1px solid #c084fc; font-size:11px; margin-top:3px; display:inline-block;">💊💊🌓 PRENDI: 2½ COMPRESSE (2,5 cpr)</span>';
-            } else if (q === 3) {
-              return '<br><span class="badge" style="background:#fce7f3; color:#9d174d; font-weight:800; border:1px solid #f472b6; font-size:11px; margin-top:3px; display:inline-block;">💊💊💊 PRENDI: 3 COMPRESSE (3 cpr)</span>';
-            } else if (q === 4) {
-              return '<br><span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; border:1px solid #f87171; font-size:11px; margin-top:3px; display:inline-block;">💊💊💊💊 PRENDI: 4 COMPRESSE (4 cpr)</span>';
-            } else if (q > 0) {
-              return '<br><span class="badge" style="background:#f1f5f9; color:#0f172a; font-weight:800; border:1px solid #94a3b8; font-size:11px; margin-top:3px; display:inline-block;">💊 PRENDI: ' + q + ' COMPRESSE</span>';
-            }
-            return '';
-          })()}
+          const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+          if (isPen) {
+            const dPen = calcolaDatiPennaIniettabile(t);
+            return `<br><span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1.5px solid #7dd3fc; font-size:11px; margin-top:4px; display:inline-block; border-radius:7px; padding:3px 8px; box-shadow:0 1px 3px rgba(3,105,161,0.08);">💉 INIETTA: ${dPen.doseDie} UI (Sottocute)</span>`;
+          }
+          const q = parseFloat(t.quantitaQuota);
+          if (q === 0.25) {
+            return '<br><span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; border:1px solid #f59e0b; font-size:11px; margin-top:3px; display:inline-block;">¼ PRENDI: ¼ DOSE (Un quarto cpr)</span>';
+          } else if (q === 0.5 || (t.dosaggio && t.dosaggio.includes('½')) || (t.farmaco && t.farmaco.includes('½ cpr'))) {
+            return '<br><span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; border:1px solid #f59e0b; font-size:11px; margin-top:3px; display:inline-block;">🌓 PRENDI: ½ DOSE (Mezza cpr)</span>';
+          } else if (q === 1 || (t.dosaggio && t.dosaggio.includes('1 cpr'))) {
+            return '<br><span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; border:1px solid #86efac; font-size:11px; margin-top:3px; display:inline-block;">🌕 PRENDI: 1 DOSE INTERA (1 cpr)</span>';
+          } else if (q === 1.5) {
+            return '<br><span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1px solid #7dd3fc; font-size:11px; margin-top:3px; display:inline-block;">💊🌓 PRENDI: 1½ DOSE (1,5 cpr)</span>';
+          } else if (q === 2) {
+            return '<br><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:800; border:1px solid #818cf8; font-size:11px; margin-top:3px; display:inline-block;">💊💊 PRENDI: 2 COMPRESSE (2 cpr)</span>';
+          } else if (q === 2.5) {
+            return '<br><span class="badge" style="background:#ede9fe; color:#6b21a8; font-weight:800; border:1px solid #c084fc; font-size:11px; margin-top:3px; display:inline-block;">💊💊🌓 PRENDI: 2½ COMPRESSE (2,5 cpr)</span>';
+          } else if (q === 3) {
+            return '<br><span class="badge" style="background:#fce7f3; color:#9d174d; font-weight:800; border:1px solid #f472b6; font-size:11px; margin-top:3px; display:inline-block;">💊💊💊 PRENDI: 3 COMPRESSE (3 cpr)</span>';
+          } else if (q === 4) {
+            return '<br><span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; border:1px solid #f87171; font-size:11px; margin-top:3px; display:inline-block;">💊💊💊💊 PRENDI: 4 COMPRESSE (4 cpr)</span>';
+          } else if (q > 0) {
+            return '<br><span class="badge" style="background:#f1f5f9; color:#0f172a; font-weight:800; border:1px solid #94a3b8; font-size:11px; margin-top:3px; display:inline-block;">💊 PRENDI: ' + q + ' COMPRESSE</span>';
+          }
+          return '';
+        })()}
         </td>
         <td>
           ${(() => {
-            const isSinemet = (t.farmaco || '').toUpperCase().includes('SINEMET');
-            const isAverelix = (t.farmaco || '').toUpperCase().includes('AVERELIX');
-            let avvisoBox = '';
-            if (isSinemet) {
-              avvisoBox = '<div style="background:#fef3c7; border:1px solid #f59e0b; color:#92400e; font-weight:800; font-size:10.5px; padding:2px 6px; border-radius:6px; margin-bottom:4px; display:inline-block;">⚡ STOMACO VUOTO (30 min prima dei pasti)</div><br>';
-            } else if (isAverelix) {
-              avvisoBox = '<div style="background:#ecfdf5; border:1px solid #10b981; color:#047857; font-weight:800; font-size:10.5px; padding:2px 6px; border-radius:6px; margin-bottom:4px; display:inline-block;">🛡️ ANTIAGGREGANTE A PRANZO</div><br>';
-            }
-            return avvisoBox + `<small style="color:#334155; font-size:12.5px;">${t.modo}</small>`;
-          })()}
+          const isSinemet = (t.farmaco || '').toUpperCase().includes('SINEMET');
+          const isAverelix = (t.farmaco || '').toUpperCase().includes('AVERELIX');
+          let avvisoBox = '';
+          if (isSinemet) {
+            avvisoBox = '<div style="background:#fef3c7; border:1px solid #f59e0b; color:#92400e; font-weight:800; font-size:10.5px; padding:2px 6px; border-radius:6px; margin-bottom:4px; display:inline-block;">⚡ STOMACO VUOTO (30 min prima dei pasti)</div><br>';
+          } else if (isAverelix) {
+            avvisoBox = '<div style="background:#ecfdf5; border:1px solid #10b981; color:#047857; font-weight:800; font-size:10.5px; padding:2px 6px; border-radius:6px; margin-bottom:4px; display:inline-block;">🛡️ ANTIAGGREGANTE A PRANZO</div><br>';
+          }
+          return avvisoBox + `<small style="color:#334155; font-size:12.5px;">${t.modo}</small>`;
+        })()}
         </td>
         <td style="text-align: center; vertical-align: middle;">
           ${(() => {
-            const isPenna = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
-            if (isPenna) {
-              const dPen = calcolaDatiPennaIniettabile(t);
-              const pStatusClass = (dPen.penne <= 0) ? 'status-danger' : (dPen.richiediSubito ? 'status-warning' : 'status-success');
-              const pStatusText = (dPen.penne <= 0) ? '🔴 Esaurite' : (dPen.richiediSubito ? '🚨 Richiedi MMG (Ultima penna)' : '🟢 Disponibili');
-              
-              let kitGlicemiaHtml = '';
-              const sensoriPz = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.sensoriScorta !== 'undefined') ? t.kitGlicemiaAssociato.sensoriScorta : (p.ausili ? (p.ausili.find(a => (a.tipo || '').toUpperCase().includes('GLUCOMEN') || (a.tipo || '').toUpperCase().includes('SENSOR'))?.pezziTotali || 25) : 25);
-              const lancettePz = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.lancetteScorta !== 'undefined') ? t.kitGlicemiaAssociato.lancetteScorta : (p.ausili ? (p.ausili.find(a => (a.tipo || '').toUpperCase().includes('GLUCOJECT') || (a.tipo || '').toUpperCase().includes('LANCET'))?.pezziTotali || 25) : 25);
-              const sensoriNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.sensoriNome) ? t.kitGlicemiaAssociato.sensoriNome : 'GlucoMen areo Sensor';
-              const lancetteNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.lancetteNome) ? t.kitGlicemiaAssociato.lancetteNome : 'Glucoject Extra 33G';
+          const isPenna = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+          if (isPenna) {
+            const dPen = calcolaDatiPennaIniettabile(t);
+            const pStatusClass = (dPen.penne <= 0) ? 'status-danger' : (dPen.richiediSubito ? 'status-warning' : 'status-success');
+            const pStatusText = (dPen.penne <= 0) ? '🔴 Esaurite' : (dPen.richiediSubito ? '🚨 Richiedi MMG (Ultima penna)' : '🟢 Disponibili');
 
-              kitGlicemiaHtml = `
+            let kitGlicemiaHtml = '';
+            const sensoriPz = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.sensoriScorta !== 'undefined') ? t.kitGlicemiaAssociato.sensoriScorta : (p.ausili ? (p.ausili.find(a => (a.tipo || '').toUpperCase().includes('GLUCOMEN') || (a.tipo || '').toUpperCase().includes('SENSOR'))?.pezziTotali || 25) : 25);
+            const lancettePz = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.lancetteScorta !== 'undefined') ? t.kitGlicemiaAssociato.lancetteScorta : (p.ausili ? (p.ausili.find(a => (a.tipo || '').toUpperCase().includes('GLUCOJECT') || (a.tipo || '').toUpperCase().includes('LANCET'))?.pezziTotali || 25) : 25);
+            const sensoriNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.sensoriNome) ? t.kitGlicemiaAssociato.sensoriNome : 'GlucoMen areo Sensor';
+            const lancetteNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.lancetteNome) ? t.kitGlicemiaAssociato.lancetteNome : 'Glucoject Extra 33G';
+
+            kitGlicemiaHtml = `
                 <div class="scorta-kit-diabete-luxury" title="Dispositivi per autocontrollo glicemico associati all\'insulina">
                   <span>🩸 <b>Kit Glicemia:</b> ${sensoriPz} sensori · ${lancettePz} lancette</span>
                 </div>
               `;
 
-              return `
+            return `
                 <div class="scorta-card-executive penna">
                   <div class="scorta-exec-header">
                     <span class="scorta-exec-badge ${pStatusClass}">${pStatusText}</span>
@@ -4741,12 +4741,12 @@ function renderTerapie() {
                   ${ritiroInfo}
                 </div>
               `;
-            }
-            const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, terapieFiltrate) : null;
-            if (mt) {
-              const mtStatusClass = (mt.scortaCondivisa <= 0) ? 'status-danger' : (mt.giorniAutonomia <= sogliaAlert ? 'status-warning' : 'status-success');
-              const mtStatusText = (mt.scortaCondivisa <= 0) ? '🔴 Scorta Zero' : (mt.giorniAutonomia <= sogliaAlert ? '🚨 Allerta Scorta' : '🟢 Farmacia Caricata');
-              return `
+          }
+          const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, terapieFiltrate) : null;
+          if (mt) {
+            const mtStatusClass = (mt.scortaCondivisa <= 0) ? 'status-danger' : (mt.giorniAutonomia <= sogliaAlert ? 'status-warning' : 'status-success');
+            const mtStatusText = (mt.scortaCondivisa <= 0) ? '🔴 Scorta Zero' : (mt.giorniAutonomia <= sogliaAlert ? '🚨 Allerta Scorta' : '🟢 Farmacia Caricata');
+            return `
                 <div class="scorta-card-executive multitempo">
                   <div class="scorta-exec-header">
                     <span class="scorta-exec-badge ${mtStatusClass}">${mtStatusText}</span>
@@ -4766,10 +4766,10 @@ function renderTerapie() {
                   ${ritiroInfo}
                 </div>
               `;
-            }
-            const sClass = (t.scorta <= 0) ? 'status-danger' : (giorniAutonomia <= sogliaAlert ? 'status-warning' : 'status-success');
-            const sText = (t.scorta <= 0) ? '🔴 Mancante' : (giorniAutonomia <= sogliaAlert ? '🚨 Allerta Scorta' : '🟢 Farmacia Caricata');
-            return `
+          }
+          const sClass = (t.scorta <= 0) ? 'status-danger' : (giorniAutonomia <= sogliaAlert ? 'status-warning' : 'status-success');
+          const sText = (t.scorta <= 0) ? '🔴 Mancante' : (giorniAutonomia <= sogliaAlert ? '🚨 Allerta Scorta' : '🟢 Farmacia Caricata');
+          return `
               <div class="scorta-card-executive standard">
                 <div class="scorta-exec-header">
                   <span class="scorta-exec-badge ${sClass}">${sText}</span>
@@ -4789,31 +4789,31 @@ function renderTerapie() {
                 ${ritiroInfo}
               </div>
             `;
-          })()}
+        })()}
         </td>
         <td style="text-align: center; vertical-align: middle;">
           ${(() => {
-            const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
-            if (isPen) {
-              return `
+          const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+          if (isPen) {
+            return `
                 <button class="btn btn-carico-luxury penna" onclick="caricaScatolaRapida(${t.id})" title="Aggiungi automaticamente 1 confezione ritirata (+${t.pennePerScatola || 3} penne)">
                   <span>💉</span> +1 Confezione (${t.pennePerScatola || 3} penne)
                 </button>
               `;
-            }
-            return `
+          }
+          return `
               <button class="btn btn-carico-luxury cpr" onclick="caricaScatolaRapida(${t.id})" title="Aggiungi automaticamente 1 scatola intera ritirata (+${t.cprPerScatola || 28} cpr)">
                 <span>📦</span> +1 Scatola (${t.cprPerScatola || 28} cpr)
               </button>
             `;
-          })()}
+        })()}
         </td>
         <td style="text-align: center; vertical-align: middle;">
           ${(() => {
-            const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
-            const isBisogno = t.fascia === 'Al Bisogno' || t.fascia === 'Al Bisogno (SOS)' || t.ora === 'Al Bisogno' || (t.frequenzaTipo === 'bisogno');
-            if (isBisogno && !t.fattoOggi) {
-              return `
+          const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+          const isBisogno = t.fascia === 'Al Bisogno' || t.fascia === 'Al Bisogno (SOS)' || t.ora === 'Al Bisogno' || (t.frequenzaTipo === 'bisogno');
+          if (isBisogno && !t.fattoOggi) {
+            return `
                 <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
                   <button class="btn btn-azione-luxury pending" style="background:#fef3c7; border-color:#f59e0b; color:#b45309;" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per registrare che questo farmaco è stato assunto al bisogno oggi">
                     ⚡ Somministra al Bisogno
@@ -4821,26 +4821,26 @@ function renderTerapie() {
                   <span style="font-size:10px; color:#b45309; font-weight:600;">Sintomatico / SOS</span>
                 </div>
               `;
-            }
-            if (t.fattoOggi) {
-              return `
+          }
+          if (t.fattoOggi) {
+            return `
                 <button class="btn btn-azione-luxury done" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per annullare la spunta se hai sbagliato">
                   ✓ ${isPen ? 'Iniettato Oggi' : 'Assunto Oggi'}
                 </button>
                 ${isBisogno ? `<div style="font-size:10px; color:#15803d; font-weight:700; margin-top:3px;">⚡ Assunto al bisogno</div>` : ''}
               `;
-            }
-            if (t.saltatoOggi) {
-              return `
+          }
+          if (t.saltatoOggi) {
+            return `
                 <button class="btn btn-danger" style="min-width: 120px; background:#b91c1c; border-color:#991b1b;" onclick="toggleFarmacoConScarico(${t.id})" title="Terapia saltata/omessa: ${t.motivoSalto || ''}. Clicca se vuoi comunque somministrare ora.">
                   ❌ Saltato
                 </button>
                 <div style="font-size:10px; color:#b91c1c; margin-top:3px; font-weight:800;" title="${t.motivoSalto || ''}">${(t.motivoSalto || 'Dose omessa').slice(0, 20)}...</div>
               `;
-            }
-            const check = verificaStatoOrarioFarmaco(t.ora);
-            if (!check.consentito) {
-              return `
+          }
+          const check = verificaStatoOrarioFarmaco(t.ora);
+          if (!check.consentito) {
+            return `
                 <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
                   <button class="btn btn-azione-luxury pending" style="background:#fffbeb; border-color:#f59e0b; color:#b45309;" onclick="toggleFarmacoConScarico(${t.id})" title="Previsto alle ${t.ora}. Clicca per somministrare ora (spunta)">
                     🕒 Alle ${t.ora} (Spunta)
@@ -4849,12 +4849,12 @@ function renderTerapie() {
                   <button type="button" class="btn btn-outline" style="padding:1px 6px; font-size:10px; border-color:#e2e8f0; color:#64748b;" onclick="apriModalSaltaFarmaco(${t.id})" title="Registra mancata assunzione o rifiuto">Salta dose</button>
                 </div>
               `;
-            }
-            if (check.inRitardo) {
-              const rOre = Math.floor(check.minutiRitardo / 60);
-              const rMin = check.minutiRitardo % 60;
-              const ritardoTesto = rOre > 0 ? `+${rOre}h ${rMin}m` : `+${rMin} min`;
-              return `
+          }
+          if (check.inRitardo) {
+            const rOre = Math.floor(check.minutiRitardo / 60);
+            const rMin = check.minutiRitardo % 60;
+            const ritardoTesto = rOre > 0 ? `+${rOre}h ${rMin}m` : `+${rMin} min`;
+            return `
                 <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
                   <button class="btn farmaco-in-ritardo-btn" style="min-width: 120px;" onclick="toggleFarmacoConScarico(${t.id})" title="ATTENZIONE: Terapia in ritardo! Clicca per somministrare ora.">
                     🔔 RITARDO!
@@ -4865,8 +4865,8 @@ function renderTerapie() {
                   </button>
                 </div>
               `;
-            }
-            return `
+          }
+          return `
               <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
                 <button class="btn btn-azione-luxury pending" onclick="toggleFarmacoConScarico(${t.id})">
                   ${isPen ? '💉 Inietta Ora' : '⚪ Somministra'}
@@ -4874,7 +4874,7 @@ function renderTerapie() {
                 <button type="button" class="btn btn-outline" style="padding:1px 6px; font-size:10px; border-color:#e2e8f0; color:#64748b;" onclick="apriModalSaltaFarmaco(${t.id})" title="Registra mancata assunzione o rifiuto">Salta dose</button>
               </div>
             `;
-          })()}
+        })()}
         </td>
         <td style="text-align: center;">
           ${canEdit ? `
@@ -4888,7 +4888,7 @@ function renderTerapie() {
         </td>
       </tr>
     `;
-  }).join('');
+    }).join('');
 
   // Gestione visibilità pulsante "+ Nuovo Farmaco" in cima alla tabella
   const btnNuovoFarmaco = document.querySelector('button[onclick="openModal(\'modal-farmaco\')"]');
@@ -4968,28 +4968,28 @@ function renderTerapie() {
 // Funzione dedicata per aggiornare la data del giorno terapia e orologio live
 function aggiornaDataGiornoTerapia() {
   const now = new Date();
-  
+
   // 1. Data estesa per giorno terapia (es. "Sabato 17 Ottobre 2026")
-  const dataEstesa = now.toLocaleDateString('it-IT', { 
-    weekday: 'long', 
-    day: 'numeric', 
-    month: 'long', 
-    year: 'numeric' 
+  const dataEstesa = now.toLocaleDateString('it-IT', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
   });
   const dataEstesaCapitalizzata = dataEstesa.charAt(0).toUpperCase() + dataEstesa.slice(1);
 
   // 2. Data compatta (es. "17/10/2026")
-  const dataCompatta = now.toLocaleDateString('it-IT', { 
-    day: '2-digit', 
-    month: '2-digit', 
-    year: 'numeric' 
+  const dataCompatta = now.toLocaleDateString('it-IT', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
   });
 
   // 3. Orario live (es. "22:15:30")
-  const oraLive = now.toLocaleTimeString('it-IT', { 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    second: '2-digit' 
+  const oraLive = now.toLocaleTimeString('it-IT', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
   });
 
   // Aggiorna Badge nella card Terapie Farmacologiche
@@ -5107,7 +5107,7 @@ function suonaChimeInsistenteElegante() {
 
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, startNota);
-      
+
       gain.gain.setValueAtTime(0, startNota);
       gain.gain.linearRampToValueAtTime(0.12, startNota + 0.03);
       gain.gain.exponentialRampToValueAtTime(0.001, startNota + 0.55);
@@ -5118,7 +5118,7 @@ function suonaChimeInsistenteElegante() {
       osc.stop(startNota + 0.6);
     });
 
-  } catch(e) {
+  } catch (e) {
     console.log('Audio non autorizzato', e);
   }
 }
@@ -5149,12 +5149,12 @@ function controllaTerapieGlobaliTuttiPazienti() {
 
   if (pazientiConRitardi.length > 0) {
     allarmeTerapieAttivo = true;
-    
+
     // Vibrazione Smartphone su ritardi reali
     if ('vibrate' in navigator) {
-      try { navigator.vibrate([400, 200, 400]); } catch(e) {}
+      try { navigator.vibrate([400, 200, 400]); } catch (e) { }
     }
-    
+
     // Notifica di sistema push
     if ('Notification' in window && Notification.permission === 'granted') {
       const adessoNotif = Date.now();
@@ -5168,7 +5168,7 @@ function controllaTerapieGlobaliTuttiPazienti() {
             icon: 'careassist_icon.jpg',
             tag: 'terapia-ritardo'
           });
-        } catch(e) {}
+        } catch (e) { }
       }
     }
 
@@ -5314,7 +5314,7 @@ function evidenziaEScrollaAFarmaco(farmacoId) {
     if (farmacoId) {
       row = document.getElementById('terapia-row-' + farmacoId) || document.querySelector('tr[data-farmaco-id="' + farmacoId + '"]');
     }
-    
+
     // Fallback: cerca la prima riga nella tabella terapie che ha un pulsante di ritardo
     if (!row) {
       const btnRitardo = document.querySelector('#terapie-table-body .farmaco-in-ritardo-btn, #terapie-table-body .badge-danger');
@@ -5326,7 +5326,7 @@ function evidenziaEScrollaAFarmaco(farmacoId) {
     if (row) {
       row.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-      document.querySelectorAll('.terapia-row-highlight').forEach(function(el) {
+      document.querySelectorAll('.terapia-row-highlight').forEach(function (el) {
         el.classList.remove('terapia-row-highlight');
       });
 
@@ -5334,7 +5334,7 @@ function evidenziaEScrollaAFarmaco(farmacoId) {
       showToast('👉 Ecco la terapia interessata in ritardo!', 'warning');
 
       // Resta lampeggiante per 7 secondi completi
-      setTimeout(function() {
+      setTimeout(function () {
         if (row) row.classList.remove('terapia-row-highlight');
       }, 7000);
     } else if (tentativi < 6) {
@@ -5452,7 +5452,7 @@ async function toggleFarmacoConScarico(id) {
       var mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
       var nuovaScorta = Math.max(0, Math.round((t.scorta - quantitaDoseScarico) * 100) / 100);
       if (mt && mt.gemelle && mt.gemelle.length > 1) {
-        mt.gemelle.forEach(function(item) {
+        mt.gemelle.forEach(function (item) {
           item.scorta = nuovaScorta;
         });
       } else if (t.scorta > 0) {
@@ -5611,8 +5611,8 @@ function mostraAuditFarmaco(farmacoId) {
   // Popola Box Info
   const infoBox = document.getElementById('audit-farmaco-info-box');
   const badgeScorta = t.scorta <= 5 ? '#fee2e2; color:#b91c1c;' : (t.scorta <= 10 ? '#fef3c7; color:#b45309;' : '#ecfdf5; color:#047857;');
-  const dataRitiroStr = t.ultimoRitiro 
-    ? new Date(t.ultimoRitiro).toLocaleDateString('it-IT') + ' ore ' + new Date(t.ultimoRitiro).toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})
+  const dataRitiroStr = t.ultimoRitiro
+    ? new Date(t.ultimoRitiro).toLocaleDateString('it-IT') + ' ore ' + new Date(t.ultimoRitiro).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
     : 'Iniziale (Prescrizione)';
 
   infoBox.innerHTML = `
@@ -5638,11 +5638,11 @@ function mostraAuditFarmaco(farmacoId) {
       </div>
       <div style="font-size:11px; color:#b45309; font-weight:700; margin-top:3px;">
         ⏳ Data Presunta Esaurimento: <b>${(() => {
-          if (!t.scorta || t.scorta <= 0) return 'Esaurito';
-          const dt = new Date();
-          dt.setDate(dt.getDate() + t.scorta);
-          return dt.toLocaleDateString('it-IT');
-        })()}</b>
+      if (!t.scorta || t.scorta <= 0) return 'Esaurito';
+      const dt = new Date();
+      dt.setDate(dt.getDate() + t.scorta);
+      return dt.toLocaleDateString('it-IT');
+    })()}</b>
       </div>
     </div>
   `;
@@ -5922,7 +5922,7 @@ async function caricaScatolaRapida(farmacoId) {
     const now = new Date();
     const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
     if (mt && mt.gemelle && mt.gemelle.length > 1) {
-      mt.gemelle.forEach(function(item) {
+      mt.gemelle.forEach(function (item) {
         item.scorta = (parseFloat(item.scorta) || 0) + cprDaAggiungere;
         item.ultimoRitiro = now.toISOString();
       });
@@ -6437,7 +6437,7 @@ function renderDiario() {
     }
 
     const d = new Date(r.timestamp);
-    const dataStr = `${d.toLocaleDateString('it-IT')} ${d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}`;
+    const dataStr = `${d.toLocaleDateString('it-IT')} ${d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`;
 
     return `
       <tr id="diario-row-${scope}-${r.id}">
@@ -6463,7 +6463,7 @@ function renderDiario() {
 async function eliminaLog(id) {
   const p = getActivePaziente();
   if (!p) return;
-  
+
   let ok = false;
   try {
     ok = await customConfirm(
@@ -6472,7 +6472,7 @@ async function eliminaLog(id) {
       '🗑️',
       'Sposta nel Cestino'
     );
-  } catch(e) {
+  } catch (e) {
     ok = confirm('Vuoi eliminare questa annotazione dal diario clinico?');
   }
 
@@ -6505,7 +6505,7 @@ async function svuotaRitardiFarmaci() {
       '🧹',
       'Sposta nel Cestino'
     );
-  } catch(e) {
+  } catch (e) {
     ok = confirm('Vuoi cancellare tutti i ' + ritardi.length + ' avvisi di ritardo registrati?');
   }
 
@@ -6634,7 +6634,7 @@ function closeModal(id) {
     el.classList.remove('active');
     el.style.display = 'none';
   }
-  setTimeout(function() {
+  setTimeout(function () {
     const anyActive = document.querySelector('.modal-overlay.active, .modal-overlay[style*="display: flex"]');
     if (!anyActive) {
       document.body.classList.remove('modal-open');
@@ -6931,21 +6931,21 @@ function recitaTestoSintesiInApp(testo) {
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(
       t.replace(/\bmg\b/gi, 'milligrammi')
-       .replace(/\bmcg\b/gi, 'microgrammi')
-       .replace(/\bcpr\b/gi, 'compresse')
-       .replace(/\bml\b/gi, 'millilitri')
+        .replace(/\bmcg\b/gi, 'microgrammi')
+        .replace(/\bcpr\b/gi, 'compresse')
+        .replace(/\bml\b/gi, 'millilitri')
     );
     utter.lang = 'it-IT';
     utter.rate = 0.98;
     utter.pitch = 1.0;
     window.speechSynthesis.speak(utter);
-  } catch (e) {}
+  } catch (e) { }
 }
 window.recitaTestoSintesiInApp = recitaTestoSintesiInApp;
 
 function fermaVoceSintesiInApp() {
   if ('speechSynthesis' in window) {
-    try { window.speechSynthesis.cancel(); } catch (e) {}
+    try { window.speechSynthesis.cancel(); } catch (e) { }
   }
 }
 window.fermaVoceSintesiInApp = fermaVoceSintesiInApp;
@@ -6994,7 +6994,7 @@ async function cercaSintesiMedicaLiveInApp(queryRicerca) {
           estratto: sumData.extract
         };
       }
-    } catch (e) {}
+    } catch (e) { }
   }
   return null;
 }
@@ -7299,8 +7299,8 @@ function analizzaSicurezzaClinicaFarmaco(f) {
     const isFans = /ketoprof|ibuprof|diclofen|napross|nimesul|ketorol|acetilsalicil|oki|moment|brufen|voltaren|aulin|aspirin/i.test(nomeScan + ' ' + princScan);
     const isPenicillina = /amoxicill|ampicill|augmentin|zimox|clavulan|penicill/i.test(nomeScan + ' ' + princScan);
     if ((allergiePaz.includes('fans') && isFans) ||
-        (allergiePaz.includes('penicill') && isPenicillina) ||
-        (princScan.length >= 5 && allergiePaz.includes(princScan.split(/\s+/)[0]))) {
+      (allergiePaz.includes('penicill') && isPenicillina) ||
+      (princScan.length >= 5 && allergiePaz.includes(princScan.split(/\s+/)[0]))) {
       return {
         livello: 'pericolo',
         titolo: `⛔ ALLERTA ALLERGIA per ${nomePaziente}!`,
@@ -7317,7 +7317,7 @@ function analizzaSicurezzaClinicaFarmaco(f) {
     const tf = (t.farmaco || '').toLowerCase();
     const tp = (t.principio || '').toLowerCase();
     return (radiceNome.length >= 4 && tf.includes(radiceNome)) ||
-           (radicePrinc.length >= 5 && (tf.includes(radicePrinc) || tp.includes(radicePrinc)));
+      (radicePrinc.length >= 5 && (tf.includes(radicePrinc) || tp.includes(radicePrinc)));
   });
 
   if (duplicato) {
@@ -7457,7 +7457,7 @@ function preparaCanvasPerOCR(img, mode) {
         }
       }
       ctx.putImageData(imgData, 0, 0);
-    } catch (e) {}
+    } catch (e) { }
   }
   return canvas;
 }
@@ -7534,7 +7534,7 @@ function analizzaFirmaVisivaConfezione(img) {
     if (totalLow > 0 && whiteTubeLow > totalLow * 0.45 && blueTraumeelLow > totalLow * 0.035 && redLineLow > totalLow * 0.02) {
       return 'traumeel s crema 100 g heel medicinale omeopatico uso cutaneo';
     }
-  } catch (e) {}
+  } catch (e) { }
   return '';
 }
 
@@ -7564,7 +7564,7 @@ async function eseguiScansioneCompletaImmagineFarmaco(file) {
       if (Array.isArray(blocks) && blocks.length > 0) {
         raccolti.push(blocks.map(b => b.rawValue || '').join(' '));
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   // 3. OCR Ottico multi-passata (prima sul ritaglio centrale della scatola con filtro Anti-Braille/Colore, poi sul frame intero)
@@ -7617,7 +7617,7 @@ async function eseguiScansioneCompletaImmagineFarmaco(file) {
       tCtx.drawImage(imageBitmap, 0, 0, 96, 96);
     }
     previewDataUrl = thumbCanvas.toDataURL('image/jpeg', 0.85);
-  } catch (e) {}
+  } catch (e) { }
 
   return { rawText: testoTotale, farmacoRiconosciuto, previewDataUrl };
 }
@@ -7630,7 +7630,7 @@ function fermaMirinoLiveScanner() {
   if (_liveScannerStream) {
     try {
       _liveScannerStream.getTracks().forEach(t => t.stop());
-    } catch (e) {}
+    } catch (e) { }
     _liveScannerStream = null;
   }
   ['live-scanner-box-capsula', 'live-scanner-box-nuovo'].forEach(id => {
@@ -7640,7 +7640,7 @@ function fermaMirinoLiveScanner() {
   ['live-scanner-video-capsula', 'live-scanner-video-nuovo'].forEach(id => {
     const vid = document.getElementById(id);
     if (vid) {
-      try { vid.srcObject = null; } catch (e) {}
+      try { vid.srcObject = null; } catch (e) { }
     }
   });
 }
@@ -7710,7 +7710,7 @@ async function toggleMirinoLiveScanner(targetModal) {
               catturaFrameMirinoLive(targetModal, match);
             }
           }
-        } catch (e) {}
+        } catch (e) { }
       }, 650);
     }
   } catch (err) {
@@ -7788,7 +7788,7 @@ function resetScannerFarmacoUI(targetModal) {
   ['scan-farm-camera', 'scan-farm-gallery', 'scan-farm-camera-alt', 'scan-farm-gallery-alt'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      try { el.value = ''; } catch (e) {}
+      try { el.value = ''; } catch (e) { }
     }
   });
 }
@@ -7802,7 +7802,7 @@ function ripetiScansioneFotoFarmaco(modo, targetModal) {
     : (isCapsula ? 'scan-farm-camera' : 'scan-farm-camera-alt');
   const inputEl = document.getElementById(inputId);
   if (inputEl) {
-    try { inputEl.value = ''; } catch (e) {}
+    try { inputEl.value = ''; } catch (e) { }
     inputEl.click();
   }
 }
@@ -7890,7 +7890,7 @@ async function eseguiRicercaWebLiveNonFarmaco(queryRicerca, boxDomId) {
         <div style="font-size:11px; color:#e2e8f0; line-height:1.35;">${estrattoBreve}</div>
       `;
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 window.eseguiRicercaWebLiveNonFarmaco = eseguiRicercaWebLiveNonFarmaco;
 
@@ -8149,7 +8149,7 @@ function avviaBriefingVocaleAssistitoDemo() {
       utter.rate = 0.98;
       utter.pitch = 1.0;
       window.speechSynthesis.speak(utter);
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 window.avviaBriefingVocaleAssistitoDemo = avviaBriefingVocaleAssistitoDemo;
@@ -8207,7 +8207,7 @@ function avviaDettaturaVocaleFarmacoScanner(targetModal) {
       rec.interimResults = false;
       rec.maxAlternatives = 3;
       showToast('🎤 Microfono attivo: pronuncia un farmaco o un ausilio (es. "Materasso antidecubito", "Sacche per stomia")...');
-      rec.onresult = function(ev) {
+      rec.onresult = function (ev) {
         const trascritto = (ev.results && ev.results[0] && ev.results[0][0])
           ? ev.results[0][0].transcript.trim()
           : '';
@@ -8222,7 +8222,7 @@ function avviaDettaturaVocaleFarmacoScanner(targetModal) {
       };
       rec.start();
       return;
-    } catch (e) {}
+    } catch (e) { }
   }
   const elQuick = document.getElementById('voce-ai-quick-input');
   if (elQuick) elQuick.focus();
@@ -8251,7 +8251,7 @@ async function gestisciFotoFarmaco(event, targetModal) {
   const file = inputEl && inputEl.files && inputEl.files[0];
   if (!file) return;
   // Sblocca IMMEDIATAMENTE l'input file prima dell'await così l'utente può sempre ripetere la foto!
-  try { inputEl.value = ''; } catch (e) {}
+  try { inputEl.value = ''; } catch (e) { }
 
   const isCapsula = (targetModal === 'capsula');
   const boxResult = document.getElementById(isCapsula ? 'scan-result-capsula' : 'scan-result-nuovo');
@@ -8350,7 +8350,7 @@ async function gestisciFotoCaricoScatola(event) {
   const inputEl = event && event.target ? event.target : null;
   const file = inputEl && inputEl.files && inputEl.files[0];
   if (!file) return;
-  try { inputEl.value = ''; } catch (e) {}
+  try { inputEl.value = ''; } catch (e) { }
 
   const resBox = document.getElementById('scan-result-carico');
   if (resBox) {
@@ -8379,7 +8379,7 @@ async function gestisciFotoCaricoScatola(event) {
       _ultimoFarmacoRiconosciutoScanner = farmacoRiconosciuto;
       const nomeVisualizzato = farmacoRiconosciuto.nomePersonalizzato || farmacoRiconosciuto.nome;
       const p = getActivePaziente();
-      const matchTerapia = (p && p.terapie) ? p.terapie.find(t => 
+      const matchTerapia = (p && p.terapie) ? p.terapie.find(t =>
         (t.farmaco || '').toLowerCase().includes(farmacoRiconosciuto.nome.toLowerCase().split(' ')[0])
       ) : null;
 
@@ -9451,32 +9451,32 @@ function aggiungiNuovaDoseModifica(oraPredefinita, fasciaPredefinita, quantitaPr
   row.style.alignItems = 'center';
   row.style.boxShadow = '0 2px 5px rgba(0,0,0,0.03)';
 
-  row.innerHTML = 
+  row.innerHTML =
     '<div style="flex:0.6; min-width:85px;">' +
-      '<span style="display:inline-block; font-size:11.5px; font-weight:800; color:#166534; background:#dcfce7; padding:4px 8px; border-radius:6px; border:1px solid #bbf7d0;">' +
-        '💊 ' + numDoseEffettiva + 'ª Dose' +
-      '</span>' +
+    '<span style="display:inline-block; font-size:11.5px; font-weight:800; color:#166534; background:#dcfce7; padding:4px 8px; border-radius:6px; border:1px solid #bbf7d0;">' +
+    '💊 ' + numDoseEffettiva + 'ª Dose' +
+    '</span>' +
     '</div>' +
     '<div class="form-group" style="flex:1; margin-bottom:0;">' +
-      '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">⏰ Orario</label>' +
-      '<input type="time" class="form-control edit-extra-ora" value="' + oraVal + '" oninput="aggiornaFasciaDoseExtraRow(this)" style="font-size:13px; padding:4px 6px; font-weight:800; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd;">' +
+    '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">⏰ Orario</label>' +
+    '<input type="time" class="form-control edit-extra-ora" value="' + oraVal + '" oninput="aggiornaFasciaDoseExtraRow(this)" style="font-size:13px; padding:4px 6px; font-weight:800; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd;">' +
     '</div>' +
     '<div class="form-group" style="flex:1.3; margin-bottom:0;">' +
-      '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">Fascia Giorno</label>' +
-      '<select class="form-control edit-extra-fascia" style="font-size:12px; padding:4px 6px; font-weight:600;">' +
-        '<option value="Mattina (Colazione)"' + (fasciaVal.indexOf('Colazione') >= 0 ? ' selected' : '') + '>Mattina (Colazione)</option>' +
-        '<option value="Pranzo"' + (fasciaVal.indexOf('Pranzo') >= 0 ? ' selected' : '') + '>Pranzo</option>' +
-        '<option value="Pomeriggio"' + (fasciaVal.indexOf('Pomeriggio') >= 0 ? ' selected' : '') + '>Pomeriggio</option>' +
-        '<option value="Sera (Cena)"' + (fasciaVal.indexOf('Cena') >= 0 ? ' selected' : '') + '>Sera (Cena)</option>' +
-        '<option value="Notte (Prima di dormire)"' + (fasciaVal.indexOf('Notte') >= 0 ? ' selected' : '') + '>Notte (Prima di dormire)</option>' +
-      '</select>' +
+    '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">Fascia Giorno</label>' +
+    '<select class="form-control edit-extra-fascia" style="font-size:12px; padding:4px 6px; font-weight:600;">' +
+    '<option value="Mattina (Colazione)"' + (fasciaVal.indexOf('Colazione') >= 0 ? ' selected' : '') + '>Mattina (Colazione)</option>' +
+    '<option value="Pranzo"' + (fasciaVal.indexOf('Pranzo') >= 0 ? ' selected' : '') + '>Pranzo</option>' +
+    '<option value="Pomeriggio"' + (fasciaVal.indexOf('Pomeriggio') >= 0 ? ' selected' : '') + '>Pomeriggio</option>' +
+    '<option value="Sera (Cena)"' + (fasciaVal.indexOf('Cena') >= 0 ? ' selected' : '') + '>Sera (Cena)</option>' +
+    '<option value="Notte (Prima di dormire)"' + (fasciaVal.indexOf('Notte') >= 0 ? ' selected' : '') + '>Notte (Prima di dormire)</option>' +
+    '</select>' +
     '</div>' +
     '<div class="form-group" style="flex:1; margin-bottom:0;">' +
-      '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">Dose / Q.tà</label>' +
-      '<input type="text" class="form-control edit-extra-qta" value="' + qtaVal + '" style="font-size:12px; padding:4px 6px; font-weight:700;">' +
+    '<label style="font-size:10.5px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">Dose / Q.tà</label>' +
+    '<input type="text" class="form-control edit-extra-qta" value="' + qtaVal + '" style="font-size:12px; padding:4px 6px; font-weight:700;">' +
     '</div>' +
     '<div style="flex:0.25; text-align:center; margin-top:14px;">' +
-      '<button type="button" class="btn btn-outline" style="color:#dc2626; border-color:#fca5a5; padding:5px 8px; font-size:12px; border-radius:8px;" onclick="rimuoviDoseExtraRow(\'' + idDose + '\')" title="Rimuovi dose">✕</button>' +
+    '<button type="button" class="btn btn-outline" style="color:#dc2626; border-color:#fca5a5; padding:5px 8px; font-size:12px; border-radius:8px;" onclick="rimuoviDoseExtraRow(\'' + idDose + '\')" title="Rimuovi dose">✕</button>' +
     '</div>';
 
   container.appendChild(row);
@@ -9744,7 +9744,7 @@ function ricalcolaDosiMultipleModifica() {
 function apriModificaFarmaco(farmacoId) {
   var p = getActivePaziente();
   if (!p || !p.terapie) return;
-  var t = p.terapie.find(function(item) { return item.id === farmacoId; });
+  var t = p.terapie.find(function (item) { return item.id === farmacoId; });
   if (!t) return;
 
   var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
@@ -9788,22 +9788,22 @@ function apriModificaFarmaco(farmacoId) {
   document.getElementById('edit-farm-id').value = t.id;
   document.getElementById('edit-farm-nome').value = cleanNome;
   document.getElementById('edit-farm-principio').value = t.principio || '';
-  
+
   // Ripulisci il dosaggio base (senza "(½ cpr)" o simili)
   var cleanDosaggio = (t.dosaggio || '').replace(/\s*\([^)]*\)/gi, '').trim();
   document.getElementById('edit-farm-dosaggio').value = cleanDosaggio || t.dosaggio || '1 cpr';
-  
+
   document.getElementById('edit-farm-modo').value = t.modo || '';
   document.getElementById('edit-farm-cpr-scatola').value = t.cprPerScatola || 28;
   document.getElementById('edit-farm-scorta').value = typeof t.scorta !== 'undefined' ? t.scorta : 28;
   document.getElementById('edit-farm-giorni-alert').value = t.giorniAlert || 7;
-  
+
   var elCad = document.getElementById('edit-farm-cadenza');
   if (elCad) elCad.value = t.cadenzaTipo || 'giornaliera';
 
   // Cerca tutte le dosi esistenti di questo farmaco
   var nomeBase = cleanNome.toLowerCase();
-  var tutteDosi = p.terapie.filter(function(item) {
+  var tutteDosi = p.terapie.filter(function (item) {
     var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
     return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
   });
@@ -9813,7 +9813,7 @@ function apriModificaFarmaco(farmacoId) {
   // Ordina cronologicamente
   tutteDosi.sort(comparaOrariTerapie);
 
-  _capsulaCurrentDosi = tutteDosi.map(function(item) {
+  _capsulaCurrentDosi = tutteDosi.map(function (item) {
     var q = parseFloat(item.quantitaQuota);
     if (isNaN(q) || q <= 0) {
       if ((item.dosaggio || '').indexOf('½') >= 0 || (item.farmaco || '').indexOf('½') >= 0) q = 0.5;
@@ -9829,7 +9829,7 @@ function apriModificaFarmaco(farmacoId) {
   // Aggiorna pulsante frequenza
   var freqCount = _capsulaCurrentDosi.length;
   var buttons = document.querySelectorAll('.capsula-freq-selector .btn-freq-pill');
-  buttons.forEach(function(b) {
+  buttons.forEach(function (b) {
     if (parseInt(b.getAttribute('data-freq')) === freqCount) {
       b.classList.add('active');
     } else {
@@ -9882,7 +9882,7 @@ function salvaModificaFarmaco(e) {
 
   // 1. Rimuovi tutte le dosi preesistenti dello stesso farmaco per ricrearle coerentemente
   var nomeBase = cleanNome.toLowerCase();
-  p.terapie = p.terapie.filter(function(item) {
+  p.terapie = p.terapie.filter(function (item) {
     var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
     var isColl = n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
     return !isColl;
@@ -9892,7 +9892,7 @@ function salvaModificaFarmaco(e) {
   var cardElements = document.querySelectorAll('#box-dosi-cards-container .dose-card-item');
   var totalDosi = cardElements.length;
 
-  cardElements.forEach(function(card, idx) {
+  cardElements.forEach(function (card, idx) {
     var oraVal = card.querySelector('.dose-card-ora').value || '08:00';
     var fasciaVal = card.querySelector('.dose-card-fascia').value || deduciFasciaDaOrario(oraVal);
     var quotaVal = parseFloat(card.querySelector('.dose-card-quota-val').value) || 1.0;
@@ -10023,7 +10023,7 @@ function salvaNuovoFarmaco(e) {
 
     var noteFrequenza = tipoFreq === 'alternati' ? ' [A giorni alterni]' : (tipoFreq === 'intervallo_giorni' ? ' [Ogni ' + valFreq + ' giorni]' : '');
 
-    dosiSelezionate.forEach(function(item, idx) {
+    dosiSelezionate.forEach(function (item, idx) {
       var fasciaNome = 'Giornaliera';
       var hInt = parseInt(item.ora.split(':')[0]) || 8;
       if (hInt < 9) fasciaNome = 'Mattina (Colazione)';
@@ -10079,7 +10079,7 @@ function esportaBackup() {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(AppData, null, 2));
   const dlAnchor = document.createElement('a');
   dlAnchor.setAttribute("href", dataStr);
-  dlAnchor.setAttribute("download", `CareAssist_MultiPaziente_Backup_${new Date().toISOString().slice(0,10)}.json`);
+  dlAnchor.setAttribute("download", `CareAssist_MultiPaziente_Backup_${new Date().toISOString().slice(0, 10)}.json`);
   dlAnchor.click();
 }
 
@@ -10087,7 +10087,7 @@ function importaBackup(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     try {
       const parsed = JSON.parse(e.target.result);
       if (parsed.pazienti) {
@@ -10095,7 +10095,7 @@ function importaBackup(event) {
       }
       saveDb();
       showToast('Backup ripristinato con successo!');
-    } catch(err) {
+    } catch (err) {
       showToast('Errore nel file di backup JSON!', 'error');
     }
   };
@@ -10182,7 +10182,7 @@ function forzaVolumeSicurezza70(motivo, mostraMessaggio) {
       _audioAllarmeVoceSpento.muted = false;
       if (_audioAllarmeVoceSpento.volume < 0.75) _audioAllarmeVoceSpento.volume = 1.0;
     }
-  } catch (e) {}
+  } catch (e) { }
 
   // 2. Riattiva forzatamente anche il flag audio postura se qualcuno lo aveva messo in Muto
   if (!audioPosturaAbilitato) {
@@ -10199,7 +10199,7 @@ function forzaVolumeSicurezza70(motivo, mostraMessaggio) {
     const ctx = getAudioContext();
     if (ctx && ctx.state === 'suspended') ctx.resume();
     getMasterAlarmDestination(ctx);
-  } catch (e) {}
+  } catch (e) { }
 
   // 4. Chiama il Server PC per togliere il Muto hardware di Windows e portare il volume Master >= 75%
   const now = Date.now();
@@ -10248,7 +10248,7 @@ function registraTentativoSabotaggioVolume(dettaglio) {
       });
       if (AppData._auditAntiFurbiVolume.length > 50) AppData._auditAntiFurbiVolume.length = 50;
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 // Riproduce un rintocco armonico ma potenziato col Master Boost Anti-Furbi (>= 70% percepiti)
@@ -10260,7 +10260,7 @@ function suonaSegnaleDolce() {
 
     const dest = getMasterAlarmDestination(ctx) || ctx.destination;
     const ora = ctx.currentTime;
-    
+
     // Prima nota armonica (Do5 523.25 Hz) con volume garantito >= 70%
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
@@ -10300,7 +10300,7 @@ function suonaSegnaleDolce() {
     osc3.start(ora + 0.48);
     osc3.stop(ora + 2.05);
 
-  } catch(err) {
+  } catch (err) {
     console.log('Audio non avviabile automaticamente senza interazione utente', err);
   }
 }
@@ -10403,7 +10403,7 @@ function aggiornaOrologioPosturale() {
   const trascorsoStr = tOre > 0 ? `${tOre}h ${pad(tMin)}m` : `${tMin} min`;
 
   txtPos.textContent = last.posizione;
-  txtUltimo.textContent = `Dalle ore ${lastTime.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})} (da ${trascorsoStr}) - Cute: ${last.cute || 'Integra'}`;
+  txtUltimo.textContent = `Dalle ore ${lastTime.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} (da ${trascorsoStr}) - Cute: ${last.cute || 'Integra'}`;
 
   // Calcolo Posizione Precedente e Suggerimento Prossima Rotazione
   const prev = logsPostura.length > 1 ? logsPostura[1] : null;
@@ -10652,7 +10652,7 @@ function salvaEventoCaduta(e) {
   // Invio notifica WhatsApp immediata alla famiglia se selezionato
   if (notificaWa) {
     const cellAngela = (p.moglieCellulare || '3389449610').replace(/[^0-9]/g, '');
-    const dataOra = new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+    const dataOra = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
     const msgWa = encodeURIComponent(
       `⚠️ NOTIFICA ASSISTENZA PER ${p.nome.toUpperCase()}\n` +
       `Ore ${dataOra} - Registrato evento: Caduta / Scivolamento accidentale.\n\n` +
@@ -10663,7 +10663,7 @@ function salvaEventoCaduta(e) {
       `👤 Operatore presente: ${operatore}\n\n` +
       `Monitoraggio parametri vitali in corso.`
     );
-    const waUrl = cellAngela.startsWith('39') 
+    const waUrl = cellAngela.startsWith('39')
       ? `https://api.whatsapp.com/send?phone=${cellAngela}&text=${msgWa}`
       : `https://api.whatsapp.com/send?phone=39${cellAngela}&text=${msgWa}`;
     window.open(waUrl, '_blank');
@@ -10683,7 +10683,7 @@ function apriConsegnaTurno() {
   // Calcolo dati odierni
   const farmaciSomministrati = (p.terapie || []).filter(t => t.fattoOggi).length;
   const farmaciTotali = (p.terapie || []).length;
-  
+
   // Terapie saltate odierne
   const saltatiOggi = (p.registrazioni || []).filter(r => r.tipo === 'farmaco_saltato' && r.timestamp.startsWith(oggiIso));
   const ritardiOggi = (p.registrazioni || []).filter(r => r.tipo === 'farmaco_ritardo' && r.timestamp.startsWith(oggiIso));
@@ -10699,22 +10699,22 @@ function apriConsegnaTurno() {
   const alvoOggi = (p.registrazioni || []).find(r => r.tipo === 'alvo' && r.timestamp.startsWith(oggiIso));
   const alvoStr = alvoOggi ? `Regolare (${alvoOggi.consistenza})` : 'Nessuna evacuazione registrata oggi';
 
-  const lastParam = (p.registrazioni || []).filter(r => r.tipo === 'parametri').sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+  const lastParam = (p.registrazioni || []).filter(r => r.tipo === 'parametri').sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
   const paramStr = lastParam ? `PA: ${lastParam.pa_max}/${lastParam.pa_min} mmHg | FC: ${lastParam.fc} bpm | Temp: ${lastParam.temp}°C | SpO2: ${lastParam.spo2}%` : 'Non rilevati oggi';
 
   const totAcqua = (p.registrazioni || []).filter(r => r.tipo === 'idratazione' && r.timestamp.startsWith(oggiIso)).reduce((acc, r) => acc + (r.ml || 0), 0);
 
-  const lastDiuresi = (p.registrazioni || []).filter(r => r.tipo === 'diuresi').sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+  const lastDiuresi = (p.registrazioni || []).filter(r => r.tipo === 'diuresi').sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
   const diuresiStr = lastDiuresi ? `${lastDiuresi.volume} [${lastDiuresi.raccolta}] - Aspetto: ${lastDiuresi.aspetto}` : 'Nessuna registrazione oggi';
 
-  const lastPasto = (p.registrazioni || []).filter(r => r.tipo === 'pasto').sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+  const lastPasto = (p.registrazioni || []).filter(r => r.tipo === 'pasto').sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
   const pastoStr = lastPasto ? `${lastPasto.pasto}: ${lastPasto.quantita} (${lastPasto.alimenti})` : 'Nessun pasto registrato oggi';
 
-  const lastPostura = (p.registrazioni || []).filter(r => r.tipo === 'postura').sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+  const lastPostura = (p.registrazioni || []).filter(r => r.tipo === 'postura').sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
   const posturaStr = lastPostura ? `${lastPostura.posizione} (Cute: ${lastPostura.cute || 'Integra'})` : 'Supino a letto';
 
-  const report = 
-`📋 PASSAGGIO CONSEGNE TURNO - ${p.nome.toUpperCase()}
+  const report =
+    `📋 PASSAGGIO CONSEGNE TURNO - ${p.nome.toUpperCase()}
 📅 ${dataStr} (ore ${oraStr})
 ------------------------------------------------
 💊 TERAPIA FARMACOLOGICA:
@@ -10796,7 +10796,7 @@ function salvaGlicemiaDedicata(e) {
   document.getElementById('glicemia-valore').value = '';
   document.getElementById('glicemia-insulina').value = '';
   document.getElementById('glicemia-note').value = '';
-  
+
   saveDb();
   renderGlicemie();
 
@@ -10863,7 +10863,7 @@ function renderGlicemie() {
 
   const ultima = logs[0];
   const uData = new Date(ultima.timestamp);
-  const uDataStr = uData.toLocaleDateString('it-IT') + ' ore ' + uData.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+  const uDataStr = uData.toLocaleDateString('it-IT') + ' ore ' + uData.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
   const sum = logs.reduce((acc, cur) => acc + (parseFloat(cur.valore) || 0), 0);
   const media = Math.round(sum / logs.length);
   const countIpo = logs.filter(r => (parseFloat(r.valore) || 0) < 70).length;
@@ -10899,7 +10899,7 @@ function renderGlicemie() {
     }
 
     const d = new Date(r.timestamp);
-    const dataOraStr = d.toLocaleDateString('it-IT') + ' ' + d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+    const dataOraStr = d.toLocaleDateString('it-IT') + ' ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
     return `
       <tr>
@@ -11044,7 +11044,7 @@ function inviaConsegnaWhatsApp() {
   if (!p) return;
   const txt = document.getElementById('consegna-testo').value;
   const cellAngela = (p.moglieCellulare || '3389449610').replace(/[^0-9]/g, '');
-  const waUrl = cellAngela.startsWith('39') 
+  const waUrl = cellAngela.startsWith('39')
     ? `https://api.whatsapp.com/send?phone=${cellAngela}&text=${encodeURIComponent(txt)}`
     : `https://api.whatsapp.com/send?phone=39${cellAngela}&text=${encodeURIComponent(txt)}`;
   window.open(waUrl, '_blank');
@@ -11078,14 +11078,14 @@ function verificaCambioDataAutomatico() {
 
         if (diffDays >= 1) {
           window._giorniAssenzaRilevati = diffDays;
-          setTimeout(function() {
+          setTimeout(function () {
             apriModalRiconciliazione(diffDays, AppData.ultimoGiornoOperativo);
           }, 800);
         }
-      } catch(e) { console.error('Data check error:', e); }
+      } catch (e) { console.error('Data check error:', e); }
 
-      (AppData.pazienti || []).forEach(function(p) {
-        (p.terapie || []).forEach(function(t) {
+      (AppData.pazienti || []).forEach(function (p) {
+        (p.terapie || []).forEach(function (t) {
           t.fattoOggi = false;
           delete t.saltatoOggi;
           delete t.motivoSalto;
@@ -11112,15 +11112,15 @@ function apriModalSmartphone() {
   var currentUrl = 'http://192.168.1.5:3000/launcher.html';
   if (labelIp) labelIp.textContent = currentUrl;
   if (linkBrowser) linkBrowser.href = currentUrl;
-  
+
   // Verifica stato server locale
   var dot = document.getElementById('dot-status-server');
   var txt = document.getElementById('text-status-server');
   var box = document.getElementById('status-server-smartphone');
-  
+
   if (dot && txt && box) {
     fetch('http://127.0.0.1:3000/launcher.html', { method: 'HEAD', mode: 'no-cors' })
-      .then(function() {
+      .then(function () {
         dot.style.background = '#10b981';
         dot.style.boxShadow = '0 0 8px #10b981';
         txt.style.color = '#065f46';
@@ -11128,10 +11128,10 @@ function apriModalSmartphone() {
         box.style.background = '#ecfdf5';
         box.style.borderColor = '#a7f3d0';
       })
-      .catch(function() {
+      .catch(function () {
         // Se non risponde prova con l'IP Wi-Fi
         fetch('http://192.168.1.5:3000/launcher.html', { method: 'HEAD', mode: 'no-cors' })
-          .then(function() {
+          .then(function () {
             dot.style.background = '#10b981';
             dot.style.boxShadow = '0 0 8px #10b981';
             txt.style.color = '#065f46';
@@ -11139,7 +11139,7 @@ function apriModalSmartphone() {
             box.style.background = '#ecfdf5';
             box.style.borderColor = '#a7f3d0';
           })
-          .catch(function() {
+          .catch(function () {
             dot.style.background = '#f59e0b';
             dot.style.boxShadow = '0 0 8px #f59e0b';
             txt.style.color = '#92400e';
@@ -11176,8 +11176,8 @@ function eseguiRiconciliazioneScorte() {
   }
 
   var totaleScalate = 0;
-  (AppData.pazienti || []).forEach(function(p) {
-    (p.terapie || []).forEach(function(t) {
+  (AppData.pazienti || []).forEach(function (p) {
+    (p.terapie || []).forEach(function (t) {
       var isBisogno = t.fascia === 'Al Bisogno' || t.fascia === 'Al Bisogno (SOS)' || (t.frequenzaTipo === 'bisogno');
       if (isBisogno) return; // non scalare farmaci al bisogno automaticamente
 
@@ -11495,16 +11495,16 @@ function renderFiltroFasceTerapie() {
       <span>Filtro Fascia:</span>
     </div>
     ${fasceConfig.map(f => {
-      const isActive = window._activeFasciaFilter === f.key;
-      const nowBadge = f.isNow ? '<span style="background:#fef08a; color:#854d0e; font-size:9px; font-weight:800; padding:1px 5px; border-radius:6px; margin-left:3px; border:1px solid #facc15;">ORA</span>' : '';
-      return `
+    const isActive = window._activeFasciaFilter === f.key;
+    const nowBadge = f.isNow ? '<span style="background:#fef08a; color:#854d0e; font-size:9px; font-weight:800; padding:1px 5px; border-radius:6px; margin-left:3px; border:1px solid #facc15;">ORA</span>' : '';
+    return `
         <button type="button" class="fascia-filter-pill ${isActive ? 'active' : ''}" onclick="filtraFasciaTerapia('${f.key}')" title="Mostra farmaci ${f.label}">
           <span>${f.icon} ${f.label}</span>
           <span class="pill-badge">${f.count}</span>
           ${nowBadge}
         </button>
       `;
-    }).join('')}
+  }).join('')}
   `;
 }
 
@@ -11550,12 +11550,12 @@ window.addEventListener('DOMContentLoaded', () => {
         if (btn) btn.click();
       }, 200);
     }
-  } catch(eParam) {}
+  } catch (eParam) { }
   initTabs();
   renderAll();
 
   // Sincronizza immediatamente il database condiviso dal server (se online)
-  sincronizzaDbDalServer(function() {
+  sincronizzaDbDalServer(function () {
     window._initialSyncDone = true;
     try {
       const urlParams = new URLSearchParams(window.location.search);
@@ -11563,10 +11563,10 @@ window.addEventListener('DOMContentLoaded', () => {
       if (targetPaz && AppData && AppData.pazienti && AppData.pazienti.some(p => p.id === targetPaz)) {
         AppData.activePazienteId = targetPaz;
       }
-    } catch(e) {}
+    } catch (e) { }
     renderAll();
   });
-  setTimeout(function() { if (!window._initialSyncDone) { window._initialSyncDone = true; renderAll(); } }, 6000);
+  setTimeout(function () { if (!window._initialSyncDone) { window._initialSyncDone = true; renderAll(); } }, 6000);
 
   // Polling automatico rapido ogni 2 secondi per sincronizzazione istantanea tra PC e Smartphone
   setInterval(() => {
@@ -12249,12 +12249,81 @@ function verificaRintoccoOrarioTerapiaAttuale() {
           osc.stop(tN + 0.9);
         });
       }
-    } catch(e) { console.error('Audio error:', e); }
+    } catch (e) { console.error('Audio error:', e); }
 
     const nomi = terapieOra.map(t => t.farmaco).join(', ');
     showToast(`🔔 Promemoria Orario (${oraCorrente} — Volume Protetto ≥70%): Somministrare ${nomi} a ${p.nome}`, 'warning');
   }
+
+  // ESCALATION AUTOMATICA A 3 STADI (Protocollo Zero-Scuse per il Coordinatore/Capo)
+  try {
+    controllaEscalationTerapieNonAssunte(p, now);
+  } catch (e) {}
 }
+
+const _escalationNotificataMap = {};
+function controllaEscalationTerapieNonAssunte(p, now) {
+  if (!p || !Array.isArray(p.terapie)) return;
+  const oggiKey = now.toISOString().slice(0, 10);
+  const minAttuali = now.getHours() * 60 + now.getMinutes();
+
+  p.terapie.forEach(t => {
+    if (!isTerapiaPrevistaOggi(t) || t.fattoOggi || t.saltatoOggi || !t.ora) return;
+    const parts = String(t.ora).split(':');
+    if (parts.length < 2) return;
+    const minPrevisti = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+    if (isNaN(minPrevisti)) return;
+
+    const ritardoMin = minAttuali - minPrevisti;
+    const baseKey = `${oggiKey}_${p.id}_${t.id}_${t.ora}`;
+
+    // STADIO 2: Dopo 10 minuti di mancata spunta -> Volume forzato al 90% + Sirena clinica + Banner Rosso
+    if (ritardoMin >= 10 && ritardoMin < 20 && !_escalationNotificataMap[baseKey + '_st2']) {
+      _escalationNotificataMap[baseKey + '_st2'] = true;
+      fetch('/api/forza-volume-70?min=0.90', { method: 'POST' }).catch(() => {});
+      suonaSegnaleDolce();
+      showToast(`🚨 STADIO 2 ESCALATION (+${ritardoMin} min): ${t.farmaco} (${p.nome}) non ancora somministrato! Volume alzato al 90%.`, 'error');
+    }
+
+    // STADIO 3: Oltre 20 minuti di mancata presa in carico -> Volume 95% + Traccia automatica nel Diario Consegne + Alert Coordinatore
+    if (ritardoMin >= 20 && ritardoMin <= 180 && !_escalationNotificataMap[baseKey + '_st3']) {
+      _escalationNotificataMap[baseKey + '_st3'] = true;
+      fetch('/api/forza-volume-70?min=0.95', { method: 'POST' }).catch(() => {});
+      suonaSegnaleDolce();
+      const opTurno = localStorage.getItem('milella_user_nome') || 'Operatore in turno';
+      const oraLog = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+      p.registrazioni = p.registrazioni || [];
+      p.registrazioni.unshift({
+        id: 'esc_' + Date.now(),
+        timestamp: now.toISOString(),
+        tipo: 'nota_turno',
+        operatore: '🛡️ Sistema Anti-Sabotaggio (Audit Automatico)',
+        testo: `[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle ${oraLog} il farmaco "${t.farmaco}" delle ore ${t.ora} risulta non ancora spuntato (+${ritardoMin} min). Allarme emesso con Volume Hardware Forzato ≥ 90% (${opTurno}).`
+      });
+      saveDb();
+      showToast(`🛡️ STADIO 3 AUDIT COORDINATORE: Ritardo di ${ritardoMin} min su ${t.farmaco} registrato automaticamente nel Diario di Turno!`, 'error');
+    }
+  });
+}
+
+function simulaEscalation3StadiDemo() {
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  const nomePaz = p ? p.nome : 'Assistito';
+  forzaVolumeSicurezza70('Simulazione Escalation 3 Stadi (75% -> 90% -> Audit Coordinatore)', false);
+  fetch('/api/forza-volume-70?min=0.90', { method: 'POST' }).catch(() => {});
+  suonaSegnaleDolce();
+  if ('vibrate' in navigator) {
+    try { navigator.vibrate([400, 150, 400, 150, 600]); } catch (e) {}
+  }
+  mostraNotificaSistemaSchermoSpento(
+    '🚨 ESCALATION 3 STADI ATTIVA (' + nomePaz + ')',
+    'Stadio 1 (75%) -> Stadio 2 (90% +10 min) -> Stadio 3 (Audit Coordinatore +20 min) verificati!'
+  );
+  showToast('🚨 PROTOCOLLO ESCALATION 3 STADI VERIFICATO: Stadio 1 (Vol. 75%) → Stadio 2 (+10m Vol. 90%) → Stadio 3 (+20m Traccia Automatica Coordinatore)!', 'success');
+  setTimeout(aggiornaDiagnosticaAlert, 400);
+}
+window.simulaEscalation3StadiDemo = simulaEscalation3StadiDemo;
 
 // Gestione Note di Turno e Report WhatsApp Operatore
 function apriModalNuovaNotaTurno() {
@@ -12393,7 +12462,7 @@ function toggleHelpBubble(bubbleId) {
     el.classList.remove('active');
   } else {
     // Chiudi altri se aperti
-    document.querySelectorAll('.field-help-bubble.active').forEach(function(b) {
+    document.querySelectorAll('.field-help-bubble.active').forEach(function (b) {
       b.classList.remove('active');
     });
     el.classList.add('active');
@@ -12404,7 +12473,7 @@ var _tuttiAiutiAperti = false;
 function toggleTuttiAiutiCampi() {
   _tuttiAiutiAperti = !_tuttiAiutiAperti;
   var bubbles = document.querySelectorAll('.field-help-bubble');
-  bubbles.forEach(function(b) {
+  bubbles.forEach(function (b) {
     if (_tuttiAiutiAperti) {
       b.classList.add('active');
     } else {
@@ -12597,17 +12666,17 @@ function leggiIstruzioniFarmacoVoce() {
   utterance.rate = 0.95; // ritmo calmo e chiaro per anziani e famiglie
   utterance.pitch = 1.0;
 
-  utterance.onstart = function() {
+  utterance.onstart = function () {
     if (btnText) btnText.textContent = 'In riproduzione... (Tocca per fermare)';
     if (btnIcon) btnIcon.textContent = '⏹️';
   };
 
-  utterance.onend = function() {
+  utterance.onend = function () {
     if (btnText) btnText.textContent = 'Ascolta Istruzioni';
     if (btnIcon) btnIcon.textContent = '🔊';
   };
 
-  utterance.onerror = function() {
+  utterance.onerror = function () {
     if (btnText) btnText.textContent = 'Ascolta Istruzioni';
     if (btnIcon) btnIcon.textContent = '🔊';
   };
@@ -12630,18 +12699,18 @@ function apriModalProspettoTascabile() {
   if (elData) elData.textContent = new Date().toLocaleDateString('it-IT');
 
   if (container) {
-    container.innerHTML = p.terapie.map(function(t, idx) {
+    container.innerHTML = p.terapie.map(function (t, idx) {
       return '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:' + (idx % 2 === 0 ? '#f8fafc' : '#ffffff') + '; border:1px solid #e2e8f0; border-radius:8px; font-size:12px;">' +
         '<div>' +
-          '<b style="color:#1e3a8a;">' + (t.ora || '--:--') + '</b> &bull; ' +
-          '<b>' + (t.farmaco || 'Farmaco') + '</b> ' +
-          '<span style="color:#64748b; font-size:11px;">(' + (t.principio || '') + ')</span><br>' +
-          '<span style="font-size:11px; color:#334155;">' + (t.modo || '') + '</span>' +
+        '<b style="color:#1e3a8a;">' + (t.ora || '--:--') + '</b> &bull; ' +
+        '<b>' + (t.farmaco || 'Farmaco') + '</b> ' +
+        '<span style="color:#64748b; font-size:11px;">(' + (t.principio || '') + ')</span><br>' +
+        '<span style="font-size:11px; color:#334155;">' + (t.modo || '') + '</span>' +
         '</div>' +
         '<div style="text-align:right; font-weight:700; color:#0369a1; font-size:11px;">' +
-          (t.dosaggio || '') +
+        (t.dosaggio || '') +
         '</div>' +
-      '</div>';
+        '</div>';
     }).join('');
   }
 
@@ -12749,9 +12818,9 @@ function aggiornaCardBuongiornoMattino() {
   // 2. Filtro privacy: mostra SOLO i pazienti a cui l'operatore è abilitato (es. solo Rosa per M.C. Stoppelli)
   var listaPazientiVisibili = typeof getPazientiAccessibili === 'function' ? getPazientiAccessibili() : AppData.pazienti;
 
-  var cardsPazientiHtml = listaPazientiVisibili.map(function(p) {
+  var cardsPazientiHtml = listaPazientiVisibili.map(function (p) {
     // Filtro terapie per fascia oraria corrente
-    var terapieFascia = (p.terapie || []).filter(function(t) {
+    var terapieFascia = (p.terapie || []).filter(function (t) {
       var f = (t.fascia || '').toLowerCase();
       var o = t.ora || '';
       if (fasciaCorrente === 'mattino') {
@@ -12765,13 +12834,13 @@ function aggiornaCardBuongiornoMattino() {
       }
     });
 
-    var fatteFascia = terapieFascia.filter(function(t) { return t.fattoOggi; }).length;
+    var fatteFascia = terapieFascia.filter(function (t) { return t.fattoOggi; }).length;
     var totFascia = terapieFascia.length;
     var tutteFatte = totFascia > 0 && fatteFascia === totFascia;
     var stAuto = tutteFatte ? ('✅ ' + etichettaFascia + ' Completata') : (totFascia > 0 ? (iconaFascia + ' ' + fatteFascia + '/' + totFascia + ' Terapie ' + etichettaFascia) : 'Nessuna terapia in questa fascia');
 
     // Controllo scorte farmaci in esaurimento (<= 3 compresse/dosi)
-    var farmaciScortaBassa = (p.terapie || []).filter(function(t) {
+    var farmaciScortaBassa = (p.terapie || []).filter(function (t) {
       return typeof t.scorta === 'number' && t.scorta <= 3;
     });
 
@@ -12784,21 +12853,21 @@ function aggiornaCardBuongiornoMattino() {
 
     return '<div style="' + cardStyle + '" onclick="cambiaPazienteDaBuongiorno(\'' + p.id + '\')">' +
       '<div style="display:flex; justify-content:space-between; align-items:center; gap: 8px;">' +
-        '<div style="display:flex; align-items:center; gap: 6px; flex-wrap: wrap;">' +
-          '<b style="font-size: 13.5px; color: #0f172a; word-break: break-word;">👤 ' + pNomeCompleto + '</b>' +
-          (isAttivo ? '<span style="font-size: 9.5px; font-weight: 800; background: #2563eb; color: #ffffff; padding: 1.5px 6px; border-radius: 6px; letter-spacing: 0.3px;">IN VISITA ORA</span>' : '') +
-        '</div>' +
-        '<span style="font-size: 10.5px; font-weight: 800; color: ' + (tutteFatte ? '#15803d' : '#b45309') + '; white-space: nowrap; flex-shrink: 0;">' + (tutteFatte ? '✓ OK' : 'Da dare') + '</span>' +
+      '<div style="display:flex; align-items:center; gap: 6px; flex-wrap: wrap;">' +
+      '<b style="font-size: 13.5px; color: #0f172a; word-break: break-word;">👤 ' + pNomeCompleto + '</b>' +
+      (isAttivo ? '<span style="font-size: 9.5px; font-weight: 800; background: #2563eb; color: #ffffff; padding: 1.5px 6px; border-radius: 6px; letter-spacing: 0.3px;">IN VISITA ORA</span>' : '') +
+      '</div>' +
+      '<span style="font-size: 10.5px; font-weight: 800; color: ' + (tutteFatte ? '#15803d' : '#b45309') + '; white-space: nowrap; flex-shrink: 0;">' + (tutteFatte ? '✓ OK' : 'Da dare') + '</span>' +
       '</div>' +
       '<div style="font-size: 11.5px; color: #475569; margin-top: 4px; font-weight: 600;">' +
-        stAuto +
+      stAuto +
       '</div>' +
       (farmaciScortaBassa.length > 0 ? (
         '<div style="margin-top: 5px; font-size: 10.5px; font-weight: 700; color: #dc2626; background: #fee2e2; border-radius: 6px; padding: 2px 6px; display: inline-flex; align-items: center; gap: 4px;">' +
-          '<span>⚠️</span> <span>Scorte in esaurimento (' + farmaciScortaBassa.length + ')</span>' +
+        '<span>⚠️</span> <span>Scorte in esaurimento (' + farmaciScortaBassa.length + ')</span>' +
         '</div>'
       ) : '') +
-    '</div>';
+      '</div>';
   }).join('');
 
   container.innerHTML = cardsPazientiHtml;
@@ -12814,12 +12883,12 @@ function cambiaPazienteDaBuongiorno(pazId) {
 function avviaRoutineMattino() {
   var tabBtn = document.querySelector('[data-target="tab-farmaci"]');
   if (tabBtn) tabBtn.click();
-  setTimeout(function() {
+  setTimeout(function () {
     var primoFarmaco = document.querySelector('#terapie-table-body tr');
     if (primoFarmaco) {
       primoFarmaco.scrollIntoView({ behavior: 'smooth', block: 'center' });
       primoFarmaco.classList.add('terapia-row-highlight');
-      setTimeout(function() {
+      setTimeout(function () {
         primoFarmaco.classList.remove('terapia-row-highlight');
       }, 4000);
     }
@@ -12843,7 +12912,7 @@ var _capsulaCurrentDosi = [];
 
 function selezionaFrequenzaCapsula(freq) {
   var buttons = document.querySelectorAll('.capsula-freq-selector .btn-freq-pill');
-  buttons.forEach(function(b) {
+  buttons.forEach(function (b) {
     if (b.getAttribute('data-freq') == freq) {
       b.classList.add('active');
     } else {
@@ -12909,7 +12978,7 @@ function renderDosiCards() {
   if (!container) return;
 
   var html = '';
-  _capsulaCurrentDosi.forEach(function(d, idx) {
+  _capsulaCurrentDosi.forEach(function (d, idx) {
     var doseNum = idx + 1;
     var isBisogno = (d.ora === 'Al Bisogno' || (d.fascia && d.fascia.indexOf('Bisogno') >= 0));
     var quotaVal = typeof d.quota !== 'undefined' ? d.quota : 1.0;
@@ -12918,72 +12987,72 @@ function renderDosiCards() {
 
     html += '<div class="dose-card-item" id="dose-card-' + idx + '">' +
       '<div class="dose-card-header">' +
-        '<span class="dose-card-badge">' +
-          '<span>⏰</span> <b>Tempo ' + doseNum + ' di ' + _capsulaCurrentDosi.length + ' (' + (d.ora || '08:00') + ')</b>' +
-        '</span>' +
-        (_capsulaCurrentDosi.length > 1 ? '<button type="button" class="btn-remove-dose-card" onclick="rimuoviDoseCard(' + idx + ')" title="Rimuovi questa dose">✕</button>' : '') +
+      '<span class="dose-card-badge">' +
+      '<span>⏰</span> <b>Tempo ' + doseNum + ' di ' + _capsulaCurrentDosi.length + ' (' + (d.ora || '08:00') + ')</b>' +
+      '</span>' +
+      (_capsulaCurrentDosi.length > 1 ? '<button type="button" class="btn-remove-dose-card" onclick="rimuoviDoseCard(' + idx + ')" title="Rimuovi questa dose">✕</button>' : '') +
       '</div>' +
       '<div class="form-row" style="margin-bottom:8px;">' +
-        '<div class="form-group" style="flex:1; margin-bottom:0;">' +
-          '<label style="font-size:11px; font-weight:800; color:#1e3a8a; margin-bottom:2px; display:block;">⏰ Orario</label>' +
-          (isBisogno ? 
-            '<input type="text" class="form-control dose-card-ora" value="Al Bisogno" readonly style="font-weight:800; font-size:13.5px; color:#b45309; background:#fffbeb;">' :
-            '<input type="time" class="form-control dose-card-ora" value="' + (d.ora || '08:00') + '" oninput="onDoseCardOraChanged(' + idx + ', this.value)" style="font-weight:800; font-size:14px; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd;">'
-          ) +
-        '</div>' +
-        '<div class="form-group" style="flex:1.4; margin-bottom:0;">' +
-          '<label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">🍽️ Fascia della Giornata</label>' +
-          '<select class="form-control dose-card-fascia" onchange="onDoseCardFasciaChanged(' + idx + ', this.value)" style="font-weight:600; font-size:12.5px;">' +
-            '<option value="Mattina (Digiuno)"' + (d.fascia && d.fascia.indexOf('Digiuno') >= 0 ? ' selected' : '') + '>Mattina (A Digiuno)</option>' +
-            '<option value="Mattina (Colazione)"' + (!d.fascia || d.fascia.indexOf('Colazione') >= 0 ? ' selected' : '') + '>Mattina (A Colazione)</option>' +
-            '<option value="Pranzo"' + (d.fascia && d.fascia.indexOf('Pranzo') >= 0 ? ' selected' : '') + '>Pranzo</option>' +
-            '<option value="Pomeriggio"' + (d.fascia && d.fascia.indexOf('Pomeriggio') >= 0 ? ' selected' : '') + '>Pomeriggio</option>' +
-            '<option value="Sera (Cena)"' + (d.fascia && d.fascia.indexOf('Cena') >= 0 ? ' selected' : '') + '>Sera (A Cena)</option>' +
-            '<option value="Notte (Prima di dormire)"' + (d.fascia && d.fascia.indexOf('Notte') >= 0 ? ' selected' : '') + '>Notte (Prima di dormire)</option>' +
-            '<option value="Al Bisogno (SOS)"' + (isBisogno ? ' selected' : '') + '>Al Bisogno (SOS)</option>' +
-          '</select>' +
-        '</div>' +
+      '<div class="form-group" style="flex:1; margin-bottom:0;">' +
+      '<label style="font-size:11px; font-weight:800; color:#1e3a8a; margin-bottom:2px; display:block;">⏰ Orario</label>' +
+      (isBisogno ?
+        '<input type="text" class="form-control dose-card-ora" value="Al Bisogno" readonly style="font-weight:800; font-size:13.5px; color:#b45309; background:#fffbeb;">' :
+        '<input type="time" class="form-control dose-card-ora" value="' + (d.ora || '08:00') + '" oninput="onDoseCardOraChanged(' + idx + ', this.value)" style="font-weight:800; font-size:14px; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd;">'
+      ) +
+      '</div>' +
+      '<div class="form-group" style="flex:1.4; margin-bottom:0;">' +
+      '<label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">🍽️ Fascia della Giornata</label>' +
+      '<select class="form-control dose-card-fascia" onchange="onDoseCardFasciaChanged(' + idx + ', this.value)" style="font-weight:600; font-size:12.5px;">' +
+      '<option value="Mattina (Digiuno)"' + (d.fascia && d.fascia.indexOf('Digiuno') >= 0 ? ' selected' : '') + '>Mattina (A Digiuno)</option>' +
+      '<option value="Mattina (Colazione)"' + (!d.fascia || d.fascia.indexOf('Colazione') >= 0 ? ' selected' : '') + '>Mattina (A Colazione)</option>' +
+      '<option value="Pranzo"' + (d.fascia && d.fascia.indexOf('Pranzo') >= 0 ? ' selected' : '') + '>Pranzo</option>' +
+      '<option value="Pomeriggio"' + (d.fascia && d.fascia.indexOf('Pomeriggio') >= 0 ? ' selected' : '') + '>Pomeriggio</option>' +
+      '<option value="Sera (Cena)"' + (d.fascia && d.fascia.indexOf('Cena') >= 0 ? ' selected' : '') + '>Sera (A Cena)</option>' +
+      '<option value="Notte (Prima di dormire)"' + (d.fascia && d.fascia.indexOf('Notte') >= 0 ? ' selected' : '') + '>Notte (Prima di dormire)</option>' +
+      '<option value="Al Bisogno (SOS)"' + (isBisogno ? ' selected' : '') + '>Al Bisogno (SOS)</option>' +
+      '</select>' +
+      '</div>' +
       '</div>' +
       '<div>' +
-        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
-          '<label style="font-size:11px; font-weight:800; color:#0f172a; margin:0;">' +
-            '💊 Assunzione per questo orario:' +
-          '</label>' +
-          '<span style="font-size:11.5px; font-weight:800; color:#1d4ed8; background:#eff6ff; padding:2px 8px; border-radius:6px; border:1px solid #bfdbfe;">' +
-            'Dose attiva: <b>' + quotaLabel + '</b>' +
-          '</span>' +
-        '</div>' +
-        '<div class="quota-pill-group">' +
-          '<button type="button" class="quota-pill' + (quotaVal === 0.5 ? ' active' : '') + '" data-quota="0.5" onclick="setDoseCardQuota(' + idx + ', 0.5)">' +
-            '🌓 ½ dose (0,5 cpr)' +
-          '</button>' +
-          '<button type="button" class="quota-pill' + (quotaVal === 1 ? ' active' : '') + '" data-quota="1" onclick="setDoseCardQuota(' + idx + ', 1)">' +
-            '🌕 1 dose (1 cpr)' +
-          '</button>' +
-          '<button type="button" class="quota-pill' + (quotaVal === 1.5 ? ' active' : '') + '" data-quota="1.5" onclick="setDoseCardQuota(' + idx + ', 1.5)">' +
-            '1½ cpr (1,5 cpr)' +
-          '</button>' +
-          '<button type="button" class="quota-pill' + (quotaVal === 2 ? ' active' : '') + '" data-quota="2" onclick="setDoseCardQuota(' + idx + ', 2)">' +
-            '💊💊 2 compresse' +
-          '</button>' +
-          '<button type="button" class="quota-pill' + (quotaVal === 2.5 ? ' active' : '') + '" data-quota="2.5" onclick="setDoseCardQuota(' + idx + ', 2.5)">' +
-            '2½ compresse' +
-          '</button>' +
-          '<button type="button" class="quota-pill' + (quotaVal === 3 ? ' active' : '') + '" data-quota="3" onclick="setDoseCardQuota(' + idx + ', 3)">' +
-            '💊💊💊 3 compresse' +
-          '</button>' +
-          '<button type="button" class="quota-pill' + (quotaVal === 4 ? ' active' : '') + '" data-quota="4" onclick="setDoseCardQuota(' + idx + ', 4)">' +
-            '4 compresse' +
-          '</button>' +
-        '</div>' +
-        '<div style="margin-top:8px; display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px 10px;">' +
-          '<label style="font-size:11px; font-weight:700; color:#475569; margin:0; white-space:nowrap;">✏️ Oppure inserisci quantità libera:</label>' +
-          '<input type="number" step="0.25" min="0.25" max="30" class="form-control" style="width:85px; height:32px; font-weight:800; font-size:13px; padding:2px 6px; color:#1e3a8a; border-color:#93c5fd;" value="' + quotaVal + '" oninput="setDoseCardQuotaCustom(' + idx + ', this.value)">' +
-          '<span style="font-size:11.5px; font-weight:700; color:#475569;">cpr</span>' +
-        '</div>' +
-        '<input type="hidden" class="dose-card-quota-val" value="' + quotaVal + '">' +
+      '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
+      '<label style="font-size:11px; font-weight:800; color:#0f172a; margin:0;">' +
+      '💊 Assunzione per questo orario:' +
+      '</label>' +
+      '<span style="font-size:11.5px; font-weight:800; color:#1d4ed8; background:#eff6ff; padding:2px 8px; border-radius:6px; border:1px solid #bfdbfe;">' +
+      'Dose attiva: <b>' + quotaLabel + '</b>' +
+      '</span>' +
       '</div>' +
-    '</div>';
+      '<div class="quota-pill-group">' +
+      '<button type="button" class="quota-pill' + (quotaVal === 0.5 ? ' active' : '') + '" data-quota="0.5" onclick="setDoseCardQuota(' + idx + ', 0.5)">' +
+      '🌓 ½ dose (0,5 cpr)' +
+      '</button>' +
+      '<button type="button" class="quota-pill' + (quotaVal === 1 ? ' active' : '') + '" data-quota="1" onclick="setDoseCardQuota(' + idx + ', 1)">' +
+      '🌕 1 dose (1 cpr)' +
+      '</button>' +
+      '<button type="button" class="quota-pill' + (quotaVal === 1.5 ? ' active' : '') + '" data-quota="1.5" onclick="setDoseCardQuota(' + idx + ', 1.5)">' +
+      '1½ cpr (1,5 cpr)' +
+      '</button>' +
+      '<button type="button" class="quota-pill' + (quotaVal === 2 ? ' active' : '') + '" data-quota="2" onclick="setDoseCardQuota(' + idx + ', 2)">' +
+      '💊💊 2 compresse' +
+      '</button>' +
+      '<button type="button" class="quota-pill' + (quotaVal === 2.5 ? ' active' : '') + '" data-quota="2.5" onclick="setDoseCardQuota(' + idx + ', 2.5)">' +
+      '2½ compresse' +
+      '</button>' +
+      '<button type="button" class="quota-pill' + (quotaVal === 3 ? ' active' : '') + '" data-quota="3" onclick="setDoseCardQuota(' + idx + ', 3)">' +
+      '💊💊💊 3 compresse' +
+      '</button>' +
+      '<button type="button" class="quota-pill' + (quotaVal === 4 ? ' active' : '') + '" data-quota="4" onclick="setDoseCardQuota(' + idx + ', 4)">' +
+      '4 compresse' +
+      '</button>' +
+      '</div>' +
+      '<div style="margin-top:8px; display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px 10px;">' +
+      '<label style="font-size:11px; font-weight:700; color:#475569; margin:0; white-space:nowrap;">✏️ Oppure inserisci quantità libera:</label>' +
+      '<input type="number" step="0.25" min="0.25" max="30" class="form-control" style="width:85px; height:32px; font-weight:800; font-size:13px; padding:2px 6px; color:#1e3a8a; border-color:#93c5fd;" value="' + quotaVal + '" oninput="setDoseCardQuotaCustom(' + idx + ', this.value)">' +
+      '<span style="font-size:11.5px; font-weight:700; color:#475569;">cpr</span>' +
+      '</div>' +
+      '<input type="hidden" class="dose-card-quota-val" value="' + quotaVal + '">' +
+      '</div>' +
+      '</div>';
   });
 
   container.innerHTML = html;
@@ -13001,7 +13070,7 @@ function setDoseCardQuotaCustom(cardIdx, rawVal) {
     var hidden = card.querySelector('.dose-card-quota-val');
     if (hidden) hidden.value = v;
     var pills = card.querySelectorAll('.quota-pill');
-    pills.forEach(function(p) {
+    pills.forEach(function (p) {
       if (parseFloat(p.getAttribute('data-quota')) === v) {
         p.classList.add('active');
       } else {
@@ -13015,13 +13084,13 @@ function setDoseCardQuotaCustom(cardIdx, rawVal) {
 function setDoseCardQuota(cardIdx, quotaVal) {
   if (!_capsulaCurrentDosi[cardIdx]) return;
   _capsulaCurrentDosi[cardIdx].quota = parseFloat(quotaVal) || 1.0;
-  
+
   var card = document.getElementById('dose-card-' + cardIdx);
   if (card) {
     var hidden = card.querySelector('.dose-card-quota-val');
     if (hidden) hidden.value = quotaVal;
     var pills = card.querySelectorAll('.quota-pill');
-    pills.forEach(function(p) {
+    pills.forEach(function (p) {
       if (parseFloat(p.getAttribute('data-quota')) === quotaVal) {
         p.classList.add('active');
       } else {
@@ -13088,7 +13157,7 @@ function ricalcolaRiepilogoCapsula() {
     var penneIntere = Math.floor(penneScorta);
     var unitaDoseDie = parseFloat(document.getElementById('edit-penna-dose-die') ? document.getElementById('edit-penna-dose-die').value : 16) || 16;
     var unitaTotaliPenna = parseInt(document.getElementById('edit-penna-unita-totali') ? document.getElementById('edit-penna-unita-totali').value : 300) || 300;
-    
+
     var ggPerPenna = Math.max(1, Math.floor(unitaTotaliPenna / unitaDoseDie));
     var ggAutonomia = Math.max(0, Math.floor(penneScorta * ggPerPenna));
     var dFine = new Date();
@@ -13102,22 +13171,22 @@ function ricalcolaRiepilogoCapsula() {
     var dMMGStr = dMMG.toLocaleDateString('it-IT');
     var richiediSubito = (penneScorta <= 1.05 || ggAutonomia <= 15);
 
-    box.innerHTML = 
+    box.innerHTML =
       '<div class="capsula-summary-title" style="color:#1e40af;">' +
-        '<span>💉</span> Piano Iniettabile: 1 Iniezione Sottocute al Giorno' +
+      '<span>💉</span> Piano Iniettabile: 1 Iniezione Sottocute al Giorno' +
       '</div>' +
       '<div class="capsula-summary-desc" style="font-weight:700; color:#0369a1; margin-bottom:8px;">' +
-        'Dose prescritta: <b>' + unitaDoseDie + ' Unità (UI)</b> sempre alla stessa ora' +
+      'Dose prescritta: <b>' + unitaDoseDie + ' Unità (UI)</b> sempre alla stessa ora' +
       '</div>' +
       '<div class="capsula-summary-metrics" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px;">' +
-        '<div><b>💧 Capacità Penna:</b> <span style="color:#0369a1; font-weight:800;">' + unitaTotaliPenna + ' UI (~' + ggPerPenna + ' gg/penna)</span></div>' +
-        '<div><b>❄️ Penne in Frigo:</b> <span style="color:#15803d; font-weight:800;">' + penneIntere + (penneIntere === 1 ? ' penna' : ' penne') + ' (~' + ggAutonomia + ' giorni)</span></div>' +
-        '<div><b>⏳ Esaurimento Scorta:</b> <span style="color:#0f172a; font-weight:800;">' + dFineStr + '</span></div>' +
-        '<div style="grid-column: 1 / -1; background:' + (richiediSubito ? '#fef2f2' : '#ecfdf5') + '; border:1.5px solid ' + (richiediSubito ? '#ef4444' : '#10b981') + '; padding:8px 12px; border-radius:8px; color:' + (richiediSubito ? '#991b1b' : '#065f46') + ';">' +
-          (richiediSubito 
-            ? '<b>🚨 RICHIEDI SUBITO LA RICETTA AL MMG:</b> Sei già all\'ultima penna in frigorifero o hai meno di 15 giorni di scorta!' 
-            : '<b>📅 DATA SUGGERITA RICHIESTA RICETTA MMG:</b> entro il <b>' + dMMGStr + '</b> (il giorno esatto in cui aprirai l\'ultima penna in frigo)') +
-        '</div>' +
+      '<div><b>💧 Capacità Penna:</b> <span style="color:#0369a1; font-weight:800;">' + unitaTotaliPenna + ' UI (~' + ggPerPenna + ' gg/penna)</span></div>' +
+      '<div><b>❄️ Penne in Frigo:</b> <span style="color:#15803d; font-weight:800;">' + penneIntere + (penneIntere === 1 ? ' penna' : ' penne') + ' (~' + ggAutonomia + ' giorni)</span></div>' +
+      '<div><b>⏳ Esaurimento Scorta:</b> <span style="color:#0f172a; font-weight:800;">' + dFineStr + '</span></div>' +
+      '<div style="grid-column: 1 / -1; background:' + (richiediSubito ? '#fef2f2' : '#ecfdf5') + '; border:1.5px solid ' + (richiediSubito ? '#ef4444' : '#10b981') + '; padding:8px 12px; border-radius:8px; color:' + (richiediSubito ? '#991b1b' : '#065f46') + ';">' +
+      (richiediSubito
+        ? '<b>🚨 RICHIEDI SUBITO LA RICETTA AL MMG:</b> Sei già all\'ultima penna in frigorifero o hai meno di 15 giorni di scorta!'
+        : '<b>📅 DATA SUGGERITA RICHIESTA RICETTA MMG:</b> entro il <b>' + dMMGStr + '</b> (il giorno esatto in cui aprirai l\'ultima penna in frigo)') +
+      '</div>' +
       '</div>';
     return;
   }
@@ -13125,7 +13194,7 @@ function ricalcolaRiepilogoCapsula() {
   var totCprDie = 0;
   var descParti = [];
 
-  _capsulaCurrentDosi.forEach(function(d, i) {
+  _capsulaCurrentDosi.forEach(function (d, i) {
     var q = typeof d.quota !== 'undefined' ? d.quota : 1.0;
     totCprDie += q;
     var qStr = (q === 0.5) ? '½ cpr' : (q === 1 ? '1 cpr' : (q === 1.5 ? '1½ cpr' : q + ' cpr'));
@@ -13144,17 +13213,17 @@ function ricalcolaRiepilogoCapsula() {
     dataScadenzaStr = dFine.toLocaleDateString('it-IT');
   }
 
-  box.innerHTML = 
+  box.innerHTML =
     '<div class="capsula-summary-title">' +
-      '<span>📊</span> Piano Terapeutico: ' + _capsulaCurrentDosi.length + ' Somministrazion' + (_capsulaCurrentDosi.length > 1 ? 'i' : 'e') + ' al giorno' +
+    '<span>📊</span> Piano Terapeutico: ' + _capsulaCurrentDosi.length + ' Somministrazion' + (_capsulaCurrentDosi.length > 1 ? 'i' : 'e') + ' al giorno' +
     '</div>' +
     '<div class="capsula-summary-desc">' +
-      descParti.join(' + ') +
+    descParti.join(' + ') +
     '</div>' +
     '<div class="capsula-summary-metrics">' +
-      '<div><b>⚖️ Consumo Giornaliero:</b> <span style="color:#166534; font-weight:800;">' + totCprDie + ' cpr / die</span></div>' +
-      '<div><b>📦 Scorte Attuali:</b> <span style="color:#0f172a; font-weight:800;">' + scorta + ' compresse</span></div>' +
-      '<div><b>⏳ Autonomia Stimata:</b> <span style="color:#1d4ed8; font-weight:800;">~' + giorniAutonomia + ' giorni (fino al ' + dataScadenzaStr + ')</span></div>' +
+    '<div><b>⚖️ Consumo Giornaliero:</b> <span style="color:#166534; font-weight:800;">' + totCprDie + ' cpr / die</span></div>' +
+    '<div><b>📦 Scorte Attuali:</b> <span style="color:#0f172a; font-weight:800;">' + scorta + ' compresse</span></div>' +
+    '<div><b>⏳ Autonomia Stimata:</b> <span style="color:#1d4ed8; font-weight:800;">~' + giorniAutonomia + ' giorni (fino al ' + dataScadenzaStr + ')</span></div>' +
     '</div>';
 }
 
@@ -13251,7 +13320,7 @@ function aggiornaStickyPatientBar() {
 }
 
 // Toggle Diagnosi Espandibili su Mobile
-window.toggleTuttePatologie = function(btn) {
+window.toggleTuttePatologie = function (btn) {
   const container = btn.closest('.patologie-container');
   if (!container) return;
   const isExp = container.classList.toggle('expanded');
@@ -13264,7 +13333,7 @@ window.toggleTuttePatologie = function(btn) {
   if (window._stickyPatientScrollInit) return;
   window._stickyPatientScrollInit = true;
 
-  window.addEventListener('scroll', function() {
+  window.addEventListener('scroll', function () {
     const bar = document.getElementById('sticky-patient-bar');
     if (!bar) return;
     // Appare morbidamente solo quando si scende sotto i 140px (dopo l'intestazione hero)
@@ -13289,7 +13358,7 @@ function apriSwitchPazienteRapido() {
     const eta = calcolaAnniDaData(p.dataNascita);
     const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
     const ritardi = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo).length;
-    
+
     // Avatar and clinical focus by patient
     let avatarEmoji = '👤';
     let avatarBg = 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)';
@@ -13334,10 +13403,10 @@ function apriSwitchPazienteRapido() {
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
           ${ritardi > 0 ? `<span class="badge" style="background:#dc2626; color:#fff; font-size:11px; font-weight:800; padding:4px 8px; border-radius:12px; box-shadow:0 2px 6px rgba(220,38,38,0.3);">🚨 ${ritardi} Ritardi</span>` : ''}
-          ${isAttivo 
-            ? `<span style="font-size:12px; font-weight:800; color:#ffffff; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding:5px 12px; border-radius:20px; box-shadow:0 2px 6px rgba(2,132,199,0.35);">✓ In Uso</span>`
-            : `<span style="font-size:12px; font-weight:700; color:#0369a1; background:#f0f9ff; border:1px solid #bae6fd; padding:5px 12px; border-radius:20px;">Apri Cartella ➔</span>`
-          }
+          ${isAttivo
+        ? `<span style="font-size:12px; font-weight:800; color:#ffffff; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding:5px 12px; border-radius:20px; box-shadow:0 2px 6px rgba(2,132,199,0.35);">✓ In Uso</span>`
+        : `<span style="font-size:12px; font-weight:700; color:#0369a1; background:#f0f9ff; border:1px solid #bae6fd; padding:5px 12px; border-radius:20px;">Apri Cartella ➔</span>`
+      }
         </div>
       </div>
     `;
@@ -13378,11 +13447,11 @@ function abilitaNotificheEAudioSmartphone() {
   if (ctx && ctx.state === 'suspended') {
     ctx.resume();
   }
-  
+
   if ('vibrate' in navigator) {
-    try { navigator.vibrate([200, 100, 200]); } catch(e) {}
+    try { navigator.vibrate([200, 100, 200]); } catch (e) { }
   }
-  
+
   suonaSegnaleDolce();
 
   if ('Notification' in window) {
@@ -13394,7 +13463,7 @@ function abilitaNotificheEAudioSmartphone() {
             body: 'Le notifiche e gli avvisi di terapia sono stati configurati correttamente!',
             icon: 'careassist_icon.jpg'
           });
-        } catch(e) {}
+        } catch (e) { }
       } else {
         showToast('Audio sbloccato. Notifiche di sistema non autorizzate nel browser.', 'info');
       }
@@ -13411,7 +13480,7 @@ function sbloccaAudioSilenziosoAlPrimoGesto() {
     if (ctx && ctx.state === 'suspended') {
       ctx.resume();
     }
-  } catch(e) {}
+  } catch (e) { }
 }
 window.addEventListener('click', sbloccaAudioSilenziosoAlPrimoGesto, { once: true, passive: true });
 window.addEventListener('touchstart', sbloccaAudioSilenziosoAlPrimoGesto, { once: true, passive: true });
@@ -13456,7 +13525,7 @@ function apriModalScheda118() {
     setTxt('s118-cf', p.cf || 'Non registrato in scheda');
     setTxt('s118-tel', p.cellulare || p.telefonoFisso || 'Non presente');
     setTxt('s118-indirizzo', p.indirizzo || 'Residenza domiciliare');
-    
+
     // Patologie & Allergie
     const patologieStr = Array.isArray(p.patologie) ? p.patologie.join(' • ') : (p.patologie || 'Nessuna patologia segnalata');
     setTxt('s118-patologie', patologieStr);
@@ -13536,7 +13605,7 @@ function apriModalScheda118() {
       modalEl.style.display = 'flex';
       document.body.classList.add('modal-open');
     }
-  } catch(err) {
+  } catch (err) {
     console.error('Errore apriModalScheda118:', err);
     const modalEl = document.getElementById('modal-scheda-118');
     if (modalEl) {
@@ -13567,7 +13636,7 @@ function apriModalReportWhatsApp() {
     const terapieOggi = (p.terapie || []).filter(t => (typeof isTerapiaPrevistaOggi === 'function') ? isTerapiaPrevistaOggi(t) : true);
     const fatteOggi = terapieOggi.filter(t => t.fattoOggi).length;
     const totOggi = terapieOggi.length;
-    const farmaciStato = totOggi > 0 ? `${fatteOggi}/${totOggi} somministrate regolarmente (${Math.round((fatteOggi/totOggi)*100)}%)` : 'Nessuna terapia prevista oggi';
+    const farmaciStato = totOggi > 0 ? `${fatteOggi}/${totOggi} somministrate regolarmente (${Math.round((fatteOggi / totOggi) * 100)}%)` : 'Nessuna terapia prevista oggi';
 
     // Idratazione
     const idratazioneMl = p.idratazioneOggi || 0;
@@ -13627,7 +13696,7 @@ _Aggiornamento inviato con il sistema CareAssist Pro C. Milella_`;
       modalEl.style.display = 'flex';
       document.body.classList.add('modal-open');
     }
-  } catch(err) {
+  } catch (err) {
     console.error('Errore apriModalReportWhatsApp:', err);
     const modalEl = document.getElementById('modal-report-whatsapp');
     if (modalEl) {
@@ -13665,7 +13734,7 @@ function inviaReportWhatsAppDiretto() {
       modalEl.style.display = 'none';
     }
     if (typeof showToast === 'function') showToast('Apertura WhatsApp completata! 📲', 'success');
-  } catch(e) {
+  } catch (e) {
     console.error('Errore inviaReportWhatsAppDiretto:', e);
   }
 }
@@ -13820,7 +13889,7 @@ async function avviaRegistrazioneConsegna() {
       _consegnaSpeechRec.continuous = true;
       _consegnaSpeechRec.interimResults = true;
 
-      _consegnaSpeechRec.onresult = function(ev) {
+      _consegnaSpeechRec.onresult = function (ev) {
         let fullTranscript = '';
         for (let i = 0; i < ev.results.length; i++) {
           fullTranscript += ev.results[i][0].transcript + ' ';
@@ -13831,7 +13900,7 @@ async function avviaRegistrazioneConsegna() {
         analizzaEdEstraiParametriConsegna(fullTranscript);
       };
 
-      _consegnaSpeechRec.onerror = function(err) {
+      _consegnaSpeechRec.onerror = function (err) {
         console.warn('[Consegna Vocale] Errore SpeechRec:', err);
       };
 
@@ -13846,10 +13915,10 @@ async function avviaRegistrazioneConsegna() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       _consegnaMediaRecorder = new MediaRecorder(stream);
-      _consegnaMediaRecorder.ondataavailable = function(e) {
+      _consegnaMediaRecorder.ondataavailable = function (e) {
         if (e.data.size > 0) _consegnaAudioChunks.push(e.data);
       };
-      _consegnaMediaRecorder.onstop = function() {
+      _consegnaMediaRecorder.onstop = function () {
         const audioBlob = new Blob(_consegnaAudioChunks, { type: 'audio/webm' });
         _consegnaAudioBlobUrl = URL.createObjectURL(audioBlob);
         const player = document.getElementById('consegna-audio-player');
@@ -13860,7 +13929,7 @@ async function avviaRegistrazioneConsegna() {
         }
         // Crea anche Data URI base64 compatto se possibile
         const reader = new FileReader();
-        reader.onloadend = function() {
+        reader.onloadend = function () {
           _consegnaAudioBase64 = reader.result;
         };
         reader.readAsDataURL(audioBlob);
@@ -13891,10 +13960,10 @@ function fermaRegistrazioneConsegna() {
   const txtArea = document.getElementById('consegna-trascrizione-testo');
 
   if (_consegnaSpeechRec) {
-    try { _consegnaSpeechRec.stop(); } catch(e) {}
+    try { _consegnaSpeechRec.stop(); } catch (e) { }
   }
   if (_consegnaMediaRecorder && _consegnaMediaRecorder.state !== 'inactive') {
-    try { _consegnaMediaRecorder.stop(); } catch(e) {}
+    try { _consegnaMediaRecorder.stop(); } catch (e) { }
   }
 
   _consegnaIsRecording = false;
@@ -14648,7 +14717,7 @@ window.inviaOrdineAusiliWhatsAppDiretto = inviaOrdineAusiliWhatsAppDiretto;
 function apriModalAvvisoFarmacoEsterno(farmacoId) {
   var p = getActivePaziente();
   if (!p || !p.terapie) return;
-  var t = p.terapie.find(function(item) { return item.id === farmacoId; });
+  var t = p.terapie.find(function (item) { return item.id === farmacoId; });
   if (!t) return;
 
   var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
@@ -14693,7 +14762,7 @@ function apriSvegliaGoogleCalendarFarmaco() {
   var p = getActivePaziente();
   var farmId = parseInt(document.getElementById('avviso-ext-farmaco-id').value);
   if (!p || !p.terapie || !farmId) return;
-  var t = p.terapie.find(function(item) { return item.id === farmId; });
+  var t = p.terapie.find(function (item) { return item.id === farmId; });
   if (!t) return;
 
   var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
@@ -14739,7 +14808,7 @@ function scaricaPromemoriaCalendarioFarmaco() {
   var p = getActivePaziente();
   var farmId = parseInt(document.getElementById('avviso-ext-farmaco-id').value);
   if (!p || !p.terapie || !farmId) return;
-  var t = p.terapie.find(function(item) { return item.id === farmId; });
+  var t = p.terapie.find(function (item) { return item.id === farmId; });
   if (!t) return;
 
   var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
@@ -14863,7 +14932,7 @@ function inviaAvvisoFarmacoWhatsApp() {
   var p = getActivePaziente();
   var farmId = parseInt(document.getElementById('avviso-ext-farmaco-id').value);
   if (!p || !p.terapie || !farmId) return;
-  var t = p.terapie.find(function(item) { return item.id === farmId; });
+  var t = p.terapie.find(function (item) { return item.id === farmId; });
   if (!t) return;
 
   var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
@@ -14898,7 +14967,7 @@ function inviaAvvisoFarmacoEmail() {
   var p = getActivePaziente();
   var farmId = parseInt(document.getElementById('avviso-ext-farmaco-id').value);
   if (!p || !p.terapie || !farmId) return;
-  var t = p.terapie.find(function(item) { return item.id === farmId; });
+  var t = p.terapie.find(function (item) { return item.id === farmId; });
   if (!t) return;
 
   var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
@@ -14940,13 +15009,13 @@ window.impostaSedeRitiroRapida = impostaSedeRitiroRapida;
 function apriModuloPrenotazioneCto(farmacoIdCustom) {
   var p = getActivePaziente();
   var farmId = farmacoIdCustom || parseInt(document.getElementById('avviso-ext-farmaco-id') ? document.getElementById('avviso-ext-farmaco-id').value : 0);
-  
+
   var farmacoNome = 'ENTERCAVIR 0,5 mg';
   var dosaggio = '0.5 mg';
   var scorta = 0;
 
   if (p && p.terapie && farmId) {
-    var t = p.terapie.find(function(item) { return item.id === farmId; });
+    var t = p.terapie.find(function (item) { return item.id === farmId; });
     if (t) {
       farmacoNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toUpperCase();
       dosaggio = t.dosaggio || '0.5 mg';
@@ -14987,7 +15056,7 @@ function apriModuloPrenotazioneCto(farmacoIdCustom) {
   aggiornaAnteprimaTestoCto();
 
   // Aggiungi listener sugli input per aggiornare l'anteprima in tempo reale
-  ['cto-form-nome', 'cto-form-cognome', 'cto-form-nascita', 'cto-form-telefono', 'cto-form-email', 'cto-form-farmaco', 'cto-form-note'].forEach(function(id) {
+  ['cto-form-nome', 'cto-form-cognome', 'cto-form-nascita', 'cto-form-telefono', 'cto-form-email', 'cto-form-farmaco', 'cto-form-note'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.oninput = aggiornaAnteprimaTestoCto;
   });
@@ -15038,7 +15107,7 @@ function aggiornaAnteprimaTestoCto() {
 function copiaTestoRichiestaCto() {
   var text = componiTestoRichiestaCto();
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function() {
+    navigator.clipboard.writeText(text).then(function () {
       showToast('📋 Testo del modulo copiato negli appunti!');
     });
   } else {
@@ -15061,7 +15130,7 @@ function inviaRichiestaCtoEmailUfficiale() {
 
   var subject = 'PRENOTAZIONE FARMACI EX-CTO: ' + cognome + ' ' + nome + ' - ' + farmaco.slice(0, 35);
   var mailto = 'mailto:agft.farmacia.bari@asl.bari.it?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-  
+
   window.location.href = mailto;
   showToast('✉️ Richiesta aperta nel tuo client di posta indirizzata ad agft.farmacia.bari@asl.bari.it!');
 }
@@ -15393,7 +15462,7 @@ function toggleSpuntaEsameModulo(esameId) {
   }
   if (!scheda || !scheda.esami) return;
 
-  var es = scheda.esami.find(function(item) { return item.id === esameId; });
+  var es = scheda.esami.find(function (item) { return item.id === esameId; });
   if (es) {
     es.spuntato = !es.spuntato;
     if (es.spuntato) {
@@ -15474,7 +15543,7 @@ function apriModalGestioneModuloPoliclinico() {
     scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
   }
   var esamiAttivi = (scheda && scheda.esami) ? scheda.esami : [];
-  
+
   // Copia profonda nello stato temporaneo del modal
   _esamiSelezionatiInModuloTemp = JSON.parse(JSON.stringify(esamiAttivi));
 
@@ -15500,46 +15569,46 @@ function renderGrigliaModuloPoliclinico() {
   var chiaviSezioni = ['fegato', 'generali', 'strumentali', 'immunologia', 'sierologia', 'altri'];
   var html = '<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap:16px;">';
 
-  chiaviSezioni.forEach(function(sezKey) {
+  chiaviSezioni.forEach(function (sezKey) {
     var sez = CATALOGO_COMPLETO_MODULO_POLICLINICO[sezKey];
     if (!sez) return;
 
-    var itemsHtml = sez.esami.map(function(esItem) {
-      var isAttivo = _esamiSelezionatiInModuloTemp.some(function(sel) {
-        return sel.nome.toLowerCase().includes(esItem.nome.toLowerCase().slice(0, 10)) || 
-               esItem.nome.toLowerCase().includes(sel.nome.toLowerCase().slice(0, 10));
+    var itemsHtml = sez.esami.map(function (esItem) {
+      var isAttivo = _esamiSelezionatiInModuloTemp.some(function (sel) {
+        return sel.nome.toLowerCase().includes(esItem.nome.toLowerCase().slice(0, 10)) ||
+          esItem.nome.toLowerCase().includes(sel.nome.toLowerCase().slice(0, 10));
       });
 
       var isPennarello = esItem.pennarello || (esItem.codice === '88.60.6' || esItem.codice === '88.30.1' || esItem.codice === '96.10.1');
-      var itemBg = isAttivo 
-        ? (isPennarello ? '#e0f2fe' : '#f0fdf4') 
+      var itemBg = isAttivo
+        ? (isPennarello ? '#e0f2fe' : '#f0fdf4')
         : '#ffffff';
-      var itemBorder = isAttivo 
-        ? (isPennarello ? '#0284c7' : '#22c55e') 
+      var itemBorder = isAttivo
+        ? (isPennarello ? '#0284c7' : '#22c55e')
         : '#e2e8f0';
 
-      var badgeAmbulatorio = isPennarello 
-        ? '<span style="font-size:9.5px; font-weight:900; background:#38bdf8; color:#0c4a6e; padding:1px 5px; border-radius:4px; margin-left:4px;">🖊️ PENNARELLO (Cod. ' + (esItem.codice || 'SSN') + ')</span>' 
+      var badgeAmbulatorio = isPennarello
+        ? '<span style="font-size:9.5px; font-weight:900; background:#38bdf8; color:#0c4a6e; padding:1px 5px; border-radius:4px; margin-left:4px;">🖊️ PENNARELLO (Cod. ' + (esItem.codice || 'SSN') + ')</span>'
         : '';
 
       return '<div style="background:' + itemBg + '; border:1.5px solid ' + itemBorder + '; border-radius:8px; padding:7px 10px; display:flex; align-items:flex-start; gap:8px; transition:all 0.2s ease; cursor:pointer;" onclick="toggleEsameNelModulo(\'' + encodeURIComponent(esItem.nome) + '\', \'' + sezKey + '\')">' +
         '<input type="checkbox" ' + (isAttivo ? 'checked' : '') + ' style="width:17px; height:17px; accent-color:#0284c7; margin-top:2px; cursor:pointer;" onclick="event.stopPropagation(); toggleEsameNelModulo(\'' + encodeURIComponent(esItem.nome) + '\', \'' + sezKey + '\')">' +
         '<div style="flex:1;">' +
-          '<div style="font-size:12px; font-weight:800; color:#0f172a; line-height:1.25;">' + esItem.nome + badgeAmbulatorio + '</div>' +
-          '<div style="font-size:10px; color:#64748b; margin-top:2px;">' + (esItem.note || esItem.cat) + '</div>' +
+        '<div style="font-size:12px; font-weight:800; color:#0f172a; line-height:1.25;">' + esItem.nome + badgeAmbulatorio + '</div>' +
+        '<div style="font-size:10px; color:#64748b; margin-top:2px;">' + (esItem.note || esItem.cat) + '</div>' +
         '</div>' +
-      '</div>';
+        '</div>';
     }).join('');
 
     html += '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px 14px; box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
       '<div style="display:flex; align-items:center; gap:8px; border-bottom:1.5px solid #f1f5f9; padding-bottom:8px; margin-bottom:10px;">' +
-        '<span style="font-size:18px;">' + sez.icona + '</span>' +
-        '<div style="font-size:12.5px; font-weight:900; color:#1e293b; text-transform:uppercase; letter-spacing:0.4px;">' + sez.titolo + '</div>' +
+      '<span style="font-size:18px;">' + sez.icona + '</span>' +
+      '<div style="font-size:12.5px; font-weight:900; color:#1e293b; text-transform:uppercase; letter-spacing:0.4px;">' + sez.titolo + '</div>' +
       '</div>' +
       '<div style="display:flex; flex-direction:column; gap:6px; max-height:320px; overflow-y:auto; padding-right:4px;">' +
-        itemsHtml +
+      itemsHtml +
       '</div>' +
-    '</div>';
+      '</div>';
   });
 
   html += '</div>';
@@ -15549,9 +15618,9 @@ window.renderGrigliaModuloPoliclinico = renderGrigliaModuloPoliclinico;
 
 function toggleEsameNelModulo(nomeEsameEnc, sezKey) {
   var nomeEsame = decodeURIComponent(nomeEsameEnc);
-  var idx = _esamiSelezionatiInModuloTemp.findIndex(function(sel) {
-    return sel.nome.toLowerCase().includes(nomeEsame.toLowerCase().slice(0, 10)) || 
-           nomeEsame.toLowerCase().includes(sel.nome.toLowerCase().slice(0, 10));
+  var idx = _esamiSelezionatiInModuloTemp.findIndex(function (sel) {
+    return sel.nome.toLowerCase().includes(nomeEsame.toLowerCase().slice(0, 10)) ||
+      nomeEsame.toLowerCase().includes(sel.nome.toLowerCase().slice(0, 10));
   });
 
   if (idx !== -1) {
@@ -15562,11 +15631,11 @@ function toggleEsameNelModulo(nomeEsameEnc, sezKey) {
     var itemFound = null;
     var sez = CATALOGO_COMPLETO_MODULO_POLICLINICO[sezKey];
     if (sez) {
-      itemFound = sez.esami.find(function(i) { return i.nome === nomeEsame; });
+      itemFound = sez.esami.find(function (i) { return i.nome === nomeEsame; });
     }
     if (!itemFound) {
       for (var k in CATALOGO_COMPLETO_MODULO_POLICLINICO) {
-        var found = CATALOGO_COMPLETO_MODULO_POLICLINICO[k].esami.find(function(i) { return i.nome === nomeEsame; });
+        var found = CATALOGO_COMPLETO_MODULO_POLICLINICO[k].esami.find(function (i) { return i.nome === nomeEsame; });
         if (found) { itemFound = found; break; }
       }
     }
@@ -15607,7 +15676,7 @@ function applicaPresetModuloPoliclinico(tipo) {
       { nome: 'Ecografia addome sup.', cat: 'Strumentale', note: 'Sorveglianza parenchima epatico', richiestoMMG: false, prenotatoCUP: false, refertato: false }
     ];
   } else if (tipo === 'ciro_reale') {
-    _esamiSelezionatiInModuloTemp = PRESET_FOTO_CIRO_2026.map(function(item, idx) {
+    _esamiSelezionatiInModuloTemp = PRESET_FOTO_CIRO_2026.map(function (item, idx) {
       return {
         id: 'ep_preset_' + idx,
         nome: item.nome,
@@ -15660,7 +15729,7 @@ function aggiungiEsamePersonalizzatoNelModulo() {
   if (!nome || !nome.trim()) return;
 
   var cat = prompt('Inserisci la categoria (es. Ematologia, Strumentale, Funzione Renale):', 'Laboratorio Specialistico');
-  
+
   _esamiSelezionatiInModuloTemp.push({
     id: 'ep_cust_' + Date.now(),
     nome: nome.trim(),
@@ -15711,7 +15780,7 @@ function gestisciUploadFotoNuovoControllo(event) {
   if (!file) return;
 
   var reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     _fotoNuovoControlloDataUrl = e.target.result;
     var preview = document.getElementById('preview-foto-nuova-scheda');
     var placeholder = document.getElementById('box-placeholder-foto-nuova');
@@ -15749,7 +15818,7 @@ function eseguiArchiviazioneEAttivaNuovoControllo() {
   // 1. ARCHIVIAZIONE SCHEDA PRECEDENTE
   var archivio = getArchivioStoricoControlliPaziente(p);
   var schedaAttuale = (p.cartelleCroniche && p.cartelleCroniche.epatologia) ? p.cartelleCroniche.epatologia : p.epatologiaFollowUp;
-  
+
   if (schedaAttuale) {
     archivio.push({
       id: 'visita_archiviata_' + Date.now(),
@@ -15764,7 +15833,7 @@ function eseguiArchiviazioneEAttivaNuovoControllo() {
   }
 
   // 2. CREAZIONE DELLA NUOVA SCHEDA ATTIVA
-  var nuoviEsami = PRESET_FOTO_CIRO_2026.map(function(item, idx) {
+  var nuoviEsami = PRESET_FOTO_CIRO_2026.map(function (item, idx) {
     return {
       id: 'ep_new_' + idx,
       nome: item.nome,
@@ -15835,13 +15904,13 @@ function renderArchivioStoricoControlli() {
     return;
   }
 
-  var html = archivio.map(function(item, idx) {
+  var html = archivio.map(function (item, idx) {
     var dataControlloStr = item.dataProssimaVisita ? new Date(item.dataProssimaVisita).toLocaleDateString('it-IT') : 'N.D.';
     var dataPrescrStr = item.dataPrescrizione ? new Date(item.dataPrescrizione).toLocaleDateString('it-IT') : 'N.D.';
     var esami = item.esami || [];
-    var refertatiCount = esami.filter(function(e) { return e.refertato; }).length;
+    var refertatiCount = esami.filter(function (e) { return e.refertato; }).length;
 
-    var elencoEsamiSintesi = esami.slice(0, 6).map(function(e) {
+    var elencoEsamiSintesi = esami.slice(0, 6).map(function (e) {
       return '<span style="background:#f1f5f9; color:#334155; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:700;">' + e.nome.split(' (')[0] + (e.valoreReferto ? ': <b style="color:#16a34a;">' + e.valoreReferto.slice(0, 16) + '</b>' : '') + '</span>';
     }).join(' ');
 
@@ -15849,38 +15918,38 @@ function renderArchivioStoricoControlli() {
       elencoEsamiSintesi += ' <span style="font-size:11px; color:#64748b; font-weight:700;">+' + (esami.length - 6) + ' altri esami</span>';
     }
 
-    var imgBtn = item.immagineScheda 
+    var imgBtn = item.immagineScheda
       ? '<button type="button" class="btn btn-sm" onclick="window.open(\'' + item.immagineScheda + '\', \'_blank\')" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:800; font-size:11.5px; cursor:pointer;">🔍 Visualizza Foto Scheda</button>'
       : '';
 
     return '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:16px 18px; margin-bottom:14px; box-shadow:0 3px 12px rgba(0,0,0,0.04);">' +
       '<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:10px;">' +
-        '<div>' +
-          '<div style="display:flex; align-items:center; gap:8px;">' +
-            '<span style="background:#4338ca; color:#ffffff; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase;">SCHEDA ARCHIVIATA #' + (idx + 1) + '</span>' +
-            '<span style="background:#e0e7ff; color:#3730a3; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px;">' + (item.stato || 'Completata') + '</span>' +
-          '</div>' +
-          '<div style="font-size:16px; font-weight:900; color:#0f172a; margin-top:4px;">' +
-            'Controllo del ' + dataControlloStr + ' &bull; Rilasciata il ' + dataPrescrStr +
-          '</div>' +
-          '<div style="font-size:12px; color:#64748b; margin-top:2px;">' +
-            '👨‍⚕️ ' + (item.medicoSpecialista || 'Clinica Malattie Infettive Policlinico Bari') +
-          '</div>' +
-        '</div>' +
-        '<div style="display:flex; gap:8px;">' +
-          imgBtn +
-        '</div>' +
+      '<div>' +
+      '<div style="display:flex; align-items:center; gap:8px;">' +
+      '<span style="background:#4338ca; color:#ffffff; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase;">SCHEDA ARCHIVIATA #' + (idx + 1) + '</span>' +
+      '<span style="background:#e0e7ff; color:#3730a3; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px;">' + (item.stato || 'Completata') + '</span>' +
+      '</div>' +
+      '<div style="font-size:16px; font-weight:900; color:#0f172a; margin-top:4px;">' +
+      'Controllo del ' + dataControlloStr + ' &bull; Rilasciata il ' + dataPrescrStr +
+      '</div>' +
+      '<div style="font-size:12px; color:#64748b; margin-top:2px;">' +
+      '👨‍⚕️ ' + (item.medicoSpecialista || 'Clinica Malattie Infettive Policlinico Bari') +
+      '</div>' +
+      '</div>' +
+      '<div style="display:flex; gap:8px;">' +
+      imgBtn +
+      '</div>' +
       '</div>' +
 
       '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px 12px; margin-bottom:8px;">' +
-        '<div style="font-size:11.5px; font-weight:800; color:#475569; margin-bottom:4px;">' +
-          '📋 Sintesi Esami & Referti Archiviati (' + refertatiCount + ' refertati su ' + esami.length + ' prescritti):' +
-        '</div>' +
-        '<div style="display:flex; flex-wrap:wrap; gap:6px;">' +
-          elencoEsamiSintesi +
-        '</div>' +
+      '<div style="font-size:11.5px; font-weight:800; color:#475569; margin-bottom:4px;">' +
+      '📋 Sintesi Esami & Referti Archiviati (' + refertatiCount + ' refertati su ' + esami.length + ' prescritti):' +
       '</div>' +
-    '</div>';
+      '<div style="display:flex; flex-wrap:wrap; gap:6px;">' +
+      elencoEsamiSintesi +
+      '</div>' +
+      '</div>' +
+      '</div>';
   }).join('');
 
   container.innerHTML = html;
@@ -15973,12 +16042,12 @@ function compilaRigaVuotaModulo(esameId) {
   }
   if (!scheda || !scheda.esami) return;
 
-  var es = scheda.esami.find(function(e) { return e.id === esameId; });
+  var es = scheda.esami.find(function (e) { return e.id === esameId; });
   if (!es) return;
 
   var attuale = es.nome || '';
   var nuovoNome = prompt('Inserisci la prescrizione scritta a mano su questa riga (es. PRELIEVO (96101), Radiografia Torace, ecc.) oppure lascia vuoto per cancellare:', attuale);
-  
+
   if (nuovoNome !== null) {
     es.nome = nuovoNome.trim();
     es.spuntato = (es.nome.length > 0);
@@ -16007,7 +16076,7 @@ window.impostaTipoVistaModulo = impostaTipoVistaModulo;
 
 function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
   // Filtro in base alla selezione a tendina
-  var esamiDaElaborare = esami.filter(function(e) {
+  var esamiDaElaborare = esami.filter(function (e) {
     if (_filtroTendinaModulo === 'spuntati') return (e.spuntato !== false);
     if (_filtroTendinaModulo === 'non_spuntati') return (e.spuntato === false);
     if (_filtroTendinaModulo === 'laboratorio') {
@@ -16023,28 +16092,28 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
 
   // Se _mostraRigheVuote è false, rimuovi righe vuote non compilate
   if (!_mostraRigheVuote) {
-    esamiDaElaborare = esamiDaElaborare.filter(function(e) {
+    esamiDaElaborare = esamiDaElaborare.filter(function (e) {
       return (e.spuntato !== false) && (!e.rigaVuota || (e.nome && e.nome.trim().length > 0));
     });
   }
 
   // Raggruppamento per le 4 colonne esatte del foglio originale
-  var col1_generali = esamiDaElaborare.filter(function(e) { return e.categoria === 'ESAMI GENERALI'; });
-  var col1_batterio = esamiDaElaborare.filter(function(e) { return e.categoria === 'BATTERIOLOGIA E PARASS.'; });
+  var col1_generali = esamiDaElaborare.filter(function (e) { return e.categoria === 'ESAMI GENERALI'; });
+  var col1_batterio = esamiDaElaborare.filter(function (e) { return e.categoria === 'BATTERIOLOGIA E PARASS.'; });
 
-  var col2_fegato = esamiDaElaborare.filter(function(e) { return e.categoria === 'FEGATO'; });
+  var col2_fegato = esamiDaElaborare.filter(function (e) { return e.categoria === 'FEGATO'; });
 
-  var col3_radiologici = esamiDaElaborare.filter(function(e) { return e.categoria === 'ESAMI RADIOLOGICI'; });
-  var col3_strumentali = esamiDaElaborare.filter(function(e) { return e.categoria === 'ESAMI STRUMENTALI' || e.categoria === 'ESAMI STRUMENTALI - ALTRI'; });
-  var col3_altri = esamiDaElaborare.filter(function(e) { return e.categoria === 'ALTRI'; });
+  var col3_radiologici = esamiDaElaborare.filter(function (e) { return e.categoria === 'ESAMI RADIOLOGICI'; });
+  var col3_strumentali = esamiDaElaborare.filter(function (e) { return e.categoria === 'ESAMI STRUMENTALI' || e.categoria === 'ESAMI STRUMENTALI - ALTRI'; });
+  var col3_altri = esamiDaElaborare.filter(function (e) { return e.categoria === 'ALTRI'; });
 
-  var col4_immunologici = esamiDaElaborare.filter(function(e) { return e.categoria === 'ESAMI IMMUNOLOGICI'; });
-  var col4_sierologia = esamiDaElaborare.filter(function(e) { return e.categoria === 'SIEROLOGIA'; });
+  var col4_immunologici = esamiDaElaborare.filter(function (e) { return e.categoria === 'ESAMI IMMUNOLOGICI'; });
+  var col4_sierologia = esamiDaElaborare.filter(function (e) { return e.categoria === 'SIEROLOGIA'; });
 
   function renderSezione(titolo, items, icona) {
     if (items.length === 0 && !_mostraRigheVuote) return '';
 
-    var itemsHtml = items.map(function(es) {
+    var itemsHtml = items.map(function (es) {
       var isSpuntato = (es.spuntato !== false);
       var isPennarello = isSpuntato && (es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4');
 
@@ -16056,17 +16125,17 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
             '<div style="width:14px; height:14px; border:1.5px solid #94a3b8; border-radius:3px; background:#fff; flex-shrink:0;"></div>' +
             '<span style="letter-spacing:1px; font-family:monospace; font-size:10px; color:#cbd5e1; flex:1; overflow:hidden; white-space:nowrap;">...................................................</span>' +
             '<span style="font-size:9.5px; color:#0284c7; font-weight:700; flex-shrink:0; opacity:0.8;">✏️ Scrivi</span>' +
-          '</div>';
+            '</div>';
         } else {
           // Riga compilata con testo manoscritto (es. PRELIEVO 96101)
           var badgeCodice = es.codicePrestazione ? (' <span style="background:#0284c7; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px;">' + es.codicePrestazione + '</span>') : '';
           return '<div class="item-prestampato" onclick="compilaRigaVuotaModulo(\'' + es.id + '\')" style="display:flex; align-items:center; justify-content:space-between; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; background:#f0fdf4; border:1px solid #86efac;" title="Scritto a mano su riga libera - Clicca per modificare o cancellare">' +
             '<div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
-              '<input type="checkbox" checked onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')" style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;">' +
-              '<span style="font-weight:900; color:#0369a1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">✍️ ' + es.nome + badgeCodice + '</span>' +
+            '<input type="checkbox" checked onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')" style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;">' +
+            '<span style="font-weight:900; color:#0369a1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">✍️ ' + es.nome + badgeCodice + '</span>' +
             '</div>' +
             '<span style="font-size:9px; color:#64748b; font-weight:700; flex-shrink:0;">✏️ Modifica</span>' +
-          '</div>';
+            '</div>';
         }
       }
 
@@ -16085,23 +16154,23 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
       if (isPennarello) {
         var cod = es.codicePrestazione || (es.id === 'feg_13' ? '88606' : (es.id === 'rad_4' ? '96101' : '88301'));
         badgeCod = '<span style="background:#0284c7; color:#fff; font-size:9.5px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px;">' + cod + '</span>' +
-                   '<span onclick="event.stopPropagation(); apriDocumentiPianoVisitaOriginali(\'ricetta_esami\')" style="background:#059669; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px; cursor:pointer;" title="Ricetta Elettronica NRE 160A24681622426 emessa dal Dr. Michele Milella - Clicca per vedere">📜 NRE 160A24681622426</span>' +
-                   (es.allegatoDataUrl ? '<span onclick="event.stopPropagation(); visualizzaAllegatoReferto(\'' + es.id + '\')" style="background:#0284c7; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px; cursor:pointer;" title="Vedi referto allegato">📎 Referto</span>' : '<span onclick="event.stopPropagation(); apriModalAllegatoReferto(\'' + es.id + '\')" style="background:#f1f5f9; color:#64748b; font-size:8.5px; font-weight:700; padding:1px 4px; border-radius:3px; margin-left:4px; cursor:pointer;" title="Allega referto (Foto/PDF)">📎</span>');
+          '<span onclick="event.stopPropagation(); apriDocumentiPianoVisitaOriginali(\'ricetta_esami\')" style="background:#059669; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px; cursor:pointer;" title="Ricetta Elettronica NRE 160A24681622426 emessa dal Dr. Michele Milella - Clicca per vedere">📜 NRE 160A24681622426</span>' +
+          (es.allegatoDataUrl ? '<span onclick="event.stopPropagation(); visualizzaAllegatoReferto(\'' + es.id + '\')" style="background:#0284c7; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:4px; cursor:pointer;" title="Vedi referto allegato">📎 Referto</span>' : '<span onclick="event.stopPropagation(); apriModalAllegatoReferto(\'' + es.id + '\')" style="background:#f1f5f9; color:#64748b; font-size:8.5px; font-weight:700; padding:1px 4px; border-radius:3px; margin-left:4px; cursor:pointer;" title="Allega referto (Foto/PDF)">📎</span>');
       }
 
       var puntiniHtml = es.haPuntini ? '<span style="letter-spacing:1px; font-family:monospace; font-size:9.5px; color:#cbd5e1; flex:1; margin-left:3px; overflow:hidden; white-space:nowrap;">..................</span>' : '';
       var badgeAllegatoStandard = (!isPennarello && isSpuntato) ? (es.allegatoDataUrl ? '<span onclick="event.stopPropagation(); visualizzaAllegatoReferto(\'' + es.id + '\')" style="background:#059669; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; margin-left:3px; cursor:pointer;" title="Vedi referto scansionato">📎 Referto</span>' : '<span onclick="event.stopPropagation(); apriModalAllegatoReferto(\'' + es.id + '\')" style="background:#f1f5f9; color:#64748b; font-size:8.5px; font-weight:700; padding:1px 4px; border-radius:3px; margin-left:3px; cursor:pointer;" title="Allega foto o PDF referto">📎</span>') : '';
-      
+
       // Link diretto Puglia Salute per esami strumentali e radiologici (Ecografia, TAC, RMN, ECG, Fibroscan)
       var pugliaSaluteBtn = '';
       var isStrumentaleORadiologico = es.categoria.includes('STRUMENTALI') || es.categoria.includes('RADIOLOGICI') || (es.nome && (es.nome.includes('Ecografia') || es.nome.includes('T.A.C.') || es.nome.includes('RMN') || es.nome.includes('ECG') || es.nome.includes('Fibroscan')));
       if (es.id === 'str_3' || (es.nome && es.nome.toLowerCase().includes('ecografia addome'))) {
         pugliaSaluteBtn = '<span onclick="event.stopPropagation(); apriFoglioPrenotazioneEcografiaCiro()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-size:9px; font-weight:900; padding:1.5px 7px; border-radius:4px; margin-left:4px; cursor:pointer; flex-shrink:0; display:inline-flex; align-items:center; gap:3px; box-shadow:0 1px 4px rgba(2,132,199,0.3);" title="PRENOTAZIONE CONFERMATA CUP: 1588303 - Martedì 08/06/2027 ore 09:15 c/o Ospedale San Paolo (Gastroenterologia, Piano 5° Est) - Clicca per vedere il modulo originale">' +
           '<span>🗓️ 08/06/2027 ore 09:15 (PO S. Paolo)</span>' +
-        '</span>' +
-        '<span onclick="event.stopPropagation(); apriFoglioPrenotazioneEcografiaCiro()" style="background:#059669; color:#ffffff; font-size:8.5px; font-weight:800; padding:1.5px 5px; border-radius:4px; margin-left:2px; cursor:pointer; flex-shrink:0;" title="Ricetta Elettronica NRE 160A24681691013 - Clicca per vedere">' +
+          '</span>' +
+          '<span onclick="event.stopPropagation(); apriFoglioPrenotazioneEcografiaCiro()" style="background:#059669; color:#ffffff; font-size:8.5px; font-weight:800; padding:1.5px 5px; border-radius:4px; margin-left:2px; cursor:pointer; flex-shrink:0;" title="Ricetta Elettronica NRE 160A24681691013 - Clicca per vedere">' +
           '📜 NRE 160A24681691013' +
-        '</span>';
+          '</span>';
       } else if (isStrumentaleORadiologico && !es.rigaVuota) {
         pugliaSaluteBtn = '<span onclick="event.stopPropagation(); apriPrenotazionePugliaSalute(\'' + encodeURIComponent(es.nome) + '\')" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-size:9px; font-weight:800; padding:1px 6px; border-radius:4px; margin-left:4px; cursor:pointer; flex-shrink:0; display:inline-flex; align-items:center; gap:2px;" title="Prenota ' + es.nome + ' su Puglia Salute (CUP Online)">🌐 Puglia Salute</span>';
       }
@@ -16120,88 +16189,88 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
 
       return '<div class="item-prestampato" onclick="toggleSpuntaEsameModulo(\'' + es.id + '\')" style="display:flex; align-items:center; justify-content:space-between; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; ' + bgStyle + ' ' + borderStyle + ' transition:all 0.15s ease;" title="' + (isSpuntato ? 'Contrassegnato sul foglio - Clicca per deselezionare' : 'Non contrassegnato - Clicca per spuntare') + '">' +
         '<div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
-          '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;" onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')">' +
-          '<span style="color:' + (isSpuntato ? '#0f172a' : '#475569') + '; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + es.nome + '</span>' +
-          puntiniHtml +
-          badgeCod +
-          pugliaSaluteBtn +
+        '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;" onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')">' +
+        '<span style="color:' + (isSpuntato ? '#0f172a' : '#475569') + '; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + es.nome + '</span>' +
+        puntiniHtml +
+        badgeCod +
+        pugliaSaluteBtn +
         '</div>' +
         '<div style="flex-shrink:0; margin-left:6px;">' + miniStato + '</div>' +
-      '</div>';
+        '</div>';
     }).join('');
 
     return '<div style="margin-bottom:14px;">' +
       '<div style="font-size:11.5px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.4px; border-bottom:2px solid #0284c7; padding-bottom:3px; margin-bottom:6px; display:flex; align-items:center; gap:5px;">' +
-        '<span>' + icona + '</span> <span>' + titolo + '</span>' +
+      '<span>' + icona + '</span> <span>' + titolo + '</span>' +
       '</div>' +
       '<div style="display:flex; flex-direction:column;">' +
-        itemsHtml +
+      itemsHtml +
       '</div>' +
-    '</div>';
+      '</div>';
   }
 
   // Barra di comando con FILTRO A TENDINA + LINK DIRETTO PUGLIA SALUTE CUP ONLINE
   var toolbarToggle = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 14px; background:#f8fafc; border-radius:10px; margin-bottom:14px; border:1.5px solid #cbd5e1; box-shadow:0 2px 6px rgba(0,0,0,0.03);">' +
     '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
-      '<div style="display:flex; align-items:center; gap:6px;">' +
-        '<span style="font-size:12px; font-weight:900; color:#0f172a;">🔽 Filtro Rapido:</span>' +
-        '<select id="select-filtro-categoria" onchange="impostaFiltroTendinaModulo(this.value)" style="font-size:12px; font-weight:800; color:#0369a1; background:#ffffff; border:1.5px solid #0284c7; padding:6px 12px; border-radius:8px; outline:none; cursor:pointer; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
-          '<option value="tutti"' + (_filtroTendinaModulo === 'tutti' ? ' selected' : '') + '>📋 Tutti gli Esami del Prestampato (105+)</option>' +
-          '<option value="spuntati"' + (_filtroTendinaModulo === 'spuntati' ? ' selected' : '') + '>✓ Solo con Spunta / Prescritti (' + esamiSpuntati.length + ')</option>' +
-          '<option value="laboratorio"' + (_filtroTendinaModulo === 'laboratorio' ? ' selected' : '') + '>🔬 Laboratorio & Sangue (Fegato, Generali, Sierologia, Immuno)</option>' +
-          '<option value="radiologia"' + (_filtroTendinaModulo === 'radiologia' ? ' selected' : '') + '>☢️ Radiologia (TAC, RMN, Colangio, Prelievo)</option>' +
-          '<option value="strumentali"' + (_filtroTendinaModulo === 'strumentali' ? ' selected' : '') + '>📸 Esami Strumentali (Ecografia, ECG, Fibroscan)</option>' +
-          '<option value="mmg"' + (_filtroTendinaModulo === 'mmg' ? ' selected' : '') + '>🖊️ Richieste Medico di Base (MMG)</option>' +
-          '<option value="ambulatorio"' + (_filtroTendinaModulo === 'ambulatorio' ? ' selected' : '') + '>🖊️ Reparto Infettivi (Pennarello 88606 / 88301)</option>' +
-          '<option value="altri"' + (_filtroTendinaModulo === 'altri' ? ' selected' : '') + '>📑 Altri & Marcatori Tumorali</option>' +
-          '<option value="non_spuntati"' + (_filtroTendinaModulo === 'non_spuntati' ? ' selected' : '') + '>⚪ Solo Non Spuntati</option>' +
-        '</select>' +
-      '</div>' +
-      '<div style="display:flex; align-items:center; gap:6px;">' +
-        '<button type="button" class="btn btn-sm" onclick="impostaVisualizzazioneRigheVuote(true)" style="background:' + (_mostraRigheVuote ? '#0284c7' : '#ffffff') + '; color:' + (_mostraRigheVuote ? '#ffffff' : '#334155') + '; border:1.5px solid ' + (_mostraRigheVuote ? '#0284c7' : '#cbd5e1') + '; font-size:11px; font-weight:800; padding:5px 10px; border-radius:6px; cursor:pointer;" title="Mostra tutte le righe vuote con puntini">' +
-          '📄 Righe Vuote: ON' +
-        '</button>' +
-        '<button type="button" class="btn btn-sm" onclick="impostaVisualizzazioneRigheVuote(false)" style="background:' + (!_mostraRigheVuote ? '#10b981' : '#ffffff') + '; color:' + (!_mostraRigheVuote ? '#ffffff' : '#334155') + '; border:1.5px solid ' + (!_mostraRigheVuote ? '#10b981' : '#cbd5e1') + '; font-size:11px; font-weight:800; padding:5px 10px; border-radius:6px; cursor:pointer;" title="Nascondi le righe vuote">' +
-          '🎯 Righe Vuote: OFF' +
-        '</button>' +
-      '</div>' +
+    '<div style="display:flex; align-items:center; gap:6px;">' +
+    '<span style="font-size:12px; font-weight:900; color:#0f172a;">🔽 Filtro Rapido:</span>' +
+    '<select id="select-filtro-categoria" onchange="impostaFiltroTendinaModulo(this.value)" style="font-size:12px; font-weight:800; color:#0369a1; background:#ffffff; border:1.5px solid #0284c7; padding:6px 12px; border-radius:8px; outline:none; cursor:pointer; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
+    '<option value="tutti"' + (_filtroTendinaModulo === 'tutti' ? ' selected' : '') + '>📋 Tutti gli Esami del Prestampato (105+)</option>' +
+    '<option value="spuntati"' + (_filtroTendinaModulo === 'spuntati' ? ' selected' : '') + '>✓ Solo con Spunta / Prescritti (' + esamiSpuntati.length + ')</option>' +
+    '<option value="laboratorio"' + (_filtroTendinaModulo === 'laboratorio' ? ' selected' : '') + '>🔬 Laboratorio & Sangue (Fegato, Generali, Sierologia, Immuno)</option>' +
+    '<option value="radiologia"' + (_filtroTendinaModulo === 'radiologia' ? ' selected' : '') + '>☢️ Radiologia (TAC, RMN, Colangio, Prelievo)</option>' +
+    '<option value="strumentali"' + (_filtroTendinaModulo === 'strumentali' ? ' selected' : '') + '>📸 Esami Strumentali (Ecografia, ECG, Fibroscan)</option>' +
+    '<option value="mmg"' + (_filtroTendinaModulo === 'mmg' ? ' selected' : '') + '>🖊️ Richieste Medico di Base (MMG)</option>' +
+    '<option value="ambulatorio"' + (_filtroTendinaModulo === 'ambulatorio' ? ' selected' : '') + '>🖊️ Reparto Infettivi (Pennarello 88606 / 88301)</option>' +
+    '<option value="altri"' + (_filtroTendinaModulo === 'altri' ? ' selected' : '') + '>📑 Altri & Marcatori Tumorali</option>' +
+    '<option value="non_spuntati"' + (_filtroTendinaModulo === 'non_spuntati' ? ' selected' : '') + '>⚪ Solo Non Spuntati</option>' +
+    '</select>' +
+    '</div>' +
+    '<div style="display:flex; align-items:center; gap:6px;">' +
+    '<button type="button" class="btn btn-sm" onclick="impostaVisualizzazioneRigheVuote(true)" style="background:' + (_mostraRigheVuote ? '#0284c7' : '#ffffff') + '; color:' + (_mostraRigheVuote ? '#ffffff' : '#334155') + '; border:1.5px solid ' + (_mostraRigheVuote ? '#0284c7' : '#cbd5e1') + '; font-size:11px; font-weight:800; padding:5px 10px; border-radius:6px; cursor:pointer;" title="Mostra tutte le righe vuote con puntini">' +
+    '📄 Righe Vuote: ON' +
+    '</button>' +
+    '<button type="button" class="btn btn-sm" onclick="impostaVisualizzazioneRigheVuote(false)" style="background:' + (!_mostraRigheVuote ? '#10b981' : '#ffffff') + '; color:' + (!_mostraRigheVuote ? '#ffffff' : '#334155') + '; border:1.5px solid ' + (!_mostraRigheVuote ? '#10b981' : '#cbd5e1') + '; font-size:11px; font-weight:800; padding:5px 10px; border-radius:6px; cursor:pointer;" title="Nascondi le righe vuote">' +
+    '🎯 Righe Vuote: OFF' +
+    '</button>' +
+    '</div>' +
     '</div>' +
 
     '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
-      '<button type="button" class="btn btn-sm" onclick="apriModalPromemoriaMMG()" style="background:#10b981; color:#ffffff; font-weight:900; font-size:12px; padding:7px 14px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(16,185,129,0.35);" title="Stampa A4 o copia WhatsApp per il Dott. Scarcia">' +
-        '<span>🖨️</span> Promemoria MMG (A4 / WhatsApp)' +
-      '</button>' +
-      '<button type="button" class="btn btn-sm" onclick="apriPrenotazionePugliaSalute()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:900; font-size:12px; padding:7px 14px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(2,132,199,0.35);">' +
-        '<span>🌐</span> Prenota su PUGLIA SALUTE (CUP Online)' +
-      '</button>' +
+    '<button type="button" class="btn btn-sm" onclick="apriModalPromemoriaMMG()" style="background:#10b981; color:#ffffff; font-weight:900; font-size:12px; padding:7px 14px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(16,185,129,0.35);" title="Stampa A4 o copia WhatsApp per il Dott. Scarcia">' +
+    '<span>🖨️</span> Promemoria MMG (A4 / WhatsApp)' +
+    '</button>' +
+    '<button type="button" class="btn btn-sm" onclick="apriPrenotazionePugliaSalute()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:900; font-size:12px; padding:7px 14px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(2,132,199,0.35);">' +
+    '<span>🌐</span> Prenota su PUGLIA SALUTE (CUP Online)' +
+    '</button>' +
     '</div>' +
-  '</div>';
+    '</div>';
 
   return toolbarToggle + '<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; background:#ffffff; border-radius:12px; padding:4px;">' +
     // COLONNA 1
     '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
-      renderSezione('ESAMI GENERALI', col1_generali, '🩸') +
-      renderSezione('BATTERIOLOGIA E PARASS.', col1_batterio, '🧫') +
+    renderSezione('ESAMI GENERALI', col1_generali, '🩸') +
+    renderSezione('BATTERIOLOGIA E PARASS.', col1_batterio, '🧫') +
     '</div>' +
 
     // COLONNA 2
     '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
-      renderSezione('FEGATO', col2_fegato, '🧬') +
+    renderSezione('FEGATO', col2_fegato, '🧬') +
     '</div>' +
 
     // COLONNA 3
     '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
-      renderSezione('ESAMI RADIOLOGICI', col3_radiologici, '☢️') +
-      renderSezione('ESAMI STRUMENTALI', col3_strumentali, '📸') +
-      renderSezione('ALTRI', col3_altri, '📑') +
+    renderSezione('ESAMI RADIOLOGICI', col3_radiologici, '☢️') +
+    renderSezione('ESAMI STRUMENTALI', col3_strumentali, '📸') +
+    renderSezione('ALTRI', col3_altri, '📑') +
     '</div>' +
 
     // COLONNA 4
     '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
-      renderSezione('ESAMI IMMUNOLOGICI', col4_immunologici, '🛡️') +
-      renderSezione('SIEROLOGIA', col4_sierologia, '🧪') +
+    renderSezione('ESAMI IMMUNOLOGICI', col4_immunologici, '🛡️') +
+    renderSezione('SIEROLOGIA', col4_sierologia, '🧪') +
     '</div>' +
-  '</div>';
+    '</div>';
 }
 window.buildPrestampatoColonneHtml = buildPrestampatoColonneHtml;
 
@@ -16213,7 +16282,7 @@ function renderOldEpatologiaTbodyView() {
   var esami = dati.esami || [];
   var completati = 0;
 
-  var htmlRows = esami.map(function(es) {
+  var htmlRows = esami.map(function (es) {
     var isDone = es.refertato || (es.prenotatoCUP && es.dataPrenotazioneCUP);
     if (es.refertato) completati += 1;
     else if (es.prenotatoCUP) completati += 0.5;
@@ -16222,8 +16291,8 @@ function renderOldEpatologiaTbodyView() {
     if (es.categoria === 'Strumentale') catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#fef3c7; color:#b45309; border:1px solid #fde047;">📸 Strumentale</span>';
     else if (es.categoria.includes('Virologia')) catBadge = '<span style="font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">🔬 Virologia</span>';
 
-    var cellRichiesto = es.richiestoMMG 
-      ? '<span style="color:#16a34a; font-weight:800; font-size:12px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta</span>' 
+    var cellRichiesto = es.richiestoMMG
+      ? '<span style="color:#16a34a; font-weight:800; font-size:12px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta</span>'
       : '<button class="btn btn-sm" style="font-size:11px; padding:3px 8px; background:#fff; border:1px solid #cbd5e1; color:#64748b; border-radius:6px;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')">⚪ Da richiedere</button>';
 
     var cellPrenotato = '';
@@ -16241,22 +16310,22 @@ function renderOldEpatologiaTbodyView() {
       cellReferto = '<button class="btn btn-sm" style="font-size:11px; padding:4px 8px; background:#fff; border:1px dashed #94a3b8; color:#475569; border-radius:6px;" onclick="apriModalInserisciEsito(\'' + es.id + '\')">📝 Registra Esito</button>';
     }
 
-    var statusCol = es.refertato 
+    var statusCol = es.refertato
       ? '<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; font-size:11px; border:1px solid #86efac;">COMPLETO</span>'
-      : (es.prenotatoCUP 
-        ? '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:11px; border:1px solid #7dd3fc;">PRENOTATO</span>' 
+      : (es.prenotatoCUP
+        ? '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:11px; border:1px solid #7dd3fc;">PRENOTATO</span>'
         : '<span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; font-size:11px; border:1px solid #fde047;">DA PRENOTARE</span>');
 
     return '<tr style="' + rowStyle + '">' +
       '<td style="padding:12px 14px;">' +
-        nomePrestazioneHtml +
+      nomePrestazioneHtml +
       '</td>' +
       '<td style="padding:12px 10px; text-align:center;">' + catBadge + '</td>' +
       '<td style="padding:12px 10px; text-align:center;">' + cellRichiesto + '</td>' +
       '<td style="padding:12px 10px; text-align:center;">' + cellPrenotato + '</td>' +
       '<td style="padding:12px 10px; text-align:center;">' + cellReferto + '</td>' +
       '<td style="padding:12px 14px; text-align:center;">' + statusCol + '</td>' +
-    '</tr>';
+      '</tr>';
   }).join('');
 
   tbody.innerHTML = htmlRows;
@@ -16292,7 +16361,7 @@ function toggleRichiestaMMGEsame(esameId) {
   if (!scheda || !scheda.esami) {
     scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
   }
-  var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === esameId; }) : null;
+  var es = (scheda && scheda.esami) ? scheda.esami.find(function (item) { return item.id === esameId; }) : null;
   if (es) {
     if (es.spuntato === false) { es.spuntato = true; }
     if (es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4' || es.id === 'ep_3' || es.id === 'ep_4') {
@@ -16310,19 +16379,19 @@ window.toggleRichiestaMMGEsame = toggleRichiestaMMGEsame;
 
 function apriModalModificaPrenotazioneEsame(esameId) {
   var dati = getEpatologiaDatiPaziente();
-  var es = (dati.esami || []).find(function(item) { return item.id === esameId; });
+  var es = (dati.esami || []).find(function (item) { return item.id === esameId; });
   if (!es) return;
 
   var dataPrompt = prompt('Inserisci la data prenotata (AAAA-MM-GG) per ' + es.nome + ':', es.dataPrenotazioneCUP || '2026-01-20');
   if (dataPrompt !== null) {
     var oraPrompt = prompt('Inserisci orario appuntamento (es. 09:30):', es.oraPrenotazione || '09:00');
     var luogoPrompt = prompt('Luogo di esecuzione (es. Policlinico Bari / Laboratorio):', es.luogoPrenotazione || 'Policlinico di Bari');
-    
+
     es.prenotatoCUP = (dataPrompt.trim().length > 0);
     es.dataPrenotazioneCUP = dataPrompt.trim();
     es.oraPrenotazione = oraPrompt ? oraPrompt.trim() : '';
     es.luogoPrenotazione = luogoPrompt ? luogoPrompt.trim() : '';
-    
+
     saveDb();
     renderEpatologiaView();
     showToast('📅 Prenotazione aggiornata con successo per ' + es.nome + '!');
@@ -16332,7 +16401,7 @@ window.apriModalModificaPrenotazioneEsame = apriModalModificaPrenotazioneEsame;
 
 function apriModalInserisciEsito(esameId) {
   var dati = getEpatologiaDatiPaziente();
-  var es = (dati.esami || []).find(function(item) { return item.id === esameId; });
+  var es = (dati.esami || []).find(function (item) { return item.id === esameId; });
   if (!es) return;
 
   var esito = prompt('Inserisci il valore o referto per ' + es.nome + ' (es. "Nella norma / HBV-DNA Non rilevabile"):', es.valoreReferto || 'Nella norma');
@@ -16355,11 +16424,11 @@ function richiediTutteRicetteAlMedicoMMG() {
   var esami = (scheda && scheda.esami) ? scheda.esami : [];
 
   // Filtriamo solo gli esami effettivamente SPUNTATI sul modulo e di competenza del Medico di Base (escludendo non spuntati e pennarello/ambulatorio)
-  var esamiPerMMG = esami.filter(function(e) {
+  var esamiPerMMG = esami.filter(function (e) {
     return (e.spuntato !== false) && !(e.emessoDaAmbulatorio || e.evidenziatoPennarello || e.id === 'feg_13' || e.id === 'feg_19' || e.id === 'rad_4' || e.id === 'ep_3' || e.id === 'ep_4');
   });
 
-  var listaNomiMMG = esamiPerMMG.map(function(e, i) {
+  var listaNomiMMG = esamiPerMMG.map(function (e, i) {
     return (i + 1) + '. ' + e.nome + (e.categoria === 'Strumentale' ? ' [STRUMENTALE]' : '');
   }).join('\n');
 
@@ -16376,7 +16445,7 @@ function richiediTutteRicetteAlMedicoMMG() {
   var mailDoc = (p && p.medicoEmail) ? p.medicoEmail : 'scarcia.roberto@alice.it';
   var subject = 'Richiesta Impegnative Protocollo Follow-up Epatologico Policlinico - Ciro Milella';
   var mailto = 'mailto:' + encodeURIComponent(mailDoc) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(msg);
-  
+
   window.location.href = mailto;
   showToast('✉️ Richiesta ricette pronta nel client di posta per il Dott. Scarcia!');
 }
@@ -16389,7 +16458,7 @@ function sincronizzaTuttoCalendarioEpatologia() {
   var dLim = new Date(dVis.getTime() - 15 * 24 * 60 * 60 * 1000);
   var nowStr = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 
-  var fmtIcsDate = function(d, h, m) {
+  var fmtIcsDate = function (d, h, m) {
     var dd = String(d.getDate()).padStart(2, '0');
     var mm = String(d.getMonth() + 1).padStart(2, '0');
     var yyyy = d.getFullYear();
@@ -16543,8 +16612,8 @@ function pazHaDiagnosiMalattieInfettive(paziente) {
 
   // Controllo testo diagnosi, patologie e note cliniche specifiche per epatite virale / malattie infettive
   var testoCompleto = (
-    (p.patologie || []).join(' ') + ' ' + 
-    (p.note || '') + ' ' + 
+    (p.patologie || []).join(' ') + ' ' +
+    (p.note || '') + ' ' +
     (p.allergie || '') + ' ' +
     (p.diagnosi || '')
   ).toLowerCase();
@@ -16703,34 +16772,34 @@ function rilevaMalattieCronicheDaiFarmaci(paziente) {
   var haParkinson = false;
   var haEpatologia = false;
 
-  terapie.forEach(function(t) {
+  terapie.forEach(function (t) {
     var txt = ((t.farmaco || '') + ' ' + (t.principio || '') + ' ' + (t.modo || '')).toLowerCase();
-    
+
     // 1. DIABETE: Insuline, Gliclazide, Metformina, Dapagliflozin, Liraglutide...
-    if (txt.includes('insulina') || txt.includes('xultophy') || txt.includes('diamicron') || 
-        txt.includes('gliclazide') || txt.includes('forxiga') || txt.includes('dapagliflozin') || 
-        txt.includes('metformina') || txt.includes('jardiance') || txt.includes('victoza') || txt.includes('diabete')) {
+    if (txt.includes('insulina') || txt.includes('xultophy') || txt.includes('diamicron') ||
+      txt.includes('gliclazide') || txt.includes('forxiga') || txt.includes('dapagliflozin') ||
+      txt.includes('metformina') || txt.includes('jardiance') || txt.includes('victoza') || txt.includes('diabete')) {
       haDiabete = true;
     }
 
     // 2. CARDIOPATIA / IPERTENSIONE: Beta-bloccanti, Sartani, Diuretici, Statine, Antiaggreganti
-    if (txt.includes('bisoprololo') || txt.includes('congescor') || txt.includes('triatec') || 
-        txt.includes('ramipril') || txt.includes('irbesartan') || txt.includes('lasix') || 
-        txt.includes('furosemide') || txt.includes('cardioaspirin') || txt.includes('clopidogrel') || 
-        txt.includes('averelix') || txt.includes('sivastin') || txt.includes('simvastatina') || 
-        txt.includes('atorvastatina') || txt.includes('ipertens') || txt.includes('cardiopat')) {
+    if (txt.includes('bisoprololo') || txt.includes('congescor') || txt.includes('triatec') ||
+      txt.includes('ramipril') || txt.includes('irbesartan') || txt.includes('lasix') ||
+      txt.includes('furosemide') || txt.includes('cardioaspirin') || txt.includes('clopidogrel') ||
+      txt.includes('averelix') || txt.includes('sivastin') || txt.includes('simvastatina') ||
+      txt.includes('atorvastatina') || txt.includes('ipertens') || txt.includes('cardiopat')) {
       haCardio = true;
     }
 
     // 3. PARKINSON / NEUROLOGIA: Sinemet, Levodopa, Madopar, Ropinirolo...
-    if (txt.includes('sinemet') || txt.includes('levodopa') || txt.includes('carbidopa') || 
-        txt.includes('madopar') || txt.includes('parkinson')) {
+    if (txt.includes('sinemet') || txt.includes('levodopa') || txt.includes('carbidopa') ||
+      txt.includes('madopar') || txt.includes('parkinson')) {
       haParkinson = true;
     }
 
     // 4. EPATOLOGIA / INFETTIVE: Entecavir, Tenofovir, HBV, HCV...
-    if (txt.includes('entecavir') || txt.includes('tenofovir') || txt.includes('baraclude') || 
-        txt.includes('hbv') || txt.includes('epatite') || txt.includes('policlinico')) {
+    if (txt.includes('entecavir') || txt.includes('tenofovir') || txt.includes('baraclude') ||
+      txt.includes('hbv') || txt.includes('epatite') || txt.includes('policlinico')) {
       haEpatologia = true;
     }
   });
@@ -16765,10 +16834,10 @@ function sincronizzaEsamiPennarelloAmbulatorio(scheda) {
   if (scheda.chiave === 'epatologia' && scheda.esami.length < 50) {
     var vecchiEsami = scheda.esami;
     var nuovoSet = JSON.parse(JSON.stringify(TUTTI_ESAMI_MODULO_POLICLINICO_BASE));
-    nuovoSet.forEach(function(ne) {
-      var trovato = vecchiEsami.find(function(ve) {
+    nuovoSet.forEach(function (ne) {
+      var trovato = vecchiEsami.find(function (ve) {
         return ve.nome.toLowerCase().includes(ne.nome.toLowerCase().slice(0, 10)) ||
-               ne.nome.toLowerCase().includes(ve.nome.toLowerCase().slice(0, 10));
+          ne.nome.toLowerCase().includes(ve.nome.toLowerCase().slice(0, 10));
       });
       if (trovato) {
         ne.spuntato = (trovato.spuntato !== undefined) ? trovato.spuntato : true;
@@ -16784,7 +16853,7 @@ function sincronizzaEsamiPennarelloAmbulatorio(scheda) {
     });
     scheda.esami = nuovoSet;
   }
-  scheda.esami.forEach(function(es) {
+  scheda.esami.forEach(function (es) {
     if (es.id === 'ep_3' || es.id === 'ep_4' || (es.nome && (es.nome.includes('HBV-DNA') || es.nome.includes('HBsAg')))) {
       es.emessoDaAmbulatorio = true;
       es.evidenziatoPennarello = true;
@@ -16808,7 +16877,7 @@ function getSchedaCronicaAttivaPaziente() {
   if (croniche.length === 0) return null;
 
   // Se la specialità attiva non fa parte delle patologie di questo paziente, imposta la prima rilevata
-  if (!croniche.some(function(c) { return c.chiave === _specialitaAttivaCronica; })) {
+  if (!croniche.some(function (c) { return c.chiave === _specialitaAttivaCronica; })) {
     _specialitaAttivaCronica = croniche[0].chiave;
   }
 
@@ -16819,7 +16888,7 @@ function getSchedaCronicaAttivaPaziente() {
     else if (_specialitaAttivaCronica === 'cardiologia') dataVisita = '2026-03-10';
     else if (_specialitaAttivaCronica === 'parkinson') dataVisita = '2026-04-08';
 
-    var initialEsami = (_specialitaAttivaCronica === 'epatologia') 
+    var initialEsami = (_specialitaAttivaCronica === 'epatologia')
       ? JSON.parse(JSON.stringify(TUTTI_ESAMI_MODULO_POLICLINICO_BASE))
       : JSON.parse(JSON.stringify(proto.esami));
 
@@ -16879,7 +16948,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
   var proto = PROTOCOLLI_SPECIALISTICI_CRONICI[_specialitaAttivaCronica] || croniche[0];
 
   // 1. BARRA SELEZIONE SPECIALITÀ CRONICHE (SE IL PAZIENTE HA PIÙ CRONICITÀ)
-  var pillsSpecialita = croniche.map(function(c) {
+  var pillsSpecialita = croniche.map(function (c) {
     var active = (c.chiave === _specialitaAttivaCronica);
     var bg = active ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' : '#ffffff';
     var col = active ? '#ffffff' : '#334155';
@@ -16887,16 +16956,16 @@ function renderEpatologiaInfettiviCiro(container, p) {
     var shadow = active ? 'box-shadow:0 4px 14px rgba(2,132,199,0.3);' : '';
     return '<button type="button" class="btn" onclick="selezionaSpecialitaCronica(\'' + c.chiave + '\')" style="background:' + bg + '; color:' + col + '; border:1.5px solid ' + border + '; font-size:13px; font-weight:800; padding:8px 16px; border-radius:999px; cursor:pointer; ' + shadow + ' display:inline-flex; align-items:center; gap:6px;">' +
       '<span>' + c.icona + '</span> <span>' + c.titolo.split(' & ')[0] + '</span>' +
-    '</button>';
+      '</button>';
   }).join(' ');
 
   // 2. CALCOLO PROGRESSO & CONTO ALLA ROVESCIA
   var esami = scheda.esami || [];
-  
+
   // Per l'epatologia consideriamo tutti gli esami del modulo, calcolando il progresso solo sugli esami effettivamente SPUNTATI
-  var esamiSpuntati = esami.filter(function(es) { return es.spuntato !== false; });
+  var esamiSpuntati = esami.filter(function (es) { return es.spuntato !== false; });
   var completati = 0;
-  esamiSpuntati.forEach(function(es) {
+  esamiSpuntati.forEach(function (es) {
     if (es.refertato) completati += 1;
     else if (es.prenotatoCUP) completati += 0.5;
   });
@@ -16912,12 +16981,12 @@ function renderEpatologiaInfettiviCiro(container, p) {
   }
 
   // FILTRAGGIO DINAMICO ESAMI DA MOSTRARE NELLA TABELLA
-  var esamiFiltrati = esami.filter(function(es) {
+  var esamiFiltrati = esami.filter(function (es) {
     if (_ricercaModuloEpatologia) {
       var txt = _ricercaModuloEpatologia;
-      var match = es.nome.toLowerCase().includes(txt) || 
-                  es.categoria.toLowerCase().includes(txt) ||
-                  (es.note && es.note.toLowerCase().includes(txt));
+      var match = es.nome.toLowerCase().includes(txt) ||
+        es.categoria.toLowerCase().includes(txt) ||
+        (es.note && es.note.toLowerCase().includes(txt));
       if (!match) return false;
     }
     if (_filtroModuloEpatologia === 'spuntati') return (es.spuntato !== false);
@@ -16927,10 +16996,10 @@ function renderEpatologiaInfettiviCiro(container, p) {
   });
 
   // 3. GENERAZIONE RIGHE TABELLA ESAMI (TUTTI GLI ESAMI DEL MODULO CON SPUNTA ATTIVABILE)
-  var rowsHtml = esamiFiltrati.map(function(es) {
+  var rowsHtml = esamiFiltrati.map(function (es) {
     var isSpuntato = (es.spuntato !== false);
     var isAutoAmbulatorio = isSpuntato && (es.emessoDaAmbulatorio || es.evidenziatoPennarello || es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4' || es.id === 'ep_3' || es.id === 'ep_4');
-    
+
     if (isAutoAmbulatorio) {
       es.richiestoMMG = true; // Auto-spuntato sempre!
       if (!es.codicePrestazione) {
@@ -16952,7 +17021,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
     // COLONNA 1: CHECKBOX DI SPUNTA SUL MODULO
     var cellSpunta = '<div style="display:flex; justify-content:center; align-items:center;">' +
       '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' onchange="toggleSpuntaEsameModulo(\'' + es.id + '\')" style="width:19px; height:19px; accent-color:#0284c7; cursor:pointer;" title="' + (isSpuntato ? 'Spuntato sul foglio - Clicca per togliere' : 'Non spuntato - Clicca per spuntare') + '">' +
-    '</div>';
+      '</div>';
 
     // COLONNA 2: NOME PRESTAZIONE & BADGE
     var nomePrestazioneHtml = '';
@@ -16960,15 +17029,15 @@ function renderEpatologiaInfettiviCiro(container, p) {
       nomePrestazioneHtml = '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:2px;">' +
         '<span style="background:linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color:#ffffff; font-size:9.5px; font-weight:900; padding:2px 7px; border-radius:4px; text-transform:uppercase; letter-spacing:0.3px; box-shadow:0 1px 3px rgba(2,132,199,0.25);">🖊️ EVIDENZIATO PENNARELLO CELESTE</span>' +
         '<span style="background:#0284c7; color:#ffffff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:4px;">Cod. ' + es.codicePrestazione + '</span>' +
-      '</div>' +
-      '<div style="font-weight:900; font-size:13.5px; color:#0369a1;">' + es.nome + '</div>' +
-      '<div style="font-size:11px; color:#0284c7; font-weight:600; margin-top:1px;">🏥 Predisposto ed eseguito direttamente dall\'Ambulatorio Infettivi Policlinico</div>';
+        '</div>' +
+        '<div style="font-weight:900; font-size:13.5px; color:#0369a1;">' + es.nome + '</div>' +
+        '<div style="font-size:11px; color:#0284c7; font-weight:600; margin-top:1px;">🏥 Predisposto ed eseguito direttamente dall\'Ambulatorio Infettivi Policlinico</div>';
     } else if (isSpuntato) {
       nomePrestazioneHtml = '<div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">' +
         '<span style="background:#dcfce7; color:#15803d; font-size:9.5px; font-weight:800; padding:1px 6px; border-radius:4px; border:1px solid #86efac;">✓ SPUNTATO A PENNA</span>' +
-      '</div>' +
-      '<div style="font-weight:800; font-size:13px; color:#0f172a;">' + es.nome + '</div>' +
-      '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>';
+        '</div>' +
+        '<div style="font-weight:800; font-size:13px; color:#0f172a;">' + es.nome + '</div>' +
+        '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>';
     } else {
       nomePrestazioneHtml = '<div style="font-weight:600; font-size:12.5px; color:#64748b;">' + es.nome + '</div>' +
         '<div style="font-size:10.5px; color:#94a3b8; font-style:italic;">(Non contrassegnato sul modulo cartaceo)</div>';
@@ -16991,21 +17060,21 @@ function renderEpatologiaInfettiviCiro(container, p) {
     } else if (isAutoAmbulatorio) {
       cellRichiesto = '<div onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" style="background:#e0f2fe; border:1.5px solid #38bdf8; border-radius:8px; padding:4px 6px; text-align:center; box-shadow:0 2px 6px rgba(2,132,199,0.12); cursor:pointer;" title="Prestazione disposta d\'ufficio dal reparto">' +
         '<div style="font-weight:900; color:#0369a1; font-size:10.5px; display:flex; align-items:center; justify-content:center; gap:4px;">' +
-          '<span>✅</span> <span>Auto-Spuntato</span>' +
+        '<span>✅</span> <span>Auto-Spuntato</span>' +
         '</div>' +
         '<div style="font-size:9.5px; color:#0284c7; font-weight:800;">Diretto Ambulatorio</div>' +
-      '</div>';
+        '</div>';
     } else {
-      cellRichiesto = es.richiestoMMG 
-        ? '<span style="color:#16a34a; font-weight:800; font-size:11.5px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta MMG</span>' 
+      cellRichiesto = es.richiestoMMG
+        ? '<span style="color:#16a34a; font-weight:800; font-size:11.5px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta MMG</span>'
         : '<button class="btn btn-sm" style="font-size:10.5px; padding:2px 7px; background:#fff; border:1px solid #cbd5e1; color:#64748b; border-radius:6px;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')">⚪ Da richiedere</button>';
     }
 
     // COLONNA 4: PRENOTAZIONE CUP
     var cellPrenotato = '';
     var isStrumentaleOrRad = es.categoria.includes('STRUMENTALI') || es.categoria.includes('RADIOLOGICI') || (es.nome && (es.nome.includes('Ecografia') || es.nome.includes('T.A.C.') || es.nome.includes('RMN') || es.nome.includes('ECG') || es.nome.includes('Fibroscan')));
-    var btnPuglia = (isStrumentaleOrRad && !es.rigaVuota) 
-      ? '<button class="btn btn-sm" style="font-size:9.5px; padding:2px 6px; background:#0284c7; color:#fff; border:none; border-radius:4px; font-weight:800; margin-top:3px; cursor:pointer;" onclick="event.stopPropagation(); apriPrenotazionePugliaSalute(\'' + encodeURIComponent(es.nome) + '\')" title="Prenota ' + es.nome + ' su Puglia Salute (CUP Online)">🌐 Puglia Salute</button>' 
+    var btnPuglia = (isStrumentaleOrRad && !es.rigaVuota)
+      ? '<button class="btn btn-sm" style="font-size:9.5px; padding:2px 6px; background:#0284c7; color:#fff; border:none; border-radius:4px; font-weight:800; margin-top:3px; cursor:pointer;" onclick="event.stopPropagation(); apriPrenotazionePugliaSalute(\'' + encodeURIComponent(es.nome) + '\')" title="Prenota ' + es.nome + ' su Puglia Salute (CUP Online)">🌐 Puglia Salute</button>'
       : '';
 
     if (!isSpuntato) {
@@ -17017,7 +17086,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
       cellPrenotato = '<div style="display:flex; flex-direction:column; align-items:center; gap:2px;">' +
         '<button class="btn btn-sm" style="font-size:10.5px; padding:3px 7px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; border-radius:6px; font-weight:700;" onclick="apriModalModificaPrenotazioneEsame(\'' + es.id + '\')">+ Data</button>' +
         btnPuglia +
-      '</div>';
+        '</div>';
     }
 
     // COLONNA 5: REFERTO / ESITO
@@ -17050,7 +17119,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
       '<td style="padding:10px 10px; text-align:center;">' + cellPrenotato + '</td>' +
       '<td style="padding:10px 10px; text-align:center;">' + cellReferto + '</td>' +
       '<td style="padding:10px 12px; text-align:center;">' + statusCol + '</td>' +
-    '</tr>';
+      '</tr>';
   }).join('');
 
   // 4. COSTRUZIONE TEMPLATE AMBULATORIALE COMPLETO
@@ -17274,13 +17343,13 @@ function renderEpatologiaInfettiviCiro(container, p) {
     <!-- SEZIONE WIDGET OPERATIVI SPECIALISTICI (DISPOSTI IN 3 COLONNE ORIZZONTALI - ERGONOMICO & COMPATTO) -->
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px; margin-bottom:20px; align-items:stretch;">
       ${(() => {
-        var sync = window.calcolaSincronizzazionePianoVisita ? window.calcolaSincronizzazionePianoVisita() : null;
-        var pt = window.getPianoTerapeuticoAttivo ? window.getPianoTerapeuticoAttivo(p) : null;
-        if (!sync || !pt) return '';
+      var sync = window.calcolaSincronizzazionePianoVisita ? window.calcolaSincronizzazionePianoVisita() : null;
+      var pt = window.getPianoTerapeuticoAttivo ? window.getPianoTerapeuticoAttivo(p) : null;
+      if (!sync || !pt) return '';
 
-        var percPianoConsumato = Math.round((pt.scatoleRitirateTotali / pt.scatoleSpettantiAnno) * 100);
+      var percPianoConsumato = Math.round((pt.scatoleRitirateTotali / pt.scatoleSpettantiAnno) * 100);
 
-        return `
+      return `
           <!-- WIDGET 1: RICETTE SPECIALISTICHE SSN (NRE) EMESSE DALL'INFETTIVOLOGO -->
           <div class="card" style="border:2px solid #059669; background:linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border-radius:16px; padding:18px; box-shadow:0 4px 18px rgba(5,150,105,0.12); display:flex; flex-direction:column; justify-content:space-between;">
             <div>
@@ -17432,7 +17501,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
             </div>
           </div>
         `;
-      })()}
+    })()}
     </div>
 
     <!-- SEZIONE MODULO PRESTAMPATO POLICLINICO A TUTTA LARGHEZZA (100% FULL WIDTH) -->
@@ -17557,7 +17626,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
     })()}
   `;
 
-    container.innerHTML = fullHtml;
+  container.innerHTML = fullHtml;
 }
 
 
@@ -17605,7 +17674,7 @@ function getPianoTerapeuticoAttivo(paziente) {
           { data: "2026-08-18", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "3° Tranche" }
         ]
       };
-      var tCiro = (p.terapie || []).find(function(item) { return (item.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
+      var tCiro = (p.terapie || []).find(function (item) { return (item.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
       if (tCiro) tCiro.scorta = 40;
       saveDb();
     }
@@ -17727,8 +17796,8 @@ function getPianoTerapeuticoAttivo(paziente) {
       cprPerConfezione: 30,
       scatoleSpettantiAnno: 12,
       dataPrescrizioneInizio: new Date().toISOString().slice(0, 10),
-      dataScadenzaAnno: new Date(Date.now() + 365*24*3600*1000).toISOString().slice(0, 10),
-      prossimaVisitaAmbulatoriale: new Date(Date.now() + 330*24*3600*1000).toISOString().slice(0, 10),
+      dataScadenzaAnno: new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString().slice(0, 10),
+      prossimaVisitaAmbulatoriale: new Date(Date.now() + 330 * 24 * 3600 * 1000).toISOString().slice(0, 10),
       scatoleRitirateTotali: 9,
       scatoleResidueDaRitirare: 3,
       puntoRitiro: p.farmaciaDiRiferimento || "Farmacia Territoriale",
@@ -17752,7 +17821,7 @@ function calcolaSincronizzazionePianoVisita() {
   var terapie = p.terapie || [];
   var farmacoRef = terapie[0] || { scorta: 40 };
   if ((p.nome || '').toLowerCase().includes('ciro')) {
-    farmacoRef = terapie.find(function(t) { return (t.farmaco || '').toUpperCase().includes('ENTECAVIR'); }) || farmacoRef;
+    farmacoRef = terapie.find(function (t) { return (t.farmaco || '').toUpperCase().includes('ENTECAVIR'); }) || farmacoRef;
   }
   var scortaCompresseCasa = farmacoRef.scorta || 40;
   var giorniCasa = Math.max(1, scortaCompresseCasa);
@@ -17764,7 +17833,7 @@ function calcolaSincronizzazionePianoVisita() {
   var scatoleTotaliSpettanti = pt.scatoleSpettantiAnno || 12;
   var scatoleRimanentiTerritoriale = Math.max(0, scatoleTotaliSpettanti - pt.scatoleRitirateTotali);
   var giorniTotaliRimanenti = (scatoleRimanentiTerritoriale * (pt.cprPerConfezione || 30)) + scortaCompresseCasa;
-  
+
   var dFineTotaleAnno = new Date();
   dFineTotaleAnno.setDate(dOggi.getDate() + giorniTotaliRimanenti);
 
@@ -17813,7 +17882,7 @@ function registraRitiroScatoleTerritoriale() {
       });
 
       // Aggiungi anche le compresse alle scorte di casa
-      var t = (p.terapie || []).find(function(item) { return (item.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
+      var t = (p.terapie || []).find(function (item) { return (item.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
       if (t) {
         t.scorta = (t.scorta || 0) + (qta * 30);
         t.ultimoRitiro = new Date().toISOString().slice(0, 10);
@@ -17903,7 +17972,7 @@ function apriModalPromemoriaMMG() {
   var esami = (scheda && scheda.esami) ? scheda.esami : [];
 
   // Filtra SOLO gli esami contrassegnati a penna da richiedere al MMG (esclude quelli automatici reparto con NRE)
-  var esamiMMG = esami.filter(function(es) {
+  var esamiMMG = esami.filter(function (es) {
     if (es.spuntato === false) return false;
     if (es.emessoDaAmbulatorio || es.evidenziatoPennarello) return false;
     if (es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4' || es.id === 'ep_3' || es.id === 'ep_4') return false;
@@ -17913,14 +17982,14 @@ function apriModalPromemoriaMMG() {
   var containerA4 = document.getElementById('promemoria-mmg-foglio-a4');
   if (!containerA4) return;
 
-  var righeHtml = esamiMMG.map(function(es, idx) {
+  var righeHtml = esamiMMG.map(function (es, idx) {
     var catBadge = es.categoria ? (' <span style="font-size:10px; color:#64748b; background:#f1f5f9; padding:1px 6px; border-radius:4px;">[' + es.categoria + ']</span>') : '';
     return '<tr style="border-bottom:1px solid #e2e8f0;">' +
       '<td style="padding:7px 10px; font-weight:800; color:#0f172a; width:35px; text-align:center;">' + (idx + 1) + '.</td>' +
       '<td style="padding:7px 10px; font-weight:700; color:#1e293b; font-size:13px;">' + es.nome + catBadge + '</td>' +
       '<td style="padding:7px 10px; font-size:11.5px; color:#475569;">' + (es.note || 'Richiesta impegnativa SSN') + '</td>' +
       '<td style="padding:7px 10px; text-align:center; font-size:12px; font-weight:700; color:#0369a1;">' + (es.richiestoMMG ? '✓ Già richiesta' : '⚪ Da emettere') + '</td>' +
-    '</tr>';
+      '</tr>';
   }).join('');
 
   var htmlA4 = `
@@ -18001,7 +18070,7 @@ function stampaPromemoriaMMGA4() {
   finestra.document.write('</body></html>');
   finestra.document.close();
   finestra.focus();
-  setTimeout(function() {
+  setTimeout(function () {
     finestra.print();
     finestra.close();
   }, 350);
@@ -18016,7 +18085,7 @@ function copiaPromemoriaMMGWhatsApp() {
   }
   var esami = (scheda && scheda.esami) ? scheda.esami : [];
 
-  var esamiMMG = esami.filter(function(es) {
+  var esamiMMG = esami.filter(function (es) {
     if (es.spuntato === false) return false;
     if (es.emessoDaAmbulatorio || es.evidenziatoPennarello) return false;
     if (es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4' || es.id === 'ep_3' || es.id === 'ep_4') return false;
@@ -18025,12 +18094,12 @@ function copiaPromemoriaMMGWhatsApp() {
 
   var testo = "Gentile Dott. Scarcia,\n" +
     "in vista del controllo per Sig. Ciro Milella (CF: MLLCRI67T16A662Z - Esenzione 016) presso Malattie Infettive Policlinico di Bari, Le trasmetto il promemoria delle impegnative SSN necessarie:\n\n" +
-    esamiMMG.map(function(es, i) { return (i + 1) + ") " + es.nome; }).join("\n") +
+    esamiMMG.map(function (es, i) { return (i + 1) + ") " + es.nome; }).join("\n") +
     "\n\n*Nota:* HBV-DNA, HBsAg, Prelievo e Visita Infettivologica sono già stati emessi dall'ospedale con ricette NRE 160A24681622426 e 160A24681622429.\n\nGrazie cordialmente,\nCiro Milella (Cell: 366 460 7396)";
 
-  navigator.clipboard.writeText(testo).then(function() {
+  navigator.clipboard.writeText(testo).then(function () {
     showToast("📋 Promemoria copiato! Pronto da incollare su WhatsApp o via messaggio.");
-  }).catch(function() {
+  }).catch(function () {
     prompt("Copia il testo:", testo);
   });
 }
@@ -18044,7 +18113,7 @@ function inviaMailMMGDirect() {
   }
   var esami = (scheda && scheda.esami) ? scheda.esami : [];
 
-  var esamiMMG = esami.filter(function(es) {
+  var esamiMMG = esami.filter(function (es) {
     if (es.spuntato === false) return false;
     if (es.emessoDaAmbulatorio || es.evidenziatoPennarello) return false;
     if (es.id === 'feg_13' || es.id === 'feg_19' || es.id === 'rad_4' || es.id === 'ep_3' || es.id === 'ep_4') return false;
@@ -18055,7 +18124,7 @@ function inviaMailMMGDirect() {
   var subject = "Richiesta Impegnative Follow-up Policlinico - Sig. Ciro Milella (Esenzione 016)";
   var body = "Gentile Dott. Scarcia,\n\n" +
     "in vista del controllo programmato per il Sig. Ciro Milella (C.F. MLLCRI67T16A662Z) presso la Clinica delle Malattie Infettive del Policlinico di Bari, Le richiedo gentilmente l'emissione delle seguenti impegnative in esenzione 016:\n\n" +
-    esamiMMG.map(function(es, i) { return (i + 1) + ". " + es.nome; }).join("\n") +
+    esamiMMG.map(function (es, i) { return (i + 1) + ". " + es.nome; }).join("\n") +
     "\n\n(Si precisa che HBV-DNA, HBsAg e la Visita di controllo sono già stati prescritti direttamente dall'Ambulatorio Infettivi con NRE 160A24681622426 e 160A24681622429).\n\nRingraziando cordialmente,\nCiro Milella - Tel. 366 460 7396";
 
   window.location.href = "mailto:" + mail + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
@@ -18077,7 +18146,7 @@ function apriModalAllegatoReferto(esameId) {
   if (!scheda || !scheda.esami) {
     scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
   }
-  var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === esameId; }) : null;
+  var es = (scheda && scheda.esami) ? scheda.esami.find(function (item) { return item.id === esameId; }) : null;
   if (!es) return;
 
   var elTitolo = document.getElementById('allegato-titolo-esame');
@@ -18125,7 +18194,7 @@ function gestisciUploadAllegatoReferto(event) {
 
   _allegatoTempNome = file.name;
   var reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     _allegatoTempDataUrl = e.target.result;
     var previewContainer = document.getElementById('allegato-preview-container');
     var previewImg = document.getElementById('allegato-preview-img');
@@ -18164,7 +18233,7 @@ function salvaAllegatoReferto() {
   if (!scheda || !scheda.esami) {
     scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
   }
-  var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === _allegatoCorrenteEsameId; }) : null;
+  var es = (scheda && scheda.esami) ? scheda.esami.find(function (item) { return item.id === _allegatoCorrenteEsameId; }) : null;
   if (!es) return;
 
   var inputValore = document.getElementById('allegato-valore-testo');
@@ -18196,7 +18265,7 @@ function eliminaRefertoDefinitivo() {
   if (!scheda || !scheda.esami) {
     scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
   }
-  var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === _allegatoCorrenteEsameId; }) : null;
+  var es = (scheda && scheda.esami) ? scheda.esami.find(function (item) { return item.id === _allegatoCorrenteEsameId; }) : null;
   if (!es) return;
 
   es.allegatoDataUrl = null;
@@ -18217,7 +18286,7 @@ function visualizzaAllegatoReferto(esameId) {
   if (!scheda || !scheda.esami) {
     scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
   }
-  var es = (scheda && scheda.esami) ? scheda.esami.find(function(item) { return item.id === esameId; }) : null;
+  var es = (scheda && scheda.esami) ? scheda.esami.find(function (item) { return item.id === esameId; }) : null;
   if (!es || !es.allegatoDataUrl) return;
 
   _zoomRefertoDataUrl = es.allegatoDataUrl;
@@ -18300,7 +18369,7 @@ function getSchedaSpecialisticaAngela(p) {
 }
 
 function renderTabellaEsamiSpecialisticiGenerica(esami, isAldo) {
-  return esami.map(function(es) {
+  return esami.map(function (es) {
     var isSpuntato = (es.spuntato !== false);
     var rowStyle = isSpuntato ? 'border-bottom:1px solid #f1f5f9; background:#ffffff;' : 'border-bottom:1px solid #f1f5f9; background:#ffffff; opacity:0.65;';
 
@@ -18313,8 +18382,8 @@ function renderTabellaEsamiSpecialisticiGenerica(esami, isAldo) {
     else if (es.categoria.includes('Infermieristica')) catBadge = '<span style="font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">🩺 ADI Domiciliare</span>';
 
     // Richiesta MMG
-    var cellRichiesto = es.richiestoMMG 
-      ? '<span style="color:#16a34a; font-weight:800; font-size:11.5px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta</span>' 
+    var cellRichiesto = es.richiestoMMG
+      ? '<span style="color:#16a34a; font-weight:800; font-size:11.5px; cursor:pointer;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')" title="Clicca per modificare">✓ Richiesta</span>'
       : '<button class="btn btn-sm" style="font-size:10.5px; padding:2px 7px; background:#fff; border:1px solid #cbd5e1; color:#64748b; border-radius:6px;" onclick="toggleRichiestaMMGEsame(\'' + es.id + '\')">⚪ Da richiedere</button>';
 
     // Prenotazione CUP / ADI
@@ -18330,8 +18399,8 @@ function renderTabellaEsamiSpecialisticiGenerica(esami, isAldo) {
     }
 
     // Referto & Allegato
-    var badgeAllegato = es.allegatoDataUrl 
-      ? '<span onclick="event.stopPropagation(); visualizzaAllegatoReferto(\'' + es.id + '\')" style="background:#059669; color:#fff; font-size:9.5px; font-weight:900; padding:1.5px 6px; border-radius:4px; cursor:pointer; margin-left:4px;" title="Vedi referto scansionato">📎 Referto</span>' 
+    var badgeAllegato = es.allegatoDataUrl
+      ? '<span onclick="event.stopPropagation(); visualizzaAllegatoReferto(\'' + es.id + '\')" style="background:#059669; color:#fff; font-size:9.5px; font-weight:900; padding:1.5px 6px; border-radius:4px; cursor:pointer; margin-left:4px;" title="Vedi referto scansionato">📎 Referto</span>'
       : '';
 
     var cellReferto = '';
@@ -18350,18 +18419,18 @@ function renderTabellaEsamiSpecialisticiGenerica(esami, isAldo) {
 
     return '<tr style="' + rowStyle + '">' +
       '<td style="padding:10px 10px; text-align:center;">' +
-        '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' onchange="toggleSpuntaEsameModulo(\'' + es.id + '\')" style="width:18px; height:18px; accent-color:#0284c7; cursor:pointer;">' +
+      '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' onchange="toggleSpuntaEsameModulo(\'' + es.id + '\')" style="width:18px; height:18px; accent-color:#0284c7; cursor:pointer;">' +
       '</td>' +
       '<td style="padding:10px 14px;">' +
-        '<div style="font-weight:800; font-size:13px; color:#0f172a;">' + es.nome + '</div>' +
-        '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>' +
+      '<div style="font-weight:800; font-size:13px; color:#0f172a;">' + es.nome + '</div>' +
+      '<div style="font-size:11px; color:#64748b;">' + (es.note || '') + '</div>' +
       '</td>' +
       '<td style="padding:10px 10px; text-align:center;">' + catBadge + '</td>' +
       '<td style="padding:10px 10px; text-align:center;">' + cellRichiesto + '</td>' +
       '<td style="padding:10px 10px; text-align:center;">' + cellPrenotato + '</td>' +
       '<td style="padding:10px 10px; text-align:center;">' + cellReferto + '</td>' +
       '<td style="padding:10px 12px; text-align:center;">' + statusBadge + '</td>' +
-    '</tr>';
+      '</tr>';
   }).join('');
 }
 
@@ -18885,7 +18954,7 @@ function calcolaRoadmapScadenzeTuttiPazienti() {
   var eventi = [];
   var pazienti = (typeof AppData !== 'undefined' && AppData.pazienti) ? AppData.pazienti : [];
 
-  pazienti.forEach(function(p) {
+  pazienti.forEach(function (p) {
     if (!p) return;
     var pId = p.id;
     var pNome = p.nome || 'Assistito';
@@ -19084,7 +19153,7 @@ function calcolaRoadmapScadenzeTuttiPazienti() {
         nre: 'Priorità P Obbligatoria',
         tipoAzione: 'laboratorio'
       });
-      
+
       // 1. Ecografia Addome Superiore (Prenotazione Ufficiale CUP 1588303)
       eventi.push({
         id: 'ev_ciro_1',
@@ -19167,7 +19236,7 @@ function calcolaRoadmapScadenzeTuttiPazienti() {
   var oggi = new Date();
   oggi.setHours(0, 0, 0, 0);
 
-  eventi.forEach(function(ev) {
+  eventi.forEach(function (ev) {
     var dEv = new Date(ev.data + 'T00:00:00');
     var diffMs = dEv.getTime() - oggi.getTime();
     var diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
@@ -19197,7 +19266,7 @@ function calcolaRoadmapScadenzeTuttiPazienti() {
   });
 
   // Ordina cronologicamente
-  eventi.sort(function(a, b) {
+  eventi.sort(function (a, b) {
     return new Date(a.data).getTime() - new Date(b.data).getTime();
   });
 
@@ -19210,10 +19279,10 @@ function renderRoadmapScadenzeHTML(filtroPaz, filtroCat) {
 
   // Filtra
   if (filtroPaz && filtroPaz !== 'tutti') {
-    eventi = eventi.filter(function(e) { return e.pazId === filtroPaz; });
+    eventi = eventi.filter(function (e) { return e.pazId === filtroPaz; });
   }
   if (filtroCat && filtroCat !== 'tutti') {
-    eventi = eventi.filter(function(e) { return e.categoria === filtroCat; });
+    eventi = eventi.filter(function (e) { return e.categoria === filtroCat; });
   }
 
   if (eventi.length === 0) {
@@ -19226,7 +19295,7 @@ function renderRoadmapScadenzeHTML(filtroPaz, filtroCat) {
     '09': 'SET', '10': 'OTT', '11': 'NOV', '12': 'DIC'
   };
 
-  return eventi.map(function(ev) {
+  return eventi.map(function (ev) {
     var dParts = ev.data.split('-');
     var giorno = dParts[2];
     var meseTxt = mesiNomi[dParts[1]] || dParts[1];
@@ -19234,52 +19303,52 @@ function renderRoadmapScadenzeHTML(filtroPaz, filtroCat) {
 
     var isImminente = (ev.diffDays >= 0 && ev.diffDays <= 7);
     var isMese = (ev.diffDays > 7 && ev.diffDays <= 30);
-    
+
     var cardBorderColor = isImminente ? '#fca5a5' : (isMese ? '#fde047' : '#e2e8f0');
     var dateHeaderBg = isImminente ? '#ef4444' : (isMese ? '#d97706' : '#0284c7');
 
     return '<div style="background:#ffffff; border-radius:16px; border:1.5px solid ' + cardBorderColor + '; border-left:6px solid ' + ev.pazColore + '; padding:14px 18px; box-shadow:0 3px 14px rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; transition:all 0.2s ease;" onmouseover="this.style.boxShadow=\'0 6px 20px rgba(0,0,0,0.08)\'; this.style.transform=\'translateY(-1px)\';" onmouseout="this.style.boxShadow=\'0 3px 14px rgba(0,0,0,0.04)\'; this.style.transform=\'translateY(0)\';">' +
-      
+
       // PARTE SINISTRA: CALENDARIO BADGE & INFO
       '<div style="display:flex; align-items:center; gap:14px; min-width:240px; flex:1;">' +
-        // TILE CALENDARIO AD ALTO IMPATTO
-        '<div style="width:72px; border-radius:12px; overflow:hidden; border:1.5px solid #cbd5e1; box-shadow:0 2px 8px rgba(0,0,0,0.06); text-align:center; flex-shrink:0;">' +
-          '<div style="background:' + dateHeaderBg + '; color:#ffffff; font-size:10px; font-weight:900; letter-spacing:0.5px; padding:3px 0; text-transform:uppercase;">' + meseTxt + ' ' + anno + '</div>' +
-          '<div style="background:#ffffff; padding:4px 0 2px 0;">' +
-            '<div style="font-size:22px; font-weight:900; color:#0f172a; line-height:1;">' + giorno + '</div>' +
-            '<div style="font-size:10.5px; font-weight:700; color:#64748b; margin-top:1px;">' + (ev.ora || 'Mattina') + '</div>' +
-          '</div>' +
-        '</div>' +
+      // TILE CALENDARIO AD ALTO IMPATTO
+      '<div style="width:72px; border-radius:12px; overflow:hidden; border:1.5px solid #cbd5e1; box-shadow:0 2px 8px rgba(0,0,0,0.06); text-align:center; flex-shrink:0;">' +
+      '<div style="background:' + dateHeaderBg + '; color:#ffffff; font-size:10px; font-weight:900; letter-spacing:0.5px; padding:3px 0; text-transform:uppercase;">' + meseTxt + ' ' + anno + '</div>' +
+      '<div style="background:#ffffff; padding:4px 0 2px 0;">' +
+      '<div style="font-size:22px; font-weight:900; color:#0f172a; line-height:1;">' + giorno + '</div>' +
+      '<div style="font-size:10.5px; font-weight:700; color:#64748b; margin-top:1px;">' + (ev.ora || 'Mattina') + '</div>' +
+      '</div>' +
+      '</div>' +
 
-        // TESTI CLINICI
-        '<div style="flex:1; min-width:0;">' +
-          '<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; flex-wrap:wrap;">' +
-            '<span style="background:' + ev.pazColore + '; color:#ffffff; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 4px rgba(0,0,0,0.15);">' +
-              '<span>' + ev.pazIcona + '</span> <span>' + ev.pazNome + '</span>' +
-            '</span>' +
-            '<span style="background:#f1f5f9; color:#475569; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:6px; border:1px solid #e2e8f0;">' + ev.categoriaLabel + '</span>' +
-            ev.badgeUrgenza +
-          '</div>' +
-          '<h3 style="font-size:15px; font-weight:800; color:#0f2744; margin:0 0 3px; line-height:1.25;">' + ev.titolo + '</h3>' +
-          '<div style="font-size:12px; color:#475569; line-height:1.35; margin-bottom:4px;">' + ev.descrizione + '</div>' +
-          '<div style="font-size:11.5px; color:#64748b; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
-            '<span>📍 <b>' + ev.luogo + '</b></span>' +
-            (ev.medico ? '<span>🩺 ' + ev.medico + '</span>' : '') +
-            (ev.nre ? '<span style="font-family:monospace; background:#ecfdf5; color:#065f46; font-weight:800; padding:1px 6px; border-radius:4px; border:1px solid #a7f3d0;">NRE: ' + ev.nre + '</span>' : '') +
-          '</div>' +
-        '</div>' +
+      // TESTI CLINICI
+      '<div style="flex:1; min-width:0;">' +
+      '<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; flex-wrap:wrap;">' +
+      '<span style="background:' + ev.pazColore + '; color:#ffffff; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 4px rgba(0,0,0,0.15);">' +
+      '<span>' + ev.pazIcona + '</span> <span>' + ev.pazNome + '</span>' +
+      '</span>' +
+      '<span style="background:#f1f5f9; color:#475569; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:6px; border:1px solid #e2e8f0;">' + ev.categoriaLabel + '</span>' +
+      ev.badgeUrgenza +
+      '</div>' +
+      '<h3 style="font-size:15px; font-weight:800; color:#0f2744; margin:0 0 3px; line-height:1.25;">' + ev.titolo + '</h3>' +
+      '<div style="font-size:12px; color:#475569; line-height:1.35; margin-bottom:4px;">' + ev.descrizione + '</div>' +
+      '<div style="font-size:11.5px; color:#64748b; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
+      '<span>📍 <b>' + ev.luogo + '</b></span>' +
+      (ev.medico ? '<span>🩺 ' + ev.medico + '</span>' : '') +
+      (ev.nre ? '<span style="font-family:monospace; background:#ecfdf5; color:#065f46; font-weight:800; padding:1px 6px; border-radius:4px; border:1px solid #a7f3d0;">NRE: ' + ev.nre + '</span>' : '') +
+      '</div>' +
+      '</div>' +
       '</div>' +
 
       // PARTE DESTRA: AZIONI RAPIDE
       '<div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">' +
-        '<button type="button" class="btn" onclick="sincronizzaSingoloEventoCalendario(\'' + ev.id + '\')" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; font-weight:800; font-size:12px; padding:7px 14px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3); transition:all 0.15s;" title="Salva questo promemoria direttamente sul tuo cellulare">' +
-          '<span>📲</span> <span>Salva nel Telefono</span>' +
-        '</button>' +
-        '<button type="button" class="btn" onclick="passaAdAssistitoDaRoadmap(\'' + ev.pazId + '\')" style="background:#f8fafc; color:#1e293b; border:1px solid #cbd5e1; font-weight:700; font-size:12px; padding:7px 12px; border-radius:8px; cursor:pointer;" title="Passa alla cartella di questo assistito">' +
-          '<span>👤</span> <span>Vai a Cartella</span>' +
-        '</button>' +
+      '<button type="button" class="btn" onclick="sincronizzaSingoloEventoCalendario(\'' + ev.id + '\')" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; font-weight:800; font-size:12px; padding:7px 14px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3); transition:all 0.15s;" title="Salva questo promemoria direttamente sul tuo cellulare">' +
+      '<span>📲</span> <span>Salva nel Telefono</span>' +
+      '</button>' +
+      '<button type="button" class="btn" onclick="passaAdAssistitoDaRoadmap(\'' + ev.pazId + '\')" style="background:#f8fafc; color:#1e293b; border:1px solid #cbd5e1; font-weight:700; font-size:12px; padding:7px 12px; border-radius:8px; cursor:pointer;" title="Passa alla cartella di questo assistito">' +
+      '<span>👤</span> <span>Vai a Cartella</span>' +
+      '</button>' +
       '</div>' +
-    '</div>';
+      '</div>';
   }).join('');
 }
 window.renderRoadmapScadenzeHTML = renderRoadmapScadenzeHTML;
@@ -19292,13 +19361,13 @@ function aggiornaViewRoadmapScadenze() {
 
   // Aggiorna KPI
   var tutti = calcolaRoadmapScadenzeTuttiPazienti();
-  var prossimi30 = tutti.filter(function(e) { return e.diffDays >= 0 && e.diffDays <= 30; });
+  var prossimi30 = tutti.filter(function (e) { return e.diffDays >= 0 && e.diffDays <= 30; });
   var kpi30 = document.getElementById('roadmap-kpi-prossimi30');
   if (kpi30) kpi30.innerText = prossimi30.length + ' Eventi';
 
   var kpiProssima = document.getElementById('roadmap-kpi-prossima');
   var kpiProssimaDet = document.getElementById('roadmap-kpi-prossima-dettaglio');
-  var futuri = tutti.filter(function(e) { return e.diffDays >= 0; });
+  var futuri = tutti.filter(function (e) { return e.diffDays >= 0; });
   if (futuri.length > 0) {
     var p0 = futuri[0];
     var parts = p0.data.split('-');
@@ -19314,7 +19383,7 @@ function aggiornaViewRoadmapScadenze() {
     'paz_rosa': 'btn-filtro-paz-rosa',
     'paz_1793216119572': 'btn-filtro-paz-ciro'
   };
-  Object.keys(pazBtns).forEach(function(k) {
+  Object.keys(pazBtns).forEach(function (k) {
     var b = document.getElementById(pazBtns[k]);
     if (b) {
       if (k === _filtroPazienteRoadmap) {
@@ -19334,7 +19403,7 @@ function aggiornaViewRoadmapScadenze() {
     'Strumentali': 'btn-filtro-cat-strumentali',
     'Piani': 'btn-filtro-cat-piani'
   };
-  Object.keys(catBtns).forEach(function(k) {
+  Object.keys(catBtns).forEach(function (k) {
     var b = document.getElementById(catBtns[k]);
     if (b) {
       if (k === _filtroCategoriaRoadmap) {
@@ -19379,7 +19448,7 @@ function passaAdAssistitoDaRoadmap(pazId) {
   if (typeof cambiaPaziente === 'function') {
     cambiaPaziente(pazId);
   }
-  setTimeout(function() {
+  setTimeout(function () {
     var tabBtn = document.querySelector('[data-target="tab-epatologia"]');
     if (tabBtn) tabBtn.click();
   }, 250);
@@ -19389,7 +19458,7 @@ window.passaAdAssistitoDaRoadmap = passaAdAssistitoDaRoadmap;
 // Sincronizza singolo evento in formato .ics
 function sincronizzaSingoloEventoCalendario(evId) {
   var tutti = calcolaRoadmapScadenzeTuttiPazienti();
-  var ev = tutti.find(function(x) { return x.id === evId; });
+  var ev = tutti.find(function (x) { return x.id === evId; });
   if (!ev) return;
   generaIcsFile([ev], 'PROMEMORIA_' + ev.id + '.ics', ev.titolo);
 }
@@ -19412,7 +19481,7 @@ function generaIcsFile(eventi, filename, calendarTitle) {
     'X-WR-CALNAME:' + (calendarTitle || 'CareAssist Pro Roadmap Clinica')
   ];
 
-  eventi.forEach(function(ev) {
+  eventi.forEach(function (ev) {
     var dStr = ev.data.replace(/-/g, '');
     var startT = dStr + 'T' + (ev.ora ? ev.ora.replace(':', '') + '00' : '090000');
     var hEnd = ev.ora ? parseInt(ev.ora.split(':')[0], 10) + 1 : 10;
@@ -19474,7 +19543,7 @@ function sincronizzaCalendarioSpecialisticoPaziente(pazId) {
   var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
   var targetId = pazId || (p ? p.id : null);
   var tutti = calcolaRoadmapScadenzeTuttiPazienti();
-  var evPaz = tutti.filter(function(e) { return e.pazId === targetId; });
+  var evPaz = tutti.filter(function (e) { return e.pazId === targetId; });
 
   if (evPaz.length === 0) {
     if (typeof showToast === 'function') showToast('ℹ️ Nessun evento programmato al momento per questo assistito.');
@@ -19501,15 +19570,15 @@ function getDatiDiariLivePaziente(p) {
   var regs = p.registrazioni || [];
 
   // Glicemia
-  var regsGlic = regs.filter(function(r) { return r.tipo === 'glicemia' || (r.tipo === 'parametri' && r.glicemia); });
+  var regsGlic = regs.filter(function (r) { return r.tipo === 'glicemia' || (r.tipo === 'parametri' && r.glicemia); });
   var ultimaGlic = regsGlic.length > 0 ? regsGlic[regsGlic.length - 1] : null;
 
   // Pressione
-  var regsPa = regs.filter(function(r) { return r.tipo === 'parametri' && r.pa_max; });
+  var regsPa = regs.filter(function (r) { return r.tipo === 'parametri' && r.pa_max; });
   var ultimaPa = regsPa.length > 0 ? regsPa[regsPa.length - 1] : null;
 
   // Postura
-  var regsPost = regs.filter(function(r) { return r.tipo === 'postura'; });
+  var regsPost = regs.filter(function (r) { return r.tipo === 'postura'; });
   var ultimaPost = regsPost.length > 0 ? regsPost[regsPost.length - 1] : null;
 
   return {
@@ -19566,7 +19635,7 @@ function generaDossierClinicoHTML(p) {
   if (terapie.length === 0) {
     terapieRows = '<tr><td colspan="8" style="text-align:center; padding:12px; color:#64748b;">Nessun farmaco registrato nel profilo attivo.</td></tr>';
   } else {
-    terapieRows = terapie.map(function(t, idx) {
+    terapieRows = terapie.map(function (t, idx) {
       var orari = t.orari || {};
       var m = orari.mattina ? '✓' : '-';
       var p_ = orari.pranzo ? '✓' : '-';
@@ -19581,7 +19650,7 @@ function generaDossierClinicoHTML(p) {
         '<td style="padding:7px 6px; text-align:center; font-weight:800; color:' + (pom === '✓' ? '#059669' : '#cbd5e1') + ';">' + pom + '</td>' +
         '<td style="padding:7px 6px; text-align:center; font-weight:800; color:' + (s === '✓' ? '#059669' : '#cbd5e1') + ';">' + s + '</td>' +
         '<td style="padding:7px 10px; color:#64748b; font-size:11px;">' + (t.note || t.indicazione || 'Terapia continuativa') + '</td>' +
-      '</tr>';
+        '</tr>';
     }).join('');
   }
 
@@ -19595,8 +19664,8 @@ function generaDossierClinicoHTML(p) {
     esamiSpecialistici = sc.esami || [];
   }
 
-  var esamiSpuntati = esamiSpecialistici.filter(function(e) { return e.spuntato !== false; });
-  var esamiRows = esamiSpuntati.slice(0, 10).map(function(es, i) {
+  var esamiSpuntati = esamiSpecialistici.filter(function (e) { return e.spuntato !== false; });
+  var esamiRows = esamiSpuntati.slice(0, 10).map(function (es, i) {
     var statoTxt = es.refertato ? '<span style="color:#059669; font-weight:800;">✓ Eseguito / Refertato</span>' : (es.prenotatoCUP ? '<span style="color:#0284c7; font-weight:800;">🗓️ Prenotato (' + (es.dataPrenotazioneCUP || 'Data fissata') + ')</span>' : '<span style="color:#d97706; font-weight:700;">⏳ In attesa di ricetta/prenotazione</span>');
     var esito = es.valoreReferto ? '<b>Esito:</b> ' + es.valoreReferto : (es.note || '--');
     return '<tr style="border-bottom:1px solid #e2e8f0; font-size:11.5px;">' +
@@ -19604,14 +19673,14 @@ function generaDossierClinicoHTML(p) {
       '<td style="padding:6px 10px; color:#475569;">' + (es.categoria || 'Controllo') + '</td>' +
       '<td style="padding:6px 10px;">' + statoTxt + '</td>' +
       '<td style="padding:6px 10px; color:#334155;">' + esito + '</td>' +
-    '</tr>';
+      '</tr>';
   }).join('');
 
   // Ultime Rilevazioni Parametri Vitali
   var regs = p.registrazioni || [];
-  var ultPa = regs.filter(function(r) { return r.tipo === 'parametri' && r.pa_max; }).slice(-1)[0];
-  var ultGlic = regs.filter(function(r) { return r.tipo === 'glicemia' || (r.tipo === 'parametri' && r.glicemia); }).slice(-1)[0];
-  var ultPost = regs.filter(function(r) { return r.tipo === 'postura'; }).slice(-1)[0];
+  var ultPa = regs.filter(function (r) { return r.tipo === 'parametri' && r.pa_max; }).slice(-1)[0];
+  var ultGlic = regs.filter(function (r) { return r.tipo === 'glicemia' || (r.tipo === 'parametri' && r.glicemia); }).slice(-1)[0];
+  var ultPost = regs.filter(function (r) { return r.tipo === 'postura'; }).slice(-1)[0];
 
   var paStr = ultPa ? (ultPa.pa_max + '/' + ultPa.pa_min + ' mmHg (FC: ' + (ultPa.fc || '--') + ' bpm) - ' + (ultPa.timestamp ? ultPa.timestamp.slice(0, 10) : '')) : '125/75 mmHg (Regolare)';
   var glicStr = ultGlic ? ((ultGlic.valore || ultGlic.glicemia) + ' mg/dL (' + (ultGlic.momento || 'Digiuno') + ')') : (pNome.includes('Rosa') ? '128 mg/dL (Digiuno)' : 'Valori glicemici nella norma');
@@ -19619,148 +19688,148 @@ function generaDossierClinicoHTML(p) {
 
   var html = '' +
     '<div id="dossier-clinico-printable" style="font-family:\'Segoe UI\', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; color:#0f172a; line-height:1.45; background:#ffffff; padding:24px 28px; border-radius:12px;">' +
-      
-      // INTESTAZIONE UFFICIALE DOSSIER SANITARIO
-      '<div style="border-bottom:2.5px solid #0284c7; padding-bottom:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">' +
-        '<div>' +
-          '<div style="display:flex; align-items:center; gap:8px;">' +
-            '<span style="font-size:24px;">🏛️</span>' +
-            '<div>' +
-              '<div style="font-size:11px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.8px;">SERVIZIO SANITARIO NAZIONALE &bull; REGIONE PUGLIA / BASILICATA</div>' +
-              '<h1 style="font-size:20px; font-weight:900; margin:2px 0 0; color:#0f172a; letter-spacing:-0.3px;">DOSSIER CLINICO E SCHEDA MEDICA INTEGRATA</h1>' +
-            '</div>' +
-          '</div>' +
-          '<div style="font-size:12px; color:#475569; margin-top:4px;">' +
-            'Cartella Sanitaria Domiciliare per Visita Specialistica, Ospedaliera o Consulenza Territoriale' +
-          '</div>' +
-        '</div>' +
-        '<div style="text-align:right;">' +
-          '<div style="font-size:11px; font-weight:700; color:#64748b;">DATA EMISSIONE:</div>' +
-          '<div style="font-size:14px; font-weight:900; color:#0f172a;">' + new Date().toLocaleDateString('it-IT') + '</div>' +
-          '<div style="font-size:10.5px; color:#0284c7; font-weight:700;">CareAssist Pro ID: ' + pId + '</div>' +
-        '</div>' +
-      '</div>' +
 
-      // SEZIONE 1: ANAGRAFICA, ESENZIONI E RECAPITI SANITARI
-      '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px 16px; margin-bottom:14px;">' +
-        '<div style="font-size:12px; font-weight:900; color:#0369a1; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:4px; display:flex; justify-content:space-between;">' +
-          '<span>1. DATI ANAGRAFICI, ESENZIONE TICKET E CONTATTI MEDICI</span>' +
-          '<span>Caregiver: ' + caregiver + '</span>' +
-        '</div>' +
-        '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; font-size:12px;">' +
-          '<div><b>Paziente:</b> <span style="font-size:14px; font-weight:900; color:#0f172a;">' + pNome + '</span></div>' +
-          '<div><b>Data Nascita & Età:</b> ' + dataNascita + ' (' + eta + ' anni)</div>' +
-          '<div><b>Codice Fiscale:</b> <span style="font-family:monospace; font-weight:800; letter-spacing:0.5px;">' + cf + '</span></div>' +
-          '<div><b>Indirizzo:</b> ' + indirizzo + '</div>' +
-          '<div><b>Telefono:</b> ' + tel + '</div>' +
-          '<div><b>Esenzione SSN:</b> ' + esenzione + '</div>' +
-          '<div><b>MMG Curante:</b> <b>' + mmg + '</b> (Tel. ' + telMmg + ')</div>' +
-          '<div><b>Studio Medico:</b> ' + studioMmg + '</div>' +
-        '</div>' +
-      '</div>' +
+    // INTESTAZIONE UFFICIALE DOSSIER SANITARIO
+    '<div style="border-bottom:2.5px solid #0284c7; padding-bottom:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">' +
+    '<div>' +
+    '<div style="display:flex; align-items:center; gap:8px;">' +
+    '<span style="font-size:24px;">🏛️</span>' +
+    '<div>' +
+    '<div style="font-size:11px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.8px;">SERVIZIO SANITARIO NAZIONALE &bull; REGIONE PUGLIA / BASILICATA</div>' +
+    '<h1 style="font-size:20px; font-weight:900; margin:2px 0 0; color:#0f172a; letter-spacing:-0.3px;">DOSSIER CLINICO E SCHEDA MEDICA INTEGRATA</h1>' +
+    '</div>' +
+    '</div>' +
+    '<div style="font-size:12px; color:#475569; margin-top:4px;">' +
+    'Cartella Sanitaria Domiciliare per Visita Specialistica, Ospedaliera o Consulenza Territoriale' +
+    '</div>' +
+    '</div>' +
+    '<div style="text-align:right;">' +
+    '<div style="font-size:11px; font-weight:700; color:#64748b;">DATA EMISSIONE:</div>' +
+    '<div style="font-size:14px; font-weight:900; color:#0f172a;">' + new Date().toLocaleDateString('it-IT') + '</div>' +
+    '<div style="font-size:10.5px; color:#0284c7; font-weight:700;">CareAssist Pro ID: ' + pId + '</div>' +
+    '</div>' +
+    '</div>' +
 
-      // SEZIONE 2: QUADRO CLINICO E DIAGNOSI ATTIVE
-      '<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px 16px; margin-bottom:14px;">' +
-        '<div style="font-size:12px; font-weight:900; color:#15803d; text-transform:uppercase; margin-bottom:4px;">' +
-          '2. QUADRO CLINICO ATTIVO, DIAGNOSI & ALLERGIE' +
-        '</div>' +
-        '<div style="font-size:12px; color:#14532d; font-weight:500;">' +
-          '<b>Diagnosi Principali:</b> ' + diagnosi +
-        '</div>' +
-        '<div style="font-size:11.5px; color:#166534; margin-top:4px;">' +
-          '<b>Allergie a Farmaci / Alimenti:</b> <span style="background:#dcfce7; padding:1px 6px; border-radius:4px; font-weight:800;">Nessuna allergia segnalata</span> &bull; <b>Stato Vaccinale:</b> Regolare.' +
-        '</div>' +
-      '</div>' +
+    // SEZIONE 1: ANAGRAFICA, ESENZIONI E RECAPITI SANITARI
+    '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px 16px; margin-bottom:14px;">' +
+    '<div style="font-size:12px; font-weight:900; color:#0369a1; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:4px; display:flex; justify-content:space-between;">' +
+    '<span>1. DATI ANAGRAFICI, ESENZIONE TICKET E CONTATTI MEDICI</span>' +
+    '<span>Caregiver: ' + caregiver + '</span>' +
+    '</div>' +
+    '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; font-size:12px;">' +
+    '<div><b>Paziente:</b> <span style="font-size:14px; font-weight:900; color:#0f172a;">' + pNome + '</span></div>' +
+    '<div><b>Data Nascita & Età:</b> ' + dataNascita + ' (' + eta + ' anni)</div>' +
+    '<div><b>Codice Fiscale:</b> <span style="font-family:monospace; font-weight:800; letter-spacing:0.5px;">' + cf + '</span></div>' +
+    '<div><b>Indirizzo:</b> ' + indirizzo + '</div>' +
+    '<div><b>Telefono:</b> ' + tel + '</div>' +
+    '<div><b>Esenzione SSN:</b> ' + esenzione + '</div>' +
+    '<div><b>MMG Curante:</b> <b>' + mmg + '</b> (Tel. ' + telMmg + ')</div>' +
+    '<div><b>Studio Medico:</b> ' + studioMmg + '</div>' +
+    '</div>' +
+    '</div>' +
 
-      // SEZIONE 3: TAVOLA POSOLOGICA FARMACOLOGICA COMPLETA
-      '<div style="border:1px solid #cbd5e1; border-radius:10px; overflow:hidden; margin-bottom:14px;">' +
-        '<div style="background:#f1f5f9; padding:8px 14px; font-size:12px; font-weight:900; color:#1e293b; border-bottom:1px solid #cbd5e1; display:flex; justify-content:space-between; align-items:center;">' +
-          '<span>3. RICOGNIZIONE & TERAPIA FARMACOLOGICA IN CORSO (SCHEMA ORARIO)</span>' +
-          '<span style="font-size:11px; color:#64748b;">' + terapie.length + ' Farmaci Registrati</span>' +
-        '</div>' +
-        '<table style="width:100%; border-collapse:collapse; text-align:left;">' +
-          '<thead>' +
-            '<tr style="background:#f8fafc; font-size:11px; text-transform:uppercase; color:#64748b; border-bottom:1px solid #cbd5e1;">' +
-              '<th style="padding:6px 10px;">Farmaco</th>' +
-              '<th style="padding:6px 10px;">Principio Attivo</th>' +
-              '<th style="padding:6px 10px;">Dosaggio</th>' +
-              '<th style="padding:6px 6px; text-align:center;">08:00</th>' +
-              '<th style="padding:6px 6px; text-align:center;">13:00</th>' +
-              '<th style="padding:6px 6px; text-align:center;">17:00</th>' +
-              '<th style="padding:6px 6px; text-align:center;">21:00</th>' +
-              '<th style="padding:6px 10px;">Note Cliniche</th>' +
-            '</tr>' +
-          '</thead>' +
-          '<tbody>' +
-            terapieRows +
-          '</tbody>' +
-        '</table>' +
-      '</div>' +
+    // SEZIONE 2: QUADRO CLINICO E DIAGNOSI ATTIVE
+    '<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px 16px; margin-bottom:14px;">' +
+    '<div style="font-size:12px; font-weight:900; color:#15803d; text-transform:uppercase; margin-bottom:4px;">' +
+    '2. QUADRO CLINICO ATTIVO, DIAGNOSI & ALLERGIE' +
+    '</div>' +
+    '<div style="font-size:12px; color:#14532d; font-weight:500;">' +
+    '<b>Diagnosi Principali:</b> ' + diagnosi +
+    '</div>' +
+    '<div style="font-size:11.5px; color:#166534; margin-top:4px;">' +
+    '<b>Allergie a Farmaci / Alimenti:</b> <span style="background:#dcfce7; padding:1px 6px; border-radius:4px; font-weight:800;">Nessuna allergia segnalata</span> &bull; <b>Stato Vaccinale:</b> Regolare.' +
+    '</div>' +
+    '</div>' +
 
-      // SEZIONE 4: MONITORAGGIO SPECIALISTICO & ESAMI CLINICI
-      '<div style="border:1px solid #cbd5e1; border-radius:10px; overflow:hidden; margin-bottom:14px;">' +
-        '<div style="background:#f1f5f9; padding:8px 14px; font-size:12px; font-weight:900; color:#1e293b; border-bottom:1px solid #cbd5e1;">' +
-          '4. STATO MONITORAGGIO SPECIALISTICO & ULTIMI REFERTI REGISTRATI' +
-        '</div>' +
-        '<table style="width:100%; border-collapse:collapse; text-align:left;">' +
-          '<thead>' +
-            '<tr style="background:#f8fafc; font-size:11px; text-transform:uppercase; color:#64748b; border-bottom:1px solid #cbd5e1;">' +
-              '<th style="padding:6px 10px;">Esame / Prestazione</th>' +
-              '<th style="padding:6px 10px;">Specialità</th>' +
-              '<th style="padding:6px 10px;">Stato / Data</th>' +
-              '<th style="padding:6px 10px;">Note Cliniche / Valore Referto</th>' +
-            '</tr>' +
-          '</thead>' +
-          '<tbody>' +
-            (esamiRows || '<tr><td colspan="4" style="padding:10px; text-align:center; color:#64748b;">Nessun esame specialistico registrato.</td></tr>') +
-          '</tbody>' +
-        '</table>' +
-      '</div>' +
+    // SEZIONE 3: TAVOLA POSOLOGICA FARMACOLOGICA COMPLETA
+    '<div style="border:1px solid #cbd5e1; border-radius:10px; overflow:hidden; margin-bottom:14px;">' +
+    '<div style="background:#f1f5f9; padding:8px 14px; font-size:12px; font-weight:900; color:#1e293b; border-bottom:1px solid #cbd5e1; display:flex; justify-content:space-between; align-items:center;">' +
+    '<span>3. RICOGNIZIONE & TERAPIA FARMACOLOGICA IN CORSO (SCHEMA ORARIO)</span>' +
+    '<span style="font-size:11px; color:#64748b;">' + terapie.length + ' Farmaci Registrati</span>' +
+    '</div>' +
+    '<table style="width:100%; border-collapse:collapse; text-align:left;">' +
+    '<thead>' +
+    '<tr style="background:#f8fafc; font-size:11px; text-transform:uppercase; color:#64748b; border-bottom:1px solid #cbd5e1;">' +
+    '<th style="padding:6px 10px;">Farmaco</th>' +
+    '<th style="padding:6px 10px;">Principio Attivo</th>' +
+    '<th style="padding:6px 10px;">Dosaggio</th>' +
+    '<th style="padding:6px 6px; text-align:center;">08:00</th>' +
+    '<th style="padding:6px 6px; text-align:center;">13:00</th>' +
+    '<th style="padding:6px 6px; text-align:center;">17:00</th>' +
+    '<th style="padding:6px 6px; text-align:center;">21:00</th>' +
+    '<th style="padding:6px 10px;">Note Cliniche</th>' +
+    '</tr>' +
+    '</thead>' +
+    '<tbody>' +
+    terapieRows +
+    '</tbody>' +
+    '</table>' +
+    '</div>' +
 
-      // SEZIONE 5: ULTIME RILEVAZIONI DEI DIARI CLINICI
-      '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px 16px; margin-bottom:14px;">' +
-        '<div style="font-size:12px; font-weight:900; color:#0369a1; text-transform:uppercase; margin-bottom:6px;">' +
-          '5. ULTIMI PARAMETRI VITALI & SORVEGLIANZA DOMICILIARE (RILEVATI NEI DIARI)' +
-        '</div>' +
-        '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px; font-size:12px;">' +
-          '<div style="background:#ffffff; border:1px solid #e2e8f0; padding:8px 12px; border-radius:6px;">' +
-            '<div style="font-size:10.5px; color:#64748b; font-weight:700;">PRESSIONE ARTERIOSA & FC</div>' +
-            '<div style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">' + paStr + '</div>' +
-          '</div>' +
-          '<div style="background:#ffffff; border:1px solid #e2e8f0; padding:8px 12px; border-radius:6px;">' +
-            '<div style="font-size:10.5px; color:#64748b; font-weight:700;">PROFILO GLICEMICO</div>' +
-            '<div style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">' + glicStr + '</div>' +
-          '</div>' +
-          '<div style="background:#ffffff; border:1px solid #e2e8f0; padding:8px 12px; border-radius:6px;">' +
-            '<div style="font-size:10.5px; color:#64748b; font-weight:700;">STATO POSTURALE / CUTE</div>' +
-            '<div style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">' + postStr + '</div>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
+    // SEZIONE 4: MONITORAGGIO SPECIALISTICO & ESAMI CLINICI
+    '<div style="border:1px solid #cbd5e1; border-radius:10px; overflow:hidden; margin-bottom:14px;">' +
+    '<div style="background:#f1f5f9; padding:8px 14px; font-size:12px; font-weight:900; color:#1e293b; border-bottom:1px solid #cbd5e1;">' +
+    '4. STATO MONITORAGGIO SPECIALISTICO & ULTIMI REFERTI REGISTRATI' +
+    '</div>' +
+    '<table style="width:100%; border-collapse:collapse; text-align:left;">' +
+    '<thead>' +
+    '<tr style="background:#f8fafc; font-size:11px; text-transform:uppercase; color:#64748b; border-bottom:1px solid #cbd5e1;">' +
+    '<th style="padding:6px 10px;">Esame / Prestazione</th>' +
+    '<th style="padding:6px 10px;">Specialità</th>' +
+    '<th style="padding:6px 10px;">Stato / Data</th>' +
+    '<th style="padding:6px 10px;">Note Cliniche / Valore Referto</th>' +
+    '</tr>' +
+    '</thead>' +
+    '<tbody>' +
+    (esamiRows || '<tr><td colspan="4" style="padding:10px; text-align:center; color:#64748b;">Nessun esame specialistico registrato.</td></tr>') +
+    '</tbody>' +
+    '</table>' +
+    '</div>' +
 
-      // SEZIONE 6: SPAZIO RISERVATO AL MEDICO SPECIALISTA / FIRMA
-      '<div style="border:1.5px dashed #94a3b8; border-radius:10px; padding:12px 16px; margin-top:12px; background:#fafafa;">' +
-        '<div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
-          '<div style="width:65%;">' +
-            '<div style="font-size:11px; font-weight:900; color:#475569; text-transform:uppercase;">' +
-              'NOTE ED OSSERVAZIONI DEL MEDICO SPECIALISTA / REPARTO OSPEDALIERO:' +
-            '</div>' +
-            '<div style="border-bottom:1px dotted #cbd5e1; height:20px; margin-top:8px;"></div>' +
-            '<div style="border-bottom:1px dotted #cbd5e1; height:20px;"></div>' +
-            '<div style="border-bottom:1px dotted #cbd5e1; height:20px;"></div>' +
-          '</div>' +
-          '<div style="width:30%; text-align:center; padding-top:8px;">' +
-            '<div style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:34px;">TIMBRO E FIRMA DELLO SPECIALISTA</div>' +
-            '<div style="border-top:1px solid #0f172a; font-size:10.5px; color:#64748b; padding-top:4px;">Dott. / Prof.ssa</div>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
+    // SEZIONE 5: ULTIME RILEVAZIONI DEI DIARI CLINICI
+    '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px 16px; margin-bottom:14px;">' +
+    '<div style="font-size:12px; font-weight:900; color:#0369a1; text-transform:uppercase; margin-bottom:6px;">' +
+    '5. ULTIMI PARAMETRI VITALI & SORVEGLIANZA DOMICILIARE (RILEVATI NEI DIARI)' +
+    '</div>' +
+    '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px; font-size:12px;">' +
+    '<div style="background:#ffffff; border:1px solid #e2e8f0; padding:8px 12px; border-radius:6px;">' +
+    '<div style="font-size:10.5px; color:#64748b; font-weight:700;">PRESSIONE ARTERIOSA & FC</div>' +
+    '<div style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">' + paStr + '</div>' +
+    '</div>' +
+    '<div style="background:#ffffff; border:1px solid #e2e8f0; padding:8px 12px; border-radius:6px;">' +
+    '<div style="font-size:10.5px; color:#64748b; font-weight:700;">PROFILO GLICEMICO</div>' +
+    '<div style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">' + glicStr + '</div>' +
+    '</div>' +
+    '<div style="background:#ffffff; border:1px solid #e2e8f0; padding:8px 12px; border-radius:6px;">' +
+    '<div style="font-size:10.5px; color:#64748b; font-weight:700;">STATO POSTURALE / CUTE</div>' +
+    '<div style="font-size:13px; font-weight:900; color:#0f172a; margin-top:2px;">' + postStr + '</div>' +
+    '</div>' +
+    '</div>' +
+    '</div>' +
 
-      // FOOTER CARTELLA
-      '<div style="margin-top:14px; border-top:1px solid #e2e8f0; padding-top:6px; font-size:10px; color:#94a3b8; display:flex; justify-content:space-between;">' +
-        '<span>CareAssist Pro &bull; Piattaforma Sanitaria Integrata Domiciliare</span>' +
-        '<span>Pagina 1 di 1 &bull; Documento generato ad uso clinico specialistico</span>' +
-      '</div>' +
+    // SEZIONE 6: SPAZIO RISERVATO AL MEDICO SPECIALISTA / FIRMA
+    '<div style="border:1.5px dashed #94a3b8; border-radius:10px; padding:12px 16px; margin-top:12px; background:#fafafa;">' +
+    '<div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
+    '<div style="width:65%;">' +
+    '<div style="font-size:11px; font-weight:900; color:#475569; text-transform:uppercase;">' +
+    'NOTE ED OSSERVAZIONI DEL MEDICO SPECIALISTA / REPARTO OSPEDALIERO:' +
+    '</div>' +
+    '<div style="border-bottom:1px dotted #cbd5e1; height:20px; margin-top:8px;"></div>' +
+    '<div style="border-bottom:1px dotted #cbd5e1; height:20px;"></div>' +
+    '<div style="border-bottom:1px dotted #cbd5e1; height:20px;"></div>' +
+    '</div>' +
+    '<div style="width:30%; text-align:center; padding-top:8px;">' +
+    '<div style="font-size:11px; color:#64748b; font-weight:700; margin-bottom:34px;">TIMBRO E FIRMA DELLO SPECIALISTA</div>' +
+    '<div style="border-top:1px solid #0f172a; font-size:10.5px; color:#64748b; padding-top:4px;">Dott. / Prof.ssa</div>' +
+    '</div>' +
+    '</div>' +
+    '</div>' +
+
+    // FOOTER CARTELLA
+    '<div style="margin-top:14px; border-top:1px solid #e2e8f0; padding-top:6px; font-size:10px; color:#94a3b8; display:flex; justify-content:space-between;">' +
+    '<span>CareAssist Pro &bull; Piattaforma Sanitaria Integrata Domiciliare</span>' +
+    '<span>Pagina 1 di 1 &bull; Documento generato ad uso clinico specialistico</span>' +
+    '</div>' +
 
     '</div>';
 
@@ -19771,7 +19840,7 @@ window.generaDossierClinicoHTML = generaDossierClinicoHTML;
 function apriModalDossierClinico(pazId) {
   var p = null;
   if (pazId && typeof AppData !== 'undefined' && AppData.pazienti) {
-    p = AppData.pazienti.find(function(x) { return x.id === pazId; });
+    p = AppData.pazienti.find(function (x) { return x.id === pazId; });
   }
   if (!p && typeof getActivePaziente === 'function') {
     p = getActivePaziente();
@@ -19796,7 +19865,7 @@ window.apriModalDossierClinico = apriModalDossierClinico;
 function cambiaPazienteDossierPreview(sel) {
   if (!sel) return;
   var pId = sel.value;
-  var p = (typeof AppData !== 'undefined' && AppData.pazienti) ? AppData.pazienti.find(function(x) { return x.id === pId; }) : null;
+  var p = (typeof AppData !== 'undefined' && AppData.pazienti) ? AppData.pazienti.find(function (x) { return x.id === pId; }) : null;
   var container = document.getElementById('dossier-clinico-preview-content');
   if (container && p) {
     container.innerHTML = generaDossierClinicoHTML(p);
@@ -19807,7 +19876,7 @@ window.cambiaPazienteDossierPreview = cambiaPazienteDossierPreview;
 function stampaDossierClinicoA4() {
   document.body.classList.add('printing-dossier');
   window.print();
-  setTimeout(function() {
+  setTimeout(function () {
     document.body.classList.remove('printing-dossier');
   }, 1000);
 }
@@ -19847,7 +19916,7 @@ function inviaPromemoriaWhatsAppPrelievoCiro() {
   var dLim = new Date(dVis.getTime() - 15 * 24 * 60 * 60 * 1000);
   var dIni = new Date(dVis.getTime() - 22 * 24 * 60 * 60 * 1000);
 
-  var fmt = function(d) {
+  var fmt = function (d) {
     var dd = String(d.getDate()).padStart(2, '0');
     var mm = String(d.getMonth() + 1).padStart(2, '0');
     var yyyy = d.getFullYear();
@@ -20127,7 +20196,7 @@ function copiaTestoRichiestaScotti() {
   var txtArea = document.getElementById('textarea-richiesta-scotti-medico');
   var testo = (txtArea && txtArea.value.trim()) ? txtArea.value.trim() : generaTestoRichiestaScottiMedico();
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(testo).then(function() {
+    navigator.clipboard.writeText(testo).then(function () {
       if (typeof showToast === 'function') showToast('📋 Testo richiesta copiato negli appunti!');
     });
   } else {
@@ -20218,12 +20287,12 @@ function apriModalPassaporto118() {
 
   var terapieHtml = (p.terapie && p.terapie.length)
     ? p.terapie.map(function (t) {
-        return '<tr>' +
-          '<td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; font-weight:800; color:#0284c7; white-space:nowrap;">' + cestinoEsc(t.ora || '') + '</td>' +
-          '<td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; font-weight:800; color:#0f172a;">' + cestinoEsc(t.farmaco || '') + (t.principio ? ' <small style="color:#64748b; font-weight:600;">(' + cestinoEsc(t.principio) + ')</small>' : '') + '</td>' +
-          '<td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; font-weight:700; color:#334155;">' + cestinoEsc(t.dosaggio || '') + '</td>' +
+      return '<tr>' +
+        '<td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; font-weight:800; color:#0284c7; white-space:nowrap;">' + cestinoEsc(t.ora || '') + '</td>' +
+        '<td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; font-weight:800; color:#0f172a;">' + cestinoEsc(t.farmaco || '') + (t.principio ? ' <small style="color:#64748b; font-weight:600;">(' + cestinoEsc(t.principio) + ')</small>' : '') + '</td>' +
+        '<td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; font-weight:700; color:#334155;">' + cestinoEsc(t.dosaggio || '') + '</td>' +
         '</tr>';
-      }).join('')
+    }).join('')
     : '<tr><td colspan="3" style="padding:8px; color:#64748b;">Nessun farmaco registrato</td></tr>';
 
   var qrText = '118:' + (p.nome || '') + '|NASC:' + dataNascStr + '|ALLERGIE:' + allergie + '|CAREGIVER:' + caregiverTel;
@@ -20231,51 +20300,51 @@ function apriModalPassaporto118() {
 
   box.innerHTML =
     '<div id="passaporto-118-printable" style="background:#ffffff; border:2.5px solid #dc2626; border-radius:16px; padding:20px; color:#0f172a; font-family:sans-serif;">' +
-      '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; border-bottom:2px solid #fecaca; padding-bottom:14px; margin-bottom:14px;">' +
-        '<div>' +
-          '<div style="display:inline-block; background:#dc2626; color:#fff; font-size:11px; font-weight:900; padding:3px 10px; border-radius:999px; letter-spacing:0.6px; text-transform:uppercase;">🚨 SCHEDA EMERGENZA 118 / PRONTO SOCCORSO</div>' +
-          '<h2 style="margin:6px 0 2px; font-size:24px; font-weight:900; color:#0f172a;">' + cestinoEsc(p.nome) + ' <span style="font-size:17px; color:#475569;">(' + eta + ' anni)</span></h2>' +
-          '<div style="font-size:13px; color:#334155; font-weight:600;">📅 Nato/a il: <b>' + dataNascStr + '</b> • 📍 Domicilio: <b>' + cestinoEsc(p.indirizzo || '--') + '</b>' + (p.esenzione ? ' • Esenzione: <b>' + cestinoEsc(p.esenzione) + '</b>' : '') + '</div>' +
-        '</div>' +
-        '<div style="text-align:center;">' +
-          svgQr +
-          '<div style="font-size:9.5px; font-weight:800; color:#475569; margin-top:3px;">QR PASSAPORTO 118</div>' +
-        '</div>' +
-      '</div>' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; border-bottom:2px solid #fecaca; padding-bottom:14px; margin-bottom:14px;">' +
+    '<div>' +
+    '<div style="display:inline-block; background:#dc2626; color:#fff; font-size:11px; font-weight:900; padding:3px 10px; border-radius:999px; letter-spacing:0.6px; text-transform:uppercase;">🚨 SCHEDA EMERGENZA 118 / PRONTO SOCCORSO</div>' +
+    '<h2 style="margin:6px 0 2px; font-size:24px; font-weight:900; color:#0f172a;">' + cestinoEsc(p.nome) + ' <span style="font-size:17px; color:#475569;">(' + eta + ' anni)</span></h2>' +
+    '<div style="font-size:13px; color:#334155; font-weight:600;">📅 Nato/a il: <b>' + dataNascStr + '</b> • 📍 Domicilio: <b>' + cestinoEsc(p.indirizzo || '--') + '</b>' + (p.esenzione ? ' • Esenzione: <b>' + cestinoEsc(p.esenzione) + '</b>' : '') + '</div>' +
+    '</div>' +
+    '<div style="text-align:center;">' +
+    svgQr +
+    '<div style="font-size:9.5px; font-weight:800; color:#475569; margin-top:3px;">QR PASSAPORTO 118</div>' +
+    '</div>' +
+    '</div>' +
 
-      '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap:12px; margin-bottom:14px;">' +
-        '<div style="background:' + (haAllergie ? '#fef2f2' : '#f0fdf4') + '; border:2px solid ' + (haAllergie ? '#ef4444' : '#86efac') + '; border-radius:12px; padding:12px;">' +
-          '<div style="font-size:11px; font-weight:900; color:' + (haAllergie ? '#b91c1c' : '#166534') + '; text-transform:uppercase;">⚠️ ALLERGIE FARMACI / SOSTANZE</div>' +
-          '<div style="font-size:16px; font-weight:900; color:' + (haAllergie ? '#991b1b' : '#14532d') + '; margin-top:4px;">' + cestinoEsc(allergie) + '</div>' +
-        '</div>' +
-        '<div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:12px; padding:12px;">' +
-          '<div style="font-size:11px; font-weight:900; color:#1e40af; text-transform:uppercase;">📞 CONTATTO FAMILIARE H24</div>' +
-          '<div style="font-size:14.5px; font-weight:800; color:#0f172a; margin-top:4px;">' + cestinoEsc(caregiverNome) + '</div>' +
-          '<div style="font-size:15px; font-weight:900; color:#0284c7;">Tel: ' + cestinoEsc(caregiverTel) + '</div>' +
-        '</div>' +
-        '<div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px;">' +
-          '<div style="font-size:11px; font-weight:900; color:#334155; text-transform:uppercase;">🩺 MEDICO CURANTE (MMG)</div>' +
-          '<div style="font-size:14.5px; font-weight:800; color:#0f172a; margin-top:4px;">' + cestinoEsc(medicoNome) + '</div>' +
-          '<div style="font-size:14px; font-weight:800; color:#0369a1;">Tel: ' + cestinoEsc(medicoTel) + '</div>' +
-        '</div>' +
-      '</div>' +
+    '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap:12px; margin-bottom:14px;">' +
+    '<div style="background:' + (haAllergie ? '#fef2f2' : '#f0fdf4') + '; border:2px solid ' + (haAllergie ? '#ef4444' : '#86efac') + '; border-radius:12px; padding:12px;">' +
+    '<div style="font-size:11px; font-weight:900; color:' + (haAllergie ? '#b91c1c' : '#166534') + '; text-transform:uppercase;">⚠️ ALLERGIE FARMACI / SOSTANZE</div>' +
+    '<div style="font-size:16px; font-weight:900; color:' + (haAllergie ? '#991b1b' : '#14532d') + '; margin-top:4px;">' + cestinoEsc(allergie) + '</div>' +
+    '</div>' +
+    '<div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:12px; padding:12px;">' +
+    '<div style="font-size:11px; font-weight:900; color:#1e40af; text-transform:uppercase;">📞 CONTATTO FAMILIARE H24</div>' +
+    '<div style="font-size:14.5px; font-weight:800; color:#0f172a; margin-top:4px;">' + cestinoEsc(caregiverNome) + '</div>' +
+    '<div style="font-size:15px; font-weight:900; color:#0284c7;">Tel: ' + cestinoEsc(caregiverTel) + '</div>' +
+    '</div>' +
+    '<div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px;">' +
+    '<div style="font-size:11px; font-weight:900; color:#334155; text-transform:uppercase;">🩺 MEDICO CURANTE (MMG)</div>' +
+    '<div style="font-size:14.5px; font-weight:800; color:#0f172a; margin-top:4px;">' + cestinoEsc(medicoNome) + '</div>' +
+    '<div style="font-size:14px; font-weight:800; color:#0369a1;">Tel: ' + cestinoEsc(medicoTel) + '</div>' +
+    '</div>' +
+    '</div>' +
 
-      '<div style="margin-bottom:14px; background:#fffbeb; border:1.5px solid #fde68a; border-radius:12px; padding:12px 14px;">' +
-        '<div style="font-size:12px; font-weight:900; color:#92400e; text-transform:uppercase; margin-bottom:6px;">📋 QUADRO CLINICO &amp; PATOLOGIE IN ANAMNESI</div>' +
-        '<ul style="margin:0; padding-left:18px; font-size:13px; color:#1e293b; font-weight:600;">' + patHtml + '</ul>' +
-      '</div>' +
+    '<div style="margin-bottom:14px; background:#fffbeb; border:1.5px solid #fde68a; border-radius:12px; padding:12px 14px;">' +
+    '<div style="font-size:12px; font-weight:900; color:#92400e; text-transform:uppercase; margin-bottom:6px;">📋 QUADRO CLINICO &amp; PATOLOGIE IN ANAMNESI</div>' +
+    '<ul style="margin:0; padding-left:18px; font-size:13px; color:#1e293b; font-weight:600;">' + patHtml + '</ul>' +
+    '</div>' +
 
-      '<div>' +
-        '<div style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:6px;">💊 TERAPIA DOMICILIARE SALVAVITA IN CORSO (' + (p.terapie ? p.terapie.length : 0) + ' FARMACI)</div>' +
-        '<table style="width:100%; border-collapse:collapse; font-size:12.5px; border:1px solid #e2e8f0;">' +
-          '<thead><tr style="background:#f1f5f9; text-align:left;">' +
-            '<th style="padding:6px 8px; border-bottom:1.5px solid #cbd5e1;">Ora</th>' +
-            '<th style="padding:6px 8px; border-bottom:1.5px solid #cbd5e1;">Farmaco &amp; Principio</th>' +
-            '<th style="padding:6px 8px; border-bottom:1.5px solid #cbd5e1;">Dosaggio</th>' +
-          '</tr></thead>' +
-          '<tbody>' + terapieHtml + '</tbody>' +
-        '</table>' +
-      '</div>' +
+    '<div>' +
+    '<div style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:6px;">💊 TERAPIA DOMICILIARE SALVAVITA IN CORSO (' + (p.terapie ? p.terapie.length : 0) + ' FARMACI)</div>' +
+    '<table style="width:100%; border-collapse:collapse; font-size:12.5px; border:1px solid #e2e8f0;">' +
+    '<thead><tr style="background:#f1f5f9; text-align:left;">' +
+    '<th style="padding:6px 8px; border-bottom:1.5px solid #cbd5e1;">Ora</th>' +
+    '<th style="padding:6px 8px; border-bottom:1.5px solid #cbd5e1;">Farmaco &amp; Principio</th>' +
+    '<th style="padding:6px 8px; border-bottom:1.5px solid #cbd5e1;">Dosaggio</th>' +
+    '</tr></thead>' +
+    '<tbody>' + terapieHtml + '</tbody>' +
+    '</table>' +
+    '</div>' +
     '</div>';
 
   openModal('modal-passaporto-118');
@@ -20318,84 +20387,84 @@ function aggiornaAnteprimaLetteraSpecialistica() {
 
   var terapieRows = (p.terapie && p.terapie.length)
     ? p.terapie.map(function (t) {
-        return '<tr>' +
-          '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-weight:800; color:#1e3a8a; white-space:nowrap;">' + cestinoEsc(t.ora || '') + ' <small style="color:#64748b; font-weight:600;">(' + cestinoEsc(t.fascia || '') + ')</small></td>' +
-          '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-weight:800;">' + cestinoEsc(t.farmaco || '') + (t.principio ? '<br><small style="color:#475569; font-weight:600;">Principio: ' + cestinoEsc(t.principio) + '</small>' : '') + '</td>' +
-          '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-weight:700;">' + cestinoEsc(t.dosaggio || '') + '</td>' +
-          '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-size:12px; color:#334155;">' + cestinoEsc(t.modo || '') + '</td>' +
+      return '<tr>' +
+        '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-weight:800; color:#1e3a8a; white-space:nowrap;">' + cestinoEsc(t.ora || '') + ' <small style="color:#64748b; font-weight:600;">(' + cestinoEsc(t.fascia || '') + ')</small></td>' +
+        '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-weight:800;">' + cestinoEsc(t.farmaco || '') + (t.principio ? '<br><small style="color:#475569; font-weight:600;">Principio: ' + cestinoEsc(t.principio) + '</small>' : '') + '</td>' +
+        '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-weight:700;">' + cestinoEsc(t.dosaggio || '') + '</td>' +
+        '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-size:12px; color:#334155;">' + cestinoEsc(t.modo || '') + '</td>' +
         '</tr>';
-      }).join('')
+    }).join('')
     : '<tr><td colspan="4" style="padding:10px; color:#64748b;">Nessuna terapia attiva</td></tr>';
 
   var ultimiLog = (p.registrazioni || []).slice(-5).reverse();
   var logHtml = ultimiLog.length
     ? ultimiLog.map(function (r) {
-        var dStr = r.timestamp ? new Date(r.timestamp).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
-        return '<li style="margin-bottom:3px;"><b>' + dStr + '</b> — ' + cestinoEsc(r.desc || r.dettaglio || r.tipo || '') + '</li>';
-      }).join('')
+      var dStr = r.timestamp ? new Date(r.timestamp).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+      return '<li style="margin-bottom:3px;"><b>' + dStr + '</b> — ' + cestinoEsc(r.desc || r.dettaglio || r.tipo || '') + '</li>';
+    }).join('')
     : '<li>Parametri e somministrazioni regolari secondo piano giornaliero.</li>';
 
   box.innerHTML =
     '<div id="lettera-spec-printable" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:24px 28px; color:#0f172a; font-family:Georgia,serif; line-height:1.5;">' +
-      '<div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #1e3a8a; padding-bottom:12px; margin-bottom:16px; font-family:sans-serif;">' +
-        '<div>' +
-          '<div style="font-size:11px; font-weight:800; color:#0284c7; text-transform:uppercase; letter-spacing:0.6px;">CAREASSIST PRO • RELAZIONE DI ACCOMPAGNAMENTO TERAPEUTICO</div>' +
-          '<h2 style="margin:4px 0 2px; font-size:21px; font-weight:900; color:#0f172a;">Alla cortese attenzione del Medico Specialista</h2>' +
-          '<div style="font-size:13.5px; font-weight:800; color:#1e3a8a;">Oggetto: ' + cestinoEsc(branca) + '</div>' +
-        '</div>' +
-        '<div style="text-align:right; font-size:12px; color:#475569;">' +
-          '<div><b>Data:</b> ' + oggiStr + '</div>' +
-          '<div><b>Medico Curante:</b> ' + cestinoEsc(p.medicoNome || p.medico || '--') + '</div>' +
-        '</div>' +
-      '</div>' +
+    '<div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #1e3a8a; padding-bottom:12px; margin-bottom:16px; font-family:sans-serif;">' +
+    '<div>' +
+    '<div style="font-size:11px; font-weight:800; color:#0284c7; text-transform:uppercase; letter-spacing:0.6px;">CAREASSIST PRO • RELAZIONE DI ACCOMPAGNAMENTO TERAPEUTICO</div>' +
+    '<h2 style="margin:4px 0 2px; font-size:21px; font-weight:900; color:#0f172a;">Alla cortese attenzione del Medico Specialista</h2>' +
+    '<div style="font-size:13.5px; font-weight:800; color:#1e3a8a;">Oggetto: ' + cestinoEsc(branca) + '</div>' +
+    '</div>' +
+    '<div style="text-align:right; font-size:12px; color:#475569;">' +
+    '<div><b>Data:</b> ' + oggiStr + '</div>' +
+    '<div><b>Medico Curante:</b> ' + cestinoEsc(p.medicoNome || p.medico || '--') + '</div>' +
+    '</div>' +
+    '</div>' +
 
-      '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px 14px; margin-bottom:14px; font-family:sans-serif; font-size:13px;">' +
-        '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:8px;">' +
-          '<div>👤 <b>Assistito:</b> ' + cestinoEsc(p.nome) + ' (' + eta + ' anni)</div>' +
-          '<div>🎂 <b>Data di Nascita:</b> ' + dataNascStr + '</div>' +
-          '<div>⚠️ <b>Allergie note:</b> <span style="color:#b91c1c; font-weight:800;">' + cestinoEsc(p.allergie || 'Nessuna nota') + '</span></div>' +
-          '<div>📞 <b>Riferimento Familiare:</b> ' + cestinoEsc((p.moglieNome || p.maritoNome || 'Caregiver') + ' ' + (p.moglieCellulare || p.cellulare || '')) + '</div>' +
-        '</div>' +
-      '</div>' +
+    '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px 14px; margin-bottom:14px; font-family:sans-serif; font-size:13px;">' +
+    '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:8px;">' +
+    '<div>👤 <b>Assistito:</b> ' + cestinoEsc(p.nome) + ' (' + eta + ' anni)</div>' +
+    '<div>🎂 <b>Data di Nascita:</b> ' + dataNascStr + '</div>' +
+    '<div>⚠️ <b>Allergie note:</b> <span style="color:#b91c1c; font-weight:800;">' + cestinoEsc(p.allergie || 'Nessuna nota') + '</span></div>' +
+    '<div>📞 <b>Riferimento Familiare:</b> ' + cestinoEsc((p.moglieNome || p.maritoNome || 'Caregiver') + ' ' + (p.moglieCellulare || p.cellulare || '')) + '</div>' +
+    '</div>' +
+    '</div>' +
 
-      '<div style="margin-bottom:14px; font-family:sans-serif;">' +
-        '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:4px;">1. Motivo della Visita / Quesito</div>' +
-        '<div style="font-size:13.5px; color:#1e293b; background:#eff6ff; border-left:4px solid #0284c7; padding:8px 12px; border-radius:6px;">' + cestinoEsc(quesito) + '</div>' +
-      '</div>' +
+    '<div style="margin-bottom:14px; font-family:sans-serif;">' +
+    '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:4px;">1. Motivo della Visita / Quesito</div>' +
+    '<div style="font-size:13.5px; color:#1e293b; background:#eff6ff; border-left:4px solid #0284c7; padding:8px 12px; border-radius:6px;">' + cestinoEsc(quesito) + '</div>' +
+    '</div>' +
 
-      '<div style="margin-bottom:14px; font-family:sans-serif;">' +
-        '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:4px;">2. Quadro Clinico &amp; Patologie in Anamnesi</div>' +
-        '<ul style="margin:0; padding-left:18px; font-size:13px; color:#1e293b;">' + patHtml + '</ul>' +
-      '</div>' +
+    '<div style="margin-bottom:14px; font-family:sans-serif;">' +
+    '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:4px;">2. Quadro Clinico &amp; Patologie in Anamnesi</div>' +
+    '<ul style="margin:0; padding-left:18px; font-size:13px; color:#1e293b;">' + patHtml + '</ul>' +
+    '</div>' +
 
-      '<div style="margin-bottom:14px; font-family:sans-serif;">' +
-        '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:6px;">3. Piano Terapeutico Domiciliare Attivo (Aggiornato al ' + new Date().toLocaleDateString('it-IT') + ')</div>' +
-        '<table style="width:100%; border-collapse:collapse; font-size:12.5px; border:1px solid #cbd5e1;">' +
-          '<thead><tr style="background:#f1f5f9; text-align:left;">' +
-            '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Orario</th>' +
-            '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Farmaco</th>' +
-            '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Posologia</th>' +
-            '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Modalità e Note Cliniche</th>' +
-          '</tr></thead>' +
-          '<tbody>' + terapieRows + '</tbody>' +
-        '</table>' +
-      '</div>' +
+    '<div style="margin-bottom:14px; font-family:sans-serif;">' +
+    '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:6px;">3. Piano Terapeutico Domiciliare Attivo (Aggiornato al ' + new Date().toLocaleDateString('it-IT') + ')</div>' +
+    '<table style="width:100%; border-collapse:collapse; font-size:12.5px; border:1px solid #cbd5e1;">' +
+    '<thead><tr style="background:#f1f5f9; text-align:left;">' +
+    '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Orario</th>' +
+    '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Farmaco</th>' +
+    '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Posologia</th>' +
+    '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Modalità e Note Cliniche</th>' +
+    '</tr></thead>' +
+    '<tbody>' + terapieRows + '</tbody>' +
+    '</table>' +
+    '</div>' +
 
-      '<div style="margin-bottom:16px; font-family:sans-serif;">' +
-        '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:4px;">4. Ultime Rilevazioni &amp; Annotazioni Domiciliari</div>' +
-        '<ul style="margin:0; padding-left:18px; font-size:12.5px; color:#334155;">' + logHtml + '</ul>' +
-      '</div>' +
+    '<div style="margin-bottom:16px; font-family:sans-serif;">' +
+    '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:4px;">4. Ultime Rilevazioni &amp; Annotazioni Domiciliari</div>' +
+    '<ul style="margin:0; padding-left:18px; font-size:12.5px; color:#334155;">' + logHtml + '</ul>' +
+    '</div>' +
 
-      '<div style="border:2px dashed #64748b; border-radius:12px; padding:14px 16px; font-family:sans-serif; background:#fcfcfd;">' +
-        '<div style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:10px;">✍️ Spazio Riservato al Medico Specialista (Variazioni Terapeutiche / Indicazioni)</div>' +
-        '<div style="border-bottom:1px dotted #94a3b8; height:24px; margin-bottom:8px;"></div>' +
-        '<div style="border-bottom:1px dotted #94a3b8; height:24px; margin-bottom:8px;"></div>' +
-        '<div style="border-bottom:1px dotted #94a3b8; height:24px; margin-bottom:14px;"></div>' +
-        '<div style="display:flex; justify-content:space-between; font-size:11.5px; color:#475569;">' +
-          '<span>Data prossimo controllo consigliato: ____/____/202__</span>' +
-          '<span>Timbro e Firma dello Specialista: ___________________________</span>' +
-        '</div>' +
-      '</div>' +
+    '<div style="border:2px dashed #64748b; border-radius:12px; padding:14px 16px; font-family:sans-serif; background:#fcfcfd;">' +
+    '<div style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:10px;">✍️ Spazio Riservato al Medico Specialista (Variazioni Terapeutiche / Indicazioni)</div>' +
+    '<div style="border-bottom:1px dotted #94a3b8; height:24px; margin-bottom:8px;"></div>' +
+    '<div style="border-bottom:1px dotted #94a3b8; height:24px; margin-bottom:8px;"></div>' +
+    '<div style="border-bottom:1px dotted #94a3b8; height:24px; margin-bottom:14px;"></div>' +
+    '<div style="display:flex; justify-content:space-between; font-size:11.5px; color:#475569;">' +
+    '<span>Data prossimo controllo consigliato: ____/____/202__</span>' +
+    '<span>Timbro e Firma dello Specialista: ___________________________</span>' +
+    '</div>' +
+    '</div>' +
     '</div>';
 }
 
@@ -20441,7 +20510,7 @@ function parlaFallbackBrowserCareAssist(testo) {
     utter.rate = 0.96;
     utter.pitch = 1.02;
     window.speechSynthesis.speak(utter);
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function fermaVoceBriefing() {
@@ -20450,9 +20519,9 @@ function fermaVoceBriefing() {
       _careHumanAudio.pause();
       _careHumanAudio.currentTime = 0;
     }
-  } catch (e) {}
+  } catch (e) { }
   if ('speechSynthesis' in window) {
-    try { window.speechSynthesis.cancel(); } catch (e) {}
+    try { window.speechSynthesis.cancel(); } catch (e) { }
   }
 }
 
@@ -20482,7 +20551,7 @@ function avviaBriefingVocaleAssistitoDemo(modalita) {
       return '<div style="padding:10px 12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:8px;">' +
         '<b>👤 ' + cestinoEsc(px.nome) + ':</b> ' + fatte + '/' + ter.length + ' terapie eseguite oggi · ' +
         (crit.length ? '<span style="color:#b91c1c; font-weight:800;">🚨 ' + crit.length + ' farmaci da ordinare</span>' : '<span style="color:#15803d; font-weight:800;">🟢 Scorte regolari</span>') +
-      '</div>';
+        '</div>';
     }).join('');
   } else {
     var nomePulito = (p.nome || 'Assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
@@ -20512,12 +20581,12 @@ function avviaBriefingVocaleAssistitoDemo(modalita) {
 
     htmlPunti =
       '<div style="background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:12px; padding:14px; margin-bottom:12px; color:#0f172a; line-height:1.55; font-size:14px;">' +
-        '“' + cestinoEsc(testoVoce) + '”' +
+      '“' + cestinoEsc(testoVoce) + '”' +
       '</div>' +
       '<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; text-align:center;">' +
-        '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"><div style="font-size:20px; font-weight:900; color:#0284c7;">' + completate + '/' + terapieOggi.length + '</div><div style="font-size:11px; color:#64748b; font-weight:700;">Dosi Oggi</div></div>' +
-        '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"><div style="font-size:15px; font-weight:900; color:#0f172a;">' + (prossima ? cestinoEsc(prossima.ora) : '✅ Fine') + '</div><div style="font-size:11px; color:#64748b; font-weight:700;">Prossima Dose</div></div>' +
-        '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"><div style="font-size:20px; font-weight:900; color:' + (inScadenza.length ? '#dc2626' : '#16a34a') + ';">' + (inScadenza.length ? inScadenza.length + ' Alert' : 'OK') + '</div><div style="font-size:11px; color:#64748b; font-weight:700;">Stato Scorte</div></div>' +
+      '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"><div style="font-size:20px; font-weight:900; color:#0284c7;">' + completate + '/' + terapieOggi.length + '</div><div style="font-size:11px; color:#64748b; font-weight:700;">Dosi Oggi</div></div>' +
+      '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"><div style="font-size:15px; font-weight:900; color:#0f172a;">' + (prossima ? cestinoEsc(prossima.ora) : '✅ Fine') + '</div><div style="font-size:11px; color:#64748b; font-weight:700;">Prossima Dose</div></div>' +
+      '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"><div style="font-size:20px; font-weight:900; color:' + (inScadenza.length ? '#dc2626' : '#16a34a') + ';">' + (inScadenza.length ? inScadenza.length + ' Alert' : 'OK') + '</div><div style="font-size:11px; color:#64748b; font-weight:700;">Stato Scorte</div></div>' +
       '</div>';
   }
 
@@ -20525,8 +20594,8 @@ function avviaBriefingVocaleAssistitoDemo(modalita) {
   if (bodyEl) {
     bodyEl.innerHTML =
       '<div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; padding:8px 12px; background:#eff6ff; border-radius:999px; width:fit-content;">' +
-        '<span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#0284c7; box-shadow:0 0 8px #0284c7;"></span>' +
-        '<span style="font-size:12px; font-weight:800; color:#1e40af;">Voce Umana Neurale Italiana Attiva</span>' +
+      '<span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#0284c7; box-shadow:0 0 8px #0284c7;"></span>' +
+      '<span style="font-size:12px; font-weight:800; color:#1e40af;">Voce Umana Neurale Italiana Attiva</span>' +
       '</div>' + htmlPunti;
   }
   openModal('modal-briefing-vocale');
@@ -20584,15 +20653,16 @@ function aggiornaDiagnosticaAlert() {
     return '<div style="background:#fff; border:1px solid ' + (ok ? '#86efac' : '#fde68a') + '; border-radius:10px; padding:8px 10px;">' +
       '<div style="font-size:11px; color:#64748b; font-weight:700;">' + titolo + '</div>' +
       '<div style="font-size:12.5px; font-weight:800; color:' + (ok ? '#15803d' : '#b45309') + '; margin-top:2px;">' + (ok ? '🟢 ' + testoOk : '🟡 ' + testoNo) + '</div>' +
-    '</div>';
+      '</div>';
   }
 
   box.innerHTML =
     '<div style="background:#fff; border:1px solid #bae6fd; border-radius:10px; padding:8px 10px;">' +
-      '<div style="font-size:11px; color:#64748b; font-weight:700;">Dispositivo Attuale</div>' +
-      '<div style="font-size:12.5px; font-weight:800; color:#0369a1; margin-top:2px;">' + tipoDev + '</div>' +
+    '<div style="font-size:11px; color:#64748b; font-weight:700;">Dispositivo Attuale</div>' +
+    '<div style="font-size:12.5px; font-weight:800; color:#0369a1; margin-top:2px;">' + tipoDev + '</div>' +
     '</div>' +
     cardStato('🛡️ Protezione Anti-Furbi', true, 'Volume Forzato ≥ 70% + Boost', '') +
+    cardStato('🚨 Escalation 3 Stadi', true, '75% → 90% (+10m) → Audit Capo (+20m)', '') +
     cardStato('Allarme Sonoro', audioOk, 'Audio Sbloccato e Attivo', 'Tocca "Testa Suono" per attivare') +
     cardStato('Notifiche Push', notifOk, 'Autorizzate sul Browser', 'Tocca "Testa Suono" per abilitare') +
     cardStato('Sync Cloud PC ↔ Mobile', true, 'Attivo (ogni 2 secondi)', 'In attesa') +
@@ -20615,10 +20685,10 @@ function inviaTestAllertaCrossDevice() {
   _ultimoAlertTestVistoTs = ts;
 
   if (typeof suonaSegnaleDolce === 'function') {
-    try { suonaSegnaleDolce(); } catch (e) {}
+    try { suonaSegnaleDolce(); } catch (e) { }
   }
   if ('vibrate' in navigator) {
-    try { navigator.vibrate([250, 120, 250]); } catch (e) {}
+    try { navigator.vibrate([250, 120, 250]); } catch (e) { }
   }
 
   AppData._liveAlertTest = {
@@ -20644,15 +20714,15 @@ setInterval(function () {
   if (t.ts > _ultimoAlertTestVistoTs && (Date.now() - t.ts) < 30000) {
     _ultimoAlertTestVistoTs = t.ts;
     if (typeof suonaSegnaleDolce === 'function') {
-      try { suonaSegnaleDolce(); } catch (e) {}
+      try { suonaSegnaleDolce(); } catch (e) { }
     }
     if ('vibrate' in navigator) {
-      try { navigator.vibrate([350, 150, 350, 150, 350]); } catch (e) {}
+      try { navigator.vibrate([350, 150, 350, 150, 350]); } catch (e) { }
     }
     if ('Notification' in window && Notification.permission === 'granted') {
       try {
         mostraNotificaSistemaSchermoSpento('📡 Alert Ricevuto da ' + (t.da || 'altro dispositivo'), (t.msg || 'Sincronizzazione PC ↔ Smartphone verificata!') + ' (' + (t.paziente || '') + ')');
-      } catch (e) {}
+      } catch (e) { }
     }
     if (typeof showAdminSyncToast === 'function') {
       showAdminSyncToast('🔔 ALERT RICEVUTO IN TEMPO REALE DA ' + (t.da || 'DISPOSITIVO').toUpperCase() + ' (' + (t.ora || '') + ') — Sincronizzazione PC ↔ Cellulare perfettamente funzionante!', true);
@@ -20700,11 +20770,11 @@ function mostraNotificaSistemaSchermoSpento(titolo, corpo) {
             tag: Date.now()
           });
         }
-      }).catch(function () {});
+      }).catch(function () { });
     } else {
       new Notification(titolo, { body: corpo, icon: 'careassist_icon.jpg' });
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function avviaKeepAliveAudioHardwarePer12Secondi() {
@@ -20721,15 +20791,15 @@ function avviaKeepAliveAudioHardwarePer12Secondi() {
     osc.start();
     _keepAliveOscillator = osc;
     setTimeout(function () {
-      try { osc.stop(); osc.disconnect(); } catch (e) {}
+      try { osc.stop(); osc.disconnect(); } catch (e) { }
     }, 13000);
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function avviaTestDisplaySpento10Secondi() {
   // 1. Richiedi subito il permesso notifiche se non ancora concesso
   if ('Notification' in window && Notification.permission !== 'granted') {
-    try { Notification.requestPermission(); } catch (e) {}
+    try { Notification.requestPermission(); } catch (e) { }
   }
 
   // 2. Pre-carica e sblocca l'audio vocale HD sul tocco dell'utente (fondamentale per iOS/Android a schermo spento)
@@ -20745,15 +20815,15 @@ function avviaTestDisplaySpento10Secondi() {
         _audioAllarmeVoceSpento.pause();
         _audioAllarmeVoceSpento.currentTime = 0;
         _audioAllarmeVoceSpento.volume = 1.0;
-      }).catch(function () {});
+      }).catch(function () { });
     }
-  } catch (e) {}
+  } catch (e) { }
 
   // 3. Avvia il keep-alive hardware WebAudio per non far addormentare il telefono appena chiudi il display
   avviaKeepAliveAudioHardwarePer12Secondi();
 
   if (typeof suonaSegnaleDolce === 'function') {
-    try { suonaSegnaleDolce(); } catch (e) {}
+    try { suonaSegnaleDolce(); } catch (e) { }
   }
 
   if (_timerDisplaySpento) clearInterval(_timerDisplaySpento);
@@ -20784,9 +20854,9 @@ function avviaTestDisplaySpento10Secondi() {
 
       // A. Suona la sirena clinica WebAudio
       if (typeof suonaSirenaClinica === 'function') {
-        try { suonaSirenaClinica(); } catch (e) {}
+        try { suonaSirenaClinica(); } catch (e) { }
       } else if (typeof suonaSegnaleDolce === 'function') {
-        try { suonaSegnaleDolce(); } catch (e) {}
+        try { suonaSegnaleDolce(); } catch (e) { }
       }
 
       // B. Riproduci la Voce Umana Studio HD a volume 100%
@@ -20794,13 +20864,13 @@ function avviaTestDisplaySpento10Secondi() {
         if (_audioAllarmeVoceSpento) {
           _audioAllarmeVoceSpento.volume = 1.0;
           _audioAllarmeVoceSpento.currentTime = 0;
-          _audioAllarmeVoceSpento.play().catch(function () {});
+          _audioAllarmeVoceSpento.play().catch(function () { });
         }
-      } catch (e) {}
+      } catch (e) { }
 
       // C. Vibrazione prolungata da tavolo
       if ('vibrate' in navigator) {
-        try { navigator.vibrate([500, 180, 500, 180, 700, 200, 700]); } catch (e) {}
+        try { navigator.vibrate([500, 180, 500, 180, 700, 200, 700]); } catch (e) { }
       }
 
       // D. Notifica Sistema Operativo sulla schermata di blocco (Service Worker)
