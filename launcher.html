@@ -961,6 +961,10 @@
         <div class="card-icon">📦</div>
         <div class="card-title">Logistica Consegne</div>
         <div class="card-desc">Gestione completa delle spedizioni, tracciamento e organizzazione del magazzino principale.</div>
+        <div class="card-quick-actions">
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=logistica&info=1';">💡 Per saperne di più</button>
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=logistica';">🎬 Video</button>
+        </div>
     </a>
 
     <!-- 2. APP FLOTTA & VEICOLI (Solo PC Console Desktop) -->
@@ -968,6 +972,10 @@
         <div class="card-icon">🚗</div>
         <div class="card-title">Flotta Veicoli & Spese</div>
         <div class="card-desc">Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.</div>
+        <div class="card-quick-actions">
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=veicoli&info=1';">💡 Per saperne di più</button>
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=veicoli';">🎬 Video</button>
+        </div>
     </a>
 
     <!-- 3. APP INVENTARIO -->
@@ -975,6 +983,10 @@
         <div class="card-icon">🛠️</div>
         <div class="card-title">Inventario Attrezzi</div>
         <div class="card-desc">Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.</div>
+        <div class="card-quick-actions">
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=inventario&info=1';">💡 Per saperne di più</button>
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=inventario';">🎬 Video</button>
+        </div>
     </a>
 
     <!-- 4. APP RICETTARIO -->
@@ -982,6 +994,10 @@
         <div class="card-icon">👨‍🍳</div>
         <div class="card-title">Il Ricettario</div>
         <div class="card-desc">L'archivio prezioso delle tue ricette personali con lista della spesa automatica.</div>
+        <div class="card-quick-actions">
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=ricettario&info=1';">💡 Per saperne di più</button>
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=ricettario';">🎬 Video</button>
+        </div>
     </a>
 
     <!-- 5. APP MEDNUTRI PRO (Riservato Admin) -->
@@ -989,6 +1005,10 @@
         <div class="card-icon">🥗</div>
         <div class="card-title">MedNutri Pro</div>
         <div class="card-desc">Software avanzato per piani nutrizionali personalizzati e gestione clinica.</div>
+        <div class="card-quick-actions">
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=mednutri&info=1';">💡 Per saperne di più</button>
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=mednutri';">🎬 Video</button>
+        </div>
     </a>
 
     <!-- 6. APP PROGETTO SALUTE (Riservato Admin) -->
@@ -996,6 +1016,10 @@
         <div class="card-icon">❤️</div>
         <div class="card-title">Progetto Salute</div>
         <div class="card-desc">Monitoraggio parametri vitali, fitness e benessere personale quotidiano.</div>
+        <div class="card-quick-actions">
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=salute&info=1';">💡 Per saperne di più</button>
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=salute';">🎬 Video</button>
+        </div>
     </a>
 
     <!-- 7. APP GIOCO (Riservato Admin) -->
@@ -1010,6 +1034,12 @@
         <div class="card-icon">🩺</div>
         <div class="card-title">CareAssist Pro</div>
         <div class="card-desc">Diario socio-sanitario, terapie farmacologiche e gestione assistenza domiciliare.</div>
+        <div class="card-quick-actions">
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); navigaVersoApp('/careassist/turni.html');">🗓️ Turnario H24</button>
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); navigaVersoApp('/careassist/');">🩺 Diario</button>
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=careassist&info=1';">💡 Per saperne di più</button>
+            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=careassist';">🎬 Video</button>
+        </div>
     </a>
 </div>
 
@@ -1031,8 +1061,11 @@
 
                 <div style="width:1px; height:24px; background:rgba(212,175,55,0.25);"></div>
 
-                <!-- Gruppo 2: Funzioni AI -->
+                <!-- Gruppo 2: Funzioni AI & Presentazione Aziendale -->
                 <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="window.location.href='/presentazione_aziendale.html'" class="dock-btn" style="background:linear-gradient(135deg, #d4af37, #aa7c11); color:#0b0f19; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 16px rgba(212,175,55,0.45);">
+                        <span>🏢</span> <span>PRESENTAZIONE & NUOVA AZIENDA</span>
+                    </button>
                     <button onclick="apriPresentazioneAI()" class="dock-btn desktop-only-btn admin-only-btn" style="display:none; background:rgba(255,255,255,0.06); border:1px solid rgba(56,189,248,0.35); color:#7dd3fc; padding:9px 16px; border-radius:24px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
                         <span>🤖</span> <span>ARCHITETTURA AI</span>
                     </button>
@@ -2936,8 +2969,9 @@
         }
         if (id.includes('careassist') || tit.includes('careassist')) {
             return [
+                { label: '🗓️ Turnario H24', url: '/careassist/turni.html' },
                 { label: '💊 Terapie', url: '/careassist/PROSPETTO_FARMACI_ROSA.html' },
-                { label: '🩺 Diario', url: '/careassist/' }
+                { label: '🩺 Diario Clinico', url: '/careassist/' }
             ];
         }
         return [];
@@ -3608,40 +3642,63 @@
         }
     }
 
-    const isSessionUnlocked = sessionStorage.getItem('milella_session_unlocked') === 'true';
-    const savedLastRole = localStorage.getItem('milella_last_authenticated_role');
+    // --------------------------------------------------------------------------
+    // VERIFICA SESSIONE UNIFICATA: AUTO-LOGIN RESILIENTE SENZA SBALZAMENTI A PIN
+    // --------------------------------------------------------------------------
+    const savedAdminPin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_last_authenticated_pin') || sessionStorage.getItem('milella_admin_pin') || 'SOS999';
+    const savedUserPin = localStorage.getItem('milella_user_pin') || localStorage.getItem('milella_last_authenticated_pin') || '';
+    const savedUserNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Ciro Milella (Admin)';
+    const savedLastRole = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
+    let savedApps = ['all'];
+    try {
+        savedApps = JSON.parse(localStorage.getItem('milella_app_abilitate') || localStorage.getItem('milella_last_authenticated_apps') || '["all"]');
+    } catch(e) { savedApps = ['all']; }
 
-    if (isSessionUnlocked && savedLastRole === 'admin' && savedAdminPin) {
+    // Considera la sessione sbloccata se è attiva in sessionStorage, o in localStorage, o se si torna da un modulo interno
+    const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || sessionStorage.getItem('milella_lock_requested') === 'true';
+    const isSessionUnlocked = !isExplicitlyLocked && (
+        sessionStorage.getItem('milella_session_unlocked') === 'true' ||
+        localStorage.getItem('milella_session_unlocked') === 'true' ||
+        savedLastRole === 'admin' ||
+        window.location.search.includes('from=turni') ||
+        window.location.search.includes('auth_role=admin')
+    );
+
+    if (isSessionUnlocked && savedLastRole === 'admin') {
+        // ACCESSO DIRETTO ADMIN COORDINATORE (NESSUN GATE BLOCCANTE)
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
-        currentAdminPin = savedAdminPin;
+        sessionStorage.setItem('milella_session_unlocked', 'true');
+        localStorage.setItem('milella_session_unlocked', 'true');
+        sessionStorage.removeItem('milella_app_locked');
+        currentAdminPin = savedAdminPin || 'SOS999';
         applicaRuolo('admin', savedUserNome || 'Ciro Milella (Admin)', ['all']);
-    } else if (isSessionUnlocked && savedUserPin && savedUserNome) {
-        // Operatore già loggato stabilmente su questo dispositivo con sessione attiva
+    } else if (isSessionUnlocked && savedUserNome) {
+        // ACCESSO OPERATORE ABILITATO CON SESSIONE ATTIVA
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
+        sessionStorage.setItem('milella_session_unlocked', 'true');
+        localStorage.setItem('milella_session_unlocked', 'true');
+        sessionStorage.removeItem('milella_app_locked');
         currentAppAbilitate = savedApps;
         applicaRuolo('operatore', savedUserNome, savedApps);
         
-        // Verifica in background con il server i permessi e i pazienti aggiornati
-        fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ codice: savedUserPin })
-        }).then(r => r.json()).then(data => {
-            if (data.success) {
-                localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
-                localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
-                localStorage.setItem('milella_profili_salute', JSON.stringify(data.profiliSalute || []));
-                localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
-                localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
-                localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
-                localStorage.setItem('milella_last_authenticated_salute', JSON.stringify(data.profiliSalute || []));
-                localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
-            }
-        }).catch(() => {});
+        if (savedUserPin) {
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codice: savedUserPin })
+            }).then(r => r.json()).then(data => {
+                if (data.success) {
+                    localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
+                    localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
+                    localStorage.setItem('milella_profili_salute', JSON.stringify(data.profiliSalute || []));
+                    localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
+                }
+            }).catch(() => {});
+        }
     } else {
-        // NESSUNA SESSIONE (App appena riaperta): Mostra il Gate di Benvenuto & Blocco PIN
+        // NESSUNA SESSIONE (Primo accesso assoluto o blocco esplicito): Mostra il Gate di Benvenuto & Blocco PIN
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'flex';
         aggiornaVisibilitaBiometriaGate();

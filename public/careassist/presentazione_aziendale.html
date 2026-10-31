@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite Gestionale Enterprise — Presentazione Video & Registrazione Azienda</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #060d1f;
+            --bg-panel: #0f1b33;
+            --bg-card: #152342;
+            --gold: #d4af37;
+            --gold-light: #fef08a;
+            --accent: #0284c7;
+            --accent-light: #38bdf8;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --rose: #f43f5e;
+            --text-white: #f8fafc;
+            --text-soft: #cbd5e1;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #112246 0%, #060d1f 65%, #030712 100%);
+            color: var(--text-white);
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 16px;
+            padding-bottom: 80px;
+        }
+
+        /* TOP NAVIGATION BAR */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 18, 36, 0.94);
+            backdrop-filter: blur(16px);
+            border-bottom: 2px solid rgba(212, 175, 55, 0.35);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-logo {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #d4af37 0%, #92400e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 900;
+            color: #060d1f;
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+            border: 2px solid #fef08a;
+        }
+
+        .brand-title-wrap h1 {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+        }
+
+        .brand-title-wrap p {
+            font-size: 13px;
+            color: var(--gold-light);
+            font-weight: 600;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-top {
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-top:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%);
+            color: #0f172a;
+            box-shadow: 0 4px 15px rgba(234, 179, 8, 0.35);
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.22);
+            color: #f8fafc;
+        }
+
+        .container {
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 28px 20px;
+        }
+
+        /* HERO SECTION */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(21, 35, 66, 0.95) 0%, rgba(11, 21, 44, 0.98) 100%);
+            border: 2px solid rgba(212, 175, 55, 0.45);
+            border-radius: 26px;
+            padding: 34px 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-badge-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .pill-badge {
+            background: rgba(212, 175, 55, 0.18);
+            border: 1px solid var(--gold);
+            color: var(--gold-light);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .pill-badge-cyan {
+            background: rgba(56, 189, 248, 0.16);
+            border: 1px solid #38bdf8;
+            color: #bae6fd;
+        }
+
+        .pill-badge-green {
+            background: rgba(16, 185, 129, 0.18);
+            border: 1px solid #10b981;
+            color: #a7f3d0;
+        }
+
+        .hero-title {
+            font-size: 34px;
+            font-weight: 900;
+            line-height: 1.25;
+            margin-bottom: 14px;
+            color: #ffffff;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, #fef08a 0%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-soft);
+            max-width: 960px;
+            margin-bottom: 24px;
+        }
+
+        /* NAVIGATION TABS (3 PILASTRI) */
+        .main-step-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .step-tab-btn {
+            background: rgba(21, 35, 66, 0.85);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            padding: 18px 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: #fff;
+        }
+
+        .step-tab-btn:hover {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+            background: rgba(30, 48, 88, 0.95);
+        }
+
+        .step-tab-btn.active {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(15, 27, 51, 0.98) 100%);
+            border-color: var(--gold);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.25);
+        }
+
+        .step-num {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1.5px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .step-tab-btn h3 {
+            font-size: 17px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 3px;
+        }
+
+        .step-tab-btn p {
+            font-size: 13.5px;
+            color: var(--text-soft);
+        }
+
+        /* SECTION PANELS */
+        .section-box {
+            background: rgba(15, 27, 51, 0.92);
+            border: 1.5px solid rgba(255, 255, 255, 0.14);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 36px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.45);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .section-header h2 {
+            font-size: 25px;
+            font-weight: 900;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* ==========================================================================
+           1. VIDEO PLAYER CINEMATOGRAFICO INTERATTIVO PER OGNI APPLICAZIONE
+           ========================================================================== */
+        .cinema-layout {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 22px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 980px) {
+            .cinema-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .playlist-sidebar {
+            background: rgba(6, 13, 31, 0.85);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 580px;
+            overflow-y: auto;
+        }
+
+        .playlist-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid transparent;
+            border-radius: 13px;
+            padding: 12px 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+            color: #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .playlist-item:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .playlist-item.active {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.35) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border-color: #38bdf8;
+            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3);
+        }
+
+        .playlist-icon {
+            font-size: 26px;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.07);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .playlist-info h4 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .playlist-info span {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        /* SCREEN STAGE */
+        .video-stage-wrapper {
+            background: #030712;
+            border: 2px solid rgba(56, 189, 248, 0.45);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.75);
+            min-height: 540px;
+        }
+
+        .video-top-hud {
+            background: rgba(15, 23, 42, 0.95);
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .rec-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .rec-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 10px #ef4444;
+            animation: blinkDot 1.2s infinite;
+        }
+
+        @keyframes blinkDot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.25; }
+        }
+
+        .video-canvas {
+            flex: 1;
+            padding: 28px 32px;
+            background: radial-gradient(circle at 50% 30%, #13284c 0%, #050b18 85%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-slide-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 26px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .video-slide-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .video-text-col h3 {
+            font-size: 28px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 10px;
+            line-height: 1.25;
+        }
+
+        .video-text-col p {
+            font-size: 16.5px;
+            color: #e2e8f0;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+
+        .video-Highlight-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .video-Highlight-list li {
+            background: rgba(255, 255, 255, 0.06);
+            border-left: 4px solid var(--gold);
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        /* VISUAL INTERACTIVE FIGURE INSIDE VIDEO */
+        .video-figure-box {
+            background: rgba(15, 23, 42, 0.92);
+            border: 2px solid rgba(212, 175, 55, 0.45);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            position: relative;
+        }
+
+        .figure-mockup-window {
+            background: #091122;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .figure-caption-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-saperne-piu {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #ffffff;
+            border: 1.5px solid #fde68a;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+            transition: all 0.2s;
+        }
+
+        .btn-saperne-piu:hover {
+            transform: scale(1.04);
+            filter: brightness(1.1);
+        }
+
+        /* SUBTITLES & CONTROLS BAR */
+        .video-subtitle-bar {
+            background: rgba(0, 0, 0, 0.82);
+            color: #fef08a;
+            padding: 12px 22px;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .video-controls-bar {
+            background: #091020;
+            padding: 14px 20px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .progress-track {
+            flex: 1;
+            min-width: 180px;
+            height: 10px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 99px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #38bdf8, #d4af37);
+            transition: width 0.25s linear;
+        }
+
+        /* ==========================================================================
+           2. GALLERIA FIGURE & APPLICAZIONI CON "PER SAPERNE DI PIÙ" SU OGNI FOTO
+           ========================================================================== */
+        .apps-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
+        }
+
+        .app-showcase-card {
+            background: linear-gradient(165deg, rgba(21, 35, 66, 0.95) 0%, rgba(10, 18, 36, 0.98) 100%);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 22px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        .app-showcase-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-4px);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.6), 0 0 25px rgba(212, 175, 55, 0.2);
+        }
+
+        /* INTERACTIVE VISUAL FIGURE HEADER (CLICKABLE PHOTO) */
+        .app-figure-preview {
+            padding: 20px;
+            background: radial-gradient(circle at 50% 20%, #1e3a6d 0%, #091326 100%);
+            border-bottom: 1.5px solid rgba(255, 255, 255, 0.12);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .figure-badge-overlay {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(245, 158, 11, 0.95);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 5px 11px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .app-card-body {
+            padding: 22px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .app-card-title {
+            font-size: 21px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-card-desc {
+            font-size: 15.5px;
+            color: var(--text-soft);
+            margin-bottom: 18px;
+            line-height: 1.55;
+        }
+
+        .app-card-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* ==========================================================================
+           3. MODULO REGISTRAZIONE NUOVA AZIENDA UTILIZZATRICE (ONBOARDING)
+           ========================================================================== */
+        .company-reg-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        @media (max-width: 980px) {
+            .company-reg-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .form-grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 800;
+            color: #fef08a;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 13px 15px;
+            border-radius: 12px;
+            background: rgba(6, 13, 31, 0.9);
+            border: 1.5px solid rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+        }
+
+        /* LIVE LICENSE CERTIFICATE PREVIEW */
+        .license-certificate {
+            background: linear-gradient(145deg, #0d1b38 0%, #050b18 100%);
+            border: 2px solid var(--gold);
+            border-radius: 22px;
+            padding: 26px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(212,175,55,0.08);
+            position: relative;
+        }
+
+        /* MODAL PER SAPERNE DI PIÙ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.88);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-card {
+            background: #0f1b33;
+            border: 2px solid var(--gold);
+            border-radius: 24px;
+            max-width: 920px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.85);
+            animation: popIn 0.25s ease-out;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            padding: 22px 28px;
+            border-bottom: 1.5px solid rgba(212, 175, 55, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-body {
+            padding: 28px;
+        }
+
+        /* PRINT STYLES FOR EXECUTIVE A4 DOSSIER */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                padding: 0 !important;
+            }
+            .top-bar, .main-step-tabs, .no-print {
+                display: none !important;
+            }
+            .section-box, .hero-banner, .app-showcase-card, .license-certificate {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                border: 1.5px solid #cbd5e1 !important;
+                box-shadow: none !important;
+                break-inside: avoid;
+            }
+            h1, h2, h3, h4, p, li, span, div {
+                color: #0f172a !important;
+                -webkit-text-fill-color: initial !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA SUPERIORE -->
+    <header class="top-bar">
+        <div class="brand-box">
+            <div class="brand-logo" id="topBrandInitials">🏢</div>
+            <div class="brand-title-wrap">
+                <h1 id="topCompanyName">SUITE GESTIONALE AZIENDALE INTEGRATA</h1>
+                <p id="topCompanySub">Edizione Enterprise • Presentazione Ufficiale & Attivazione Licenza Aziendale</p>
+            </div>
+        </div>
+        <div class="top-actions">
+            <button type="button" class="btn-top btn-gold" onclick="scrollToSection('sec-registrazione')">
+                🏛️ 1. Registra Azienda Utilizzatrice
+            </button>
+            <button type="button" class="btn-top btn-blue" onclick="scrollToSection('sec-video')">
+                🎬 2. Video-Presentazione Moduli
+            </button>
+            <button type="button" class="btn-top btn-outline" onclick="window.print()">
+                🖨️ Stampa Dossier Aziendale A4
+            </button>
+            <a href="/launcher.html" class="btn-top btn-outline" title="Torna alla tua Suite personale">
+                🏠 Torna al Portale
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- HERO DI BENVENUTO CON SOTTOLINEATURA COLLABORAZIONE UOMO + AI -->
+        <section class="hero-banner">
+            <div class="hero-badge-row">
+                <span class="pill-badge">🤝 Co-Progettazione Uomo + AI Antigravity</span>
+                <span class="pill-badge pill-badge-cyan">📱 Sincronizzazione Tempo Reale PC ↔ Smartphone</span>
+                <span class="pill-badge pill-badge-green">🔒 Database Aziendale Vergine & Protetto GDPR</span>
+            </div>
+            <h2 class="hero-title">
+                Un Unico Ecosistema Digitale per <span id="heroDynamicCompany">la Tua Azienda</span>
+            </h2>
+            <p class="hero-subtitle">
+                Questa piattaforma nasce dall'unione tra <strong>esperienza operativa reale sul campo</strong> e <strong>ingegneria software avanzata assistita dall'Intelligenza Artificiale (Google DeepMind Antigravity)</strong>. Ogni maschera è stata progettata con <strong>alta leggibilità</strong>, avvisi intelligenti tra PC e cellulare e sicurezza anti-errore.
+            </p>
+
+            <!-- I 3 PASSI CONSIGLIATI PER LA PRESENTAZIONE AL DATORE DI LAVORO -->
+            <div class="main-step-tabs no-print">
+                <button type="button" class="step-tab-btn active" onclick="scrollToSection('sec-registrazione')">
+                    <div class="step-num">🏛️</div>
+                    <div>
+                        <h3>Passo 1: Anagrafica Nuova Azienda</h3>
+                        <p>Registra il nome dell'azienda, P.IVA, sede, responsabile e personalizza subito l'intera Suite.</p>
+                    </div>
+                </button>
+                <button type="button" class="step-tab-btn" onclick="scrollToSection('sec-video')">
+                    <div class="step-num">🎬</div>
+                    <div>
+                        <h3>Passo 2: Presentazione Video Moduli</h3>
+                        <p>Guarda e ascolta il video-tour animato per ciascuna delle 8 applicazioni della Suite.</p>
+                    </div>
+                </button>
+                <button type="button" class="step-tab-btn" onclick="scrollToSection('sec-galleria')">
+                    <div class="step-num">🖼️</div>
+                    <div>
+                        <h3>Passo 3: Figure & «Per Saperne di Più»</h3>
+                        <p>Esplora le figure interattive di ogni modulo con scheda tecnica, benefici e dettagli clinici/operativi.</p>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             SEZIONE 1: REGISTRAZIONE NUOVA AZIENDA UTILIZZATRICE (ONBOARDING WIZARD)
+             ========================================================================== -->
+        <section id="sec-registrazione" class="section-box">
+            <div class="section-header">
+                <div>
+                    <h2>🏛️ 1. Registrazione & Intestazione Azienda Utilizzatrice</h2>
+                    <p style="color:#cbd5e1; font-size:15.5px; margin-top:4px;">
+                        Poiché l'applicazione viene consegnata come <strong>nuova licenza aziendale</strong> (con database pazienti/mezzi completamente pulito e separato), inserisci qui i dati dell'Azienda per personalizzare tutte le stampe, i report A4 e la console.
+                    </p>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;" class="no-print">
+                    <button type="button" class="btn-top btn-gold" onclick="compilaDemoAziendaDatore()">
+                        ⚡ Compila Esempio Rapido per Demo
+                    </button>
+                    <button type="button" class="btn-top btn-outline" onclick="resetAziendaForm()">
+                        🔄 Svuota Campi
+                    </button>
+                </div>
+            </div>
+
+            <div class="company-reg-grid">
+                <!-- FORM DATI AZIENDALI -->
+                <div style="background:rgba(6,13,31,0.55); border:1px solid rgba(255,255,255,0.12); border-radius:18px; padding:22px;">
+                    <div class="form-grid-2col" style="margin-bottom:16px;">
+                        <div class="form-group">
+                            <label>🏢 Ragione Sociale / Nome Azienda o Ente *</label>
+                            <input type="text" id="regNomeAzienda" class="form-control" placeholder="es. Cooperativa Sociale San Nicola S.r.l." oninput="aggiornaCertificatoLive()">
+                        </div>
+                        <div class="form-group">
+                            <label>🏥 Settore / Tipologia Struttura *</label>
+                            <select id="regSettore" class="form-control" onchange="aggiornaCertificatoLive()">
+                                <option value="Assistenza Socio-Sanitaria Domiciliare (ADI / RSA)">🩺 Assistenza Socio-Sanitaria Domiciliare / RSA</option>
+                                <option value="Azienda Multiservizi, Logistica & Gestione Flotta">🚚 Azienda Multiservizi, Logistica & Gestione Flotta</option>
+                                <option value="Cooperativa Sociale & Servizi alla Persona">🤝 Cooperativa Sociale & Servizi alla Persona</option>
+                                <option value="Studio Medico Associato / Poliambulatorio">🏥 Studio Medico Associato / Poliambulatorio</option>
+                                <option value="Impresa Tecnica, Manutenzioni & Cantieri">🛠️ Impresa Tecnica, Manutenzioni & Cantieri</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2col" style="margin-bottom:16px;">
+                        <div class="form-group">
+                            <label>🧾 Partita IVA / Codice Fiscale Aziendale *</label>
+                            <input type="text" id="regPiva" class="form-control" placeholder="es. IT 08451230721" oninput="aggiornaCertificatoLive()">
+                        </div>
+                        <div class="form-group">
+                            <label>🏛️ Codice Univoco SDI / Accreditamento Regionale</label>
+                            <input type="text" id="regSdi" class="form-control" placeholder="es. SUBM70N • Aut. Reg. Puglia n. 412" oninput="aggiornaCertificatoLive()">
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2col" style="margin-bottom:16px;">
+                        <div class="form-group">
+                            <label>👔 Legale Rappresentante / Datore di Lavoro *</label>
+                            <input type="text" id="regResponsabile" class="form-control" placeholder="es. Dott. Giuseppe Rossi (Amministratore)" oninput="aggiornaCertificatoLive()">
+                        </div>
+                        <div class="form-group">
+                            <label>📍 Sede Legale & Operativa *</label>
+                            <input type="text" id="regIndirizzo" class="form-control" placeholder="es. Via Sparano 120, 70121 Bari (BA)" oninput="aggiornaCertificatoLive()">
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2col" style="margin-bottom:18px;">
+                        <div class="form-group">
+                            <label>📞 Telefono Centralino / Reperibilità H24</label>
+                            <input type="text" id="regTelefono" class="form-control" placeholder="es. 080 555 1234 • Cell. 340 0000000" oninput="aggiornaCertificatoLive()">
+                        </div>
+                        <div class="form-group">
+                            <label>✉️ Email Ufficiale & PEC Aziendale</label>
+                            <input type="text" id="regEmail" class="form-control" placeholder="es. direzione@azienda.it • azienda@pec.it" oninput="aggiornaCertificatoLive()">
+                        </div>
+                    </div>
+
+                    <!-- SELEZIONE MODULI DA ATTIVARE PER L'AZIENDA -->
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block; font-size:14px; font-weight:800; color:#38bdf8; margin-bottom:8px;">
+                            🧩 Moduli della Suite da Attivare per questa Licenza Aziendale:
+                        </label>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:8px;">
+                            <label style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); padding:9px 12px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:700;">
+                                <input type="checkbox" class="chk-mod-az" value="🩺 CareAssist Pro" checked onchange="aggiornaCertificatoLive()" style="width:18px; height:18px; accent-color:#d4af37;">
+                                <span>🩺 CareAssist Pro</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); padding:9px 12px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:700;">
+                                <input type="checkbox" class="chk-mod-az" value="🚗 Flotta Veicoli & Spese" checked onchange="aggiornaCertificatoLive()" style="width:18px; height:18px; accent-color:#d4af37;">
+                                <span>🚗 Flotta Veicoli</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); padding:9px 12px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:700;">
+                                <input type="checkbox" class="chk-mod-az" value="🛠️ Inventario Attrezzi QR" checked onchange="aggiornaCertificatoLive()" style="width:18px; height:18px; accent-color:#d4af37;">
+                                <span>🛠️ Inventario Attrezzi</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); padding:9px 12px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:700;">
+                                <input type="checkbox" class="chk-mod-az" value="📦 Logistica & Magazzino" checked onchange="aggiornaCertificatoLive()" style="width:18px; height:18px; accent-color:#d4af37;">
+                                <span>📦 Logistica Consegne</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); padding:9px 12px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:700;">
+                                <input type="checkbox" class="chk-mod-az" value="🥗 MedNutri Pro" checked onchange="aggiornaCertificatoLive()" style="width:18px; height:18px; accent-color:#d4af37;">
+                                <span>🥗 MedNutri Pro</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); padding:9px 12px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:700;">
+                                <input type="checkbox" class="chk-mod-az" value="👨‍🍳 Mensa & Ricettario" checked onchange="aggiornaCertificatoLive()" style="width:18px; height:18px; accent-color:#d4af37;">
+                                <span>👨‍🍳 Mensa & Ricettario</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <button type="button" class="btn-top btn-gold" style="flex:1; justify-content:center; font-size:16px; padding:14px;" onclick="salvaRegistrazioneAzienda()">
+                            ✅ REGISTRA E ATTIVA PROFILO AZIENDALE
+                        </button>
+                    </div>
+                    <div id="msgSalvataggioAzienda" style="display:none; margin-top:12px; padding:12px 16px; border-radius:12px; background:rgba(16,185,129,0.2); border:1.5px solid #10b981; color:#a7f3d0; font-weight:700; font-size:14.5px;"></div>
+                </div>
+
+                <!-- ANTEPRIMA LIVE DEL CERTIFICATO DI LICENZA & AMBIENTE PULITO -->
+                <div class="license-certificate">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid rgba(212,175,55,0.3);">
+                        <span style="font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px; color:var(--gold-light);">
+                            📜 Certificato Configurazione Nuova Azienda
+                        </span>
+                        <span style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#6ee7b7; font-size:11.5px; font-weight:800; padding:3px 10px; border-radius:12px;">
+                            DATABASE VERGINE PRONTO
+                        </span>
+                    </div>
+
+                    <div style="font-size:23px; font-weight:900; color:#ffffff; margin-bottom:4px;" id="certNomeAzienda">
+                        [Nome Azienda Utilizzatrice]
+                    </div>
+                    <div style="font-size:14px; color:#38bdf8; font-weight:700; margin-bottom:16px;" id="certSettore">
+                        Assistenza Socio-Sanitaria Domiciliare (ADI / RSA)
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:9px; font-size:14.5px; background:rgba(255,255,255,0.04); padding:14px; border-radius:14px; margin-bottom:16px;">
+                        <div><strong style="color:#fef08a;">Partita IVA / CF:</strong> <span id="certPiva">Da compilare</span></div>
+                        <div><strong style="color:#fef08a;">Cod. SDI / Aut.:</strong> <span id="certSdi">Da compilare</span></div>
+                        <div><strong style="color:#fef08a;">Legale Rappresentante:</strong> <span id="certResponsabile">Da compilare</span></div>
+                        <div><strong style="color:#fef08a;">Sede Operativa:</strong> <span id="certIndirizzo">Da compilare</span></div>
+                        <div><strong style="color:#fef08a;">Contatti Ufficiali:</strong> <span id="certContatti">Da compilare</span></div>
+                    </div>
+
+                    <div style="margin-bottom:16px;">
+                        <div style="font-size:12.5px; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:6px;">Moduli Abilitati per l'Azienda:</div>
+                        <div id="certModuliBadges" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+                    </div>
+
+                    <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.35); border-radius:12px; padding:12px; font-size:13px; color:#bae6fd; line-height:1.45;">
+                        🛡️ <strong>Garanzia Privacy & Separazione Dati:</strong> Questa licenza viene inizializzata con <strong>archivio aziendale autonomo</strong> (zero dati personali pregressi), pronta per registrare gli operatori, gli assistiti e la flotta dell'azienda utilizzatrice.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             SEZIONE 2: PRESENTAZIONE VIDEO INTERATTIVA PER OGNI APPLICAZIONE
+             ========================================================================== -->
+        <section id="sec-video" class="section-box">
+            <div class="section-header">
+                <div>
+                    <h2>🎬 2. Presentazione Video Animata per Ogni Applicazione</h2>
+                    <p style="color:#cbd5e1; font-size:15.5px; margin-top:4px;">
+                        Seleziona un'applicazione a sinistra e premi <strong>«▶️ Avvia Video-Presentazione»</strong> (anche con <strong>Voce Narrante Italiana</strong> automatica). Ogni schermata include il pulsante <strong>«💡 Per saperne di più»</strong>.
+                    </p>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;" class="no-print">
+                    <button type="button" id="btnPlayPauseVideo" class="btn-top btn-gold" onclick="togglePlayVideoPresentation()">
+                        ▶️ Avvia Video-Tour Automatico
+                    </button>
+                    <button type="button" id="btnToggleVoice" class="btn-top btn-blue" onclick="toggleVoceNarrante()">
+                        🔊 Voce Narrante: ATTIVA
+                    </button>
+                </div>
+            </div>
+
+            <div class="cinema-layout">
+                <!-- PLAYLIST DEI 7 VIDEO MODULI -->
+                <div class="playlist-sidebar" id="videoPlaylistContainer">
+                    <!-- Popolato da JS -->
+                </div>
+
+                <!-- PALCOSCENICO VIDEO ANIMATO -->
+                <div class="video-stage-wrapper">
+                    <div class="video-top-hud">
+                        <div class="rec-indicator">
+                            <span class="rec-dot"></span>
+                            <span id="videoHudChapter">CAPITOLO 1 DI 7 • PRESENTAZIONE INTERATTIVA</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span id="videoSlideCounter" style="font-size:13px; font-weight:800; color:#fef08a; background:rgba(212,175,55,0.2); padding:4px 10px; border-radius:8px;">
+                                Scena 1 / 3
+                            </span>
+                            <button type="button" class="btn-saperne-piu" onclick="apriModalApprofondimento(currentAppKey)">
+                                💡 Per saperne di più su questo Modulo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SCENA GRAFICA DINAMICA -->
+                    <div class="video-canvas" id="videoCanvasStage">
+                        <!-- Iniettato dinamicamente da renderVideoScene() -->
+                    </div>
+
+                    <!-- SOTTOTITOLI PARLATI -->
+                    <div class="video-subtitle-bar" id="videoSubtitleText">
+                        Premi "▶️ Avvia Video-Tour Automatico" per guardare e ascoltare la spiegazione di ogni applicazione.
+                    </div>
+
+                    <!-- CONTROLLI PLAYER -->
+                    <div class="video-controls-bar no-print">
+                        <button type="button" class="btn-top btn-outline" style="padding:8px 14px;" onclick="prevVideoScene()">
+                            ⏮️ Indietro
+                        </button>
+                        <button type="button" class="btn-top btn-gold" style="padding:8px 18px;" id="btnBottomPlay" onclick="togglePlayVideoPresentation()">
+                            ▶️ Play
+                        </button>
+                        <button type="button" class="btn-top btn-outline" style="padding:8px 14px;" onclick="nextVideoScene()">
+                            Avanti ⏭️
+                        </button>
+                        <div class="progress-track" onclick="seekVideoProgress(event)">
+                            <div class="progress-fill" id="videoProgressBar"></div>
+                        </div>
+                        <span id="videoTimeLabel" style="font-size:13px; font-weight:800; color:#94a3b8;">00:00 / 00:45</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             SEZIONE 3: FIGURE ILLUSTRATIVE DELLA SUITE CON LINK "PER SAPERNE DI PIÙ"
+             ========================================================================== -->
+        <section id="sec-galleria" class="section-box">
+            <div class="section-header">
+                <div>
+                    <h2>🖼️ 3. Esplora le Figure della Suite & «Per Saperne di Più»</h2>
+                    <p style="color:#cbd5e1; font-size:15.5px; margin-top:4px;">
+                        Clicca su <strong>qualsiasi figura</strong> o sul pulsante <strong>«💡 Per saperne di più»</strong> per aprire la scheda illustrativa completa (Come si usa, Piccole Rifiniture, Alert PC↔Cellulare e Vantaggi per l'Azienda).
+                    </p>
+                </div>
+            </div>
+
+            <div class="apps-gallery-grid" id="appsGalleryGrid">
+                <!-- Popolato da JS con figure grafiche ad alta leggibilità e link "Per saperne di più" -->
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ==========================================================================
+         MODALE UNIVERSALE "💡 PER SAPERNE DI PIÙ" (APPROFONDIMENTO FOTO & MODULO)
+         ========================================================================== -->
+    <div class="modal-overlay" id="modalSaperneDiPiu" onclick="if(event.target===this) chiudiModalApprofondimento()">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div id="modalAppIcon" style="font-size:36px; background:rgba(255,255,255,0.1); width:60px; height:60px; border-radius:16px; display:flex; align-items:center; justify-content:center;">🩺</div>
+                    <div>
+                        <div style="font-size:12px; font-weight:800; color:#fde047; text-transform:uppercase; letter-spacing:1px;">SCHEDA DI APPROFONDIMENTO • PER SAPERNE DI PIÙ</div>
+                        <h3 id="modalAppTitle" style="font-size:24px; font-weight:900; color:#ffffff;">CareAssist Pro</h3>
+                    </div>
+                </div>
+                <button type="button" onclick="chiudiModalApprofondimento()" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); color:#fff; width:40px; height:40px; border-radius:50%; font-size:18px; font-weight:900; cursor:pointer;">✕</button>
+            </div>
+
+            <div class="modal-body" id="modalAppBody">
+                <!-- Contenuto dinamico ricco con Figura Ingrandita, Come si Usa, Piccole Rifiniture e ROI -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // DATABASE DEI 7 MODULI DELLA SUITE (VIDEO SCENE + FIGURE + PER SAPERNE DI PIÙ)
+        // =========================================================================
+        const SUITE_MODULES = {
+            panorama: {
+                key: 'panorama',
+                icon: '🌐',
+                title: '1. La Suite Aziendale Integrata',
+                tag: 'Ecosistema Cloud H24 • Multi-Operatore con PIN',
+                shortDesc: 'Un unico portale aziendale con accesso tramite PIN o Impronta Digitale che assegna ad ogni operatore solo i moduli di sua competenza.',
+                appUrl: '/launcher.html',
+                mockupHtml: `
+                    <div style="background:#071024; border:1px solid rgba(212,175,55,0.4); border-radius:12px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
+                            <span style="font-size:12px; font-weight:800; color:#fef08a;">🔐 PORTALE ACCESSO PIN & RUOLI</span>
+                            <span style="font-size:11px; background:#065f46; color:#a7f3d0; padding:2px 8px; border-radius:8px; font-weight:800;">● Cloud Sincronizzato 2s</span>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; text-align:center;">
+                            <div style="background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.35); padding:8px; border-radius:8px;">
+                                <div style="font-size:20px;">🩺</div>
+                                <div style="font-size:11px; font-weight:800; color:#fff;">Sanità & ADI</div>
+                            </div>
+                            <div style="background:rgba(212,175,55,0.12); border:1px solid rgba(212,175,55,0.35); padding:8px; border-radius:8px;">
+                                <div style="font-size:20px;">🚗</div>
+                                <div style="font-size:11px; font-weight:800; color:#fff;">Flotta Mezzi</div>
+                            </div>
+                            <div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); padding:8px; border-radius:8px;">
+                                <div style="font-size:20px;">🛠️</div>
+                                <div style="font-size:11px; font-weight:800; color:#fff;">Attrezzi QR</div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                scenes: [
+                    {
+                        title: 'Un Solo Portale per Tutta l\'Azienda',
+                        subtitle: 'Benvenuti nella Suite Gestionale Integrata: un unico ambiente sicuro che unisce assistenza sanitaria, logistica, flotta veicoli e magazzino.',
+                        bullets: [
+                            '🔑 Accesso con Codice PIN Personale o Impronta Biometrica per ogni dipendente',
+                            '🛡️ Isolamento Permessi: ogni collaboratore vede solo le App e i Pazienti assegnati',
+                            '🌐 Funziona su qualsiasi PC, Tablet e Smartphone senza installazioni complesse'
+                        ]
+                    },
+                    {
+                        title: 'Smart Hub Promemoria Centralizzato',
+                        subtitle: 'Appena il datore di lavoro apre la Suite, lo Smart Hub mostra in un colpo d\'occhio tutte le scadenze critiche dell\'azienda.',
+                        bullets: [
+                            '🔔 Unifica avvisi farmaci in esaurimento, revisioni auto e attrezzi fuori sede',
+                            '📲 Invio riepilogo scadenze su WhatsApp aziendale con un solo clic',
+                            '🏛️ Personalizzabile al 100% con il nome e i dati dell\'azienda utilizzatrice'
+                        ]
+                    }
+                ],
+                deepDive: {
+                    howToUse: [
+                        'Il Datore di Lavoro registra i dati della propria Azienda nel Passo 1 di questa pagina.',
+                        'Dal pulsante «👥 OPERATORI» crea i codici PIN per i propri dipendenti (es. OSS, Infermieri, Autisti, Magazzinieri) scegliendo quali App può aprire ciascuno.',
+                        'Gli operatori inquadrano il QR Code col proprio cellulare e lavorano in tempo reale sincronizzati con l\'ufficio.'
+                    ],
+                    refinements: [
+                        'Blocco automatico per inattività (Kiosk Security) per proteggere la privacy in ufficio o in reparto.',
+                        'Permesso granulare "Sola Spunta vs Modifica": gli operatori possono spuntare i compiti eseguiti senza rischiare di cancellare le anagrafiche.',
+                        'Doppio motore di salvataggio Cloud MongoDB Atlas + Backup Locale su Chiavetta USB.'
+                    ],
+                    employerBenefits: 'Riduce del 70% le telefonate di coordinamento tra ufficio e operatori sul territorio, garantendo tracciabilità totale di ogni operazione.'
+                }
+            },
+
+            careassist: {
+                key: 'careassist',
+                icon: '🩺',
+                title: '2. CareAssist Pro (Sanità & ADI)',
+                tag: 'Terapie • Alert PC↔Cellulare • Turnario H24 • Passaporto 118',
+                shortDesc: 'Cartella socio-sanitaria domiciliare e residenziale con controllo scorte predittivo, allarmi sincronizzati tra PC e telefono, kit diabete e stampe ufficiali ASL.',
+                appUrl: '/careassist/',
+                mockupHtml: `
+                    <div style="background:#071024; border:1px solid rgba(56,189,248,0.45); border-radius:12px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:12px; font-weight:800; color:#38bdf8;">💊 PIANO TERAPEUTICO & ALERT</span>
+                            <span style="font-size:11px; background:#059669; color:#fff; padding:2px 8px; border-radius:6px; font-weight:800;">✓ Assunto Oggi 08:00</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.05); padding:8px 10px; border-radius:8px; margin-bottom:8px; font-size:12px; display:flex; justify-content:space-between;">
+                            <span><strong>Entecavir 0,5 mg</strong> (Digiuno)</span>
+                            <span style="color:#fde047; font-weight:800;">📦 Scorta: 39 cpr (~39 gg)</span>
+                        </div>
+                        <div style="display:flex; gap:6px; font-size:11px;">
+                            <span style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:3px 7px; border-radius:6px; font-weight:700;">🚨 Passaporto 118</span>
+                            <span style="background:rgba(168,85,247,0.2); border:1px solid #a855f7; color:#e9d5ff; padding:3px 7px; border-radius:6px; font-weight:700;">🎙️ Briefing Vocale</span>
+                            <span style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#a7f3d0; padding:3px 7px; border-radius:6px; font-weight:700;">🗑️ Cestino 60gg</span>
+                        </div>
+                    </div>
+                `,
+                scenes: [
+                    {
+                        title: 'Zero Errori Terapeutici & Scorte Intelligenti',
+                        subtitle: 'CareAssist Pro guida l\'operatore fascia per fascia: basta un clic su "Assunto Oggi" per registrare la dose e scalare automaticamente la scatola reale.',
+                        bullets: [
+                            '🔗 Scorta Unificata Multi-Orario: se un farmaco si prende mattina e sera, scala dallo stesso blister',
+                            '🩸 Kit Diabete Collegato: iniettando l\'insulina, aggiorna unità penna, aghi, lancette e strisce',
+                            '🗑️ Cestino di Sicurezza 60 Giorni: qualunque terapia cancellata per errore si recupera con un clic'
+                        ]
+                    },
+                    {
+                        title: 'Alert in Tempo Reale tra PC e Smartphone',
+                        subtitle: 'La comunicazione bidirezionale tra la postazione del coordinatore e il telefono dell\'operatore a domicilio avviene in meno di 2 secondi.',
+                        bullets: [
+                            '🔔 Sveglia sonora, vibrazione aptica e notifica push all\'orario esatto del farmaco',
+                            '⏳ Semaforo predittivo che avvisa 10 giorni prima che finiscano compresse o pannoloni ASL',
+                            '🚨 Passaporto Emergenza 118 con QR Code, Lettera Specialistica A4 e Assistente Vocale Mattutino'
+                        ]
+                    }
+                ],
+                deepDive: {
+                    howToUse: [
+                        'Seleziona l\'assistito dal menu in alto (o visualizza il riepilogo di tutti gli assistiti).',
+                        'Premi «✓ Assunto Oggi» quando somministri il farmaco: il pulsante diventa verde su tutti i dispositivi collegati, impedendo doppie somministrazioni.',
+                        'Quando ritiri le scatole in farmacia, premi «+1 Scatola» per aggiornare all\'istante i giorni di autonomia e la data di fine scorta.'
+                    ],
+                    refinements: [
+                        'Controllo Interazioni Cliniche e allergie sempre visibile in testata.',
+                        'Pulsante «🕵️ Traccia» su ogni farmaco per vedere chi ha somministrato cosa e a che ora esatta.',
+                        'Stampa automatica Modulo Ufficiale ASL / Farmacia Territoriale Ex-CTO precompilato.',
+                        'Turnario Operatori H24 integrato con calcolo ore e copertura domiciliare.'
+                    ],
+                    employerBenefits: 'Garantisce standard di qualità da clinica accreditata, tutela medico-legale completa grazie allo storico audit e azzera il rischio di rimanere senza farmaci salvavita.'
+                }
+            },
+
+            veicoli: {
+                key: 'veicoli',
+                icon: '🚗',
+                title: '3. Flotta Veicoli & Spese Aziendali',
+                tag: 'Scadenze Revisioni • Assicurazioni • Manutenzioni • Rimborsi Km',
+                shortDesc: 'Controllo completo dei mezzi aziendali: avvisi automatici per assicurazione, bollo, revisione, tagliandi e registro spese carburante/manutenzione.',
+                appUrl: '/veicoli_mobile/',
+                mockupHtml: `
+                    <div style="background:#071024; border:1px solid rgba(245,158,11,0.45); border-radius:12px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:12px; font-weight:800; color:#fbbf24;">🚗 CRUSCOTTO FLOTTA AZIENDALE</span>
+                            <span style="font-size:11px; background:rgba(16,185,129,0.2); color:#6ee7b7; padding:2px 8px; border-radius:6px; font-weight:800;">Revisioni OK</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.05); padding:8px 10px; border-radius:8px; font-size:12px; margin-bottom:6px; display:flex; justify-content:space-between;">
+                            <span>🚐 <strong>Mezzo Aziendale #1</strong></span>
+                            <span style="color:#38bdf8; font-weight:800;">Tagliando tra 45 gg</span>
+                        </div>
+                        <div style="font-size:11.5px; color:#cbd5e1;">📊 Report Costi Carburante, Pedaggi & Rimborsi Chilometrici</div>
+                    </div>
+                `,
+                scenes: [
+                    {
+                        title: 'Nessun Mezzo Aziendale Fuori Regola',
+                        subtitle: 'Il modulo Flotta monitora costantemente ogni automezzo aziendale, avvisando in anticipo su revisioni ministeriali, polizze RCA e tagliandi.',
+                        bullets: [
+                            '📅 Scadenzario automatico per Assicurazione, Bollo, Revisione e Cambio Gomme',
+                            '💶 Registro Spese e Manutenzioni con storico interventi meccanici per targa',
+                            '📱 Versione Mobile rapida per gli autisti e gli operatori sul territorio'
+                        ]
+                    }
+                ],
+                deepDive: {
+                    howToUse: [
+                        'Registra la targa, il modello e le date di scadenza di ogni veicolo aziendale.',
+                        'Ogni volta che viene effettuato un rifornimento o una riparazione, registralo in 10 secondi anche da smartphone.',
+                        'Consulta il riepilogo costi mensili/annuali per singolo mezzo.'
+                    ],
+                    refinements: [
+                        'Semaforo visivo (Verde / Giallo / Rosso) sui giorni mancanti alla scadenza assicurativa o revisione.',
+                        'Collegamento diretto con il banner notifiche principale della Suite.'
+                    ],
+                    employerBenefits: 'Evita sanzioni pesanti per revisioni o assicurazioni dimenticate e tiene sotto controllo i costi reali di ogni singolo veicolo aziendale.'
+                }
+            },
+
+            inventario: {
+                key: 'inventario',
+                icon: '🛠️',
+                title: '4. Inventario Attrezzi & Magazzino QR',
+                tag: 'Catalogo Fotografico • Tracciamento Prestiti • Posizioni',
+                shortDesc: 'Catalogo fotografico digitale di tutte le attrezzature e dispositivi aziendali: sai sempre dove si trova ogni oggetto (Sede, Furgone, Reparto o in Prestito).',
+                appUrl: '/inventario.html',
+                mockupHtml: `
+                    <div style="background:#071024; border:1px solid rgba(16,185,129,0.45); border-radius:12px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:12px; font-weight:800; color:#34d399;">🛠️ CATALOGO ATTREZZI & PRESIDI</span>
+                            <span style="font-size:11px; background:rgba(56,189,248,0.2); color:#7dd3fc; padding:2px 8px; border-radius:6px; font-weight:800;">QR Scanner</span>
+                        </div>
+                        <div style="display:flex; gap:8px; font-size:12px;">
+                            <div style="flex:1; background:rgba(34,197,94,0.15); padding:7px; border-radius:8px; text-align:center;">
+                                <div style="font-weight:900; color:#4ade80;">Disponibili</div>
+                                <div style="font-size:11px; color:#cbd5e1;">In Magazzino</div>
+                            </div>
+                            <div style="flex:1; background:rgba(239,68,68,0.15); padding:7px; border-radius:8px; text-align:center;">
+                                <div style="font-weight:900; color:#f87171;">In Uso / Fuori</div>
+                                <div style="font-size:11px; color:#cbd5e1;">Tracciato con Nome</div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                scenes: [
+                    {
+                        title: 'Sai Sempre "Chi Ha Cosa" e Dove Si Trova',
+                        subtitle: 'Basta attrezzature smarrite o dimenticate nei cantieri o a domicilio: ogni strumento ha la sua scheda fotografica, posizione esatta e stato d\'uso.',
+                        bullets: [
+                            '📸 Scheda fotografica con ricerca istantanea per nome, categoria o scaffale',
+                            '🚚 Stato "Disponibile" vs "In Uso / Prestito" con indicazione dell\'operatore responsabile',
+                            '🏷️ Supporto codici QR per identificazione immediata con la fotocamera del telefono'
+                        ]
+                    }
+                ],
+                deepDive: {
+                    howToUse: [
+                        'Scatta una foto all\'attrezzo o presidio medico e assegna la sua posizione abituale (es. Scaffale A, Furgone 2, Magazzino Centrale).',
+                        'Quando un operatore preleva l\'attrezzo, lo segna "In Uso": il cruscotto principale mostra subito quanti attrezzi sono fuori sede.',
+                        'Alla riconsegna, un clic riporta l\'attrezzo tra i "Disponibili".'
+                    ],
+                    refinements: [
+                        'Filtro rapido dal cruscotto KPI per vedere solo gli attrezzi attualmente fuori sede.',
+                        'Gestione dinamica delle posizioni e dei magazzini.'
+                    ],
+                    employerBenefits: 'Azzera lo smarrimento di attrezzature costose e fa risparmiare ore di ricerca in magazzino.'
+                }
+            },
+
+            logistica: {
+                key: 'logistica',
+                icon: '📦',
+                title: '5. Logistica Consegne & Magazzino',
+                tag: 'Spedizioni • Tracciamento Consegne • Flussi Sede-Territorio',
+                shortDesc: 'Gestione completa delle consegne domiciliari/aziendali, tracciamento dei pacchi e organizzazione dei carichi in uscita dal magazzino principale.',
+                appUrl: '/launcher.html',
+                mockupHtml: `
+                    <div style="background:#071024; border:1px solid rgba(56,189,248,0.45); border-radius:12px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:12px; font-weight:800; color:#38bdf8;">📦 LOGISTICA & CONSEGNE</span>
+                            <span style="font-size:11px; background:rgba(16,185,129,0.2); color:#6ee7b7; padding:2px 8px; border-radius:6px; font-weight:800;">Tracciamento Attivo</span>
+                        </div>
+                        <div style="font-size:12px; color:#e2e8f0; background:rgba(255,255,255,0.05); padding:8px; border-radius:8px;">
+                            🚚 Pianificazione giri di consegna presidi/materiali e conferma avvenuta consegna.
+                        </div>
+                    </div>
+                `,
+                scenes: [
+                    {
+                        title: 'Controllo Totale su Spedizioni e Consegne',
+                        subtitle: 'Coordina la distribuzione di materiali, farmaci, presidi o merci dal magazzino centrale fino alla consegna finale al destinatario.',
+                        bullets: [
+                            '📦 Pianificazione giornaliera delle uscite e dei carichi per singolo corriere/operatore',
+                            '✅ Stato consegna aggiornato in tempo reale (In preparazione, In transito, Consegnato)',
+                            '📊 Storico completo delle movimentazioni di magazzino'
+                        ]
+                    }
+                ],
+                deepDive: {
+                    howToUse: [
+                        'Registra il carico o la consegna assegnandola al mezzo o all\'operatore incaricato.',
+                        'Monitora in tempo reale lo stato di avanzamento delle consegne della giornata.'
+                    ],
+                    refinements: [
+                        'Integrazione nativa con Flotta Veicoli e Inventario Attrezzi.'
+                    ],
+                    employerBenefits: 'Ottimizza i giri di consegna riducendo i tempi morti e i chilometri percorsi a vuoto.'
+                }
+            },
+
+            mednutri: {
+                key: 'mednutri',
+                icon: '🥗',
+                title: '6. MedNutri Pro (Nutrizione Clinica)',
+                tag: 'Piani Alimentari • Patologie • Composizione Corporea',
+                shortDesc: 'Software dedicato all\'elaborazione di piani nutrizionali personalizzati per pazienti diabetici, nefropatici, disfagici o con patologie metaboliche.',
+                appUrl: '/mednutri/',
+                mockupHtml: `
+                    <div style="background:#071024; border:1px solid rgba(16,185,129,0.45); border-radius:12px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:12px; font-weight:800; color:#6ee7b7;">🥗 PIANO NUTRIZIONALE CLINICO</span>
+                            <span style="font-size:11px; background:rgba(212,175,55,0.2); color:#fef08a; padding:2px 8px; border-radius:6px; font-weight:800;">Kcal & Macro</span>
+                        </div>
+                        <div style="font-size:12px; color:#e2e8f0; background:rgba(255,255,255,0.05); padding:8px; border-radius:8px;">
+                            ⚖️ Bilanciamento automatico Glicemia / Disfagia / Intolleranze con stampa piano settimanale.
+                        </div>
+                    </div>
+                `,
+                scenes: [
+                    {
+                        title: 'Nutrizione Clinica Integrata alla Terapia',
+                        subtitle: 'Un supporto prezioso per RSA, comunità e assistenza domiciliare: allinea l\'alimentazione quotidiana alle patologie e ai farmaci dell\'assistito.',
+                        bullets: [
+                            '🍎 Piani alimentari mirati per diabete, ipertensione, insufficienza renale e malattie epatiche',
+                            '📊 Calcolo automatico del fabbisogno calorico, idratazione e macronutrienti',
+                            '🖨️ Stampa chiara del prospetto settimanale per la cucina e i caregiver'
+                        ]
+                    }
+                ],
+                deepDive: {
+                    howToUse: [
+                        'Seleziona il profilo dell\'assistito e imposta i parametri antropometrici e le patologie.',
+                        'Genera o personalizza i pasti giornalieri verificando l\'impatto glicemico e nutrizionale.',
+                        'Stampa la dieta settimanale ad alta leggibilità da affiggere in cucina o consegnare agli operatori.'
+                    ],
+                    refinements: [
+                        'Avvisi automatici su alimenti sconsigliati in base ai farmaci assunti (es. interazioni o restrizioni di rame/zuccheri/sodio).'
+                    ],
+                    employerBenefits: 'Completa l\'assistenza sanitaria offrendo un servizio nutrizionale professionale integrato.'
+                }
+            },
+
+            salute: {
+                key: 'salute',
+                icon: '❤️',
+                title: '7. Progetto Salute & Monitoraggio Vitali',
+                tag: 'Pressione • Frequenza • Idratazione • Prevenzione',
+                shortDesc: 'Diario quotidiano del benessere e dei parametri vitali con grafici di andamento, obiettivi di idratazione e storico clinico personale.',
+                appUrl: '/salute/',
+                mockupHtml: `
+                    <div style="background:#071024; border:1px solid rgba(244,63,94,0.45); border-radius:12px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:12px; font-weight:800; color:#fda4af;">❤️ PARAMETRI VITALI & BENESSERE</span>
+                            <span style="font-size:11px; background:rgba(244,63,94,0.2); color:#fecdd3; padding:2px 8px; border-radius:6px; font-weight:800;">PA 120/78 mmHg</span>
+                        </div>
+                        <div style="font-size:12px; color:#e2e8f0; background:rgba(255,255,255,0.05); padding:8px; border-radius:8px;">
+                            💧 Monitoraggio Pressione, Peso, Idratazione e Attività Fisica con trend storici.
+                        </div>
+                    </div>
+                `,
+                scenes: [
+                    {
+                        title: 'Monitoraggio Continuo dei Parametri Vitali',
+                        subtitle: 'Permette di tenere traccia nel tempo di pressione arteriosa, battiti, peso corporeo e idratazione con avvisi automatici fuori soglia.',
+                        bullets: [
+                            '❤️ Registrazione rapida di Pressione Sistolica/Diastolica e Frequenza Cardiaca',
+                            '💧 Contatore giornaliero dell\'idratazione e degli obiettivi di salute',
+                            '📈 Storico consultabile dal medico curante per valutare l\'efficacia delle cure'
+                        ]
+                    }
+                ],
+                deepDive: {
+                    howToUse: [
+                        'Scegli il profilo monitorato e inserisci i valori rilevati durante la giornata.',
+                        'Controlla a colpo d\'occhio se i valori rientrano nei range di sicurezza.'
+                    ],
+                    refinements: [
+                        'Separazione dei profili autorizzati tramite PIN operatore.'
+                    ],
+                    employerBenefits: 'Fornisce dati oggettivi e continuativi sull\'andamento di salute degli assistiti.'
+                }
+            },
+
+            ricettario: {
+                key: 'ricettario',
+                icon: '👨‍🍳',
+                title: '8. Il Ricettario & Mensa Aziendale',
+                tag: 'Ricette Standardizzate • Foto Passo-Passo • Lista Spesa',
+                shortDesc: 'Archivio digitale per mense, comunità e famiglie con dosi ricalcolabili automaticamente e generazione istantanea della lista della spesa.',
+                appUrl: '/ricettario/',
+                mockupHtml: `
+                    <div style="background:#071024; border:1px solid rgba(212,175,55,0.45); border-radius:12px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:12px; font-weight:800; color:#fef08a;">👨‍🍳 RICETTARIO & LISTA SPESA</span>
+                            <span style="font-size:11px; background:rgba(16,185,129,0.2); color:#a7f3d0; padding:2px 8px; border-radius:6px; font-weight:800;">Auto-Calcolo Dosi</span>
+                        </div>
+                        <div style="font-size:12px; color:#e2e8f0; background:rgba(255,255,255,0.05); padding:8px; border-radius:8px;">
+                            🛒 Moltiplica gli ingredienti per il numero di ospiti e genera la lista della spesa per il fornitore.
+                        </div>
+                    </div>
+                `,
+                scenes: [
+                    {
+                        title: 'Organizzazione Cucina & Lista Spesa Automatica',
+                        subtitle: 'Ideale per strutture residenziali, case famiglia o gestione domestica: standardizza le preparazioni e calcola le quantità esatte da acquistare.',
+                        bullets: [
+                            '🍲 Schede ricette illustrate con tempi, procedimento e valori nutrizionali',
+                            '🔢 Ricalcolo automatico delle grammature in base al numero di porzioni',
+                            '🛒 Creazione immediata della lista della spesa pronta da stampare o inviare su WhatsApp'
+                        ]
+                    }
+                ],
+                deepDive: {
+                    howToUse: [
+                        'Sfoglia o cerca la ricetta per categoria (Primi, Secondi, Contorni, Dietetici).',
+                        'Imposta il numero di persone e aggiungi gli ingredienti alla Lista della Spesa con un clic.'
+                    ],
+                    refinements: [
+                        'Upload fotografico immediato e salvataggio Cloud.'
+                    ],
+                    employerBenefits: 'Riduce gli sprechi alimentari in struttura e standardizza la qualità dei pasti preparati dai diversi operatori.'
+                }
+            }
+        };
+
+        // =========================================================================
+        // STATO DEL PLAYER VIDEO E DELLA PAGINA
+        // =========================================================================
+        let currentAppKey = 'careassist';
+        let currentSceneIdx = 0;
+        let isVideoPlaying = false;
+        let isVoiceEnabled = true;
+        let videoTimer = null;
+        let progressPercent = 0;
+        let progressInterval = null;
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // =========================================================================
+        // 1. GESTIONE REGISTRAZIONE NUOVA AZIENDA UTILIZZATRICE
+        // =========================================================================
+        function aggiornaCertificatoLive() {
+            const nome = document.getElementById('regNomeAzienda').value.trim() || '[Nome Azienda Utilizzatrice]';
+            const settore = document.getElementById('regSettore').value;
+            const piva = document.getElementById('regPiva').value.trim() || 'Da compilare';
+            const sdi = document.getElementById('regSdi').value.trim() || 'Da compilare';
+            const resp = document.getElementById('regResponsabile').value.trim() || 'Da compilare';
+            const ind = document.getElementById('regIndirizzo').value.trim() || 'Da compilare';
+            const tel = document.getElementById('regTelefono').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const contatti = [tel, email].filter(Boolean).join(' • ') || 'Da compilare';
+
+            document.getElementById('certNomeAzienda').textContent = nome;
+            document.getElementById('certSettore').textContent = settore;
+            document.getElementById('certPiva').textContent = piva;
+            document.getElementById('certSdi').textContent = sdi;
+            document.getElementById('certResponsabile').textContent = resp;
+            document.getElementById('certIndirizzo').textContent = ind;
+            document.getElementById('certContatti').textContent = contatti;
+
+            // Aggiorna anche la testata e il titolo Hero in tempo reale!
+            if (document.getElementById('regNomeAzienda').value.trim()) {
+                document.getElementById('topCompanyName').textContent = 'SUITE AZIENDALE — ' + nome.toUpperCase();
+                document.getElementById('heroDynamicCompany').textContent = nome;
+            } else {
+                document.getElementById('topCompanyName').textContent = 'SUITE GESTIONALE AZIENDALE INTEGRATA';
+                document.getElementById('heroDynamicCompany').textContent = 'la Tua Azienda';
+            }
+
+            // Moduli selezionati
+            const checks = document.querySelectorAll('.chk-mod-az:checked');
+            const badgesContainer = document.getElementById('certModuliBadges');
+            badgesContainer.innerHTML = '';
+            checks.forEach(chk => {
+                const span = document.createElement('span');
+                span.style.cssText = 'background:rgba(212,175,55,0.2); border:1px solid #d4af37; color:#fef08a; font-size:12px; font-weight:800; padding:4px 10px; border-radius:8px;';
+                span.textContent = chk.value;
+                badgesContainer.appendChild(span);
+            });
+        }
+
+        function compilaDemoAziendaDatore() {
+            document.getElementById('regNomeAzienda').value = 'Gruppo Assistenza & Servizi Integrati S.r.l.';
+            document.getElementById('regSettore').selectedIndex = 0;
+            document.getElementById('regPiva').value = 'IT 08945120726';
+            document.getElementById('regSdi').value = 'M5UXCR1 • Accreditamento Reg. Puglia n. 204/2026';
+            document.getElementById('regResponsabile').value = 'Direzione Generale / Amministratore Unico';
+            document.getElementById('regIndirizzo').value = 'Via Sparano da Bari 145, 70121 Bari (BA)';
+            document.getElementById('regTelefono').value = '080 521 0000 • Numero Verde 800 123 456';
+            document.getElementById('regEmail').value = 'direzione@gruppoassistenza.it • pec@pec.gruppoassistenza.it';
+            document.querySelectorAll('.chk-mod-az').forEach(c => c.checked = true);
+            aggiornaCertificatoLive();
+            salvaRegistrazioneAzienda();
+        }
+
+        function resetAziendaForm() {
+            ['regNomeAzienda','regPiva','regSdi','regResponsabile','regIndirizzo','regTelefono','regEmail'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            aggiornaCertificatoLive();
+            document.getElementById('msgSalvataggioAzienda').style.display = 'none';
+        }
+
+        function salvaRegistrazioneAzienda() {
+            const data = {
+                nomeAzienda: document.getElementById('regNomeAzienda').value.trim(),
+                settore: document.getElementById('regSettore').value,
+                piva: document.getElementById('regPiva').value.trim(),
+                sdi: document.getElementById('regSdi').value.trim(),
+                responsabile: document.getElementById('regResponsabile').value.trim(),
+                indirizzo: document.getElementById('regIndirizzo').value.trim(),
+                telefono: document.getElementById('regTelefono').value.trim(),
+                email: document.getElementById('regEmail').value.trim(),
+                moduli: Array.from(document.querySelectorAll('.chk-mod-az:checked')).map(c => c.value),
+                savedAt: new Date().toLocaleString('it-IT')
+            };
+            localStorage.setItem('suite_nuova_azienda_licenza', JSON.stringify(data));
+            aggiornaCertificatoLive();
+            const msg = document.getElementById('msgSalvataggioAzienda');
+            msg.style.display = 'block';
+            msg.innerHTML = `✅ <strong>Profilo Aziendale Registrato con Successo!</strong> L'intestazione della presentazione e il Dossier A4 sono ora personalizzati per <strong>${data.nomeAzienda || 'la Nuova Azienda'}</strong> (i dati personali della famiglia Milella restano totalmente separati e protetti).`;
+        }
+
+        function caricaRegistrazioneAziendaSalvata() {
+            try {
+                const raw = localStorage.getItem('suite_nuova_azienda_licenza');
+                if (!raw) {
+                    aggiornaCertificatoLive();
+                    return;
+                }
+                const d = JSON.parse(raw);
+                if (d.nomeAzienda) document.getElementById('regNomeAzienda').value = d.nomeAzienda;
+                if (d.piva) document.getElementById('regPiva').value = d.piva;
+                if (d.sdi) document.getElementById('regSdi').value = d.sdi;
+                if (d.responsabile) document.getElementById('regResponsabile').value = d.responsabile;
+                if (d.indirizzo) document.getElementById('regIndirizzo').value = d.indirizzo;
+                if (d.telefono) document.getElementById('regTelefono').value = d.telefono;
+                if (d.email) document.getElementById('regEmail').value = d.email;
+                aggiornaCertificatoLive();
+            } catch (e) {
+                aggiornaCertificatoLive();
+            }
+        }
+
+        // =========================================================================
+        // 2. MOTORE VIDEO-PRESENTAZIONE INTERATTIVA CON VOCE NARRANTE
+        // =========================================================================
+        function renderPlaylist() {
+            const container = document.getElementById('videoPlaylistContainer');
+            container.innerHTML = '';
+            Object.values(SUITE_MODULES).forEach((mod, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'playlist-item' + (mod.key === currentAppKey ? ' active' : '');
+                btn.onclick = () => selectVideoModule(mod.key, true);
+                btn.innerHTML = `
+                    <div class="playlist-icon">${mod.icon}</div>
+                    <div class="playlist-info">
+                        <h4>${mod.title}</h4>
+                        <span>🎬 ${mod.scenes.length} scene • 💡 Per saperne di più</span>
+                    </div>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function selectVideoModule(appKey, autoStart = false) {
+            currentAppKey = appKey;
+            currentSceneIdx = 0;
+            renderPlaylist();
+            renderVideoScene();
+            if (autoStart) {
+                startVideoPlayback();
+            }
+        }
+
+        function renderVideoScene() {
+            const mod = SUITE_MODULES[currentAppKey];
+            const scene = mod.scenes[currentSceneIdx] || mod.scenes[0];
+            const allKeys = Object.keys(SUITE_MODULES);
+            const chapNum = allKeys.indexOf(currentAppKey) + 1;
+
+            document.getElementById('videoHudChapter').textContent = `MODULO ${chapNum} DI ${allKeys.length} • ${mod.title.toUpperCase()}`;
+            document.getElementById('videoSlideCounter').textContent = `Scena ${currentSceneIdx + 1} / ${mod.scenes.length}`;
+            document.getElementById('videoSubtitleText').textContent = `🎙️ "${scene.subtitle}"`;
+
+            const stage = document.getElementById('videoCanvasStage');
+            stage.innerHTML = `
+                <div class="video-slide-grid">
+                    <div class="video-text-col">
+                        <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(56,189,248,0.18); border:1px solid #38bdf8; color:#bae6fd; padding:5px 12px; border-radius:20px; font-size:12.5px; font-weight:800; margin-bottom:12px;">
+                            <span>${mod.icon}</span> <span>${mod.tag}</span>
+                        </div>
+                        <h3>${scene.title}</h3>
+                        <p>${scene.subtitle}</p>
+                        <ul class="video-Highlight-list">
+                            ${scene.bullets.map(b => `<li>${b}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="video-figure-box">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span style="font-size:12px; font-weight:800; color:#fef08a; text-transform:uppercase;">🖼️ Figura Interattiva del Modulo</span>
+                            <span style="font-size:11px; color:#94a3b8;">Clicca per approfondire</span>
+                        </div>
+                        <div class="figure-mockup-window" onclick="apriModalApprofondimento('${mod.key}')" style="cursor:pointer;">
+                            ${mod.mockupHtml}
+                        </div>
+                        <div class="figure-caption-bar">
+                            <button type="button" class="btn-saperne-piu" onclick="apriModalApprofondimento('${mod.key}')">
+                                💡 Per saperne di più
+                            </button>
+                            <a href="${mod.appUrl}" class="btn-top btn-outline" style="padding:8px 14px; font-size:13px;">
+                                🚀 Apri Modulo Live ↗
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function speakText(text) {
+            if (!isVoiceEnabled || !('speechSynthesis' in window)) return;
+            try {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'it-IT';
+                u.rate = 1.0;
+                window.speechSynthesis.speak(u);
+            } catch (e) {}
+        }
+
+        function startVideoPlayback() {
+            isVideoPlaying = true;
+            document.getElementById('btnPlayPauseVideo').innerHTML = '⏸️ Metti in Pausa Video-Tour';
+            document.getElementById('btnBottomPlay').innerHTML = '⏸️ Pausa';
+            playCurrentSceneCycle();
+        }
+
+        function stopVideoPlayback() {
+            isVideoPlaying = false;
+            document.getElementById('btnPlayPauseVideo').innerHTML = '▶️ Avvia Video-Tour Automatico';
+            document.getElementById('btnBottomPlay').innerHTML = '▶️ Play';
+            if (videoTimer) clearTimeout(videoTimer);
+            if (progressInterval) clearInterval(progressInterval);
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+
+        function togglePlayVideoPresentation() {
+            if (isVideoPlaying) {
+                stopVideoPlayback();
+            } else {
+                startVideoPlayback();
+            }
+        }
+
+        function toggleVoceNarrante() {
+            isVoiceEnabled = !isVoiceEnabled;
+            const btn = document.getElementById('btnToggleVoice');
+            if (isVoiceEnabled) {
+                btn.innerHTML = '🔊 Voce Narrante: ATTIVA';
+                btn.className = 'btn-top btn-blue';
+            } else {
+                btn.innerHTML = '🔇 Voce Narrante: MUTA';
+                btn.className = 'btn-top btn-outline';
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        function playCurrentSceneCycle() {
+            if (!isVideoPlaying) return;
+            if (videoTimer) clearTimeout(videoTimer);
+            if (progressInterval) clearInterval(progressInterval);
+
+            const mod = SUITE_MODULES[currentAppKey];
+            const scene = mod.scenes[currentSceneIdx] || mod.scenes[0];
+            speakText(`${mod.title}. ${scene.title}. ${scene.subtitle}`);
+
+            progressPercent = 0;
+            const durationMs = 11000; // 11 secondi per scena
+            const stepMs = 100;
+            progressInterval = setInterval(() => {
+                progressPercent += (stepMs / durationMs) * 100;
+                if (progressPercent > 100) progressPercent = 100;
+                document.getElementById('videoProgressBar').style.width = progressPercent + '%';
+                const sec = Math.floor((progressPercent / 100) * 11);
+                document.getElementById('videoTimeLabel').textContent = `00:${String(sec).padStart(2,'0')} / 00:11`;
+            }, stepMs);
+
+            videoTimer = setTimeout(() => {
+                if (isVideoPlaying) nextVideoScene(true);
+            }, durationMs);
+        }
+
+        function nextVideoScene(fromAuto = false) {
+            const keys = Object.keys(SUITE_MODULES);
+            const mod = SUITE_MODULES[currentAppKey];
+            if (currentSceneIdx + 1 < mod.scenes.length) {
+                currentSceneIdx++;
+            } else {
+                const nextKeyIdx = (keys.indexOf(currentAppKey) + 1) % keys.length;
+                currentAppKey = keys[nextKeyIdx];
+                currentSceneIdx = 0;
+                renderPlaylist();
+            }
+            renderVideoScene();
+            if (isVideoPlaying || fromAuto) {
+                playCurrentSceneCycle();
+            }
+        }
+
+        function prevVideoScene() {
+            const keys = Object.keys(SUITE_MODULES);
+            if (currentSceneIdx > 0) {
+                currentSceneIdx--;
+            } else {
+                const prevKeyIdx = (keys.indexOf(currentAppKey) - 1 + keys.length) % keys.length;
+                currentAppKey = keys[prevKeyIdx];
+                currentSceneIdx = SUITE_MODULES[currentAppKey].scenes.length - 1;
+                renderPlaylist();
+            }
+            renderVideoScene();
+            if (isVideoPlaying) playCurrentSceneCycle();
+        }
+
+        function seekVideoProgress(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            progressPercent = ratio * 100;
+            document.getElementById('videoProgressBar').style.width = progressPercent + '%';
+        }
+
+        // =========================================================================
+        // 3. GALLERIA FIGURE CON LINK "PER SAPERNE DI PIÙ" SU OGNI FOTO
+        // =========================================================================
+        function renderAppsGallery() {
+            const grid = document.getElementById('appsGalleryGrid');
+            grid.innerHTML = '';
+            Object.values(SUITE_MODULES).forEach(mod => {
+                const card = document.createElement('div');
+                card.className = 'app-showcase-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="app-figure-preview" onclick="apriModalApprofondimento('${mod.key}')" title="Clicca sulla figura per saperne di più">
+                            <div class="figure-badge-overlay">💡 Per saperne di più</div>
+                            <div style="margin-top:18px;">
+                                ${mod.mockupHtml}
+                            </div>
+                        </div>
+                        <div class="app-card-body">
+                            <div>
+                                <div style="font-size:12px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:4px;">${mod.tag}</div>
+                                <h3 class="app-card-title"><span>${mod.icon}</span> <span>${mod.title}</span></h3>
+                                <p class="app-card-desc">${mod.shortDesc}</p>
+                            </div>
+                            <div class="app-card-actions">
+                                <button type="button" class="btn-saperne-piu" style="flex:1; justify-content:center;" onclick="apriModalApprofondimento('${mod.key}')">
+                                    💡 Per saperne di più
+                                </button>
+                                <button type="button" class="btn-top btn-blue" style="padding:9px 14px; font-size:13.5px;" onclick="scrollToSection('sec-video'); selectVideoModule('${mod.key}', true);">
+                                    🎬 Video
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // =========================================================================
+        // 4. MODALE APPROFONDIMENTO "💡 PER SAPERNE DI PIÙ"
+        // =========================================================================
+        function apriModalApprofondimento(appKey) {
+            const mod = SUITE_MODULES[appKey] || SUITE_MODULES.careassist;
+            document.getElementById('modalAppIcon').textContent = mod.icon;
+            document.getElementById('modalAppTitle').textContent = mod.title;
+
+            const body = document.getElementById('modalAppBody');
+            body.innerHTML = `
+                <div style="margin-bottom:22px;">
+                    <div style="font-size:13px; font-weight:800; color:#fef08a; text-transform:uppercase; margin-bottom:8px;">🖼️ Figura & Anteprima Interfaccia ad Alta Leggibilità:</div>
+                    <div style="padding:18px; background:#060d1f; border:1.5px solid rgba(212,175,55,0.4); border-radius:16px;">
+                        ${mod.mockupHtml}
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:18px; margin-bottom:22px;">
+                    <div style="background:rgba(2,132,199,0.12); border:1.5px solid rgba(56,189,248,0.4); border-radius:16px; padding:18px;">
+                        <h4 style="font-size:17px; font-weight:900; color:#7dd3fc; margin-bottom:10px;">📘 Come si utilizza in pratica</h4>
+                        <ol style="padding-left:18px; display:flex; flex-direction:column; gap:8px; font-size:15px; color:#f1f5f9;">
+                            ${mod.deepDive.howToUse.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+
+                    <div style="background:rgba(212,175,55,0.1); border:1.5px solid rgba(212,175,55,0.4); border-radius:16px; padding:18px;">
+                        <h4 style="font-size:17px; font-weight:900; color:#fef08a; margin-bottom:10px;">✨ Piccole Rifiniture & Suggerimenti</h4>
+                        <ul style="padding-left:18px; display:flex; flex-direction:column; gap:8px; font-size:15px; color:#f1f5f9;">
+                            ${mod.deepDive.refinements.map(r => `<li>${r}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background:rgba(16,185,129,0.14); border:1.5px solid #10b981; border-radius:16px; padding:18px; margin-bottom:22px;">
+                    <h4 style="font-size:17px; font-weight:900; color:#6ee7b7; margin-bottom:6px;">📈 Vantaggio Diretto per il Datore di Lavoro / Azienda</h4>
+                    <p style="font-size:15.5px; color:#ecfdf5; font-weight:600;">${mod.deepDive.employerBenefits}</p>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);">
+                    <button type="button" class="btn-top btn-gold" onclick="chiudiModalApprofondimento(); scrollToSection('sec-video'); selectVideoModule('${mod.key}', true);">
+                        🎬 Guarda e Ascolta il Video di questo Modulo
+                    </button>
+                    <div style="display:flex; gap:10px;">
+                        <a href="${mod.appUrl}" class="btn-top btn-blue">🚀 Apri Applicazione Reale ↗</a>
+                        <button type="button" class="btn-top btn-outline" onclick="chiudiModalApprofondimento()">Chiudi</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalSaperneDiPiu').style.display = 'flex';
+        }
+
+        function chiudiModalApprofondimento() {
+            document.getElementById('modalSaperneDiPiu').style.display = 'none';
+        }
+
+        // Inizializzazione al caricamento
+        window.addEventListener('DOMContentLoaded', () => {
+            caricaRegistrazioneAziendaSalvata();
+            const params = new URLSearchParams(window.location.search);
+            const modParam = params.get('modulo');
+            if (modParam && SUITE_MODULES[modParam]) {
+                currentAppKey = modParam;
+            }
+            renderPlaylist();
+            renderVideoScene();
+            renderAppsGallery();
+            if (params.get('info') === '1' && modParam && SUITE_MODULES[modParam]) {
+                apriModalApprofondimento(modParam);
+            } else if (modParam && SUITE_MODULES[modParam]) {
+                scrollToSection('sec-video');
+            }
+        });
+    </script>
+</body>
+</html>
