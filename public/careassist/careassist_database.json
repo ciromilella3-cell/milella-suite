@@ -627,12 +627,16 @@
           "farmaco": "DIAMICRON 60 mg RM",
           "principio": "Gliclazide",
           "dosaggio": "60 mg (1 cpr rilascio modificato)",
-          "modo": "A colazione, non masticare (Diabete) - rischio ipoglicemia con insulina ⚠️ Orario/dose da confermare col medico",
+          "modo": "A colazione, non masticare (Diabete) - rischio ipoglicemia in caso di digiuno prolungato ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 30,
           "scorta": 19,
           "farmacia": "Farmacia Girasole Picconi",
           "fattoOggi": false,
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "quantitaQuota": 1,
+          "giorniAlert": 7,
+          "cadenzaTipo": "giornaliera",
+          "tipoFormulazione": "compressa"
         },
         {
           "id": 304,
@@ -679,7 +683,7 @@
           "farmaco": "XULTOPHY penna",
           "principio": "Insulina degludec + Liraglutide",
           "dosaggio": "16 Unità (sottocute)",
-          "modo": "Iniezione sottocute 1 volta al giorno ore 08:00 (Diabete - confermato dal diabetologo)",
+          "modo": "Iniezione sottocute 1 volta al giorno al mattino (Diabete)",
           "cprPerScatola": 15,
           "scorta": 2,
           "farmacia": "Farmacia Girasole Picconi",
