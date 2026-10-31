@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=90">
+  <link rel="stylesheet" href="style.css?v=91">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -253,6 +253,20 @@
             <span>⚙️</span> <span>Opzioni & Backup</span> <span style="font-size:10px; opacity:0.75;">▾</span>
           </button>
           <div class="tools-dropdown-menu" id="tools-dropdown-panel">
+            <div class="dropdown-section-title">✨ Chicche &amp; Presentazione Medico</div>
+            <a href="presentazione.html" target="_blank" class="dropdown-menu-item" onclick="chiudiMenuStrumenti()" style="font-weight:800; color:#0284c7;">
+              <span>🎬</span> Presentazione Progetto (Slide Lunedì)
+            </a>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalPassaporto118()">
+              <span>🚑</span> Passaporto Emergenza 118 (QR da Frigo)
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalLetteraSpecialistica()">
+              <span>🩺</span> Lettera per Visita Specialistica (A4)
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); avviaBriefingVocaleAssistitoDemo()">
+              <span>🔊</span> Assistente Vocale Mattutino (Briefing AI)
+            </button>
+            <div class="dropdown-divider"></div>
             <div class="dropdown-section-title">Strumenti Assistenza</div>
             <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); abilitaNotificheEAudioSmartphone()">
               <span>🔔</span> Attiva Notifiche Push & Audio Allarmi
@@ -2598,6 +2612,102 @@
   </div>
 
   <!-- MODAL CUSTOM CONFIRM (EFFETTO WAOO AL POSTO DI CONFIRM NATIVO) -->
+  <!-- PASSAPORTO EMERGENZA 118 CON QR DA FRIGO -->
+  <div class="modal-overlay" id="modal-passaporto-118" style="z-index: 1000010;">
+    <div class="modal-card" style="max-width: 780px; width: 96%; max-height: 92vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; border: 2px solid #ef4444;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #fff; border-bottom: none; flex-shrink: 0;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:30px;">🚑</span>
+          <div>
+            <h3 style="margin:0; font-size:18px; font-weight:800;">Passaporto Emergenza 118 &amp; Guardia Medica</h3>
+            <p style="margin:2px 0 0; font-size:12px; opacity:.9;">Biglietto clinico con QR Code da appendere al frigorifero o tenere nel portafoglio</p>
+          </div>
+        </div>
+        <button class="modal-close" style="color:#fff;" onclick="closeModal('modal-passaporto-118')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 18px 20px; overflow-y: auto; flex: 1; background: #f8fafc;">
+        <div id="passaporto-118-content"></div>
+      </div>
+      <div class="modal-footer" style="justify-content: space-between; gap: 10px; flex-wrap: wrap; flex-shrink: 0;">
+        <span style="font-size: 12px; color: #64748b;">📌 Stampalo e applicalo sul frigorifero per i soccorritori del 118</span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline" onclick="closeModal('modal-passaporto-118')">Chiudi</button>
+          <button class="btn btn-primary" style="background:#dc2626; border-color:#b91c1c;" onclick="stampaPassaporto118()">🖨️ Stampa Scheda 118</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LETTERA DI ACCOMPAGNAMENTO PER VISITA SPECIALISTICA -->
+  <div class="modal-overlay" id="modal-lettera-specialistica" style="z-index: 1000010;">
+    <div class="modal-card" style="max-width: 860px; width: 96%; max-height: 92vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%); color: #fff; border-bottom: none; flex-shrink: 0;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:28px;">🩺</span>
+          <div>
+            <h3 style="margin:0; font-size:18px; font-weight:800;">Lettera di Accompagnamento per Visita Specialistica</h3>
+            <p style="margin:2px 0 0; font-size:12px; opacity:.9;">Prospetto clinico aggiornato ad oggi pronto da consegnare allo specialista</p>
+          </div>
+        </div>
+        <button class="modal-close" style="color:#fff;" onclick="closeModal('modal-lettera-specialistica')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 18px 20px; overflow-y: auto; flex: 1; background: #f8fafc;">
+        <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:14px; background:#fff; padding:12px 14px; border-radius:12px; border:1px solid #e2e8f0;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:11.5px; font-weight:800; color:#475569; display:block; margin-bottom:4px;">Branca Specialistica:</label>
+            <select id="lettera-spec-branca" class="form-control" style="padding:7px 10px; font-weight:700;" onchange="aggiornaAnteprimaLetteraSpecialistica()">
+              <option value="Visita Specialistica Cardiologica">❤️ Visita Specialistica Cardiologica</option>
+              <option value="Visita Specialistica Neurologica">🧠 Visita Specialistica Neurologica</option>
+              <option value="Visita Specialistica Diabetologica / Endocrinologica">🩸 Visita Diabetologica / Endocrinologica</option>
+              <option value="Visita Epatologica / Malattie Infettive">🩺 Visita Epatologica / Malattie Infettive</option>
+              <option value="Visita Specialistica Geriatrica">👴 Visita Specialistica Geriatrica</option>
+              <option value="Controllo Medico di Medicina Generale (MMG)">🏥 Controllo Medico Curante (MMG)</option>
+            </select>
+          </div>
+          <div style="flex:1.4; min-width:220px;">
+            <label style="font-size:11.5px; font-weight:800; color:#475569; display:block; margin-bottom:4px;">Quesito o Motivo della Visita (opzionale):</label>
+            <input type="text" id="lettera-spec-quesito" class="form-control" placeholder="Es. Controllo periodico e rivalutazione piano terapeutico" style="padding:7px 10px;" oninput="aggiornaAnteprimaLetteraSpecialistica()">
+          </div>
+        </div>
+        <div id="lettera-specialistica-preview"></div>
+      </div>
+      <div class="modal-footer" style="justify-content: space-between; gap: 10px; flex-wrap: wrap; flex-shrink: 0;">
+        <span style="font-size: 12px; color: #64748b;">📄 Include spazio dedicato alle variazioni prescritte dallo specialista</span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline" onclick="closeModal('modal-lettera-specialistica')">Chiudi</button>
+          <button class="btn btn-primary" onclick="stampaLetteraSpecialistica()">🖨️ Stampa Lettera A4 per il Medico</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONSOLE ASSISTENTE VOCALE MATTUTINO (BRIEFING AI) -->
+  <div class="modal-overlay" id="modal-briefing-vocale" style="z-index: 1000010;">
+    <div class="modal-card" style="max-width: 620px; width: 96%; border-radius: 20px; overflow: hidden;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff; border-bottom: none;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:28px;">🎙️</span>
+          <div>
+            <h3 style="margin:0; font-size:18px; font-weight:800;">Assistente Vocale Mattutino (Briefing AI)</h3>
+            <p style="margin:2px 0 0; font-size:12px; color:#93c5fd;">Riepilogo parlato di terapie, scorte, penne insulina e appuntamenti</p>
+          </div>
+        </div>
+        <button class="modal-close" style="color:#fff;" onclick="fermaVoceBriefing(); closeModal('modal-briefing-vocale')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <div id="briefing-vocale-body"></div>
+      </div>
+      <div class="modal-footer" style="justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="avviaBriefingVocaleAssistitoDemo('singolo')">🔊 Riascolta Assistito</button>
+          <button class="btn btn-outline" style="border-color:#0284c7; color:#0284c7; font-weight:800;" onclick="avviaBriefingVocaleAssistitoDemo('tutti')">👨‍👩‍👧‍👦 Briefing Tutti i 4 Assistiti</button>
+          <button class="btn btn-outline" style="color:#b91c1c; border-color:#fca5a5;" onclick="fermaVoceBriefing()">⏹️ Ferma Voce</button>
+        </div>
+        <button class="btn btn-outline" onclick="fermaVoceBriefing(); closeModal('modal-briefing-vocale')">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
   <!-- CESTINO & RIPRISTINO -->
   <div class="modal-overlay" id="modal-cestino">
     <div class="modal-card cestino-card">
@@ -4760,7 +4870,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=90"></script>
+  <script src="app.js?v=91"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {

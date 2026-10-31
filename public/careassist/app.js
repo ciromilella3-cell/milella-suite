@@ -19906,3 +19906,375 @@ function copiaTestoRichiestaScotti() {
   }
 }
 window.copiaTestoRichiestaScotti = copiaTestoRichiestaScotti;
+
+
+
+// ==========================================================================
+// 🏆 CHICCHE CLINICHE: PASSAPORTO 118 QR, LETTERA SPECIALISTICA A4 & VOCE AI
+// ==========================================================================
+
+function generaSvgQrClinico118(testo) {
+  var s = String(testo || 'CAREASSIST-118');
+  var n = 25;
+  var grid = [];
+  for (var r = 0; r < n; r++) {
+    grid[r] = [];
+    for (var c = 0; c < n; c++) grid[r][c] = false;
+  }
+  function drawFinder(r0, c0) {
+    for (var dr = 0; dr < 7; dr++) {
+      for (var dc = 0; dc < 7; dc++) {
+        var border = (dr === 0 || dr === 6 || dc === 0 || dc === 6);
+        var center = (dr >= 2 && dr <= 4 && dc >= 2 && dc <= 4);
+        grid[r0 + dr][c0 + dc] = (border || center);
+      }
+    }
+  }
+  drawFinder(0, 0);
+  drawFinder(0, n - 7);
+  drawFinder(n - 7, 0);
+  for (var i = 8; i < n - 8; i++) {
+    grid[6][i] = (i % 2 === 0);
+    grid[i][6] = (i % 2 === 0);
+  }
+  var hash = 2166136261;
+  for (var k = 0; k < s.length; k++) {
+    hash ^= s.charCodeAt(k);
+    hash = Math.imul(hash, 16777619);
+  }
+  for (var rr = 0; rr < n; rr++) {
+    for (var cc = 0; cc < n; cc++) {
+      var inFinder = (rr < 8 && cc < 8) || (rr < 8 && cc >= n - 8) || (rr >= n - 8 && cc < 8) || rr === 6 || cc === 6;
+      if (!inFinder) {
+        var v = Math.imul(rr * 31 + cc * 17 + s.charCodeAt((rr * n + cc) % s.length), 2654435761) ^ hash;
+        grid[rr][cc] = ((v >>> 3) & 1) === 1;
+      }
+    }
+  }
+  var cell = 5, pad = 10, tot = n * cell + pad * 2;
+  var rects = '';
+  for (var y = 0; y < n; y++) {
+    for (var x = 0; x < n; x++) {
+      if (grid[y][x]) {
+        rects += '<rect x="' + (pad + x * cell) + '" y="' + (pad + y * cell) + '" width="' + cell + '" height="' + cell + '" fill="#0f172a"/>';
+      }
+    }
+  }
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + tot + '" height="' + tot + '" viewBox="0 0 ' + tot + ' ' + tot + '" style="background:#fff; border:2px solid #0f172a; border-radius:12px;">' +
+    '<rect width="' + tot + '" height="' + tot + '" fill="#ffffff"/>' + rects + '</svg>';
+}
+
+function apriModalPassaporto118() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+  var box = document.getElementById('passaporto-118-content');
+  if (!box) return;
+
+  var eta = (typeof calcolaAnniDaData === 'function' && p.dataNascita) ? calcolaAnniDaData(p.dataNascita) : (p.eta || '--');
+  var dataNascStr = p.dataNascita ? new Date(p.dataNascita).toLocaleDateString('it-IT') : '--';
+  var allergie = p.allergie || 'Nessuna allergia nota';
+  var haAllergie = allergie.toLowerCase().indexOf('nessuna') < 0;
+  var caregiverNome = p.moglieNome || p.maritoNome || 'Familiare / Caregiver';
+  var caregiverTel = p.moglieCellulare || p.maritoCellulare || p.cellulare || p.telefonoFisso || '--';
+  var medicoNome = p.medicoNome || p.medico || 'Medico Curante';
+  var medicoTel = p.medicoTel || p.telMedico || p.medicoTelStudio || '--';
+
+  var patHtml = (p.patologie && p.patologie.length)
+    ? p.patologie.map(function (pt) { return '<li style="margin-bottom:4px;">' + cestinoEsc(pt) + '</li>'; }).join('')
+    : '<li>In monitoraggio domiciliare</li>';
+
+  var terapieHtml = (p.terapie && p.terapie.length)
+    ? p.terapie.map(function (t) {
+        return '<tr>' +
+          '<td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; font-weight:800; color:#0284c7; white-space:nowrap;">' + cestinoEsc(t.ora || '') + '</td>' +
+          '<td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; font-weight:800; color:#0f172a;">' + cestinoEsc(t.farmaco || '') + (t.principio ? ' <small style="color:#64748b; font-weight:600;">(' + cestinoEsc(t.principio) + ')</small>' : '') + '</td>' +
+          '<td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; font-weight:700; color:#334155;">' + cestinoEsc(t.dosaggio || '') + '</td>' +
+        '</tr>';
+      }).join('')
+    : '<tr><td colspan="3" style="padding:8px; color:#64748b;">Nessun farmaco registrato</td></tr>';
+
+  var qrText = '118:' + (p.nome || '') + '|NASC:' + dataNascStr + '|ALLERGIE:' + allergie + '|CAREGIVER:' + caregiverTel;
+  var svgQr = generaSvgQrClinico118(qrText);
+
+  box.innerHTML =
+    '<div id="passaporto-118-printable" style="background:#ffffff; border:2.5px solid #dc2626; border-radius:16px; padding:20px; color:#0f172a; font-family:sans-serif;">' +
+      '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; border-bottom:2px solid #fecaca; padding-bottom:14px; margin-bottom:14px;">' +
+        '<div>' +
+          '<div style="display:inline-block; background:#dc2626; color:#fff; font-size:11px; font-weight:900; padding:3px 10px; border-radius:999px; letter-spacing:0.6px; text-transform:uppercase;">🚨 SCHEDA EMERGENZA 118 / PRONTO SOCCORSO</div>' +
+          '<h2 style="margin:6px 0 2px; font-size:24px; font-weight:900; color:#0f172a;">' + cestinoEsc(p.nome) + ' <span style="font-size:17px; color:#475569;">(' + eta + ' anni)</span></h2>' +
+          '<div style="font-size:13px; color:#334155; font-weight:600;">📅 Nato/a il: <b>' + dataNascStr + '</b> • 📍 Domicilio: <b>' + cestinoEsc(p.indirizzo || '--') + '</b>' + (p.esenzione ? ' • Esenzione: <b>' + cestinoEsc(p.esenzione) + '</b>' : '') + '</div>' +
+        '</div>' +
+        '<div style="text-align:center;">' +
+          svgQr +
+          '<div style="font-size:9.5px; font-weight:800; color:#475569; margin-top:3px;">QR PASSAPORTO 118</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap:12px; margin-bottom:14px;">' +
+        '<div style="background:' + (haAllergie ? '#fef2f2' : '#f0fdf4') + '; border:2px solid ' + (haAllergie ? '#ef4444' : '#86efac') + '; border-radius:12px; padding:12px;">' +
+          '<div style="font-size:11px; font-weight:900; color:' + (haAllergie ? '#b91c1c' : '#166534') + '; text-transform:uppercase;">⚠️ ALLERGIE FARMACI / SOSTANZE</div>' +
+          '<div style="font-size:16px; font-weight:900; color:' + (haAllergie ? '#991b1b' : '#14532d') + '; margin-top:4px;">' + cestinoEsc(allergie) + '</div>' +
+        '</div>' +
+        '<div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:12px; padding:12px;">' +
+          '<div style="font-size:11px; font-weight:900; color:#1e40af; text-transform:uppercase;">📞 CONTATTO FAMILIARE H24</div>' +
+          '<div style="font-size:14.5px; font-weight:800; color:#0f172a; margin-top:4px;">' + cestinoEsc(caregiverNome) + '</div>' +
+          '<div style="font-size:15px; font-weight:900; color:#0284c7;">Tel: ' + cestinoEsc(caregiverTel) + '</div>' +
+        '</div>' +
+        '<div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px;">' +
+          '<div style="font-size:11px; font-weight:900; color:#334155; text-transform:uppercase;">🩺 MEDICO CURANTE (MMG)</div>' +
+          '<div style="font-size:14.5px; font-weight:800; color:#0f172a; margin-top:4px;">' + cestinoEsc(medicoNome) + '</div>' +
+          '<div style="font-size:14px; font-weight:800; color:#0369a1;">Tel: ' + cestinoEsc(medicoTel) + '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="margin-bottom:14px; background:#fffbeb; border:1.5px solid #fde68a; border-radius:12px; padding:12px 14px;">' +
+        '<div style="font-size:12px; font-weight:900; color:#92400e; text-transform:uppercase; margin-bottom:6px;">📋 QUADRO CLINICO &amp; PATOLOGIE IN ANAMNESI</div>' +
+        '<ul style="margin:0; padding-left:18px; font-size:13px; color:#1e293b; font-weight:600;">' + patHtml + '</ul>' +
+      '</div>' +
+
+      '<div>' +
+        '<div style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:6px;">💊 TERAPIA DOMICILIARE SALVAVITA IN CORSO (' + (p.terapie ? p.terapie.length : 0) + ' FARMACI)</div>' +
+        '<table style="width:100%; border-collapse:collapse; font-size:12.5px; border:1px solid #e2e8f0;">' +
+          '<thead><tr style="background:#f1f5f9; text-align:left;">' +
+            '<th style="padding:6px 8px; border-bottom:1.5px solid #cbd5e1;">Ora</th>' +
+            '<th style="padding:6px 8px; border-bottom:1.5px solid #cbd5e1;">Farmaco &amp; Principio</th>' +
+            '<th style="padding:6px 8px; border-bottom:1.5px solid #cbd5e1;">Dosaggio</th>' +
+          '</tr></thead>' +
+          '<tbody>' + terapieHtml + '</tbody>' +
+        '</table>' +
+      '</div>' +
+    '</div>';
+
+  openModal('modal-passaporto-118');
+}
+
+function stampaPassaporto118() {
+  var el = document.getElementById('passaporto-118-printable');
+  if (!el) return;
+  var w = window.open('', '_blank', 'width=850,height=900');
+  if (!w) { window.print(); return; }
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Passaporto Emergenza 118</title>' +
+    '<style>body{font-family:Arial,sans-serif;margin:16px;color:#0f172a;} @media print{body{margin:0;}}</style></head><body>' +
+    el.outerHTML +
+    '<script>window.onload=function(){setTimeout(function(){window.print();},250);};<\/script></body></html>');
+  w.document.close();
+}
+
+function apriModalLetteraSpecialistica() {
+  aggiornaAnteprimaLetteraSpecialistica();
+  openModal('modal-lettera-specialistica');
+}
+
+function aggiornaAnteprimaLetteraSpecialistica() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var box = document.getElementById('lettera-specialistica-preview');
+  if (!p || !box) return;
+
+  var brancaEl = document.getElementById('lettera-spec-branca');
+  var quesitoEl = document.getElementById('lettera-spec-quesito');
+  var branca = brancaEl ? brancaEl.value : 'Visita Specialistica';
+  var quesito = (quesitoEl && quesitoEl.value.trim()) ? quesitoEl.value.trim() : 'Controllo clinico periodico e rivalutazione dello schema terapeutico domiciliare.';
+
+  var oggiStr = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' });
+  var eta = (typeof calcolaAnniDaData === 'function' && p.dataNascita) ? calcolaAnniDaData(p.dataNascita) : (p.eta || '--');
+  var dataNascStr = p.dataNascita ? new Date(p.dataNascita).toLocaleDateString('it-IT') : '--';
+
+  var patHtml = (p.patologie && p.patologie.length)
+    ? p.patologie.map(function (pt) { return '<li style="margin-bottom:4px;">' + cestinoEsc(pt) + '</li>'; }).join('')
+    : '<li>Paziente in assistenza domiciliare continuativa</li>';
+
+  var terapieRows = (p.terapie && p.terapie.length)
+    ? p.terapie.map(function (t) {
+        return '<tr>' +
+          '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-weight:800; color:#1e3a8a; white-space:nowrap;">' + cestinoEsc(t.ora || '') + ' <small style="color:#64748b; font-weight:600;">(' + cestinoEsc(t.fascia || '') + ')</small></td>' +
+          '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-weight:800;">' + cestinoEsc(t.farmaco || '') + (t.principio ? '<br><small style="color:#475569; font-weight:600;">Principio: ' + cestinoEsc(t.principio) + '</small>' : '') + '</td>' +
+          '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-weight:700;">' + cestinoEsc(t.dosaggio || '') + '</td>' +
+          '<td style="padding:7px 9px; border-bottom:1px solid #cbd5e1; font-size:12px; color:#334155;">' + cestinoEsc(t.modo || '') + '</td>' +
+        '</tr>';
+      }).join('')
+    : '<tr><td colspan="4" style="padding:10px; color:#64748b;">Nessuna terapia attiva</td></tr>';
+
+  var ultimiLog = (p.registrazioni || []).slice(-5).reverse();
+  var logHtml = ultimiLog.length
+    ? ultimiLog.map(function (r) {
+        var dStr = r.timestamp ? new Date(r.timestamp).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+        return '<li style="margin-bottom:3px;"><b>' + dStr + '</b> — ' + cestinoEsc(r.desc || r.dettaglio || r.tipo || '') + '</li>';
+      }).join('')
+    : '<li>Parametri e somministrazioni regolari secondo piano giornaliero.</li>';
+
+  box.innerHTML =
+    '<div id="lettera-spec-printable" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:24px 28px; color:#0f172a; font-family:Georgia,serif; line-height:1.5;">' +
+      '<div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #1e3a8a; padding-bottom:12px; margin-bottom:16px; font-family:sans-serif;">' +
+        '<div>' +
+          '<div style="font-size:11px; font-weight:800; color:#0284c7; text-transform:uppercase; letter-spacing:0.6px;">CAREASSIST PRO • RELAZIONE DI ACCOMPAGNAMENTO TERAPEUTICO</div>' +
+          '<h2 style="margin:4px 0 2px; font-size:21px; font-weight:900; color:#0f172a;">Alla cortese attenzione del Medico Specialista</h2>' +
+          '<div style="font-size:13.5px; font-weight:800; color:#1e3a8a;">Oggetto: ' + cestinoEsc(branca) + '</div>' +
+        '</div>' +
+        '<div style="text-align:right; font-size:12px; color:#475569;">' +
+          '<div><b>Data:</b> ' + oggiStr + '</div>' +
+          '<div><b>Medico Curante:</b> ' + cestinoEsc(p.medicoNome || p.medico || '--') + '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px 14px; margin-bottom:14px; font-family:sans-serif; font-size:13px;">' +
+        '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:8px;">' +
+          '<div>👤 <b>Assistito:</b> ' + cestinoEsc(p.nome) + ' (' + eta + ' anni)</div>' +
+          '<div>🎂 <b>Data di Nascita:</b> ' + dataNascStr + '</div>' +
+          '<div>⚠️ <b>Allergie note:</b> <span style="color:#b91c1c; font-weight:800;">' + cestinoEsc(p.allergie || 'Nessuna nota') + '</span></div>' +
+          '<div>📞 <b>Riferimento Familiare:</b> ' + cestinoEsc((p.moglieNome || p.maritoNome || 'Caregiver') + ' ' + (p.moglieCellulare || p.cellulare || '')) + '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="margin-bottom:14px; font-family:sans-serif;">' +
+        '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:4px;">1. Motivo della Visita / Quesito</div>' +
+        '<div style="font-size:13.5px; color:#1e293b; background:#eff6ff; border-left:4px solid #0284c7; padding:8px 12px; border-radius:6px;">' + cestinoEsc(quesito) + '</div>' +
+      '</div>' +
+
+      '<div style="margin-bottom:14px; font-family:sans-serif;">' +
+        '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:4px;">2. Quadro Clinico &amp; Patologie in Anamnesi</div>' +
+        '<ul style="margin:0; padding-left:18px; font-size:13px; color:#1e293b;">' + patHtml + '</ul>' +
+      '</div>' +
+
+      '<div style="margin-bottom:14px; font-family:sans-serif;">' +
+        '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:6px;">3. Piano Terapeutico Domiciliare Attivo (Aggiornato al ' + new Date().toLocaleDateString('it-IT') + ')</div>' +
+        '<table style="width:100%; border-collapse:collapse; font-size:12.5px; border:1px solid #cbd5e1;">' +
+          '<thead><tr style="background:#f1f5f9; text-align:left;">' +
+            '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Orario</th>' +
+            '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Farmaco</th>' +
+            '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Posologia</th>' +
+            '<th style="padding:7px 9px; border-bottom:1.5px solid #94a3b8;">Modalità e Note Cliniche</th>' +
+          '</tr></thead>' +
+          '<tbody>' + terapieRows + '</tbody>' +
+        '</table>' +
+      '</div>' +
+
+      '<div style="margin-bottom:16px; font-family:sans-serif;">' +
+        '<div style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; margin-bottom:4px;">4. Ultime Rilevazioni &amp; Annotazioni Domiciliari</div>' +
+        '<ul style="margin:0; padding-left:18px; font-size:12.5px; color:#334155;">' + logHtml + '</ul>' +
+      '</div>' +
+
+      '<div style="border:2px dashed #64748b; border-radius:12px; padding:14px 16px; font-family:sans-serif; background:#fcfcfd;">' +
+        '<div style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:10px;">✍️ Spazio Riservato al Medico Specialista (Variazioni Terapeutiche / Indicazioni)</div>' +
+        '<div style="border-bottom:1px dotted #94a3b8; height:24px; margin-bottom:8px;"></div>' +
+        '<div style="border-bottom:1px dotted #94a3b8; height:24px; margin-bottom:8px;"></div>' +
+        '<div style="border-bottom:1px dotted #94a3b8; height:24px; margin-bottom:14px;"></div>' +
+        '<div style="display:flex; justify-content:space-between; font-size:11.5px; color:#475569;">' +
+          '<span>Data prossimo controllo consigliato: ____/____/202__</span>' +
+          '<span>Timbro e Firma dello Specialista: ___________________________</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function stampaLetteraSpecialistica() {
+  var el = document.getElementById('lettera-spec-printable');
+  if (!el) return;
+  var w = window.open('', '_blank', 'width=900,height=950');
+  if (!w) { window.print(); return; }
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Lettera Visita Specialistica</title>' +
+    '<style>body{font-family:Arial,sans-serif;margin:14px;color:#0f172a;} @media print{body{margin:0;}}</style></head><body>' +
+    el.outerHTML +
+    '<script>window.onload=function(){setTimeout(function(){window.print();},250);};<\/script></body></html>');
+  w.document.close();
+}
+
+function fermaVoceBriefing() {
+  if ('speechSynthesis' in window) {
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+  }
+}
+
+function avviaBriefingVocaleAssistitoDemo(modalita) {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  var ora = new Date().getHours();
+  var saluto = ora < 13 ? 'Buongiorno' : (ora < 18 ? 'Buon pomeriggio' : 'Buonasera');
+  var dataOggi = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var testoVoce = '';
+  var htmlPunti = '';
+
+  if (modalita === 'tutti' && AppData && Array.isArray(AppData.pazienti)) {
+    testoVoce = saluto + ' Ciro. Ecco il riepilogo mattutino completo di CareAssist Pro per ' + dataOggi + '. ';
+    htmlPunti = AppData.pazienti.map(function (px) {
+      var ter = Array.isArray(px.terapie) ? px.terapie : [];
+      var fatte = ter.filter(function (t) { return t.fattoOggi; }).length;
+      var crit = ter.filter(function (t) { return (typeof calcolaGiorniAutonomiaFarmaco === 'function' ? calcolaGiorniAutonomiaFarmaco(t) : 99) <= (parseInt(t.giorniAlert) || 7); });
+      var rigaVoce = 'Per ' + px.nome + ': ' + fatte + ' su ' + ter.length + ' somministrazioni completate oggi. ';
+      if (crit.length > 0) {
+        rigaVoce += 'Attenzione scorta per ' + crit.map(function (c) { return c.farmaco; }).join(', ') + '. ';
+      } else {
+        rigaVoce += 'Scorte coperte. ';
+      }
+      testoVoce += rigaVoce;
+      return '<div style="padding:10px 12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:8px;">' +
+        '<b>👤 ' + cestinoEsc(px.nome) + ':</b> ' + fatte + '/' + ter.length + ' terapie eseguite oggi · ' +
+        (crit.length ? '<span style="color:#b91c1c; font-weight:800;">🚨 ' + crit.length + ' farmaci da ordinare</span>' : '<span style="color:#15803d; font-weight:800;">🟢 Scorte regolari</span>') +
+      '</div>';
+    }).join('');
+  } else {
+    var nomePulito = (p.nome || 'Assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+    var eta = (typeof calcolaAnniDaData === 'function' && p.dataNascita) ? calcolaAnniDaData(p.dataNascita) : (p.eta || '');
+    var terapie = Array.isArray(p.terapie) ? p.terapie : [];
+    var terapieOggi = terapie.filter(function (t) { return (typeof isTerapiaPrevistaOggi === 'function') ? isTerapiaPrevistaOggi(t) : true; });
+    var completate = terapieOggi.filter(function (t) { return t.fattoOggi; }).length;
+    var daFare = terapieOggi.filter(function (t) { return !t.fattoOggi && !t.saltatoOggi; });
+    var prossima = daFare.length > 0 ? daFare[0] : null;
+    var inScadenza = terapie.filter(function (t) {
+      var gg = (typeof calcolaGiorniAutonomiaFarmaco === 'function') ? calcolaGiorniAutonomiaFarmaco(t) : (parseInt(t.scorta) || 0);
+      return gg <= (parseInt(t.giorniAlert) || 7);
+    });
+
+    testoVoce = saluto + ' Ciro. Assistente vocale CareAssist Pro attivo per ' + nomePulito + (eta ? ', ' + eta + ' anni. ' : '. ');
+    testoVoce += 'Oggi, ' + dataOggi + ', il piano terapeutico prevede ' + terapieOggi.length + ' somministrazioni, di cui ' + completate + ' già eseguite. ';
+    if (prossima) {
+      testoVoce += 'La prossima dose in programma è ' + (prossima.farmaco || '').split('(')[0].trim() + ' alle ore ' + (prossima.ora || '08:00') + '. ';
+    } else if (terapieOggi.length > 0) {
+      testoVoce += 'Tutte le somministrazioni di oggi risultano completate. ';
+    }
+    if (inScadenza.length > 0) {
+      testoVoce += 'Avviso scorte: richiedere ricetta medica per ' + inScadenza.map(function (x) { return (x.farmaco || '').split('(')[0].trim(); }).join(' e ') + '. ';
+    } else {
+      testoVoce += 'Tutte le scorte in armadietto e in frigorifero sono regolarmente coperte.';
+    }
+
+    htmlPunti =
+      '<div style="background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:12px; padding:14px; margin-bottom:12px; color:#0f172a; line-height:1.55; font-size:14px;">' +
+        '“' + cestinoEsc(testoVoce) + '”' +
+      '</div>' +
+      '<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; text-align:center;">' +
+        '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"><div style="font-size:20px; font-weight:900; color:#0284c7;">' + completate + '/' + terapieOggi.length + '</div><div style="font-size:11px; color:#64748b; font-weight:700;">Dosi Oggi</div></div>' +
+        '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"><div style="font-size:15px; font-weight:900; color:#0f172a;">' + (prossima ? cestinoEsc(prossima.ora) : '✅ Fine') + '</div><div style="font-size:11px; color:#64748b; font-weight:700;">Prossima Dose</div></div>' +
+        '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"><div style="font-size:20px; font-weight:900; color:' + (inScadenza.length ? '#dc2626' : '#16a34a') + ';">' + (inScadenza.length ? inScadenza.length + ' Alert' : 'OK') + '</div><div style="font-size:11px; color:#64748b; font-weight:700;">Stato Scorte</div></div>' +
+      '</div>';
+  }
+
+  var bodyEl = document.getElementById('briefing-vocale-body');
+  if (bodyEl) {
+    bodyEl.innerHTML =
+      '<div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; padding:8px 12px; background:#eff6ff; border-radius:999px; width:fit-content;">' +
+        '<span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#0284c7; box-shadow:0 0 8px #0284c7;"></span>' +
+        '<span style="font-size:12px; font-weight:800; color:#1e40af;">Sintesi Vocale Italiana Attiva</span>' +
+      '</div>' + htmlPunti;
+  }
+  openModal('modal-briefing-vocale');
+
+  if ('speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+      var utter = new SpeechSynthesisUtterance(testoVoce);
+      utter.lang = 'it-IT';
+      utter.rate = 0.98;
+      utter.pitch = 1.0;
+      window.speechSynthesis.speak(utter);
+    } catch (e) {}
+  }
+}
+
+window.apriModalPassaporto118 = apriModalPassaporto118;
+window.stampaPassaporto118 = stampaPassaporto118;
+window.apriModalLetteraSpecialistica = apriModalLetteraSpecialistica;
+window.aggiornaAnteprimaLetteraSpecialistica = aggiornaAnteprimaLetteraSpecialistica;
+window.stampaLetteraSpecialistica = stampaLetteraSpecialistica;
+window.avviaBriefingVocaleAssistitoDemo = avviaBriefingVocaleAssistitoDemo;
+window.fermaVoceBriefing = fermaVoceBriefing;
