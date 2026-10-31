@@ -686,6 +686,47 @@
                             <div class="cartoon-progress-bar" id="filmProgressBar"></div>
                         </div>
                         <span id="filmTimeLabel" style="font-size:12px; font-weight:800; color:#cbd5e1;">Atto 1/5</span>
+                        
+                        <!-- PULSANTE REGIA & GESTIONE VOCI IN AUTONOMIA -->
+                        <button type="button" onclick="apriRegiaVociModal()" style="background:linear-gradient(135deg, #a855f7, #6366f1); color:#fff; border:none; padding:7px 12px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow:0 2px 8px rgba(168,85,247,0.4);" title="Personalizza le voci, il volume, la velocità e i testi">
+                            🎛️ Gestisci Voci
+                        </button>
+                    </div>
+
+                    <!-- PANNELLO CONTROLLO RAPIDO VOCI (INLINE) -->
+                    <div style="background:#090d16; border-top:1px solid rgba(255,255,255,0.1); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:12px; color:#cbd5e1;">
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                            <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-weight:700;">
+                                <span>Modalità Voce:</span>
+                                <select id="selectVoiceMode" onchange="cambiaVoiceMode(this.value)" style="background:#1e293b; color:#ffd814; border:1px solid #d4af37; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:800;">
+                                    <option value="neural">🎙️ Voce Studio HD Neurale (Isabella &amp; Ciro)</option>
+                                    <option value="browser">🗣️ Voce Sintetica del Browser (Locale)</option>
+                                    <option value="silent">🔇 Modalità Silenziosa (Solo Sottotitoli)</option>
+                                </select>
+                            </label>
+
+                            <label style="display:flex; align-items:center; gap:5px; font-weight:700;">
+                                <span>Velocità:</span>
+                                <select id="selectAudioSpeed" onchange="cambiaAudioSpeed(this.value)" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.25); padding:4px 8px; border-radius:6px; font-size:12px;">
+                                    <option value="0.9">0.9x (Calma)</option>
+                                    <option value="1.0" selected>1.0x (Normale)</option>
+                                    <option value="1.15">1.15x (Dinamica)</option>
+                                    <option value="1.3">1.3x (Veloce)</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <label style="display:flex; align-items:center; gap:6px; font-weight:700;">
+                                <span id="labelVolumeIcon">🔊</span>
+                                <input type="range" id="sliderSuiteVolume" min="0" max="100" value="85" oninput="cambiaSuiteVolume(this.value)" style="width:75px; accent-color:#ffd814; cursor:pointer;">
+                                <span id="labelVolumeVal" style="color:#ffd814; font-weight:800; min-width:30px;">85%</span>
+                            </label>
+
+                            <button type="button" id="btnToggleMute" onclick="toggleMuteAudio()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:4px 8px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">
+                                Muto
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -871,6 +912,130 @@
                 <button type="button" onclick="chiudiModalInfoApp()" style="background:rgba(255,255,255,0.15); border:none; color:#fff; width:36px; height:36px; border-radius:50%; font-size:18px; cursor:pointer;">✕</button>
             </div>
             <div style="padding:24px;" id="modalAppBody"></div>
+        </div>
+    </div>
+
+    <!-- MODALE REGIA & GESTIONE VOCI IN COMPLETA AUTONOMIA -->
+    <div class="modal-backdrop" id="modalRegiaVoci" onclick="if(event.target===this) chiudiRegiaVociModal()">
+        <div class="modal-window" style="max-width:820px; max-height:90vh; overflow-y:auto;">
+            <div style="background:linear-gradient(135deg, #4c1d95 0%, #1e1b4b 100%); color:#fff; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #a855f7;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="font-size:28px;">🎛️</div>
+                    <div>
+                        <div style="font-size:11.5px; font-weight:800; color:#f0abfc; text-transform:uppercase; letter-spacing:0.8px;">STANZA REGIA VOCALE AUTONOMA</div>
+                        <h3 style="font-size:20px; font-weight:900; margin:0;">Gestione e Personalizzazione Voci della Suite</h3>
+                    </div>
+                </div>
+                <button type="button" onclick="chiudiRegiaVociModal()" style="background:rgba(255,255,255,0.15); border:none; color:#fff; width:36px; height:36px; border-radius:50%; font-size:18px; cursor:pointer;">✕</button>
+            </div>
+
+            <div style="padding:24px; background:#0f172a; color:#f8fafc;">
+                <!-- 1. PREFERENZE DI RIPRODUZIONE GLOBALI -->
+                <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(168,85,247,0.3); border-radius:12px; padding:16px; margin-bottom:20px;">
+                    <h4 style="font-size:15px; font-weight:900; color:#e9d5ff; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                        <span>⚙️</span> Impostazioni Audio Generali
+                    </h4>
+                    
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; font-size:13px;">
+                        <div>
+                            <label style="display:block; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Sorgente Vocale:</label>
+                            <select id="modalSelectVoiceMode" onchange="cambiaVoiceMode(this.value); document.getElementById('selectVoiceMode').value=this.value;" style="width:100%; background:#1e293b; color:#ffd814; border:1px solid #a855f7; padding:8px 10px; border-radius:8px; font-weight:800;">
+                                <option value="neural">🎙️ Voci Studio HD Neurali (Isabella &amp; Ciro)</option>
+                                <option value="browser">🗣️ Voce Sintetica Locale del Tuo Dispositivo</option>
+                                <option value="silent">🔇 Solo Sottotitoli (Muto)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label style="display:block; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Voce Locale del Browser:</label>
+                            <select id="selectBrowserVoiceList" onchange="salvaBrowserVoiceScelta(this.value)" style="width:100%; background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.2); padding:8px 10px; border-radius:8px;">
+                                <option value="">Rilevamento voci in corso...</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label style="display:block; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Velocità di Eloquio:</label>
+                            <select id="modalSelectAudioSpeed" onchange="cambiaAudioSpeed(this.value); document.getElementById('selectAudioSpeed').value=this.value;" style="width:100%; background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.2); padding:8px 10px; border-radius:8px;">
+                                <option value="0.85">0.85x — Molto Calma</option>
+                                <option value="1.0" selected>1.0x — Naturale Standard</option>
+                                <option value="1.15">1.15x — Vivace &amp; Scorrevole</option>
+                                <option value="1.3">1.3x — Rapida</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. EDITOR COPIONE TESTI & ANTEPRIMA ASCOLTO -->
+                <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(212,175,55,0.3); border-radius:12px; padding:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                        <h4 style="font-size:15px; font-weight:900; color:#fde047; margin:0; display:flex; align-items:center; gap:8px;">
+                            <span>✍️</span> Personalizza Copione e Testi Parlati
+                        </h4>
+                        <span style="font-size:11.5px; background:rgba(253,224,71,0.15); color:#fde047; padding:4px 8px; border-radius:6px; border:1px solid rgba(253,224,71,0.3);">
+                            Modifiche salvate automaticamente in memoria locale
+                        </span>
+                    </div>
+
+                    <p style="font-size:13px; color:#94a3b8; margin-bottom:14px;">
+                        Seleziona la scena o l'applicazione per modificare il testo recitato. Puoi ascoltare immediatamente l'anteprima vocale con le tue parole!
+                    </p>
+
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Seleziona Brano da Personalizzare:</label>
+                        <select id="selectEditorItem" onchange="caricaTestoItemInEditor(this.value)" style="width:100%; background:#1e293b; color:#fff; border:1px solid #d4af37; padding:10px; border-radius:8px; font-weight:700; font-size:13.5px;">
+                            <optgroup label="🎬 Le 5 Scene del Film Suite">
+                                <option value="scene-0">Atto 1: Il Portale Unificato &amp; La Sicurezza degli Accessi</option>
+                                <option value="scene-1">Atto 2: CareAssist Pro — Il Cuore Clinico &amp; Assistenziale</option>
+                                <option value="scene-2">Atto 3: Flotta Veicoli, Inventario Attrezzi &amp; Logistica</option>
+                                <option value="scene-3">Atto 4: Il Ricettario di Famiglia, MedNutri &amp; Progetto Salute</option>
+                                <option value="scene-4">Atto 5: La Sicurezza Totale — Cloud, USB e Partner Antigravity AI</option>
+                            </optgroup>
+                            <optgroup label="📱 Le 8 Schede Applicative">
+                                <option value="app-0">App 1: CareAssist Pro</option>
+                                <option value="app-1">App 2: Flotta Veicoli &amp; Spese</option>
+                                <option value="app-2">App 3: Inventario Attrezzi &amp; Magazzino</option>
+                                <option value="app-3">App 4: Logistica Consegne &amp; Pacchi</option>
+                                <option value="app-4">App 5: Il Ricettario di Famiglia</option>
+                                <option value="app-5">App 6: MedNutri Terapie Nutrizionali</option>
+                                <option value="app-6">App 7: Progetto Salute &amp; Benessere</option>
+                                <option value="app-7">App 8: Progetto Gioco &amp; Bilancio</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Testo del Copione Recitato:</label>
+                        <textarea id="editorCopioneText" rows="4" style="width:100%; background:#0f172a; color:#fff; border:1.5px solid rgba(255,255,255,0.2); border-radius:8px; padding:12px; font-family:inherit; font-size:13.5px; line-height:1.45; resize:vertical; box-sizing:border-box;"></textarea>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div style="display:flex; gap:8px;">
+                            <button type="button" onclick="anteprimaVoceEditor()" style="background:#0284c7; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                                🔊 Prova Ascolto Testo
+                            </button>
+                            <button type="button" onclick="fermaAudioSuite()" style="background:rgba(255,255,255,0.1); color:#fff; border:none; padding:9px 14px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer;">
+                                ⏹️ Stop
+                            </button>
+                        </div>
+
+                        <div style="display:flex; gap:8px;">
+                            <button type="button" onclick="ripristinaTestoOriginaleEditor()" style="background:rgba(239,68,68,0.18); border:1px solid #ef4444; color:#fca5a5; padding:9px 14px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">
+                                🔄 Ripristina Originale
+                            </button>
+                            <button type="button" onclick="salvaTestoEditor()" style="background:#10b981; color:#fff; border:none; padding:9px 20px; border-radius:8px; font-size:13.5px; font-weight:900; cursor:pointer; box-shadow:0 3px 10px rgba(16,185,129,0.35);">
+                                💾 Salva Copione
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. FOOTER AZIONI -->
+                <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" onclick="chiudiRegiaVociModal()" style="background:#ffd814; color:#0f172a; border:none; padding:10px 24px; border-radius:10px; font-size:14px; font-weight:900; cursor:pointer;">
+                        ✓ Fatto &amp; Chiudi Regia
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1359,6 +1524,7 @@
 
         // =========================================================================
         // STATO DEL PLAYER MULTIMEDIALE CON AUDIO NEURALI STUDIO MP3 (ISABELLA & CIRO)
+        // E GESTIONE VOCI IN COMPLETA AUTONOMIA (VOLUME, VELOCITÀ, VOCI SINTETICHE/NEURALI, COPIONE)
         // =========================================================================
         let viewMode = 'film'; // 'film' | 'app'
         let currentSceneIdx = 0;
@@ -1367,12 +1533,156 @@
         let suiteAudio = new Audio();
         suiteAudio.preload = 'auto';
 
+        // Preferenze Audio Autonome salvate in LocalStorage
+        let audioConfig = {
+            mode: localStorage.getItem('milella_suite_voicemode') || 'neural', // 'neural' | 'browser' | 'silent'
+            speed: parseFloat(localStorage.getItem('milella_suite_audiospeed')) || 1.0,
+            volume: parseInt(localStorage.getItem('milella_suite_volume')) || 85,
+            muted: localStorage.getItem('milella_suite_muted') === 'true',
+            browserVoice: localStorage.getItem('milella_suite_browservoice') || ''
+        };
+
+        // Cache dei copioni personalizzati dall'utente
+        let customCopioni = {};
+        try {
+            const saved = localStorage.getItem('milella_suite_custom_copioni');
+            if (saved) customCopioni = JSON.parse(saved);
+        } catch(e) {}
+
+        function applicaAudioConfig() {
+            suiteAudio.playbackRate = audioConfig.speed;
+            suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
+
+            const selMode = document.getElementById('selectVoiceMode');
+            if (selMode) selMode.value = audioConfig.mode;
+            const selSpeed = document.getElementById('selectAudioSpeed');
+            if (selSpeed) selSpeed.value = audioConfig.speed.toString();
+            const sliderVol = document.getElementById('sliderSuiteVolume');
+            if (sliderVol) sliderVol.value = audioConfig.volume;
+            const lblVol = document.getElementById('labelVolumeVal');
+            if (lblVol) lblVol.textContent = (audioConfig.muted ? '0%' : audioConfig.volume + '%');
+            const lblIcon = document.getElementById('labelVolumeIcon');
+            if (lblIcon) lblIcon.textContent = audioConfig.muted || audioConfig.volume === 0 ? '🔇' : (audioConfig.volume > 50 ? '🔊' : '🔉');
+            const btnMute = document.getElementById('btnToggleMute');
+            if (btnMute) {
+                btnMute.style.background = audioConfig.muted ? '#ef4444' : 'rgba(255,255,255,0.1)';
+                btnMute.textContent = audioConfig.muted ? 'Riattiva' : 'Muto';
+            }
+        }
+
+        function cambiaVoiceMode(val) {
+            audioConfig.mode = val;
+            localStorage.setItem('milella_suite_voicemode', val);
+            fermaAudioSuite();
+            if (isFilmPlaying) avviaRiproduzioneFilm();
+        }
+
+        function cambiaAudioSpeed(val) {
+            audioConfig.speed = parseFloat(val);
+            localStorage.setItem('milella_suite_audiospeed', val);
+            suiteAudio.playbackRate = audioConfig.speed;
+        }
+
+        function cambiaSuiteVolume(val) {
+            audioConfig.volume = parseInt(val);
+            audioConfig.muted = false;
+            localStorage.setItem('milella_suite_volume', val);
+            localStorage.setItem('milella_suite_muted', 'false');
+            applicaAudioConfig();
+        }
+
+        function toggleMuteAudio() {
+            audioConfig.muted = !audioConfig.muted;
+            localStorage.setItem('milella_suite_muted', audioConfig.muted ? 'true' : 'false');
+            applicaAudioConfig();
+        }
+
         function fermaAudioSuite() {
             try {
                 suiteAudio.pause();
                 suiteAudio.onended = null;
                 suiteAudio.ontimeupdate = null;
             } catch (e) {}
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        // =========================================================================
+        // VOCI SINTETICHE LOCALI DEL BROWSER (SPEECH SYNTHESIS)
+        // =========================================================================
+        let availableBrowserVoices = [];
+        function popolaListaVociBrowser() {
+            if (!('speechSynthesis' in window)) return;
+            const voices = window.speechSynthesis.getVoices();
+            if (!voices || voices.length === 0) return;
+            availableBrowserVoices = voices.filter(v => v.lang.startsWith('it'));
+            if (availableBrowserVoices.length === 0) availableBrowserVoices = voices;
+
+            const sel = document.getElementById('selectBrowserVoiceList');
+            if (!sel) return;
+            sel.innerHTML = '';
+            availableBrowserVoices.forEach((v, idx) => {
+                const opt = document.createElement('option');
+                opt.value = v.name;
+                opt.textContent = `${v.name} (${v.lang})`;
+                if (audioConfig.browserVoice && v.name === audioConfig.browserVoice) {
+                    opt.selected = true;
+                } else if (!audioConfig.browserVoice && v.lang.startsWith('it')) {
+                    opt.selected = true;
+                }
+                sel.appendChild(opt);
+            });
+        }
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = popolaListaVociBrowser;
+        }
+
+        function salvaBrowserVoiceScelta(name) {
+            audioConfig.browserVoice = name;
+            localStorage.setItem('milella_suite_browservoice', name);
+        }
+
+        function parlaConBrowserSpeech(testo, onEndCallback) {
+            if (!('speechSynthesis' in window) || audioConfig.muted) {
+                if (onEndCallback) setTimeout(onEndCallback, 1500);
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const cleanText = testo.replace(/[«»]/g, '').trim();
+            const utt = new SpeechSynthesisUtterance(cleanText);
+            utt.rate = audioConfig.speed;
+            utt.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
+            utt.lang = 'it-IT';
+
+            if (audioConfig.browserVoice) {
+                const found = availableBrowserVoices.find(v => v.name === audioConfig.browserVoice);
+                if (found) utt.voice = found;
+            } else if (availableBrowserVoices.length > 0) {
+                utt.voice = availableBrowserVoices[0];
+            }
+
+            utt.onend = () => {
+                if (onEndCallback) onEndCallback();
+            };
+            utt.onerror = () => {
+                if (onEndCallback) onEndCallback();
+            };
+            window.speechSynthesis.speak(utt);
+        }
+
+        function ottieniTestoAttualeScena(sceneIdx) {
+            const key = 'scene-' + sceneIdx;
+            if (customCopioni[key]) return customCopioni[key];
+            const sc = SUITE_SCENES[sceneIdx] || SUITE_SCENES[0];
+            return sc.subtitle;
+        }
+
+        function ottieniTestoAttualeApp(appIdx) {
+            const key = 'app-' + appIdx;
+            if (customCopioni[key]) return customCopioni[key];
+            const app = SUITE_APPS[appIdx] || SUITE_APPS[0];
+            return app.summary;
         }
 
         function evidenziaThumbnail(idAttivo) {
@@ -1399,7 +1709,7 @@
             const sc = SUITE_SCENES[currentSceneIdx] || SUITE_SCENES[0];
             document.getElementById('viewerTopTitle').textContent = `🎬 SUITE GESTIONALE C. MILELLA — ${sc.title.toUpperCase()}`;
             document.getElementById('speakerBadge').textContent = sc.speaker;
-            document.getElementById('subtitleText').textContent = sc.subtitle;
+            document.getElementById('subtitleText').textContent = ottieniTestoAttualeScena(currentSceneIdx);
             document.getElementById('filmTimeLabel').textContent = `Atto ${currentSceneIdx + 1}/5`;
 
             const container = document.getElementById('mainStageContainer');
@@ -1411,8 +1721,40 @@
             isFilmPlaying = true;
             document.getElementById('btnPlayFilm').innerHTML = '⏸️ Pausa';
             const sc = SUITE_SCENES[currentSceneIdx] || SUITE_SCENES[0];
+            const currentText = ottieniTestoAttualeScena(currentSceneIdx);
 
+            // Modalità 1: Muto (Solo lettura visiva e avanzamento)
+            if (audioConfig.mode === 'silent') {
+                let simulatedSec = 12;
+                let cur = 0;
+                const interval = setInterval(() => {
+                    if (!isFilmPlaying) { clearInterval(interval); return; }
+                    cur++;
+                    const pct = Math.min(100, (cur / simulatedSec) * 100);
+                    document.getElementById('filmProgressBar').style.width = pct + '%';
+                    if (cur >= simulatedSec) {
+                        clearInterval(interval);
+                        prossimaScenaFilm();
+                    }
+                }, 1000);
+                return;
+            }
+
+            // Modalità 2: Voce Locale Browser (o testo personalizzato dall'utente)
+            if (audioConfig.mode === 'browser' || customCopioni['scene-' + currentSceneIdx]) {
+                document.getElementById('filmProgressBar').style.width = '30%';
+                parlaConBrowserSpeech(currentText, () => {
+                    document.getElementById('filmProgressBar').style.width = '100%';
+                    if (isFilmPlaying) prossimaScenaFilm();
+                });
+                return;
+            }
+
+            // Modalità 3: Voce Studio Neurale Ufficiale MP3 (Isabella & Ciro)
             suiteAudio.src = sc.audioUrl;
+            suiteAudio.playbackRate = audioConfig.speed;
+            suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
+
             suiteAudio.ontimeupdate = () => {
                 if (suiteAudio.duration && isFinite(suiteAudio.duration)) {
                     const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
@@ -1421,20 +1763,28 @@
             };
             suiteAudio.onended = () => {
                 if (!isFilmPlaying) return;
-                if (currentSceneIdx + 1 < SUITE_SCENES.length) {
-                    currentSceneIdx++;
-                    renderFilmStage();
-                    setTimeout(() => {
-                        if (isFilmPlaying) avviaRiproduzioneFilm();
-                    }, 650);
-                } else {
-                    isFilmPlaying = false;
-                    document.getElementById('btnPlayFilm').innerHTML = '▶️ Riguarda Presentazione';
-                }
+                prossimaScenaFilm();
             };
             suiteAudio.play().catch(err => {
                 console.warn('Play audio suite warning:', err);
+                // Fallback trasparente su sintesi vocale se rete offline o bloccata
+                parlaConBrowserSpeech(currentText, () => {
+                    if (isFilmPlaying) prossimaScenaFilm();
+                });
             });
+        }
+
+        function prossimaScenaFilm() {
+            if (currentSceneIdx + 1 < SUITE_SCENES.length) {
+                currentSceneIdx++;
+                renderFilmStage();
+                setTimeout(() => {
+                    if (isFilmPlaying) avviaRiproduzioneFilm();
+                }, 650);
+            } else {
+                isFilmPlaying = false;
+                document.getElementById('btnPlayFilm').innerHTML = '▶️ Riguarda Presentazione';
+            }
         }
 
         function togglePlayFilm() {
@@ -1482,10 +1832,11 @@
             evidenziaThumbnail('thumb-app-' + idx);
 
             const app = SUITE_APPS[idx] || SUITE_APPS[0];
+            const testoApp = ottieniTestoAttualeApp(idx);
             document.getElementById('viewerTopTitle').textContent = `📱 SCHEDA MODULO ${idx + 1} DI 8 — ${app.name.toUpperCase()}`;
             document.getElementById('speakerBadge').textContent = '🎙️ Dialogo: Isabella & Ciro';
-            document.getElementById('subtitleText').textContent = app.summary;
-            document.getElementById('btnPlayFilm').innerHTML = '🎙️ Ascolta Dialogo Modulo';
+            document.getElementById('subtitleText').textContent = testoApp;
+            document.getElementById('btnPlayFilm').innerHTML = '🎙️ Ascolta Spiegazione';
             document.getElementById('filmTimeLabel').textContent = `App ${idx + 1}/8`;
 
             const container = document.getElementById('mainStageContainer');
@@ -1493,9 +1844,14 @@
                 <div style="padding:24px; background:radial-gradient(circle at 50% 20%, #1e3a8a 0%, #091122 100%); flex:1; display:flex; flex-direction:column; justify-content:center; gap:16px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                         <span style="background:#ffd814; color:#0f172a; font-size:12px; font-weight:900; padding:4px 10px; border-radius:6px;">${app.badge}</span>
-                        <button type="button" onclick="parlaApp(${idx})" style="background:#0284c7; color:#fff; border:none; padding:7px 14px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">
-                            🔊 Ascolta Voce Studio HD
-                        </button>
+                        <div style="display:flex; gap:8px;">
+                            <button type="button" onclick="parlaApp(${idx})" style="background:#0284c7; color:#fff; border:none; padding:7px 14px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">
+                                🔊 Ascolta Voce
+                            </button>
+                            <button type="button" onclick="apriRegiaVociModal('app-${idx}')" style="background:#a855f7; color:#fff; border:none; padding:7px 12px; border-radius:8px; font-size:12.5px; font-weight:800; cursor:pointer;" title="Personalizza testo o voce per questa app">
+                                🎛️ Modifica
+                            </button>
+                        </div>
                     </div>
                     ${app.visualHtml}
                     <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.06); padding:12px 16px; border-radius:10px;">
@@ -1513,14 +1869,111 @@
         function parlaApp(idx) {
             fermaAudioSuite();
             const app = SUITE_APPS[idx] || SUITE_APPS[0];
+            const testoApp = ottieniTestoAttualeApp(idx);
+
+            if (audioConfig.mode === 'silent') return;
+
+            if (audioConfig.mode === 'browser' || customCopioni['app-' + idx]) {
+                document.getElementById('filmProgressBar').style.width = '40%';
+                parlaConBrowserSpeech(testoApp, () => {
+                    document.getElementById('filmProgressBar').style.width = '100%';
+                });
+                return;
+            }
+
             suiteAudio.src = app.audioUrl;
+            suiteAudio.playbackRate = audioConfig.speed;
+            suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
+
             suiteAudio.ontimeupdate = () => {
                 if (suiteAudio.duration && isFinite(suiteAudio.duration)) {
                     const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
                     document.getElementById('filmProgressBar').style.width = pct + '%';
                 }
             };
-            suiteAudio.play().catch(e => console.warn('Errore audio app:', e));
+            suiteAudio.play().catch(e => {
+                console.warn('Fallback speech app:', e);
+                parlaConBrowserSpeech(testoApp);
+            });
+        }
+
+        // =========================================================================
+        // GESTIONE DELLA STANZA REGIA VOCI & EDITOR COPIONE
+        // =========================================================================
+        function apriRegiaVociModal(targetItem) {
+            fermaAudioSuite();
+            popolaListaVociBrowser();
+            applicaAudioConfig();
+
+            const modalSel = document.getElementById('modalSelectVoiceMode');
+            if (modalSel) modalSel.value = audioConfig.mode;
+            const modalSpeed = document.getElementById('modalSelectAudioSpeed');
+            if (modalSpeed) modalSpeed.value = audioConfig.speed.toString();
+
+            const selItem = document.getElementById('selectEditorItem');
+            if (targetItem && selItem) {
+                selItem.value = targetItem;
+            } else if (selItem) {
+                selItem.value = (viewMode === 'film' ? 'scene-' + currentSceneIdx : 'app-' + currentAppIdx);
+            }
+
+            caricaTestoItemInEditor(selItem ? selItem.value : 'scene-0');
+            document.getElementById('modalRegiaVoci').style.display = 'flex';
+        }
+
+        function chiudiRegiaVociModal() {
+            fermaAudioSuite();
+            document.getElementById('modalRegiaVoci').style.display = 'none';
+            if (viewMode === 'film') renderFilmStage();
+            else mostraAppDettaglio(currentAppIdx);
+        }
+
+        function caricaTestoItemInEditor(key) {
+            const txtArea = document.getElementById('editorCopioneText');
+            if (!txtArea) return;
+
+            if (customCopioni[key]) {
+                txtArea.value = customCopioni[key];
+                return;
+            }
+
+            if (key.startsWith('scene-')) {
+                const sIdx = parseInt(key.replace('scene-', ''));
+                txtArea.value = (SUITE_SCENES[sIdx] || SUITE_SCENES[0]).subtitle;
+            } else if (key.startsWith('app-')) {
+                const aIdx = parseInt(key.replace('app-', ''));
+                txtArea.value = (SUITE_APPS[aIdx] || SUITE_APPS[0]).summary;
+            }
+        }
+
+        function salvaTestoEditor() {
+            const key = document.getElementById('selectEditorItem').value;
+            const text = document.getElementById('editorCopioneText').value.trim();
+            if (!text) {
+                delete customCopioni[key];
+            } else {
+                customCopioni[key] = text;
+            }
+            localStorage.setItem('milella_suite_custom_copioni', JSON.stringify(customCopioni));
+            alert('✓ Copione salvato con successo! La presentazione reciterà le tue nuove parole.');
+            if (viewMode === 'film') renderFilmStage();
+            else mostraAppDettaglio(currentAppIdx);
+        }
+
+        function ripristinaTestoOriginaleEditor() {
+            const key = document.getElementById('selectEditorItem').value;
+            delete customCopioni[key];
+            localStorage.setItem('milella_suite_custom_copioni', JSON.stringify(customCopioni));
+            caricaTestoItemInEditor(key);
+            alert('✓ Testo originale di fabbrica ripristinato!');
+            if (viewMode === 'film') renderFilmStage();
+            else mostraAppDettaglio(currentAppIdx);
+        }
+
+        function anteprimaVoceEditor() {
+            fermaAudioSuite();
+            const text = document.getElementById('editorCopioneText').value;
+            parlaConBrowserSpeech(text);
         }
 
         function apriPerSaperneCorrente() {
@@ -1621,10 +2074,12 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            applicaAudioConfig();
+            popolaListaVociBrowser();
             renderFilmStage();
             renderAplusGallery();
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js?v=110').catch(() => {});
+                navigator.serviceWorker.register('/sw.js?v=115').catch(() => {});
             }
         });
     </script>
