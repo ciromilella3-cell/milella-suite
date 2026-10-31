@@ -20579,7 +20579,7 @@ function avviaTestDisplaySpento10Secondi() {
       var nomePaz = p ? p.nome : 'Assistito';
       mostraNotificaSistemaSchermoSpento(
         '🔔 CareAssist Pro — Sveglia Terapia (' + nomePaz + ')',
-        'Allarme a schermo spento verificato! È l'ora della somministrazione programmata.'
+        'Allarme a schermo spento verificato! È l\'ora della somministrazione programmata.'
       );
 
       // E. Invia in tempo reale anche all'altro dispositivo (PC <-> Cellulare)
