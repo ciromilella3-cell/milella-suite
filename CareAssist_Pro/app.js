@@ -75,33 +75,49 @@ function getDatiFarmacoMultiTempo(t, tutteTerapie) {
 // ==========================================
 function isFarmacoPennaIniettabile(t) {
   if (!t) return false;
+  // Se l'utente ha esplicitamente marcato o il tipo è compressa/capsula/gocce, non è MAI una penna
+  if (t.tipoFormulazione === 'compressa' || t.tipoFormulazione === 'capsula' || t.tipoFormulazione === 'gocce') return false;
   if (t.tipoFormulazione === 'penna') return true;
-  var str = ((t.farmaco || '') + ' ' + (t.principio || '') + ' ' + (t.dosaggio || '') + ' ' + (t.modo || '')).toLowerCase();
-  return (
-    str.indexOf('penna') >= 0 ||
-    str.indexOf('insulina') >= 0 ||
-    str.indexOf('xultophy') >= 0 ||
-    str.indexOf('tresiba') >= 0 ||
-    str.indexOf('lantus') >= 0 ||
-    str.indexOf('toujeo') >= 0 ||
-    str.indexOf('novorapid') >= 0 ||
-    str.indexOf('humalog') >= 0 ||
-    str.indexOf('fiasp') >= 0 ||
-    str.indexOf('ozempic') >= 0 ||
-    str.indexOf('victoza') >= 0 ||
-    str.indexOf('trulicity') >= 0 ||
-    str.indexOf('mounjaro') >= 0 ||
-    str.indexOf('saxenda') >= 0 ||
-    str.indexOf('soliqua') >= 0 ||
-    str.indexOf('suliqua') >= 0 ||
-    str.indexOf('byetta') >= 0 ||
-    str.indexOf('levemir') >= 0 ||
-    str.indexOf('degludec') >= 0 ||
-    str.indexOf('glargina') >= 0 ||
-    str.indexOf('aspart') >= 0 ||
-    str.indexOf('lispro') >= 0 ||
-    str.indexOf('sottocute') >= 0
-  );
+
+  // Antidiabetici ORALI noti: non sono MAI penne (evita falsi positivi es. DIAMICRON con dosaggio sporcato)
+  var oraliNoti = ['diamicron', 'gliclazide', 'metformina', 'glucophage', 'metforal', 'rybelsus', 'jardiance', 'empagliflozin', 'forxiga', 'dapagliflozin', 'januvia', 'sitagliptin', 'trajenta', 'linagliptin', 'eucreas', 'janumet', 'amaryl', 'glimepiride', 'galvus', 'vildagliptin', 'xigduo', 'synjardy'];
+  var nomeLow = ((t.farmaco || '') + ' ' + (t.principio || '')).toLowerCase();
+  for (var k = 0; k < oraliNoti.length; k++) {
+    if (nomeLow.indexOf(oraliNoti[k]) >= 0) return false;
+  }
+
+  // Analisi clinica SOLO su nome farmaco e principio attivo (MAI sulle istruzioni/modo per evitare falsi positivi)
+  var fStr = (t.farmaco || '').toLowerCase();
+  var pStr = (t.principio || '').toLowerCase();
+  var dStr = (t.dosaggio || '').toLowerCase();
+
+  // Se contiene esplicitamente penna o iniezione
+  if (fStr.indexOf('penna') >= 0 || fStr.indexOf('pen\b') >= 0 || fStr.indexOf('multidose') >= 0 || dStr.indexOf('sottocute') >= 0) {
+    return true;
+  }
+
+  // Nomi commerciali noti di penne iniettabili per diabete / dimagrimento
+  var penBrands = [
+    'xultophy', 'tresiba', 'lantus', 'toujeo', 'novorapid', 'humalog',
+    'fiasp', 'ozempic', 'victoza', 'trulicity', 'mounjaro', 'saxenda',
+    'soliqua', 'suliqua', 'byetta', 'levemir', 'insulatard', 'actrapid',
+    'apidra', 'lyumjev', 'ryzodeg'
+  ];
+  for (var i = 0; i < penBrands.length; i++) {
+    if (fStr.indexOf(penBrands[i]) >= 0) return true;
+  }
+
+  // Principi attivi noti di insuline e analoghi GLP-1 iniettabili (se specificati nel principio o nome)
+  var molecole = ['insulina', 'liraglutide', 'semaglutide', 'tirzepatide', 'dulaglutide', 'degludec', 'glargina', 'lispro', 'aspart', 'lixisenatide', 'detemir'];
+  for (var j = 0; j < molecole.length; j++) {
+    if (fStr.indexOf(molecole[j]) >= 0 || pStr.indexOf(molecole[j]) >= 0) {
+      // Se è un farmaco orale noto (es. Rybelsus semaglutide orale), non è penna
+      if (fStr.indexOf('rybelsus') >= 0) return false;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function calcolaDatiPennaIniettabile(t) {
@@ -116,27 +132,42 @@ function calcolaDatiPennaIniettabile(t) {
     }
   }
   var giorniPerPenna = Math.max(1, Math.floor(unitaTotaliPenna / doseDie));
-  var penne = (typeof t.penneScorta !== 'undefined') ? parseFloat(t.penneScorta) : (parseFloat(t.scorta) || 2);
-  var giorniAutonomia = Math.max(0, Math.floor(penne * giorniPerPenna));
+  var penneRaw = (typeof t.penneScorta !== 'undefined') ? parseFloat(t.penneScorta) : (parseFloat(t.scorta) || 2);
+  if (isNaN(penneRaw) || penneRaw < 0) penneRaw = 0;
+
+  // Calcolo penne intere in frigo ed eventuale penna attiva in uso
+  var penneIntere = Math.floor(penneRaw);
+  var frazioneUso = penneRaw - penneIntere;
+  var unitaInAttiva = Math.round(frazioneUso * unitaTotaliPenna);
+  var unitaTotali = Math.round(penneRaw * unitaTotaliPenna);
+
+  var giorniAutonomia = Math.max(0, Math.floor(penneRaw * giorniPerPenna));
 
   var dataEsaurimento = new Date();
   dataEsaurimento.setDate(dataEsaurimento.getDate() + giorniAutonomia);
   var dataEsaurimentoStr = dataEsaurimento.toLocaleDateString('it-IT');
 
-  var giorniAnticipo = Math.max(0, Math.floor((penne - 1) * giorniPerPenna));
+  // La ricetta va richiesta quando si apre l'ultima penna in frigorifero
+  var pennePrimaDellUltima = Math.max(0, Math.ceil(penneRaw) - 1);
+  var giorniAnticipo = Math.max(0, Math.floor(pennePrimaDellUltima * giorniPerPenna));
   var dataRichiestaMMG = new Date();
-  dataRichiestaMMG.setDate(dataRichiestaMMG.getDate() + (giorniAnticipo > 0 ? giorniAnticipo : 0));
+  dataRichiestaMMG.setDate(dataRichiestaMMG.getDate() + giorniAnticipo);
   var dataRichiestaMMGStr = dataRichiestaMMG.toLocaleDateString('it-IT');
+
+  var richiediSubito = (penneRaw <= 1.05 || giorniAutonomia <= 15);
 
   return {
     unitaTotaliPenna: unitaTotaliPenna,
     doseDie: doseDie,
     giorniPerPenna: giorniPerPenna,
-    penne: penne,
+    penne: penneRaw,
+    penneIntere: penneIntere,
+    unitaInAttiva: unitaInAttiva,
+    unitaTotali: unitaTotali,
     giorniAutonomia: giorniAutonomia,
     dataEsaurimentoStr: dataEsaurimentoStr,
     dataRichiestaMMGStr: dataRichiestaMMGStr,
-    richiediSubito: (penne <= 1 || giorniAutonomia <= 15)
+    richiediSubito: richiediSubito
   };
 }
 
@@ -1452,6 +1483,19 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
   if (!ciroEx && !(AppData._deletedPazienti || []).includes('paz_1793216119572')) {
     AppData.pazienti.push(getPazienteCiroInit());
     console.log('Profilo Ciro Milella integrato in AppData!');
+  }
+
+  // RECUPERO UNA TANTUM (31/10/2026): terapia di Ciro Milella cancellata involontariamente.
+  // Se la lista è vuota ripristina Entecavir Sandoz 0,5 mg e la invia al Cloud. Il flag impedisce di riattivarsi dopo una cancellazione volontaria.
+  if (!AppData.ciroTerapiaRecuperata20261031) {
+    AppData.ciroTerapiaRecuperata20261031 = true;
+    const ciroRec = AppData.pazienti.find(p => p.id === 'paz_1793216119572' || (p.nome || '').toLowerCase().includes('ciro milella'));
+    if (ciroRec && (!Array.isArray(ciroRec.terapie) || ciroRec.terapie.length === 0)) {
+      ciroRec.terapie = getPazienteCiroInit().terapie;
+      AppData.lastModified = Date.now();
+      localStorage.setItem('careassist_pending_sync', 'true');
+      console.log('Terapia di Ciro Milella ripristinata (Entecavir Sandoz 0,5 mg).');
+    }
   }
 
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
@@ -2771,7 +2815,7 @@ window.nascondiLenteClinica = nascondiLenteClinica;
 window.eseguiAzioneLenteClinica = eseguiAzioneLenteClinica;
 
 // Finestra di Conferma Personalizzata (Custom Dialog Elegante)
-function customConfirm(titolo, testo, icona = '💊') {
+function customConfirm(titolo, testo, icona = '💊', okLabel) {
   return new Promise((resolve) => {
     const modal = document.getElementById('modal-custom-confirm');
     document.getElementById('confirm-modal-title').textContent = titolo;
@@ -2781,6 +2825,7 @@ function customConfirm(titolo, testo, icona = '💊') {
     const btnOk = document.getElementById('confirm-modal-ok');
     const btnCancel = document.getElementById('confirm-modal-cancel');
     const btnX = document.getElementById('confirm-modal-x-btn');
+    btnOk.textContent = okLabel || 'Conferma';
 
     modal.classList.add('active');
     modal.style.display = 'flex';
@@ -2808,6 +2853,186 @@ function customConfirm(titolo, testo, icona = '💊') {
     if (btnX) btnX.addEventListener('click', handleCancel);
   });
 }
+
+// ==========================================================================
+// CESTINO & RIPRISTINO: ogni cancellazione finisce qui e resta recuperabile per 60 giorni
+// (terapie, visite, ausili, annotazioni del diario, registrazioni glicemiche, cartelle assistito)
+// Il Cestino è dentro AppData._cestino, quindi si sincronizza su Cloud, PC e smartphone.
+// ==========================================================================
+const CESTINO_GIORNI = 60;
+const CESTINO_MAX = 300;
+const CESTINO_TIPI = {
+  terapia:     { icona: '💊', nome: 'Terapia' },
+  visita:      { icona: '📅', nome: 'Visita' },
+  ausilio:     { icona: '🦽', nome: 'Ausilio' },
+  annotazione: { icona: '📝', nome: 'Annotazioni diario' },
+  glicemia:    { icona: '🩸', nome: 'Glicemia' },
+  paziente:    { icona: '👤', nome: 'Cartella assistito' }
+};
+
+function cestinoEsc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+function cestinoPulisciScaduti() {
+  if (!AppData || !Array.isArray(AppData._cestino)) return;
+  const limite = Date.now() - CESTINO_GIORNI * 86400000;
+  AppData._cestino = AppData._cestino.filter(function (e) { return e && e.ts > limite; });
+}
+
+function cestinoAggiungi(tipo, etichetta, dettaglio, item, paz) {
+  try {
+    AppData._cestino = Array.isArray(AppData._cestino) ? AppData._cestino : [];
+    AppData._cestino.unshift({
+      id: 'cst_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+      tipo: tipo,
+      etichetta: etichetta || '',
+      dettaglio: dettaglio || '',
+      pazienteId: paz ? paz.id : '',
+      pazienteNome: paz ? paz.nome : '',
+      ts: Date.now(),
+      eliminatoDa: localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Admin',
+      item: JSON.parse(JSON.stringify(item))
+    });
+    cestinoPulisciScaduti();
+    if (AppData._cestino.length > CESTINO_MAX) AppData._cestino.length = CESTINO_MAX;
+  } catch (e) { console.warn('Cestino: impossibile archiviare', e); }
+}
+
+function cestinoAggiornaBadge() {
+  const n = (AppData && Array.isArray(AppData._cestino)) ? AppData._cestino.length : 0;
+  document.querySelectorAll('.cestino-count-badge').forEach(function (el) {
+    el.textContent = n;
+    el.style.display = n > 0 ? 'inline-flex' : 'none';
+  });
+}
+
+function apriModalCestino() {
+  cestinoPulisciScaduti();
+  renderCestino();
+  openModal('modal-cestino');
+}
+
+function renderCestino() {
+  const box = document.getElementById('cestino-lista');
+  if (!box) return;
+  const lista = (AppData && Array.isArray(AppData._cestino)) ? AppData._cestino : [];
+  cestinoAggiornaBadge();
+  const btnSvuota = document.getElementById('cestino-btn-svuota');
+  if (btnSvuota) btnSvuota.style.display = lista.length ? 'inline-flex' : 'none';
+  if (!lista.length) {
+    box.innerHTML = '<div class="cestino-vuoto"><div style="font-size:42px;">✨</div><b>Il Cestino è vuoto</b><span>Tutto ciò che elimini compare qui e resta recuperabile per ' + CESTINO_GIORNI + ' giorni.</span></div>';
+    return;
+  }
+  box.innerHTML = lista.map(function (e) {
+    const t = CESTINO_TIPI[e.tipo] || { icona: '🗂️', nome: e.tipo };
+    const giorniRimasti = Math.max(0, Math.ceil((e.ts + CESTINO_GIORNI * 86400000 - Date.now()) / 86400000));
+    const quando = new Date(e.ts).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    return '<div class="cestino-item">' +
+      '<div class="cestino-item-ico">' + t.icona + '</div>' +
+      '<div class="cestino-item-body">' +
+        '<div class="cestino-item-titolo">' + cestinoEsc(e.etichetta) + '</div>' +
+        '<div class="cestino-item-meta"><span class="cestino-tag">' + cestinoEsc(t.nome) + '</span>' +
+          (e.pazienteNome && e.tipo !== 'paziente' ? '<span>👤 ' + cestinoEsc(e.pazienteNome) + '</span>' : '') +
+          '<span>🕒 ' + quando + '</span>' +
+          '<span class="' + (giorniRimasti <= 7 ? 'cestino-scade' : '') + '">⏳ ' + giorniRimasti + ' gg</span></div>' +
+        (e.dettaglio ? '<div class="cestino-item-dett">' + cestinoEsc(e.dettaglio) + '</div>' : '') +
+      '</div>' +
+      '<div class="cestino-item-azioni">' +
+        '<button class="btn cestino-btn-ripristina" onclick="cestinoRipristina(\'' + e.id + '\')">↩️ Ripristina</button>' +
+        '<button class="btn cestino-btn-elimina" onclick="cestinoEliminaDefinitivo(\'' + e.id + '\')" title="Elimina per sempre">✖</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function cestinoRipristina(id) {
+  const lista = AppData._cestino || [];
+  const e = lista.find(function (x) { return x.id === id; });
+  if (!e) return;
+  const item = JSON.parse(JSON.stringify(e.item));
+  let messaggio = '';
+
+  if (e.tipo === 'paziente') {
+    if (AppData.pazienti.some(function (p) { return p.id === item.id; })) {
+      showToast('Questa cartella è già presente.', 'warning');
+    } else {
+      AppData.pazienti.push(item);
+      AppData._deletedPazienti = (AppData._deletedPazienti || []).filter(function (x) { return x !== item.id; });
+    }
+    messaggio = 'Cartella di "' + item.nome + '" ripristinata con tutti i dati.';
+  } else {
+    const p = AppData.pazienti.find(function (x) { return x.id === e.pazienteId; });
+    if (!p) {
+      showToast('La cartella di ' + (e.pazienteNome || 'questo assistito') + ' non esiste più: ripristina prima la cartella dal Cestino.', 'warning');
+      return;
+    }
+    if (e.tipo === 'terapia') {
+      p.terapie = p.terapie || [];
+      if (p.terapie.some(function (t) { return t.id === item.id; })) item.id = Date.now();
+      p.terapie.push(item);
+    } else if (e.tipo === 'visita') {
+      p.visite = p.visite || [];
+      if (p.visite.some(function (v) { return v.id === item.id; })) item.id = Date.now();
+      p.visite.push(item);
+    } else if (e.tipo === 'ausilio') {
+      p.ausili = p.ausili || [];
+      p.ausili.push(item);
+    } else if (e.tipo === 'annotazione' || e.tipo === 'glicemia') {
+      p.registrazioni = p.registrazioni || [];
+      const arr = Array.isArray(item) ? item : [item];
+      arr.forEach(function (r) {
+        if (!p.registrazioni.some(function (x) { return String(x.id) === String(r.id); })) p.registrazioni.push(r);
+      });
+    }
+    messaggio = '"' + e.etichetta + '" ripristinato per ' + p.nome + '.';
+  }
+
+  AppData._cestino = lista.filter(function (x) { return x.id !== id; });
+  saveDb();
+  renderCestino();
+  showToast(messaggio + ' ↩️');
+}
+
+async function cestinoEliminaDefinitivo(id) {
+  const e = (AppData._cestino || []).find(function (x) { return x.id === id; });
+  if (!e) return;
+  const ok = await customConfirm(
+    'Elimina per sempre',
+    '"' + e.etichetta + '" verrà cancellato DEFINITIVAMENTE e non sarà più recuperabile da nessuna parte.',
+    '⛔',
+    'Elimina per sempre'
+  );
+  if (!ok) return;
+  AppData._cestino = AppData._cestino.filter(function (x) { return x.id !== id; });
+  saveDb();
+  renderCestino();
+  showToast('Elemento eliminato definitivamente.');
+}
+
+async function cestinoSvuota() {
+  const n = (AppData._cestino || []).length;
+  if (!n) return;
+  const ok = await customConfirm(
+    'Svuota il Cestino',
+    'Verranno cancellati DEFINITIVAMENTE tutti i ' + n + ' elementi del Cestino. Dopo questa operazione non sarà più possibile recuperarli.',
+    '⛔',
+    'Svuota definitivamente'
+  );
+  if (!ok) return;
+  AppData._cestino = [];
+  saveDb();
+  renderCestino();
+  showToast('Cestino svuotato.');
+}
+window.apriModalCestino = apriModalCestino;
+window.renderCestino = renderCestino;
+window.cestinoRipristina = cestinoRipristina;
+window.cestinoEliminaDefinitivo = cestinoEliminaDefinitivo;
+window.cestinoSvuota = cestinoSvuota;
+
+const CESTINO_AVVISO = ' Non viene cancellato subito: finisce nel Cestino (Opzioni → Cestino & Ripristino) e potrai ripristinarlo entro ' + CESTINO_GIORNI + ' giorni.';
 
 // CODICE PUK DI SICUREZZA SEGRETO PER CANCELLAZIONI PROTETTE
 const PUK_SEGRETO_OSS = 'SOS999';
@@ -3613,17 +3838,19 @@ async function eliminaPazienteAttivo() {
   }
 
   const ok = await customConfirm(
-    'Elimina Cartella Paziente',
-    `Sei sicuro di voler eliminare la cartella di "${p.nome}" e tutti i dati registrati?`,
-    '⚠️'
+    'Elimina Cartella Assistito',
+    `ATTENZIONE: stai per eliminare la cartella di "${p.nome}" con tutte le terapie (${(p.terapie || []).length}), visite, ausili e il diario.` + CESTINO_AVVISO + ' Dopo ' + CESTINO_GIORNI + ' giorni sarà cancellata per sempre.',
+    '⚠️',
+    'Sposta nel Cestino'
   );
   if (ok) {
+    cestinoAggiungi('paziente', p.nome, (p.terapie || []).length + ' terapie · ' + (p.visite || []).length + ' visite · ' + (p.registrazioni || []).length + ' registrazioni', p, p);
     AppData._deletedPazienti = AppData._deletedPazienti || [];
     if (!AppData._deletedPazienti.includes(p.id)) AppData._deletedPazienti.push(p.id);
     AppData.pazienti = AppData.pazienti.filter(item => item.id !== p.id);
     AppData.activePazienteId = AppData.pazienti[0].id;
     saveDb();
-    showToast(`Cartella di "${p.nome}" eliminata.`);
+    showToast(`Cartella di "${p.nome}" spostata nel Cestino.`);
   }
 }
 
@@ -4040,14 +4267,16 @@ async function rimuoviAusilio(idx) {
   const ausilioDaRimuovere = p.ausili[idx];
   const ok = await customConfirm(
     'Rimuovi Ausilio Sanitario',
-    `Vuoi rimuovere l'ausilio "${ausilioDaRimuovere.tipo}" dalla cartella di ${p.nome}?`,
-    '🗑️'
+    `Vuoi rimuovere l'ausilio "${ausilioDaRimuovere.tipo}" dalla cartella di ${p.nome}?` + CESTINO_AVVISO,
+    '🗑️',
+    'Sposta nel Cestino'
   );
   if (ok) {
+    cestinoAggiungi('ausilio', ausilioDaRimuovere.tipo || 'Ausilio', '', ausilioDaRimuovere, p);
     p.ausili.splice(idx, 1);
     saveDb();
     renderApp();
-    showToast(`Ausilio "${ausilioDaRimuovere.tipo}" rimosso.`);
+    showToast(`Ausilio "${ausilioDaRimuovere.tipo}" spostato nel Cestino.`);
   }
 }
 
@@ -4320,6 +4549,18 @@ function renderTerapie() {
     p.terapie.sort(comparaOrariTerapie);
   }
 
+  // Riparazione automatica: DIAMICRON (compressa orale) erroneamente trattato come penna insulina
+  (p.terapie || []).forEach(function (t) {
+    var nm = ((t.farmaco || '') + ' ' + (t.principio || '')).toLowerCase();
+    if ((nm.indexOf('diamicron') >= 0 || nm.indexOf('gliclazide') >= 0) && /sottocute|unit|\bui\b/i.test(t.dosaggio || '')) {
+      t.dosaggio = '60 mg (1 cpr rilascio modificato)';
+      t.tipoFormulazione = 'compressa';
+      t.quantitaQuota = 1;
+      delete t.penneScorta; delete t.unitaPerPenna; delete t.unitaDoseDie; delete t.kitGlicemiaAssociato;
+      if (typeof t.scorta === 'number' && t.scorta % 1 !== 0) t.scorta = Math.round(t.scorta);
+      if (typeof saveDb === 'function') { setTimeout(function () { try { saveDb(); } catch (e) {} }, 300); }
+    }
+  });
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
   const canEdit = (role === 'admin') || (localStorage.getItem('milella_can_edit_terapie') === 'true');
 
@@ -4412,6 +4653,11 @@ function renderTerapie() {
         <td>
           <b>${t.dosaggio}</b>
           ${(() => {
+            const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+            if (isPen) {
+              const dPen = calcolaDatiPennaIniettabile(t);
+              return `<br><span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1.5px solid #7dd3fc; font-size:11px; margin-top:4px; display:inline-block; border-radius:7px; padding:3px 8px; box-shadow:0 1px 3px rgba(3,105,161,0.08);">💉 INIETTA: ${dPen.doseDie} UI (Sottocute)</span>`;
+            }
             const q = parseFloat(t.quantitaQuota);
             if (q === 0.25) {
               return '<br><span class="badge" style="background:#fef3c7; color:#b45309; font-weight:800; border:1px solid #f59e0b; font-size:11px; margin-top:3px; display:inline-block;">¼ PRENDI: ¼ DOSE (Un quarto cpr)</span>';
@@ -4448,16 +4694,14 @@ function renderTerapie() {
             return avvisoBox + `<small style="color:#334155; font-size:12.5px;">${t.modo}</small>`;
           })()}
         </td>
-        <td style="text-align: center;">
+        <td style="text-align: center; vertical-align: middle;">
           ${(() => {
             const isPenna = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
             if (isPenna) {
               const dPen = calcolaDatiPennaIniettabile(t);
-              const pBadge = (dPen.penne <= 0)
-                ? '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#b91c1c; color:#fff;">🔴 PENNE ESAURITE</span>'
-                : (dPen.richiediSubito 
-                    ? '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#dc2626; color:#fff; border:1px solid #991b1b; padding:2px 7px; border-radius:6px; box-shadow:0 2px 6px rgba(220,38,38,0.25);">🚨 RICHIEDI RICETTA MMG (Ultima penna!)</span>'
-                    : '<span class="badge badge-success" style="font-weight:800; font-size:11px; background:#16a34a; color:#fff;">🟢 PENNE DISPONIBILI</span>');
+              const pStatusClass = (dPen.penne <= 0) ? 'status-danger' : (dPen.richiediSubito ? 'status-warning' : 'status-success');
+              const pStatusText = (dPen.penne <= 0) ? '🔴 Esaurite' : (dPen.richiediSubito ? '🚨 Richiedi MMG (Ultima penna)' : '🟢 Disponibili');
+              
               let kitGlicemiaHtml = '';
               const sensoriPz = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.sensoriScorta !== 'undefined') ? t.kitGlicemiaAssociato.sensoriScorta : (p.ausili ? (p.ausili.find(a => (a.tipo || '').toUpperCase().includes('GLUCOMEN') || (a.tipo || '').toUpperCase().includes('SENSOR'))?.pezziTotali || 25) : 25);
               const lancettePz = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.lancetteScorta !== 'undefined') ? t.kitGlicemiaAssociato.lancetteScorta : (p.ausili ? (p.ausili.find(a => (a.tipo || '').toUpperCase().includes('GLUCOJECT') || (a.tipo || '').toUpperCase().includes('LANCET'))?.pezziTotali || 25) : 25);
@@ -4465,106 +4709,107 @@ function renderTerapie() {
               const lancetteNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.lancetteNome) ? t.kitGlicemiaAssociato.lancetteNome : 'Glucoject Extra 33G';
 
               kitGlicemiaHtml = `
-                <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:8px; padding:5px 8px; margin-top:6px; text-align:left; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-                  <div style="font-size:10px; font-weight:800; color:#166534; margin-bottom:3px; display:flex; align-items:center; justify-content:space-between;">
-                    <span style="display:flex; align-items:center; gap:4px;"><span>🩸</span> KIT AUTOCONTROLLO ASSOCIATO:</span>
-                    <span style="font-size:9px; background:#dcfce7; color:#14532d; padding:1px 5px; border-radius:4px; font-weight:800;">COLLEGATO</span>
-                  </div>
-                  <div style="display:flex; flex-direction:column; gap:2px; font-size:10.5px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #bbf7d0; padding:2px 6px; border-radius:5px;">
-                      <span>🩸 <b>${sensoriNome.replace(/\s*\(.*\)/, '')}:</b></span>
-                      <span style="font-weight:800; color:#15803d;">${sensoriPz} sensori</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#ffffff; border:1px solid #bbf7d0; padding:2px 6px; border-radius:5px;">
-                      <span>📍 <b>${lancetteNome.replace(/\s*\(.*\)/, '')}:</b></span>
-                      <span style="font-weight:800; color:#15803d;">${lancettePz} lancette</span>
-                    </div>
-                  </div>
+                <div class="scorta-kit-diabete-luxury" title="Dispositivi per autocontrollo glicemico associati all\'insulina">
+                  <span>🩸 <b>Kit Glicemia:</b> ${sensoriPz} sensori · ${lancettePz} lancette</span>
                 </div>
               `;
 
               return `
-                ${pBadge}
-                <div style="font-size:13.5px; font-weight:800; color:#0369a1; margin-top:4px;">
-                  💉 ${dPen.penne} Penne in Frigorifero
+                <div class="scorta-card-executive penna">
+                  <div class="scorta-exec-header">
+                    <span class="scorta-exec-badge ${pStatusClass}">${pStatusText}</span>
+                    <span class="scorta-exec-autonomia">⏱️ ~${dPen.giorniAutonomia} gg</span>
+                  </div>
+                  <div class="scorta-exec-quantita" style="color:#0369a1;">
+                    💉 <b>${dPen.penneIntere} ${dPen.penneIntere === 1 ? 'Penna' : 'Penne'}</b> <small style="color:#64748b; font-weight:600; font-size:11px;">in frigo (${dPen.unitaTotali} UI)</small>
+                  </div>
+                  <div class="scorta-exec-milestones">
+                    <div class="milestone-pill mmg ${dPen.richiediSubito ? 'urgent' : ''}" title="Data consigliata per richiedere la nuova ricetta al Medico di Base (apertura ultima penna)">
+                      <span>📅 MMG:</span> <b>${dPen.dataRichiestaMMGStr}</b>
+                    </div>
+                    <div class="milestone-pill fine" title="Data di esaurimento totale delle scorte">
+                      <span>⏳ Fine:</span> <b>${dPen.dataEsaurimentoStr}</b>
+                    </div>
+                  </div>
+                  ${kitGlicemiaHtml}
+                  ${ritiroInfo}
                 </div>
-                <div style="font-size:10.5px; color:#64748b;">Autonomia: <b>~${dPen.giorniAutonomia} giorni</b> (~${Math.round(dPen.penne * dPen.unitaTotaliPenna)} UI)</div>
-                <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:2px 6px; margin-top:4px; display:inline-block;">
-                  <span style="font-size:10px; color:#1e40af; font-weight:700;">⏳ Fine Scorta: <b>${dPen.dataEsaurimentoStr}</b></span>
-                </div>
-                <div style="background:${dPen.richiediSubito ? '#fef2f2' : '#ecfdf5'}; border:1px solid ${dPen.richiediSubito ? '#ef4444' : '#a7f3d0'}; border-radius:6px; padding:3px 8px; margin-top:4px; display:inline-block;">
-                  <span style="font-size:10px; color:${dPen.richiediSubito ? '#991b1b' : '#065f46'}; font-weight:800;">📅 Richiedi ricetta entro: <b>${dPen.dataRichiestaMMGStr}</b></span>
-                </div>
-                ${kitGlicemiaHtml}
-                ${ritiroInfo}
               `;
             }
             const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, terapieFiltrate) : null;
             if (mt) {
-              const mtAutonomia = mt.giorniAutonomia;
-              const mtTermine = mt.dataTermineStr;
-              let mtBadge = '';
-              if (mt.scortaCondivisa <= 0) {
-                mtBadge = '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#b91c1c; color:#fff;">🔴 SCORTA ZERO</span>';
-              } else if (mtAutonomia <= sogliaAlert) {
-                mtBadge = '<span class="badge badge-danger" style="font-weight:800; font-size:11px; background:#ea580c; color:#fff; border:1px solid #c2410c;">🚨 ALLERTA SCORTA (≤' + sogliaAlert + 'gg)</span>';
-              } else {
-                mtBadge = '<span class="badge badge-success" style="font-weight:800; font-size:11px; background:#16a34a; color:#fff;">🟢 SCORTA SUFFICIENTE</span>';
-              }
+              const mtStatusClass = (mt.scortaCondivisa <= 0) ? 'status-danger' : (mt.giorniAutonomia <= sogliaAlert ? 'status-warning' : 'status-success');
+              const mtStatusText = (mt.scortaCondivisa <= 0) ? '🔴 Scorta Zero' : (mt.giorniAutonomia <= sogliaAlert ? '🚨 Allerta Scorta' : '🟢 Farmacia Caricata');
               return `
-                ${mtBadge}
-                <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:8px; padding:3px 7px; margin-top:4px; display:inline-block;">
-                  <span style="font-size:10px; font-weight:800; color:#1e3a8a;">🔗 SCORTA CONDIVISA (${mt.numTempi} TEMPI)</span>
-                  <div style="font-size:9.5px; color:#475569;">Consumo totale: <b>${mt.consumoTotaleDie} cpr/die</b> (ore ${mt.orariStr})</div>
+                <div class="scorta-card-executive multitempo">
+                  <div class="scorta-exec-header">
+                    <span class="scorta-exec-badge ${mtStatusClass}">${mtStatusText}</span>
+                    <span class="scorta-exec-autonomia">⏱️ ~${mt.giorniAutonomia} gg</span>
+                  </div>
+                  <div class="scorta-exec-quantita" style="color:#1e3a8a;">
+                    📦 <b>${mt.scortaCondivisa} cpr</b> <small style="color:#64748b; font-weight:600; font-size:11px;">(🔗 ${mt.numTempi} tempi · ${mt.consumoTotaleDie} cpr/die)</small>
+                  </div>
+                  <div class="scorta-exec-milestones">
+                    <div class="milestone-pill fine" title="Data termine scorta calcolata sul consumo totale combinato">
+                      <span>⏳ Fine Scorta:</span> <b>${mt.dataTermineStr}</b>
+                    </div>
+                    <div class="milestone-pill alert" title="Alert preavviso impostato">
+                      <span>🔔 Alert:</span> <b>${sogliaAlert} gg</b>
+                    </div>
+                  </div>
+                  ${ritiroInfo}
                 </div>
-                <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin-top:2px;">
-                  📦 ${mt.scortaCondivisa} compresse a casa
-                </div>
-                <div style="font-size:10.5px; color:#1e40af; font-weight:700;">Autonomia Reale: <b>~${mtAutonomia} giorni</b></div>
-                <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:2px 6px; margin-top:4px; display:inline-block;">
-                  <span style="font-size:10px; color:#1e40af; font-weight:700;">⏳ Fine Scorta: <b>${mtTermine}</b></span>
-                </div>
-                ${ritiroInfo}
               `;
             }
+            const sClass = (t.scorta <= 0) ? 'status-danger' : (giorniAutonomia <= sogliaAlert ? 'status-warning' : 'status-success');
+            const sText = (t.scorta <= 0) ? '🔴 Mancante' : (giorniAutonomia <= sogliaAlert ? '🚨 Allerta Scorta' : '🟢 Farmacia Caricata');
             return `
-              ${statusBadge}
-              <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:4px;">
-                📦 ${t.scorta} compresse
+              <div class="scorta-card-executive standard">
+                <div class="scorta-exec-header">
+                  <span class="scorta-exec-badge ${sClass}">${sText}</span>
+                  <span class="scorta-exec-autonomia">⏱️ ~${giorniAutonomia} gg</span>
+                </div>
+                <div class="scorta-exec-quantita" style="color:#0f172a;">
+                  📦 <b>${t.scorta} compresse</b>
+                </div>
+                <div class="scorta-exec-milestones">
+                  <div class="milestone-pill fine" title="Data presunta termine compresse">
+                    <span>⏳ Fine Scorta:</span> <b>${dataTermineStr}</b>
+                  </div>
+                  <div class="milestone-pill alert" title="Alert preavviso impostato">
+                    <span>🔔 Alert:</span> <b>${sogliaAlert} gg</b>
+                  </div>
+                </div>
+                ${ritiroInfo}
               </div>
-              <div style="font-size:10.5px; color:#64748b;">Autonomia: <b>~${giorniAutonomia} giorni</b></div>
-              <div style="font-size:9.5px; color:#d97706; font-weight:700;" title="Giorni di preavviso allerta configurabili da 1 a 30">🔔 Alert impostato: <b>${sogliaAlert} gg</b></div>
-              <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:2px 6px; margin-top:4px; display:inline-block;">
-                <span style="font-size:10px; color:#1e40af; font-weight:700;">⏳ Fine Scorta: <b>${dataTermineStr}</b></span>
-              </div>
-              ${ritiroInfo}
             `;
           })()}
         </td>
-        <td style="text-align: center;">
+        <td style="text-align: center; vertical-align: middle;">
           ${(() => {
             const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
             if (isPen) {
               return `
-                <button class="btn btn-outline" style="padding:6px 10px; font-size:11.5px; font-weight:700; border-color:#0284c7; color:#0369a1; background:#f0f9ff; border-radius:8px;" onclick="caricaScatolaRapida(${t.id})" title="Aggiungi automaticamente 1 confezione ritirata (+${t.pennePerScatola || 3} penne)">
-                  +1 Confezione (${t.pennePerScatola || 3} penne)
+                <button class="btn btn-carico-luxury penna" onclick="caricaScatolaRapida(${t.id})" title="Aggiungi automaticamente 1 confezione ritirata (+${t.pennePerScatola || 3} penne)">
+                  <span>💉</span> +1 Confezione (${t.pennePerScatola || 3} penne)
                 </button>
               `;
             }
             return `
-              <button class="btn btn-outline" style="padding:6px 10px; font-size:11.5px; font-weight:700; border-color:#10b981; color:#047857; background:#ecfdf5; border-radius:8px;" onclick="caricaScatolaRapida(${t.id})" title="Aggiungi automaticamente 1 scatola intera ritirata (+${t.cprPerScatola || 28} cpr)">
-                +1 Scatola (${t.cprPerScatola || 28} cpr)
+              <button class="btn btn-carico-luxury cpr" onclick="caricaScatolaRapida(${t.id})" title="Aggiungi automaticamente 1 scatola intera ritirata (+${t.cprPerScatola || 28} cpr)">
+                <span>📦</span> +1 Scatola (${t.cprPerScatola || 28} cpr)
               </button>
             `;
           })()}
         </td>
-        <td style="text-align: center;">
+        <td style="text-align: center; vertical-align: middle;">
           ${(() => {
+            const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
             const isBisogno = t.fascia === 'Al Bisogno' || t.fascia === 'Al Bisogno (SOS)' || t.ora === 'Al Bisogno' || (t.frequenzaTipo === 'bisogno');
             if (isBisogno && !t.fattoOggi) {
               return `
                 <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                  <button class="btn btn-outline" style="min-width: 125px; background:#fef3c7; border-color:#f59e0b; color:#b45309; font-weight:800;" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per registrare che questo farmaco è stato assunto al bisogno oggi">
+                  <button class="btn btn-azione-luxury pending" style="background:#fef3c7; border-color:#f59e0b; color:#b45309;" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per registrare che questo farmaco è stato assunto al bisogno oggi">
                     ⚡ Somministra al Bisogno
                   </button>
                   <span style="font-size:10px; color:#b45309; font-weight:600;">Sintomatico / SOS</span>
@@ -4572,10 +4817,12 @@ function renderTerapie() {
               `;
             }
             if (t.fattoOggi) {
-              return `${(() => {
-              const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
-              return `<button class="btn btn-success" style="min-width: 120px;" onclick="toggleFarmacoConScarico(${t.id})">✓ ${isPen ? 'Iniettato Oggi' : 'Assunto Oggi'}</button>`;
-            })()}` + (isBisogno ? `<div style="font-size:10px; color:#15803d; font-weight:700; margin-top:3px;">⚡ Assunto al bisogno</div>` : '');
+              return `
+                <button class="btn btn-azione-luxury done" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per annullare la spunta se hai sbagliato">
+                  ✓ ${isPen ? 'Iniettato Oggi' : 'Assunto Oggi'}
+                </button>
+                ${isBisogno ? `<div style="font-size:10px; color:#15803d; font-weight:700; margin-top:3px;">⚡ Assunto al bisogno</div>` : ''}
+              `;
             }
             if (t.saltatoOggi) {
               return `
@@ -4589,7 +4836,7 @@ function renderTerapie() {
             if (!check.consentito) {
               return `
                 <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                  <button class="btn btn-outline" style="min-width: 120px; background:#fffbeb; border-color:#f59e0b; color:#b45309; font-weight:700;" onclick="toggleFarmacoConScarico(${t.id})" title="Previsto alle ${t.ora}. Clicca per somministrare ora (spunta)">
+                  <button class="btn btn-azione-luxury pending" style="background:#fffbeb; border-color:#f59e0b; color:#b45309;" onclick="toggleFarmacoConScarico(${t.id})" title="Previsto alle ${t.ora}. Clicca per somministrare ora (spunta)">
                     🕒 Alle ${t.ora} (Spunta)
                   </button>
                   <span style="font-size:10px; color:#d97706; font-weight:700;">Previsto alle ${t.ora}</span>
@@ -4615,7 +4862,9 @@ function renderTerapie() {
             }
             return `
               <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                <button class="btn btn-outline" style="min-width: 120px;" onclick="toggleFarmacoConScarico(${t.id})">⚪ Da dare</button>
+                <button class="btn btn-azione-luxury pending" onclick="toggleFarmacoConScarico(${t.id})">
+                  ${isPen ? '💉 Inietta Ora' : '⚪ Somministra'}
+                </button>
                 <button type="button" class="btn btn-outline" style="padding:1px 6px; font-size:10px; border-color:#e2e8f0; color:#64748b;" onclick="apriModalSaltaFarmaco(${t.id})" title="Registra mancata assunzione o rifiuto">Salta dose</button>
               </div>
             `;
@@ -5242,17 +5491,28 @@ async function toggleFarmacoConScarico(id) {
 
   } else {
     // Si annulla per errore o modifica con DIALOG ELEGANTE
+    const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+    const tipoDoseStr = isPen ? 'l\'iniezione' : 'l\'assunzione';
+    const tipoRipristinoStr = isPen ? 'la dose della penna' : '1 compressa';
     const confermato = await customConfirm(
       'Annullare Somministrazione?',
-      `Vuoi annullare l'assunzione di "${t.farmaco}" e ripristinare 1 compressa nella scorta? Verrà tenuta traccia della modifica nello storico.`,
-      '💊'
+      `Vuoi annullare ${tipoDoseStr} di "${t.farmaco}" e ripristinare ${tipoRipristinoStr} nella scorta? Verrà tenuta traccia della modifica nello storico.`,
+      isPen ? '💉' : '💊'
     );
     if (confermato) {
       t.fattoOggi = false;
       delete t.saltatoOggi;
       delete t.motivoSalto;
-      var qtaRipristino = t.ultimaDoseSomministrata || parseFloat(t.quantitaQuota) || 1;
-      t.scorta = Math.round((t.scorta + qtaRipristino) * 100) / 100;
+
+      if (isPen) {
+        var dPen = calcolaDatiPennaIniettabile(t);
+        var frazPenna = 1 / dPen.giorniPerPenna;
+        t.penneScorta = Math.round(((parseFloat(t.penneScorta) || 0) + frazPenna) * 100) / 100;
+        t.scorta = t.penneScorta;
+      } else {
+        var qtaRipristino = t.ultimaDoseSomministrata || parseFloat(t.quantitaQuota) || 1;
+        t.scorta = Math.round((t.scorta + qtaRipristino) * 100) / 100;
+      }
 
       // Registra l'annullamento per tracciabilità
       p.registrazioni.push({
@@ -5263,11 +5523,11 @@ async function toggleFarmacoConScarico(id) {
         farmaco: t.farmaco,
         dosaggio: t.dosaggio,
         azione: 'annullamento',
-        dettaglio: `Somministrazione annullata alle ore ${oraFormattata}. 1 compressa riaccreditata in scorta (${t.scorta} cpr).`,
+        dettaglio: `Somministrazione annullata alle ore ${oraFormattata}. ${isPen ? 'Dose penna ripristinata' : '1 compressa riaccreditata in scorta'} (${t.scorta} ${isPen ? 'penne' : 'cpr'}).`,
         operatore: nomeOperatore
       });
 
-      showToast(`Somministrazione annullata alle ${oraFormattata}: 1 compressa ripristinata.`);
+      showToast(`Somministrazione annullata alle ${oraFormattata}: ${isPen ? 'dose penna' : 'compressa'} ripristinata.`);
     }
   }
 
@@ -5939,15 +6199,19 @@ function inviaRichiestaVia(canale) {
 async function eliminaTerapia(id) {
   const p = getActivePaziente();
   if (!p) return;
+  const t = (p.terapie || []).find(x => x.id === id);
+  if (!t) return;
   const ok = await customConfirm(
     'Elimina Farmaco',
-    'Vuoi eliminare questo farmaco dal piano terapeutico?',
-    '🗑️'
+    'Vuoi eliminare "' + t.farmaco + '" dal piano terapeutico di ' + p.nome + '?' + CESTINO_AVVISO,
+    '🗑️',
+    'Sposta nel Cestino'
   );
   if (ok) {
-    p.terapie = p.terapie.filter(t => t.id !== id);
+    cestinoAggiungi('terapia', t.farmaco, (t.dosaggio || '') + (t.ora ? ' · ore ' + t.ora : ''), t, p);
+    p.terapie = p.terapie.filter(x => x.id !== id);
     saveDb();
-    showToast('Farmaco rimosso dalla terapia.');
+    showToast('Farmaco spostato nel Cestino: puoi ripristinarlo da Opzioni → Cestino. 🗑️');
   }
 }
 
@@ -6038,15 +6302,18 @@ async function eliminaAnnotazioniSelezionate(scope) {
 
   const ok = await customConfirm(
     'Elimina Annotazioni Selezionate',
-    `Sei sicuro di voler eliminare definitivamente <b>${count}</b> annotazion${count === 1 ? 'e' : 'i'} dal registro?`,
-    '🗑️'
+    `Stai per eliminare ${count} annotazion${count === 1 ? 'e' : 'i'} dal registro di ${p.nome}.` + CESTINO_AVVISO,
+    '🗑️',
+    'Sposta nel Cestino'
   );
 
   if (ok) {
+    const daArchiviare = (p.registrazioni || []).filter(r => idsToDelete.has(String(r.id)));
+    if (daArchiviare.length) cestinoAggiungi('annotazione', daArchiviare.length + ' annotazion' + (daArchiviare.length === 1 ? 'e' : 'i') + ' del diario', (daArchiviare[0].desc || daArchiviare[0].tipo || '').toString().slice(0, 110), daArchiviare, p);
     p.registrazioni = (p.registrazioni || []).filter(r => !idsToDelete.has(String(r.id)));
     saveDb();
     renderDiario();
-    showToast(`Eliminate ${count} annotazion${count === 1 ? 'e' : 'i'} con successo.`);
+    showToast(`${count} annotazion${count === 1 ? 'e spostata' : 'i spostate'} nel Cestino.`);
   }
 }
 
@@ -6195,18 +6462,21 @@ async function eliminaLog(id) {
   try {
     ok = await customConfirm(
       'Elimina Annotazione',
-      'Vuoi eliminare questa annotazione dal diario clinico?',
-      '🗑️'
+      'Vuoi eliminare questa annotazione dal diario clinico?' + CESTINO_AVVISO,
+      '🗑️',
+      'Sposta nel Cestino'
     );
   } catch(e) {
     ok = confirm('Vuoi eliminare questa annotazione dal diario clinico?');
   }
 
   if (ok) {
+    const rec = (p.registrazioni || []).find(r => String(r.id) === String(id));
+    if (rec) cestinoAggiungi('annotazione', 'Annotazione del diario', (rec.desc || rec.tipo || '').toString().slice(0, 140), [rec], p);
     p.registrazioni = (p.registrazioni || []).filter(r => String(r.id) !== String(id));
     saveDb();
     renderDiario();
-    showToast('Annotazione rimossa con successo! 🗑️');
+    showToast('Annotazione spostata nel Cestino. 🗑️');
   }
 }
 window.eliminaLog = eliminaLog;
@@ -6225,18 +6495,20 @@ async function svuotaRitardiFarmaci() {
   try {
     ok = await customConfirm(
       'Cancella Avvisi di Ritardo',
-      'Vuoi cancellare tutti i ' + ritardi.length + ' avvisi di ritardo registrati per ' + p.nome + '?',
-      '🧹'
+      'Vuoi cancellare tutti i ' + ritardi.length + ' avvisi di ritardo registrati per ' + p.nome + '?' + CESTINO_AVVISO,
+      '🧹',
+      'Sposta nel Cestino'
     );
   } catch(e) {
     ok = confirm('Vuoi cancellare tutti i ' + ritardi.length + ' avvisi di ritardo registrati?');
   }
 
   if (ok) {
+    cestinoAggiungi('annotazione', ritardi.length + ' avvisi di ritardo farmaci', 'Registro ritardi di ' + p.nome, ritardi, p);
     p.registrazioni = (p.registrazioni || []).filter(r => r.tipo !== 'farmaco_ritardo');
     saveDb();
     renderDiario();
-    showToast('Tutti i ' + ritardi.length + ' avvisi di ritardo sono stati cancellati! 🧹');
+    showToast('I ' + ritardi.length + ' avvisi di ritardo sono nel Cestino. 🧹');
   }
 }
 window.svuotaRitardiFarmaci = svuotaRitardiFarmaci;
@@ -6295,15 +6567,19 @@ function toggleVisita(id) {
 async function eliminaVisita(id) {
   const p = getActivePaziente();
   if (!p) return;
+  const v = (p.visite || []).find(x => x.id === id);
+  if (!v) return;
   const ok = await customConfirm(
     'Elimina Appuntamento',
-    'Sei sicuro di voler cancellare questo appuntamento / visita medica?',
-    '📅'
+    'Vuoi cancellare la visita "' + (v.medico || '') + ' - ' + (v.motivo || '') + '"?' + CESTINO_AVVISO,
+    '📅',
+    'Sposta nel Cestino'
   );
   if (ok) {
-    p.visite = p.visite.filter(v => v.id !== id);
+    cestinoAggiungi('visita', (v.medico || 'Visita') + (v.motivo ? ' - ' + v.motivo : ''), (v.data ? new Date(v.data).toLocaleDateString('it-IT') : '') + (v.ora ? ' ore ' + v.ora : ''), v, p);
+    p.visite = p.visite.filter(x => x.id !== id);
     saveDb();
-    showToast('Appuntamento eliminato.');
+    showToast('Appuntamento spostato nel Cestino. 📅');
   }
 }
 
@@ -10384,15 +10660,25 @@ function salvaGlicemiaDedicata(e) {
   }
 }
 
-function eliminaGlicemia(logId) {
+async function eliminaGlicemia(logId) {
   const p = getActivePaziente();
   if (!p || !p.registrazioni) return;
-  if (!confirm('Vuoi eliminare questa registrazione glicemica?')) return;
+  const rec = p.registrazioni.find(r => r.id === logId);
+  if (!rec) return;
+  const ok = await customConfirm(
+    'Elimina Registrazione Glicemica',
+    'Vuoi eliminare questa registrazione glicemica?' + CESTINO_AVVISO,
+    '🩸',
+    'Sposta nel Cestino'
+  );
+  if (!ok) return;
+  cestinoAggiungi('glicemia', 'Glicemia ' + (rec.valore || rec.glicemia || rec.val || ''), (rec.desc || (rec.timestamp ? new Date(rec.timestamp).toLocaleString('it-IT') : '')).toString().slice(0, 120), [rec], p);
   p.registrazioni = p.registrazioni.filter(r => r.id !== logId);
   saveDb();
   renderGlicemie();
-  showToast('Registrazione glicemica eliminata.');
+  showToast('Registrazione glicemica spostata nel Cestino.');
 }
+window.eliminaGlicemia = eliminaGlicemia;
 
 function renderGlicemie() {
   const p = getActivePaziente();
@@ -11095,6 +11381,7 @@ function renderAll() {
   renderVisite();
   aggiornaVisibilitaTabEpatologia();
   renderGlicemie();
+  if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
 }
 
 window._initialSyncDone = false;
@@ -12647,6 +12934,7 @@ function ricalcolaRiepilogoCapsula() {
 
   if (window._currentFormatoModal === 'penna') {
     var penneScorta = parseFloat(document.getElementById('edit-penna-scorta') ? document.getElementById('edit-penna-scorta').value : 2) || 2;
+    var penneIntere = Math.floor(penneScorta);
     var unitaDoseDie = parseFloat(document.getElementById('edit-penna-dose-die') ? document.getElementById('edit-penna-dose-die').value : 16) || 16;
     var unitaTotaliPenna = parseInt(document.getElementById('edit-penna-unita-totali') ? document.getElementById('edit-penna-unita-totali').value : 300) || 300;
     
@@ -12656,11 +12944,12 @@ function ricalcolaRiepilogoCapsula() {
     dFine.setDate(dFine.getDate() + ggAutonomia);
     var dFineStr = dFine.toLocaleDateString('it-IT');
 
-    var ggAnticipo = Math.max(0, Math.floor((penneScorta - 1) * ggPerPenna));
+    var pennePrimaDellUltima = Math.max(0, Math.ceil(penneScorta) - 1);
+    var ggAnticipo = Math.max(0, Math.floor(pennePrimaDellUltima * ggPerPenna));
     var dMMG = new Date();
     dMMG.setDate(dMMG.getDate() + (ggAnticipo > 0 ? ggAnticipo : 0));
     var dMMGStr = dMMG.toLocaleDateString('it-IT');
-    var richiediSubito = (penneScorta <= 1 || ggAutonomia <= 15);
+    var richiediSubito = (penneScorta <= 1.05 || ggAutonomia <= 15);
 
     box.innerHTML = 
       '<div class="capsula-summary-title" style="color:#1e40af;">' +
@@ -12671,7 +12960,7 @@ function ricalcolaRiepilogoCapsula() {
       '</div>' +
       '<div class="capsula-summary-metrics" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px;">' +
         '<div><b>💧 Capacità Penna:</b> <span style="color:#0369a1; font-weight:800;">' + unitaTotaliPenna + ' UI (~' + ggPerPenna + ' gg/penna)</span></div>' +
-        '<div><b>❄️ Penne in Frigo:</b> <span style="color:#15803d; font-weight:800;">' + penneScorta + ' penne (~' + ggAutonomia + ' giorni)</span></div>' +
+        '<div><b>❄️ Penne in Frigo:</b> <span style="color:#15803d; font-weight:800;">' + penneIntere + (penneIntere === 1 ? ' penna' : ' penne') + ' (~' + ggAutonomia + ' giorni)</span></div>' +
         '<div><b>⏳ Esaurimento Scorta:</b> <span style="color:#0f172a; font-weight:800;">' + dFineStr + '</span></div>' +
         '<div style="grid-column: 1 / -1; background:' + (richiediSubito ? '#fef2f2' : '#ecfdf5') + '; border:1.5px solid ' + (richiediSubito ? '#ef4444' : '#10b981') + '; padding:8px 12px; border-radius:8px; color:' + (richiediSubito ? '#991b1b' : '#065f46') + ';">' +
           (richiediSubito 

@@ -4632,17 +4632,13 @@ function renderTerapie() {
         return `<span class="badge badge-warning" style="background:#fef08a; color:#854d0e; font-weight:800; border:1px solid #facc15;">🌟 OGGI È IL GIORNO (15 o 30)!</span> <b>${t.ora}</b>`;
       }
     }
-    const fasciaTxt = (t.fascia || '').replace(/\s*\(.*\)\s*/, '');
-    const fasciaSub = ((t.fascia || '').match(/\(([^)]+)\)/) || [])[1] || '';
-    const fl = (t.fascia || '').toLowerCase();
-    const fasciaIcon = fl.includes('matt') ? '🌅' : fl.includes('pranzo') ? '☀️' : fl.includes('pomer') ? '🌤️' : fl.includes('sera') || fl.includes('cena') ? '🌆' : fl.includes('notte') ? '🌙' : '⏰';
-    return `<div class="ter-time-cell"><span class="ter-time-ora">${t.ora}</span><span class="ter-time-fascia">${fasciaIcon} ${fasciaTxt}</span>${fasciaSub ? `<span class="ter-time-sub">${fasciaSub}</span>` : ''}</div>`;
+    return `<span class="badge badge-primary">${t.fascia}</span> <b>${t.ora}</b>`;
   })()}
 </td>
         <td>
           <div class="audit-pill-clickable" onclick="mostraAuditFarmaco(${t.id})" title="Clicca per aprire la tracciabilità e la cronologia">
-            <b class="ter-drug-name">${t.farmaco}</b>
-            <span class="ter-drug-lens" title="Storico">🔍</span>
+            <b style="color:var(--primary); font-size:14.5px; text-decoration: underline; text-decoration-color: rgba(37,99,235,0.4);">${t.farmaco}</b>
+            <span style="font-size:11px; margin-left:4px;" title="Storico">🔍</span>
             ${(() => {
               const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, terapieFiltrate) : null;
               if (mt) {
@@ -4651,11 +4647,11 @@ function renderTerapie() {
               return '';
             })()}
             ${t.ultimaModificaClinica ? `<span style="display:inline-block; font-size:10px; font-weight:800; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:1px 6px; border-radius:6px; margin-left:4px;" title="${t.ultimaModificaClinica.motivo || ''}">🩺 Agg. ${t.ultimaModificaClinica.fonte || 'Medico'} (${t.ultimaModificaClinica.data || ''})</span>` : ''}
-            ${t.principio ? `<div class="ter-drug-principio">🧬 ${t.principio}</div>` : ''}
+            ${t.principio ? `<br><small style="color:#64748b;">Principio: ${t.principio}</small>` : ''}
           </div>
         </td>
-        <td class="ter-dose-cell">
-          <b class="ter-dose-main">${t.dosaggio}</b>
+        <td>
+          <b>${t.dosaggio}</b>
           ${(() => {
             const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
             if (isPen) {
@@ -4695,7 +4691,7 @@ function renderTerapie() {
             } else if (isAverelix) {
               avvisoBox = '<div style="background:#ecfdf5; border:1px solid #10b981; color:#047857; font-weight:800; font-size:10.5px; padding:2px 6px; border-radius:6px; margin-bottom:4px; display:inline-block;">🛡️ ANTIAGGREGANTE A PRANZO</div><br>';
             }
-            return avvisoBox + `<div class="ter-modo-text">${t.modo || ''}</div>`;
+            return avvisoBox + `<small style="color:#334155; font-size:12.5px;">${t.modo}</small>`;
           })()}
         </td>
         <td style="text-align: center; vertical-align: middle;">
@@ -4875,16 +4871,14 @@ function renderTerapie() {
           })()}
         </td>
         <td style="text-align: center;">
-          <div class="ter-actions-grid">
           ${canEdit ? `
-            <button class="ter-icon-btn edit" onclick="apriModificaFarmaco(${t.id})" title="Modifica dati e orario del farmaco">✏️<span>Modifica</span></button>
-            <button class="ter-icon-btn danger" onclick="eliminaTerapia(${t.id})" title="Elimina farmaco">🗑️<span>Elimina</span></button>
+            <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="apriModificaFarmaco(${t.id})" title="Modifica dati e orario del farmaco">✏️ Modifica</button>
+            <button class="btn btn-outline" style="padding:5px 6px; font-size:11px;" onclick="eliminaTerapia(${t.id})" title="Elimina farmaco">🗑️</button>
           ` : `
-            <span class="ter-readonly" title="Sola somministrazione e spunta (Modifiche riservate all'Amministratore)">🔒 Sola Lettura</span>
+            <span style="font-size:11px; color:#64748b; font-weight:600;" title="Sola somministrazione e spunta (Modifiche riservate all'Amministratore)">🔒 Sola Lettura</span>
           `}
-            <button class="ter-icon-btn" onclick="mostraAuditFarmaco(${t.id})" title="Tracciabilità e cronologia controlli">🕒<span>Traccia</span></button>
-            <button class="ter-icon-btn notify" onclick="apriModalAvvisoFarmacoEsterno(${t.id})" title="Configura avviso esterno su Smartphone, Calendario, WhatsApp e Mail per questo farmaco">🔔<span>Avviso</span></button>
-          </div>
+          <button class="btn btn-outline" style="padding:5px 8px; font-size:11px; margin-left:3px;" onclick="mostraAuditFarmaco(${t.id})" title="Tracciabilità e cronologia controlli">🕒 Traccia</button>
+          <button class="btn btn-outline" style="padding:5px 8px; font-size:11px; margin-left:3px; background:#f0fdf4; border-color:#86efac; color:#166534; font-weight:700;" onclick="apriModalAvvisoFarmacoEsterno(${t.id})" title="Configura avviso esterno su Smartphone, Calendario, WhatsApp e Mail per questo farmaco">🔔 Avviso</button>
         </td>
       </tr>
     `;

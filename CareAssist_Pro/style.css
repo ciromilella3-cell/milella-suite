@@ -6165,3 +6165,404 @@ textarea.form-control {
     gap: 10px !important;
   }
 }
+
+/* ==========================================================================
+   EXECUTIVE LUXURY SCORTA & TERAPIA CARD (APPLE HEALTH STANDARD)
+   ========================================================================== */
+.scorta-card-executive {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 11px;
+  padding: 8px 10px;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: all 0.2s ease;
+  max-width: 250px;
+  margin: 0 auto;
+}
+
+.scorta-card-executive:hover {
+  border-color: #94a3b8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.scorta-card-executive.penna {
+  background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+  border-color: #bae6fd;
+}
+
+.scorta-card-executive.multitempo {
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border-color: #cbd5e1;
+}
+
+.scorta-exec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.scorta-exec-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.scorta-exec-badge.status-success {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.scorta-exec-badge.status-warning {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  box-shadow: 0 1px 4px rgba(220, 38, 38, 0.15);
+}
+
+.scorta-exec-badge.status-danger {
+  background: #b91c1c;
+  color: #ffffff;
+  border: 1px solid #991b1b;
+}
+
+.scorta-exec-autonomia {
+  font-size: 10px;
+  font-weight: 800;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.scorta-exec-quantita {
+  font-size: 13.5px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.scorta-exec-milestones {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.milestone-pill {
+  font-size: 9.5px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.milestone-pill.fine {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.milestone-pill.alert {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.milestone-pill.mmg {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.milestone-pill.mmg.urgent {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #f87171;
+  font-weight: 800;
+}
+
+.scorta-kit-diabete-luxury {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 10px;
+  color: #166534;
+  font-weight: 600;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-carico-luxury {
+  padding: 7px 11px !important;
+  font-size: 11.5px !important;
+  font-weight: 800 !important;
+  border-radius: 9px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  transition: all 0.15s ease !important;
+  white-space: nowrap !important;
+}
+
+.btn-carico-luxury.penna {
+  background: #f0f9ff !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #0369a1 !important;
+}
+
+.btn-carico-luxury.penna:hover {
+  background: #e0f2fe !important;
+  border-color: #0369a1 !important;
+  box-shadow: 0 3px 8px rgba(2, 132, 199, 0.18) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-carico-luxury.cpr {
+  background: #ecfdf5 !important;
+  border: 1.5px solid #10b981 !important;
+  color: #047857 !important;
+}
+
+.btn-carico-luxury.cpr:hover {
+  background: #d1fae5 !important;
+  border-color: #059669 !important;
+  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.18) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-azione-luxury {
+  min-width: 124px !important;
+  padding: 7px 14px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  border-radius: 9px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-azione-luxury.done {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 2px 7px rgba(16, 185, 129, 0.3) !important;
+}
+
+.btn-azione-luxury.done:hover {
+  filter: brightness(1.06) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-azione-luxury.pending {
+  background: #ffffff !important;
+  color: #334155 !important;
+  border: 1.5px solid #cbd5e1 !important;
+}
+
+.btn-azione-luxury.pending:hover {
+  border-color: #0284c7 !important;
+  color: #0284c7 !important;
+  background: #f0f9ff !important;
+  transform: translateY(-1px) !important;
+}
+
+
+
+/* ==========================================================================
+   TABELLA TERAPIE — EXECUTIVE ELEGANT REDESIGN (v85)
+   ========================================================================== */
+#terapie-table-body tr.terapia-row-item td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #eef2f7;
+  vertical-align: middle;
+  transition: background .2s ease;
+}
+#terapie-table-body tr.terapia-row-item:hover td { background: #f8fbff; }
+#terapie-table-body tr.terapia-row-item td:first-child { border-left: 4px solid transparent; }
+#terapie-table-body tr.terapia-row-item:hover td:first-child { border-left-color: #0284c7; }
+
+/* --- Colonna orario --- */
+.ter-time-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.ter-time-ora {
+  font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums; line-height: 1;
+}
+.ter-time-fascia {
+  font-size: 11px; font-weight: 700; color: #0369a1; background: #e0f2fe;
+  padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+}
+.ter-time-sub { font-size: 10.5px; color: #64748b; font-weight: 600; padding-left: 4px; }
+
+/* --- Colonna farmaco --- */
+.ter-drug-name {
+  font-size: 15px; font-weight: 800; color: #1e3a8a; letter-spacing: -0.2px;
+}
+.audit-pill-clickable:hover .ter-drug-name { color: #2563eb; }
+.ter-drug-lens { font-size: 11px; margin-left: 3px; opacity: .55; }
+.ter-drug-principio {
+  margin-top: 5px; font-size: 11.5px; color: #64748b; font-weight: 600; font-style: italic;
+}
+
+/* --- Colonna dosaggio --- */
+.ter-dose-main { display: block; font-size: 13.5px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+.ter-dose-cell .badge { border-radius: 10px !important; font-size: 10.5px !important; padding: 4px 9px !important; line-height: 1.3; white-space: normal; }
+
+/* --- Colonna modalità --- */
+.ter-modo-text {
+  font-size: 12.5px; color: #334155; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* --- Card scorta --- */
+.scorta-card-executive {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px 12px;
+  text-align: left;
+  box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 4px 12px rgba(15,23,42,.04);
+  min-width: 200px;
+  position: relative;
+  overflow: hidden;
+}
+.scorta-card-executive::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #16a34a;
+}
+.scorta-card-executive.penna::before { background: linear-gradient(180deg, #0ea5e9, #0369a1); }
+.scorta-card-executive.multitempo::before { background: linear-gradient(180deg, #6366f1, #1e3a8a); }
+.scorta-exec-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
+.scorta-exec-badge {
+  font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 999px;
+  text-transform: uppercase; letter-spacing: .4px; white-space: nowrap;
+}
+.scorta-exec-badge.status-success { background: #dcfce7; color: #166534; }
+.scorta-exec-badge.status-warning { background: #ffedd5; color: #c2410c; }
+.scorta-exec-badge.status-danger  { background: #fee2e2; color: #b91c1c; }
+.scorta-exec-autonomia { font-size: 11px; font-weight: 800; color: #475569; white-space: nowrap; }
+.scorta-exec-quantita { font-size: 15px; margin: 2px 0 8px; line-height: 1.3; }
+.scorta-exec-quantita b { font-weight: 800; }
+.scorta-exec-milestones { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+.milestone-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px; padding: 3px 8px; border-radius: 8px;
+  background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0; white-space: nowrap;
+}
+.milestone-pill span { color: #64748b; font-weight: 600; }
+.milestone-pill b { font-weight: 800; }
+.milestone-pill.fine  { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+.milestone-pill.alert { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.milestone-pill.mmg   { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.milestone-pill.mmg.urgent { background: #fef2f2; border-color: #fecaca; color: #b91c1c; animation: terPulse 1.8s infinite; }
+@keyframes terPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(220,38,38,.25); } 50% { box-shadow: 0 0 0 4px rgba(220,38,38,0); } }
+.scorta-kit-diabete-luxury {
+  font-size: 10.5px; color: #9f1239; background: #fff1f2; border: 1px dashed #fda4af;
+  border-radius: 8px; padding: 4px 8px; margin-bottom: 6px;
+}
+.scorta-card-executive > div[style*="font-size:10px"],
+.scorta-card-executive > div[style*="font-size:9.5px"] { font-size: 10px !important; color: #94a3b8 !important; margin-top: 0 !important; }
+
+/* --- Carico rapido --- */
+.btn-carico-luxury {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-width: 120px; padding: 8px 12px; border-radius: 12px;
+  font-size: 11.5px; font-weight: 800; cursor: pointer;
+  background: #ffffff; transition: all .18s ease; line-height: 1.25;
+}
+.btn-carico-luxury.cpr   { color: #047857; border: 1.5px dashed #6ee7b7; }
+.btn-carico-luxury.penna { color: #0369a1; border: 1.5px dashed #7dd3fc; }
+.btn-carico-luxury:hover { transform: translateY(-1px); border-style: solid; box-shadow: 0 4px 12px rgba(15,23,42,.08); }
+.btn-carico-luxury.cpr:hover   { background: #ecfdf5; }
+.btn-carico-luxury.penna:hover { background: #f0f9ff; }
+.btn-carico-luxury span { font-size: 14px; }
+
+/* --- Azione oggi --- */
+.btn-azione-luxury {
+  min-width: 132px; padding: 11px 14px; border-radius: 14px;
+  font-size: 13px; font-weight: 800; cursor: pointer; border: 1.5px solid #cbd5e1;
+  background: #ffffff; color: #0f172a; transition: all .18s ease;
+}
+.btn-azione-luxury.pending:hover { border-color: #0284c7; color: #0284c7; box-shadow: 0 4px 14px rgba(2,132,199,.15); transform: translateY(-1px); }
+.btn-azione-luxury.done {
+  background: linear-gradient(135deg, #10b981, #047857); color: #fff; border-color: transparent;
+  box-shadow: 0 6px 16px rgba(4,120,87,.25);
+}
+.btn-azione-luxury.done:hover { filter: brightness(1.05); }
+
+/* --- Dettagli (icone) --- */
+.ter-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; min-width: 112px; }
+.ter-icon-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  padding: 6px 4px; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff;
+  font-size: 14px; cursor: pointer; transition: all .15s ease; line-height: 1.1;
+}
+.ter-icon-btn span { font-size: 9.5px; font-weight: 700; color: #64748b; }
+.ter-icon-btn:hover { background: #f1f5f9; transform: translateY(-1px); }
+.ter-icon-btn.edit:hover   { border-color: #93c5fd; background: #eff6ff; }
+.ter-icon-btn.danger:hover { border-color: #fca5a5; background: #fef2f2; }
+.ter-icon-btn.danger:hover span { color: #b91c1c; }
+.ter-icon-btn.notify { background: #f0fdf4; border-color: #bbf7d0; }
+.ter-icon-btn.notify span { color: #166534; }
+.ter-readonly { grid-column: 1 / -1; font-size: 10.5px; color: #64748b; font-weight: 700; }
+
+/* --- Mobile --- */
+@media (max-width: 900px) {
+  .ter-time-ora { font-size: 18px; }
+  .scorta-card-executive { min-width: 180px; }
+  .ter-actions-grid { min-width: 96px; }
+}
+
+
+/* ==========================================================================
+   CESTINO & RIPRISTINO (v87)
+   ========================================================================== */
+.cestino-card { max-width: 640px; width: 96%; max-height: 88vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; }
+.cestino-header { background: linear-gradient(135deg, #0f766e 0%, #0e7490 100%); color: #fff; border-bottom: none; }
+.cestino-count-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 20px; padding: 0 6px; margin-left: 6px;
+  border-radius: 999px; background: #dc2626; color: #fff; font-size: 11px; font-weight: 800;
+}
+.cestino-vuoto { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 36px 16px; text-align: center; color: #475569; }
+.cestino-vuoto span { font-size: 12.5px; color: #94a3b8; max-width: 320px; }
+.cestino-item {
+  display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 10px;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(15,23,42,.04);
+}
+.cestino-item-ico { font-size: 26px; width: 44px; height: 44px; flex: 0 0 44px; display: flex; align-items: center; justify-content: center; background: #f0fdfa; border-radius: 12px; }
+.cestino-item-body { flex: 1; min-width: 0; }
+.cestino-item-titolo { font-size: 14px; font-weight: 800; color: #0f172a; overflow-wrap: anywhere; }
+.cestino-item-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 4px; font-size: 11px; color: #64748b; font-weight: 600; }
+.cestino-tag { background: #e0f2fe; color: #0369a1; padding: 1px 8px; border-radius: 999px; font-weight: 800; }
+.cestino-scade { color: #b91c1c; font-weight: 800; }
+.cestino-item-dett { margin-top: 4px; font-size: 11.5px; color: #475569; overflow-wrap: anywhere; }
+.cestino-item-azioni { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+.cestino-btn-ripristina { background: linear-gradient(135deg, #10b981, #047857); color: #fff; border: none; border-radius: 10px; padding: 8px 12px; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+.cestino-btn-ripristina:hover { filter: brightness(1.07); }
+.cestino-btn-elimina { background: #fff; color: #b91c1c; border: 1px solid #fecaca; border-radius: 10px; padding: 4px 8px; font-size: 11px; cursor: pointer; }
+.cestino-btn-elimina:hover { background: #fef2f2; }
+@media (max-width: 560px) {
+  .cestino-item { flex-wrap: wrap; }
+  .cestino-item-azioni { flex-direction: row; width: 100%; }
+  .cestino-btn-ripristina { flex: 1; }
+}

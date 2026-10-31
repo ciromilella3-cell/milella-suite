@@ -1,3 +1,4 @@
+
 /* NASCONDE LA BARRA STICKY RIDONDANTE: L'HEADER PRINCIPALE È GIÀ SEMPRE VISIBILE */
 #sticky-patient-bar,
 .sticky-patient-bar,
@@ -8,7 +9,6 @@
   pointer-events: none !important;
   visibility: hidden !important;
 }
-
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 :root {
@@ -18,30 +18,30 @@
   --primary-glow: rgba(37, 99, 235, 0.25);
   --secondary: #0ea5e9;
   --accent: #8b5cf6;
-
+  
   --success: #10b981;
   --success-glow: rgba(16, 185, 129, 0.2);
   --warning: #f59e0b;
   --warning-glow: rgba(245, 158, 11, 0.2);
   --danger: #ef4444;
   --danger-glow: rgba(239, 68, 68, 0.2);
-
+  
   --bg-body: #f1f5f9;
   --bg-card: #ffffff;
   --bg-glass: rgba(255, 255, 255, 0.85);
-
+  
   --text-main: #0f172a;
   --text-muted: #64748b;
   --text-light: #94a3b8;
-
+  
   --border: #e2e8f0;
   --border-focus: #3b82f6;
-
+  
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
   --shadow-xl: 0 20px 30px -10px rgba(15, 23, 42, 0.12);
-
+  
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
@@ -154,7 +154,7 @@ body {
   padding: 5px 12px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
   flex-shrink: 0;
 }
 
@@ -232,7 +232,7 @@ body {
   background: #f8fafc;
   outline: none;
   cursor: pointer;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
   letter-spacing: -0.2px;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -353,7 +353,6 @@ body {
     opacity: 0;
     transform: translateY(-8px) scale(0.98);
   }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -516,24 +515,20 @@ body {
     flex-wrap: wrap;
     gap: 10px;
   }
-
   .header-left {
     width: 100%;
     justify-content: space-between;
   }
-
   .header-center-patient {
     max-width: 100%;
     width: 100%;
     order: 2;
   }
-
   .header-top-utilities {
     width: 100%;
     justify-content: flex-end;
     order: 3;
   }
-
   .header-toolbar-inner {
     justify-content: flex-start;
     overflow-x: auto;
@@ -542,7 +537,6 @@ body {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
-
   .header-toolbar-inner::-webkit-scrollbar {
     display: none;
   }
@@ -616,10 +610,8 @@ body {
 .anagrafica-hero::before {
   content: '';
   position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 180px;
-  height: 180px;
+  top: -50px; right: -50px;
+  width: 180px; height: 180px;
   background: radial-gradient(circle, rgba(2, 132, 199, 0.12) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
@@ -644,7 +636,7 @@ body {
   align-items: center;
   gap: 6px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   white-space: nowrap;
 }
 
@@ -660,7 +652,7 @@ body {
 .btn-hero-118 {
   background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255,255,255,0.4);
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
   animation: pulseBeacon 2.5s infinite ease-in-out;
 }
@@ -668,7 +660,7 @@ body {
 .btn-hero-wa {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255,255,255,0.3);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
@@ -726,12 +718,12 @@ body {
   padding: 6px 14px;
   border-radius: 20px;
   border: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   transition: all 0.2s ease;
 }
 
 .meta-item:hover {
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
 
 .smart-link {
@@ -966,7 +958,7 @@ body {
   margin-bottom: 1px;
 }
 
-.contact-value-link,
+.contact-value-link, 
 .contact-value {
   font-size: 13px;
   font-weight: 800;
@@ -1016,14 +1008,14 @@ body {
   padding: 6px 14px;
   border-radius: 12px;
   border: 1.5px solid #cbd5e1;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   font-size: 13px;
   transition: all 0.2s ease;
 }
 
 .contact-chip:hover {
   border-color: #94a3b8;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .chip-actions {
@@ -1109,7 +1101,7 @@ body {
   border-radius: 10px;
   font-size: 12.5px;
   color: #1e40af;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
 }
 
 .cg-pill-left {
@@ -1265,21 +1257,13 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 @keyframes pulseOpenStatus {
-  0% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
-  }
-
-  50% {
-    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
 .open-now-pulse {
@@ -1423,7 +1407,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .farmacia-row-item {
@@ -1605,7 +1589,6 @@ body {
   color: white;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
-
 .btn-primary:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
@@ -1616,7 +1599,6 @@ body {
   color: white;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
-
 .btn-success:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
@@ -1627,7 +1609,6 @@ body {
   color: white;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
 }
-
 .btn-danger:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
@@ -1639,7 +1620,6 @@ body {
   color: var(--text-main);
   box-shadow: var(--shadow-sm);
 }
-
 .btn-outline:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
@@ -1700,25 +1680,10 @@ body {
   letter-spacing: 0.2px;
 }
 
-.badge-success {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.badge-warning {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.badge-danger {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.badge-primary {
-  background: #e0f2fe;
-  color: #0369a1;
-}
+.badge-success { background: #dcfce7; color: #166534; }
+.badge-warning { background: #fef3c7; color: #92400e; }
+.badge-danger { background: #fee2e2; color: #991b1b; }
+.badge-primary { background: #e0f2fe; color: #0369a1; }
 
 /* ==========================================================================
    MODAL DIALOG (MODERN POPUP)
@@ -1735,10 +1700,7 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
 
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(15, 23, 42, 0.72);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -1761,15 +1723,8 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .modal-card {
@@ -1784,7 +1739,7 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
   flex-direction: column;
 }
 
-.modal-card>form {
+.modal-card > form {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -1843,17 +1798,14 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
 .modal-body::-webkit-scrollbar {
   width: 8px;
 }
-
 .modal-body::-webkit-scrollbar-track {
   background: #f1f5f9;
   border-radius: 4px;
 }
-
 .modal-body::-webkit-scrollbar-thumb {
   background: #94a3b8;
   border-radius: 4px;
 }
-
 .modal-body::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
@@ -2003,7 +1955,7 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
   border-radius: 12px;
   outline: none;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
 }
 
 .form-control:hover {
@@ -2050,7 +2002,6 @@ textarea.form-control {
   transition: all 0.2s ease;
   user-select: none;
 }
-
 .audit-pill-clickable:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
@@ -2061,7 +2012,6 @@ textarea.form-control {
   padding-left: 28px;
   margin-top: 10px;
 }
-
 .audit-timeline::before {
   content: '';
   position: absolute;
@@ -2071,16 +2021,13 @@ textarea.form-control {
   width: 2px;
   background: #e2e8f0;
 }
-
 .audit-timeline-item {
   position: relative;
   margin-bottom: 20px;
 }
-
 .audit-timeline-item:last-child {
   margin-bottom: 0;
 }
-
 .audit-timeline-dot {
   position: absolute;
   left: -28px;
@@ -2094,24 +2041,20 @@ textarea.form-control {
   font-size: 11px;
   background: white;
   border: 2px solid #cbd5e1;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.06);
 }
-
 .audit-timeline-dot.green {
   border-color: #10b981;
   background: #ecfdf5;
 }
-
 .audit-timeline-dot.orange {
   border-color: #f59e0b;
   background: #fffbeb;
 }
-
 .audit-timeline-dot.blue {
   border-color: #3b82f6;
   background: #eff6ff;
 }
-
 .audit-timeline-content {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -2119,26 +2062,22 @@ textarea.form-control {
   padding: 12px 16px;
   transition: all 0.2s ease;
 }
-
 .audit-timeline-content:hover {
   background: #ffffff;
   border-color: #cbd5e1;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
 }
-
 .audit-timeline-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 6px;
 }
-
 .audit-time {
   font-size: 12px;
   font-weight: 700;
   color: #0f172a;
 }
-
 .audit-operator {
   font-size: 11px;
   font-weight: 700;
@@ -2147,7 +2086,6 @@ textarea.form-control {
   background: #e0f2fe;
   color: #0369a1;
 }
-
 .audit-desc {
   font-size: 13px;
   color: #334155;
@@ -2180,15 +2118,8 @@ textarea.form-control {
 }
 
 @keyframes toastSlideDown {
-  from {
-    transform: translateY(-50px) scale(0.95);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
+  from { transform: translateY(-50px) scale(0.95); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 /* ==========================================================================
@@ -2263,20 +2194,9 @@ textarea.form-control {
 }
 
 @keyframes pulseWarning {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-  }
-
-  70% {
-    transform: scale(1.04);
-    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
-  }
-
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { transform: scale(1.04); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 .postura-quick-btns {
@@ -2321,13 +2241,11 @@ textarea.form-control {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
     border-color: #10b981;
   }
-
   50% {
     transform: scale(1.05);
     box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
     border-color: #059669;
   }
-
   100% {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
@@ -2355,7 +2273,7 @@ textarea.form-control {
   padding: 1px 6px;
   border-radius: 8px;
   font-weight: 800;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
   letter-spacing: 0.2px;
 }
 
@@ -2366,13 +2284,11 @@ textarea.form-control {
     border-color: #ef4444;
     transform: scale(1);
   }
-
   50% {
     box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
     border-color: #dc2626;
     transform: scale(1.04);
   }
-
   100% {
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
     border-color: #ef4444;
@@ -2444,7 +2360,7 @@ textarea.form-control {
   position: relative;
   overflow: hidden;
   margin: 12px 0;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
 }
 
 .hydration-bar-fill {
@@ -2504,26 +2420,18 @@ textarea.form-control {
 
 /* PRINT STYLES */
 @media print {
-
-  .app-header,
-  .nav-bar,
-  .quick-tiles,
-  .btn,
-  .no-print {
+  .app-header, .nav-bar, .quick-tiles, .btn, .no-print {
     display: none !important;
   }
-
   body {
     background: white;
     font-size: 11pt;
   }
-
   .container {
     max-width: 100%;
     margin: 0;
     padding: 0;
   }
-
   .card {
     box-shadow: none;
     border: 1px solid #ccc;
@@ -2531,11 +2439,7 @@ textarea.form-control {
   }
 }
 
-.badge-danger {
-  background: #dc2626 !important;
-  color: #ffffff !important;
-  font-weight: 800 !important;
-}
+.badge-danger { background: #dc2626 !important; color: #ffffff !important; font-weight: 800 !important; }
 
 .modal-close {
   background: transparent;
@@ -2684,17 +2588,14 @@ textarea.form-control {
     flex-wrap: wrap;
     gap: 12px;
   }
-
   .cartella-selector-container {
     width: 100%;
     justify-content: space-between;
   }
-
   .cartella-selector-container select {
     flex: 1;
     min-width: 0 !important;
   }
-
   .header-actions {
     width: 100%;
     overflow-x: auto;
@@ -2702,7 +2603,6 @@ textarea.form-control {
     justify-content: flex-start;
     -webkit-overflow-scrolling: touch;
   }
-
   .nav-bar {
     top: 0;
     padding: 6px 12px;
@@ -2711,28 +2611,23 @@ textarea.form-control {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
-
   .nav-bar::-webkit-scrollbar {
     display: none;
   }
-
   .nav-tab {
     padding: 8px 14px;
     font-size: 12.5px;
     flex-shrink: 0;
   }
-
   .container {
     padding: 0 12px;
     margin: 14px auto;
     padding-bottom: calc(115px + env(safe-area-inset-bottom, 24px)) !important;
   }
-
   .grid-2 {
     grid-template-columns: 1fr;
     gap: 14px;
   }
-
   .quick-tiles {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 10px;
@@ -2743,7 +2638,7 @@ textarea.form-control {
   body {
     font-size: 14px;
   }
-
+  
   /* HEADER SMARTPHONE COMPATTO */
   .app-header {
     padding: 8px 10px;
@@ -2753,27 +2648,22 @@ textarea.form-control {
     position: relative;
     top: auto;
   }
-
   .header-left {
     justify-content: space-between;
     width: 100%;
   }
-
   .brand {
     gap: 8px;
   }
-
   .brand-icon {
     width: 34px;
     height: 34px;
     font-size: 18px;
     border-radius: 8px;
   }
-
   .brand-title {
     font-size: 17px;
   }
-
   .brand-sub {
     font-size: 9.5px;
     letter-spacing: 0.3px;
@@ -2785,7 +2675,6 @@ textarea.form-control {
     width: 100% !important;
     flex: auto !important;
   }
-
   .patient-picker-box {
     display: flex !important;
     align-items: center !important;
@@ -2794,14 +2683,12 @@ textarea.form-control {
     border-radius: 12px !important;
     width: 100% !important;
   }
-
   .patient-picker-label {
     font-size: 11px !important;
     font-weight: 800 !important;
     white-space: nowrap !important;
     flex-shrink: 0 !important;
   }
-
   .patient-select-input {
     font-size: 13.5px !important;
     font-weight: 700 !important;
@@ -2809,7 +2696,6 @@ textarea.form-control {
     min-width: 0 !important;
     flex: 1 1 auto !important;
   }
-
   .btn-new-patient {
     padding: 6px 10px !important;
     font-size: 11.5px !important;
@@ -2817,11 +2703,9 @@ textarea.form-control {
     white-space: nowrap !important;
     flex-shrink: 0 !important;
   }
-
   .btn-new-patient-full-label {
     display: none !important;
   }
-
   .btn-new-patient-mobile-label {
     display: inline !important;
   }
@@ -2838,12 +2722,10 @@ textarea.form-control {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
-
   .header-actions::-webkit-scrollbar,
   .header-right-actions::-webkit-scrollbar {
     display: none;
   }
-
   .header-actions .btn,
   .header-right-actions .btn,
   .btn-header-action {
@@ -2867,11 +2749,9 @@ textarea.form-control {
     scrollbar-width: none;
     display: flex !important;
   }
-
   .nav-bar::-webkit-scrollbar {
     display: none;
   }
-
   .nav-tab {
     padding: 7px 14px !important;
     font-size: 12.5px !important;
@@ -2888,32 +2768,27 @@ textarea.form-control {
     margin-bottom: 14px;
     gap: 10px;
   }
-
   .hero-quick-actions-bar {
     width: 100% !important;
     display: grid !important;
     grid-template-columns: 1.2fr 1.2fr 1fr !important;
     gap: 6px !important;
   }
-
   .btn-hero-action {
     width: 100% !important;
     justify-content: center !important;
     padding: 8px 6px !important;
     font-size: 11.5px !important;
   }
-
   .hero-actions-column,
-  .anagrafica-hero>div:last-child {
+  .anagrafica-hero > div:last-child {
     align-items: stretch !important;
     width: 100% !important;
     margin-top: 6px !important;
   }
-
   .paziente-name {
     font-size: 21px !important;
   }
-
   .meta-item,
   .contact-chip {
     font-size: 13px !important;
@@ -2928,14 +2803,12 @@ textarea.form-control {
     justify-content: space-between !important;
     box-sizing: border-box !important;
   }
-
   .patient-hero-identity {
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
     width: 100% !important;
   }
-
   .patient-avatar-badge-modern {
     width: 48px !important;
     height: 48px !important;
@@ -2943,7 +2816,6 @@ textarea.form-control {
     font-size: 24px !important;
     border-radius: 14px !important;
   }
-
   .patient-hero-fullname {
     font-size: 19px !important;
     line-height: 1.2 !important;
@@ -2952,25 +2824,20 @@ textarea.form-control {
     word-break: normal !important;
     overflow-wrap: break-word !important;
   }
-
   .patient-hero-chips-row {
     gap: 5px !important;
   }
-
   .patient-contacts-card {
     margin-top: 10px !important;
     border-radius: 14px !important;
   }
-
   .patient-contact-row {
     padding: 8px 12px !important;
   }
-
   .contact-value-link,
   .contact-value {
     font-size: 12.5px !important;
   }
-
   .action-icon-btn {
     width: 34px !important;
     height: 34px !important;
@@ -2980,20 +2847,17 @@ textarea.form-control {
     align-items: center !important;
     justify-content: center !important;
   }
-
   .caregiver-card {
     padding: 10px 12px !important;
     gap: 8px !important;
     border-radius: 14px !important;
   }
-
   .cg-details {
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 6px !important;
   }
-
   .cg-pill {
     font-size: 12px !important;
     padding: 7px 10px !important;
@@ -3003,39 +2867,32 @@ textarea.form-control {
     justify-content: space-between !important;
     align-items: center !important;
   }
-
   .cg-email-link {
     max-width: 170px !important;
   }
-
   .cg-pec-link {
     max-width: 160px !important;
   }
-
   .medico-contacts-row {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 6px !important;
   }
-
   .medico-contact-item {
     width: 100% !important;
     box-sizing: border-box !important;
     justify-content: space-between !important;
     padding: 7px 10px !important;
   }
-
   .medico-contact-item.studio-addr {
     flex-wrap: wrap !important;
     justify-content: flex-start !important;
   }
-
   .farmacia-contacts-row {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 6px !important;
   }
-
   .farmacia-contacts-row .farmacia-contact-item.phone-row {
     width: 100% !important;
     box-sizing: border-box !important;
@@ -3052,13 +2909,11 @@ textarea.form-control {
     gap: 8px !important;
     margin-bottom: 16px;
   }
-
   .tile {
     padding: 12px 8px !important;
     border-radius: 12px !important;
     gap: 4px !important;
   }
-
   .tile-icon {
     width: 44px !important;
     height: 44px !important;
@@ -3066,12 +2921,10 @@ textarea.form-control {
     border-radius: 12px !important;
     margin-bottom: 4px !important;
   }
-
   .tile-title {
     font-size: 13px !important;
     line-height: 1.2;
   }
-
   .tile-sub {
     font-size: 10.5px !important;
     line-height: 1.2;
@@ -3083,24 +2936,20 @@ textarea.form-control {
     border-radius: 14px !important;
     margin-bottom: 14px !important;
   }
-
   .card-header {
     flex-direction: column;
     align-items: flex-start !important;
     gap: 8px;
   }
-
-  .card-header>div:last-child {
+  .card-header > div:last-child {
     width: 100%;
     display: flex;
     justify-content: space-between;
   }
-
   .custom-table th {
     padding: 8px 10px !important;
     font-size: 10px !important;
   }
-
   .custom-table td {
     padding: 10px 8px !important;
     font-size: 12px !important;
@@ -3111,7 +2960,6 @@ textarea.form-control {
     padding: 8px 8px calc(14px + env(safe-area-inset-bottom, 0px)) 8px !important;
     z-index: 10000000 !important;
   }
-
   .modal-card,
   .scheda-118-card,
   .report-wa-card {
@@ -3126,7 +2974,6 @@ textarea.form-control {
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
     background: #ffffff !important;
   }
-
   .modal-header {
     flex-shrink: 0 !important;
     padding: 12px 14px !important;
@@ -3137,7 +2984,6 @@ textarea.form-control {
     background: #f8fafc !important;
     border-bottom: 1.5px solid #e2e8f0 !important;
   }
-
   .modal-title {
     font-size: 15px !important;
     line-height: 1.3 !important;
@@ -3148,7 +2994,6 @@ textarea.form-control {
     flex: 1 !important;
     min-width: 0 !important;
   }
-
   .modal-patient-badge {
     font-size: 12px !important;
     padding: 3px 10px !important;
@@ -3157,7 +3002,6 @@ textarea.form-control {
     text-overflow: ellipsis !important;
     max-width: 100% !important;
   }
-
   .modal-header .btn-outline,
   .modal-header button {
     flex-shrink: 0 !important;
@@ -3170,10 +3014,9 @@ textarea.form-control {
     font-size: 16px !important;
     border-radius: 10px !important;
   }
-
   .modal-body,
   .scheda-118-body,
-  .modal-card>form>div:not(.modal-header):not(.modal-footer) {
+  .modal-card > form > div:not(.modal-header):not(.modal-footer) {
     padding: 14px 12px !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
@@ -3181,7 +3024,6 @@ textarea.form-control {
     min-height: 0 !important;
     background: #ffffff !important;
   }
-
   .modal-footer {
     flex-shrink: 0 !important;
     padding: 12px 14px calc(14px + env(safe-area-inset-bottom, 0px)) 14px !important;
@@ -3193,32 +3035,27 @@ textarea.form-control {
     align-items: stretch !important;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08) !important;
   }
-
   .modal-footer-anagrafica {
     display: flex !important;
     flex-direction: column !important;
     gap: 8px !important;
     width: 100% !important;
   }
-
   .modal-footer-anagrafica .modal-footer-actions {
     display: flex !important;
     gap: 8px !important;
     width: 100% !important;
     order: 1 !important;
   }
-
   .modal-footer-anagrafica .modal-footer-actions button {
     flex: 1 1 50% !important;
     width: 50% !important;
   }
-
   .modal-footer-anagrafica .btn-elimina-cartella {
     width: 100% !important;
     order: 2 !important;
     margin-top: 4px !important;
   }
-
   .modal-footer button,
   .modal-footer a {
     min-height: 44px !important;
@@ -3235,13 +3072,11 @@ textarea.form-control {
   .modal-card .form-group {
     margin-bottom: 8px !important;
   }
-
   #modal-modifica-anagrafica .form-label,
   .modal-card .form-label {
     margin-bottom: 3px !important;
     font-size: 11px !important;
   }
-
   #modal-modifica-anagrafica .form-control,
   .modal-card .form-control {
     padding: 6px 10px !important;
@@ -3249,20 +3084,17 @@ textarea.form-control {
     min-height: 36px !important;
     border-radius: 8px !important;
   }
-
   #modal-modifica-anagrafica div[style*="margin-bottom:14px"],
   #modal-modifica-anagrafica div[style*="margin-bottom: 14px"] {
     margin-bottom: 8px !important;
     padding: 8px 10px !important;
   }
-
   #modal-modifica-anagrafica div[style*="padding:14px"],
   #modal-modifica-anagrafica div[style*="padding: 14px"],
   #modal-modifica-anagrafica div[style*="padding:12px"],
   #modal-modifica-anagrafica div[style*="padding: 12px"] {
     padding: 8px 10px !important;
   }
-
   #modal-modifica-anagrafica .anagrafica-nascita-row {
     margin-bottom: 8px !important;
   }
@@ -3275,25 +3107,21 @@ textarea.form-control {
     gap: 6px !important;
     align-items: flex-end !important;
   }
-
-  .anagrafica-nascita-row>.form-group:first-child {
+  .anagrafica-nascita-row > .form-group:first-child {
     flex: 1 1 auto !important;
     min-width: 0 !important;
   }
-
-  .anagrafica-nascita-row>.form-group:last-child {
+  .anagrafica-nascita-row > .form-group:last-child {
     flex: 0 0 68px !important;
     min-width: 60px !important;
     max-width: 75px !important;
   }
-
   #edit-paz-nascita-selects,
   #nuovo-paz-nascita-selects {
     display: flex !important;
     gap: 4px !important;
     width: 100% !important;
   }
-
   #edit-paz-nascita-selects select,
   #nuovo-paz-nascita-selects select {
     font-size: 13px !important;
@@ -3308,8 +3136,7 @@ textarea.form-control {
     gap: 8px !important;
     width: 100% !important;
   }
-
-  .modal-card .form-row:not(.anagrafica-nascita-row)>.form-group {
+  .modal-card .form-row:not(.anagrafica-nascita-row) > .form-group {
     min-width: 0 !important;
     flex: 1 1 50% !important;
     width: 50% !important;
@@ -3325,7 +3152,6 @@ textarea.form-control {
     flex-direction: column !important;
     box-shadow: 0 20px 60px rgba(225, 29, 72, 0.45) !important;
   }
-
   #modal-allarme-terapie .modal-header {
     background: linear-gradient(135deg, #881337 0%, #be123c 45%, #e11d48 100%) !important;
     color: #ffffff !important;
@@ -3336,7 +3162,6 @@ textarea.form-control {
     justify-content: space-between !important;
     gap: 10px !important;
   }
-
   #modal-allarme-terapie .modal-header h3 {
     color: #ffffff !important;
     font-size: 15.5px !important;
@@ -3345,14 +3170,12 @@ textarea.form-control {
     margin: 0 !important;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
   }
-
   #modal-allarme-terapie .modal-header p {
     color: #ffe4e6 !important;
     font-size: 11px !important;
     font-weight: 600 !important;
     margin: 2px 0 0 0 !important;
   }
-
   #modal-allarme-terapie .modal-header button {
     width: 36px !important;
     height: 36px !important;
@@ -3369,7 +3192,6 @@ textarea.form-control {
     justify-content: center !important;
     cursor: pointer !important;
   }
-
   #modal-allarme-terapie .modal-body {
     padding: 12px 10px !important;
     flex: 1 !important;
@@ -3377,7 +3199,6 @@ textarea.form-control {
     -webkit-overflow-scrolling: touch;
     background: #f8fafc !important;
   }
-
   #modal-allarme-terapie .modal-footer {
     background: #ffffff !important;
     border-top: 1.5px solid #fee2e2 !important;
@@ -3400,7 +3221,6 @@ textarea.form-control {
     justify-content: space-around;
     padding: 4px 6px;
   }
-
   .mobile-bar-btn {
     display: flex;
     flex-direction: column;
@@ -3416,17 +3236,14 @@ textarea.form-control {
     padding: 4px 0;
     transition: color 0.15s ease;
   }
-
   .mobile-bar-btn span:first-child {
     font-size: 18px;
     line-height: 1.1;
   }
-
   .mobile-bar-btn.active,
   .mobile-bar-btn:active {
     color: #38bdf8;
   }
-
   .mobile-bar-btn-save {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
     color: #ffffff !important;
@@ -3792,45 +3609,29 @@ textarea.form-control {
 }
 
 @keyframes pulseStickyAlert {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 6px rgba(220, 38, 38, 0.5);
-  }
-
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 12px rgba(220, 38, 38, 0.9);
-  }
-
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 6px rgba(220, 38, 38, 0.5);
-  }
+  0% { transform: scale(1); box-shadow: 0 0 6px rgba(220, 38, 38, 0.5); }
+  50% { transform: scale(1.05); box-shadow: 0 0 12px rgba(220, 38, 38, 0.9); }
+  100% { transform: scale(1); box-shadow: 0 0 6px rgba(220, 38, 38, 0.5); }
 }
 
 @media (max-width: 768px) {
   .sticky-patient-bar {
-    top: 41px;
-    /* Direttamente ancorato sotto i tab di navigazione mobili */
+    top: 41px; /* Direttamente ancorato sotto i tab di navigazione mobili */
     padding: 0 12px;
     z-index: 39;
   }
-
   .sticky-patient-bar.is-sticky-active {
     padding: 5px 12px;
     max-height: 52px;
   }
-
   .sticky-patient-name {
     font-size: 12.5px;
     max-width: 170px;
   }
-
   .sticky-patient-sub {
     font-size: 9.5px;
     max-width: 170px;
   }
-
   .btn-sticky-cambia {
     padding: 4px 10px;
     font-size: 11px;
@@ -3854,7 +3655,6 @@ textarea.form-control {
   transition: transform 0.15s ease;
   white-space: nowrap;
 }
-
 .gps-nav-btn:active {
   transform: scale(0.92);
 }
@@ -3862,16 +3662,13 @@ textarea.form-control {
 .patologie-toggle-btn {
   display: none;
 }
-
 @media (max-width: 640px) {
   .patologie-container:not(.expanded) .patologia-collapsible {
     display: none !important;
   }
-
   .patologie-toggle-btn {
     display: inline-block !important;
   }
-
   .container {
     padding-bottom: calc(96px + env(safe-area-inset-bottom, 20px)) !important;
   }
@@ -3887,13 +3684,11 @@ textarea.form-control {
     box-shadow: inset 0 0 0 3px #dc2626, 0 0 18px rgba(220, 38, 38, 0.75) !important;
     transform: scale(1);
   }
-
   50% {
     background-color: #fca5a5 !important;
     box-shadow: inset 0 0 0 4px #b91c1c, 0 0 32px 8px rgba(220, 38, 38, 0.95) !important;
     transform: scale(1.02);
   }
-
   100% {
     background-color: #fee2e2 !important;
     box-shadow: inset 0 0 0 3px #dc2626, 0 0 18px rgba(220, 38, 38, 0.75) !important;
@@ -3933,20 +3728,9 @@ textarea.form-control {
    MODULO AVANZATO: SCHEDA 118, REPORT WHATSAPP, BICCHIERI IDRATAZIONE
    ========================================================================== */
 @keyframes pulseBeacon {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 8px rgba(220, 38, 38, 0.4);
-  }
-
-  50% {
-    transform: scale(1.04);
-    box-shadow: 0 0 18px rgba(220, 38, 38, 0.85);
-  }
-
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 8px rgba(220, 38, 38, 0.4);
-  }
+  0% { transform: scale(1); box-shadow: 0 0 8px rgba(220, 38, 38, 0.4); }
+  50% { transform: scale(1.04); box-shadow: 0 0 18px rgba(220, 38, 38, 0.85); }
+  100% { transform: scale(1); box-shadow: 0 0 8px rgba(220, 38, 38, 0.4); }
 }
 
 .btn-scheda-118 {
@@ -4102,17 +3886,9 @@ textarea.form-control {
   gap: 6px;
 }
 
-.color-blue-118 {
-  color: #0284c7;
-}
-
-.color-red-118 {
-  color: #dc2626;
-}
-
-.color-green-118 {
-  color: #16a34a;
-}
+.color-blue-118 { color: #0284c7; }
+.color-red-118 { color: #dc2626; }
+.color-green-118 { color: #16a34a; }
 
 .grid-anagrafica-118 {
   display: grid;
@@ -4344,51 +4120,41 @@ textarea.form-control {
     max-height: calc(100dvh - 16px) !important;
     border-radius: 16px !important;
   }
-
   .header-118-pro {
     padding: 10px 12px !important;
   }
-
   .title-118-main {
     font-size: 14px !important;
   }
-
   .subtitle-118-sub {
     font-size: 11px !important;
   }
-
   .body-118-pro {
     padding: 10px !important;
     gap: 8px !important;
   }
-
   .grid-anagrafica-118 {
     grid-template-columns: 1fr 1fr;
     gap: 6px 8px;
   }
-
   .grid-contatti-118 {
     grid-template-columns: 1fr 1fr;
     gap: 6px;
   }
-
   .footer-118-pro {
     padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px)) 10px !important;
     flex-direction: column !important;
     gap: 8px !important;
   }
-
   .btn-chiamata-118 {
     width: 100% !important;
     height: 44px !important;
   }
-
   .footer-118-sub-btns {
     width: 100% !important;
     display: flex !important;
     gap: 8px !important;
   }
-
   .btn-118-sub {
     flex: 1 1 50% !important;
     height: 38px !important;
@@ -4438,18 +4204,9 @@ textarea.form-control {
 
 /* ALLERGIE 118 ALERT & PILLS */
 @keyframes pulseAllergyAlert {
-  0% {
-    box-shadow: 0 0 4px rgba(220, 38, 38, 0.4);
-  }
-
-  50% {
-    box-shadow: 0 0 12px rgba(220, 38, 38, 0.85);
-    transform: scale(1.02);
-  }
-
-  100% {
-    box-shadow: 0 0 4px rgba(220, 38, 38, 0.4);
-  }
+  0% { box-shadow: 0 0 4px rgba(220, 38, 38, 0.4); }
+  50% { box-shadow: 0 0 12px rgba(220, 38, 38, 0.85); transform: scale(1.02); }
+  100% { box-shadow: 0 0 4px rgba(220, 38, 38, 0.4); }
 }
 
 .allergy-alert-badge {
@@ -4460,12 +4217,10 @@ textarea.form-control {
   transition: all 0.15s ease;
   cursor: pointer;
 }
-
 .allergy-quick-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
-
 .allergy-quick-btn:active {
   transform: scale(0.95);
 }
@@ -4501,17 +4256,14 @@ textarea.form-control {
 #clinica-lente-overlay::-webkit-scrollbar {
   width: 6px;
 }
-
 #clinica-lente-overlay::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
 }
-
 #clinica-lente-overlay::-webkit-scrollbar-thumb {
   background: rgba(56, 189, 248, 0.4);
   border-radius: 8px;
 }
-
 #clinica-lente-overlay::-webkit-scrollbar-thumb:hover {
   background: #38bdf8;
 }
@@ -4654,7 +4406,6 @@ textarea.form-control {
     border-radius: 18px;
     max-height: 88vh;
   }
-
   #btn-chiudi-lente-x {
     width: 36px;
     height: 36px;
@@ -4662,20 +4413,17 @@ textarea.form-control {
     min-height: 36px;
     font-size: 18px;
   }
-
   #lente-footer {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 10px !important;
   }
-
-  #lente-footer>div:last-child {
+  #lente-footer > div:last-child {
     width: 100% !important;
     display: flex !important;
     justify-content: space-between !important;
     gap: 8px !important;
   }
-
   #btn-chiudi-lente-footer,
   #btn-apri-lente {
     flex: 1 !important;
@@ -5014,21 +4762,10 @@ textarea.form-control {
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.box-caregiver-pro .sezione-titolo-pro {
-  color: #0369a1;
-}
-
-.box-sanita-pro .sezione-titolo-pro {
-  color: #15803d;
-}
-
-.box-ausili-pro .sezione-titolo-pro {
-  color: #1d4ed8;
-}
-
-.box-allergie-pro .sezione-titolo-pro {
-  color: #b91c1c;
-}
+.box-caregiver-pro .sezione-titolo-pro { color: #0369a1; }
+.box-sanita-pro .sezione-titolo-pro { color: #15803d; }
+.box-ausili-pro .sezione-titolo-pro { color: #1d4ed8; }
+.box-allergie-pro .sezione-titolo-pro { color: #b91c1c; }
 
 /* Griglia & Campi Compatte */
 .riga-doppia-pro {
@@ -5225,12 +4962,10 @@ textarea.form-control {
     max-height: 94vh !important;
     border-radius: 14px !important;
   }
-
   .modal-body-pro {
     padding: 10px !important;
     gap: 8px !important;
   }
-
   .card-sezione-pro {
     padding: 9px 10px;
   }
@@ -5437,7 +5172,7 @@ textarea.form-control {
   border: 1.5px solid #d1d5db;
   border-radius: 12px;
   padding: 10px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
 }
@@ -5478,7 +5213,7 @@ textarea.form-control {
   resize: vertical;
   height: 200px;
   max-height: 380px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   outline: none;
   transition: all 0.15s ease;
 }
@@ -5585,34 +5320,27 @@ textarea.form-control {
     max-height: calc(100dvh - 16px) !important;
     border-radius: 16px !important;
   }
-
   .header-wa-pro {
     padding: 10px 12px !important;
   }
-
   .wa-brand-title {
     font-size: 14px !important;
   }
-
   .wa-brand-sub {
     font-size: 11px !important;
   }
-
   .body-wa-pro {
     padding: 10px !important;
     gap: 8px !important;
   }
-
   .wa-textarea-bubble {
     height: 180px !important;
     font-size: 13px !important;
   }
-
   .footer-wa-pro {
     padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px)) 10px !important;
     flex-direction: row !important;
   }
-
   .btn-wa-annulla,
   .btn-wa-invia {
     height: 42px !important;
@@ -5706,23 +5434,9 @@ textarea.form-control {
   cursor: pointer;
 }
 
-.pill-amber {
-  background: #fef3c7;
-  color: #92400e;
-  border: 1px solid #f59e0b;
-}
-
-.pill-emerald {
-  background: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #10b981;
-}
-
-.pill-sky {
-  background: #f0f9ff;
-  color: #0369a1;
-  border: 1px solid #0284c7;
-}
+.pill-amber { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+.pill-emerald { background: #ecfdf5; color: #065f46; border: 1px solid #10b981; }
+.pill-sky { background: #f0f9ff; color: #0369a1; border: 1px solid #0284c7; }
 
 /* Responsive Pills frequenza farmaco */
 @media (max-width: 600px) {
@@ -5731,41 +5445,34 @@ textarea.form-control {
     max-height: calc(100dvh - 12px) !important;
     border-radius: 14px !important;
   }
-
   .header-farmaco-pro {
     padding: 9px 12px !important;
   }
-
   .modal-body-farmaco-pro {
     padding: 9px !important;
     gap: 8px !important;
     max-height: calc(100dvh - 125px) !important;
   }
-
   .capsula-freq-selector {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 5px !important;
   }
-
   .btn-freq-pill {
     min-width: 0 !important;
     padding: 6px 4px !important;
     font-size: 11px !important;
     flex: unset !important;
   }
-
   .dose-card-item {
     padding: 9px 10px !important;
     border-radius: 10px !important;
   }
-
   .quota-pill-group {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 4px !important;
   }
-
   .quota-pill {
     padding: 6px 2px !important;
     font-size: 10.5px !important;
@@ -5783,46 +5490,20 @@ textarea.form-control {
    ========================================================================== */
 
 @keyframes sosBlink {
-  0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-  }
-
-  70% {
-    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 @keyframes micPulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-  }
-
-  50% {
-    transform: scale(1.08);
-    box-shadow: 0 0 0 14px rgba(239, 68, 68, 0);
-  }
-
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  50% { transform: scale(1.08); box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 @keyframes soundWaveAnim {
-
-  0%,
-  100% {
-    height: 6px;
-  }
-
-  50% {
-    height: 28px;
-  }
+  0%, 100% { height: 6px; }
+  50% { height: 28px; }
 }
 
 .btn-sos-pulse {
@@ -5884,25 +5565,11 @@ textarea.form-control {
   transition: height 0.1s ease;
 }
 
-.soundwave-box.active .soundwave-bar:nth-child(1) {
-  animation: soundWaveAnim 0.7s infinite 0.1s;
-}
-
-.soundwave-box.active .soundwave-bar:nth-child(2) {
-  animation: soundWaveAnim 0.8s infinite 0.3s;
-}
-
-.soundwave-box.active .soundwave-bar:nth-child(3) {
-  animation: soundWaveAnim 0.6s infinite 0.2s;
-}
-
-.soundwave-box.active .soundwave-bar:nth-child(4) {
-  animation: soundWaveAnim 0.9s infinite 0.4s;
-}
-
-.soundwave-box.active .soundwave-bar:nth-child(5) {
-  animation: soundWaveAnim 0.7s infinite 0.15s;
-}
+.soundwave-box.active .soundwave-bar:nth-child(1) { animation: soundWaveAnim 0.7s infinite 0.1s; }
+.soundwave-box.active .soundwave-bar:nth-child(2) { animation: soundWaveAnim 0.8s infinite 0.3s; }
+.soundwave-box.active .soundwave-bar:nth-child(3) { animation: soundWaveAnim 0.6s infinite 0.2s; }
+.soundwave-box.active .soundwave-bar:nth-child(4) { animation: soundWaveAnim 0.9s infinite 0.4s; }
+.soundwave-box.active .soundwave-bar:nth-child(5) { animation: soundWaveAnim 0.7s infinite 0.15s; }
 
 /* MODALE SOS PRONTO SOCCORSO */
 .modal-sos-pro {
@@ -6067,7 +5734,6 @@ textarea.form-control {
 }
 
 @media (max-width: 600px) {
-
   .modal-consegna-pro,
   .modal-sos-pro,
   .modal-interazioni-pro {
@@ -6167,7 +5833,7 @@ textarea.form-control {
   margin-bottom: 2px !important;
 }
 
-.contact-value-link,
+.contact-value-link, 
 .contact-value {
   font-size: 13.5px !important;
   font-weight: 800 !important;
@@ -6236,7 +5902,7 @@ textarea.form-control {
   align-items: center !important;
   gap: 6px !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
   white-space: nowrap !important;
 }
 
@@ -6327,17 +5993,8 @@ textarea.form-control {
 }
 
 @keyframes pulseDot {
-
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.5;
-    transform: scale(0.85);
-  }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
 }
 
 /* CAREGIVER ELEGANTE */
@@ -6427,7 +6084,7 @@ textarea.form-control {
   padding: 6px 14px !important;
   display: inline-flex !important;
   align-items: center !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03) !important;
 }
 
 
@@ -6435,7 +6092,6 @@ textarea.form-control {
   cursor: pointer !important;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-
 .patient-picker-chip:hover {
   background: #e0f2fe !important;
   border-color: #38bdf8 !important;
@@ -6448,7 +6104,6 @@ textarea.form-control {
   border-color: rgba(245, 158, 11, 0.45) !important;
   color: #fef08a !important;
 }
-
 .btn-notifiche:hover {
   background: rgba(245, 158, 11, 0.35) !important;
   border-color: rgba(250, 204, 21, 0.7) !important;
@@ -6502,11 +6157,9 @@ textarea.form-control {
   #modal-roadmap-scadenze .roadmap-header-executive {
     padding: 12px 14px !important;
   }
-
   #modal-roadmap-scadenze .btn-roadmap-export {
     display: none !important;
   }
-
   #modal-roadmap-scadenze .roadmap-kpi-grid {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
@@ -6734,6 +6387,151 @@ textarea.form-control {
 }
 
 
+
+/* ==========================================================================
+   TABELLA TERAPIE — EXECUTIVE ELEGANT REDESIGN (v85)
+   ========================================================================== */
+#terapie-table-body tr.terapia-row-item td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #eef2f7;
+  vertical-align: middle;
+  transition: background .2s ease;
+}
+#terapie-table-body tr.terapia-row-item:hover td { background: #f8fbff; }
+#terapie-table-body tr.terapia-row-item td:first-child { border-left: 4px solid transparent; }
+#terapie-table-body tr.terapia-row-item:hover td:first-child { border-left-color: #0284c7; }
+
+/* --- Colonna orario --- */
+.ter-time-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.ter-time-ora {
+  font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums; line-height: 1;
+}
+.ter-time-fascia {
+  font-size: 11px; font-weight: 700; color: #0369a1; background: #e0f2fe;
+  padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+}
+.ter-time-sub { font-size: 10.5px; color: #64748b; font-weight: 600; padding-left: 4px; }
+
+/* --- Colonna farmaco --- */
+.ter-drug-name {
+  font-size: 15px; font-weight: 800; color: #1e3a8a; letter-spacing: -0.2px;
+}
+.audit-pill-clickable:hover .ter-drug-name { color: #2563eb; }
+.ter-drug-lens { font-size: 11px; margin-left: 3px; opacity: .55; }
+.ter-drug-principio {
+  margin-top: 5px; font-size: 11.5px; color: #64748b; font-weight: 600; font-style: italic;
+}
+
+/* --- Colonna dosaggio --- */
+.ter-dose-main { display: block; font-size: 13.5px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+.ter-dose-cell .badge { border-radius: 10px !important; font-size: 10.5px !important; padding: 4px 9px !important; line-height: 1.3; white-space: normal; }
+
+/* --- Colonna modalità --- */
+.ter-modo-text {
+  font-size: 12.5px; color: #334155; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* --- Card scorta --- */
+.scorta-card-executive {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px 12px;
+  text-align: left;
+  box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 4px 12px rgba(15,23,42,.04);
+  min-width: 200px;
+  position: relative;
+  overflow: hidden;
+}
+.scorta-card-executive::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #16a34a;
+}
+.scorta-card-executive.penna::before { background: linear-gradient(180deg, #0ea5e9, #0369a1); }
+.scorta-card-executive.multitempo::before { background: linear-gradient(180deg, #6366f1, #1e3a8a); }
+.scorta-exec-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
+.scorta-exec-badge {
+  font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 999px;
+  text-transform: uppercase; letter-spacing: .4px; white-space: nowrap;
+}
+.scorta-exec-badge.status-success { background: #dcfce7; color: #166534; }
+.scorta-exec-badge.status-warning { background: #ffedd5; color: #c2410c; }
+.scorta-exec-badge.status-danger  { background: #fee2e2; color: #b91c1c; }
+.scorta-exec-autonomia { font-size: 11px; font-weight: 800; color: #475569; white-space: nowrap; }
+.scorta-exec-quantita { font-size: 15px; margin: 2px 0 8px; line-height: 1.3; }
+.scorta-exec-quantita b { font-weight: 800; }
+.scorta-exec-milestones { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+.milestone-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px; padding: 3px 8px; border-radius: 8px;
+  background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0; white-space: nowrap;
+}
+.milestone-pill span { color: #64748b; font-weight: 600; }
+.milestone-pill b { font-weight: 800; }
+.milestone-pill.fine  { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+.milestone-pill.alert { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.milestone-pill.mmg   { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.milestone-pill.mmg.urgent { background: #fef2f2; border-color: #fecaca; color: #b91c1c; animation: terPulse 1.8s infinite; }
+@keyframes terPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(220,38,38,.25); } 50% { box-shadow: 0 0 0 4px rgba(220,38,38,0); } }
+.scorta-kit-diabete-luxury {
+  font-size: 10.5px; color: #9f1239; background: #fff1f2; border: 1px dashed #fda4af;
+  border-radius: 8px; padding: 4px 8px; margin-bottom: 6px;
+}
+.scorta-card-executive > div[style*="font-size:10px"],
+.scorta-card-executive > div[style*="font-size:9.5px"] { font-size: 10px !important; color: #94a3b8 !important; margin-top: 0 !important; }
+
+/* --- Carico rapido --- */
+.btn-carico-luxury {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-width: 120px; padding: 8px 12px; border-radius: 12px;
+  font-size: 11.5px; font-weight: 800; cursor: pointer;
+  background: #ffffff; transition: all .18s ease; line-height: 1.25;
+}
+.btn-carico-luxury.cpr   { color: #047857; border: 1.5px dashed #6ee7b7; }
+.btn-carico-luxury.penna { color: #0369a1; border: 1.5px dashed #7dd3fc; }
+.btn-carico-luxury:hover { transform: translateY(-1px); border-style: solid; box-shadow: 0 4px 12px rgba(15,23,42,.08); }
+.btn-carico-luxury.cpr:hover   { background: #ecfdf5; }
+.btn-carico-luxury.penna:hover { background: #f0f9ff; }
+.btn-carico-luxury span { font-size: 14px; }
+
+/* --- Azione oggi --- */
+.btn-azione-luxury {
+  min-width: 132px; padding: 11px 14px; border-radius: 14px;
+  font-size: 13px; font-weight: 800; cursor: pointer; border: 1.5px solid #cbd5e1;
+  background: #ffffff; color: #0f172a; transition: all .18s ease;
+}
+.btn-azione-luxury.pending:hover { border-color: #0284c7; color: #0284c7; box-shadow: 0 4px 14px rgba(2,132,199,.15); transform: translateY(-1px); }
+.btn-azione-luxury.done {
+  background: linear-gradient(135deg, #10b981, #047857); color: #fff; border-color: transparent;
+  box-shadow: 0 6px 16px rgba(4,120,87,.25);
+}
+.btn-azione-luxury.done:hover { filter: brightness(1.05); }
+
+/* --- Dettagli (icone) --- */
+.ter-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; min-width: 112px; }
+.ter-icon-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  padding: 6px 4px; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff;
+  font-size: 14px; cursor: pointer; transition: all .15s ease; line-height: 1.1;
+}
+.ter-icon-btn span { font-size: 9.5px; font-weight: 700; color: #64748b; }
+.ter-icon-btn:hover { background: #f1f5f9; transform: translateY(-1px); }
+.ter-icon-btn.edit:hover   { border-color: #93c5fd; background: #eff6ff; }
+.ter-icon-btn.danger:hover { border-color: #fca5a5; background: #fef2f2; }
+.ter-icon-btn.danger:hover span { color: #b91c1c; }
+.ter-icon-btn.notify { background: #f0fdf4; border-color: #bbf7d0; }
+.ter-icon-btn.notify span { color: #166534; }
+.ter-readonly { grid-column: 1 / -1; font-size: 10.5px; color: #64748b; font-weight: 700; }
+
+/* --- Mobile --- */
+@media (max-width: 900px) {
+  .ter-time-ora { font-size: 18px; }
+  .scorta-card-executive { min-width: 180px; }
+  .ter-actions-grid { min-width: 96px; }
+}
+
+
 /* ==========================================================================
    CESTINO & RIPRISTINO (v87)
    ========================================================================== */
@@ -6767,148 +6565,4 @@ textarea.form-control {
   .cestino-item { flex-wrap: wrap; }
   .cestino-item-azioni { flex-direction: row; width: 100%; }
   .cestino-btn-ripristina { flex: 1; }
-}
-
-
-/* ==========================================================================
-   LEGGIBILITÀ PER TUTTE LE ETÀ (v89) — testo, contrasto, aree di tocco
-   ========================================================================== */
-:root { --text-muted: #475569; }
-body { line-height: 1.55; -webkit-font-smoothing: antialiased; }
-
-/* Tabelle più respirate e leggibili */
-.custom-table { font-size: 15px; }
-.custom-table th { font-size: 12.5px; color: #334155; padding: 14px 14px; }
-.custom-table td { padding: 16px 14px; }
-
-/* Schede di navigazione */
-.nav-tab { font-size: 15px; padding: 13px 18px; }
-
-/* Pulsanti: area di tocco comoda */
-.btn { font-size: 14px; min-height: 40px; }
-@media (pointer: coarse) { .btn { min-height: 46px; } }
-
-/* Campi dei moduli: grandi, con bordo ben visibile (16px evita lo zoom automatico su iPhone) */
-.modal-card input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-.modal-card select,
-.modal-card textarea,
-.container input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-.container select,
-.container textarea {
-  font-size: 16px;
-  min-height: 46px;
-  padding: 10px 12px;
-  border: 1.5px solid #94a3b8;
-  border-radius: 10px;
-  color: #0f172a;
-}
-.modal-card textarea, .container textarea { min-height: 90px; line-height: 1.5; }
-input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; accent-color: #0284c7; cursor: pointer; }
-::placeholder { color: #64748b; opacity: 1; }
-label { font-size: 14px; font-weight: 700; color: #1e293b; }
-
-/* Finestre: titoli e pulsante chiudi più grandi */
-.modal-header h3 { font-size: 20px; }
-.modal-close { font-size: 34px; width: 46px; height: 46px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
-.modal-body { line-height: 1.6; }
-
-/* Badge e notifiche */
-.badge { font-size: 13px; padding: 5px 12px; }
-.toast-notification { font-size: 15px; }
-
-/* Navigazione da tastiera ben visibile */
-:focus-visible { outline: 3px solid #0284c7; outline-offset: 2px; }
-
-/* Tasto dimensione testo nell'intestazione */
-.ca-size-btn { font-weight: 800; }
-
-
-/* ==========================================================================
-   LEGGIBILITÀ PER TUTTE LE ETÀ (v89) — testo, contrasto, aree di tocco
-   ========================================================================== */
-:root { --text-muted: #475569; }
-body { line-height: 1.55; -webkit-font-smoothing: antialiased; }
-
-/* Tabelle più respirate e leggibili */
-.custom-table { font-size: 15px; }
-.custom-table th { font-size: 12.5px; color: #334155; padding: 14px 14px; }
-.custom-table td { padding: 16px 14px; }
-
-/* Schede di navigazione */
-.nav-tab { font-size: 15px; padding: 13px 18px; }
-
-/* Pulsanti: area di tocco comoda */
-.btn { font-size: 14px; min-height: 40px; }
-@media (pointer: coarse) { .btn { min-height: 46px; } }
-
-/* Campi dei moduli: grandi, con bordo ben visibile (16px evita lo zoom automatico su iPhone) */
-.modal-card input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-.modal-card select,
-.modal-card textarea,
-.container input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-.container select,
-.container textarea {
-  font-size: 16px;
-  min-height: 46px;
-  padding: 10px 12px;
-  border: 1.5px solid #94a3b8;
-  border-radius: 10px;
-  color: #0f172a;
-}
-.modal-card textarea, .container textarea { min-height: 90px; line-height: 1.5; }
-input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; accent-color: #0284c7; cursor: pointer; }
-::placeholder { color: #64748b; opacity: 1; }
-label { font-size: 14px; font-weight: 700; color: #1e293b; }
-
-/* Finestre: titoli e pulsante chiudi più grandi */
-.modal-header h3 { font-size: 20px; }
-.modal-close { font-size: 34px; width: 46px; height: 46px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
-.modal-body { line-height: 1.6; }
-
-/* Badge e notifiche */
-.badge { font-size: 13px; padding: 5px 12px; }
-.toast-notification { font-size: 15px; }
-
-/* Navigazione da tastiera ben visibile */
-:focus-visible { outline: 3px solid #0284c7; outline-offset: 2px; }
-
-/* Tasto dimensione testo nell'intestazione */
-.ca-size-btn { font-weight: 800; }
-
-
-/* ==========================================================================
-   MODALI & MASCHERE ERGONOMICHE PER UTENTI 50+ (ALTA VISIBILITÀ)
-   ========================================================================== */
-.modal-overlay .modal-card {
-  max-height: 92vh !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-.modal-overlay .modal-header,
-.modal-overlay .modal-footer {
-  flex-shrink: 0 !important;
-}
-.modal-overlay .modal-body {
-  overflow-y: auto !important;
-  flex: 1 1 auto !important;
-  font-size: 15.5px;
-  line-height: 1.6;
-  color: #0f172a;
-}
-
-/* Barra di scorrimento larga e ben visibile dentro le maschere */
-.modal-overlay .modal-body::-webkit-scrollbar {
-  width: 11px;
-}
-.modal-overlay .modal-body::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 8px;
-}
-.modal-overlay .modal-body::-webkit-scrollbar-thumb {
-  background: #64748b;
-  border-radius: 8px;
-  border: 2px solid #f1f5f9;
-}
-.modal-overlay .modal-body::-webkit-scrollbar-thumb:hover {
-  background: #0284c7;
 }
