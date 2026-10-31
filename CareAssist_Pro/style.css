@@ -1,14 +1,3 @@
-
-/* NASCONDE LA BARRA STICKY RIDONDANTE: L'HEADER PRINCIPALE È GIÀ SEMPRE VISIBILE */
-#sticky-patient-bar,
-.sticky-patient-bar,
-.sticky-patient-bar.is-sticky-active {
-  display: none !important;
-  max-height: 0 !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  visibility: hidden !important;
-}
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 :root {
@@ -6593,4 +6582,53 @@ textarea.form-control {
   .cestino-item { flex-wrap: wrap; }
   .cestino-item-azioni { flex-direction: row; width: 100%; }
   .cestino-btn-ripristina { flex: 1; }
+}
+
+
+/* ==========================================================================
+   BARRA STICKY PAZIENTE SEMPRE VISIBILE ALLO SCROLL (MOBILE & DESKTOP)
+   ========================================================================== */
+#sticky-patient-bar.sticky-patient-bar {
+  background: linear-gradient(135deg, #0b1f38 0%, #173252 100%) !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid #0284c7 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28) !important;
+  position: sticky !important;
+  top: 118px !important; /* desktop sotto header + nav-bar */
+  z-index: 44 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+#sticky-patient-bar.sticky-patient-bar:not(.is-sticky-active) {
+  max-height: 0 !important;
+  opacity: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  border-bottom: none !important;
+  transform: translateY(-10px) !important;
+}
+
+#sticky-patient-bar.sticky-patient-bar.is-sticky-active {
+  max-height: 58px !important;
+  opacity: 1 !important;
+  padding: 6px 16px !important;
+  overflow: visible !important;
+  pointer-events: auto !important;
+  transform: translateY(0) !important;
+}
+
+@media (max-width: 768px) {
+  #sticky-patient-bar.sticky-patient-bar {
+    top: 42px !important; /* su mobile si ancora subito sotto la nav-bar dei tab (top: 0) */
+    z-index: 44 !important;
+  }
+  #sticky-patient-bar.sticky-patient-bar.is-sticky-active {
+    padding: 6px 12px !important;
+    max-height: 52px !important;
+  }
 }

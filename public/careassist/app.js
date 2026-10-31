@@ -13408,7 +13408,8 @@ window.toggleTuttePatologie = function (btn) {
     const bar = document.getElementById('sticky-patient-bar');
     if (!bar) return;
     // Appare morbidamente solo quando si scende sotto i 140px (dopo l'intestazione hero)
-    if (window.scrollY > 140) {
+    if (window.scrollY > 80) {
+      if (typeof aggiornaStickyPatientBar === 'function') aggiornaStickyPatientBar();
       bar.classList.add('is-sticky-active');
     } else {
       bar.classList.remove('is-sticky-active');
