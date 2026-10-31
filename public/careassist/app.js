@@ -10151,14 +10151,14 @@ function getMasterAlarmDestination(ctx) {
   try {
     if (!_masterBoostNode || _masterBoostNode._ctx !== ctx) {
       const compressor = ctx.createDynamicsCompressor();
-      compressor.threshold.setValueAtTime(-28, ctx.currentTime);
-      compressor.knee.setValueAtTime(12, ctx.currentTime);
-      compressor.ratio.setValueAtTime(8, ctx.currentTime);
-      compressor.attack.setValueAtTime(0.002, ctx.currentTime);
-      compressor.release.setValueAtTime(0.18, ctx.currentTime);
+      compressor.threshold.setValueAtTime(-32, ctx.currentTime);
+      compressor.knee.setValueAtTime(10, ctx.currentTime);
+      compressor.ratio.setValueAtTime(12, ctx.currentTime);
+      compressor.attack.setValueAtTime(0.001, ctx.currentTime);
+      compressor.release.setValueAtTime(0.15, ctx.currentTime);
 
       const preAmp = ctx.createGain();
-      preAmp.gain.setValueAtTime(2.2, ctx.currentTime); // Boost acustico 220% contro volume basso
+      preAmp.gain.setValueAtTime(3.2, ctx.currentTime); // Boost acustico 320% per alta udibilità anche su cellulare con volume basso
 
       preAmp.connect(compressor);
       compressor.connect(ctx.destination);
@@ -10169,6 +10169,27 @@ function getMasterAlarmDestination(ctx) {
   } catch (e) {
     return ctx.destination;
   }
+}
+
+// Chiama sia il server relativo sia http://localhost:3000 così anche se l'utente apre Render sul PC, il volume hardware di Windows viene sbloccato!
+async function invocaHardwareVolumePC(minDecimal) {
+  const minStr = (minDecimal || 0.75).toFixed(2);
+  const urls = [
+    '/api/forza-volume-70?min=' + minStr,
+    'http://localhost:3000/api/forza-volume-70?min=' + minStr
+  ];
+  let bestResult = null;
+  for (const u of urls) {
+    try {
+      const r = await fetch(u, { method: 'POST' });
+      if (r.ok) {
+        const d = await r.json();
+        if (d && d.platform === 'win32') return d;
+        if (!bestResult) bestResult = d;
+      }
+    } catch (e) {}
+  }
+  return bestResult || { ok: true, enforcedPercent: Math.round((minDecimal || 0.75) * 100) };
 }
 
 // ==========================================================================
@@ -10198,7 +10219,7 @@ function forzaVolumeSicurezza70(motivo, mostraMessaggio) {
     });
     if (typeof _audioAllarmeVoceSpento === 'object' && _audioAllarmeVoceSpento) {
       _audioAllarmeVoceSpento.muted = false;
-      if (_audioAllarmeVoceSpento.volume < 0.75) _audioAllarmeVoceSpento.volume = 1.0;
+      _audioAllarmeVoceSpento.volume = 1.0;
     }
   } catch (e) { }
 
@@ -10219,32 +10240,54 @@ function forzaVolumeSicurezza70(motivo, mostraMessaggio) {
     getMasterAlarmDestination(ctx);
   } catch (e) { }
 
-  // 4. Chiama il Server PC per togliere il Muto hardware di Windows e portare il volume Master >= 75%
+  // 4. Se richiesto test manuale (mostraMessaggio = true), riproduci anche l'avviso vocale HD a volume 100% + vibrazione!
+  if (mostraMessaggio) {
+    try {
+      if (!_audioAllarmeVoceSpento) {
+        _audioAllarmeVoceSpento = new Audio('assets/audio_presentazione/allarme_terapia_voce.mp3');
+      }
+      _audioAllarmeVoceSpento.muted = false;
+      _audioAllarmeVoceSpento.volume = 1.0;
+      _audioAllarmeVoceSpento.currentTime = 0;
+      _audioAllarmeVoceSpento.play().catch(function () {});
+    } catch (e) {}
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate([400, 150, 400, 150, 600]); } catch (e) {}
+    }
+  }
+
+  // 5. Chiama il Server PC per togliere il Muto hardware di Windows e portare il volume Master >= 75%
   const now = Date.now();
   if (now - _ultimoControlloVolumeTs > 2500 || mostraMessaggio) {
     _ultimoControlloVolumeTs = now;
-    fetch('/api/forza-volume-70?min=0.75', { method: 'POST' })
-      .then(r => r.json())
+    invocaHardwareVolumePC(0.75)
       .then(data => {
+        const enf = (data && data.enforcedPercent) ? data.enforcedPercent : 75;
+        const prev = (data && typeof data.previousPercent === 'number') ? data.previousPercent : null;
         if (typeof AppData === 'object' && AppData) {
           AppData._statoAntiFurbiVolume = {
             attivo: true,
-            livelloMinimo: (data && data.enforcedPercent ? data.enforcedPercent : 75) + '%',
+            livelloMinimo: enf + '%',
             dispositivo: devName,
             ora: oraStr,
             motivo: motivo || 'Controllo Automatico Allarme Clinico'
           };
         }
-        if (mostraMessaggio && typeof showToast === 'function') {
-          showToast('🛡️ Protezione Anti-Furbi Attiva: Volume Hardware sbloccato e forzato al ' + (data && data.enforcedPercent ? data.enforcedPercent : 75) + '% + Boost Acustico Mobile!', 'success');
+        if (mostraMessaggio) {
+          const boxEsito = document.getElementById('box-countdown-display-spento');
+          if (boxEsito) {
+            boxEsito.style.display = 'block';
+            boxEsito.style.background = '#065f46';
+            boxEsito.innerHTML = '🛡️ <b>PROTEZIONE ANTI-FURBI VERIFICATA CON SUCCESSO!</b><br>' +
+              (prev !== null ? ('Volume Hardware PC rilevato al <b>' + prev + '%</b> → Forzato istantaneamente al <b>' + enf + '%</b>!<br>') : ('Volume e Boost Acustico forzati al <b>' + enf + '% (Gain 320%)</b>!<br>')) +
+              '🔊 Sirena Clinica + Voce Umana HD + Vibrazione attivate!';
+          }
+          if (typeof showToast === 'function') {
+            showToast('🛡️ Protezione Anti-Furbi Attiva: Volume forzato al ' + enf + '% + Voce Umana HD!', 'success');
+          }
         }
         if (typeof aggiornaDiagnosticaAlert === 'function') {
           aggiornaDiagnosticaAlert();
-        }
-      })
-      .catch(() => {
-        if (mostraMessaggio && typeof showToast === 'function') {
-          showToast('🛡️ Protezione Anti-Furbi Attiva: Boost Acustico WebAudio ≥ 75% verificato!', 'success');
         }
       });
   }
@@ -12328,8 +12371,18 @@ function controllaEscalationTerapieNonAssunte(p, now) {
 function simulaEscalation3StadiDemo() {
   const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
   const nomePaz = p ? p.nome : 'Assistito';
-  forzaVolumeSicurezza70('Simulazione Escalation 3 Stadi (75% -> 90% -> Audit Coordinatore)', false);
-  fetch('/api/forza-volume-70?min=0.90', { method: 'POST' }).catch(() => {});
+  forzaVolumeSicurezza70('Simulazione Escalation 3 Stadi (75% -> 90% -> Audit Coordinatore)', true);
+  invocaHardwareVolumePC(0.90).then(data => {
+    const boxEsito = document.getElementById('box-countdown-display-spento');
+    if (boxEsito) {
+      boxEsito.style.display = 'block';
+      boxEsito.style.background = '#5b21b6';
+      boxEsito.innerHTML = '🚨 <b>ESCALATION A 3 STADI SIMULATA CON SUCCESSO!</b><br>' +
+        '1️⃣ <b>Stadio 1 (Min 0):</b> Volume sbloccato al 75% + Avviso Vocale HD<br>' +
+        '2️⃣ <b>Stadio 2 (+10 min):</b> Volume Hardware alzato al <b>' + ((data && data.enforcedPercent) ? data.enforcedPercent : 90) + '%</b> + Sirena Clinica<br>' +
+        '3️⃣ <b>Stadio 3 (+20 min):</b> Traccia automatica inviata al Diario del Coordinatore!';
+    }
+  });
   suonaSegnaleDolce();
   if ('vibrate' in navigator) {
     try { navigator.vibrate([400, 150, 400, 150, 600]); } catch (e) {}

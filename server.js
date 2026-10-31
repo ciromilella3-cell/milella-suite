@@ -2636,6 +2636,11 @@ app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
 
 // --- SISTEMA ANTI-FURBI: FORZATURA VOLUME HARDWARE >= 70% SU PC WINDOWS + AUDIT LOG ---
 app.all(['/api/forza-volume-70', '/careassist/api/forza-volume-70'], (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
+
     const minLevel = Math.max(0.70, Math.min(1.0, parseFloat(req.query.min || '0.75') || 0.75));
     if (process.platform !== 'win32') {
         return res.json({
@@ -2648,16 +2653,19 @@ app.all(['/api/forza-volume-70', '/careassist/api/forza-volume-70'], (req, res) 
     try {
         const { exec } = require('child_process');
         const psScript = [
-            `Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; [Guid("5CDF2C82-841E-4546-9722-0CF74078229A"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)] interface IAudioEndpointVolume { int f(); int g(); int h(); int i(); int SetMasterVolumeLevelScalar(float fLevel, Guid pguidEventContext); int j(); int GetMasterVolumeLevelScalar(out float pfLevel); int k(); int l(); int m(); int n(); int SetMute([MarshalAs(UnmanagedType.Bool)] bool bMute, Guid pguidEventContext); int GetMute(out bool pbMute); } [Guid("D666063F-1587-4E43-81F1-B948E807363F"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)] interface IMMDevice { int Activate(ref Guid id, int clsCtx, int activationParams, out IAudioEndpointVolume aev); } [Guid("A95664D2-9614-4F35-A746-DE8DB63617E6"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)] interface IMMDeviceEnumerator { int f(); int GetDefaultAudioEndpoint(int dataFlow, int role, out IMMDevice endpoint); } [ComImport, Guid("BCDE0395-E52F-467C-8E3D-C4579291692E")] class MMDeviceEnumeratorComObject { } public class VolGuard { public static int Enforce(float minVol) { var enumerator = new MMDeviceEnumeratorComObject() as IMMDeviceEnumerator; IMMDevice dev = null; Marshal.ThrowExceptionForHR(enumerator.GetDefaultAudioEndpoint(0, 1, out dev)); var iid = typeof(IAudioEndpointVolume).GUID; IAudioEndpointVolume epv = null; Marshal.ThrowExceptionForHR(dev.Activate(ref iid, 23, 0, out epv)); epv.SetMute(false, Guid.Empty); float cur = 0f; epv.GetMasterVolumeLevelScalar(out cur); if (cur < minVol) { epv.SetMasterVolumeLevelScalar(minVol, Guid.Empty); cur = minVol; } return (int)Math.Round(cur * 100); } }'`,
+            `Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; [Guid("5CDF2C82-841E-4546-9722-0CF74078229A"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)] interface IAudioEndpointVolume { int f(); int g(); int h(); int i(); int SetMasterVolumeLevelScalar(float fLevel, Guid pguidEventContext); int j(); int GetMasterVolumeLevelScalar(out float pfLevel); int k(); int l(); int m(); int n(); int SetMute([MarshalAs(UnmanagedType.Bool)] bool bMute, Guid pguidEventContext); int GetMute(out bool pbMute); } [Guid("D666063F-1587-4E43-81F1-B948E807363F"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)] interface IMMDevice { int Activate(ref Guid id, int clsCtx, int activationParams, out IAudioEndpointVolume aev); } [Guid("A95664D2-9614-4F35-A746-DE8DB63617E6"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)] interface IMMDeviceEnumerator { int f(); int GetDefaultAudioEndpoint(int dataFlow, int role, out IMMDevice endpoint); } [ComImport, Guid("BCDE0395-E52F-467C-8E3D-C4579291692E")] class MMDeviceEnumeratorComObject { } public class VolGuard { public static string Enforce(float minVol) { var enumerator = new MMDeviceEnumeratorComObject() as IMMDeviceEnumerator; IMMDevice dev = null; Marshal.ThrowExceptionForHR(enumerator.GetDefaultAudioEndpoint(0, 1, out dev)); var iid = typeof(IAudioEndpointVolume).GUID; IAudioEndpointVolume epv = null; Marshal.ThrowExceptionForHR(dev.Activate(ref iid, 23, 0, out epv)); float before = 0f; epv.GetMasterVolumeLevelScalar(out before); epv.SetMute(false, Guid.Empty); float cur = before; if (cur < minVol) { epv.SetMasterVolumeLevelScalar(minVol, Guid.Empty); cur = minVol; } return Math.Round(before * 100) + "|" + Math.Round(cur * 100); } }'`,
             `[VolGuard]::Enforce(${minLevel.toFixed(2)})`
         ].join('; ');
 
         exec(`powershell -NoProfile -NonInteractive -Command "${psScript.replace(/"/g, '\\"')}"`, { timeout: 4000, windowsHide: true }, (err, stdout) => {
-            const parsedVol = parseInt(String(stdout || '').trim(), 10);
+            const parts = String(stdout || '').trim().split('|');
+            const prevVol = parseInt(parts[0], 10);
+            const parsedVol = parseInt(parts[1] || parts[0], 10);
             return res.json({
                 ok: true,
                 platform: 'win32',
                 unmuted: true,
+                previousPercent: !isNaN(prevVol) ? prevVol : null,
                 enforcedPercent: !isNaN(parsedVol) ? parsedVol : Math.round(minLevel * 100),
                 warning: err ? err.message : null
             });
