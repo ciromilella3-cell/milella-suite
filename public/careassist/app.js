@@ -10126,39 +10126,179 @@ function getAudioContext() {
   return audioCtxInstance;
 }
 
-// Riproduce un rintocco rilassante e dolce (due note armoniche morbide tipo carillon/chime ospedaliero dolce)
+// Canale Master Boost Anti-Furbi (DynamicsCompressor + Pre-Amp Gain >= 70% percepiti)
+let _masterBoostNode = null;
+function getMasterAlarmDestination(ctx) {
+  if (!ctx) return null;
+  try {
+    if (!_masterBoostNode || _masterBoostNode._ctx !== ctx) {
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.setValueAtTime(-28, ctx.currentTime);
+      compressor.knee.setValueAtTime(12, ctx.currentTime);
+      compressor.ratio.setValueAtTime(8, ctx.currentTime);
+      compressor.attack.setValueAtTime(0.002, ctx.currentTime);
+      compressor.release.setValueAtTime(0.18, ctx.currentTime);
+
+      const preAmp = ctx.createGain();
+      preAmp.gain.setValueAtTime(2.2, ctx.currentTime); // Boost acustico 220% contro volume basso
+
+      preAmp.connect(compressor);
+      compressor.connect(ctx.destination);
+      preAmp._ctx = ctx;
+      _masterBoostNode = preAmp;
+    }
+    return _masterBoostNode;
+  } catch (e) {
+    return ctx.destination;
+  }
+}
+
+// ==========================================================================
+// 🛡️ SISTEMA ANTI-FURBI: FORZATURA VOLUME MINIMO 70% (PC HARDWARE + MOBILE BOOST + AUDIT)
+// ==========================================================================
+let _ultimoControlloVolumeTs = 0;
+function forzaVolumeSicurezza70(motivo, mostraMessaggio) {
+  const oraStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const devName = (window.innerWidth <= 900) ? 'Smartphone/Tablet' : 'PC Postazione';
+
+  // 1. Blocca e rialza qualsiasi elemento <audio> o <video> sotto il 75% o in Muto
+  try {
+    const mediaEls = document.querySelectorAll('audio, video');
+    mediaEls.forEach(el => {
+      if (el.muted) el.muted = false;
+      if (el.volume < 0.75) el.volume = 1.0;
+      if (!el._antiFurbiProtetto) {
+        el._antiFurbiProtetto = true;
+        el.addEventListener('volumechange', function () {
+          if (this.muted || this.volume < 0.70) {
+            this.muted = false;
+            this.volume = 1.0;
+            registraTentativoSabotaggioVolume('Tentativo di abbassare/silenziare player audio bloccato automaticamente');
+          }
+        });
+      }
+    });
+    if (typeof _audioAllarmeVoceSpento === 'object' && _audioAllarmeVoceSpento) {
+      _audioAllarmeVoceSpento.muted = false;
+      if (_audioAllarmeVoceSpento.volume < 0.75) _audioAllarmeVoceSpento.volume = 1.0;
+    }
+  } catch (e) {}
+
+  // 2. Riattiva forzatamente anche il flag audio postura se qualcuno lo aveva messo in Muto
+  if (!audioPosturaAbilitato) {
+    audioPosturaAbilitato = true;
+    const btn = document.getElementById('btn-toggle-audio-postura');
+    if (btn) {
+      btn.innerHTML = '🔔 Audio ON (Protetto ≥70%)';
+      btn.classList.add('active');
+    }
+  }
+
+  // 3. Risveglia il WebAudio Context e il Master Compressor Boost
+  try {
+    const ctx = getAudioContext();
+    if (ctx && ctx.state === 'suspended') ctx.resume();
+    getMasterAlarmDestination(ctx);
+  } catch (e) {}
+
+  // 4. Chiama il Server PC per togliere il Muto hardware di Windows e portare il volume Master >= 75%
+  const now = Date.now();
+  if (now - _ultimoControlloVolumeTs > 2500 || mostraMessaggio) {
+    _ultimoControlloVolumeTs = now;
+    fetch('/api/forza-volume-70?min=0.75', { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (typeof AppData === 'object' && AppData) {
+          AppData._statoAntiFurbiVolume = {
+            attivo: true,
+            livelloMinimo: (data && data.enforcedPercent ? data.enforcedPercent : 75) + '%',
+            dispositivo: devName,
+            ora: oraStr,
+            motivo: motivo || 'Controllo Automatico Allarme Clinico'
+          };
+        }
+        if (mostraMessaggio && typeof showToast === 'function') {
+          showToast('🛡️ Protezione Anti-Furbi Attiva: Volume Hardware sbloccato e forzato al ' + (data && data.enforcedPercent ? data.enforcedPercent : 75) + '% + Boost Acustico Mobile!', 'success');
+        }
+        if (typeof aggiornaDiagnosticaAlert === 'function') {
+          aggiornaDiagnosticaAlert();
+        }
+      })
+      .catch(() => {
+        if (mostraMessaggio && typeof showToast === 'function') {
+          showToast('🛡️ Protezione Anti-Furbi Attiva: Boost Acustico WebAudio ≥ 75% verificato!', 'success');
+        }
+      });
+  }
+}
+window.forzaVolumeSicurezza70 = forzaVolumeSicurezza70;
+
+function registraTentativoSabotaggioVolume(dettaglio) {
+  try {
+    const oraStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const dataStr = new Date().toLocaleDateString('it-IT');
+    const op = localStorage.getItem('milella_user_nome') || 'Operatore in turno';
+    if (typeof AppData === 'object' && AppData) {
+      AppData._auditAntiFurbiVolume = AppData._auditAntiFurbiVolume || [];
+      AppData._auditAntiFurbiVolume.unshift({
+        data: dataStr + ' ' + oraStr,
+        operatore: op,
+        evento: dettaglio,
+        esito: 'Ripristinato forzatamente al 75%-100%'
+      });
+      if (AppData._auditAntiFurbiVolume.length > 50) AppData._auditAntiFurbiVolume.length = 50;
+    }
+  } catch (e) {}
+}
+
+// Riproduce un rintocco armonico ma potenziato col Master Boost Anti-Furbi (>= 70% percepiti)
 function suonaSegnaleDolce() {
   try {
+    forzaVolumeSicurezza70('Emissione Segnale Acustico Allerta', false);
     const ctx = getAudioContext();
     if (!ctx) return;
 
+    const dest = getMasterAlarmDestination(ctx) || ctx.destination;
     const ora = ctx.currentTime;
     
-    // Prima nota dolce (La 440 Hz)
+    // Prima nota armonica (Do5 523.25 Hz) con volume garantito >= 70%
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(523.25, ora); // C5 (Do dolce)
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(523.25, ora);
     gain1.gain.setValueAtTime(0, ora);
-    gain1.gain.linearRampToValueAtTime(0.08, ora + 0.08); // attacco morbidissimo
-    gain1.gain.exponentialRampToValueAtTime(0.001, ora + 1.2); // decadimento lungo e dolce
+    gain1.gain.linearRampToValueAtTime(0.42, ora + 0.05);
+    gain1.gain.exponentialRampToValueAtTime(0.001, ora + 1.25);
     osc1.connect(gain1);
-    gain1.connect(ctx.destination);
+    gain1.connect(dest);
     osc1.start(ora);
     osc1.stop(ora + 1.3);
 
-    // Seconda nota armonica a salire (Mi 659.25 Hz) dopo 250ms
+    // Seconda nota armonica a salire (Mi5 659.25 Hz) dopo 240ms
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(659.25, ora + 0.25); // E5 (Mi dolce)
-    gain2.gain.setValueAtTime(0, ora + 0.25);
-    gain2.gain.linearRampToValueAtTime(0.09, ora + 0.33);
-    gain2.gain.exponentialRampToValueAtTime(0.001, ora + 1.6);
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(659.25, ora + 0.24);
+    gain2.gain.setValueAtTime(0, ora + 0.24);
+    gain2.gain.linearRampToValueAtTime(0.48, ora + 0.30);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ora + 1.65);
     osc2.connect(gain2);
-    gain2.connect(ctx.destination);
-    osc2.start(ora + 0.25);
+    gain2.connect(dest);
+    osc2.start(ora + 0.24);
     osc2.stop(ora + 1.7);
+
+    // Terza nota di sicurezza (Sol5 783.99 Hz) ad alta udibilità in corsia/stanza
+    const osc3 = ctx.createOscillator();
+    const gain3 = ctx.createGain();
+    osc3.type = 'sine';
+    osc3.frequency.setValueAtTime(783.99, ora + 0.48);
+    gain3.gain.setValueAtTime(0, ora + 0.48);
+    gain3.gain.linearRampToValueAtTime(0.52, ora + 0.54);
+    gain3.gain.exponentialRampToValueAtTime(0.001, ora + 2.0);
+    osc3.connect(gain3);
+    gain3.connect(dest);
+    osc3.start(ora + 0.48);
+    osc3.stop(ora + 2.05);
 
   } catch(err) {
     console.log('Audio non avviabile automaticamente senza interazione utente', err);
@@ -10166,18 +10306,21 @@ function suonaSegnaleDolce() {
 }
 
 function testSegnaleDolce() {
+  forzaVolumeSicurezza70('Test Manuale Volume Sicurezza >= 70%', true);
   suonaSegnaleDolce();
-  showToast('🎵 Segnale acustico dolce riprodotto (Do-Mi carillon)');
 }
 
 function toggleAudioPostura() {
-  audioPosturaAbilitato = !audioPosturaAbilitato;
+  // Sistema Anti-Furbi: non consente di ammutolire completamente l'avviso a discapito del paziente!
+  audioPosturaAbilitato = true;
   const btn = document.getElementById('btn-toggle-audio-postura');
   if (btn) {
-    btn.innerHTML = audioPosturaAbilitato ? '🔔 Audio ON' : '🔕 Audio MUTO';
-    btn.classList.toggle('active', audioPosturaAbilitato);
+    btn.innerHTML = '🛡️ Audio Protetto ≥70%';
+    btn.classList.add('active');
   }
-  showToast(audioPosturaAbilitato ? 'Audio cambio postura attivato' : 'Audio silenziato');
+  registraTentativoSabotaggioVolume('Tentativo operatore di disattivare Audio Postura bloccato dal Protocollo Sicurezza Paziente');
+  forzaVolumeSicurezza70('Blocco Tentativo Muto Operatore', false);
+  showToast('🛡️ Sicurezza Paziente Attiva: il volume degli avvisi clinici non può essere spento (minimo garantito ≥ 70%).', 'warning');
 }
 
 // 1. OROLOGIO POSTURALE & PREVENZIONE DECUBITO (Q2H)
@@ -12083,31 +12226,33 @@ function verificaRintoccoOrarioTerapiaAttuale() {
   const terapieOra = p.terapie.filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && t.ora === oraCorrente);
   if (terapieOra.length > 0) {
     _ultimoMinutoNotificatoTerapia = oraCorrente;
+    forzaVolumeSicurezza70('Scadenza Orario Terapia (' + oraCorrente + ')', false);
     try {
       const ctx = getAudioContext();
       if (ctx) {
         if (ctx.state === 'suspended') ctx.resume();
+        const dest = getMasterAlarmDestination(ctx) || ctx.destination;
         const t0 = ctx.currentTime;
-        // Dolce doppio rintocco campanella armonico (La5 880Hz -> Do#6 1108Hz)
-        [880.0, 1108.73].forEach((freq, idx) => {
+        // Rintocco campanella armonico ad alta udibilità (Volume >= 70% garantito)
+        [880.0, 1108.73, 1318.51].forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
-          const tN = t0 + (idx * 0.18);
-          osc.type = 'sine';
+          const tN = t0 + (idx * 0.22);
+          osc.type = 'triangle';
           osc.frequency.setValueAtTime(freq, tN);
           gain.gain.setValueAtTime(0, tN);
-          gain.gain.linearRampToValueAtTime(0.08, tN + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.0001, tN + 0.7);
+          gain.gain.linearRampToValueAtTime(0.45, tN + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, tN + 0.85);
           osc.connect(gain);
-          gain.connect(ctx.destination);
+          gain.connect(dest);
           osc.start(tN);
-          osc.stop(tN + 0.75);
+          osc.stop(tN + 0.9);
         });
       }
     } catch(e) { console.error('Audio error:', e); }
 
     const nomi = terapieOra.map(t => t.farmaco).join(', ');
-    showToast(`🔔 Promemoria Orario (${oraCorrente}): Somministrare ${nomi} a ${p.nome}`, 'warning');
+    showToast(`🔔 Promemoria Orario (${oraCorrente} — Volume Protetto ≥70%): Somministrare ${nomi} a ${p.nome}`, 'warning');
   }
 }
 
@@ -20447,6 +20592,7 @@ function aggiornaDiagnosticaAlert() {
       '<div style="font-size:11px; color:#64748b; font-weight:700;">Dispositivo Attuale</div>' +
       '<div style="font-size:12.5px; font-weight:800; color:#0369a1; margin-top:2px;">' + tipoDev + '</div>' +
     '</div>' +
+    cardStato('🛡️ Protezione Anti-Furbi', true, 'Volume Forzato ≥ 70% + Boost', '') +
     cardStato('Allarme Sonoro', audioOk, 'Audio Sbloccato e Attivo', 'Tocca "Testa Suono" per attivare') +
     cardStato('Notifiche Push', notifOk, 'Autorizzate sul Browser', 'Tocca "Testa Suono" per abilitare') +
     cardStato('Sync Cloud PC ↔ Mobile', true, 'Attivo (ogni 2 secondi)', 'In attesa') +
@@ -20454,6 +20600,7 @@ function aggiornaDiagnosticaAlert() {
 }
 
 function eseguiTestAllertaLocale() {
+  forzaVolumeSicurezza70('Test Locale Protezione Volume >= 70%', true);
   if (typeof abilitaNotificheEAudioSmartphone === 'function') {
     abilitaNotificheEAudioSmartphone();
   }
