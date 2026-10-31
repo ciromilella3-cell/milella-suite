@@ -1485,6 +1485,19 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     console.log('Profilo Ciro Milella integrato in AppData!');
   }
 
+  // RECUPERO UNA TANTUM (31/10/2026): terapia di Ciro Milella cancellata involontariamente.
+  // Se la lista è vuota ripristina Entecavir Sandoz 0,5 mg e la invia al Cloud. Il flag impedisce di riattivarsi dopo una cancellazione volontaria.
+  if (!AppData.ciroTerapiaRecuperata20261031) {
+    AppData.ciroTerapiaRecuperata20261031 = true;
+    const ciroRec = AppData.pazienti.find(p => p.id === 'paz_1793216119572' || (p.nome || '').toLowerCase().includes('ciro milella'));
+    if (ciroRec && (!Array.isArray(ciroRec.terapie) || ciroRec.terapie.length === 0)) {
+      ciroRec.terapie = getPazienteCiroInit().terapie;
+      AppData.lastModified = Date.now();
+      localStorage.setItem('careassist_pending_sync', 'true');
+      console.log('Terapia di Ciro Milella ripristinata (Entecavir Sandoz 0,5 mg).');
+    }
+  }
+
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
 }
 
