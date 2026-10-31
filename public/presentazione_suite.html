@@ -941,27 +941,41 @@
                 linkedAppIdx: 0,
                 svgRender: () => `
                     <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 50% 50%, #064e3b 0%, #091122 100%);">
-                        <rect x="35" y="35" width="330" height="135" rx="16" fill="rgba(15,23,42,0.9)" stroke="#38bdf8" stroke-width="2"/>
-                        <text x="20" y="35" font-size="15" font-weight="900" fill="#38bdf8" transform="translate(15,5)">💊 Terapie &amp; Scorte Condivise</text>
-                        <text x="20" y="65" font-size="12.5" fill="#e2e8f0" transform="translate(15,5)">Scala compresse dallo stesso blister reale,</text>
-                        <text x="20" y="85" font-size="12.5" fill="#fef08a" font-weight="700" transform="translate(15,5)">preavvisa la ricetta 10 giorni prima!</text>
-                        <text x="20" y="112" font-size="11" fill="#7dd3fc" transform="translate(15,5)">✓ Badge A Digiuno &amp; Giorni Alterni</text>
+                        <!-- Riquadro 1: Terapie & Scorte -->
+                        <g transform="translate(35, 35)">
+                            <rect x="0" y="0" width="330" height="135" rx="16" fill="rgba(15,23,42,0.92)" stroke="#38bdf8" stroke-width="2.5"/>
+                            <text x="20" y="32" font-size="15" font-weight="900" fill="#38bdf8">💊 Terapie &amp; Scorte Condivise</text>
+                            <text x="20" y="62" font-size="12.5" fill="#e2e8f0">Scala compresse dallo stesso blister reale,</text>
+                            <text x="20" y="84" font-size="12.5" fill="#fef08a" font-weight="700">preavvisa la ricetta 10 giorni prima!</text>
+                            <text x="20" y="112" font-size="11.5" font-weight="800" fill="#7dd3fc">✓ Badge A Digiuno &amp; Giorni Alterni</text>
+                        </g>
 
-                        <rect x="395" y="35" width="330" height="135" rx="16" fill="rgba(15,23,42,0.9)" stroke="#10b981" stroke-width="2"/>
-                        <text x="20" y="35" font-size="15" font-weight="900" fill="#34d399" transform="translate(375,5)">🩸 Kit Diabete &amp; Insulina</text>
-                        <text x="20" y="65" font-size="12.5" fill="#e2e8f0" transform="translate(375,5)">Toujeo Solostar collegato al frigo,</text>
-                        <text x="20" y="85" font-size="12.5" fill="#a7f3d0" font-weight="700" transform="translate(375,5)">Lancette e Strisce reattive scalate insieme!</text>
-                        <text x="20" y="112" font-size="11" fill="#6ee7b7" transform="translate(375,5)">❄️ Alert quando resta 1 sola penna</text>
+                        <!-- Riquadro 2: Kit Diabete & Insulina -->
+                        <g transform="translate(395, 35)">
+                            <rect x="0" y="0" width="330" height="135" rx="16" fill="rgba(15,23,42,0.92)" stroke="#10b981" stroke-width="2.5"/>
+                            <text x="20" y="32" font-size="15" font-weight="900" fill="#34d399">🩸 Kit Diabete &amp; Insulina</text>
+                            <text x="20" y="62" font-size="12.5" fill="#e2e8f0">Toujeo Solostar collegato al frigo,</text>
+                            <text x="20" y="84" font-size="12.5" fill="#a7f3d0" font-weight="700">Lancette e Strisce reattive scalate insieme!</text>
+                            <text x="20" y="112" font-size="11.5" font-weight="800" fill="#6ee7b7">❄️ Alert quando resta 1 sola penna</text>
+                        </g>
 
-                        <rect x="35" y="190" width="330" height="130" rx="16" fill="rgba(15,23,42,0.9)" stroke="#ef4444" stroke-width="2"/>
-                        <text x="20" y="35" font-size="15" font-weight="900" fill="#f87171" transform="translate(15,160)">🚑 Passaporto 118 QR &amp; ASL</text>
-                        <text x="20" y="65" font-size="12.5" fill="#e2e8f0" transform="translate(15,160)">Documento A4 salvavita da frigo con QR,</text>
-                        <text x="20" y="85" font-size="12.5" fill="#fecaca" font-weight="700" transform="translate(15,160)">Lettera per visita specialistica &amp; Modulo ASL.</text>
+                        <!-- Riquadro 3: Passaporto 118 QR & ASL -->
+                        <g transform="translate(35, 190)">
+                            <rect x="0" y="0" width="330" height="130" rx="16" fill="rgba(15,23,42,0.92)" stroke="#ef4444" stroke-width="2.5"/>
+                            <text x="20" y="32" font-size="15" font-weight="900" fill="#f87171">🚑 Passaporto 118 QR &amp; ASL</text>
+                            <text x="20" y="62" font-size="12.5" fill="#e2e8f0">Documento A4 salvavita da frigo con QR,</text>
+                            <text x="20" y="84" font-size="12.5" fill="#fecaca" font-weight="700">Lettera per visita specialistica &amp; Modulo ASL.</text>
+                            <text x="20" y="108" font-size="11.5" font-weight="800" fill="#fca5a5">🏥 Pronto per i soccorritori</text>
+                        </g>
 
-                        <rect x="395" y="190" width="330" height="130" rx="16" fill="rgba(15,23,42,0.9)" stroke="#fbbf24" stroke-width="2"/>
-                        <text x="20" y="35" font-size="15" font-weight="900" fill="#fde047" transform="translate(375,160)">🛡️ Protocollo Zero-Scuse &amp; Cestino</text>
-                        <text x="20" y="65" font-size="12.5" fill="#e2e8f0" transform="translate(375,160)">Volume forzato ≥ 75% per non perdere avvisi,</text>
-                        <text x="20" y="85" font-size="12.5" fill="#fef08a" font-weight="700" transform="translate(375,160)">e Cestino 60 giorni per recuperare ogni errore!</text>
+                        <!-- Riquadro 4: Protocollo Zero-Scuse & Cestino -->
+                        <g transform="translate(395, 190)">
+                            <rect x="0" y="0" width="330" height="130" rx="16" fill="rgba(15,23,42,0.92)" stroke="#fbbf24" stroke-width="2.5"/>
+                            <text x="20" y="32" font-size="15" font-weight="900" fill="#fde047">🛡️ Protocollo Zero-Scuse &amp; Cestino</text>
+                            <text x="20" y="62" font-size="12.5" fill="#e2e8f0">Volume forzato ≥ 75% per non perdere avvisi,</text>
+                            <text x="20" y="84" font-size="12.5" fill="#fef08a" font-weight="700">e Cestino 60 giorni per recuperare ogni errore!</text>
+                            <text x="20" y="108" font-size="11.5" font-weight="800" fill="#fde047">📋 Audit automatico Coordinatore</text>
+                        </g>
                     </svg>
                 `
             },
