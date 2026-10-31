@@ -2675,6 +2675,140 @@ app.all(['/api/forza-volume-70', '/careassist/api/forza-volume-70'], (req, res) 
     }
 });
 
+// ==============================================================================
+// 7. CANALE NOTIFICHE PUSH SVEGLIE SMARTPHONE A DISPLAY SPENTO (NTFY / TELEGRAM)
+// ==============================================================================
+const NOTIFICHE_CONFIG_FILE = path.join(dataDir, 'notifiche_mobile_config.json');
+
+function getNotificheConfig() {
+    try {
+        if (fs.existsSync(NOTIFICHE_CONFIG_FILE)) {
+            return JSON.parse(fs.readFileSync(NOTIFICHE_CONFIG_FILE, 'utf8'));
+        }
+    } catch(e) {}
+    // Configurazione predefinita: canale sicuro univoco per la famiglia Milella
+    return {
+        ntfyTopic: 'suite-milella-careassist',
+        attivo: true,
+        telegramToken: '',
+        telegramChatId: ''
+    };
+}
+
+// Invia notifica push a display spento via NTFY e Telegram
+async function inviaPushMobileEmergenza(titolo, messaggio, priorita = 5, tag = 'alarm_clock') {
+    const cfg = getNotificheConfig();
+    const risultati = { ntfy: false, telegram: false };
+
+    // 1. NTFY: priorità 5 ("urgent") sveglia lo schermo e suona a display spento
+    if (cfg.ntfyTopic && cfg.attivo) {
+        try {
+            const https = require('https');
+            const ntfyUrl = `https://ntfy.sh/${encodeURIComponent(cfg.ntfyTopic)}`;
+            const postData = messaggio || titolo;
+
+            await new Promise((resolve) => {
+                const req = https.request(ntfyUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Title': titolo,
+                        'Priority': String(priorita), // 5 = Urgent/Max, suona anche in non disturbare
+                        'Tags': tag,
+                        'Click': 'https://milella-suite.onrender.com/careassist/',
+                        'Content-Type': 'text/plain; charset=utf-8',
+                        'Content-Length': Buffer.byteLength(postData)
+                    }
+                }, (res) => {
+                    risultati.ntfy = (res.statusCode >= 200 && res.statusCode < 300);
+                    resolve();
+                });
+                req.on('error', () => resolve());
+                req.write(postData);
+                req.end();
+            });
+        } catch(e) {
+            console.warn('[PUSH NTFY ERRORE]', e.message);
+        }
+    }
+
+    // 2. Telegram Bot (se configurato)
+    if (cfg.telegramToken && cfg.telegramChatId) {
+        try {
+            const https = require('https');
+            const tgMsg = `🚨 *${titolo}*\n\n${messaggio}\n\n👉 [Apri CareAssist](https://milella-suite.onrender.com/careassist/)`;
+            const tgUrl = `https://api.telegram.org/bot${cfg.telegramToken}/sendMessage`;
+            const payload = JSON.stringify({
+                chat_id: cfg.telegramChatId,
+                text: tgMsg,
+                parse_mode: 'Markdown'
+            });
+
+            await new Promise((resolve) => {
+                const req = https.request(tgUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Content-Length': Buffer.byteLength(payload)
+                    }
+                }, (res) => {
+                    risultati.telegram = (res.statusCode === 200);
+                    resolve();
+                });
+                req.on('error', () => resolve());
+                req.write(payload);
+                req.end();
+            });
+        } catch(e) {}
+    }
+
+    return risultati;
+}
+
+// Endpoint per inviare allarme push immediato al cellulare
+app.post('/api/invia-alert-smartphone', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
+
+    const { titolo, messaggio, priorita, tag } = req.body || {};
+    const t = titolo || '🚨 SVEGLIA TERAPIA CAREASSIST';
+    const m = messaggio || 'È l\'ora del farmaco programmato!';
+    const p = priorita || 5;
+
+    const esito = await inviaPushMobileEmergenza(t, m, p, tag);
+    return res.json({ success: true, esito, topic: getNotificheConfig().ntfyTopic });
+});
+
+// Endpoint per leggere / salvare la configurazione notifiche
+app.get('/api/notifiche-config', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.json(getNotificheConfig());
+});
+
+app.post('/api/notifiche-config', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
+
+    const body = req.body || {};
+    const current = getNotificheConfig();
+    const updated = {
+        ntfyTopic: (body.ntfyTopic || current.ntfyTopic || 'suite-milella-careassist').trim().toLowerCase(),
+        attivo: body.attivo !== undefined ? Boolean(body.attivo) : true,
+        telegramToken: (body.telegramToken || current.telegramToken || '').trim(),
+        telegramChatId: (body.telegramChatId || current.telegramChatId || '').trim()
+    };
+
+    try {
+        fs.writeFileSync(NOTIFICHE_CONFIG_FILE, JSON.stringify(updated, null, 2), 'utf8');
+        return res.json({ success: true, config: updated });
+    } catch(err) {
+        return res.status(500).json({ error: err.message });
+    }
+});
+
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Inventario Server running on http://localhost:${PORT}`);
     // Scrivi l'IP in un file per farlo leggere al Pannello HTA

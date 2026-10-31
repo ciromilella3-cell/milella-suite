@@ -5158,30 +5158,32 @@ function controllaTerapieGlobaliTuttiPazienti() {
       try { navigator.vibrate([400, 200, 400]); } catch (e) { }
     }
 
-    // Notifica di sistema push (anche a schermo spento via Service Worker)
-    if ('Notification' in window && Notification.permission === 'granted') {
-      const adessoNotif = Date.now();
-      if (adessoNotif - ultimoNotificaRitardoTimestamp >= 60000) {
-        ultimoNotificaRitardoTimestamp = adessoNotif;
-        try {
-          const totR = pazientiConRitardi.reduce((sum, it) => sum + it.farmaci.length, 0);
-          const pPrimo = pazientiConRitardi[0].paziente.nome;
-          const fPrimo = pazientiConRitardi[0].farmaci[0] ? pazientiConRitardi[0].farmaci[0].farmaco : 'Farmaco';
-          const oraPrimo = pazientiConRitardi[0].farmaci[0] ? pazientiConRitardi[0].farmaci[0].ora : '';
+    // Notifica di sistema push (anche a schermo spento via Service Worker & Server Push Esterno)
+    const adessoNotif = Date.now();
+    if (adessoNotif - ultimoNotificaRitardoTimestamp >= 60000) {
+      ultimoNotificaRitardoTimestamp = adessoNotif;
+      try {
+        const totR = pazientiConRitardi.reduce((sum, it) => sum + it.farmaci.length, 0);
+        const pPrimo = pazientiConRitardi[0].paziente.nome;
+        const fPrimo = pazientiConRitardi[0].farmaci[0] ? pazientiConRitardi[0].farmaci[0].farmaco : 'Farmaco';
+        const oraPrimo = pazientiConRitardi[0].farmaci[0] ? pazientiConRitardi[0].farmaci[0].ora : '';
+        const titoloPush = `🚨 SVEGLIA TERAPIA ORE ${oraPrimo} (${pPrimo})`;
+        const corpoPush = `È ora di somministrare ${fPrimo} (${totR} farmaci in attesa)!`;
+
+        // 1. Notifica locale tramite Service Worker
+        if ('Notification' in window && Notification.permission === 'granted') {
           if (typeof mostraNotificaSistemaSchermoSpento === 'function') {
-            mostraNotificaSistemaSchermoSpento(
-              `🚨 SVEGLIA TERAPIA ORE ${oraPrimo} (${pPrimo})`,
-              `È ora di somministrare ${fPrimo} (${totR} in attesa)!`
-            );
+            mostraNotificaSistemaSchermoSpento(titoloPush, corpoPush);
           } else {
-            new Notification('🚨 SVEGLIA TERAPIA!', {
-              body: `${totR} farmaco/i da somministrare a ${pPrimo}!`,
-              icon: 'careassist_icon.jpg',
-              tag: 'terapia-ritardo'
-            });
+            new Notification(titoloPush, { body: corpoPush, icon: 'careassist_icon.jpg', tag: 'terapia-ritardo' });
           }
-        } catch (e) { }
-      }
+        }
+
+        // 2. DISPATCH PUSH SERVER-SIDE AL CELLULARE SPENTO (NTFY Priorità Massima 5)
+        if (typeof inviaAlertPushServerSide === 'function') {
+          inviaAlertPushServerSide(titoloPush, corpoPush, 5, 'pill,alarm_clock');
+        }
+      } catch (e) { }
     }
 
     // Popola lista pazienti e terapie scadute con design clinico moderno
@@ -20838,7 +20840,57 @@ var _timerDisplaySpento = null;
 var _audioAllarmeVoceSpento = null;
 var _keepAliveOscillator = null;
 
+function inviaAlertPushServerSide(titolo, messaggio, priorita = 5, tag = 'alarm_clock') {
+  try {
+    return fetch('/api/invia-alert-smartphone', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ titolo, messaggio, priorita, tag })
+    }).catch(function(err) {
+      console.warn('[Push Alert] Errore invio:', err);
+    });
+  } catch(e) {
+    return Promise.reject(e);
+  }
+}
+
+// Funzione richiamata dal bottone di test nel modale smartphone
+window.testSvegliaSmartphonePush = async function() {
+  const btn = document.getElementById('btn-test-push-sveglia');
+  const stato = document.getElementById('stato-test-push');
+  if (btn) btn.disabled = true;
+  if (stato) stato.textContent = 'Invio in corso...';
+
+  try {
+    const res = await fetch('/api/invia-alert-smartphone', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        titolo: '🚨 TEST SVEGLIA CAREASSIST PRO',
+        messaggio: 'Allarme di prova urgente! Il telefono suona anche a display spento.',
+        priorita: 5,
+        tag: 'alarm_clock,rotating_light'
+      })
+    });
+    const data = await res.json();
+    if (stato) {
+      stato.textContent = '✅ Inviato! Se il canale è iscritto sul cellulare, suonerà tra 2 secondi.';
+      stato.style.color = '#047857';
+    }
+  } catch (err) {
+    if (stato) {
+      stato.textContent = '❌ Errore di connessione al server.';
+      stato.style.color = '#b91c1c';
+    }
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+};
+
 function mostraNotificaSistemaSchermoSpento(titolo, corpo) {
+  // 1. Spedisci anche al canale Push di sistema NTFY
+  inviaAlertPushServerSide(titolo, corpo, 5, 'warning,alarm_clock');
+
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   try {
     if ('serviceWorker' in navigator) {

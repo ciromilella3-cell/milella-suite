@@ -2333,6 +2333,43 @@
           </div>
         </div>
 
+        <!-- SEZIONE SPECIALE: SVEGLIE A SCHERMO SPENTO / TELEFONO BLOCCATO -->
+        <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 2px solid #f59e0b; border-radius: 12px; padding: 14px; text-align: left; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:22px;">🚨</span>
+              <div>
+                <div style="font-size:13.5px; font-weight:900; color:#b45309; text-transform:uppercase; letter-spacing:0.5px;">
+                  Sveglie a Display Spento / Telefono Bloccato
+                </div>
+                <div style="font-size:11px; color:#92400e; font-weight:600;">
+                  Ricevi allarmi acustici e vibrazione anche se il cellulare è in standby
+                </div>
+              </div>
+            </div>
+            <span style="background:#f59e0b; color:white; font-size:10px; font-weight:800; padding:3px 8px; border-radius:20px;">CANALE ATTIVO</span>
+          </div>
+
+          <div style="background:white; border:1px solid #fde68a; border-radius:8px; padding:10px; margin-bottom:10px;">
+            <div style="font-size:12px; font-weight:700; color:#1e293b; margin-bottom:4px;">
+              📲 1. Collega il cellulare al canale allarmi di CareAssist:
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:6px;">
+              <a href="https://ntfy.sh/suite-milella-careassist" target="_blank" class="btn btn-primary" style="font-size:12px; padding:6px 14px; text-decoration:none; background:#ea580c; border:none; font-weight:800; border-radius:8px;">
+                🔔 Apri Canale Allarmi (ntfy.sh)
+              </a>
+              <span style="font-size:11px; color:#64748b;">Oppure scarica l'app gratuita <b>ntfy</b> su Google Play o App Store</span>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button type="button" onclick="testSvegliaSmartphonePush()" id="btn-test-push-sveglia" class="btn" style="flex:1; background:#b45309; color:white; font-size:12px; font-weight:800; padding:8px 12px; border-radius:8px; border:none; cursor:pointer; box-shadow:0 2px 6px rgba(180,83,9,0.3);">
+              ⚡ Fai Squillare il Telefono Adesso (Test Urgente)
+            </button>
+            <span id="stato-test-push" style="font-size:11px; font-weight:700; color:#047857;"></span>
+          </div>
+        </div>
+
         <div style="font-size:12px; color:#334155; line-height:1.5; text-align:left; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px;">
           <div style="font-weight:800; color:#15803d; margin-bottom:4px;">🚀 Connessione & Utilizzo Offline Domiciliare:</div>
           <div>Inquadra il QR Code col cellulare quando sei a casa (stesso Wi-Fi o hotspot) per aprirlo la prima volta.</div>
