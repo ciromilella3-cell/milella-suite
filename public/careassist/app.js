@@ -20422,10 +20422,7 @@ setInterval(function () {
     }
     if ('Notification' in window && Notification.permission === 'granted') {
       try {
-        new Notification('📡 Alert Ricevuto da ' + (t.da || 'altro dispositivo'), {
-          body: (t.msg || 'Sincronizzazione PC ↔ Smartphone verificata!') + ' (' + (t.paziente || '') + ')',
-          icon: 'careassist_icon.jpg'
-        });
+        mostraNotificaSistemaSchermoSpento('📡 Alert Ricevuto da ' + (t.da || 'altro dispositivo'), (t.msg || 'Sincronizzazione PC ↔ Smartphone verificata!') + ' (' + (t.paziente || '') + ')');
       } catch (e) {}
     }
     if (typeof showAdminSyncToast === 'function') {
@@ -20441,3 +20438,168 @@ window.cambiaTabSaperneDiPiu = cambiaTabSaperneDiPiu;
 window.aggiornaDiagnosticaAlert = aggiornaDiagnosticaAlert;
 window.eseguiTestAllertaLocale = eseguiTestAllertaLocale;
 window.inviaTestAllertaCrossDevice = inviaTestAllertaCrossDevice;
+
+
+// ==========================================================================
+// 🔒 TEST GUIDATO A DISPLAY SPENTO (10 SECONDI) + NOTIFICA SERVICE WORKER
+// ==========================================================================
+var _timerDisplaySpento = null;
+var _audioAllarmeVoceSpento = null;
+var _keepAliveOscillator = null;
+
+function mostraNotificaSistemaSchermoSpento(titolo, corpo) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(function (reg) {
+        if (reg && typeof reg.showNotification === 'function') {
+          reg.showNotification(titolo, {
+            body: corpo,
+            icon: 'careassist_icon.jpg',
+            badge: 'careassist_icon.jpg',
+            vibrate: [500, 180, 500, 180, 700, 200, 700],
+            requireInteraction: true,
+            renotify: true,
+            tag: 'careassist-alert-' + Date.now()
+          });
+        }
+        if (reg && reg.active) {
+          reg.active.postMessage({
+            type: 'SHOW_LOCKSCREEN_ALERT',
+            title: titolo,
+            body: corpo,
+            tag: Date.now()
+          });
+        }
+      }).catch(function () {});
+    } else {
+      new Notification(titolo, { body: corpo, icon: 'careassist_icon.jpg' });
+    }
+  } catch (e) {}
+}
+
+function avviaKeepAliveAudioHardwarePer12Secondi() {
+  try {
+    var ctx = (typeof getAudioContext === 'function') ? getAudioContext() : new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    // Oscillatore sub-udibile che impedisce ad Android/iOS di sospendere il processo quando l'utente spegne lo schermo
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.frequency.value = 440;
+    gain.gain.value = 0.0005; // quasi impercettibile ma mantiene attivo il canale audio hardware a display spento
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    _keepAliveOscillator = osc;
+    setTimeout(function () {
+      try { osc.stop(); osc.disconnect(); } catch (e) {}
+    }, 13000);
+  } catch (e) {}
+}
+
+function avviaTestDisplaySpento10Secondi() {
+  // 1. Richiedi subito il permesso notifiche se non ancora concesso
+  if ('Notification' in window && Notification.permission !== 'granted') {
+    try { Notification.requestPermission(); } catch (e) {}
+  }
+
+  // 2. Pre-carica e sblocca l'audio vocale HD sul tocco dell'utente (fondamentale per iOS/Android a schermo spento)
+  try {
+    if (!_audioAllarmeVoceSpento) {
+      _audioAllarmeVoceSpento = new Audio('assets/audio_presentazione/allarme_terapia_voce.mp3');
+    }
+    _audioAllarmeVoceSpento.volume = 0.01;
+    _audioAllarmeVoceSpento.currentTime = 0;
+    var playPromise = _audioAllarmeVoceSpento.play();
+    if (playPromise && typeof playPromise.then === 'function') {
+      playPromise.then(function () {
+        _audioAllarmeVoceSpento.pause();
+        _audioAllarmeVoceSpento.currentTime = 0;
+        _audioAllarmeVoceSpento.volume = 1.0;
+      }).catch(function () {});
+    }
+  } catch (e) {}
+
+  // 3. Avvia il keep-alive hardware WebAudio per non far addormentare il telefono appena chiudi il display
+  avviaKeepAliveAudioHardwarePer12Secondi();
+
+  if (typeof suonaSegnaleDolce === 'function') {
+    try { suonaSegnaleDolce(); } catch (e) {}
+  }
+
+  if (_timerDisplaySpento) clearInterval(_timerDisplaySpento);
+
+  var secondiRimasti = 10;
+  var box1 = document.getElementById('box-countdown-display-spento');
+  var box2 = document.getElementById('box-countdown-display-spento-ext');
+
+  function aggiornaBoxCountdown(testo, finito) {
+    [box1, box2].forEach(function (b) {
+      if (!b) return;
+      b.style.display = 'block';
+      b.style.background = finito ? '#065f46' : '#7c2d12';
+      b.innerHTML = testo;
+    });
+  }
+
+  aggiornaBoxCountdown('⏳ <b>' + secondiRimasti + ' SECONDI!</b><br>👉 ORA PREMI IL TASTO LATERALE DEL TELEFONO E SPEGNI IL DISPLAY!', false);
+
+  _timerDisplaySpento = setInterval(function () {
+    secondiRimasti--;
+    if (secondiRimasti > 0) {
+      aggiornaBoxCountdown('⏳ <b>' + secondiRimasti + ' SECONDI...</b><br>👉 TIENI IL DISPLAY DEL TELEFONO SPENTO E ASCOLTA!', false);
+    } else {
+      clearInterval(_timerDisplaySpento);
+      _timerDisplaySpento = null;
+      aggiornaBoxCountdown('🔔 <b>ALLARME A DISPLAY SPENTO ATTIVATO CON SUCCESSO!</b><br>Suono + Voce Umana HD + Vibrazione + Notifica Schermata di Blocco inviati!', true);
+
+      // A. Suona la sirena clinica WebAudio
+      if (typeof suonaSirenaClinica === 'function') {
+        try { suonaSirenaClinica(); } catch (e) {}
+      } else if (typeof suonaSegnaleDolce === 'function') {
+        try { suonaSegnaleDolce(); } catch (e) {}
+      }
+
+      // B. Riproduci la Voce Umana Studio HD a volume 100%
+      try {
+        if (_audioAllarmeVoceSpento) {
+          _audioAllarmeVoceSpento.volume = 1.0;
+          _audioAllarmeVoceSpento.currentTime = 0;
+          _audioAllarmeVoceSpento.play().catch(function () {});
+        }
+      } catch (e) {}
+
+      // C. Vibrazione prolungata da tavolo
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate([500, 180, 500, 180, 700, 200, 700]); } catch (e) {}
+      }
+
+      // D. Notifica Sistema Operativo sulla schermata di blocco (Service Worker)
+      var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+      var nomePaz = p ? p.nome : 'Assistito';
+      mostraNotificaSistemaSchermoSpento(
+        '🔔 CareAssist Pro — Sveglia Terapia (' + nomePaz + ')',
+        'Allarme a schermo spento verificato! È l'ora della somministrazione programmata.'
+      );
+
+      // E. Invia in tempo reale anche all'altro dispositivo (PC <-> Cellulare)
+      if (typeof AppData === 'object' && AppData) {
+        var devName = (window.innerWidth <= 900) ? 'Smartphone (a Display Spento)' : 'PC';
+        var oraStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        var ts = Date.now();
+        _ultimoAlertTestVistoTs = ts;
+        AppData._liveAlertTest = {
+          ts: ts,
+          da: devName,
+          ora: oraStr,
+          paziente: nomePaz,
+          msg: 'Allarme a Display Spento verificato con successo alle ' + oraStr
+        };
+        if (typeof saveDb === 'function') saveDb();
+      }
+    }
+  }, 1000);
+}
+
+window.avviaTestDisplaySpento10Secondi = avviaTestDisplaySpento10Secondi;
+window.mostraNotificaSistemaSchermoSpento = mostraNotificaSistemaSchermoSpento;

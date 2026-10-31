@@ -1,12 +1,12 @@
-// Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare
-const CACHE_NAME = 'careassist-pro-v95';
+// Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
+const CACHE_NAME = 'careassist-pro-v96';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './turni.html',
   './style.css',
-  './style.css?v=92',
-  './app.js?v=92',
+  './style.css?v=96',
+  './app.js?v=96',
   './app.js',
   './turnario_admin.js',
   './turnario_admin.js?v=2',
@@ -42,11 +42,40 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Gestione Notifiche Sistema Operativo anche a Display Spento / Bloccato
+self.addEventListener('message', (event) => {
+  if (!event.data) return;
+  if (event.data.type === 'SHOW_LOCKSCREEN_ALERT') {
+    const title = event.data.title || '🔔 CareAssist Pro — Avviso Terapia';
+    const options = {
+      body: event.data.body || 'È l\'ora della somministrazione programmata.',
+      icon: './careassist_icon.jpg',
+      badge: './careassist_icon.jpg',
+      vibrate: [500, 180, 500, 180, 700, 200, 700],
+      requireInteraction: true,
+      renotify: true,
+      tag: 'careassist-lockscreen-' + (event.data.tag || Date.now()),
+      data: { url: './index.html' }
+    };
+    event.waitUntil(self.registration.showNotification(title, options));
+  }
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ('focus' in client) return client.focus();
+      }
+      if (clients.openWindow) return clients.openWindow('./index.html');
+    })
+  );
+});
+
 // Strategia: Network First (no-cache) con fallback immediato su Cache offline
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-
-  // Ignora chiamate API server (gestite da app.js con local storage offline fallback)
   if (event.request.url.includes('/api/')) return;
 
   event.respondWith(

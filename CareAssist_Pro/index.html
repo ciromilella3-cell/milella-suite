@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=95">
+  <link rel="stylesheet" href="style.css?v=96">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -3239,8 +3239,25 @@
                 <button type="button" class="btn btn-success" style="background:#059669; font-weight:800; padding:9px 14px;" onclick="inviaTestAllertaCrossDevice()">
                   📲 Invia Alert di Prova PC ↔ Cellulare
                 </button>
+                <button type="button" class="btn" style="background:linear-gradient(135deg,#d97706,#b45309); color:#fff; border:2px solid #fde68a; font-weight:900; padding:9px 14px; border-radius:10px; cursor:pointer; box-shadow:0 4px 12px rgba(217,119,6,0.35);" onclick="avviaTestDisplaySpento10Secondi()">
+                  🔒 Test a Display Spento (Tra 10 sec)
+                </button>
               </div>
             </div>
+
+            <!-- GUIDA CHIARA + CONTO ALLA ROVESCIA PER TEST A DISPLAY SPENTO -->
+            <div style="background:#fffbeb; border:1.5px solid #f59e0b; border-radius:12px; padding:12px 14px; margin-top:10px;">
+              <div style="font-weight:900; color:#92400e; font-size:13.5px; margin-bottom:4px;">
+                🔒 Come provare l'Allarme a Display Spento sul Cellulare (in 3 passi):
+              </div>
+              <div style="font-size:12.5px; color:#78350f; line-height:1.5;">
+                <b>1.</b> Apri questa schermata sul tuo <b>Cellulare</b> e tocca il pulsante arancione <b>«🔒 Test a Display Spento (Tra 10 sec)»</b>.<br>
+                <b>2.</b> Appena parte il conto alla rovescia da 10 a 0, <b>premi il tasto laterale del telefono per spegnere/bloccare lo schermo</b> e appoggialo sul tavolo.<br>
+                <b>3.</b> Allo scadere dei 10 secondi (con display nero/spento!), il telefono <b>suonerà con la Voce Umana HD, vibrerà e mostrerà la notifica sulla schermata di blocco</b>!
+              </div>
+              <div id="box-countdown-display-spento" style="display:none; margin-top:10px; background:#7c2d12; color:#fff; padding:14px; border-radius:10px; text-align:center; font-size:16px; font-weight:900; border:2px solid #fde047;"></div>
+            </div>
+
             <div id="saperne-alert-diagnostica" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:8px; margin-top:10px;"></div>
           </div>
 
@@ -3487,6 +3504,25 @@
             <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:4px;">📧 Email per Riepilogo Scorte:</label>
             <input type="email" id="avviso-ext-email" class="form-control" placeholder="ciromilella3@gmail.com" style="font-size:13px; padding:8px 10px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
           </div>
+        </div>
+
+        <!-- BOX PROVA DIRETTA ALLARME ANCHE A SCHERMO SPENTO -->
+        <div style="background:linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border:2px solid #f59e0b; border-radius:12px; padding:14px; margin-bottom:16px;">
+          <div style="font-weight:900; color:#92400e; font-size:14px; margin-bottom:4px;">
+            🔒 Vuoi testare adesso la Sveglia a Display Spento per questo farmaco?
+          </div>
+          <div style="font-size:12px; color:#78350f; margin-bottom:10px; line-height:1.45;">
+            Tocca il pulsante qui sotto, poi <b>spegni subito il display del cellulare</b> col tasto laterale: tra <b>10 secondi</b> sentirai suonare la sveglia vocale e vibrare il telefono a schermo spento!
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn" onclick="avviaTestDisplaySpento10Secondi()" style="flex:1; background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:#fff; border:none; padding:11px 14px; border-radius:10px; font-weight:900; font-size:13px; cursor:pointer; box-shadow:0 4px 12px rgba(217,119,6,0.35);">
+              🔒 Avvia Test a Display Spento (Tra 10 Secondi)
+            </button>
+            <button type="button" class="btn" onclick="eseguiTestAllertaLocale()" style="background:#0284c7; color:#fff; border:none; padding:11px 14px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;">
+              🔔 Suona Subito
+            </button>
+          </div>
+          <div id="box-countdown-display-spento-ext" style="display:none; margin-top:10px; background:#7c2d12; color:#fff; padding:12px; border-radius:10px; text-align:center; font-size:15px; font-weight:900; border:2px solid #fde047;"></div>
         </div>
 
         <!-- LE 3 AZIONI RAPIDE DI NOTIFICA -->
@@ -4908,7 +4944,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=95"></script>
+  <script src="app.js?v=96"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
