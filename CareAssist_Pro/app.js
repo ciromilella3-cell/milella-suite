@@ -4853,13 +4853,14 @@ function renderTerapie() {
           if (check.inRitardo) {
             const rOre = Math.floor(check.minutiRitardo / 60);
             const rMin = check.minutiRitardo % 60;
-            const ritardoTesto = rOre > 0 ? `+${rOre}h ${rMin}m` : `+${rMin} min`;
+            const ritardoTesto = (check.minutiRitardo === 0) ? 'ORA ESATTA!' : (rOre > 0 ? `+${rOre}h ${rMin}m` : `+${rMin} min`);
+            const badgeTesto = (check.minutiRitardo === 0) ? '⏰ È L\'ORA ESATTA!' : `Scaduto da ${ritardoTesto}`;
             return `
                 <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                  <button class="btn farmaco-in-ritardo-btn" style="min-width: 120px;" onclick="toggleFarmacoConScarico(${t.id})" title="ATTENZIONE: Terapia in ritardo! Clicca per somministrare ora.">
-                    🔔 RITARDO!
+                  <button class="btn farmaco-in-ritardo-btn" style="min-width: 120px;" onclick="toggleFarmacoConScarico(${t.id})" title="ATTENZIONE: È ora di somministrare la terapia! Clicca per somministrare ora.">
+                    🔔 ${check.minutiRitardo === 0 ? 'PRENDI ORA!' : 'RITARDO!'}
                   </button>
-                  <span style="display:inline-block; background:#dc2626; color:#ffffff !important; font-weight:800; font-size:11px; padding:3px 10px; border-radius:12px; margin-top:3px; box-shadow:0 1px 3px rgba(220,38,38,0.3);">Scaduto da ${ritardoTesto}</span>
+                  <span style="display:inline-block; background:#dc2626; color:#ffffff !important; font-weight:800; font-size:11px; padding:3px 10px; border-radius:12px; margin-top:3px; box-shadow:0 1px 3px rgba(220,38,38,0.3);">${badgeTesto}</span>
                   <button type="button" class="btn btn-outline" style="padding:2px 8px; font-size:10.5px; border-color:#fca5a5; color:#b91c1c; background:#fef2f2; border-radius:6px;" onclick="apriModalSaltaFarmaco(${t.id})" title="Se non può essere preso (rifiuto, addormentato, vomito), registralo come dose saltata">
                     ❌ Non somministrato?
                   </button>
@@ -5037,7 +5038,7 @@ function verificaStatoOrarioFarmaco(orarioStr) {
   const adessoMinuti = now.getHours() * 60 + now.getMinutes();
   const farmacoMinuti = oreF * 60 + minF;
 
-  const diff = farmacoMinuti - adessoMinuti; // >0 se nel futuro, <0 se già passato
+  const diff = farmacoMinuti - adessoMinuti; // >0 se nel futuro, <=0 se l'ora è arrivata o già passata
 
   // Se l'orario è nel futuro oltre 30 minuti di tolleranza
   if (diff > 30) {
@@ -5051,8 +5052,8 @@ function verificaStatoOrarioFarmaco(orarioStr) {
     };
   }
 
-  // Se l'orario è passato da più di 15 minuti e non ancora preso: RITARDO / TERAPIA SALTATA!
-  if (diff <= -5) {
+  // ALLARME PUNTUALE AL MINUTO 0: non appena scatta l'orario programmato (diff <= 0) e non è ancora spuntato!
+  if (diff <= 0) {
     return {
       consentito: true,
       futuro: false,
@@ -5093,29 +5094,31 @@ let audioSbloccatoDaGesto = false; // se l'utente chiude il popup, non riapre pe
 
 function suonaChimeInsistenteElegante() {
   try {
+    forzaVolumeSicurezza70('Allarme Terapia in Corso / Scaduta', false);
     const ctx = getAudioContext();
     if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    const dest = (typeof getMasterAlarmDestination === 'function') ? (getMasterAlarmDestination(ctx) || ctx.destination) : ctx.destination;
     const t0 = ctx.currentTime;
 
-    // Sequenza a tre toni arpeggiati nitidi (Mi5 659.25Hz -> Sol#5 830.61Hz -> Si5 987.77Hz)
-    // Elegante, penetrante e insistente senza essere sgradevole
+    // Sequenza a quattro toni arpeggiati nitidi ad alta udibilità (Volume >= 70% garantito)
     const note = [659.25, 830.61, 987.77, 1318.51]; // Mi5, Sol#5, Si5, Mi6
     note.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      const startNota = t0 + (idx * 0.12);
+      const startNota = t0 + (idx * 0.14);
 
-      osc.type = 'sine';
+      osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, startNota);
 
       gain.gain.setValueAtTime(0, startNota);
-      gain.gain.linearRampToValueAtTime(0.12, startNota + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.001, startNota + 0.55);
+      gain.gain.linearRampToValueAtTime(0.45, startNota + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, startNota + 0.65);
 
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(dest);
       osc.start(startNota);
-      osc.stop(startNota + 0.6);
+      osc.stop(startNota + 0.7);
     });
 
   } catch (e) {
@@ -5155,7 +5158,7 @@ function controllaTerapieGlobaliTuttiPazienti() {
       try { navigator.vibrate([400, 200, 400]); } catch (e) { }
     }
 
-    // Notifica di sistema push
+    // Notifica di sistema push (anche a schermo spento via Service Worker)
     if ('Notification' in window && Notification.permission === 'granted') {
       const adessoNotif = Date.now();
       if (adessoNotif - ultimoNotificaRitardoTimestamp >= 60000) {
@@ -5163,11 +5166,20 @@ function controllaTerapieGlobaliTuttiPazienti() {
         try {
           const totR = pazientiConRitardi.reduce((sum, it) => sum + it.farmaci.length, 0);
           const pPrimo = pazientiConRitardi[0].paziente.nome;
-          new Notification('🚨 TERAPIA IN RITARDO!', {
-            body: `${totR} farmaco/i scaduto/i da somministrare a ${pPrimo}!`,
-            icon: 'careassist_icon.jpg',
-            tag: 'terapia-ritardo'
-          });
+          const fPrimo = pazientiConRitardi[0].farmaci[0] ? pazientiConRitardi[0].farmaci[0].farmaco : 'Farmaco';
+          const oraPrimo = pazientiConRitardi[0].farmaci[0] ? pazientiConRitardi[0].farmaci[0].ora : '';
+          if (typeof mostraNotificaSistemaSchermoSpento === 'function') {
+            mostraNotificaSistemaSchermoSpento(
+              `🚨 SVEGLIA TERAPIA ORE ${oraPrimo} (${pPrimo})`,
+              `È ora di somministrare ${fPrimo} (${totR} in attesa)!`
+            );
+          } else {
+            new Notification('🚨 SVEGLIA TERAPIA!', {
+              body: `${totR} farmaco/i da somministrare a ${pPrimo}!`,
+              icon: 'careassist_icon.jpg',
+              tag: 'terapia-ritardo'
+            });
+          }
         } catch (e) { }
       }
     }
@@ -5180,7 +5192,7 @@ function controllaTerapieGlobaliTuttiPazienti() {
           const check = verificaStatoOrarioFarmaco(f.ora);
           const rOre = Math.floor(check.minutiRitardo / 60);
           const rMin = check.minutiRitardo % 60;
-          const ritardoStr = rOre > 0 ? `+${rOre}h ${rMin}m` : `+${rMin} min`;
+          const ritardoStr = (check.minutiRitardo === 0) ? 'ADESSO (ORA ESATTA!)' : (rOre > 0 ? `+${rOre}h ${rMin}m` : `+${rMin} min`);
           return `
             <div class="card-allarme-farmaco-item" style="background:linear-gradient(135deg, #ffffff 0%, #fffbfb 100%); border:1.5px solid #fee2e2; border-left:4.5px solid #e11d48; border-radius:14px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
               <div style="flex:1; min-width:200px;">
@@ -9944,7 +9956,13 @@ function salvaModificaFarmaco(e) {
   p.terapie.sort(comparaOrariTerapie);
 
   closeModal('modal-modifica-farmaco');
+  allarmeTerapieSnoozeFinoA = 0; // Azzera qualsiasi pausa snooze appena cambi l'orario di un farmaco!
+  ultimoSuonoFarmacoRitardo = 0;
+  _ultimoMinutoNotificatoTerapia = '';
   saveDb();
+  setTimeout(function () {
+    try { controllaTerapieGlobaliTuttiPazienti(); } catch (e) {}
+  }, 300);
   showToast('Terapia per "' + cleanNome + '" salvata con successo con ' + totalDosi + ' somministrazioni! 💊');
 }
 
