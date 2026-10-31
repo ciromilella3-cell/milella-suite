@@ -759,6 +759,44 @@
                             <div class="cartoon-progress-bar" id="cartoonProgressBar"></div>
                         </div>
                         <span id="cartoonTimeLabel" style="font-size:12px; font-weight:800; color:#cbd5e1;">Atto 1/5</span>
+                        <button type="button" onclick="condividiCareAssistWhatsApp()" style="background:#25D366; color:#fff; border:none; padding:7px 11px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px;" title="Condividi CareAssist su WhatsApp">
+                            <span>💬</span> WhatsApp
+                        </button>
+                    </div>
+
+                    <!-- PANNELLO CONTROLLO RAPIDO VOCI CAREASSIST -->
+                    <div class="no-print" style="background:#090d16; border-top:1px solid rgba(255,255,255,0.1); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:12px; color:#cbd5e1;">
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                            <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-weight:700;">
+                                <span>Modalità Voce:</span>
+                                <select id="selectVoiceModeCareAssist" onchange="cambiaVoiceModeCareAssist(this.value)" style="background:#1e293b; color:#ffd814; border:1px solid #d4af37; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:800;">
+                                    <option value="neural">🎙️ Voci Studio HD (Giuseppe, Isabella &amp; Diego)</option>
+                                    <option value="browser">🗣️ Voce Sintetica Browser</option>
+                                    <option value="silent">🔇 Solo Sottotitoli Muto</option>
+                                </select>
+                            </label>
+
+                            <label style="display:flex; align-items:center; gap:5px; font-weight:700;">
+                                <span>Velocità:</span>
+                                <select id="selectAudioSpeedCareAssist" onchange="cambiaAudioSpeedCareAssist(this.value)" style="background:#1e293b; color:#fff; border:1px solid rgba(255,255,255,0.25); padding:4px 8px; border-radius:6px; font-size:12px;">
+                                    <option value="0.9">0.9x</option>
+                                    <option value="1.0" selected>1.0x</option>
+                                    <option value="1.15">1.15x</option>
+                                    <option value="1.3">1.3x</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <label style="display:flex; align-items:center; gap:6px; font-weight:700;">
+                                <span id="labelVolIconCareAssist">🔊</span>
+                                <input type="range" id="sliderVolCareAssist" min="0" max="100" value="85" oninput="cambiaVolumeCareAssist(this.value)" style="width:75px; accent-color:#ffd814; cursor:pointer;">
+                                <span id="labelVolValCareAssist" style="color:#ffd814; font-weight:800; min-width:30px;">85%</span>
+                            </label>
+                            <button type="button" id="btnMuteCareAssist" onclick="toggleMuteCareAssist()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:4px 8px; border-radius:6px; font-size:11.5px; font-weight:800; cursor:pointer;">
+                                Muto
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1555,7 +1593,7 @@
         ];
 
         // =========================================================================
-        // STATO DEL PLAYER E FUNZIONI INTERATTIVE
+        // STATO DEL PLAYER E FUNZIONI INTERATTIVE (CON CONTROLLO VOCI AUTONOMO)
         // =========================================================================
         let viewMode = 'cartoon'; // 'cartoon' | 'photo'
         let currentCartoonIdx = 0;
@@ -1564,6 +1602,71 @@
         let studioAudio = new Audio();
         studioAudio.preload = 'auto';
 
+        let audioConfigCareAssist = {
+            mode: localStorage.getItem('careassist_voicemode') || 'neural',
+            speed: parseFloat(localStorage.getItem('careassist_audiospeed')) || 1.0,
+            volume: parseInt(localStorage.getItem('careassist_volume')) || 85,
+            muted: localStorage.getItem('careassist_muted') === 'true'
+        };
+
+        function applicaAudioConfigCareAssist() {
+            studioAudio.playbackRate = audioConfigCareAssist.speed;
+            studioAudio.volume = audioConfigCareAssist.muted ? 0 : (audioConfigCareAssist.volume / 100);
+
+            const selMode = document.getElementById('selectVoiceModeCareAssist');
+            if (selMode) selMode.value = audioConfigCareAssist.mode;
+            const selSpeed = document.getElementById('selectAudioSpeedCareAssist');
+            if (selSpeed) selSpeed.value = audioConfigCareAssist.speed.toString();
+            const sliderVol = document.getElementById('sliderVolCareAssist');
+            if (sliderVol) sliderVol.value = audioConfigCareAssist.volume;
+            const lblVal = document.getElementById('labelVolValCareAssist');
+            if (lblVal) lblVal.textContent = (audioConfigCareAssist.muted ? '0%' : audioConfigCareAssist.volume + '%');
+            const lblIcon = document.getElementById('labelVolIconCareAssist');
+            if (lblIcon) lblIcon.textContent = audioConfigCareAssist.muted || audioConfigCareAssist.volume === 0 ? '🔇' : '🔊';
+            const btnMute = document.getElementById('btnMuteCareAssist');
+            if (btnMute) {
+                btnMute.style.background = audioConfigCareAssist.muted ? '#ef4444' : 'rgba(255,255,255,0.1)';
+                btnMute.textContent = audioConfigCareAssist.muted ? 'Riattiva' : 'Muto';
+            }
+        }
+
+        function cambiaVoiceModeCareAssist(val) {
+            audioConfigCareAssist.mode = val;
+            localStorage.setItem('careassist_voicemode', val);
+            fermaAudioStudio();
+            if (isCartoonPlaying) avviaRiproduzioneCartone();
+        }
+
+        function cambiaAudioSpeedCareAssist(val) {
+            audioConfigCareAssist.speed = parseFloat(val);
+            localStorage.setItem('careassist_audiospeed', val);
+            studioAudio.playbackRate = audioConfigCareAssist.speed;
+        }
+
+        function cambiaVolumeCareAssist(val) {
+            audioConfigCareAssist.volume = parseInt(val);
+            audioConfigCareAssist.muted = false;
+            localStorage.setItem('careassist_volume', val);
+            localStorage.setItem('careassist_muted', 'false');
+            applicaAudioConfigCareAssist();
+        }
+
+        function toggleMuteCareAssist() {
+            audioConfigCareAssist.muted = !audioConfigCareAssist.muted;
+            localStorage.setItem('careassist_muted', audioConfigCareAssist.muted ? 'true' : 'false');
+            applicaAudioConfigCareAssist();
+        }
+
+        function condividiCareAssistWhatsApp() {
+            const testo = encodeURIComponent(
+                "🏥 *CAREASSIST PRO — PRESENTAZIONE AZIENDALE*\n" +
+                "Guarda la presentazione interattiva con cartoni animati, alert in tempo reale e gestione farmaci H24:\n\n" +
+                "🔗 https://milella-suite.onrender.com/presentazione_aziendale.html\n\n" +
+                "Co-Progettato da Ciro Milella & Google DeepMind Antigravity AI"
+            );
+            window.open('https://api.whatsapp.com/send?text=' + testo, '_blank');
+        }
+
         function fermaAudioStudio() {
             try {
                 studioAudio.pause();
@@ -1571,6 +1674,7 @@
                 studioAudio.ontimeupdate = null;
                 document.getElementById('mainStageContainer')?.classList.remove('is-speaking');
             } catch (e) {}
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
         }
 
         function evidenziaThumbnail(idAttivo) {
@@ -1615,7 +1719,52 @@
             document.getElementById('btnPlayCartoon').innerHTML = '⏸️ Pausa Cartone';
             const scene = CARTOON_SCENES[currentCartoonIdx] || CARTOON_SCENES[0];
 
+            if (audioConfigCareAssist.mode === 'silent') {
+                let dur = 12, cur = 0;
+                const intv = setInterval(() => {
+                    if (!isCartoonPlaying) { clearInterval(intv); return; }
+                    cur++;
+                    document.getElementById('cartoonProgressBar').style.width = Math.min(100, (cur/dur)*100) + '%';
+                    if (cur >= dur) {
+                        clearInterval(intv);
+                        if (currentCartoonIdx + 1 < CARTOON_SCENES.length) {
+                            currentCartoonIdx++;
+                            renderCartoonStage();
+                            setTimeout(() => { if (isCartoonPlaying) avviaRiproduzioneCartone(); }, 650);
+                        } else {
+                            isCartoonPlaying = false;
+                            document.getElementById('btnPlayCartoon').innerHTML = '▶️ Riguarda Video Cartone';
+                        }
+                    }
+                }, 1000);
+                return;
+            }
+
+            if (audioConfigCareAssist.mode === 'browser') {
+                if ('speechSynthesis' in window) {
+                    const utt = new SpeechSynthesisUtterance(scene.subtitle.replace(/[«»]/g, ''));
+                    utt.lang = 'it-IT';
+                    utt.rate = audioConfigCareAssist.speed;
+                    utt.volume = audioConfigCareAssist.muted ? 0 : (audioConfigCareAssist.volume / 100);
+                    utt.onend = () => {
+                        if (!isCartoonPlaying) return;
+                        if (currentCartoonIdx + 1 < CARTOON_SCENES.length) {
+                            currentCartoonIdx++;
+                            renderCartoonStage();
+                            setTimeout(() => { if (isCartoonPlaying) avviaRiproduzioneCartone(); }, 650);
+                        } else {
+                            isCartoonPlaying = false;
+                            document.getElementById('btnPlayCartoon').innerHTML = '▶️ Riguarda Video Cartone';
+                        }
+                    };
+                    window.speechSynthesis.speak(utt);
+                    return;
+                }
+            }
+
             studioAudio.src = scene.audioUrl;
+            studioAudio.playbackRate = audioConfigCareAssist.speed;
+            studioAudio.volume = audioConfigCareAssist.muted ? 0 : (audioConfigCareAssist.volume / 100);
             studioAudio.ontimeupdate = () => {
                 if (studioAudio.duration && isFinite(studioAudio.duration)) {
                     const pct = Math.min(100, (studioAudio.currentTime / studioAudio.duration) * 100);
@@ -1855,6 +2004,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            applicaAudioConfigCareAssist();
             try {
                 const saved = JSON.parse(localStorage.getItem('careassist_azienda_capo') || 'null');
                 if (saved && saved.nome) {
@@ -1868,7 +2018,7 @@
             renderCartoonStage();
             renderAplusGallery();
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js?v=106').catch(() => {});
+                navigator.serviceWorker.register('/sw.js?v=116').catch(() => {});
             }
         });
     </script>

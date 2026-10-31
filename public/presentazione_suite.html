@@ -555,6 +555,60 @@
             overflow-y: auto;
             box-shadow: 0 25px 60px rgba(0,0,0,0.45);
         }
+
+        /* STILI PER LA STAMPA DEPLIANT A4 SUITE */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #0f172a !important;
+            }
+            .amz-header, .amz-subbar, .cartoon-controls, #panelVoiceControl, .btn-per-saperne, .amz-buy-box, .amz-thumb-strip, .modal-backdrop, #btnShareWhatsapp, #btnShareSuiteTop {
+                display: none !important;
+            }
+            .amz-container {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .amz-product-sheet {
+                grid-template-columns: 1fr !important;
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+            .print-depliant-header {
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 2px solid #d4af37;
+                padding-bottom: 12px;
+                margin-bottom: 16px;
+            }
+            .print-qr-section {
+                display: flex !important;
+                align-items: center;
+                gap: 16px;
+                background: #f8fafc;
+                border: 1.5px solid #0284c7;
+                border-radius: 12px;
+                padding: 14px;
+                margin-top: 18px;
+                page-break-inside: avoid;
+            }
+        }
+        .print-depliant-header, .print-qr-section {
+            display: none;
+        }
+
+        /* EVIDENZIAZIONE SOTTOTITOLO KARAOKE TELEPROMPTER */
+        .karaoke-active-phrase {
+            color: #ffd814 !important;
+            text-shadow: 0 0 10px rgba(255, 216, 20, 0.5);
+            font-weight: 900;
+            transition: all 0.25s ease;
+        }
+        .karaoke-dimmed-phrase {
+            opacity: 0.65;
+            transition: opacity 0.25s ease;
+        }
     </style>
 </head>
 <body>
@@ -570,15 +624,18 @@
                 <span>8 Applicazioni Integrate • Dati Protetti • Progettata con Google DeepMind Antigravity AI</span>
             </div>
         </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <button type="button" onclick="condividiSuiteWhatsApp()" id="btnShareSuiteTop" style="background:#25D366; color:#ffffff; border:none; padding:9px 16px; border-radius:10px; font-weight:900; font-size:13.5px; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(37,211,102,0.35);" title="Condividi la presentazione su WhatsApp con testo e link automatico">
+                <span>💬</span> Condividi su WhatsApp
+            </button>
             <button type="button" onclick="attivaModalitaFilm(0, true)" style="background:#ffd814; color:#0f172a; border:none; padding:9px 16px; border-radius:10px; font-weight:900; font-size:13.5px; cursor:pointer;">
-                🎬 Avvia Presentazione con Voce Guida
+                🎬 Avvia Presentazione
             </button>
             <a href="/launcher.html" style="background:#0284c7; color:#fff; text-decoration:none; padding:9px 16px; border-radius:10px; font-weight:800; font-size:13.5px;">
-                🚀 Apri Tutte le 8 App (Launcher)
+                🚀 Apri Launcher
             </a>
             <a href="/presentazione_aziendale.html" style="background:rgba(255,255,255,0.12); color:#fff; text-decoration:none; padding:9px 14px; border-radius:10px; font-weight:700; font-size:13.5px;">
-                🏥 Vetrina Solo CareAssist Pro
+                🏥 Solo CareAssist
             </a>
         </div>
     </header>
@@ -603,6 +660,22 @@
     </nav>
 
     <div class="amz-container">
+
+        <!-- INTESTAZIONE SPECIALE PER STAMPA A4 DEPLIANT ESECUTIVO -->
+        <div class="print-depliant-header">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <img src="/assets/img/suite_mc_official_full.png" alt="Logo Suite M.C." style="width:58px; height:58px; object-fit:cover; border-radius:12px; border:2px solid #d4af37;">
+                <div>
+                    <h1 style="font-size:22px; font-weight:900; margin:0; color:#0f172a;">SUITE GESTIONALE C. MILELLA</h1>
+                    <div style="font-size:13px; font-weight:700; color:#b45309;">Scheda Ufficiale Esecutiva di Presentazione • 8 Moduli Software Integrati</div>
+                </div>
+            </div>
+            <div style="text-align:right; font-size:11px; color:#475569; font-weight:700;">
+                <div>Progettata da Ciro Milella</div>
+                <div>Potenziata con Google Antigravity AI</div>
+                <div>Data: 31 Ottobre 2026</div>
+            </div>
+        </div>
 
         <!-- SCHEDA PRODOTTO STILE AMAZON A 3 COLONNE -->
         <section class="amz-product-sheet">
@@ -694,7 +767,7 @@
                     </div>
 
                     <!-- PANNELLO CONTROLLO RAPIDO VOCI (INLINE) -->
-                    <div style="background:#090d16; border-top:1px solid rgba(255,255,255,0.1); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:12px; color:#cbd5e1;">
+                    <div id="panelVoiceControl" style="background:#090d16; border-top:1px solid rgba(255,255,255,0.1); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:12px; color:#cbd5e1;">
                         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                             <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-weight:700;">
                                 <span>Modalità Voce:</span>
@@ -850,6 +923,20 @@
                         Questa Suite non è un prodotto statico: è un sistema che cresce con te. Qualsiasi nuova funzione per la casa, la salute o l'azienda può essere creata e pubblicata in Cloud in pochi minuti.
                     </p>
                 </div>
+
+                <!-- BOX QR CODE PER STAMPA DEPLIANT A4 -->
+                <div class="print-qr-section">
+                    <img src="/assets/img/qr_turni.png" alt="QR Code Suite" style="width:105px; height:105px; border-radius:10px; border:2px solid #0f172a; background:#fff; padding:4px;">
+                    <div>
+                        <div style="font-size:14px; font-weight:900; color:#0f172a; margin-bottom:4px;">INQUADRA DAL TUO SMARTPHONE PER APRIRE LA SUITE COMPLETA</div>
+                        <div style="font-size:12px; color:#334155; line-height:1.4;">
+                            Nessuna installazione richiesta. Apri la fotocamera del telefono e inquadra questo codice per consultare le presentazioni animate, i turni, le scadenze dei veicoli e il diario clinico CareAssist in tempo reale.
+                        </div>
+                        <div style="font-size:11.5px; font-weight:800; color:#0284c7; margin-top:6px;">
+                            Indirizzo Cloud Render: https://milella-suite.onrender.com
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- COLONNA 3: BUY BOX AZIONI SUITE -->
@@ -867,6 +954,14 @@
                     🏢 Vetrina Aziendale CareAssist Pro
                 </button>
 
+                <button type="button" onclick="condividiSuiteWhatsApp()" id="btnShareWhatsapp" style="width:100%; background:#25D366; color:#ffffff; border:none; padding:12px; border-radius:99px; font-size:14px; font-weight:900; cursor:pointer; margin-top:8px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 3px 10px rgba(37,211,102,0.35);">
+                    <span>💬</span> Invia su WhatsApp
+                </button>
+
+                <button type="button" onclick="stampaDepliantA4()" style="width:100%; background:#f1f5f9; color:#0f172a; border:1.5px solid #cbd5e1; padding:10px; border-radius:99px; font-size:13px; font-weight:800; cursor:pointer; margin-top:8px; display:flex; align-items:center; justify-content:center; gap:6px;">
+                    <span>📄</span> Stampa Depliant A4 Esecutivo
+                </button>
+
                 <div style="margin-top:16px; padding:12px; background:#f8fafc; border-radius:12px; border:1px solid #cbd5e1; font-size:12.5px; color:#334155;">
                     <div style="font-weight:800; color:#0f172a; margin-bottom:4px;">📱 Come aprirla sul cellulare:</div>
                     1. Apri la fotocamera dello smartphone.<br>
@@ -877,7 +972,7 @@
                 <div style="margin-top:14px; padding-top:12px; border-top:1px solid #e2e8f0; font-size:12px; color:#475569; display:flex; flex-direction:column; gap:5px;">
                     <div>🔒 <strong>Accessi:</strong> Protetti da PIN Personale</div>
                     <div>💾 <strong>Sicurezza:</strong> Sincronizzazione USB + Cloud</div>
-                    <div>🖨️ <a href="javascript:void(0)" onclick="window.print()" style="color:#007185; font-weight:800;">Stampa Panoramica Suite A4</a></div>
+                    <div>🖨️ <a href="javascript:void(0)" onclick="stampaDepliantA4()" style="color:#007185; font-weight:800;">Stampa Depliant Esecutivo A4</a></div>
                 </div>
             </aside>
 
@@ -1709,11 +1804,48 @@
             const sc = SUITE_SCENES[currentSceneIdx] || SUITE_SCENES[0];
             document.getElementById('viewerTopTitle').textContent = `🎬 SUITE GESTIONALE C. MILELLA — ${sc.title.toUpperCase()}`;
             document.getElementById('speakerBadge').textContent = sc.speaker;
-            document.getElementById('subtitleText').textContent = ottieniTestoAttualeScena(currentSceneIdx);
+            aggiornaSottotitoloKaraoke(ottieniTestoAttualeScena(currentSceneIdx), 0);
             document.getElementById('filmTimeLabel').textContent = `Atto ${currentSceneIdx + 1}/5`;
 
             const container = document.getElementById('mainStageContainer');
             container.innerHTML = sc.svgRender();
+        }
+
+        // FUNZIONE TELEPROMPTER / KARAOKE SOTTOTITOLI
+        function aggiornaSottotitoloKaraoke(testoCompleto, percentualeProgresso = 0) {
+            const box = document.getElementById('subtitleText');
+            if (!box) return;
+
+            // Se il testo contiene un dialogo (es. «Isabella: ... — Ciro: ...»)
+            if (testoCompleto.includes('—')) {
+                const parti = testoCompleto.split('—');
+                const isSecondPartActive = percentualeProgresso >= 48;
+
+                box.innerHTML = `
+                    <span class="${isSecondPartActive ? 'karaoke-dimmed-phrase' : 'karaoke-active-phrase'}">${parti[0].trim()}</span>
+                    <br style="margin:4px 0;">
+                    <span style="color:#d4af37; font-weight:800;">—</span> 
+                    <span class="${isSecondPartActive ? 'karaoke-active-phrase' : 'karaoke-dimmed-phrase'}">${parti[1].trim()}</span>
+                `;
+            } else {
+                box.textContent = testoCompleto;
+            }
+        }
+
+        // CONDIVISIONE WHATSAPP AUTOMATICA
+        function condividiSuiteWhatsApp() {
+            const testo = encodeURIComponent(
+                "👑 *SUITE GESTIONALE C. MILELLA*\n" +
+                "Guarda la presentazione ufficiale con audio e cartoni animati degli 8 moduli software integrati:\n\n" +
+                "🔗 https://milella-suite.onrender.com/presentazione_suite.html\n\n" +
+                "Dati protetti • Backup USB • Progettata con Google DeepMind Antigravity AI"
+            );
+            window.open('https://api.whatsapp.com/send?text=' + testo, '_blank');
+        }
+
+        // STAMPA DEPLIANT ESECUTIVO A4
+        function stampaDepliantA4() {
+            window.print();
         }
 
         function avviaRiproduzioneFilm() {
@@ -1759,6 +1891,7 @@
                 if (suiteAudio.duration && isFinite(suiteAudio.duration)) {
                     const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
                     document.getElementById('filmProgressBar').style.width = pct + '%';
+                    aggiornaSottotitoloKaraoke(currentText, pct);
                 }
             };
             suiteAudio.onended = () => {
@@ -1889,6 +2022,7 @@
                 if (suiteAudio.duration && isFinite(suiteAudio.duration)) {
                     const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
                     document.getElementById('filmProgressBar').style.width = pct + '%';
+                    aggiornaSottotitoloKaraoke(currentText, pct);
                 }
             };
             suiteAudio.play().catch(e => {
