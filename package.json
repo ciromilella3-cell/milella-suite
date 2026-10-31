@@ -1,21 +1,20 @@
-﻿{
-    "name":  "inventarioweb",
-    "version":  "1.0.0",
-    "description":  "",
-    "main":  "index.js",
-    "scripts":  {
-                    "test":  "echo \"Error: no test specified\" \u0026\u0026 exit 1"
-                },
-    "keywords":  [
-
-                 ],
-    "author":  "",
-    "license":  "ISC",
-    "dependencies":  {
-                         "cors":  "^2.8.6",
-                         "express":  "^5.2.1",
-                         "http-proxy-middleware":  "^4.2.0",
-                         "multer":  "^2.4.0",
-                         "mongodb":  "^6.8.0"
-                     }
+{
+    "name": "inventarioweb",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.6",
+        "express": "^5.2.1",
+        "http-proxy-middleware": "^4.2.0",
+        "mongodb": "^6.8.0",
+        "msedge-tts": "^2.1.1",
+        "multer": "^2.4.0"
+    }
 }

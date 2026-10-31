@@ -2556,12 +2556,15 @@ function dividiInFrasiNaturali(text, maxLen = 170) {
 app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
     try {
         const rawText = String(req.query.text || '').slice(0, 1800);
-        const speed = req.query.speed === 'slow' ? '0.85' : '1';
+        const voiceParam = String(req.query.voice || 'isabella').toLowerCase();
+        const voiceName = voiceParam === 'diego' ? 'it-IT-DiegoNeural'
+            : (voiceParam === 'giuseppe' ? 'it-IT-GiuseppeNeural' : 'it-IT-IsabellaNeural');
         if (!rawText.trim()) {
             return res.status(400).json({ error: 'Testo mancante' });
         }
 
-        const cacheKey = `${speed}:${rawText}`;
+        const cleanedText = preparaTestoPerVoceUmana(rawText);
+        const cacheKey = `edge:${voiceName}:${cleanedText}`;
         if (ttsAudioCache.has(cacheKey)) {
             const cachedBuf = ttsAudioCache.get(cacheKey);
             res.setHeader('Content-Type', 'audio/mpeg');
@@ -2569,10 +2572,43 @@ app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
             return res.send(cachedBuf);
         }
 
+        // 1. Priorità assoluta: Motore Microsoft Azure Neural HD (24kHz 96kbps - Voce Umana Reale)
+        try {
+            const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
+            const tts = new MsEdgeTTS();
+            await tts.setMetadata(voiceName, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
+            const { audioStream } = tts.toStream(cleanedText);
+            const edgeBuf = await new Promise((resolve, reject) => {
+                const chunks = [];
+                audioStream.on('data', c => chunks.push(c));
+                audioStream.on('end', () => {
+                    try { tts.close(); } catch (e) {}
+                    resolve(Buffer.concat(chunks));
+                });
+                audioStream.on('error', err => {
+                    try { tts.close(); } catch (e) {}
+                    reject(err);
+                });
+            });
+            if (edgeBuf && edgeBuf.length > 500) {
+                if (ttsAudioCache.size > 150) {
+                    const firstKey = ttsAudioCache.keys().next().value;
+                    ttsAudioCache.delete(firstKey);
+                }
+                ttsAudioCache.set(cacheKey, edgeBuf);
+                res.setHeader('Content-Type', 'audio/mpeg');
+                res.setHeader('Cache-Control', 'public, max-age=86400');
+                return res.send(edgeBuf);
+            }
+        } catch (edgeErr) {
+            console.warn('[TTS EDGE FALLBACK]', edgeErr.message);
+        }
+
+        // 2. Fallback secondario
         const chunks = dividiInFrasiNaturali(rawText, 170);
         const buffers = [];
         for (const chunk of chunks) {
-            const url = 'https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=it&client=gtx&ttsspeed=' + speed + '&q=' + encodeURIComponent(chunk);
+            const url = 'https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=it&client=gtx&ttsspeed=1&q=' + encodeURIComponent(chunk);
             const response = await fetch(url, {
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
@@ -2589,12 +2625,6 @@ app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
         }
 
         const finalBuffer = Buffer.concat(buffers);
-        if (ttsAudioCache.size > 150) {
-            const firstKey = ttsAudioCache.keys().next().value;
-            ttsAudioCache.delete(firstKey);
-        }
-        ttsAudioCache.set(cacheKey, finalBuffer);
-
         res.setHeader('Content-Type', 'audio/mpeg');
         res.setHeader('Cache-Control', 'public, max-age=86400');
         return res.send(finalBuffer);
