@@ -585,12 +585,12 @@
 
         /* CARTOON ANIMATIONS (SVG CHARACTERS) */
         @keyframes talkMouth {
-            0%, 100% { transform: scaleY(0.3); }
-            50% { transform: scaleY(1.35); }
+            0%, 100% { opacity: 0.75; }
+            50% { opacity: 1; }
         }
         @keyframes floatAi {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-6px); }
         }
         @keyframes pulseSignal {
             0% { stroke-dashoffset: 120; opacity: 0.4; }
@@ -598,8 +598,10 @@
             100% { stroke-dashoffset: 0; opacity: 0.4; }
         }
         .talking-mouth {
-            transform-origin: center;
-            animation: talkMouth 0.28s infinite ease-in-out;
+            transition: opacity 0.2s ease;
+        }
+        .is-speaking .talking-mouth {
+            animation: talkMouth 0.65s infinite ease-in-out;
         }
         .ai-float {
             animation: floatAi 2.6s infinite ease-in-out;
@@ -1029,8 +1031,8 @@
                             <line x1="56" y1="59" x2="64" y2="59" stroke="#fbbf24" stroke-width="2.8"/>
                             <circle cx="44" cy="59" r="3.5" fill="#0f172a"/>
                             <circle cx="75" cy="59" r="3.5" fill="#0f172a"/>
-                            <!-- Bocca Animata Parlante -->
-                            <ellipse cx="60" cy="86" rx="10" ry="5.5" fill="#991b1b" class="talking-mouth"/>
+                            <!-- Bocca Naturale Sobria -->
+                            <path d="M51,85 Q60,91 69,85" fill="none" stroke="#991b1b" stroke-width="3" stroke-linecap="round" class="talking-mouth"/>
                         </g>
 
                         <!-- Scrivania Presidenziale -->
@@ -1124,7 +1126,7 @@
                                 <path d="M24,46 Q40,18 60,20 Q85,18 96,46 Q75,32 60,32 Q42,32 24,46 Z" fill="#1e293b"/>
                                 <circle cx="46" cy="54" r="3.5" fill="#0f172a"/>
                                 <circle cx="74" cy="54" r="3.5" fill="#0f172a"/>
-                                <ellipse cx="60" cy="76" rx="9" ry="5" fill="#991b1b" class="talking-mouth"/>
+                                <path d="M51,75 Q60,82 69,75" fill="none" stroke="#991b1b" stroke-width="3" stroke-linecap="round" class="talking-mouth"/>
                             </g>
 
                             <rect x="20" y="218" width="195" height="30" rx="8" fill="#fbbf24"/>
@@ -1567,6 +1569,7 @@
                 studioAudio.pause();
                 studioAudio.onended = null;
                 studioAudio.ontimeupdate = null;
+                document.getElementById('mainStageContainer')?.classList.remove('is-speaking');
             } catch (e) {}
         }
 
@@ -1632,7 +1635,9 @@
                     document.getElementById('btnPlayCartoon').innerHTML = '▶️ Riguarda Video Cartone';
                 }
             };
-            studioAudio.play().catch(err => {
+            studioAudio.play().then(() => {
+                document.getElementById('mainStageContainer')?.classList.add('is-speaking');
+            }).catch(err => {
                 console.warn('Errore play audio:', err);
             });
         }
@@ -1862,6 +1867,9 @@
             } catch (e) {}
             renderCartoonStage();
             renderAplusGallery();
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js?v=106').catch(() => {});
+            }
         });
     </script>
 </body>
