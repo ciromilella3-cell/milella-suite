@@ -1,156 +1,1596 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Suite Gestionale C. Milella — Presentazione Completa</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 70%); color: #f8fafc; min-height: 100vh; }
-  header { text-align: center; padding: 28px 16px 10px; }
-  header .tag { display: inline-block; background: rgba(212,175,55,0.15); border: 1px solid #d4af37; color: #f3e5ab; font-size: 12px; font-weight: 800; padding: 5px 14px; border-radius: 999px; letter-spacing: 1px; }
-  header h1 { font-size: clamp(24px, 4vw, 38px); font-weight: 800; margin: 12px 0 6px; }
-  header h1 span { color: #d4af37; }
-  header p { color: #94a3b8; font-size: 15px; }
-  .back { position: absolute; top: 16px; left: 16px; color: #f3e5ab; text-decoration: none; font-weight: 700; font-size: 14px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite Gestionale C. Milella — Vetrina Ufficiale & Presentazione Completa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --amz-navy: #131921;
+            --amz-subnav: #232f3e;
+            --amz-orange: #ff9900;
+            --amz-gold-btn: #ffd814;
+            --amz-buy-btn: #ffa41c;
+            --amz-teal: #007185;
+            --bg-page: #f1f5f9;
+            --bg-white: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+        }
 
-  .stage { max-width: 1000px; margin: 18px auto; padding: 0 16px; }
-  .screen { background: linear-gradient(160deg, #0f172a, #111827); border: 2px solid rgba(212,175,55,0.4); border-radius: 22px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.55); }
-  .slide { min-height: 360px; padding: 34px 32px; display: flex; gap: 28px; align-items: center; animation: fadeIn 0.6s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-  .slide-icon { flex-shrink: 0; width: 150px; height: 150px; border-radius: 34px; display: flex; align-items: center; justify-content: center; font-size: 76px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
-  .slide-body { flex: 1; }
-  .slide-num { font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
-  .slide-body h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 800; margin-bottom: 10px; }
-  .slide-body p { color: #cbd5e1; font-size: 16px; line-height: 1.55; margin-bottom: 14px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+        }
 
-  .subtitle { background: #070b14; border-top: 2px solid #d4af37; padding: 14px 22px; font-size: 15.5px; font-weight: 600; line-height: 1.5; min-height: 70px; color: #f1f5f9; }
-  .controls { display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: #050810; flex-wrap: wrap; }
-  .btn { border: none; border-radius: 12px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; }
-  .btn-play { background: linear-gradient(135deg, #f3e5ab, #d4af37); color: #0b0f19; }
-  .btn-step { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-  .progress { flex: 1; min-width: 120px; height: 8px; background: rgba(255,255,255,0.12); border-radius: 99px; overflow: hidden; }
-  .progress div { height: 100%; width: 0; background: linear-gradient(90deg, #38bdf8, #d4af37); transition: width 0.4s; }
-  .counter { font-size: 13px; font-weight: 800; color: #94a3b8; }
+        body {
+            background: var(--bg-page);
+            color: var(--text-dark);
+            font-size: 16px;
+            line-height: 1.55;
+            padding-bottom: 70px;
+        }
 
-  .grid { max-width: 1000px; margin: 26px auto 50px; padding: 0 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
-  .mini { background: rgba(15,23,42,0.75); border: 1px solid rgba(212,175,55,0.25); border-radius: 18px; padding: 16px; cursor: pointer; transition: all 0.2s; }
-  .mini:hover, .mini.active { border-color: #d4af37; transform: translateY(-4px); box-shadow: 0 10px 25px rgba(212,175,55,0.15); }
-  .mini .ic { font-size: 30px; }
-  .mini h3 { font-size: 15.5px; margin: 6px 0 4px; }
-  .mini p { font-size: 12.5px; color: #94a3b8; line-height: 1.4; }
+        /* BARRA SUPERIORE STILE AMAZON ENTERPRISE */
+        .amz-header {
+            background: var(--amz-navy);
+            color: #ffffff;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+        }
 
-  @media (max-width: 700px) { .slide { flex-direction: column; text-align: center; padding: 26px 18px; } .chips { justify-content: center; } .slide-icon { width: 110px; height: 110px; font-size: 56px; } }
-</style>
+        .amz-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .amz-logo-badge {
+            background: linear-gradient(135deg, #ffd814 0%, #d4af37 100%);
+            color: #111827;
+            font-weight: 900;
+            font-size: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(212,175,55,0.4);
+        }
+
+        .amz-brand h1 {
+            font-size: 19px;
+            font-weight: 900;
+            letter-spacing: 0.2px;
+            color: #fff;
+        }
+
+        .amz-brand span {
+            font-size: 12.5px;
+            color: #fbbf24;
+            font-weight: 700;
+            display: block;
+        }
+
+        .amz-subbar {
+            background: var(--amz-subnav);
+            color: #f8fafc;
+            padding: 9px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+
+        .subbar-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .subbar-links button {
+            color: #f8fafc;
+            background: none;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 6px;
+            transition: background 0.15s;
+        }
+
+        .subbar-links button:hover {
+            background: rgba(255,255,255,0.12);
+            color: #fbbf24;
+        }
+
+        /* CONTAINER SCHEDA PRODOTTO STILE AMAZON (3 COLONNE) */
+        .amz-container {
+            max-width: 1460px;
+            margin: 20px auto;
+            padding: 0 18px;
+        }
+
+        .amz-product-sheet {
+            background: var(--bg-white);
+            border-radius: 18px;
+            border: 1px solid #cbd5e1;
+            padding: 26px;
+            display: grid;
+            grid-template-columns: 580px 1fr 350px;
+            gap: 28px;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+            margin-bottom: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 1280px) {
+            .amz-product-sheet {
+                grid-template-columns: 1fr 340px;
+            }
+            .amz-media-column {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 860px) {
+            .amz-product-sheet {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* COLONNA 1: THUMBNAILS VERTICALI + VIEWER */
+        .amz-media-column {
+            display: grid;
+            grid-template-columns: 82px 1fr;
+            gap: 14px;
+            position: sticky;
+            top: 80px;
+        }
+
+        @media (max-width: 600px) {
+            .amz-media-column {
+                grid-template-columns: 1fr;
+                position: static;
+            }
+            .amz-thumb-strip {
+                flex-direction: row !important;
+                overflow-x: auto;
+            }
+        }
+
+        .amz-thumb-strip {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .amz-thumb-btn {
+            width: 78px;
+            min-height: 56px;
+            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            background: #f8fafc;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 4px;
+            transition: all 0.15s;
+            color: #0f172a;
+        }
+
+        .amz-thumb-btn:hover {
+            border-color: var(--amz-orange);
+            transform: scale(1.04);
+        }
+
+        .amz-thumb-btn.active {
+            border: 2.5px solid #d4af37;
+            background: #fffbeb;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+        }
+
+        .amz-thumb-btn.video-thumb {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: #ffffff;
+            border-color: #38bdf8;
+        }
+
+        .amz-thumb-icon {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .amz-thumb-label {
+            font-size: 9.5px;
+            font-weight: 800;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        /* VIEWER PRINCIPALE */
+        .amz-main-viewer {
+            background: #070e1e;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+            display: flex;
+            flex-direction: column;
+            min-height: 480px;
+        }
+
+        .viewer-top-bar {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .viewer-stage-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* SUBTITLES BOX A TUTTA LARGHEZZA */
+        .cartoon-subtitle-box {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(7, 12, 26, 0.99) 100%);
+            border-top: 2px solid #d4af37;
+            padding: 14px 18px;
+            min-height: 86px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 7px;
+        }
+
+        .speaker-pill {
+            background: linear-gradient(135deg, #fde047 0%, #f59e0b 100%);
+            color: #0f172a;
+            font-size: 11.5px;
+            font-weight: 900;
+            padding: 4px 12px;
+            border-radius: 999px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
+            letter-spacing: 0.3px;
+        }
+
+        .subtitle-spoken-text {
+            color: #f8fafc;
+            font-size: 14.5px;
+            font-weight: 700;
+            line-height: 1.45;
+            width: 100%;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+        }
+
+        /* CONTROLLI MULTIMEDIALI */
+        .cartoon-controls {
+            background: #090f1d;
+            padding: 10px 14px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-cartoon-play {
+            background: linear-gradient(135deg, #ffd814 0%, #f59e0b 100%);
+            color: #0f172a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 900;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 10px rgba(245,158,11,0.35);
+        }
+
+        .btn-cartoon-step {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 7px 11px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .cartoon-progress-wrap {
+            flex: 1;
+            min-width: 110px;
+            height: 8px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .cartoon-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #38bdf8, #d4af37);
+            transition: width 0.25s linear;
+        }
+
+        /* COLONNA 2: DETTAGLI PRODOTTO STILE AMAZON */
+        .amz-info-column h2 {
+            font-size: 25px;
+            font-weight: 900;
+            color: #0f172a;
+            line-height: 1.28;
+            margin-bottom: 6px;
+        }
+
+        .amz-brand-link {
+            color: var(--amz-teal);
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .amz-rating-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 14px;
+        }
+
+        .amz-choice-badge {
+            background: #232f3e;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .amz-choice-badge span {
+            color: #ffd814;
+        }
+
+        .amz-about-title {
+            font-size: 17px;
+            font-weight: 900;
+            color: #0f172a;
+            margin: 14px 0 10px 0;
+        }
+
+        .amz-bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .amz-bullet-list li {
+            font-size: 14.5px;
+            color: #1e293b;
+            line-height: 1.5;
+            padding-left: 14px;
+            border-left: 3.5px solid #d4af37;
+        }
+
+        /* COLONNA 3: AMAZON BUY BOX */
+        .amz-buy-box {
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+        }
+
+        .amz-status-green {
+            color: #007600;
+            font-size: 17px;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .btn-amz-primary {
+            width: 100%;
+            background: var(--amz-gold-btn);
+            border: 1px solid #fcd200;
+            color: #0f172a;
+            padding: 12px;
+            border-radius: 99px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            margin-top: 8px;
+            box-shadow: 0 2px 6px rgba(15,23,42,0.15);
+            transition: transform 0.15s, background 0.15s;
+        }
+
+        .btn-amz-primary:hover {
+            background: #f7ca00;
+            transform: translateY(-1px);
+        }
+
+        .btn-amz-secondary {
+            width: 100%;
+            background: var(--amz-buy-btn);
+            border: 1px solid #ff8f00;
+            color: #0f172a;
+            padding: 12px;
+            border-radius: 99px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            margin-top: 8px;
+            box-shadow: 0 2px 6px rgba(15,23,42,0.15);
+        }
+
+        /* SEZIONE A+ GALLERIA SCHEDE */
+        .aplus-section {
+            background: var(--bg-white);
+            border-radius: 18px;
+            border: 1px solid #cbd5e1;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+            margin-top: 20px;
+        }
+
+        .aplus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 22px;
+            margin-top: 20px;
+        }
+
+        .aplus-card {
+            border: 1.5px solid #cbd5e1;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .aplus-card:hover {
+            border-color: #d4af37;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .aplus-figure-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            padding: 16px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .aplus-body {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .btn-per-saperne {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #ffffff;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /* MODALE PER SAPERNE DI PIÙ */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        .modal-window {
+            background: #ffffff;
+            border: 2px solid #d4af37;
+            border-radius: 20px;
+            max-width: 860px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.45);
+        }
+    </style>
 </head>
 <body>
-<a class="back" href="/launcher.html">← Torna alla Suite</a>
-<header>
-  <span class="tag">🎬 PRESENTAZIONE GUIDATA CON VOCE</span>
-  <h1>La <span>Suite Gestionale C. Milella</span></h1>
-  <p>Otto applicazioni, un solo accesso: casa, lavoro, salute e famiglia sempre sotto controllo.</p>
-</header>
 
-<div class="stage">
-  <div class="screen">
-    <div id="slide"></div>
-    <div class="subtitle" id="sub">Premi «▶️ Avvia Presentazione» per ascoltare la Suite completa.</div>
-    <div class="controls">
-      <button class="btn btn-play" id="btnPlay" onclick="togglePlay()">▶️ Avvia Presentazione</button>
-      <button class="btn btn-step" onclick="vai(-1)">⏮️</button>
-      <button class="btn btn-step" onclick="vai(1)">⏭️</button>
-      <div class="progress"><div id="bar"></div></div>
-      <span class="counter" id="counter"></span>
+    <!-- INTESTAZIONE STILE AMAZON -->
+    <header class="amz-header">
+        <div class="amz-brand">
+            <div class="amz-logo-badge">👑</div>
+            <div>
+                <h1 id="headerDynamicBrand">Suite Gestionale C. Milella — Presentazione Ufficiale Completa</h1>
+                <span>8 Applicazioni Integrate • Dati Protetti • Progettata con Google DeepMind Antigravity AI</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" onclick="attivaModalitaFilm(0, true)" style="background:#ffd814; color:#0f172a; border:none; padding:9px 16px; border-radius:10px; font-weight:900; font-size:13.5px; cursor:pointer;">
+                🎬 Avvia Presentazione con Voce Guida
+            </button>
+            <a href="/launcher.html" style="background:#0284c7; color:#fff; text-decoration:none; padding:9px 16px; border-radius:10px; font-weight:800; font-size:13.5px;">
+                🚀 Apri Tutte le 8 App (Launcher)
+            </a>
+            <a href="/presentazione_aziendale.html" style="background:rgba(255,255,255,0.12); color:#fff; text-decoration:none; padding:9px 14px; border-radius:10px; font-weight:700; font-size:13.5px;">
+                🏥 Vetrina Solo CareAssist Pro
+            </a>
+        </div>
+    </header>
+
+    <!-- SOTTO-BARRA RAPIDA -->
+    <nav class="amz-subbar">
+        <div class="subbar-links">
+            <button type="button" onclick="attivaModalitaFilm(0, true)">🎬 Film Completo Suite (5 Atti)</button>
+            <button type="button" onclick="mostraAppDettaglio(0)">🩺 1. CareAssist</button>
+            <button type="button" onclick="mostraAppDettaglio(1)">🚗 2. Flotta Veicoli</button>
+            <button type="button" onclick="mostraAppDettaglio(2)">🛠️ 3. Inventario</button>
+            <button type="button" onclick="mostraAppDettaglio(3)">📦 4. Logistica</button>
+            <button type="button" onclick="mostraAppDettaglio(4)">👨‍🍳 5. Ricettario</button>
+            <button type="button" onclick="mostraAppDettaglio(5)">🥗 6. MedNutri</button>
+            <button type="button" onclick="mostraAppDettaglio(6)">❤️ 7. Salute</button>
+            <button type="button" onclick="mostraAppDettaglio(7)">🎰 8. Gioco</button>
+            <button type="button" onclick="document.getElementById('sec-aplus').scrollIntoView({behavior:'smooth'})">💡 Tutte le 8 Schede A+</button>
+        </div>
+        <div style="color:#fde047;">
+            ⚡ Sincronizzazione Cloud + Copia Sicurezza USB
+        </div>
+    </nav>
+
+    <div class="amz-container">
+
+        <!-- SCHEDA PRODOTTO STILE AMAZON A 3 COLONNE -->
+        <section class="amz-product-sheet">
+
+            <!-- COLONNA 1: THUMBNAILS + PALCOSCENICO PRINCIPALE -->
+            <div class="amz-media-column">
+                <div class="amz-thumb-strip">
+                    <button type="button" class="amz-thumb-btn video-thumb active" id="thumb-video" onclick="attivaModalitaFilm(0, true)" title="Guarda il Film Completo della Suite">
+                        <span class="amz-thumb-icon">🎬</span>
+                        <span class="amz-thumb-label" style="color:#fde047;">FILM SUITE</span>
+                    </button>
+                    <button type="button" class="amz-thumb-btn" id="thumb-app-0" onclick="mostraAppDettaglio(0)">
+                        <span class="amz-thumb-icon">🩺</span>
+                        <span class="amz-thumb-label">CareAssist</span>
+                    </button>
+                    <button type="button" class="amz-thumb-btn" id="thumb-app-1" onclick="mostraAppDettaglio(1)">
+                        <span class="amz-thumb-icon">🚗</span>
+                        <span class="amz-thumb-label">Flotta Auto</span>
+                    </button>
+                    <button type="button" class="amz-thumb-btn" id="thumb-app-2" onclick="mostraAppDettaglio(2)">
+                        <span class="amz-thumb-icon">🛠️</span>
+                        <span class="amz-thumb-label">Inventario</span>
+                    </button>
+                    <button type="button" class="amz-thumb-btn" id="thumb-app-3" onclick="mostraAppDettaglio(3)">
+                        <span class="amz-thumb-icon">📦</span>
+                        <span class="amz-thumb-label">Logistica</span>
+                    </button>
+                    <button type="button" class="amz-thumb-btn" id="thumb-app-4" onclick="mostraAppDettaglio(4)">
+                        <span class="amz-thumb-icon">👨‍🍳</span>
+                        <span class="amz-thumb-label">Ricettario</span>
+                    </button>
+                    <button type="button" class="amz-thumb-btn" id="thumb-app-5" onclick="mostraAppDettaglio(5)">
+                        <span class="amz-thumb-icon">🥗</span>
+                        <span class="amz-thumb-label">MedNutri</span>
+                    </button>
+                    <button type="button" class="amz-thumb-btn" id="thumb-app-6" onclick="mostraAppDettaglio(6)">
+                        <span class="amz-thumb-icon">❤️</span>
+                        <span class="amz-thumb-label">Salute</span>
+                    </button>
+                    <button type="button" class="amz-thumb-btn" id="thumb-app-7" onclick="mostraAppDettaglio(7)">
+                        <span class="amz-thumb-icon">🎰</span>
+                        <span class="amz-thumb-label">Gioco</span>
+                    </button>
+                </div>
+
+                <!-- PALCOSCENICO PRINCIPALE -->
+                <div class="amz-main-viewer">
+                    <div class="viewer-top-bar">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="width:10px; height:10px; border-radius:50%; background:#ef4444; display:inline-block; box-shadow:0 0 8px #ef4444;"></span>
+                            <span id="viewerTopTitle" style="font-size:13px; font-weight:800; color:#fef08a;">
+                                🎬 SUITE GESTIONALE C. MILELLA — ATTO 1 DI 5
+                            </span>
+                        </div>
+                        <button type="button" class="btn-per-saperne" style="padding:5px 12px; font-size:12px;" onclick="apriPerSaperneCorrente()">
+                            💡 Per saperne di più
+                        </button>
+                    </div>
+
+                    <!-- CONTENUTO DINAMICO: SCENA ILLUSTRATA O SCHEDA APP -->
+                    <div class="viewer-stage-body" id="mainStageContainer">
+                        <!-- Popolato via JS -->
+                    </div>
+
+                    <!-- SOTTOTITOLI DIALOGO A TUTTA LARGHEZZA -->
+                    <div class="cartoon-subtitle-box">
+                        <span class="speaker-pill" id="speakerBadge">🎙️ Voce Guida Umana HD</span>
+                        <div class="subtitle-spoken-text" id="subtitleText">
+                            Premi «▶️ Avvia Presentazione» per ascoltare la panoramica della Suite completa!
+                        </div>
+                    </div>
+
+                    <!-- BARRA CONTROLLI -->
+                    <div class="cartoon-controls">
+                        <button type="button" class="btn-cartoon-play" id="btnPlayFilm" onclick="togglePlayFilm()">
+                            ▶️ Avvia Presentazione
+                        </button>
+                        <button type="button" class="btn-cartoon-step" onclick="scenaPrecedente()">⏮️</button>
+                        <button type="button" class="btn-cartoon-step" onclick="scenaSuccessiva()">⏭️</button>
+                        <div class="cartoon-progress-wrap">
+                            <div class="cartoon-progress-bar" id="filmProgressBar"></div>
+                        </div>
+                        <span id="filmTimeLabel" style="font-size:12px; font-weight:800; color:#cbd5e1;">Atto 1/5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLONNA 2: DETTAGLI PRODOTTO STILE AMAZON -->
+            <div class="amz-info-column">
+                <span class="amz-brand-link">Suite Gestionale C. Milella • Portale Completo Multi-Modulo</span>
+                <h2 id="productMainTitle">
+                    La Suite Gestionale di Ciro Milella — 8 Moduli Software Integrati per Casa, Assistenza Clinica, Lavoro, Veicoli e Famiglia
+                </h2>
+
+                <div class="amz-rating-row">
+                    <span style="color:#d4af37; font-size:18px; letter-spacing:1px;">★★★★★</span>
+                    <span style="font-weight:800; color:#007185; font-size:14px;">5.0 su 5 stelle (Suite Completa All-in-One)</span>
+                    <span class="amz-choice-badge">Scelta <span>Completa</span> Casa &amp; Lavoro</span>
+                </div>
+
+                <!-- MINI PULSANTI SCENA RAPIDA -->
+                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px; margin-bottom:14px;">
+                    <div style="font-size:12.5px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:8px;">
+                        🎬 Scegli un Atto della Presentazione Suite:
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                        <button type="button" onclick="attivaModalitaFilm(0, true)" style="padding:6px 10px; border-radius:8px; border:1px solid #cbd5e1; background:#fff; font-size:12px; font-weight:800; cursor:pointer;">1. Portale &amp; Sicurezza</button>
+                        <button type="button" onclick="attivaModalitaFilm(1, true)" style="padding:6px 10px; border-radius:8px; border:1px solid #0284c7; background:#f0f9ff; color:#0369a1; font-size:12px; font-weight:800; cursor:pointer;">2. CareAssist Domicilio</button>
+                        <button type="button" onclick="attivaModalitaFilm(2, true)" style="padding:6px 10px; border-radius:8px; border:1px solid #475569; background:#f8fafc; color:#334155; font-size:12px; font-weight:800; cursor:pointer;">3. Auto, Attrezzi &amp; Merci</button>
+                        <button type="button" onclick="attivaModalitaFilm(3, true)" style="padding:6px 10px; border-radius:8px; border:1px solid #dc2626; background:#fef2f2; color:#991b1b; font-size:12px; font-weight:800; cursor:pointer;">4. Ricette, Nutrizione &amp; Benessere</button>
+                        <button type="button" onclick="attivaModalitaFilm(4, true)" style="padding:6px 10px; border-radius:8px; border:1px solid #d4af37; background:#fffbeb; color:#78350f; font-size:12px; font-weight:800; cursor:pointer;">5. Backup USB &amp; AI</button>
+                    </div>
+                </div>
+
+                <div class="amz-about-title">Punti di Forza della Suite Completa:</div>
+                <ul class="amz-bullet-list">
+                    <li>
+                        <strong>8 APPLICAZIONI IN UN UNICO ACCESSO:</strong> Non devi più usare 8 programmi diversi o fogli sparsi. Dalla gestione dei pazienti di CareAssist al controllo delle scadenze dei veicoli, dall'inventario attrezzi al ricettario di casa, tutto vive nello stesso portale unificato.
+                    </li>
+                    <li>
+                        <strong>ACCESSO UNIVERSALE PC ↔ SMARTPHONE (CON QR CODE):</strong> Puoi consultare e aggiornare la Suite dal computer di casa o dell'ufficio, e con un clic inquadrare il QR Code per aprirla all'istante sullo smartphone, senza installare nulla dallo store.
+                    </li>
+                    <li>
+                        <strong>DOPPIA COPIA DI SICUREZZA (CLOUD + CHIAVETTA USB):</strong> I tuoi dati sono sempre online per essere consultati ovunque, e con un solo clic puoi sincronizzarli su chiavetta USB per avere la sicurezza assoluta che niente andrà mai perduto.
+                    </li>
+                    <li>
+                        <strong>POTENZIATO CON INTELLIGENZA ARTIFICIALE ANTIGRAVITY AI:</strong> Ogni modulo è vivo e può essere adattato o arricchito su misura per le esigenze tue o della tua azienda in pochi minuti.
+                    </li>
+                </ul>
+
+                <!-- CARD EXECUTIVE: LE 8 APPLICAZIONI DELLA SUITE -->
+                <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border:2px solid #d4af37; border-radius:16px; padding:16px 18px; margin:16px 0; color:#ffffff; box-shadow:0 10px 25px rgba(15,23,42,0.18);">
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px; border-bottom:1px solid rgba(212,175,55,0.3); padding-bottom:8px;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg, #ffd814 0%, #d4af37 100%); display:flex; align-items:center; justify-content:center; font-size:20px; color:#0f172a; font-weight:900;">
+                                👑
+                            </div>
+                            <div>
+                                <div style="font-size:11px; font-weight:900; color:#fde047; text-transform:uppercase; letter-spacing:0.8px;">PORTAFOGLIO APPLICATIVO INTEGRATO</div>
+                                <div style="font-size:15.5px; font-weight:900; color:#ffffff;">Gli 8 Moduli della Suite C. Milella</div>
+                            </div>
+                        </div>
+                        <span style="background:rgba(16,185,129,0.2); border:1px solid #34d399; color:#6ee7b7; font-size:11px; font-weight:900; padding:4px 10px; border-radius:999px;">
+                            ● 8 MODULI OPERATIVI
+                        </span>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; font-size:12px;">
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(56,189,248,0.4); border-radius:8px; padding:8px; text-align:center;">
+                            <div style="font-size:18px;">🩺</div>
+                            <div style="font-weight:900; color:#7dd3fc;">CareAssist Pro</div>
+                            <div style="font-size:10.5px; color:#cbd5e1;">Clinica &amp; Domicilio</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(251,191,36,0.4); border-radius:8px; padding:8px; text-align:center;">
+                            <div style="font-size:18px;">🚗</div>
+                            <div style="font-weight:900; color:#fde047;">Flotta Auto</div>
+                            <div style="font-size:10.5px; color:#cbd5e1;">Scadenze &amp; Spese</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(245,158,11,0.4); border-radius:8px; padding:8px; text-align:center;">
+                            <div style="font-size:18px;">🛠️</div>
+                            <div style="font-weight:900; color:#fde047;">Inventario</div>
+                            <div style="font-size:10.5px; color:#cbd5e1;">Catalogo &amp; Prestiti</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(168,85,247,0.4); border-radius:8px; padding:8px; text-align:center;">
+                            <div style="font-size:18px;">📦</div>
+                            <div style="font-weight:900; color:#d8b4fe;">Logistica</div>
+                            <div style="font-size:10.5px; color:#cbd5e1;">Ordini &amp; Consegne</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(239,68,68,0.4); border-radius:8px; padding:8px; text-align:center;">
+                            <div style="font-size:18px;">👨‍🍳</div>
+                            <div style="font-weight:900; color:#fca5a5;">Ricettario</div>
+                            <div style="font-size:10.5px; color:#cbd5e1;">Archivio &amp; Spesa</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(34,197,94,0.4); border-radius:8px; padding:8px; text-align:center;">
+                            <div style="font-size:18px;">🥗</div>
+                            <div style="font-weight:900; color:#86efac;">MedNutri Pro</div>
+                            <div style="font-size:10.5px; color:#cbd5e1;">Nutrizione Su Misura</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(244,63,94,0.4); border-radius:8px; padding:8px; text-align:center;">
+                            <div style="font-size:18px;">❤️</div>
+                            <div style="font-weight:900; color:#fda4af;">Salute</div>
+                            <div style="font-size:10.5px; color:#cbd5e1;">Parametri &amp; Fitness</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(234,179,8,0.4); border-radius:8px; padding:8px; text-align:center;">
+                            <div style="font-size:18px;">🎰</div>
+                            <div style="font-weight:900; color:#fef08a;">Gioco</div>
+                            <div style="font-size:10.5px; color:#cbd5e1;">Bilancio Consapevole</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD SINERGIA AI -->
+                <div style="background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border:2px solid #0284c7; border-radius:16px; padding:15px 18px; box-shadow:0 6px 18px rgba(2,132,199,0.12);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <div style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, #0284c7 0%, #1e3a8a 100%); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">
+                            🤖
+                        </div>
+                        <div>
+                            <div style="font-size:11px; font-weight:900; color:#0369a1; text-transform:uppercase;">SVILUPPO SU MISURA CONTINUO</div>
+                            <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin:0;">Ciro Milella + Google DeepMind Antigravity AI</h3>
+                        </div>
+                    </div>
+                    <p style="font-size:13.5px; color:#1e293b; line-height:1.5; margin:0;">
+                        Questa Suite non è un prodotto statico: è un sistema che cresce con te. Qualsiasi nuova funzione per la casa, la salute o l'azienda può essere creata e pubblicata in Cloud in pochi minuti.
+                    </p>
+                </div>
+            </div>
+
+            <!-- COLONNA 3: BUY BOX AZIONI SUITE -->
+            <aside class="amz-buy-box">
+                <div class="amz-status-green">🟢 Suite Completa Attiva</div>
+                <p style="font-size:13px; color:#475569; margin-bottom:12px;">
+                    Accedi direttamente a tutti i moduli o apri la Suite sul tuo smartphone tramite QR Code:
+                </p>
+
+                <button type="button" class="btn-amz-primary" onclick="window.location.href='/launcher.html'">
+                    🚀 Apri la Suite Completa (Launcher)
+                </button>
+
+                <button type="button" class="btn-amz-secondary" onclick="window.location.href='/presentazione_aziendale.html'">
+                    🏢 Vetrina Aziendale CareAssist Pro
+                </button>
+
+                <div style="margin-top:16px; padding:12px; background:#f8fafc; border-radius:12px; border:1px solid #cbd5e1; font-size:12.5px; color:#334155;">
+                    <div style="font-weight:800; color:#0f172a; margin-bottom:4px;">📱 Come aprirla sul cellulare:</div>
+                    1. Apri la fotocamera dello smartphone.<br>
+                    2. Inquadra il QR Code dal Launcher.<br>
+                    3. Tutti gli 8 moduli si aprono sincronizzati in tempo reale.
+                </div>
+
+                <div style="margin-top:14px; padding-top:12px; border-top:1px solid #e2e8f0; font-size:12px; color:#475569; display:flex; flex-direction:column; gap:5px;">
+                    <div>🔒 <strong>Accessi:</strong> Protetti da PIN Personale</div>
+                    <div>💾 <strong>Sicurezza:</strong> Sincronizzazione USB + Cloud</div>
+                    <div>🖨️ <a href="javascript:void(0)" onclick="window.print()" style="color:#007185; font-weight:800;">Stampa Panoramica Suite A4</a></div>
+                </div>
+            </aside>
+
+        </section>
+
+        <!-- SEZIONE A+ GALLERIA DELLE 8 SCHEDE DETTAGLIATE -->
+        <section class="aplus-section" id="sec-aplus">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-bottom:2px solid #f1f5f9; padding-bottom:14px;">
+                <div>
+                    <span style="font-size:12px; font-weight:900; color:#d4af37; text-transform:uppercase; letter-spacing:1px;">DAL PRODUTTORE • SCHEDE DETTAGLIATE STILE AMAZON A+</span>
+                    <h2 style="font-size:24px; font-weight:900; color:#0f172a;">
+                        Esplora gli 8 Moduli della Suite C. Milella (con Link «Per saperne di più» e Voce Guida)
+                    </h2>
+                </div>
+            </div>
+
+            <div class="aplus-grid" id="aplusGalleryContainer">
+                <!-- Popolato via JS -->
+            </div>
+        </section>
+
     </div>
-  </div>
-</div>
 
-<div class="grid" id="grid"></div>
+    <!-- MODALE "PER SAPERNE DI PIÙ" -->
+    <div class="modal-backdrop" id="modalInfoApp" onclick="if(event.target===this) chiudiModalInfoApp()">
+        <div class="modal-window">
+            <div style="background:linear-gradient(135deg, #131921 0%, #232f3e 100%); color:#fff; padding:18px 24px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-size:11.5px; font-weight:800; color:#fbbf24; text-transform:uppercase;">💡 SCHEDA TECNICA • APPROFONDIMENTO MODULO</div>
+                    <h3 id="modalAppTitle" style="font-size:21px; font-weight:900;">Titolo Modulo</h3>
+                </div>
+                <button type="button" onclick="chiudiModalInfoApp()" style="background:rgba(255,255,255,0.15); border:none; color:#fff; width:36px; height:36px; border-radius:50%; font-size:18px; cursor:pointer;">✕</button>
+            </div>
+            <div style="padding:24px;" id="modalAppBody"></div>
+        </div>
+    </div>
 
-<script>
-const SLIDES = [
-  { icon:'👑', color:'linear-gradient(135deg,#d4af37,#7c5a0b)', accent:'#f3e5ab', title:'Benvenuti nella Suite', desc:'Un unico portale elegante che raccoglie tutte le applicazioni di casa e di lavoro, accessibile da PC e da cellulare con un semplice QR Code.', chips:['🔐 Accesso con PIN','📱 PC + Smartphone','☁️ Cloud + Chiavetta USB'],
-    voce:'Benvenuti nella Suite Gestionale di Ciro Milella. Un unico portale che raccoglie tutte le applicazioni di casa e di lavoro, utilizzabile dal computer e dal cellulare, con i dati sempre sincronizzati e una copia di sicurezza sulla chiavetta USB.' },
-  { icon:'🩺', color:'linear-gradient(135deg,#0284c7,#1e3a8a)', accent:'#7dd3fc', title:'CareAssist Pro', desc:'Il cuore clinico: diario socio-sanitario, terapie con allarmi vocali, scorte dei farmaci, turnario H24 e protocollo anti-volume abbassato.', chips:['💊 Terapie e Scorte','🔊 Allarmi ≥ 70%','🗓️ Turnario H24','🚑 Passaporto 118'],
-    voce:'CareAssist Pro è il cuore clinico della Suite. Gestisce il diario dei pazienti, le terapie con allarmi vocali che nessuno può silenziare, le scorte dei farmaci, il turnario degli operatori e il passaporto di emergenza per il centodiciotto.' },
-  { icon:'🚗', color:'linear-gradient(135deg,#475569,#0f172a)', accent:'#cbd5e1', title:'Flotta Veicoli & Spese', desc:'Scadenze di revisione, bollo e assicurazione, manutenzioni, rifornimenti e rimborsi chilometrici: nessuna multa per dimenticanza.', chips:['📅 Scadenze automatiche','⛽ Rifornimenti','🔧 Manutenzioni'],
-    voce:'Con Flotta Veicoli e Spese non si dimentica più nulla: revisioni, bollo, assicurazione e manutenzioni vengono ricordati in anticipo, e ogni spesa e rimborso chilometrico resta registrato.' },
-  { icon:'🛠️', color:'linear-gradient(135deg,#b45309,#78350f)', accent:'#fde68a', title:'Inventario Attrezzi', desc:'Catalogo fotografico di ogni attrezzo, con la posizione esatta: garage, casa o furgone. E chi lo ha in prestito.', chips:['📸 Catalogo con foto','📍 Dove si trova','🤝 Prestiti'],
-    voce:'Inventario Attrezzi è il catalogo fotografico di tutti gli strumenti. In un attimo sai dove si trova ogni attrezzo, tra garage, casa e furgone, e a chi lo hai prestato.' },
-  { icon:'📦', color:'linear-gradient(135deg,#7c3aed,#3b0764)', accent:'#ddd6fe', title:'Logistica Consegne', desc:'Organizzazione delle spedizioni, tracciamento delle consegne e gestione del magazzino principale.', chips:['🚚 Spedizioni','📍 Tracciamento','🏬 Magazzino'],
-    voce:'Logistica Consegne organizza le spedizioni, segue lo stato di ogni consegna e tiene in ordine il magazzino principale.' },
-  { icon:'👨‍🍳', color:'linear-gradient(135deg,#dc2626,#7f1d1d)', accent:'#fecaca', title:'Il Ricettario', desc:'Lo scrigno delle ricette di famiglia, con ingredienti e lista della spesa generata automaticamente.', chips:['📖 Ricette di famiglia','🛒 Lista spesa automatica'],
-    voce:'Il Ricettario custodisce le ricette di famiglia e prepara da solo la lista della spesa con tutti gli ingredienti necessari.' },
-  { icon:'🥗', color:'linear-gradient(135deg,#16a34a,#14532d)', accent:'#bbf7d0', title:'MedNutri Pro', desc:'Piani nutrizionali personalizzati e supporto alla gestione clinica dell’alimentazione.', chips:['🍎 Piani alimentari','📊 Valori nutrizionali'],
-    voce:'MedNutri Pro crea piani nutrizionali personalizzati, per mangiare bene in base alle esigenze di salute di ciascuno.' },
-  { icon:'❤️', color:'linear-gradient(135deg,#e11d48,#881337)', accent:'#fecdd3', title:'Progetto Salute', desc:'Monitoraggio dei parametri vitali, dell’idratazione, dell’attività fisica e del benessere quotidiano.', chips:['💓 Parametri vitali','💧 Idratazione','🏃 Attività fisica'],
-    voce:'Progetto Salute tiene traccia dei parametri vitali, dell idratazione e dell attività fisica, per prendersi cura del proprio benessere ogni giorno.' },
-  { icon:'🎰', color:'linear-gradient(135deg,#ca8a04,#713f12)', accent:'#fef08a', title:'Progetto Gioco', desc:'Statistiche di SuperEnalotto e Gratta & Vinci con bilancio netto: per giocare con la testa.', chips:['📈 Statistiche','💶 Bilancio netto'],
-    voce:'Progetto Gioco raccoglie le statistiche di SuperEnalotto e Gratta e Vinci, mostrando sempre il bilancio netto, per giocare con consapevolezza.' },
-  { icon:'🛡️', color:'linear-gradient(135deg,#d4af37,#0f172a)', accent:'#f3e5ab', title:'Sicurezza, Backup e Intelligenza Artificiale', desc:'Dati protetti con PIN, sincronizzazione Cloud, copia automatica su chiavetta USB e un partner AI che migliora la Suite su misura in pochi minuti.', chips:['🔐 PIN e permessi','💾 Backup USB','🤖 Antigravity AI'],
-    voce:'Tutto è protetto: accessi con PIN, sincronizzazione sul Cloud e copia di sicurezza sulla chiavetta USB. E grazie alla collaborazione con Antigravity AI, ogni nuova idea diventa realtà in pochi minuti. Questa è la Suite Gestionale di Ciro Milella.' }
-];
+    <script>
+        // =========================================================================
+        // LE 5 SCENE ILLUSTRATE DELLA SUITE COMPLETA
+        // =========================================================================
+        const SUITE_SCENES = [
+            {
+                id: 0,
+                title: 'Atto 1: Il Portale Unificato & La Sicurezza degli Accessi',
+                speaker: '👑 Ciro Milella & Voce Guida HD',
+                subtitle: '«Benvenuti nella Suite: 8 applicazioni complete riunite in un unico accesso protetto da PIN, sincronizzato tra PC e Smartphone con una copia di sicurezza su chiavetta USB!»',
+                linkedAppIdx: 0,
+                svgRender: () => `
+                    <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 50% 40%, #1e293b 0%, #070b14 100%);">
+                        <!-- Corona Suite Centrale -->
+                        <circle cx="380" cy="140" r="70" fill="rgba(212,175,55,0.15)" stroke="#d4af37" stroke-width="2.5"/>
+                        <text x="380" y="155" font-size="54" text-anchor="middle">👑</text>
 
-let idx = 0, playing = false;
-const synth = window.speechSynthesis;
+                        <!-- Titolo Portale -->
+                        <rect x="220" y="22" width="320" height="34" rx="10" fill="rgba(15,23,42,0.9)" stroke="#d4af37" stroke-width="2"/>
+                        <text x="380" y="44" font-size="13" font-weight="900" fill="#fde047" text-anchor="middle">SUITE GESTIONALE C. MILELLA</text>
 
-function vocaleItaliana() {
-  const v = synth ? synth.getVoices().filter(x => x.lang && x.lang.startsWith('it')) : [];
-  return v.find(x => /natural|online|neural|google/i.test(x.name)) || v[0] || null;
-}
+                        <!-- Raggi verso i Moduli -->
+                        <!-- 1. CareAssist -->
+                        <g transform="translate(60, 80)">
+                            <rect x="0" y="0" width="160" height="70" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+                            <text x="24" y="42" font-size="24">🩺</text>
+                            <text x="56" y="34" font-size="12" font-weight="900" fill="#7dd3fc">CareAssist Pro</text>
+                            <text x="56" y="52" font-size="10.5" fill="#cbd5e1">Clinica &amp; Terapie</text>
+                        </g>
 
-function render() {
-  const s = SLIDES[idx];
-  document.getElementById('slide').innerHTML = `
-    <div class="slide">
-      <div class="slide-icon" style="background:${s.color}">${s.icon}</div>
-      <div class="slide-body">
-        <div class="slide-num" style="color:${s.accent}">Capitolo ${idx + 1} di ${SLIDES.length}</div>
-        <h2>${s.title}</h2>
-        <p>${s.desc}</p>
-        <div class="chips">${s.chips.map(c => `<span class="chip">${c}</span>`).join('')}</div>
-      </div>
-    </div>`;
-  document.getElementById('sub').textContent = '«' + s.voce + '»';
-  document.getElementById('counter').textContent = `${idx + 1}/${SLIDES.length}`;
-  document.getElementById('bar').style.width = ((idx + 1) / SLIDES.length * 100) + '%';
-  document.querySelectorAll('.mini').forEach((m, i) => m.classList.toggle('active', i === idx));
-}
+                        <!-- 2. Flotta Auto -->
+                        <g transform="translate(60, 180)">
+                            <rect x="0" y="0" width="160" height="70" rx="12" fill="#0f172a" stroke="#fbbf24" stroke-width="2"/>
+                            <text x="24" y="42" font-size="24">🚗</text>
+                            <text x="56" y="34" font-size="12" font-weight="900" fill="#fde047">Flotta Veicoli</text>
+                            <text x="56" y="52" font-size="10.5" fill="#cbd5e1">Bolli &amp; Revisioni</text>
+                        </g>
 
-function parla() {
-  if (!synth) return;
-  synth.cancel();
-  const u = new SpeechSynthesisUtterance(SLIDES[idx].voce);
-  u.lang = 'it-IT'; u.rate = 0.97;
-  const v = vocaleItaliana(); if (v) u.voice = v;
-  u.onend = () => {
-    if (!playing) return;
-    if (idx < SLIDES.length - 1) { idx++; render(); setTimeout(() => playing && parla(), 600); }
-    else { playing = false; document.getElementById('btnPlay').textContent = '▶️ Riascolta'; }
-  };
-  synth.speak(u);
-}
+                        <!-- 3. Inventario Attrezzi -->
+                        <g transform="translate(540, 80)">
+                            <rect x="0" y="0" width="160" height="70" rx="12" fill="#0f172a" stroke="#f59e0b" stroke-width="2"/>
+                            <text x="24" y="42" font-size="24">🛠️</text>
+                            <text x="56" y="34" font-size="12" font-weight="900" fill="#fde047">Inventario</text>
+                            <text x="56" y="52" font-size="10.5" fill="#cbd5e1">Garage &amp; Cantiere</text>
+                        </g>
 
-function togglePlay() {
-  if (playing) { playing = false; synth && synth.cancel(); document.getElementById('btnPlay').textContent = '▶️ Riprendi'; }
-  else { playing = true; document.getElementById('btnPlay').textContent = '⏸️ Pausa'; parla(); }
-}
+                        <!-- 4. Ricettario & Famiglia -->
+                        <g transform="translate(540, 180)">
+                            <rect x="0" y="0" width="160" height="70" rx="12" fill="#0f172a" stroke="#ef4444" stroke-width="2"/>
+                            <text x="24" y="42" font-size="24">👨‍🍳</text>
+                            <text x="56" y="34" font-size="12" font-weight="900" fill="#fca5a5">Ricettario</text>
+                            <text x="56" y="52" font-size="10.5" fill="#cbd5e1">Ricette &amp; Spesa</text>
+                        </g>
 
-function vai(d) {
-  idx = (idx + d + SLIDES.length) % SLIDES.length;
-  render();
-  if (playing) parla();
-}
+                        <!-- Barra Inferiore Sicurezza & QR -->
+                        <rect x="180" y="275" width="400" height="48" rx="14" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+                        <text x="380" y="296" font-size="12" font-weight="900" fill="#6ee7b7" text-anchor="middle">🔐 ACCESSO CON PIN • 📱 QR CODE SMARTPHONE</text>
+                        <text x="380" y="313" font-size="11" fill="#cbd5e1" text-anchor="middle">I tuoi dati viaggiano sincronizzati e protetti</text>
+                    </svg>
+                `
+            },
+            {
+                id: 1,
+                title: 'Atto 2: CareAssist Pro — Il Cuore Clinico & Assistenziale',
+                speaker: '🩺 Isabella HD & Ciro Milella',
+                subtitle: '«Diario socio-sanitario, alert vocali per i farmaci, scorte predittive, gestione del diabete in frigo e protocollo anti-furbi che sblocca il volume se qualcuno lo abbassa!»',
+                linkedAppIdx: 0,
+                svgRender: () => `
+                    <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 50% 50%, #064e3b 0%, #091122 100%);">
+                        <rect x="35" y="35" width="330" height="135" rx="16" fill="rgba(15,23,42,0.9)" stroke="#38bdf8" stroke-width="2"/>
+                        <text x="20" y="35" font-size="15" font-weight="900" fill="#38bdf8" transform="translate(15,5)">💊 Terapie &amp; Scorte Condivise</text>
+                        <text x="20" y="65" font-size="12.5" fill="#e2e8f0" transform="translate(15,5)">Scala compresse dallo stesso blister reale,</text>
+                        <text x="20" y="85" font-size="12.5" fill="#fef08a" font-weight="700" transform="translate(15,5)">preavvisa la ricetta 10 giorni prima!</text>
+                        <text x="20" y="112" font-size="11" fill="#7dd3fc" transform="translate(15,5)">✓ Badge A Digiuno &amp; Giorni Alterni</text>
 
-function vaiA(i) { idx = i; render(); if (playing) parla(); }
+                        <rect x="395" y="35" width="330" height="135" rx="16" fill="rgba(15,23,42,0.9)" stroke="#10b981" stroke-width="2"/>
+                        <text x="20" y="35" font-size="15" font-weight="900" fill="#34d399" transform="translate(375,5)">🩸 Kit Diabete &amp; Insulina</text>
+                        <text x="20" y="65" font-size="12.5" fill="#e2e8f0" transform="translate(375,5)">Toujeo Solostar collegato al frigo,</text>
+                        <text x="20" y="85" font-size="12.5" fill="#a7f3d0" font-weight="700" transform="translate(375,5)">Lancette e Strisce reattive scalate insieme!</text>
+                        <text x="20" y="112" font-size="11" fill="#6ee7b7" transform="translate(375,5)">❄️ Alert quando resta 1 sola penna</text>
 
-document.getElementById('grid').innerHTML = SLIDES.map((s, i) =>
-  `<div class="mini" onclick="vaiA(${i})"><div class="ic">${s.icon}</div><h3>${s.title}</h3><p>${s.desc}</p></div>`).join('');
-if (synth) synth.onvoiceschanged = () => {};
-render();
-</script>
+                        <rect x="35" y="190" width="330" height="130" rx="16" fill="rgba(15,23,42,0.9)" stroke="#ef4444" stroke-width="2"/>
+                        <text x="20" y="35" font-size="15" font-weight="900" fill="#f87171" transform="translate(15,160)">🚑 Passaporto 118 QR &amp; ASL</text>
+                        <text x="20" y="65" font-size="12.5" fill="#e2e8f0" transform="translate(15,160)">Documento A4 salvavita da frigo con QR,</text>
+                        <text x="20" y="85" font-size="12.5" fill="#fecaca" font-weight="700" transform="translate(15,160)">Lettera per visita specialistica &amp; Modulo ASL.</text>
+
+                        <rect x="395" y="190" width="330" height="130" rx="16" fill="rgba(15,23,42,0.9)" stroke="#fbbf24" stroke-width="2"/>
+                        <text x="20" y="35" font-size="15" font-weight="900" fill="#fde047" transform="translate(375,160)">🛡️ Protocollo Zero-Scuse &amp; Cestino</text>
+                        <text x="20" y="65" font-size="12.5" fill="#e2e8f0" transform="translate(375,160)">Volume forzato ≥ 75% per non perdere avvisi,</text>
+                        <text x="20" y="85" font-size="12.5" fill="#fef08a" font-weight="700" transform="translate(375,160)">e Cestino 60 giorni per recuperare ogni errore!</text>
+                    </svg>
+                `
+            },
+            {
+                id: 2,
+                title: 'Atto 3: Flotta Veicoli, Inventario Attrezzi & Logistica',
+                speaker: '🚗 Diego HD & Ciro Milella',
+                subtitle: '«Scadenze di revisione, bollo e assicurazione sempre ricordate in tempo; catalogo fotografico degli attrezzi tra garage e furgone; gestione delle spedizioni e magazzino!»',
+                linkedAppIdx: 1,
+                svgRender: () => `
+                    <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 50% 50%, #1e293b 0%, #0b1120 100%);">
+                        <g transform="translate(30, 45)">
+                            <rect x="0" y="0" width="215" height="260" rx="16" fill="rgba(15,23,42,0.9)" stroke="#fbbf24" stroke-width="2.5"/>
+                            <text x="107" y="55" font-size="44" text-anchor="middle">🚗</text>
+                            <text x="107" y="95" font-size="15" font-weight="900" fill="#fde047" text-anchor="middle">Flotta Veicoli</text>
+                            <text x="107" y="130" font-size="12" fill="#cbd5e1" text-anchor="middle">Revisioni &amp; Bolli</text>
+                            <text x="107" y="152" font-size="12" fill="#cbd5e1" text-anchor="middle">Manutenzioni &amp; Spese</text>
+                            <text x="107" y="174" font-size="12" fill="#cbd5e1" text-anchor="middle">Rimborsi Km Auto</text>
+                            <rect x="20" y="205" width="175" height="30" rx="8" fill="#78350f"/>
+                            <text x="107" y="225" font-size="11" font-weight="900" fill="#fef08a" text-anchor="middle">ZERO MULTE</text>
+                        </g>
+
+                        <g transform="translate(272, 45)">
+                            <rect x="0" y="0" width="215" height="260" rx="16" fill="rgba(15,23,42,0.9)" stroke="#38bdf8" stroke-width="2.5"/>
+                            <text x="107" y="55" font-size="44" text-anchor="middle">🛠️</text>
+                            <text x="107" y="95" font-size="15" font-weight="900" fill="#7dd3fc" text-anchor="middle">Inventario Attrezzi</text>
+                            <text x="107" y="130" font-size="12" fill="#cbd5e1" text-anchor="middle">Catalogo con Foto</text>
+                            <text x="107" y="152" font-size="12" fill="#cbd5e1" text-anchor="middle">Posizione: Garage/Casa</text>
+                            <text x="107" y="174" font-size="12" fill="#cbd5e1" text-anchor="middle">Registro Prestiti</text>
+                            <rect x="20" y="205" width="175" height="30" rx="8" fill="#0369a1"/>
+                            <text x="107" y="225" font-size="11" font-weight="900" fill="#e0f2fe" text-anchor="middle">TROVI SUBITO TUTTO</text>
+                        </g>
+
+                        <g transform="translate(515, 45)">
+                            <rect x="0" y="0" width="215" height="260" rx="16" fill="rgba(15,23,42,0.9)" stroke="#a855f7" stroke-width="2.5"/>
+                            <text x="107" y="55" font-size="44" text-anchor="middle">📦</text>
+                            <text x="107" y="95" font-size="15" font-weight="900" fill="#d8b4fe" text-anchor="middle">Logistica Consegne</text>
+                            <text x="107" y="130" font-size="12" fill="#cbd5e1" text-anchor="middle">Spedizioni &amp; Ritiro</text>
+                            <text x="107" y="152" font-size="12" fill="#cbd5e1" text-anchor="middle">Tracciamento Pacchi</text>
+                            <text x="107" y="174" font-size="12" fill="#cbd5e1" text-anchor="middle">Controllo Magazzino</text>
+                            <rect x="20" y="205" width="175" height="30" rx="8" fill="#581c87"/>
+                            <text x="107" y="225" font-size="11" font-weight="900" fill="#f3e8ff" text-anchor="middle">MERCI SOTTO OCCHIO</text>
+                        </g>
+                    </svg>
+                `
+            },
+            {
+                id: 3,
+                title: 'Atto 4: Il Ricettario di Famiglia, MedNutri & Progetto Salute',
+                speaker: '🥗 Isabella HD & Ciro Milella',
+                subtitle: '«Le ricette di casa con lista della spesa automatica; piani nutrizionali clinici personalizzati; monitoraggio di parametri vitali, idratazione e benessere quotidiano!»',
+                linkedAppIdx: 4,
+                svgRender: () => `
+                    <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 50% 50%, #450a0a 0%, #09101f 100%);">
+                        <g transform="translate(30, 45)">
+                            <rect x="0" y="0" width="215" height="260" rx="16" fill="rgba(15,23,42,0.9)" stroke="#ef4444" stroke-width="2.5"/>
+                            <text x="107" y="55" font-size="44" text-anchor="middle">👨‍🍳</text>
+                            <text x="107" y="95" font-size="15" font-weight="900" fill="#fca5a5" text-anchor="middle">Il Ricettario</text>
+                            <text x="107" y="130" font-size="12" fill="#cbd5e1" text-anchor="middle">Ricette Personali</text>
+                            <text x="107" y="152" font-size="12" fill="#cbd5e1" text-anchor="middle">Ingredienti &amp; Dosi</text>
+                            <text x="107" y="174" font-size="12" fill="#cbd5e1" text-anchor="middle">Lista Spesa Automatica</text>
+                            <rect x="20" y="205" width="175" height="30" rx="8" fill="#7f1d1d"/>
+                            <text x="107" y="225" font-size="11" font-weight="900" fill="#fecaca" text-anchor="middle">SAPORI DI CASA</text>
+                        </g>
+
+                        <g transform="translate(272, 45)">
+                            <rect x="0" y="0" width="215" height="260" rx="16" fill="rgba(15,23,42,0.9)" stroke="#16a34a" stroke-width="2.5"/>
+                            <text x="107" y="55" font-size="44" text-anchor="middle">🥗</text>
+                            <text x="107" y="95" font-size="15" font-weight="900" fill="#86efac" text-anchor="middle">MedNutri Pro</text>
+                            <text x="107" y="130" font-size="12" fill="#cbd5e1" text-anchor="middle">Piani Alimentari</text>
+                            <text x="107" y="152" font-size="12" fill="#cbd5e1" text-anchor="middle">Valori Nutrizionali</text>
+                            <text x="107" y="174" font-size="12" fill="#cbd5e1" text-anchor="middle">Diete Cliniche</text>
+                            <rect x="20" y="205" width="175" height="30" rx="8" fill="#14532d"/>
+                            <text x="107" y="225" font-size="11" font-weight="900" fill="#bbf7d0" text-anchor="middle">NUTRIZIONE SU MISURA</text>
+                        </g>
+
+                        <g transform="translate(515, 45)">
+                            <rect x="0" y="0" width="215" height="260" rx="16" fill="rgba(15,23,42,0.9)" stroke="#f43f5e" stroke-width="2.5"/>
+                            <text x="107" y="55" font-size="44" text-anchor="middle">❤️</text>
+                            <text x="107" y="95" font-size="15" font-weight="900" fill="#fda4af" text-anchor="middle">Progetto Salute</text>
+                            <text x="107" y="130" font-size="12" fill="#cbd5e1" text-anchor="middle">Pressione &amp; Parametri</text>
+                            <text x="107" y="152" font-size="12" fill="#cbd5e1" text-anchor="middle">Bicchieri d'Acqua</text>
+                            <text x="107" y="174" font-size="12" fill="#cbd5e1" text-anchor="middle">Passi &amp; Attività Fisica</text>
+                            <rect x="20" y="205" width="175" height="30" rx="8" fill="#881337"/>
+                            <text x="107" y="225" font-size="11" font-weight="900" fill="#fecdd3" text-anchor="middle">BENESSERE H24</text>
+                        </g>
+                    </svg>
+                `
+            },
+            {
+                id: 4,
+                title: 'Atto 5: La Sicurezza Totale — Cloud, USB e Partner Antigravity AI',
+                speaker: '🤖 Antigravity AI & Ciro Milella',
+                subtitle: '«Dati protetti nel Cloud di Render, copia fisica di sicurezza su Chiavetta USB con un clic, e un partner di intelligenza artificiale sempre al tuo fianco!»',
+                linkedAppIdx: 7,
+                svgRender: () => `
+                    <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 50% 40%, #064e3b 0%, #070b14 100%);">
+                        <rect x="180" y="30" width="400" height="290" rx="20" fill="#0f172a" stroke="#d4af37" stroke-width="3"/>
+                        <circle cx="380" cy="80" r="32" fill="rgba(212,175,55,0.2)" stroke="#d4af37" stroke-width="2"/>
+                        <text x="380" y="92" font-size="34" text-anchor="middle">💾</text>
+
+                        <text x="380" y="138" font-size="15" font-weight="900" fill="#fde047" text-anchor="middle">DOPPIA COPIA DI SICUREZZA CERTIFICATA</text>
+                        <text x="380" y="162" font-size="12.5" fill="#cbd5e1" text-anchor="middle">1. Cloud Render per consultazione da ogni luogo</text>
+                        <text x="380" y="184" font-size="12.5" fill="#cbd5e1" text-anchor="middle">2. Copia fisica su Chiavetta USB sempre aggiornata</text>
+
+                        <rect x="220" y="205" width="320" height="38" rx="10" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+                        <text x="380" y="229" font-size="12.5" font-weight="900" fill="#6ee7b7" text-anchor="middle">🤝 POTENZIATO CON ANTIGRAVITY AI</text>
+
+                        <text x="380" y="272" font-size="12" fill="#94a3b8" text-anchor="middle">Ogni idea o perfezionamento diventa realtà in pochi minuti.</text>
+                        <text x="380" y="292" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">Questa è la Suite Gestionale di Ciro Milella.</text>
+                    </svg>
+                `
+            }
+        ];
+
+        // =========================================================================
+        // LE 8 SCHEDE APPLICATIVE STILE AMAZON (CON "PER SAPERNE DI PIÙ")
+        // =========================================================================
+        const SUITE_APPS = [
+            {
+                idx: 0,
+                icon: '🩺',
+                name: 'CareAssist Pro',
+                shortTitle: '1. CareAssist Pro — Assistenza Domiciliare & Terapie H24',
+                badge: 'CLINICA & ASSISTENZA',
+                summary: 'Diario socio-sanitario, alert vocali delle terapie con protocollo anti-furbi ≥ 70%, scorte predittive, gestione del diabete in frigo e passaporto 118 da frigo.',
+                visualHtml: `
+                    <div style="background:#0f172a; color:#fff; border-radius:12px; padding:14px; border:2px solid #38bdf8;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong style="color:#7dd3fc; font-size:13px;">🩺 DIARIO SOCIO-SANITARIO H24</strong>
+                            <span style="background:#0284c7; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800;">VOLUME ≥ 70% ATTIVO</span>
+                        </div>
+                        <div style="font-size:12.5px; line-height:1.4; color:#cbd5e1;">
+                            • Allarmi sonori a prova di disattivazione involontaria<br>
+                            • Sincronizzazione Smartphone ↔ PC Direzione in 2 secondi<br>
+                            • Kit Diabete Toujeo Solostar + Strisce e Pungidito in frigo<br>
+                            • Passaporto 118 con QR Code e Cestino di sicurezza per 60 giorni
+                        </div>
+                    </div>
+                `,
+                howToUse: [
+                    'Si apre sul PC dell\'ufficio o sullo smartphone dell\'operatore a domicilio.',
+                    'L\'operatore tocca «✓ Assunto Oggi» e in 2 secondi il PC in sede si aggiorna, scala la compressa e calcola quando richiedere la nuova ricetta medica.'
+                ],
+                benefits: [
+                    'Nessun rischio di dimenticare una terapia o di somministrare una doppia dose.',
+                    'Famiglie e medici hanno sempre una documentazione clinica A4 chiara e autorevole.'
+                ]
+            },
+            {
+                idx: 1,
+                icon: '🚗',
+                name: 'Flotta Veicoli & Spese',
+                shortTitle: '2. Flotta Veicoli & Spese — Zero Multe e Controllo Costi',
+                badge: 'GESTIONE MEZZI',
+                summary: 'Monitoraggio scadenze di revisioni, bolli e assicurazioni, tagliandi, manutenzioni, rifornimenti e rimborsi chilometrici aziendali.',
+                visualHtml: `
+                    <div style="background:#0f172a; color:#fff; border-radius:12px; padding:14px; border:2px solid #fbbf24;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong style="color:#fde047; font-size:13px;">🚗 PARCO VEICOLI AZIENDALE &amp; PERSONALE</strong>
+                            <span style="background:#78350f; color:#fef08a; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800;">PREAVVISO AUTOMATICO</span>
+                        </div>
+                        <div style="font-size:12.5px; line-height:1.4; color:#cbd5e1;">
+                            • Calendario scadenze Revisione Periodica, Bollo e Polizza<br>
+                            • Registro interventi meccanici, cambio gomme e tagliandi<br>
+                            • Monitoraggio consumi carburante e storico rifornimenti<br>
+                            • Calcolo automatico rimborsi chilometrici ACI per trasferte
+                        </div>
+                    </div>
+                `,
+                howToUse: [
+                    'Registri targa e scadenze del veicolo una volta sola.',
+                    'Il programma calcola i giorni mancanti e colora di rosso o arancione i veicoli vicini alla scadenza.'
+                ],
+                benefits: [
+                    'Evita sanzioni stradali per revisioni scadute e fermi macchina imprevisti.',
+                    'Tieni sotto controllo ogni euro speso per carburante e riparazioni.'
+                ]
+            },
+            {
+                idx: 2,
+                icon: '🛠️',
+                name: 'Inventario Attrezzi',
+                shortTitle: '3. Inventario Attrezzi — Catalogo Fotografico & Prestiti',
+                badge: 'MAGAZZINO & STRUMENTI',
+                summary: 'Catalogo fotografico ad alta definizione degli attrezzi, posizione esatta tra casa, garage e furgone, e tracciamento dei prestiti ad amici e colleghi.',
+                visualHtml: `
+                    <div style="background:#0f172a; color:#fff; border-radius:12px; padding:14px; border:2px solid #f59e0b;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong style="color:#fde047; font-size:13px;">🛠️ CATALOGO ATTREZZI CON FOTO</strong>
+                            <span style="background:#b45309; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800;">RICERCA VELOCE</span>
+                        </div>
+                        <div style="font-size:12.5px; line-height:1.4; color:#cbd5e1;">
+                            • Foto nitida di ogni strumento da lavoro e da fai-da-te<br>
+                            • Collocazione esatta: Banco 1, Cantiere, Garage o Cassetta<br>
+                            • Tracciabilità prestiti con nome del destinatario e data<br>
+                            • Ricerca istantanea in 1 secondo anche da cellulare
+                        </div>
+                    </div>
+                `,
+                howToUse: [
+                    'Scatti la foto con lo smartphone o carichi l\'immagine dal PC.',
+                    'Indichi dove si trova lo strumento e, se lo presti a qualcuno, scrivi a chi è stato affidato.'
+                ],
+                benefits: [
+                    'Non perdi più ore a cercare un attrezzo e non ricompri doppioni inutili.',
+                    'Sai sempre a chi hai prestato trapano, saldatrice o chiavi inglesi.'
+                ]
+            },
+            {
+                idx: 3,
+                icon: '📦',
+                name: 'Logistica Consegne',
+                shortTitle: '4. Logistica Consegne — Spedizioni, Ordini & Merci',
+                badge: 'LOGISTICA & MAGAZZINO',
+                summary: 'Gestione flussi di magazzino, spedizioni in partenza, tracciamento pacchi e monitoraggio delle consegne ai clienti o ai cantieri.',
+                visualHtml: `
+                    <div style="background:#0f172a; color:#fff; border-radius:12px; padding:14px; border:2px solid #a855f7;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong style="color:#d8b4fe; font-size:13px;">📦 FLUSSO SPEDIZIONI &amp; CONSEGNE</strong>
+                            <span style="background:#581c87; color:#f3e8ff; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800;">TRACKING ATTIVO</span>
+                        </div>
+                        <div style="font-size:12.5px; line-height:1.4; color:#cbd5e1;">
+                            • Pianificazione consegne con indirizzi e orari concordati<br>
+                            • Stato spedizione: In Lavorazione, In Viaggio, Consegnato<br>
+                            • Registro giacenze e carichi di magazzino principale<br>
+                            • Integrazione rapida con note di trasporto e DDT
+                        </div>
+                    </div>
+                `,
+                howToUse: [
+                    'Inserisci il numero d\'ordine e la destinazione della merce.',
+                    'L\'operatore o l\'autista visualizza lo stato e conferma la consegna con un clic.'
+                ],
+                benefits: [
+                    'Controllo completo sulle merci e nessun ordine disperso nel tragitto.',
+                    'Comunicazione chiara e puntuale con i clienti e con i magazzinieri.'
+                ]
+            },
+            {
+                idx: 4,
+                icon: '👨‍🍳',
+                name: 'Il Ricettario di Famiglia',
+                shortTitle: '5. Il Ricettario di Famiglia — Tradizione & Lista Spesa',
+                badge: 'CASA & CUCINA',
+                summary: 'Archivio delle ricette di famiglia tramandate nel tempo, ingredienti dettagliati, dosi per persone e generazione automatica della lista della spesa.',
+                visualHtml: `
+                    <div style="background:#0f172a; color:#fff; border-radius:12px; padding:14px; border:2px solid #ef4444;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong style="color:#fca5a5; font-size:13px;">👨‍🍳 ARCHIVIO SEGRETO DELLE RICETTE</strong>
+                            <span style="background:#7f1d1d; color:#fecaca; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800;">LISTA SPESA RAPIDA</span>
+                        </div>
+                        <div style="font-size:12.5px; line-height:1.4; color:#cbd5e1;">
+                            • Custodia sicura delle ricette tradizionali e piatti speciali<br>
+                            • Foto dei piatti finiti e passaggi passo-passo<br>
+                            • Calcolo automatico della lista degli ingredienti da acquistare<br>
+                            • Consultabile comodamente dallo smartphone tra i banchi del supermercato
+                        </div>
+                    </div>
+                `,
+                howToUse: [
+                    'Selezioni la ricetta che vuoi preparare per pranzo o per cena.',
+                    'Il programma estrae tutti gli ingredienti mancanti e crea la lista della spesa pronta da spuntare.'
+                ],
+                benefits: [
+                    'Le ricette preziose della famiglia non andranno mai perse su fogli volanti.',
+                    'Fai la spesa senza dimenticare ingredienti essenziali.'
+                ]
+            },
+            {
+                idx: 5,
+                icon: '🥗',
+                name: 'MedNutri Pro',
+                shortTitle: '6. MedNutri Pro — Piani Nutrizionali Clinici Personalizzati',
+                badge: 'SALUTE & NUTRIZIONE',
+                summary: 'Piattaforma avanzata per la gestione della nutrizione clinica, bilanciamento dei macronutrienti e regimi dietetici per patologie specifiche.',
+                visualHtml: `
+                    <div style="background:#0f172a; color:#fff; border-radius:12px; padding:14px; border:2px solid #16a34a;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong style="color:#86efac; font-size:13px;">🥗 PIANI NUTRIZIONALI SU MISURA</strong>
+                            <span style="background:#14532d; color:#bbf7d0; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800;">APPROCCIO CLINICO</span>
+                        </div>
+                        <div style="font-size:12.5px; line-height:1.4; color:#cbd5e1;">
+                            • Piani alimentari personalizzati per diabete, fegato e reni<br>
+                            • Calcolo calorie, carboidrati, proteine e lipidi giornalieri<br>
+                            • Schemi settimanali chiari e stampabili per il paziente<br>
+                            • Monitoraggio dell\'aderenza alla dieta nel tempo
+                        </div>
+                    </div>
+                `,
+                howToUse: [
+                    'Si imposta il profilo nutrizionale e le eventuali patologie da considerare.',
+                    'Il programma struttura il piano settimanale giorno per giorno con indicazioni precise.'
+                ],
+                benefits: [
+                    'Supporto concreto per mangiare bene secondo le reali esigenze di salute.',
+                    'Chiarezza totale per pazienti e famiglie che devono seguire una dieta medica.'
+                ]
+            },
+            {
+                idx: 6,
+                icon: '❤️',
+                name: 'Progetto Salute',
+                shortTitle: '7. Progetto Salute — Parametri Vitali & Benessere Quotidiano',
+                badge: 'BENESSERE & VITALI',
+                summary: 'Tracciamento della pressione sanguigna, frequenza cardiaca, idratazione (bicchieri d\'acqua) e attività fisica per restare in forma ogni giorno.',
+                visualHtml: `
+                    <div style="background:#0f172a; color:#fff; border-radius:12px; padding:14px; border:2px solid #f43f5e;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong style="color:#fda4af; font-size:13px;">❤️ MONITORAGGIO VITALI &amp; FITNESS</strong>
+                            <span style="background:#881337; color:#fecdd3; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800;">DIARIO GIORNALIERO</span>
+                        </div>
+                        <div style="font-size:12.5px; line-height:1.4; color:#cbd5e1;">
+                            • Registrazione rapida di Massima, Minima e Pulsazioni<br>
+                            • Contatore bicchieri d\'acqua con promemoria idratazione<br>
+                            • Diario dei passi camminati e delle uscite all\'aperto<br>
+                            • Grafici visivi dell\'andamento della salute nel mese
+                        </div>
+                    </div>
+                `,
+                howToUse: [
+                    'Inserisci i valori della misurazione dopo aver provato la pressione.',
+                    'Tocchi i bicchieri d\'acqua ogni volta che bevi per raggiungere l\'obiettivo giornaliero.'
+                ],
+                benefits: [
+                    'Il medico curante può vedere l\'andamento reale della pressione senza fogli sparsi.',
+                    'Ti aiuta a mantenere sane abitudini quotidiane di bere e muoverti.'
+                ]
+            },
+            {
+                idx: 7,
+                icon: '🎰',
+                name: 'Progetto Gioco',
+                shortTitle: '8. Progetto Gioco — Statistiche & Bilancio Consapevole',
+                badge: 'STATISTICHE & BILANCIO',
+                summary: 'Archivio storico delle estrazioni di SuperEnalotto e Gratta & Vinci con calcolo del bilancio netto tra spese e vincite per giocare con la testa.',
+                visualHtml: `
+                    <div style="background:#0f172a; color:#fff; border-radius:12px; padding:14px; border:2px solid #ca8a04;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong style="color:#fef08a; font-size:13px;">🎰 MONITORAGGIO ESTRAZIONI &amp; SPESA</strong>
+                            <span style="background:#713f12; color:#fef08a; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800;">GIOCO RESPONSABILE</span>
+                        </div>
+                        <div style="font-size:12.5px; line-height:1.4; color:#cbd5e1;">
+                            • Frequenze numeriche, ritardi e combinazioni storiche<br>
+                            • Bilancio trasparente: Speso vs Incassato sempre visibile<br>
+                            • Statistiche di probabilità reale per non farsi illusioni<br>
+                            • Strumento per vivere il gioco come semplice svago consapevole
+                        </div>
+                    </div>
+                `,
+                howToUse: [
+                    'Registri le giocate effettuate e le eventuali vincite realizzate.',
+                    'Il modulo aggiorna all\'istante il saldo netto complessivo.'
+                ],
+                benefits: [
+                    'Trasparenza totale sul denaro speso per evitare brutte sorprese.',
+                    'Approccio matematico e divertimento senza eccessi.'
+                ]
+            }
+        ];
+
+        // =========================================================================
+        // STATO DEL PLAYER MULTIMEDIALE
+        // =========================================================================
+        let viewMode = 'film'; // 'film' | 'app'
+        let currentSceneIdx = 0;
+        let currentAppIdx = 0;
+        let isFilmPlaying = false;
+        const synth = window.speechSynthesis;
+
+        function vocaleItaliana() {
+            if (!synth) return null;
+            const v = synth.getVoices().filter(x => x.lang && x.lang.startsWith('it'));
+            return v.find(x => /natural|online|neural|google|elsa|cosimo/i.test(x.name)) || v[0] || null;
+        }
+
+        function fermaVoceGuida() {
+            if (synth) synth.cancel();
+        }
+
+        function evidenziaThumbnail(idAttivo) {
+            document.querySelectorAll('.amz-thumb-btn').forEach(b => b.classList.remove('active'));
+            const el = document.getElementById(idAttivo);
+            if (el) el.classList.add('active');
+        }
+
+        function attivaModalitaFilm(sceneIdx = 0, autoPlay = false) {
+            viewMode = 'film';
+            currentSceneIdx = sceneIdx;
+            evidenziaThumbnail('thumb-video');
+            renderFilmStage();
+            if (autoPlay) {
+                avviaRiproduzioneFilm();
+            } else {
+                fermaVoceGuida();
+                isFilmPlaying = false;
+                document.getElementById('btnPlayFilm').innerHTML = '▶️ Avvia Presentazione';
+            }
+        }
+
+        function renderFilmStage() {
+            const sc = SUITE_SCENES[currentSceneIdx] || SUITE_SCENES[0];
+            document.getElementById('viewerTopTitle').textContent = `🎬 SUITE GESTIONALE C. MILELLA — ${sc.title.toUpperCase()}`;
+            document.getElementById('speakerBadge').textContent = sc.speaker;
+            document.getElementById('subtitleText').textContent = sc.subtitle;
+            document.getElementById('filmTimeLabel').textContent = `Atto ${currentSceneIdx + 1}/5`;
+            document.getElementById('filmProgressBar').style.width = ((currentSceneIdx + 1) / SUITE_SCENES.length * 100) + '%';
+
+            const container = document.getElementById('mainStageContainer');
+            container.innerHTML = sc.svgRender();
+        }
+
+        function avviaRiproduzioneFilm() {
+            fermaVoceGuida();
+            isFilmPlaying = true;
+            document.getElementById('btnPlayFilm').innerHTML = '⏸️ Pausa';
+            const sc = SUITE_SCENES[currentSceneIdx] || SUITE_SCENES[0];
+
+            if (!synth) return;
+            const u = new SpeechSynthesisUtterance(sc.subtitle.replace(/[«»]/g, ''));
+            u.lang = 'it-IT';
+            u.rate = 0.98;
+            const v = vocaleItaliana();
+            if (v) u.voice = v;
+
+            u.onend = () => {
+                if (!isFilmPlaying) return;
+                if (currentSceneIdx + 1 < SUITE_SCENES.length) {
+                    currentSceneIdx++;
+                    renderFilmStage();
+                    setTimeout(() => {
+                        if (isFilmPlaying) avviaRiproduzioneFilm();
+                    }, 700);
+                } else {
+                    isFilmPlaying = false;
+                    document.getElementById('btnPlayFilm').innerHTML = '▶️ Riguarda Presentazione';
+                }
+            };
+            synth.speak(u);
+        }
+
+        function togglePlayFilm() {
+            if (viewMode !== 'film') {
+                attivaModalitaFilm(0, true);
+                return;
+            }
+            if (isFilmPlaying) {
+                fermaVoceGuida();
+                isFilmPlaying = false;
+                document.getElementById('btnPlayFilm').innerHTML = '▶️ Riprendi Presentazione';
+            } else {
+                avviaRiproduzioneFilm();
+            }
+        }
+
+        function scenaPrecedente() {
+            if (viewMode === 'film') {
+                currentSceneIdx = (currentSceneIdx - 1 + SUITE_SCENES.length) % SUITE_SCENES.length;
+                renderFilmStage();
+                if (isFilmPlaying) avviaRiproduzioneFilm();
+            } else {
+                mostraAppDettaglio((currentAppIdx - 1 + SUITE_APPS.length) % SUITE_APPS.length);
+            }
+        }
+
+        function scenaSuccessiva() {
+            if (viewMode === 'film') {
+                currentSceneIdx = (currentSceneIdx + 1) % SUITE_SCENES.length;
+                renderFilmStage();
+                if (isFilmPlaying) avviaRiproduzioneFilm();
+            } else {
+                mostraAppDettaglio((currentAppIdx + 1) % SUITE_APPS.length);
+            }
+        }
+
+        // =========================================================================
+        // MODALITÀ DETTAGLIO SINGOLA APPLICAZIONE
+        // =========================================================================
+        function mostraAppDettaglio(idx) {
+            fermaVoceGuida();
+            isFilmPlaying = false;
+            viewMode = 'app';
+            currentAppIdx = idx;
+            evidenziaThumbnail('thumb-app-' + idx);
+
+            const app = SUITE_APPS[idx] || SUITE_APPS[0];
+            document.getElementById('viewerTopTitle').textContent = `📱 SCHEDA MODULO ${idx + 1} DI 8 — ${app.name.toUpperCase()}`;
+            document.getElementById('speakerBadge').textContent = '🎙️ Voce Guida Suite HD';
+            document.getElementById('subtitleText').textContent = app.summary;
+            document.getElementById('btnPlayFilm').innerHTML = '🎙️ Ascolta Spiegazione Modulo';
+            document.getElementById('filmTimeLabel').textContent = `App ${idx + 1}/8`;
+            document.getElementById('filmProgressBar').style.width = ((idx + 1) / SUITE_APPS.length * 100) + '%';
+
+            const container = document.getElementById('mainStageContainer');
+            container.innerHTML = `
+                <div style="padding:24px; background:radial-gradient(circle at 50% 20%, #1e3a8a 0%, #091122 100%); flex:1; display:flex; flex-direction:column; justify-content:center; gap:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <span style="background:#ffd814; color:#0f172a; font-size:12px; font-weight:900; padding:4px 10px; border-radius:6px;">${app.badge}</span>
+                        <button type="button" onclick="parlaApp(${idx})" style="background:#0284c7; color:#fff; border:none; padding:7px 14px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">
+                            🔊 Ascolta con Voce Guida
+                        </button>
+                    </div>
+                    ${app.visualHtml}
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.06); padding:12px 16px; border-radius:10px;">
+                        <span style="font-size:13.5px; color:#e2e8f0; font-weight:600;">Vuoi vedere le istruzioni e i vantaggi di questo modulo?</span>
+                        <button type="button" class="btn-per-saperne" onclick="apriModalInfoApp(${idx})">
+                            💡 Per saperne di più
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            parlaApp(idx);
+        }
+
+        function parlaApp(idx) {
+            fermaVoceGuida();
+            const app = SUITE_APPS[idx] || SUITE_APPS[0];
+            if (!synth) return;
+            const u = new SpeechSynthesisUtterance(app.summary);
+            u.lang = 'it-IT';
+            u.rate = 0.98;
+            const v = vocaleItaliana();
+            if (v) u.voice = v;
+            synth.speak(u);
+        }
+
+        function apriPerSaperneCorrente() {
+            if (viewMode === 'app') {
+                apriModalInfoApp(currentAppIdx);
+            } else {
+                const sc = SUITE_SCENES[currentSceneIdx] || SUITE_SCENES[0];
+                apriModalInfoApp(sc.linkedAppIdx || 0);
+            }
+        }
+
+        // =========================================================================
+        // RENDER DELLA GALLERIA STILE AMAZON A+
+        // =========================================================================
+        function renderAplusGallery() {
+            const grid = document.getElementById('aplusGalleryContainer');
+            grid.innerHTML = '';
+            SUITE_APPS.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'aplus-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="aplus-figure-header" onclick="apriModalInfoApp(${item.idx})">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <span style="background:#ffd814; color:#0f172a; font-size:11px; font-weight:900; padding:3px 9px; border-radius:6px;">${item.badge}</span>
+                                <span style="font-size:12px; color:#fde047; font-weight:800;">💡 Clicca per approfondire ↗</span>
+                            </div>
+                            ${item.visualHtml}
+                        </div>
+                        <div class="aplus-body">
+                            <div>
+                                <h3 style="font-size:17px; font-weight:900; color:#0f172a; margin-bottom:6px;">${item.icon} ${item.name}</h3>
+                                <p style="font-size:14px; color:#475569; margin-bottom:12px; line-height:1.45;">${item.summary}</p>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button type="button" class="btn-per-saperne" style="flex:1;" onclick="apriModalInfoApp(${item.idx})">
+                                    💡 Per saperne di più
+                                </button>
+                                <button type="button" onclick="mostraAppDettaglio(${item.idx})" style="background:#0284c7; color:#fff; border:none; padding:8px 12px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;" title="Mostra nel viewer">
+                                    👁️ Guarda
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // =========================================================================
+        // MODALE PER SAPERNE DI PIÙ
+        // =========================================================================
+        function apriModalInfoApp(idx) {
+            const app = SUITE_APPS[idx] || SUITE_APPS[0];
+            document.getElementById('modalAppTitle').textContent = `${app.icon} ${app.shortTitle}`;
+
+            const body = document.getElementById('modalAppBody');
+            body.innerHTML = `
+                <div style="margin-bottom:18px;">
+                    <span style="background:#0284c7; color:#fff; font-size:11.5px; font-weight:900; padding:4px 10px; border-radius:6px;">${app.badge}</span>
+                    <p style="font-size:15px; color:#334155; margin-top:10px; line-height:1.5;">${app.summary}</p>
+                </div>
+
+                <div style="margin-bottom:18px;">
+                    ${app.visualHtml}
+                </div>
+
+                <div style="background:#f8fafc; border-left:4px solid #0284c7; padding:12px 16px; border-radius:0 10px 10px 0; margin-bottom:14px;">
+                    <h4 style="font-size:14.5px; font-weight:900; color:#0f172a; margin-bottom:6px;">📋 Come si usa nella vita quotidiana:</h4>
+                    <ul style="padding-left:18px; font-size:13.5px; color:#334155; line-height:1.5;">
+                        ${app.howToUse.map(p => `<li style="margin-bottom:4px;">${p}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div style="background:#f0fdf4; border-left:4px solid #16a34a; padding:12px 16px; border-radius:0 10px 10px 0; margin-bottom:18px;">
+                    <h4 style="font-size:14.5px; font-weight:900; color:#14532d; margin-bottom:6px;">🏆 Vantaggi e Serenità:</h4>
+                    <ul style="padding-left:18px; font-size:13.5px; color:#14532d; line-height:1.5;">
+                        ${app.benefits.map(b => `<li style="margin-bottom:4px;">${b}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" onclick="parlaApp(${idx})" style="background:#ffd814; color:#0f172a; border:none; padding:10px 18px; border-radius:10px; font-size:14px; font-weight:900; cursor:pointer;">
+                        🔊 Ascolta Voce Guida
+                    </button>
+                    <button type="button" onclick="chiudiModalInfoApp()" style="background:#0f172a; color:#fff; border:none; padding:10px 20px; border-radius:10px; font-size:14px; font-weight:800; cursor:pointer;">
+                        Chiudi Scheda
+                    </button>
+                </div>
+            `;
+            document.getElementById('modalInfoApp').style.display = 'flex';
+            parlaApp(idx);
+        }
+
+        function chiudiModalInfoApp() {
+            fermaVoceGuida();
+            document.getElementById('modalInfoApp').style.display = 'none';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderFilmStage();
+            renderAplusGallery();
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js?v=109').catch(() => {});
+            }
+        });
+    </script>
 </body>
 </html>
