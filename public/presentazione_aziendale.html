@@ -266,33 +266,41 @@
             position: relative;
         }
 
-        /* SUBTITLES CARTOON */
+        /* SUBTITLES CARTOON (CINEMATIC GLASS) */
         .cartoon-subtitle-box {
-            background: rgba(8, 15, 32, 0.96);
-            border-top: 2px solid #fbbf24;
-            padding: 12px 16px;
-            min-height: 74px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(7, 12, 26, 0.99) 100%);
+            border-top: 2px solid #f59e0b;
+            padding: 14px 18px;
+            min-height: 82px;
             display: flex;
-            align-items: center;
-            gap: 12px;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 7px;
         }
 
         .speaker-pill {
-            background: #fbbf24;
+            background: linear-gradient(135deg, #fde047 0%, #f59e0b 100%);
             color: #0f172a;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 900;
-            padding: 5px 11px;
-            border-radius: 8px;
+            padding: 4px 12px;
+            border-radius: 999px;
             white-space: nowrap;
-            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
+            letter-spacing: 0.3px;
         }
 
         .subtitle-spoken-text {
-            color: #ffffff;
-            font-size: 15px;
+            color: #f8fafc;
+            font-size: 14.5px;
             font-weight: 700;
-            line-height: 1.4;
+            line-height: 1.45;
+            width: 100%;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.6);
         }
 
         /* PLAYER CONTROLS */
@@ -799,29 +807,67 @@
                     </li>
                 </ul>
 
-                <!-- BADGE DORATO PROTOCOLLO ZERO-SCUSE -->
-                <div style="background:linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border:2px solid #f59e0b; border-radius:12px; padding:12px 16px; margin-bottom:14px; display:flex; align-items:center; gap:12px; box-shadow:0 4px 12px rgba(245,158,11,0.18);">
-                    <span style="font-size:28px;">🛡️🔊</span>
-                    <div>
-                        <div style="font-size:13.5px; font-weight:900; color:#92400e; text-transform:uppercase; letter-spacing:0.3px;">
-                            Garanzia Medico-Legale «Zero-Scuse» per la Direzione
+                <!-- CARD EXECUTIVE: PROTOCOLLO ZERO-SCUSE & ESCALATION 3 STADI -->
+                <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border:2px solid #f59e0b; border-radius:16px; padding:16px 18px; margin:16px 0; color:#ffffff; box-shadow:0 10px 25px rgba(15,23,42,0.18); position:relative; overflow:hidden;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px; border-bottom:1px solid rgba(251,191,36,0.25); padding-bottom:8px;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 12px rgba(245,158,11,0.4);">
+                                🛡️
+                            </div>
+                            <div>
+                                <div style="font-size:11px; font-weight:900; color:#fde047; letter-spacing:0.8px; text-transform:uppercase;">
+                                    TUTELA MEDICO-LEGALE PER LA DIREZIONE
+                                </div>
+                                <div style="font-size:15.5px; font-weight:900; color:#ffffff;">
+                                    Protocollo «Zero-Scuse» Anti-Sabotaggio Volume
+                                </div>
+                            </div>
                         </div>
-                        <div style="font-size:13px; color:#78350f; line-height:1.45;">
-                            Nessun operatore potrà mai dire <em>«Non avevo sentito la sveglia»</em>: CareAssist Pro riattiva forzatamente il volume hardware <strong>≥ 70%</strong> su PC, amplifica del <strong>220%</strong> l'onda sonora su Smartphone (anche a display spento) e attiva l'<strong>Escalation a 3 Stadi (75% → 90% → Audit Coordinatore)</strong>.
+                        <span style="background:rgba(16,185,129,0.2); border:1px solid #34d399; color:#6ee7b7; font-size:11px; font-weight:900; padding:4px 10px; border-radius:999px;">
+                            ● ATTIVO H24
+                        </span>
+                    </div>
+
+                    <p style="font-size:13.5px; color:#e2e8f0; line-height:1.5; margin-bottom:12px;">
+                        Nessun operatore potrà mai giustificarsi dicendo <em style="color:#fde047;">«Non avevo sentito la sveglia»</em>: CareAssist Pro impedisce di silenziare gli avvisi a discapito del paziente grazie alla <strong>Catena di Sicurezza a 3 Stadi</strong>:
+                    </p>
+
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(56,189,248,0.4); border-radius:10px; padding:9px 10px; text-align:center;">
+                            <div style="font-size:11px; font-weight:900; color:#38bdf8;">STADIO 1 (MIN 0)</div>
+                            <div style="font-size:15px; font-weight:900; color:#ffffff; margin:2px 0;">🔊 Vol. ≥ 75%</div>
+                            <div style="font-size:11px; color:#cbd5e1; line-height:1.25;">Sblocco Muto PC + Boost 320% Mobile</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(245,158,11,0.5); border-radius:10px; padding:9px 10px; text-align:center;">
+                            <div style="font-size:11px; font-weight:900; color:#fbbf24;">STADIO 2 (+10 MIN)</div>
+                            <div style="font-size:15px; font-weight:900; color:#fde047; margin:2px 0;">🚨 Vol. 90%</div>
+                            <div style="font-size:11px; color:#cbd5e1; line-height:1.25;">Sirena + Voce HD + Schermo Rosso</div>
+                        </div>
+                        <div style="background:rgba(239,68,68,0.15); border:1px solid rgba(248,113,113,0.6); border-radius:10px; padding:9px 10px; text-align:center;">
+                            <div style="font-size:11px; font-weight:900; color:#fca5a5;">STADIO 3 (+20 MIN)</div>
+                            <div style="font-size:15px; font-weight:900; color:#fecaca; margin:2px 0;">📋 Audit Capo</div>
+                            <div style="font-size:11px; color:#fecaca; line-height:1.25;">Notifica certificata al Coordinatore</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- BOX VALORE STRATEGICO: CIRO MILELLA + ANTIGRAVITY AI -->
-                <div class="ai-partnership-card">
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
-                        <span style="font-size:24px;">🤝🤖</span>
-                        <h3 style="font-size:16px; font-weight:900; color:#0369a1;">
-                            Il Valore Aggiunto: Esperienza Umana + Partner Strategico Antigravity AI
-                        </h3>
+                <!-- CARD EXECUTIVE: SINERGIA UOMO + ANTIGRAVITY AI -->
+                <div style="background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border:2px solid #0284c7; border-radius:16px; padding:15px 18px; box-shadow:0 6px 18px rgba(2,132,199,0.12);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <div style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, #0284c7 0%, #1e3a8a 100%); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; box-shadow:0 4px 10px rgba(2,132,199,0.3);">
+                            🤖
+                        </div>
+                        <div>
+                            <div style="font-size:11px; font-weight:900; color:#0369a1; text-transform:uppercase; letter-spacing:0.6px;">
+                                IL VANTAGGIO COMPETITIVO ESCLUSIVO
+                            </div>
+                            <h3 style="font-size:16px; font-weight:900; color:#0f172a; margin:0;">
+                                Esperienza Clinica Ciro Milella + Partner Antigravity AI
+                            </h3>
+                        </div>
                     </div>
-                    <p style="font-size:14px; color:#1e293b; line-height:1.5;">
-                        Questo progetto non è un pacchetto standard rigido: nasce dall'<strong>esperienza pratica di Ciro Milella</strong> potenziata dalla collaborazione strategica in tempo reale con <strong>Antigravity AI</strong>. Questo significa che qualsiasi nuova esigenza dell'Azienda può essere implementata e perfezionata in pochi minuti!
+                    <p style="font-size:13.5px; color:#1e293b; line-height:1.5; margin:0;">
+                        Non è un software rigido comprato a scatola chiusa: nasce dall'<strong>esperienza pratica sul campo di Ciro Milella</strong> potenziata in tempo reale da <strong>Antigravity AI</strong>. Qualsiasi nuova esigenza della vostra Azienda viene implementata su misura in pochi minuti!
                     </p>
                 </div>
             </div>
@@ -916,44 +962,136 @@
                 title: 'Atto 1: Il Problema Quotidiano del Direttore',
                 audioUrl: '/assets/audio_presentazione/scena_1.mp3',
                 speaker: '👨‍💼 Direttore & Voce Guida (Giuseppe + Isabella HD)',
-                subtitle: '«Come Direttore, ogni giorno mi chiedo: l\'operatore avrà dato la compressa delle 08:00? Quante scatole restano? E se qualcuno cancella per sbaglio una terapia?»',
+                subtitle: '«Come Direttore, ogni giorno mi chiedo: l\'operatore avrà dato la compressa delle 08:00? Quante scatole restano? E se qualcuno abbassa il volume o cancella per sbaglio?»',
                 linkedPhotoIdx: 0,
                 svgRender: () => `
-                    <svg viewBox="0 0 760 340" style="width:100%; height:340px; display:block; background:linear-gradient(180deg, #0f172a 0%, #1e293b 100%);">
-                        <!-- Ufficio del Direttore -->
-                        <rect x="40" y="250" width="680" height="18" rx="6" fill="#475569"/>
-                        <!-- Pile di fogli disordinati -->
-                        <g transform="translate(130, 195)">
-                            <rect x="0" y="0" width="65" height="55" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
-                            <line x1="10" y1="15" x2="50" y2="15" stroke="#ef4444" stroke-width="3"/>
-                            <line x1="10" y1="28" x2="55" y2="28" stroke="#64748b" stroke-width="2"/>
-                            <text x="32" y="48" font-size="11" fill="#dc2626" text-anchor="middle" font-weight="bold">SCADUTO?</text>
+                    <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 38% 35%, #1e293b 0%, #090d16 100%);">
+                        <defs>
+                            <linearGradient id="winSky" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#0f172a"/>
+                                <stop offset="100%" stop-color="#1e3a8a"/>
+                            </linearGradient>
+                            <linearGradient id="suitGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#1e40af"/>
+                                <stop offset="100%" stop-color="#0f172a"/>
+                            </linearGradient>
+                            <linearGradient id="deskGrad" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#334155"/>
+                                <stop offset="50%" stop-color="#475569"/>
+                                <stop offset="100%" stop-color="#1e293b"/>
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Finestra Panoramica Ufficio Direzione -->
+                        <rect x="28" y="22" width="195" height="145" rx="12" fill="url(#winSky)" stroke="#334155" stroke-width="3"/>
+                        <line x1="125" y1="22" x2="125" y2="167" stroke="#334155" stroke-width="2.5"/>
+                        <line x1="28" y1="95" x2="223" y2="95" stroke="#334155" stroke-width="2.5"/>
+                        <!-- Grattacieli / Città sullo sfondo -->
+                        <rect x="42" y="80" width="26" height="84" fill="#0f172a" opacity="0.65"/>
+                        <rect x="74" y="62" width="34" height="102" fill="#0f172a" opacity="0.75"/>
+                        <rect x="140" y="72" width="32" height="92" fill="#0f172a" opacity="0.65"/>
+                        <circle cx="192" cy="52" r="12" fill="#fde047" opacity="0.85"/>
+
+                        <!-- Orologio da Parete Ufficio (Ore 08:15 - Ritardo!) -->
+                        <g transform="translate(262, 54)">
+                            <circle cx="0" cy="0" r="26" fill="#0f172a" stroke="#ef4444" stroke-width="3"/>
+                            <circle cx="0" cy="0" r="21" fill="none" stroke="rgba(248,113,113,0.3)" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <line x1="0" y1="0" x2="-10" y2="6" stroke="#f8fafc" stroke-width="3" stroke-linecap="round"/>
+                            <line x1="0" y1="0" x2="13" y2="0" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+                            <circle cx="0" cy="0" r="3" fill="#ef4444"/>
+                            <rect x="-34" y="32" width="68" height="18" rx="6" fill="#7f1d1d"/>
+                            <text x="0" y="44" font-size="9.5" font-weight="900" fill="#fecaca" text-anchor="middle">ORE 08:15 ⏰</text>
                         </g>
-                        <!-- Personaggio Cartone: IL DIRETTORE PREOCCUPATO -->
-                        <g transform="translate(330, 85)">
-                            <!-- Busto Giacca Blu -->
-                            <path d="M25,115 Q60,95 95,115 L110,165 L10,165 Z" fill="#1e3a8a" stroke="#60a5fa" stroke-width="2"/>
-                            <!-- Cravatta Rossa -->
-                            <polygon points="56,112 64,112 67,155 60,163 53,155" fill="#ef4444"/>
-                            <!-- Testa -->
-                            <circle cx="60" cy="65" r="38" fill="#fed7aa" stroke="#f97316" stroke-width="2"/>
-                            <!-- Capelli Brizzolati -->
-                            <path d="M22,58 Q30,22 60,24 Q90,22 98,58 Q80,38 60,40 Q40,38 22,58 Z" fill="#64748b"/>
-                            <!-- Occhiali -->
-                            <rect x="36" y="54" width="20" height="13" rx="3" fill="none" stroke="#0f172a" stroke-width="2.5"/>
-                            <rect x="64" y="54" width="20" height="13" rx="3" fill="none" stroke="#0f172a" stroke-width="2.5"/>
-                            <line x1="56" y1="60" x2="64" y2="60" stroke="#0f172a" stroke-width="2.5"/>
-                            <circle cx="46" cy="60" r="3" fill="#0f172a"/>
-                            <circle cx="74" cy="60" r="3" fill="#0f172a"/>
+
+                        <!-- Poltrona Direzionale Ergonomica -->
+                        <rect x="260" y="102" width="110" height="145" rx="26" fill="#0f172a" stroke="#475569" stroke-width="3"/>
+
+                        <!-- IL DIRETTORE (Illustrazione Ricca Executive) -->
+                        <g transform="translate(255, 76)">
+                            <!-- Spalle e Giacca Sartoriale -->
+                            <path d="M12,132 Q60,104 108,132 L124,195 L-4,195 Z" fill="url(#suitGrad)" stroke="#60a5fa" stroke-width="2.5"/>
+                            <!-- Camicia Bianca e Rever -->
+                            <polygon points="44,116 76,116 60,162" fill="#f8fafc"/>
+                            <!-- Cravatta Bordeaux -->
+                            <polygon points="56,120 64,120 67,168 60,178 53,168" fill="#dc2626"/>
+                            <!-- Collo -->
+                            <rect x="49" y="98" width="22" height="22" rx="6" fill="#fdba74"/>
+                            <!-- Volto -->
+                            <circle cx="60" cy="64" r="40" fill="#fed7aa" stroke="#fb923c" stroke-width="2.5"/>
+                            <!-- Capelli Brizzolati Executive -->
+                            <path d="M20,56 Q28,16 60,18 Q92,16 100,56 Q84,34 60,36 Q36,34 20,56 Z" fill="#475569"/>
+                            <!-- Sopracciglia Preoccupate -->
+                            <line x1="34" y1="45" x2="52" y2="49" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+                            <line x1="86" y1="45" x2="68" y2="49" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+                            <!-- Occhiali Montatura Oro/Nero -->
+                            <rect x="33" y="52" width="23" height="15" rx="4" fill="rgba(255,255,255,0.2)" stroke="#0f172a" stroke-width="2.8"/>
+                            <rect x="64" y="52" width="23" height="15" rx="4" fill="rgba(255,255,255,0.2)" stroke="#0f172a" stroke-width="2.8"/>
+                            <line x1="56" y1="59" x2="64" y2="59" stroke="#fbbf24" stroke-width="2.8"/>
+                            <circle cx="44" cy="59" r="3.5" fill="#0f172a"/>
+                            <circle cx="75" cy="59" r="3.5" fill="#0f172a"/>
                             <!-- Bocca Animata Parlante -->
-                            <ellipse cx="60" cy="84" rx="9" ry="5" fill="#991b1b" class="talking-mouth"/>
+                            <ellipse cx="60" cy="86" rx="10" ry="5.5" fill="#991b1b" class="talking-mouth"/>
                         </g>
-                        <!-- Fumetti di dubbio -->
-                        <g transform="translate(470, 42)">
-                            <rect x="0" y="0" width="245" height="90" rx="16" fill="#fef2f2" stroke="#ef4444" stroke-width="2.5"/>
-                            <text x="16" y="28" font-size="13.5" font-weight="800" fill="#991b1b">❓ Pastiglia delle 08:00 data?</text>
-                            <text x="16" y="52" font-size="13.5" font-weight="800" fill="#991b1b">❓ Quante scatole restano?</text>
-                            <text x="16" y="76" font-size="13.5" font-weight="800" fill="#991b1b">❓ E se cancellano per errore?</text>
+
+                        <!-- Scrivania Presidenziale -->
+                        <rect x="20" y="262" width="435" height="22" rx="8" fill="url(#deskGrad)" stroke="#64748b" stroke-width="1.5"/>
+                        <rect x="38" y="284" width="395" height="50" rx="6" fill="#0f172a" opacity="0.8"/>
+                        <!-- Targhetta Oro sulla Scrivania -->
+                        <rect x="255" y="244" width="128" height="22" rx="5" fill="#fbbf24" stroke="#78350f" stroke-width="1.5"/>
+                        <text x="319" y="259" font-size="10.5" font-weight="900" fill="#0f172a" text-anchor="middle">DIREZIONE SANITARIA</text>
+
+                        <!-- Faldoni Cartacei Caotici & Blister Scaduto a Sinistra -->
+                        <g transform="translate(56, 194)">
+                            <rect x="0" y="22" width="84" height="46" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+                            <rect x="8" y="8" width="84" height="46" rx="4" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+                            <line x1="18" y1="22" x2="72" y2="22" stroke="#ef4444" stroke-width="3"/>
+                            <line x1="18" y1="32" x2="80" y2="32" stroke="#64748b" stroke-width="2"/>
+                            <rect x="14" y="38" width="72" height="18" rx="4" fill="#dc2626"/>
+                            <text x="50" y="50" font-size="9.5" fill="#ffffff" text-anchor="middle" font-weight="900">FOGLIO PERSO?</text>
+                        </g>
+
+                        <!-- Laptop con Warning Rosso -->
+                        <g transform="translate(158, 198)">
+                            <rect x="0" y="0" width="82" height="56" rx="6" fill="#1e293b" stroke="#f87171" stroke-width="2.5"/>
+                            <rect x="6" y="6" width="70" height="42" rx="3" fill="#450a0a"/>
+                            <text x="41" y="26" font-size="16" text-anchor="middle">🔇</text>
+                            <text x="41" y="42" font-size="8.5" font-weight="900" fill="#fca5a5" text-anchor="middle">MUTO ATTIVO?</text>
+                            <polygon points="-8,56 90,56 98,64 -16,64" fill="#94a3b8"/>
+                        </g>
+
+                        <!-- 3 CARD OLOGRAFICHE DEI RISCHI QUOTIDIANI (A DESTRA) -->
+                        <g transform="translate(430, 22)">
+                            <rect x="0" y="0" width="308" height="304" rx="18" fill="rgba(15,23,42,0.88)" stroke="#ef4444" stroke-width="2.5"/>
+                            <rect x="16" y="14" width="276" height="28" rx="8" fill="rgba(239,68,68,0.2)"/>
+                            <text x="154" y="33" font-size="11.5" font-weight="900" fill="#fca5a5" text-anchor="middle">⚠️ I 4 TIMORI DELLA DIREZIONE SENZA CAREASSIST</text>
+
+                            <!-- Dubbio 1 -->
+                            <rect x="16" y="52" width="276" height="52" rx="10" fill="#1e293b" stroke="rgba(248,113,113,0.4)" stroke-width="1.5"/>
+                            <circle cx="42" cy="78" r="15" fill="#7f1d1d"/>
+                            <text x="42" y="83" font-size="14" text-anchor="middle">💊</text>
+                            <text x="68" y="73" font-size="12.5" font-weight="900" fill="#ffffff">Pastiglia delle 08:00 data?</text>
+                            <text x="68" y="91" font-size="11" fill="#fca5a5">Nessuna conferma in tempo reale in sede</text>
+
+                            <!-- Dubbio 2 -->
+                            <rect x="16" y="114" width="276" height="52" rx="10" fill="#1e293b" stroke="rgba(251,191,36,0.4)" stroke-width="1.5"/>
+                            <circle cx="42" cy="140" r="15" fill="#78350f"/>
+                            <text x="42" y="145" font-size="14" text-anchor="middle">🔇</text>
+                            <text x="68" y="135" font-size="12.5" font-weight="900" fill="#fde047">Volume abbassato dai «furbi»?</text>
+                            <text x="68" y="153" font-size="11" fill="#fef08a">Rischio sveglia ignorata a discapito del paziente</text>
+
+                            <!-- Dubbio 3 -->
+                            <rect x="16" y="176" width="276" height="52" rx="10" fill="#1e293b" stroke="rgba(56,189,248,0.4)" stroke-width="1.5"/>
+                            <circle cx="42" cy="202" r="15" fill="#0c4a6e"/>
+                            <text x="42" y="207" font-size="14" text-anchor="middle">📦</text>
+                            <text x="68" y="197" font-size="12.5" font-weight="900" fill="#ffffff">Quante scatole restano a casa?</text>
+                            <text x="68" y="215" font-size="11" fill="#bae6fd">Emergenza ricette all'ultimo minuto</text>
+
+                            <!-- Dubbio 4 -->
+                            <rect x="16" y="238" width="276" height="52" rx="10" fill="#1e293b" stroke="rgba(168,85,247,0.4)" stroke-width="1.5"/>
+                            <circle cx="42" cy="264" r="15" fill="#4c1d95"/>
+                            <text x="42" y="269" font-size="14" text-anchor="middle">🗑️</text>
+                            <text x="68" y="259" font-size="12.5" font-weight="900" fill="#ffffff">Cancellazioni per errore?</text>
+                            <text x="68" y="277" font-size="11" fill="#e9d5ff">Chi ha modificato il piano terapeutico?</text>
                         </g>
                     </svg>
                 `
@@ -966,83 +1104,155 @@
                 subtitle: '«Ciro ha messo l\'esperienza reale sul campo; io, Antigravity AI, ho trasformato ogni sua intuizione in codice sicuro, maschere leggibili e controlli automatici!»',
                 linkedPhotoIdx: 0,
                 svgRender: () => `
-                    <svg viewBox="0 0 760 340" style="width:100%; height:340px; display:block; background:radial-gradient(circle at 50% 40%, #1e3a8a 0%, #091122 100%);">
-                        <!-- Personaggio 1: CIRO MILELLA (Ideatore) -->
-                        <g transform="translate(120, 82)">
-                            <path d="M20,115 Q60,95 100,115 L115,175 L5,175 Z" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
-                            <circle cx="60" cy="64" r="38" fill="#fed7aa" stroke="#fb923c" stroke-width="2"/>
-                            <path d="M24,52 Q40,22 60,24 Q85,22 96,52 Q75,36 60,36 Q42,36 24,52 Z" fill="#1e293b"/>
-                            <circle cx="46" cy="58" r="3.5" fill="#0f172a"/>
-                            <circle cx="74" cy="58" r="3.5" fill="#0f172a"/>
-                            <ellipse cx="60" cy="82" rx="9" ry="5" fill="#991b1b" class="talking-mouth"/>
-                            <rect x="4" y="182" width="112" height="26" rx="8" fill="#fbbf24"/>
-                            <text x="60" y="199" font-size="12" font-weight="900" fill="#0f172a" text-anchor="middle">CIRO MILELLA</text>
+                    <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 50% 45%, #172554 0%, #060b16 100%);">
+                        <!-- Griglia Tecnologica Sfondo -->
+                        <line x1="0" y1="85" x2="760" y2="85" stroke="rgba(56,189,248,0.08)" stroke-width="1"/>
+                        <line x1="0" y1="175" x2="760" y2="175" stroke="rgba(56,189,248,0.08)" stroke-width="1"/>
+                        <line x1="0" y1="265" x2="760" y2="265" stroke="rgba(56,189,248,0.08)" stroke-width="1"/>
+
+                        <!-- CARD SINISTRA: CIRO MILELLA (ESPERIENZA SUL CAMPO) -->
+                        <g transform="translate(26, 28)">
+                            <rect x="0" y="0" width="235" height="292" rx="18" fill="rgba(15,23,42,0.88)" stroke="#38bdf8" stroke-width="2.5"/>
+                            <rect x="18" y="14" width="199" height="24" rx="6" fill="rgba(2,132,199,0.3)"/>
+                            <text x="117" y="30" font-size="10.5" font-weight="900" fill="#7dd3fc" text-anchor="middle">🧠 IDEATORE &amp; ESPERIENZA REALE</text>
+
+                            <!-- Illustrazione Ciro Milella -->
+                            <g transform="translate(57, 46)">
+                                <path d="M12,108 Q60,88 108,108 L120,162 L0,162 Z" fill="#0284c7" stroke="#7dd3fc" stroke-width="2.5"/>
+                                <polygon points="46,98 74,98 60,132" fill="#e0f2fe"/>
+                                <circle cx="60" cy="58" r="36" fill="#fed7aa" stroke="#fb923c" stroke-width="2.5"/>
+                                <path d="M24,46 Q40,18 60,20 Q85,18 96,46 Q75,32 60,32 Q42,32 24,46 Z" fill="#1e293b"/>
+                                <circle cx="46" cy="54" r="3.5" fill="#0f172a"/>
+                                <circle cx="74" cy="54" r="3.5" fill="#0f172a"/>
+                                <ellipse cx="60" cy="76" rx="9" ry="5" fill="#991b1b" class="talking-mouth"/>
+                            </g>
+
+                            <rect x="20" y="218" width="195" height="30" rx="8" fill="#fbbf24"/>
+                            <text x="117" y="238" font-size="13" font-weight="900" fill="#0f172a" text-anchor="middle">👨‍💻 CIRO MILELLA</text>
+                            <text x="117" y="270" font-size="11" font-weight="700" fill="#cbd5e1" text-anchor="middle">Conoscenza reale dei bisogni</text>
+                            <text x="117" y="284" font-size="11" font-weight="700" fill="#fde047" text-anchor="middle">di Pazienti, OSS e Direzione</text>
                         </g>
 
-                        <!-- Ponte Luminoso Collaborazione Uomo + AI -->
-                        <line x1="255" y1="155" x2="455" y2="155" stroke="#fbbf24" stroke-width="4" class="signal-beam"/>
-                        <rect x="280" y="110" width="160" height="34" rx="10" fill="rgba(15,23,42,0.9)" stroke="#fbbf24" stroke-width="2"/>
-                        <text x="360" y="132" font-size="12.5" font-weight="900" fill="#fef08a" text-anchor="middle">🤝 SINERGIA UOMO + AI</text>
+                        <!-- PONTE CENTRALE SINERGIA UOMO + AI -->
+                        <g transform="translate(275, 55)">
+                            <line x1="0" y1="115" x2="210" y2="115" stroke="#fbbf24" stroke-width="5" class="signal-beam"/>
+                            <rect x="12" y="18" width="186" height="44" rx="12" fill="#0f172a" stroke="#fbbf24" stroke-width="2.5"/>
+                            <text x="105" y="37" font-size="11" font-weight="900" fill="#fbbf24" text-anchor="middle">⚡ ALLEANZA STRATEGICA</text>
+                            <text x="105" y="53" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle">UOMO + INTELLIGENZA AI</text>
 
-                        <!-- Personaggio 2: ANTIGRAVITY AI (Partner Strategico Olografico) -->
-                        <g transform="translate(480, 68)" class="ai-float">
-                            <circle cx="75" cy="75" r="56" fill="rgba(56,189,248,0.15)" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="8 4"/>
-                            <rect x="38" y="38" width="74" height="68" rx="18" fill="#0284c7" stroke="#bae6fd" stroke-width="3"/>
-                            <!-- Occhi LED AI -->
-                            <circle cx="60" cy="66" r="7" fill="#fef08a"/>
-                            <circle cx="90" cy="66" r="7" fill="#fef08a"/>
-                            <!-- Onda Vocale AI -->
-                            <rect x="56" y="84" width="38" height="8" rx="4" fill="#38bdf8" class="talking-mouth"/>
-                            <!-- Antenna Strategica -->
-                            <line x1="75" y1="18" x2="75" y2="38" stroke="#fbbf24" stroke-width="4"/>
-                            <circle cx="75" cy="14" r="7" fill="#fbbf24"/>
-                            <rect x="8" y="194" width="134" height="26" rx="8" fill="#38bdf8"/>
-                            <text x="75" y="211" font-size="12" font-weight="900" fill="#0f172a" text-anchor="middle">🤖 ANTIGRAVITY AI</text>
+                            <!-- Badge Funzionalità Generate -->
+                            <rect x="18" y="82" width="174" height="28" rx="8" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+                            <text x="105" y="100" font-size="11" font-weight="900" fill="#ecfdf5" text-anchor="middle">🔊 Volume Forzato ≥ 70%</text>
+
+                            <rect x="18" y="122" width="174" height="28" rx="8" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1.5"/>
+                            <text x="105" y="140" font-size="11" font-weight="900" fill="#eff6ff" text-anchor="middle">🎙️ Voci Neurali Studio HD</text>
+
+                            <rect x="18" y="162" width="174" height="28" rx="8" fill="#78350f" stroke="#fbbf24" stroke-width="1.5"/>
+                            <text x="105" y="180" font-size="11" font-weight="900" fill="#fef3c7" text-anchor="middle">🚨 Escalation 3 Stadi H24</text>
+
+                            <rect x="18" y="202" width="174" height="28" rx="8" fill="#3b0764" stroke="#c084fc" stroke-width="1.5"/>
+                            <text x="105" y="220" font-size="11" font-weight="900" fill="#f3e8ff" text-anchor="middle">🔄 Sync Cloud + USB Sicura</text>
+                        </g>
+
+                        <!-- CARD DESTRA: ANTIGRAVITY AI (PARTNER TECNOLOGICO) -->
+                        <g transform="translate(499, 28)">
+                            <rect x="0" y="0" width="235" height="292" rx="18" fill="rgba(15,23,42,0.88)" stroke="#a855f7" stroke-width="2.5"/>
+                            <rect x="18" y="14" width="199" height="24" rx="6" fill="rgba(168,85,247,0.25)"/>
+                            <text x="117" y="30" font-size="10.5" font-weight="900" fill="#e9d5ff" text-anchor="middle">🤖 PARTNER INGEGNERISTICO H24</text>
+
+                            <g transform="translate(42, 48)" class="ai-float">
+                                <circle cx="75" cy="75" r="56" fill="rgba(56,189,248,0.12)" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="8 4"/>
+                                <rect x="36" y="36" width="78" height="70" rx="20" fill="linear-gradient(135deg,#0284c7,#1e3a8a)" fill="#0284c7" stroke="#bae6fd" stroke-width="3"/>
+                                <circle cx="58" cy="64" r="7.5" fill="#fef08a"/>
+                                <circle cx="92" cy="64" r="7.5" fill="#fef08a"/>
+                                <rect x="54" y="84" width="42" height="8" rx="4" fill="#38bdf8" class="talking-mouth"/>
+                                <line x1="75" y1="14" x2="75" y2="36" stroke="#fbbf24" stroke-width="4"/>
+                                <circle cx="75" cy="12" r="7" fill="#fbbf24"/>
+                            </g>
+
+                            <rect x="20" y="218" width="195" height="30" rx="8" fill="#38bdf8"/>
+                            <text x="117" y="238" font-size="13" font-weight="900" fill="#0f172a" text-anchor="middle">🤖 ANTIGRAVITY AI</text>
+                            <text x="117" y="270" font-size="11" font-weight="700" fill="#cbd5e1" text-anchor="middle">Sviluppo immediato su misura</text>
+                            <text x="117" y="284" font-size="11" font-weight="700" fill="#7dd3fc" text-anchor="middle">senza costi di agenzie esterne</text>
                         </g>
                     </svg>
                 `
             },
             {
                 id: 2,
-                title: 'Atto 3: Alert in Tempo Reale Cellulare ↔ PC in 2 Secondi',
+                title: 'Atto 3: Alert Cellulare ↔ PC in 2 Secondi + Volume Anti-Furbi ≥ 70%',
                 audioUrl: '/assets/audio_presentazione/scena_3.mp3',
                 speaker: '👩‍⚕️ Operatrice a Domicilio & 👨‍💻 Ciro (Isabella + Diego HD)',
-                subtitle: '«Tocco "✓ Assunto Oggi" sullo smartphone a casa del paziente... e in 2 secondi il PC della Direzione diventa verde, suona e scala la compressa dalla scatola!»',
+                subtitle: '«Tocco "✓ Assunto Oggi" sullo smartphone a casa del paziente... e in 2 secondi il PC della Direzione diventa verde, sblocca il volume ≥ 70% e scala la scatola!»',
                 linkedPhotoIdx: 1,
                 svgRender: () => `
-                    <svg viewBox="0 0 760 340" style="width:100%; height:340px; display:block; background:linear-gradient(135deg, #064e3b 0%, #0f172a 100%);">
-                        <!-- SINISTRA: Operatrice con Smartphone a domicilio -->
-                        <g transform="translate(45, 55)">
-                            <rect x="0" y="0" width="175" height="225" rx="22" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
-                            <rect x="12" y="22" width="151" height="180" rx="10" fill="#0f172a"/>
-                            <text x="87" y="48" font-size="12" font-weight="900" fill="#38bdf8" text-anchor="middle">📱 SMARTPHONE DOMICILIO</text>
-                            <rect x="22" y="65" width="131" height="45" rx="8" fill="rgba(255,255,255,0.08)"/>
-                            <text x="87" y="85" font-size="12" font-weight="800" fill="#fff" text-anchor="middle">Entecavir 0,5 mg</text>
-                            <text x="87" y="102" font-size="11" fill="#fde047" text-anchor="middle">Ore 07:00 (Digiuno)</text>
+                    <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:linear-gradient(135deg, #042f2e 0%, #0f172a 55%, #172554 100%);">
+                        <!-- SINISTRA: SMARTPHONE OPERATORE A DOMICILIO -->
+                        <g transform="translate(28, 24)">
+                            <rect x="0" y="0" width="210" height="300" rx="24" fill="#1e293b" stroke="#38bdf8" stroke-width="3.5"/>
+                            <rect x="12" y="22" width="186" height="256" rx="14" fill="#09101f"/>
+                            <rect x="75" y="10" width="60" height="5" rx="2.5" fill="#475569"/>
+
+                            <rect x="22" y="34" width="166" height="24" rx="6" fill="rgba(56,189,248,0.18)"/>
+                            <text x="105" y="50" font-size="10.5" font-weight="900" fill="#38bdf8" text-anchor="middle">📱 DOMICILIO PAZIENTE</text>
+
+                            <rect x="22" y="68" width="166" height="68" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+                            <text x="105" y="90" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">💊 Entecavir 0,5 mg</text>
+                            <text x="105" y="108" font-size="11" font-weight="800" fill="#fde047" text-anchor="middle">⏰ Ore 07:00 • A digiuno</text>
+                            <text x="105" y="125" font-size="10" fill="#94a3b8" text-anchor="middle">Operatore: Maria R. (PIN Verificato)</text>
+
                             <!-- Pulsante Verde Toccato -->
-                            <rect x="24" y="128" width="127" height="42" rx="10" fill="#10b981" stroke="#a7f3d0" stroke-width="2"/>
-                            <text x="87" y="154" font-size="13.5" font-weight="900" fill="#fff" text-anchor="middle">✓ ASSUNTO OGGI</text>
+                            <rect x="22" y="148" width="166" height="48" rx="12" fill="#10b981" stroke="#a7f3d0" stroke-width="2.5"/>
+                            <text x="105" y="177" font-size="14" font-weight="900" fill="#ffffff" text-anchor="middle">✓ ASSUNTO OGGI</text>
+
+                            <!-- Badge Guadagno Audio Mobile -->
+                            <rect x="22" y="208" width="166" height="56" rx="10" fill="rgba(245,158,11,0.16)" stroke="#f59e0b" stroke-width="1.5"/>
+                            <text x="105" y="228" font-size="10.5" font-weight="900" fill="#fde047" text-anchor="middle">🔊 BOOSTER MOBILE +220%</text>
+                            <text x="105" y="244" font-size="9.5" fill="#fef3c7" text-anchor="middle">Suona anche a schermo bloccato</text>
+                            <text x="105" y="257" font-size="9.5" fill="#fef3c7" text-anchor="middle">con sintesi vocale in italiano</text>
                         </g>
 
-                        <!-- RAGGIO CLOUD 2 SECONDI -->
-                        <path d="M235,165 Q365,90 485,165" fill="none" stroke="#34d399" stroke-width="5" class="signal-beam"/>
-                        <circle cx="360" cy="128" r="32" fill="#059669" stroke="#a7f3d0" stroke-width="2"/>
-                        <text x="360" y="124" font-size="11" font-weight="900" fill="#fff" text-anchor="middle">SYNC</text>
-                        <text x="360" y="140" font-size="13" font-weight="900" fill="#fef08a" text-anchor="middle">2 sec</text>
+                        <!-- CENTRO: RAGGIO CLOUD 2 SECONDI + ANTI-SABOTAGGIO -->
+                        <g transform="translate(248, 45)">
+                            <path d="M10,125 Q105,55 200,125" fill="none" stroke="#34d399" stroke-width="5" class="signal-beam"/>
+                            <path d="M200,145 Q105,215 10,145" fill="none" stroke="#38bdf8" stroke-width="4" class="signal-beam"/>
 
-                        <!-- DESTRA: Monitor PC del Direttore in Sede -->
-                        <g transform="translate(495, 55)">
-                            <rect x="0" y="0" width="225" height="175" rx="14" fill="#1e293b" stroke="#fbbf24" stroke-width="3"/>
-                            <rect x="10" y="12" width="205" height="145" rx="6" fill="#0f172a"/>
-                            <text x="112" y="35" font-size="12" font-weight="900" fill="#fbbf24" text-anchor="middle">💻 PC DIREZIONE / COORDINAMENTO</text>
-                            <rect x="20" y="48" width="185" height="42" rx="8" fill="rgba(16,185,129,0.22)" stroke="#10b981" stroke-width="2"/>
-                            <text x="112" y="68" font-size="12" font-weight="900" fill="#6ee7b7" text-anchor="middle">🔔 DOSE CONFERMATA ORA!</text>
-                            <text x="112" y="83" font-size="11" fill="#fff" text-anchor="middle">Scorta scalata: 39 cpr residue</text>
-                            <rect x="20" y="102" width="185" height="38" rx="8" fill="rgba(56,189,248,0.15)"/>
-                            <text x="112" y="125" font-size="11.5" font-weight="800" fill="#bae6fd" text-anchor="middle">✅ Zero Rischio Doppia Dose</text>
+                            <circle cx="105" cy="135" r="46" fill="#065f46" stroke="#6ee7b7" stroke-width="3"/>
+                            <text x="105" y="122" font-size="11" font-weight="900" fill="#a7f3d0" text-anchor="middle">CLOUD SYNC</text>
+                            <text x="105" y="144" font-size="19" font-weight="900" fill="#fde047" text-anchor="middle">2 sec</text>
+                            <text x="105" y="160" font-size="9.5" font-weight="800" fill="#ffffff" text-anchor="middle">TEMPO REALE</text>
+
+                            <rect x="12" y="212" width="186" height="44" rx="10" fill="#7f1d1d" stroke="#f87171" stroke-width="2"/>
+                            <text x="105" y="231" font-size="10.5" font-weight="900" fill="#fef2f2" text-anchor="middle">🛡️ ANTI-SABOTAGGIO VOLUME</text>
+                            <text x="105" y="247" font-size="10" font-weight="800" fill="#fde047" text-anchor="middle">75% ➔ 90% (+10m) ➔ Capo (+20m)</text>
+                        </g>
+
+                        <!-- DESTRA: MONITOR PC DIREZIONE / COORDINAMENTO -->
+                        <g transform="translate(465, 28)">
+                            <rect x="0" y="0" width="268" height="238" rx="16" fill="#1e293b" stroke="#fbbf24" stroke-width="3.5"/>
+                            <rect x="10" y="12" width="248" height="214" rx="10" fill="#09101f"/>
+
+                            <rect x="20" y="22" width="228" height="24" rx="6" fill="rgba(251,191,36,0.2)"/>
+                            <text x="134" y="38" font-size="11" font-weight="900" fill="#fbbf24" text-anchor="middle">💻 PC DIREZIONE / GUARDIOLA</text>
+
+                            <!-- Notifica Verde Istantanea -->
+                            <rect x="20" y="56" width="228" height="54" rx="10" fill="rgba(16,185,129,0.22)" stroke="#10b981" stroke-width="2"/>
+                            <text x="134" y="76" font-size="12.5" font-weight="900" fill="#6ee7b7" text-anchor="middle">🔔 DOSE CONFERMATA ORA!</text>
+                            <text x="134" y="96" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Scorta scalata: 39 compresse residue</text>
+
+                            <!-- Barra Volume Hardware Sbloccato -->
+                            <rect x="20" y="120" width="228" height="50" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+                            <text x="134" y="138" font-size="10.5" font-weight="900" fill="#7dd3fc" text-anchor="middle">🔊 VOLUME HARDWARE FORZATO: 75%</text>
+                            <rect x="34" y="147" width="200" height="12" rx="6" fill="#0f172a"/>
+                            <rect x="34" y="147" width="152" height="12" rx="6" fill="#10b981"/>
+
+                            <!-- Blocco Doppia Dose -->
+                            <rect x="20" y="180" width="228" height="34" rx="8" fill="rgba(56,189,248,0.15)"/>
+                            <text x="134" y="201" font-size="11" font-weight="800" fill="#bae6fd" text-anchor="middle">✅ Zero Rischio Doppia Somministrazione</text>
+
                             <!-- Base Monitor -->
-                            <rect x="92" y="175" width="40" height="25" fill="#64748b"/>
-                            <rect x="62" y="200" width="100" height="10" rx="4" fill="#475569"/>
+                            <rect x="114" y="238" width="40" height="32" fill="#64748b"/>
+                            <rect x="78" y="268" width="112" height="12" rx="6" fill="#475569"/>
                         </g>
                     </svg>
                 `
@@ -1052,33 +1262,60 @@
                 title: 'Atto 4: Le Piccole Rifiniture Cliniche che Fanno la Differenza',
                 audioUrl: '/assets/audio_presentazione/scena_4.mp3',
                 speaker: '👨‍💻 Ciro Milella & 👩‍⚕️ Assistente Clinica (Diego + Isabella HD)',
-                subtitle: '«Scorta condivisa per farmaci multi-orario, Kit Diabete collegato alle penne in frigo, Passaporto 118 con QR Code e Cestino di sicurezza per 60 giorni!»',
+                subtitle: '«Scorta condivisa per farmaci multi-orario, Kit Diabete collegato alle penne in frigo, Passaporto 118 con QR Code e Protocollo Escalation a 3 Stadi!»',
                 linkedPhotoIdx: 2,
                 svgRender: () => `
-                    <svg viewBox="0 0 760 340" style="width:100%; height:340px; display:block; background:linear-gradient(180deg, #0f172a 0%, #172554 100%);">
-                        <g transform="translate(35, 35)">
-                            <rect x="0" y="0" width="330" height="120" rx="14" fill="rgba(15,23,42,0.9)" stroke="#38bdf8" stroke-width="2"/>
-                            <text x="20" y="34" font-size="15" font-weight="900" fill="#38bdf8">🔗 Scorta Unificata Multi-Orario</text>
-                            <text x="20" y="62" font-size="13" fill="#e2e8f0">Prendi la compressa alle 08:00 e alle 20:00?</text>
-                            <text x="20" y="84" font-size="13" fill="#fef08a" font-weight="700">Scala sempre dallo stesso blister reale!</text>
+                    <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 50% 50%, #172554 0%, #090d16 100%);">
+                        <!-- Card 1: Scorta Unificata -->
+                        <g transform="translate(26, 22)">
+                            <rect x="0" y="0" width="342" height="142" rx="16" fill="rgba(15,23,42,0.92)" stroke="#38bdf8" stroke-width="2.5"/>
+                            <circle cx="38" cy="40" r="22" fill="rgba(56,189,248,0.2)" stroke="#38bdf8" stroke-width="1.5"/>
+                            <text x="38" y="47" font-size="20" text-anchor="middle">🔗</text>
+                            <text x="72" y="35" font-size="15" font-weight="900" fill="#38bdf8">Scorta Unificata Multi-Orario</text>
+                            <text x="72" y="54" font-size="11.5" font-weight="800" fill="#fde047">1 Sola Scatola Reale per 08:00 / 16:00 / 20:00</text>
+                            <text x="22" y="84" font-size="12.5" fill="#e2e8f0">Se lo stesso farmaco si assume più volte al giorno,</text>
+                            <text x="22" y="103" font-size="12.5" fill="#e2e8f0">ogni conferma scala dallo stesso blister fisico.</text>
+                            <rect x="22" y="114" width="298" height="18" rx="6" fill="rgba(56,189,248,0.15)"/>
+                            <text x="171" y="127" font-size="10.5" font-weight="900" fill="#7dd3fc" text-anchor="middle">📦 Calcolo automatico data esaurimento e ricetta</text>
                         </g>
-                        <g transform="translate(395, 35)">
-                            <rect x="0" y="0" width="330" height="120" rx="14" fill="rgba(15,23,42,0.9)" stroke="#10b981" stroke-width="2"/>
-                            <text x="20" y="34" font-size="15" font-weight="900" fill="#34d399">🩸 Kit Diabete + Penna Insulina</text>
-                            <text x="20" y="62" font-size="13" fill="#e2e8f0">Inietti Toujeo? Aggiorna Unità penna in frigo,</text>
-                            <text x="20" y="84" font-size="13" fill="#a7f3d0" font-weight="700">Lancette Pungidito e Strisce Glicemia insieme!</text>
+
+                        <!-- Card 2: Kit Diabete + Insulina -->
+                        <g transform="translate(392, 22)">
+                            <rect x="0" y="0" width="342" height="142" rx="16" fill="rgba(15,23,42,0.92)" stroke="#10b981" stroke-width="2.5"/>
+                            <circle cx="38" cy="40" r="22" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
+                            <text x="38" y="47" font-size="20" text-anchor="middle">🩸</text>
+                            <text x="72" y="35" font-size="15" font-weight="900" fill="#34d399">Kit Diabete + Penna Insulina</text>
+                            <text x="72" y="54" font-size="11.5" font-weight="800" fill="#a7f3d0">Sincronizzazione Unità UI, Aghi, Lancette e Strisce</text>
+                            <text x="22" y="84" font-size="12.5" fill="#e2e8f0">Registrando la glicemia o l'iniezione di Toujeo,</text>
+                            <text x="22" y="103" font-size="12.5" fill="#e2e8f0">aggiorna le penne in frigo e i materiali pungidito.</text>
+                            <rect x="22" y="114" width="298" height="18" rx="6" fill="rgba(16,185,129,0.18)"/>
+                            <text x="171" y="127" font-size="10.5" font-weight="900" fill="#6ee7b7" text-anchor="middle">❄️ Alert automatico quando resta 1 sola penna</text>
                         </g>
-                        <g transform="translate(35, 180)">
-                            <rect x="0" y="0" width="330" height="120" rx="14" fill="rgba(15,23,42,0.9)" stroke="#ef4444" stroke-width="2"/>
-                            <text x="20" y="34" font-size="15" font-weight="900" fill="#f87171">🚑 Passaporto Emergenza 118 QR</text>
-                            <text x="20" y="62" font-size="13" fill="#e2e8f0">Allergie, farmaci salvavita e contatti pronti</text>
-                            <text x="20" y="84" font-size="13" fill="#fecaca" font-weight="700">per i soccorritori + Modulo ASL Ex-CTO Bari!</text>
+
+                        <!-- Card 3: Passaporto 118 QR + ASL -->
+                        <g transform="translate(26, 184)">
+                            <rect x="0" y="0" width="342" height="142" rx="16" fill="rgba(15,23,42,0.92)" stroke="#ef4444" stroke-width="2.5"/>
+                            <circle cx="38" cy="40" r="22" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1.5"/>
+                            <text x="38" y="47" font-size="20" text-anchor="middle">🚑</text>
+                            <text x="72" y="35" font-size="15" font-weight="900" fill="#f87171">Passaporto 118 QR &amp; ASL Bari</text>
+                            <text x="72" y="54" font-size="11.5" font-weight="800" fill="#fecaca">Emergenza Medica + Modulo Ufficiale Ex-CTO</text>
+                            <text x="22" y="84" font-size="12.5" fill="#e2e8f0">QR Code immediato con allergie, patologie e</text>
+                            <text x="22" y="103" font-size="12.5" fill="#e2e8f0">terapie salvavita per i soccorritori del 118.</text>
+                            <rect x="22" y="114" width="298" height="18" rx="6" fill="rgba(239,68,68,0.18)"/>
+                            <text x="171" y="127" font-size="10.5" font-weight="900" fill="#fca5a5" text-anchor="middle">🏥 Compilazione PDF Fornitura ASL in 1 clic</text>
                         </g>
-                        <g transform="translate(395, 180)">
-                            <rect x="0" y="0" width="330" height="120" rx="14" fill="rgba(15,23,42,0.9)" stroke="#fbbf24" stroke-width="2"/>
-                            <text x="20" y="34" font-size="15" font-weight="900" fill="#fde047">🗑️ Cestino 60 Giorni &amp; Traccia Audit</text>
-                            <text x="20" y="62" font-size="13" fill="#e2e8f0">Cancellato un farmaco per sbaglio?</text>
-                            <text x="20" y="84" font-size="13" fill="#fef08a" font-weight="700">Lo recuperi con 1 clic senza perdere nulla!</text>
+
+                        <!-- Card 4: Cestino 60gg + Escalation 3 Stadi -->
+                        <g transform="translate(392, 184)">
+                            <rect x="0" y="0" width="342" height="142" rx="16" fill="rgba(15,23,42,0.92)" stroke="#fbbf24" stroke-width="2.5"/>
+                            <circle cx="38" cy="40" r="22" fill="rgba(251,191,36,0.2)" stroke="#fbbf24" stroke-width="1.5"/>
+                            <text x="38" y="47" font-size="20" text-anchor="middle">🛡️</text>
+                            <text x="72" y="35" font-size="15" font-weight="900" fill="#fde047">Zero-Scuse &amp; Cestino 60 Giorni</text>
+                            <text x="72" y="54" font-size="11.5" font-weight="800" fill="#fef08a">Volume Forzato ≥ 70% + Ripristino Dati</text>
+                            <text x="22" y="84" font-size="12.5" fill="#e2e8f0">Impedisce il muto sugli avvisi e recupera</text>
+                            <text x="22" y="103" font-size="12.5" fill="#e2e8f0">qualsiasi dato cancellato per errore entro 60 gg.</text>
+                            <rect x="22" y="114" width="298" height="18" rx="6" fill="rgba(251,191,36,0.18)"/>
+                            <text x="171" y="127" font-size="10.5" font-weight="900" fill="#fde047" text-anchor="middle">📋 Nota Audit automatica al Capo dopo 20 min</text>
                         </g>
                     </svg>
                 `
@@ -1091,15 +1328,54 @@
                 subtitle: '«Straordinario! È intuitivo, leggibile anche per chi ha 50 anni e tiene tutto sotto controllo. Intestiamolo subito alla nostra Azienda!»',
                 linkedPhotoIdx: 5,
                 svgRender: () => `
-                    <svg viewBox="0 0 760 340" style="width:100%; height:340px; display:block; background:radial-gradient(circle at 50% 30%, #065f46 0%, #0f172a 100%);">
-                        <!-- Certificato Aziendale al Centro -->
-                        <rect x="190" y="45" width="380" height="240" rx="20" fill="#0f172a" stroke="#fbbf24" stroke-width="3"/>
-                        <text x="380" y="85" font-size="14" font-weight="900" fill="#fbbf24" text-anchor="middle">🏛️ LICENZA AZIENDALE PRONTA ALL'USO</text>
-                        <text x="380" y="122" font-size="20" font-weight="900" fill="#ffffff" text-anchor="middle" id="svgCertCompanyName">LA VOSTRA AZIENDA S.R.L.</text>
-                        <rect x="235" y="145" width="290" height="36" rx="8" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
-                        <text x="380" y="168" font-size="13" font-weight="800" fill="#6ee7b7" text-anchor="middle">✅ DATABASE VERGINE &amp; PROTETTO GDPR</text>
-                        <text x="380" y="212" font-size="13" fill="#cbd5e1" text-anchor="middle">Pronto per registrare i vostri Assistiti,</text>
-                        <text x="380" y="232" font-size="13" fill="#cbd5e1" text-anchor="middle">Operatori con PIN e Piano Terapeutico!</text>
+                    <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 50% 35%, #065f46 0%, #09101f 100%);">
+                        <!-- Personaggio Sinistra: Direttore Sorridente -->
+                        <g transform="translate(36, 95)">
+                            <path d="M10,112 Q55,92 100,112 L112,175 L-2,175 Z" fill="#1e3a8a" stroke="#60a5fa" stroke-width="2.5"/>
+                            <polygon points="51,110 59,110 62,155 55,163 48,155" fill="#10b981"/>
+                            <circle cx="55" cy="60" r="36" fill="#fed7aa" stroke="#fb923c" stroke-width="2.5"/>
+                            <path d="M19,52 Q27,18 55,20 Q83,18 91,52 Q75,34 55,36 Q35,34 19,52 Z" fill="#64748b"/>
+                            <rect x="31" y="48" width="20" height="13" rx="3" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+                            <rect x="59" y="48" width="20" height="13" rx="3" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+                            <line x1="51" y1="54" x2="59" y2="54" stroke="#fbbf24" stroke-width="2.5"/>
+                            <path d="M42,76 Q55,88 68,76" fill="none" stroke="#065f46" stroke-width="3.5" stroke-linecap="round"/>
+                            <rect x="0" y="182" width="110" height="24" rx="7" fill="#10b981"/>
+                            <text x="55" y="198" font-size="10.5" font-weight="900" fill="#052e16" text-anchor="middle">DIRETTORE APPROVA</text>
+                        </g>
+
+                        <!-- CERTIFICATO ESECUTIVO D'ORO AL CENTRO -->
+                        <g transform="translate(175, 24)">
+                            <rect x="0" y="0" width="410" height="300" rx="22" fill="#0f172a" stroke="#fbbf24" stroke-width="3.5"/>
+                            <rect x="10" y="10" width="390" height="280" rx="16" fill="none" stroke="rgba(251,191,36,0.35)" stroke-width="1.5" stroke-dasharray="6 4"/>
+
+                            <!-- Coccarda Superiore -->
+                            <rect x="85" y="24" width="240" height="28" rx="14" fill="rgba(251,191,36,0.18)" stroke="#fbbf24" stroke-width="1.5"/>
+                            <text x="205" y="43" font-size="11.5" font-weight="900" fill="#fde047" text-anchor="middle">⭐⭐⭐⭐⭐ LICENZA ENTERPRISE CAREASSIST PRO</text>
+
+                            <text x="205" y="82" font-size="13" font-weight="800" fill="#94a3b8" text-anchor="middle">INTESTAZIONE UFFICIALE DELLA PIATTAFORMA:</text>
+                            <text x="205" y="114" font-size="21" font-weight="900" fill="#ffffff" text-anchor="middle" id="svgCertCompanyName">LA VOSTRA AZIENDA S.R.L.</text>
+
+                            <rect x="45" y="134" width="320" height="38" rx="10" fill="rgba(16,185,129,0.22)" stroke="#10b981" stroke-width="2"/>
+                            <text x="205" y="158" font-size="13" font-weight="900" fill="#6ee7b7" text-anchor="middle">✅ DATABASE VERGINE &amp; PROTETTO GDPR</text>
+
+                            <text x="205" y="198" font-size="12.5" fill="#e2e8f0" text-anchor="middle">Pronto in 10 secondi per registrare i vostri Assistiti,</text>
+                            <text x="205" y="218" font-size="12.5" fill="#e2e8f0" text-anchor="middle">Operatori con PIN, Farmaci e Alert Vocali H24.</text>
+
+                            <rect x="55" y="238" width="300" height="36" rx="10" fill="#fbbf24"/>
+                            <text x="205" y="261" font-size="12.5" font-weight="900" fill="#0f172a" text-anchor="middle">🚀 PERSONALIZZA ORA IN FONDO ALLA PAGINA</text>
+                        </g>
+
+                        <!-- Personaggio Destra: Ciro Milella -->
+                        <g transform="translate(614, 95)">
+                            <path d="M10,112 Q55,92 100,112 L112,175 L-2,175 Z" fill="#0284c7" stroke="#7dd3fc" stroke-width="2.5"/>
+                            <circle cx="55" cy="60" r="36" fill="#fed7aa" stroke="#fb923c" stroke-width="2.5"/>
+                            <path d="M19,48 Q35,18 55,20 Q80,18 91,48 Q70,32 55,32 Q37,32 19,48 Z" fill="#1e293b"/>
+                            <circle cx="42" cy="54" r="3.5" fill="#0f172a"/>
+                            <circle cx="68" cy="54" r="3.5" fill="#0f172a"/>
+                            <path d="M42,76 Q55,88 68,76" fill="none" stroke="#991b1b" stroke-width="3.5" stroke-linecap="round"/>
+                            <rect x="0" y="182" width="110" height="24" rx="7" fill="#fbbf24"/>
+                            <text x="55" y="198" font-size="10.5" font-weight="900" fill="#0f172a" text-anchor="middle">CIRO + AI PRONTI</text>
+                        </g>
                     </svg>
                 `
             }
