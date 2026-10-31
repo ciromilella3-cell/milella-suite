@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suite Gestionale C. Milella — Presentazione Completa</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 70%); color: #f8fafc; min-height: 100vh; }
+  header { text-align: center; padding: 28px 16px 10px; }
+  header .tag { display: inline-block; background: rgba(212,175,55,0.15); border: 1px solid #d4af37; color: #f3e5ab; font-size: 12px; font-weight: 800; padding: 5px 14px; border-radius: 999px; letter-spacing: 1px; }
+  header h1 { font-size: clamp(24px, 4vw, 38px); font-weight: 800; margin: 12px 0 6px; }
+  header h1 span { color: #d4af37; }
+  header p { color: #94a3b8; font-size: 15px; }
+  .back { position: absolute; top: 16px; left: 16px; color: #f3e5ab; text-decoration: none; font-weight: 700; font-size: 14px; }
+
+  .stage { max-width: 1000px; margin: 18px auto; padding: 0 16px; }
+  .screen { background: linear-gradient(160deg, #0f172a, #111827); border: 2px solid rgba(212,175,55,0.4); border-radius: 22px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.55); }
+  .slide { min-height: 360px; padding: 34px 32px; display: flex; gap: 28px; align-items: center; animation: fadeIn 0.6s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .slide-icon { flex-shrink: 0; width: 150px; height: 150px; border-radius: 34px; display: flex; align-items: center; justify-content: center; font-size: 76px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+  .slide-body { flex: 1; }
+  .slide-num { font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+  .slide-body h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 800; margin-bottom: 10px; }
+  .slide-body p { color: #cbd5e1; font-size: 16px; line-height: 1.55; margin-bottom: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+
+  .subtitle { background: #070b14; border-top: 2px solid #d4af37; padding: 14px 22px; font-size: 15.5px; font-weight: 600; line-height: 1.5; min-height: 70px; color: #f1f5f9; }
+  .controls { display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: #050810; flex-wrap: wrap; }
+  .btn { border: none; border-radius: 12px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .btn-play { background: linear-gradient(135deg, #f3e5ab, #d4af37); color: #0b0f19; }
+  .btn-step { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+  .progress { flex: 1; min-width: 120px; height: 8px; background: rgba(255,255,255,0.12); border-radius: 99px; overflow: hidden; }
+  .progress div { height: 100%; width: 0; background: linear-gradient(90deg, #38bdf8, #d4af37); transition: width 0.4s; }
+  .counter { font-size: 13px; font-weight: 800; color: #94a3b8; }
+
+  .grid { max-width: 1000px; margin: 26px auto 50px; padding: 0 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+  .mini { background: rgba(15,23,42,0.75); border: 1px solid rgba(212,175,55,0.25); border-radius: 18px; padding: 16px; cursor: pointer; transition: all 0.2s; }
+  .mini:hover, .mini.active { border-color: #d4af37; transform: translateY(-4px); box-shadow: 0 10px 25px rgba(212,175,55,0.15); }
+  .mini .ic { font-size: 30px; }
+  .mini h3 { font-size: 15.5px; margin: 6px 0 4px; }
+  .mini p { font-size: 12.5px; color: #94a3b8; line-height: 1.4; }
+
+  @media (max-width: 700px) { .slide { flex-direction: column; text-align: center; padding: 26px 18px; } .chips { justify-content: center; } .slide-icon { width: 110px; height: 110px; font-size: 56px; } }
+</style>
+</head>
+<body>
+<a class="back" href="/launcher.html">← Torna alla Suite</a>
+<header>
+  <span class="tag">🎬 PRESENTAZIONE GUIDATA CON VOCE</span>
+  <h1>La <span>Suite Gestionale C. Milella</span></h1>
+  <p>Otto applicazioni, un solo accesso: casa, lavoro, salute e famiglia sempre sotto controllo.</p>
+</header>
+
+<div class="stage">
+  <div class="screen">
+    <div id="slide"></div>
+    <div class="subtitle" id="sub">Premi «▶️ Avvia Presentazione» per ascoltare la Suite completa.</div>
+    <div class="controls">
+      <button class="btn btn-play" id="btnPlay" onclick="togglePlay()">▶️ Avvia Presentazione</button>
+      <button class="btn btn-step" onclick="vai(-1)">⏮️</button>
+      <button class="btn btn-step" onclick="vai(1)">⏭️</button>
+      <div class="progress"><div id="bar"></div></div>
+      <span class="counter" id="counter"></span>
+    </div>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const SLIDES = [
+  { icon:'👑', color:'linear-gradient(135deg,#d4af37,#7c5a0b)', accent:'#f3e5ab', title:'Benvenuti nella Suite', desc:'Un unico portale elegante che raccoglie tutte le applicazioni di casa e di lavoro, accessibile da PC e da cellulare con un semplice QR Code.', chips:['🔐 Accesso con PIN','📱 PC + Smartphone','☁️ Cloud + Chiavetta USB'],
+    voce:'Benvenuti nella Suite Gestionale di Ciro Milella. Un unico portale che raccoglie tutte le applicazioni di casa e di lavoro, utilizzabile dal computer e dal cellulare, con i dati sempre sincronizzati e una copia di sicurezza sulla chiavetta USB.' },
+  { icon:'🩺', color:'linear-gradient(135deg,#0284c7,#1e3a8a)', accent:'#7dd3fc', title:'CareAssist Pro', desc:'Il cuore clinico: diario socio-sanitario, terapie con allarmi vocali, scorte dei farmaci, turnario H24 e protocollo anti-volume abbassato.', chips:['💊 Terapie e Scorte','🔊 Allarmi ≥ 70%','🗓️ Turnario H24','🚑 Passaporto 118'],
+    voce:'CareAssist Pro è il cuore clinico della Suite. Gestisce il diario dei pazienti, le terapie con allarmi vocali che nessuno può silenziare, le scorte dei farmaci, il turnario degli operatori e il passaporto di emergenza per il centodiciotto.' },
+  { icon:'🚗', color:'linear-gradient(135deg,#475569,#0f172a)', accent:'#cbd5e1', title:'Flotta Veicoli & Spese', desc:'Scadenze di revisione, bollo e assicurazione, manutenzioni, rifornimenti e rimborsi chilometrici: nessuna multa per dimenticanza.', chips:['📅 Scadenze automatiche','⛽ Rifornimenti','🔧 Manutenzioni'],
+    voce:'Con Flotta Veicoli e Spese non si dimentica più nulla: revisioni, bollo, assicurazione e manutenzioni vengono ricordati in anticipo, e ogni spesa e rimborso chilometrico resta registrato.' },
+  { icon:'🛠️', color:'linear-gradient(135deg,#b45309,#78350f)', accent:'#fde68a', title:'Inventario Attrezzi', desc:'Catalogo fotografico di ogni attrezzo, con la posizione esatta: garage, casa o furgone. E chi lo ha in prestito.', chips:['📸 Catalogo con foto','📍 Dove si trova','🤝 Prestiti'],
+    voce:'Inventario Attrezzi è il catalogo fotografico di tutti gli strumenti. In un attimo sai dove si trova ogni attrezzo, tra garage, casa e furgone, e a chi lo hai prestato.' },
+  { icon:'📦', color:'linear-gradient(135deg,#7c3aed,#3b0764)', accent:'#ddd6fe', title:'Logistica Consegne', desc:'Organizzazione delle spedizioni, tracciamento delle consegne e gestione del magazzino principale.', chips:['🚚 Spedizioni','📍 Tracciamento','🏬 Magazzino'],
+    voce:'Logistica Consegne organizza le spedizioni, segue lo stato di ogni consegna e tiene in ordine il magazzino principale.' },
+  { icon:'👨‍🍳', color:'linear-gradient(135deg,#dc2626,#7f1d1d)', accent:'#fecaca', title:'Il Ricettario', desc:'Lo scrigno delle ricette di famiglia, con ingredienti e lista della spesa generata automaticamente.', chips:['📖 Ricette di famiglia','🛒 Lista spesa automatica'],
+    voce:'Il Ricettario custodisce le ricette di famiglia e prepara da solo la lista della spesa con tutti gli ingredienti necessari.' },
+  { icon:'🥗', color:'linear-gradient(135deg,#16a34a,#14532d)', accent:'#bbf7d0', title:'MedNutri Pro', desc:'Piani nutrizionali personalizzati e supporto alla gestione clinica dell’alimentazione.', chips:['🍎 Piani alimentari','📊 Valori nutrizionali'],
+    voce:'MedNutri Pro crea piani nutrizionali personalizzati, per mangiare bene in base alle esigenze di salute di ciascuno.' },
+  { icon:'❤️', color:'linear-gradient(135deg,#e11d48,#881337)', accent:'#fecdd3', title:'Progetto Salute', desc:'Monitoraggio dei parametri vitali, dell’idratazione, dell’attività fisica e del benessere quotidiano.', chips:['💓 Parametri vitali','💧 Idratazione','🏃 Attività fisica'],
+    voce:'Progetto Salute tiene traccia dei parametri vitali, dell idratazione e dell attività fisica, per prendersi cura del proprio benessere ogni giorno.' },
+  { icon:'🎰', color:'linear-gradient(135deg,#ca8a04,#713f12)', accent:'#fef08a', title:'Progetto Gioco', desc:'Statistiche di SuperEnalotto e Gratta & Vinci con bilancio netto: per giocare con la testa.', chips:['📈 Statistiche','💶 Bilancio netto'],
+    voce:'Progetto Gioco raccoglie le statistiche di SuperEnalotto e Gratta e Vinci, mostrando sempre il bilancio netto, per giocare con consapevolezza.' },
+  { icon:'🛡️', color:'linear-gradient(135deg,#d4af37,#0f172a)', accent:'#f3e5ab', title:'Sicurezza, Backup e Intelligenza Artificiale', desc:'Dati protetti con PIN, sincronizzazione Cloud, copia automatica su chiavetta USB e un partner AI che migliora la Suite su misura in pochi minuti.', chips:['🔐 PIN e permessi','💾 Backup USB','🤖 Antigravity AI'],
+    voce:'Tutto è protetto: accessi con PIN, sincronizzazione sul Cloud e copia di sicurezza sulla chiavetta USB. E grazie alla collaborazione con Antigravity AI, ogni nuova idea diventa realtà in pochi minuti. Questa è la Suite Gestionale di Ciro Milella.' }
+];
+
+let idx = 0, playing = false;
+const synth = window.speechSynthesis;
+
+function vocaleItaliana() {
+  const v = synth ? synth.getVoices().filter(x => x.lang && x.lang.startsWith('it')) : [];
+  return v.find(x => /natural|online|neural|google/i.test(x.name)) || v[0] || null;
+}
+
+function render() {
+  const s = SLIDES[idx];
+  document.getElementById('slide').innerHTML = `
+    <div class="slide">
+      <div class="slide-icon" style="background:${s.color}">${s.icon}</div>
+      <div class="slide-body">
+        <div class="slide-num" style="color:${s.accent}">Capitolo ${idx + 1} di ${SLIDES.length}</div>
+        <h2>${s.title}</h2>
+        <p>${s.desc}</p>
+        <div class="chips">${s.chips.map(c => `<span class="chip">${c}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  document.getElementById('sub').textContent = '«' + s.voce + '»';
+  document.getElementById('counter').textContent = `${idx + 1}/${SLIDES.length}`;
+  document.getElementById('bar').style.width = ((idx + 1) / SLIDES.length * 100) + '%';
+  document.querySelectorAll('.mini').forEach((m, i) => m.classList.toggle('active', i === idx));
+}
+
+function parla() {
+  if (!synth) return;
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(SLIDES[idx].voce);
+  u.lang = 'it-IT'; u.rate = 0.97;
+  const v = vocaleItaliana(); if (v) u.voice = v;
+  u.onend = () => {
+    if (!playing) return;
+    if (idx < SLIDES.length - 1) { idx++; render(); setTimeout(() => playing && parla(), 600); }
+    else { playing = false; document.getElementById('btnPlay').textContent = '▶️ Riascolta'; }
+  };
+  synth.speak(u);
+}
+
+function togglePlay() {
+  if (playing) { playing = false; synth && synth.cancel(); document.getElementById('btnPlay').textContent = '▶️ Riprendi'; }
+  else { playing = true; document.getElementById('btnPlay').textContent = '⏸️ Pausa'; parla(); }
+}
+
+function vai(d) {
+  idx = (idx + d + SLIDES.length) % SLIDES.length;
+  render();
+  if (playing) parla();
+}
+
+function vaiA(i) { idx = i; render(); if (playing) parla(); }
+
+document.getElementById('grid').innerHTML = SLIDES.map((s, i) =>
+  `<div class="mini" onclick="vaiA(${i})"><div class="ic">${s.icon}</div><h3>${s.title}</h3><p>${s.desc}</p></div>`).join('');
+if (synth) synth.onvoiceschanged = () => {};
+render();
+</script>
+</body>
+</html>
