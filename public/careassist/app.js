@@ -2815,7 +2815,7 @@ window.nascondiLenteClinica = nascondiLenteClinica;
 window.eseguiAzioneLenteClinica = eseguiAzioneLenteClinica;
 
 // Finestra di Conferma Personalizzata (Custom Dialog Elegante)
-function customConfirm(titolo, testo, icona = '💊') {
+function customConfirm(titolo, testo, icona = '💊', okLabel) {
   return new Promise((resolve) => {
     const modal = document.getElementById('modal-custom-confirm');
     document.getElementById('confirm-modal-title').textContent = titolo;
@@ -2825,6 +2825,7 @@ function customConfirm(titolo, testo, icona = '💊') {
     const btnOk = document.getElementById('confirm-modal-ok');
     const btnCancel = document.getElementById('confirm-modal-cancel');
     const btnX = document.getElementById('confirm-modal-x-btn');
+    btnOk.textContent = okLabel || 'Conferma';
 
     modal.classList.add('active');
     modal.style.display = 'flex';
@@ -2852,6 +2853,186 @@ function customConfirm(titolo, testo, icona = '💊') {
     if (btnX) btnX.addEventListener('click', handleCancel);
   });
 }
+
+// ==========================================================================
+// CESTINO & RIPRISTINO: ogni cancellazione finisce qui e resta recuperabile per 60 giorni
+// (terapie, visite, ausili, annotazioni del diario, registrazioni glicemiche, cartelle assistito)
+// Il Cestino è dentro AppData._cestino, quindi si sincronizza su Cloud, PC e smartphone.
+// ==========================================================================
+const CESTINO_GIORNI = 60;
+const CESTINO_MAX = 300;
+const CESTINO_TIPI = {
+  terapia:     { icona: '💊', nome: 'Terapia' },
+  visita:      { icona: '📅', nome: 'Visita' },
+  ausilio:     { icona: '🦽', nome: 'Ausilio' },
+  annotazione: { icona: '📝', nome: 'Annotazioni diario' },
+  glicemia:    { icona: '🩸', nome: 'Glicemia' },
+  paziente:    { icona: '👤', nome: 'Cartella assistito' }
+};
+
+function cestinoEsc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+function cestinoPulisciScaduti() {
+  if (!AppData || !Array.isArray(AppData._cestino)) return;
+  const limite = Date.now() - CESTINO_GIORNI * 86400000;
+  AppData._cestino = AppData._cestino.filter(function (e) { return e && e.ts > limite; });
+}
+
+function cestinoAggiungi(tipo, etichetta, dettaglio, item, paz) {
+  try {
+    AppData._cestino = Array.isArray(AppData._cestino) ? AppData._cestino : [];
+    AppData._cestino.unshift({
+      id: 'cst_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+      tipo: tipo,
+      etichetta: etichetta || '',
+      dettaglio: dettaglio || '',
+      pazienteId: paz ? paz.id : '',
+      pazienteNome: paz ? paz.nome : '',
+      ts: Date.now(),
+      eliminatoDa: localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Admin',
+      item: JSON.parse(JSON.stringify(item))
+    });
+    cestinoPulisciScaduti();
+    if (AppData._cestino.length > CESTINO_MAX) AppData._cestino.length = CESTINO_MAX;
+  } catch (e) { console.warn('Cestino: impossibile archiviare', e); }
+}
+
+function cestinoAggiornaBadge() {
+  const n = (AppData && Array.isArray(AppData._cestino)) ? AppData._cestino.length : 0;
+  document.querySelectorAll('.cestino-count-badge').forEach(function (el) {
+    el.textContent = n;
+    el.style.display = n > 0 ? 'inline-flex' : 'none';
+  });
+}
+
+function apriModalCestino() {
+  cestinoPulisciScaduti();
+  renderCestino();
+  openModal('modal-cestino');
+}
+
+function renderCestino() {
+  const box = document.getElementById('cestino-lista');
+  if (!box) return;
+  const lista = (AppData && Array.isArray(AppData._cestino)) ? AppData._cestino : [];
+  cestinoAggiornaBadge();
+  const btnSvuota = document.getElementById('cestino-btn-svuota');
+  if (btnSvuota) btnSvuota.style.display = lista.length ? 'inline-flex' : 'none';
+  if (!lista.length) {
+    box.innerHTML = '<div class="cestino-vuoto"><div style="font-size:42px;">✨</div><b>Il Cestino è vuoto</b><span>Tutto ciò che elimini compare qui e resta recuperabile per ' + CESTINO_GIORNI + ' giorni.</span></div>';
+    return;
+  }
+  box.innerHTML = lista.map(function (e) {
+    const t = CESTINO_TIPI[e.tipo] || { icona: '🗂️', nome: e.tipo };
+    const giorniRimasti = Math.max(0, Math.ceil((e.ts + CESTINO_GIORNI * 86400000 - Date.now()) / 86400000));
+    const quando = new Date(e.ts).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    return '<div class="cestino-item">' +
+      '<div class="cestino-item-ico">' + t.icona + '</div>' +
+      '<div class="cestino-item-body">' +
+        '<div class="cestino-item-titolo">' + cestinoEsc(e.etichetta) + '</div>' +
+        '<div class="cestino-item-meta"><span class="cestino-tag">' + cestinoEsc(t.nome) + '</span>' +
+          (e.pazienteNome && e.tipo !== 'paziente' ? '<span>👤 ' + cestinoEsc(e.pazienteNome) + '</span>' : '') +
+          '<span>🕒 ' + quando + '</span>' +
+          '<span class="' + (giorniRimasti <= 7 ? 'cestino-scade' : '') + '">⏳ ' + giorniRimasti + ' gg</span></div>' +
+        (e.dettaglio ? '<div class="cestino-item-dett">' + cestinoEsc(e.dettaglio) + '</div>' : '') +
+      '</div>' +
+      '<div class="cestino-item-azioni">' +
+        '<button class="btn cestino-btn-ripristina" onclick="cestinoRipristina(\'' + e.id + '\')">↩️ Ripristina</button>' +
+        '<button class="btn cestino-btn-elimina" onclick="cestinoEliminaDefinitivo(\'' + e.id + '\')" title="Elimina per sempre">✖</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function cestinoRipristina(id) {
+  const lista = AppData._cestino || [];
+  const e = lista.find(function (x) { return x.id === id; });
+  if (!e) return;
+  const item = JSON.parse(JSON.stringify(e.item));
+  let messaggio = '';
+
+  if (e.tipo === 'paziente') {
+    if (AppData.pazienti.some(function (p) { return p.id === item.id; })) {
+      showToast('Questa cartella è già presente.', 'warning');
+    } else {
+      AppData.pazienti.push(item);
+      AppData._deletedPazienti = (AppData._deletedPazienti || []).filter(function (x) { return x !== item.id; });
+    }
+    messaggio = 'Cartella di "' + item.nome + '" ripristinata con tutti i dati.';
+  } else {
+    const p = AppData.pazienti.find(function (x) { return x.id === e.pazienteId; });
+    if (!p) {
+      showToast('La cartella di ' + (e.pazienteNome || 'questo assistito') + ' non esiste più: ripristina prima la cartella dal Cestino.', 'warning');
+      return;
+    }
+    if (e.tipo === 'terapia') {
+      p.terapie = p.terapie || [];
+      if (p.terapie.some(function (t) { return t.id === item.id; })) item.id = Date.now();
+      p.terapie.push(item);
+    } else if (e.tipo === 'visita') {
+      p.visite = p.visite || [];
+      if (p.visite.some(function (v) { return v.id === item.id; })) item.id = Date.now();
+      p.visite.push(item);
+    } else if (e.tipo === 'ausilio') {
+      p.ausili = p.ausili || [];
+      p.ausili.push(item);
+    } else if (e.tipo === 'annotazione' || e.tipo === 'glicemia') {
+      p.registrazioni = p.registrazioni || [];
+      const arr = Array.isArray(item) ? item : [item];
+      arr.forEach(function (r) {
+        if (!p.registrazioni.some(function (x) { return String(x.id) === String(r.id); })) p.registrazioni.push(r);
+      });
+    }
+    messaggio = '"' + e.etichetta + '" ripristinato per ' + p.nome + '.';
+  }
+
+  AppData._cestino = lista.filter(function (x) { return x.id !== id; });
+  saveDb();
+  renderCestino();
+  showToast(messaggio + ' ↩️');
+}
+
+async function cestinoEliminaDefinitivo(id) {
+  const e = (AppData._cestino || []).find(function (x) { return x.id === id; });
+  if (!e) return;
+  const ok = await customConfirm(
+    'Elimina per sempre',
+    '"' + e.etichetta + '" verrà cancellato DEFINITIVAMENTE e non sarà più recuperabile da nessuna parte.',
+    '⛔',
+    'Elimina per sempre'
+  );
+  if (!ok) return;
+  AppData._cestino = AppData._cestino.filter(function (x) { return x.id !== id; });
+  saveDb();
+  renderCestino();
+  showToast('Elemento eliminato definitivamente.');
+}
+
+async function cestinoSvuota() {
+  const n = (AppData._cestino || []).length;
+  if (!n) return;
+  const ok = await customConfirm(
+    'Svuota il Cestino',
+    'Verranno cancellati DEFINITIVAMENTE tutti i ' + n + ' elementi del Cestino. Dopo questa operazione non sarà più possibile recuperarli.',
+    '⛔',
+    'Svuota definitivamente'
+  );
+  if (!ok) return;
+  AppData._cestino = [];
+  saveDb();
+  renderCestino();
+  showToast('Cestino svuotato.');
+}
+window.apriModalCestino = apriModalCestino;
+window.renderCestino = renderCestino;
+window.cestinoRipristina = cestinoRipristina;
+window.cestinoEliminaDefinitivo = cestinoEliminaDefinitivo;
+window.cestinoSvuota = cestinoSvuota;
+
+const CESTINO_AVVISO = ' Non viene cancellato subito: finisce nel Cestino (Opzioni → Cestino & Ripristino) e potrai ripristinarlo entro ' + CESTINO_GIORNI + ' giorni.';
 
 // CODICE PUK DI SICUREZZA SEGRETO PER CANCELLAZIONI PROTETTE
 const PUK_SEGRETO_OSS = 'SOS999';
@@ -3657,17 +3838,19 @@ async function eliminaPazienteAttivo() {
   }
 
   const ok = await customConfirm(
-    'Elimina Cartella Paziente',
-    `Sei sicuro di voler eliminare la cartella di "${p.nome}" e tutti i dati registrati?`,
-    '⚠️'
+    'Elimina Cartella Assistito',
+    `ATTENZIONE: stai per eliminare la cartella di "${p.nome}" con tutte le terapie (${(p.terapie || []).length}), visite, ausili e il diario.` + CESTINO_AVVISO + ' Dopo ' + CESTINO_GIORNI + ' giorni sarà cancellata per sempre.',
+    '⚠️',
+    'Sposta nel Cestino'
   );
   if (ok) {
+    cestinoAggiungi('paziente', p.nome, (p.terapie || []).length + ' terapie · ' + (p.visite || []).length + ' visite · ' + (p.registrazioni || []).length + ' registrazioni', p, p);
     AppData._deletedPazienti = AppData._deletedPazienti || [];
     if (!AppData._deletedPazienti.includes(p.id)) AppData._deletedPazienti.push(p.id);
     AppData.pazienti = AppData.pazienti.filter(item => item.id !== p.id);
     AppData.activePazienteId = AppData.pazienti[0].id;
     saveDb();
-    showToast(`Cartella di "${p.nome}" eliminata.`);
+    showToast(`Cartella di "${p.nome}" spostata nel Cestino.`);
   }
 }
 
@@ -4084,14 +4267,16 @@ async function rimuoviAusilio(idx) {
   const ausilioDaRimuovere = p.ausili[idx];
   const ok = await customConfirm(
     'Rimuovi Ausilio Sanitario',
-    `Vuoi rimuovere l'ausilio "${ausilioDaRimuovere.tipo}" dalla cartella di ${p.nome}?`,
-    '🗑️'
+    `Vuoi rimuovere l'ausilio "${ausilioDaRimuovere.tipo}" dalla cartella di ${p.nome}?` + CESTINO_AVVISO,
+    '🗑️',
+    'Sposta nel Cestino'
   );
   if (ok) {
+    cestinoAggiungi('ausilio', ausilioDaRimuovere.tipo || 'Ausilio', '', ausilioDaRimuovere, p);
     p.ausili.splice(idx, 1);
     saveDb();
     renderApp();
-    showToast(`Ausilio "${ausilioDaRimuovere.tipo}" rimosso.`);
+    showToast(`Ausilio "${ausilioDaRimuovere.tipo}" spostato nel Cestino.`);
   }
 }
 
@@ -6020,15 +6205,19 @@ function inviaRichiestaVia(canale) {
 async function eliminaTerapia(id) {
   const p = getActivePaziente();
   if (!p) return;
+  const t = (p.terapie || []).find(x => x.id === id);
+  if (!t) return;
   const ok = await customConfirm(
     'Elimina Farmaco',
-    'Vuoi eliminare questo farmaco dal piano terapeutico?',
-    '🗑️'
+    'Vuoi eliminare "' + t.farmaco + '" dal piano terapeutico di ' + p.nome + '?' + CESTINO_AVVISO,
+    '🗑️',
+    'Sposta nel Cestino'
   );
   if (ok) {
-    p.terapie = p.terapie.filter(t => t.id !== id);
+    cestinoAggiungi('terapia', t.farmaco, (t.dosaggio || '') + (t.ora ? ' · ore ' + t.ora : ''), t, p);
+    p.terapie = p.terapie.filter(x => x.id !== id);
     saveDb();
-    showToast('Farmaco rimosso dalla terapia.');
+    showToast('Farmaco spostato nel Cestino: puoi ripristinarlo da Opzioni → Cestino. 🗑️');
   }
 }
 
@@ -6119,15 +6308,18 @@ async function eliminaAnnotazioniSelezionate(scope) {
 
   const ok = await customConfirm(
     'Elimina Annotazioni Selezionate',
-    `Sei sicuro di voler eliminare definitivamente <b>${count}</b> annotazion${count === 1 ? 'e' : 'i'} dal registro?`,
-    '🗑️'
+    `Stai per eliminare ${count} annotazion${count === 1 ? 'e' : 'i'} dal registro di ${p.nome}.` + CESTINO_AVVISO,
+    '🗑️',
+    'Sposta nel Cestino'
   );
 
   if (ok) {
+    const daArchiviare = (p.registrazioni || []).filter(r => idsToDelete.has(String(r.id)));
+    if (daArchiviare.length) cestinoAggiungi('annotazione', daArchiviare.length + ' annotazion' + (daArchiviare.length === 1 ? 'e' : 'i') + ' del diario', (daArchiviare[0].desc || daArchiviare[0].tipo || '').toString().slice(0, 110), daArchiviare, p);
     p.registrazioni = (p.registrazioni || []).filter(r => !idsToDelete.has(String(r.id)));
     saveDb();
     renderDiario();
-    showToast(`Eliminate ${count} annotazion${count === 1 ? 'e' : 'i'} con successo.`);
+    showToast(`${count} annotazion${count === 1 ? 'e spostata' : 'i spostate'} nel Cestino.`);
   }
 }
 
@@ -6276,18 +6468,21 @@ async function eliminaLog(id) {
   try {
     ok = await customConfirm(
       'Elimina Annotazione',
-      'Vuoi eliminare questa annotazione dal diario clinico?',
-      '🗑️'
+      'Vuoi eliminare questa annotazione dal diario clinico?' + CESTINO_AVVISO,
+      '🗑️',
+      'Sposta nel Cestino'
     );
   } catch(e) {
     ok = confirm('Vuoi eliminare questa annotazione dal diario clinico?');
   }
 
   if (ok) {
+    const rec = (p.registrazioni || []).find(r => String(r.id) === String(id));
+    if (rec) cestinoAggiungi('annotazione', 'Annotazione del diario', (rec.desc || rec.tipo || '').toString().slice(0, 140), [rec], p);
     p.registrazioni = (p.registrazioni || []).filter(r => String(r.id) !== String(id));
     saveDb();
     renderDiario();
-    showToast('Annotazione rimossa con successo! 🗑️');
+    showToast('Annotazione spostata nel Cestino. 🗑️');
   }
 }
 window.eliminaLog = eliminaLog;
@@ -6306,18 +6501,20 @@ async function svuotaRitardiFarmaci() {
   try {
     ok = await customConfirm(
       'Cancella Avvisi di Ritardo',
-      'Vuoi cancellare tutti i ' + ritardi.length + ' avvisi di ritardo registrati per ' + p.nome + '?',
-      '🧹'
+      'Vuoi cancellare tutti i ' + ritardi.length + ' avvisi di ritardo registrati per ' + p.nome + '?' + CESTINO_AVVISO,
+      '🧹',
+      'Sposta nel Cestino'
     );
   } catch(e) {
     ok = confirm('Vuoi cancellare tutti i ' + ritardi.length + ' avvisi di ritardo registrati?');
   }
 
   if (ok) {
+    cestinoAggiungi('annotazione', ritardi.length + ' avvisi di ritardo farmaci', 'Registro ritardi di ' + p.nome, ritardi, p);
     p.registrazioni = (p.registrazioni || []).filter(r => r.tipo !== 'farmaco_ritardo');
     saveDb();
     renderDiario();
-    showToast('Tutti i ' + ritardi.length + ' avvisi di ritardo sono stati cancellati! 🧹');
+    showToast('I ' + ritardi.length + ' avvisi di ritardo sono nel Cestino. 🧹');
   }
 }
 window.svuotaRitardiFarmaci = svuotaRitardiFarmaci;
@@ -6376,15 +6573,19 @@ function toggleVisita(id) {
 async function eliminaVisita(id) {
   const p = getActivePaziente();
   if (!p) return;
+  const v = (p.visite || []).find(x => x.id === id);
+  if (!v) return;
   const ok = await customConfirm(
     'Elimina Appuntamento',
-    'Sei sicuro di voler cancellare questo appuntamento / visita medica?',
-    '📅'
+    'Vuoi cancellare la visita "' + (v.medico || '') + ' - ' + (v.motivo || '') + '"?' + CESTINO_AVVISO,
+    '📅',
+    'Sposta nel Cestino'
   );
   if (ok) {
-    p.visite = p.visite.filter(v => v.id !== id);
+    cestinoAggiungi('visita', (v.medico || 'Visita') + (v.motivo ? ' - ' + v.motivo : ''), (v.data ? new Date(v.data).toLocaleDateString('it-IT') : '') + (v.ora ? ' ore ' + v.ora : ''), v, p);
+    p.visite = p.visite.filter(x => x.id !== id);
     saveDb();
-    showToast('Appuntamento eliminato.');
+    showToast('Appuntamento spostato nel Cestino. 📅');
   }
 }
 
@@ -10465,15 +10666,25 @@ function salvaGlicemiaDedicata(e) {
   }
 }
 
-function eliminaGlicemia(logId) {
+async function eliminaGlicemia(logId) {
   const p = getActivePaziente();
   if (!p || !p.registrazioni) return;
-  if (!confirm('Vuoi eliminare questa registrazione glicemica?')) return;
+  const rec = p.registrazioni.find(r => r.id === logId);
+  if (!rec) return;
+  const ok = await customConfirm(
+    'Elimina Registrazione Glicemica',
+    'Vuoi eliminare questa registrazione glicemica?' + CESTINO_AVVISO,
+    '🩸',
+    'Sposta nel Cestino'
+  );
+  if (!ok) return;
+  cestinoAggiungi('glicemia', 'Glicemia ' + (rec.valore || rec.glicemia || rec.val || ''), (rec.desc || (rec.timestamp ? new Date(rec.timestamp).toLocaleString('it-IT') : '')).toString().slice(0, 120), [rec], p);
   p.registrazioni = p.registrazioni.filter(r => r.id !== logId);
   saveDb();
   renderGlicemie();
-  showToast('Registrazione glicemica eliminata.');
+  showToast('Registrazione glicemica spostata nel Cestino.');
 }
+window.eliminaGlicemia = eliminaGlicemia;
 
 function renderGlicemie() {
   const p = getActivePaziente();
@@ -11176,6 +11387,7 @@ function renderAll() {
   renderVisite();
   aggiornaVisibilitaTabEpatologia();
   renderGlicemie();
+  if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
 }
 
 window._initialSyncDone = false;
