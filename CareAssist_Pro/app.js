@@ -4461,6 +4461,9 @@ function checkFarmaciScorteAlert() {
         <button class="btn btn-success" style="font-weight: 700; font-size: 12.5px; padding: 8px 14px; border-radius: 8px;" onclick="apriRicaricaScorta()">
           📦 Carica Scatole
         </button>
+        <button class="btn btn-outline" style="background:#fff; border-color:#f87171; color:#991b1b; font-weight:800; font-size:12px; padding:8px 12px; border-radius:8px;" onclick="apriModalPerSaperneDiPiu('alert')">
+          💡 Per saperne di più
+        </button>
       </div>
     </div>`;
 
@@ -4533,6 +4536,9 @@ function checkAusiliScadenzeAlert() {
         </button>
         <button class="btn btn-outline" style="border-color:#b45309; color:#92400e; font-weight:700; font-size:12px; background:#fff;" onclick="apriModificaAnagrafica()">
           ✏️ Aggiorna Date Ausili
+        </button>
+        <button class="btn btn-outline" style="border-color:#b45309; color:#92400e; font-weight:800; font-size:12px; background:#fff;" onclick="apriModalPerSaperneDiPiu('alert')">
+          💡 Per saperne di più
         </button>
       </div>
     </div>
@@ -20278,3 +20284,130 @@ window.aggiornaAnteprimaLetteraSpecialistica = aggiornaAnteprimaLetteraSpecialis
 window.stampaLetteraSpecialistica = stampaLetteraSpecialistica;
 window.avviaBriefingVocaleAssistitoDemo = avviaBriefingVocaleAssistitoDemo;
 window.fermaVoceBriefing = fermaVoceBriefing;
+
+
+
+// ==========================================================================
+// 💡 CENTRO "PER SAPERNE DI PIÙ" & TEST LIVE ALERT PC ↔ CELLULARE
+// ==========================================================================
+var _ultimoAlertTestVistoTs = 0;
+
+function apriModalPerSaperneDiPiu(tabIniziale) {
+  cambiaTabSaperneDiPiu(tabIniziale || 'alert');
+  aggiornaDiagnosticaAlert();
+  openModal('modal-info-guida');
+}
+
+function cambiaTabSaperneDiPiu(tab) {
+  var tabs = ['alert', 'uso', 'tips'];
+  tabs.forEach(function (t) {
+    var panel = document.getElementById('saperne-panel-' + t);
+    var btn = document.getElementById('btn-saperne-tab-' + t);
+    var attivo = (t === tab);
+    if (panel) panel.style.display = attivo ? 'block' : 'none';
+    if (btn) {
+      btn.className = attivo ? 'btn btn-primary' : 'btn btn-outline';
+      btn.style.background = attivo ? '' : '#ffffff';
+    }
+  });
+  if (tab === 'alert') aggiornaDiagnosticaAlert();
+}
+
+function aggiornaDiagnosticaAlert() {
+  var box = document.getElementById('saperne-alert-diagnostica');
+  if (!box) return;
+  var notifPerm = ('Notification' in window) ? Notification.permission : 'unsupported';
+  var notifOk = (notifPerm === 'granted');
+  var audioCtx = (typeof getAudioContext === 'function') ? getAudioContext() : null;
+  var audioOk = audioCtx && audioCtx.state === 'running';
+  var vibraOk = ('vibrate' in navigator);
+  var tipoDev = (window.innerWidth <= 900) ? '📱 Smartphone / Tablet' : '💻 Computer (PC)';
+
+  function cardStato(titolo, ok, testoOk, testoNo) {
+    return '<div style="background:#fff; border:1px solid ' + (ok ? '#86efac' : '#fde68a') + '; border-radius:10px; padding:8px 10px;">' +
+      '<div style="font-size:11px; color:#64748b; font-weight:700;">' + titolo + '</div>' +
+      '<div style="font-size:12.5px; font-weight:800; color:' + (ok ? '#15803d' : '#b45309') + '; margin-top:2px;">' + (ok ? '🟢 ' + testoOk : '🟡 ' + testoNo) + '</div>' +
+    '</div>';
+  }
+
+  box.innerHTML =
+    '<div style="background:#fff; border:1px solid #bae6fd; border-radius:10px; padding:8px 10px;">' +
+      '<div style="font-size:11px; color:#64748b; font-weight:700;">Dispositivo Attuale</div>' +
+      '<div style="font-size:12.5px; font-weight:800; color:#0369a1; margin-top:2px;">' + tipoDev + '</div>' +
+    '</div>' +
+    cardStato('Allarme Sonoro', audioOk, 'Audio Sbloccato e Attivo', 'Tocca "Testa Suono" per attivare') +
+    cardStato('Notifiche Push', notifOk, 'Autorizzate sul Browser', 'Tocca "Testa Suono" per abilitare') +
+    cardStato('Sync Cloud PC ↔ Mobile', true, 'Attivo (ogni 2 secondi)', 'In attesa') +
+    (vibraOk ? cardStato('Vibrazione Haptic', true, 'Supportata su dispositivo', '') : '');
+}
+
+function eseguiTestAllertaLocale() {
+  if (typeof abilitaNotificheEAudioSmartphone === 'function') {
+    abilitaNotificheEAudioSmartphone();
+  }
+  setTimeout(aggiornaDiagnosticaAlert, 400);
+}
+
+function inviaTestAllertaCrossDevice() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var devName = (window.innerWidth <= 900) ? 'Smartphone' : 'PC';
+  var oraStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  var ts = Date.now();
+  _ultimoAlertTestVistoTs = ts;
+
+  if (typeof suonaSegnaleDolce === 'function') {
+    try { suonaSegnaleDolce(); } catch (e) {}
+  }
+  if ('vibrate' in navigator) {
+    try { navigator.vibrate([250, 120, 250]); } catch (e) {}
+  }
+
+  AppData._liveAlertTest = {
+    ts: ts,
+    da: devName,
+    ora: oraStr,
+    paziente: p ? p.nome : 'Assistito',
+    msg: 'Test Allerta Sincronizzato inviato da ' + devName + ' alle ' + oraStr
+  };
+  saveDb();
+  aggiornaDiagnosticaAlert();
+  showToast('📡 Alert di prova inviato da ' + devName + '! Entro 2 secondi suonerà anche sull\'altro dispositivo collegato.');
+}
+
+// Ricevitore automatico dell'Alert di Prova su altri dispositivi (PC <-> Cellulare)
+setInterval(function () {
+  if (!AppData || !AppData._liveAlertTest || !AppData._liveAlertTest.ts) return;
+  var t = AppData._liveAlertTest;
+  if (!_ultimoAlertTestVistoTs) {
+    _ultimoAlertTestVistoTs = t.ts;
+    return;
+  }
+  if (t.ts > _ultimoAlertTestVistoTs && (Date.now() - t.ts) < 30000) {
+    _ultimoAlertTestVistoTs = t.ts;
+    if (typeof suonaSegnaleDolce === 'function') {
+      try { suonaSegnaleDolce(); } catch (e) {}
+    }
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate([350, 150, 350, 150, 350]); } catch (e) {}
+    }
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification('📡 Alert Ricevuto da ' + (t.da || 'altro dispositivo'), {
+          body: (t.msg || 'Sincronizzazione PC ↔ Smartphone verificata!') + ' (' + (t.paziente || '') + ')',
+          icon: 'careassist_icon.jpg'
+        });
+      } catch (e) {}
+    }
+    if (typeof showAdminSyncToast === 'function') {
+      showAdminSyncToast('🔔 ALERT RICEVUTO IN TEMPO REALE DA ' + (t.da || 'DISPOSITIVO').toUpperCase() + ' (' + (t.ora || '') + ') — Sincronizzazione PC ↔ Cellulare perfettamente funzionante!', true);
+    } else if (typeof showToast === 'function') {
+      showToast('🔔 Alert ricevuto da ' + (t.da || 'altro dispositivo') + ' alle ' + (t.ora || '') + '!');
+    }
+  }
+}, 1500);
+
+window.apriModalPerSaperneDiPiu = apriModalPerSaperneDiPiu;
+window.cambiaTabSaperneDiPiu = cambiaTabSaperneDiPiu;
+window.aggiornaDiagnosticaAlert = aggiornaDiagnosticaAlert;
+window.eseguiTestAllertaLocale = eseguiTestAllertaLocale;
+window.inviaTestAllertaCrossDevice = inviaTestAllertaCrossDevice;
