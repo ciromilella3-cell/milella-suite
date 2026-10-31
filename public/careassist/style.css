@@ -3016,7 +3016,7 @@ textarea.form-control {
   }
   .modal-body,
   .scheda-118-body,
-  .modal-card > form > div:not(.modal-header):not(.modal-footer) {
+  .modal-card > form > div:not(.modal-header):not(.modal-footer):not(.modal-footer-pro) {
     padding: 14px 12px !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
@@ -5440,18 +5440,46 @@ textarea.form-control {
 
 /* Responsive Pills frequenza farmaco */
 @media (max-width: 600px) {
-  .modal-farmaco-pro {
-    width: 98% !important;
-    max-height: calc(100dvh - 12px) !important;
-    border-radius: 14px !important;
+  #modal-modifica-farmaco .modal-card.modal-farmaco-pro {
+    width: 98vw !important;
+    max-width: 98vw !important;
+    max-height: calc(100dvh - 14px) !important;
+    border-radius: 16px !important;
+    padding: 0 !important;
+    margin: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  #modal-modifica-farmaco #form-maschera-capsula {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
   }
   .header-farmaco-pro {
-    padding: 9px 12px !important;
+    padding: 10px 14px !important;
+    background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%) !important;
+    color: #ffffff !important;
   }
   .modal-body-farmaco-pro {
-    padding: 9px !important;
+    padding: 12px !important;
+    gap: 10px !important;
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    max-height: calc(100dvh - 140px) !important;
+    overflow-y: auto !important;
+  }
+  #modal-modifica-farmaco .modal-footer-pro {
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
     gap: 8px !important;
-    max-height: calc(100dvh - 125px) !important;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)) 12px !important;
+    background: #ffffff !important;
+    border-top: 1.5px solid #cbd5e1 !important;
   }
   .capsula-freq-selector {
     display: grid !important;
