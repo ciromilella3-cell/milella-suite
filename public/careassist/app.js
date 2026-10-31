@@ -14543,7 +14543,53 @@ function chiudiModalAvvisoFarmacoEsterno() {
 }
 window.chiudiModalAvvisoFarmacoEsterno = chiudiModalAvvisoFarmacoEsterno;
 
-// 1. GENERA EVENTO CALENDARIO SMARTPHONE (.ICS) PER SVEGLIA E PROMEMORIA SCORTE
+// 1A. APERTURA DIRETTA GOOGLE CALENDAR PER SALVARE SVEGLIA QUOTIDIANA FARMACO SU ANDROID / WEB
+function apriSvegliaGoogleCalendarFarmaco() {
+  var p = getActivePaziente();
+  var farmId = parseInt(document.getElementById('avviso-ext-farmaco-id').value);
+  if (!p || !p.terapie || !farmId) return;
+  var t = p.terapie.find(function(item) { return item.id === farmId; });
+  if (!t) return;
+
+  var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
+  var oraRaw = (t.ora || '08:00').trim();
+  var mOra = oraRaw.match(/(\d{1,2})[:.](\d{2})/);
+  var hh = mOra ? String(mOra[1]).padStart(2, '0') : '08';
+  var mm = mOra ? String(mOra[2]).padStart(2, '0') : '00';
+  var endHh = String((parseInt(hh, 10) + 0) % 24).padStart(2, '0');
+  var endMm = String(Math.min(59, parseInt(mm, 10) + 15)).padStart(2, '0');
+
+  var dOggi = new Date();
+  var y = dOggi.getFullYear();
+  var m = String(dOggi.getMonth() + 1).padStart(2, '0');
+  var d = String(dOggi.getDate()).padStart(2, '0');
+  var startStr = y + m + d + 'T' + hh + mm + '00';
+  var endStr = y + m + d + 'T' + endHh + endMm + '00';
+
+  var giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
+  var farmacia = (document.getElementById('avviso-ext-farmacia') && document.getElementById('avviso-ext-farmacia').value.trim()) || 'Farmacia / Ospedale';
+  var titolo = '💊 SVEGLIA FARMACO: ' + cleanNome + ' (' + (t.dose || '1 cp') + ') - ' + (p.nome || 'Paziente');
+  var dettagli = '⏰ Assunzione giornaliera ore ' + hh + ':' + mm + ' per ' + (p.nome || 'Paziente') + '.\n' +
+    '💊 Farmaco: ' + cleanNome + ' - Dose: ' + (t.dose || '1 cp') + '\n' +
+    '📋 Note cliniche: ' + (t.note || 'Seguire piano terapeutico') + '\n' +
+    '📦 Autonomia scorte attuale: ' + giorniAutonomia + ' giorni.\n' +
+    '📍 Punto ritiro: ' + farmacia;
+
+  var gcalUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+    '&text=' + encodeURIComponent(titolo) +
+    '&dates=' + startStr + '/' + endStr +
+    '&details=' + encodeURIComponent(dettagli) +
+    '&location=' + encodeURIComponent(farmacia) +
+    '&recur=' + encodeURIComponent('RRULE:FREQ=DAILY');
+
+  window.open(gcalUrl, '_blank');
+  if (typeof showToast === 'function') {
+    showToast('📅 Google Calendar aperto! Tocca "Salva" in alto a destra per attivare la sveglia giornaliera!');
+  }
+}
+window.apriSvegliaGoogleCalendarFarmaco = apriSvegliaGoogleCalendarFarmaco;
+
+// 1B. GENERA EVENTO CALENDARIO SMARTPHONE (.ICS) PER SVEGLIA QUOTIDIANA E PROMEMORIA SCORTE
 function scaricaPromemoriaCalendarioFarmaco() {
   var p = getActivePaziente();
   var farmId = parseInt(document.getElementById('avviso-ext-farmaco-id').value);
@@ -14553,9 +14599,21 @@ function scaricaPromemoriaCalendarioFarmaco() {
 
   var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
   var giorniAutonomia = calcolaGiorniAutonomiaFarmaco(t);
-  var farmacia = document.getElementById('avviso-ext-farmacia').value.trim() || 'Ospedale Territoriale di Bari / Farmacia';
+  var farmacia = (document.getElementById('avviso-ext-farmacia') && document.getElementById('avviso-ext-farmacia').value.trim()) || 'Ospedale Territoriale di Bari / Farmacia';
+
+  var oraRaw = (t.ora || '08:00').trim();
+  var mOra = oraRaw.match(/(\d{1,2})[:.](\d{2})/);
+  var hh = mOra ? String(mOra[1]).padStart(2, '0') : '08';
+  var mm = mOra ? String(mOra[2]).padStart(2, '0') : '00';
+  var endMm = String(Math.min(59, parseInt(mm, 10) + 15)).padStart(2, '0');
 
   var dOggi = new Date();
+  var yOggi = dOggi.getFullYear();
+  var mOggi = String(dOggi.getMonth() + 1).padStart(2, '0');
+  var dGiorno = String(dOggi.getDate()).padStart(2, '0');
+  var startSveglia = yOggi + mOggi + dGiorno + 'T' + hh + mm + '00';
+  var endSveglia = yOggi + mOggi + dGiorno + 'T' + hh + endMm + '00';
+
   var dRitiro = new Date();
   dRitiro.setDate(dRitiro.getDate() + Math.max(1, giorniAutonomia - 3)); // 3 giorni prima del termine scorte
 
@@ -14568,32 +14626,34 @@ function scaricaPromemoriaCalendarioFarmaco() {
 
   var ics = [
     'BEGIN:VCALENDAR',
-
-    // EVENTO 0: FINESTRA DICEMBRE LABORATORIO SCOTTI & MEDICO CURANTE
-    'BEGIN:VEVENT',
-    'UID:scotti-dicembre-20261201@careassist.pro',
-    'DTSTAMP:' + nowStr,
-    'DTSTART:20261201T090000',
-    'DTEND:20261201T103000',
-    'SUMMARY:🔬 RICHIESTA RICETTE PRIORITÀ [P] & PRENOTAZIONE LAB. SCOTTI',
-    'DESCRIPTION:Finestra 180 giorni aperta! Richiedere al Dott. Scarcia le ricette NRE ematochimiche con PRIORITÀ P (obbligatoria per accettazione ASL Bari). Chiamare Laboratorio Scotti al 080 561 3974 per fissare data prelievo.',
-    'LOCATION:Laboratorio Scotti - Via Giuseppe Maria Giovene 60, Bari (Tel 080 561 3974)',
-    'STATUS:CONFIRMED',
-    'BEGIN:VALARM',
-    'TRIGGER:-P3D',
-    'ACTION:DISPLAY',
-    'DESCRIPTION:Promemoria tra 3 giorni: Finestra Dicembre per ricette con Priorità P al Laboratorio Scotti',
-    'END:VALARM',
-    'BEGIN:VALARM',
-    'TRIGGER:-PT2H',
-    'ACTION:DISPLAY',
-    'DESCRIPTION:Oggi: inviare richiesta ricette con Priorità P al Dott. Scarcia e chiamare Lab. Scotti',
-    'END:VALARM',
-    'END:VEVENT',
     'VERSION:2.0',
     'PRODID:-//CareAssist Pro//Promemoria Farmaci H24//IT',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
+
+    // EVENTO 1: SVEGLIA GIORNALIERA ALL'ORARIO ESATTO DEL FARMACO
+    'BEGIN:VEVENT',
+    'UID:sveglia-terapia-' + farmId + '-' + Date.now() + '@careassist.pro',
+    'DTSTAMP:' + nowStamp,
+    'DTSTART:' + startSveglia,
+    'DTEND:' + endSveglia,
+    'RRULE:FREQ=DAILY',
+    'SUMMARY:💊 SVEGLIA FARMACO: ' + cleanNome + ' (' + (t.dose || '1 cp') + ') - ' + (p.nome || 'Paziente'),
+    'DESCRIPTION:Assunzione giornaliera di ' + cleanNome + ' alle ore ' + hh + ':' + mm + '. Note: ' + (t.note || 'Seguire piano terapeutico'),
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:PT0M',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:È l\'ora di assumere ' + cleanNome,
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT5M',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Tra 5 minuti assumere ' + cleanNome,
+    'END:VALARM',
+    'END:VEVENT',
+
+    // EVENTO 2: PROMEMORIA RITIRO NUOVE SCORTE (3 GIORNI PRIMA DELLA SCADENZA)
     'BEGIN:VEVENT',
     'UID:farmaco-ritiro-' + farmId + '-' + Date.now() + '@careassist.pro',
     'DTSTAMP:' + nowStamp,
@@ -14614,6 +14674,28 @@ function scaricaPromemoriaCalendarioFarmaco() {
     'DESCRIPTION:URGENTE: oggi ritiro ' + cleanNome + ' presso ' + farmacia,
     'END:VALARM',
     'END:VEVENT',
+
+    // EVENTO 3: FINESTRA DICEMBRE LABORATORIO SCOTTI & MEDICO CURANTE
+    'BEGIN:VEVENT',
+    'UID:scotti-dicembre-20261201@careassist.pro',
+    'DTSTAMP:' + nowStamp,
+    'DTSTART:20261201T090000',
+    'DTEND:20261201T103000',
+    'SUMMARY:🔬 RICHIESTA RICETTE PRIORITÀ [P] & PRENOTAZIONE LAB. SCOTTI',
+    'DESCRIPTION:Finestra 180 giorni aperta! Richiedere al Dott. Scarcia le ricette NRE ematochimiche con PRIORITÀ P (obbligatoria per accettazione ASL Bari). Chiamare Laboratorio Scotti al 080 561 3974 per fissare data prelievo.',
+    'LOCATION:Laboratorio Scotti - Via Giuseppe Maria Giovene 60, Bari (Tel 080 561 3974)',
+    'STATUS:CONFIRMED',
+    'BEGIN:VALARM',
+    'TRIGGER:-P3D',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Promemoria tra 3 giorni: Finestra Dicembre per ricette con Priorità P al Laboratorio Scotti',
+    'END:VALARM',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT2H',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Oggi: inviare richiesta ricette con Priorità P al Dott. Scarcia e chiamare Lab. Scotti',
+    'END:VALARM',
+    'END:VEVENT',
     'END:VCALENDAR'
   ].join('\r\n');
 
@@ -14621,13 +14703,13 @@ function scaricaPromemoriaCalendarioFarmaco() {
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
   a.href = url;
-  a.download = 'PROMEMORIA_RITIRO_' + cleanNome.replace(/\s+/g, '_') + '.ics';
+  a.download = 'SVEGLIA_E_PROMEMORIA_' + cleanNome.replace(/\s+/g, '_') + '.ics';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  showToast('📅 Sveglia/Promemoria creato! Aprilo per aggiungerlo al tuo Google Calendar o iPhone!');
+  showToast('📅 File Sveglia (.ics) scaricato! Aprilo dalle notifiche per aggiungerlo al Calendario!');
 }
 window.scaricaPromemoriaCalendarioFarmaco = scaricaPromemoriaCalendarioFarmaco;
 

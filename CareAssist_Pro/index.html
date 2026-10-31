@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=96">
+  <link rel="stylesheet" href="style.css?v=97">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -3420,22 +3420,22 @@
   <!-- MODAL: NOTIFICHE ESTERNE FARMACO & CALENDARIO SMARTPHONE -->
   <div class="modal-overlay" id="modal-avviso-farmaco-esterno" style="z-index:999999; background:rgba(15, 23, 42, 0.85); backdrop-filter:blur(6px);">
     <div class="modal-card" style="max-width:580px; border-radius:18px; overflow:hidden; border:2px solid #38bdf8; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
-      <div class="modal-header" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:white; padding:16px 20px;">
+      <div class="modal-header" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; padding:16px 20px;">
         <div style="display:flex; align-items:center; gap:10px;">
           <span style="font-size:28px;">🔔</span>
           <div>
-            <h3 style="margin:0; font-size:18px; font-weight:800;">Notifiche Esterne & Promemoria Farmaco</h3>
-            <p style="margin:2px 0 0; font-size:12.5px; color:#bae6fd;">Avvisi su Smartphone, WhatsApp ed Email anche a schermo spento</p>
+            <h3 style="margin:0; font-size:18px; font-weight:900; color:#ffffff !important;">Notifiche Esterne & Promemoria Farmaco</h3>
+            <p style="margin:2px 0 0; font-size:12.5px; color:#e0f2fe !important;">Avvisi su Smartphone, WhatsApp ed Email anche a schermo spento</p>
           </div>
         </div>
-        <button class="modal-close" style="color:white; font-size:24px; cursor:pointer;" onclick="chiudiModalAvvisoFarmacoEsterno()">&times;</button>
+        <button class="modal-close" style="color:#ffffff !important; font-size:24px; cursor:pointer; background:rgba(255,255,255,0.2) !important; border-radius:8px; width:34px; height:34px;" onclick="chiudiModalAvvisoFarmacoEsterno()">&times;</button>
       </div>
 
-      <div class="modal-body" style="padding:20px; background:#ffffff; color:#0f172a;">
+      <div class="modal-body" style="padding:18px; background:#ffffff; color:#0f172a;">
         <input type="hidden" id="avviso-ext-farmaco-id">
 
         <!-- RIEPILOGO CLINICO FARMACO SELEZIONATO -->
-        <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:14px; margin-bottom:18px;">
+        <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:14px; margin-bottom:14px;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div>
               <span style="font-size:11px; font-weight:800; color:#15803d; text-transform:uppercase; letter-spacing:0.5px;">Assistito: <span id="avviso-ext-paziente-nome">Ciro Milella</span></span>
@@ -3443,15 +3443,99 @@
             </div>
             <span style="background:#dcfce7; color:#166534; font-size:11px; font-weight:800; padding:3px 8px; border-radius:999px; border:1px solid #86efac;">Salva-Vita / Continuo</span>
           </div>
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-top:10px; font-size:12px; color:#334155; border-top:1px dashed #bbf7d0; padding-top:8px;">
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:8px; margin-top:10px; font-size:12px; color:#334155; border-top:1px dashed #bbf7d0; padding-top:8px;">
             <div>📦 Scorta Residua: <b id="avviso-ext-scorta-val" style="color:#0f172a;">--</b></div>
             <div>⏳ Autonomia: <b id="avviso-ext-autonomia-val" style="color:#0369a1;">--</b></div>
             <div>⏰ Orario: <b id="avviso-ext-orario-val" style="color:#0f172a;">--</b></div>
           </div>
         </div>
 
+        <!-- BOX 1: PROVA DIRETTA ALLARME ANCHE A SCHERMO SPENTO (IN CIMA PER TEST IMMEDIATO) -->
+        <div style="background:linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border:2px solid #f59e0b; border-radius:12px; padding:14px; margin-bottom:14px;">
+          <div style="font-weight:900; color:#92400e; font-size:14px; margin-bottom:4px;">
+            🔒 Vuoi testare adesso la Sveglia a Display Spento per questo farmaco?
+          </div>
+          <div style="font-size:12px; color:#78350f; margin-bottom:10px; line-height:1.45;">
+            Tocca il pulsante arancione qui sotto, poi <b>spegni subito il display del cellulare</b> col tasto laterale: tra <b>10 secondi</b> sentirai suonare la sveglia vocale e vibrare il telefono a schermo spento!
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn" onclick="avviaTestDisplaySpento10Secondi()" style="flex:1; background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:#fff; border:none; padding:11px 14px; border-radius:10px; font-weight:900; font-size:13px; cursor:pointer; box-shadow:0 4px 12px rgba(217,119,6,0.35);">
+              🔒 Avvia Test a Display Spento (Tra 10 Secondi)
+            </button>
+            <button type="button" class="btn" onclick="eseguiTestAllertaLocale()" style="background:#0284c7; color:#fff; border:none; padding:11px 14px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;">
+              🔔 Suona Subito
+            </button>
+          </div>
+          <div id="box-countdown-display-spento-ext" style="display:none; margin-top:10px; background:#7c2d12; color:#fff; padding:12px; border-radius:10px; text-align:center; font-size:15px; font-weight:900; border:2px solid #fde047;"></div>
+        </div>
+
+        <!-- BOX 2: PULSANTI SVEGLIA & PROMEMORIA SEMPRE VISIBILI IN CIMA -->
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+          <!-- AZIONE 1A: APERTURA DIRETTA GOOGLE CALENDAR (PER ANDROID / CELLULARE) -->
+          <button type="button" class="btn" onclick="apriSvegliaGoogleCalendarFarmaco()" style="background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color:white; border:2px solid #93c5fd; padding:13px 16px; border-radius:10px; font-weight:900; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 4px 14px rgba(37,99,235,0.35);">
+            <span style="display:flex; align-items:center; gap:8px; text-align:left;">
+              <span style="font-size:20px;">📅</span> 
+              <span>1A. Apri e Salva Sveglia in Google Calendar (Diretto su Android)</span>
+            </span>
+            <span style="font-size:11px; background:rgba(255,255,255,0.25); padding:4px 8px; border-radius:6px; white-space:nowrap;">Apri e Salva</span>
+          </button>
+
+          <!-- AZIONE 1B: FILE UNIVERSALE .ICS (APPLE / OUTLOOK / OFFLINE) -->
+          <button type="button" class="btn" onclick="scaricaPromemoriaCalendarioFarmaco()" style="background:#0284c7; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 3px 10px rgba(2,132,199,0.25);" onmouseover="this.style.background='#0369a1'" onmouseout="this.style.background='#0284c7'">
+            <span style="display:flex; align-items:center; gap:8px; text-align:left;">
+              <span style="font-size:18px;">📲</span> 
+              <span>1B. Aggiungi Sveglia & Promemoria (.ics per iPhone / PC / Calendario)</span>
+            </span>
+            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px; white-space:nowrap;">File Sveglia</span>
+          </button>
+
+          <!-- AZIONE 2: NOTIFICA WHATSAPP -->
+          <button type="button" class="btn" onclick="inviaAvvisoFarmacoWhatsApp()" style="background:#16a34a; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 3px 10px rgba(22,163,74,0.25);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+            <span style="display:flex; align-items:center; gap:8px; text-align:left;">
+              <span style="font-size:18px;">💬</span> 
+              <span>2. Invia Promemoria Scorte su WhatsApp</span>
+            </span>
+            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px; white-space:nowrap;">Messaggio Istantaneo</span>
+          </button>
+
+          <!-- AZIONE 3: NOTIFICA EMAIL -->
+          <button type="button" class="btn" onclick="inviaAvvisoFarmacoEmail()" style="background:#475569; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 3px 10px rgba(71,85,105,0.25);" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#475569'">
+            <span style="display:flex; align-items:center; gap:8px; text-align:left;">
+              <span style="font-size:18px;">📧</span> 
+              <span>3. Invia Notifica Scorte via Email</span>
+            </span>
+            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px; white-space:nowrap;">Posta Elettronica</span>
+          </button>
+
+          <!-- AZIONE PRENOTAZIONE MODULO UFFICIALE EX-CTO BARI -->
+          <button type="button" class="btn" onclick="apriModuloPrenotazioneCto()" style="background:linear-gradient(135deg, #0369a1 0%, #075985 100%); color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 4px 14px rgba(2,132,199,0.25); border:1.5px solid #38bdf8;">
+            <span style="display:flex; align-items:center; gap:9px; text-align:left;">
+              <span style="font-size:18px;">📑</span> 
+              <span>Compila Modulo Ufficiale Prenotazione Farmaci Ex-CTO ASL Bari</span>
+            </span>
+            <span style="font-size:11px; background:rgba(255,255,255,0.25); padding:3px 8px; border-radius:6px; font-weight:800; white-space:nowrap;">AUTO-COMPILATO</span>
+          </button>
+        </div>
+
+        <!-- CAMPI CONTATTI E PUNTO DI RITIRO -->
+        <div style="margin-bottom:14px;">
+          <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:6px;">📍 Punto di Ritiro Selezionato per il Promemoria:</label>
+          <input type="text" id="avviso-ext-farmacia" class="form-control" value="Farmacia Territoriale ASL Bari (Ex CTO - Lungomare Starita 6) • Tel: 080 5842181" style="font-size:12.5px; font-weight:700; padding:8px 12px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px;">
+          <div>
+            <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:4px;">📱 Cellulare per WhatsApp:</label>
+            <input type="tel" id="avviso-ext-telefono" class="form-control" placeholder="366 460 7396" style="font-size:13px; padding:8px 10px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+          </div>
+          <div>
+            <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:4px;">📧 Email per Riepilogo Scorte:</label>
+            <input type="email" id="avviso-ext-email" class="form-control" placeholder="ciromilella3@gmail.com" style="font-size:13px; padding:8px 10px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
+          </div>
+        </div>
+
         <!-- GUIDA & SCHEDA OPERATIVA FARMACIE TERRITORIALI BARI -->
-        <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:12px; padding:14px; margin-bottom:16px;">
+        <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:12px; padding:14px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <div style="display:flex; align-items:center; gap:6px;">
               <span style="font-size:18px;">🏥</span>
@@ -3487,81 +3571,6 @@
               <option value="Farmacia MACARIO (Via G. Petroni, 69/b - Bari) • Tel: 080 542 8061">💊 Farmacia Territoriale di Famiglia (Dott. Macario - Via G. Petroni)</option>
             </select>
           </div>
-        </div>
-
-        <!-- CAMPO LUOGO RITIRO EFFETTIVO -->
-        <div style="margin-bottom:18px;">
-          <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:6px;">📍 Punto di Ritiro Selezionato per il Promemoria:</label>
-          <input type="text" id="avviso-ext-farmacia" class="form-control" value="Farmacia Territoriale ASL Bari (Ex CTO - Lungomare Starita 6) • Tel: 080 5842181" style="font-size:12.5px; font-weight:700; padding:8px 12px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
-        </div>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:18px;">
-          <div>
-            <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:4px;">📱 Cellulare per WhatsApp:</label>
-            <input type="tel" id="avviso-ext-telefono" class="form-control" placeholder="366 460 7396" style="font-size:13px; padding:8px 10px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
-          </div>
-          <div>
-            <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:4px;">📧 Email per Riepilogo Scorte:</label>
-            <input type="email" id="avviso-ext-email" class="form-control" placeholder="ciromilella3@gmail.com" style="font-size:13px; padding:8px 10px; width:100%; border:1.5px solid #cbd5e1; border-radius:8px;">
-          </div>
-        </div>
-
-        <!-- BOX PROVA DIRETTA ALLARME ANCHE A SCHERMO SPENTO -->
-        <div style="background:linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border:2px solid #f59e0b; border-radius:12px; padding:14px; margin-bottom:16px;">
-          <div style="font-weight:900; color:#92400e; font-size:14px; margin-bottom:4px;">
-            🔒 Vuoi testare adesso la Sveglia a Display Spento per questo farmaco?
-          </div>
-          <div style="font-size:12px; color:#78350f; margin-bottom:10px; line-height:1.45;">
-            Tocca il pulsante qui sotto, poi <b>spegni subito il display del cellulare</b> col tasto laterale: tra <b>10 secondi</b> sentirai suonare la sveglia vocale e vibrare il telefono a schermo spento!
-          </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="btn" onclick="avviaTestDisplaySpento10Secondi()" style="flex:1; background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:#fff; border:none; padding:11px 14px; border-radius:10px; font-weight:900; font-size:13px; cursor:pointer; box-shadow:0 4px 12px rgba(217,119,6,0.35);">
-              🔒 Avvia Test a Display Spento (Tra 10 Secondi)
-            </button>
-            <button type="button" class="btn" onclick="eseguiTestAllertaLocale()" style="background:#0284c7; color:#fff; border:none; padding:11px 14px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;">
-              🔔 Suona Subito
-            </button>
-          </div>
-          <div id="box-countdown-display-spento-ext" style="display:none; margin-top:10px; background:#7c2d12; color:#fff; padding:12px; border-radius:10px; text-align:center; font-size:15px; font-weight:900; border:2px solid #fde047;"></div>
-        </div>
-
-        <!-- LE 3 AZIONI RAPIDE DI NOTIFICA -->
-          <!-- AZIONE PRENOTAZIONE MODULO UFFICIALE EX-CTO BARI -->
-          <button type="button" class="btn" onclick="apriModuloPrenotazioneCto()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:white; border:none; padding:13px 16px; border-radius:10px; font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 4px 14px rgba(2,132,199,0.35); border:1.5px solid #38bdf8;">
-            <span style="display:flex; align-items:center; gap:9px;">
-              <span style="font-size:20px;">📑</span> 
-              <span>Compila Modulo Ufficiale Prenotazione Farmaci Ex-CTO ASL Bari</span>
-            </span>
-            <span style="font-size:11px; background:rgba(255,255,255,0.25); padding:3px 8px; border-radius:6px; font-weight:800;">AUTO-COMPILATO</span>
-          </button>
-
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          <!-- AZIONE 1: CALENDARIO NATIVO SMARTPHONE -->
-          <button type="button" class="btn" onclick="scaricaPromemoriaCalendarioFarmaco()" style="background:#0284c7; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 3px 10px rgba(2,132,199,0.25);" onmouseover="this.style.background='#0369a1'" onmouseout="this.style.background='#0284c7'">
-            <span style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:18px;">📅</span> 
-              <span>1. Aggiungi Sveglia & Promemoria a Calendario Smartphone</span>
-            </span>
-            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px;">Google / Apple iCal</span>
-          </button>
-
-          <!-- AZIONE 2: NOTIFICA WHATSAPP -->
-          <button type="button" class="btn" onclick="inviaAvvisoFarmacoWhatsApp()" style="background:#16a34a; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 3px 10px rgba(22,163,74,0.25);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
-            <span style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:18px;">📲</span> 
-              <span>2. Invia Promemoria Scorte su WhatsApp</span>
-            </span>
-            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px;">Messaggio Istantaneo</span>
-          </button>
-
-          <!-- AZIONE 3: NOTIFICA EMAIL -->
-          <button type="button" class="btn" onclick="inviaAvvisoFarmacoEmail()" style="background:#475569; color:white; border:none; padding:12px 16px; border-radius:10px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 3px 10px rgba(71,85,105,0.25);" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#475569'">
-            <span style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:18px;">📧</span> 
-              <span>3. Invia Notifica Scorte via Email</span>
-            </span>
-            <span style="font-size:11px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px;">Posta Elettronica</span>
-          </button>
         </div>
       </div>
 
@@ -4944,7 +4953,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=96"></script>
+  <script src="app.js?v=97"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -4955,7 +4964,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js?v=77', { updateViaCache: 'none' }).then(function(reg) {
+        navigator.serviceWorker.register('./sw.js?v=97', { updateViaCache: 'none' }).then(function(reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) {}
         }).catch(function(err) {
