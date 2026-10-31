@@ -11163,21 +11163,41 @@ function verificaCambioDataAutomatico() {
 }
 
 function apriModalSmartphone() {
-  var img = document.getElementById('img-qr-smartphone');
-  if (img && window.QR_CODE_SMARTPHONE_DATA_URL) {
-    img.src = window.QR_CODE_SMARTPHONE_DATA_URL;
+  // Determina l'URL corretto: se online o su Render usa HTTPS Cloud, altrimenti usa l'origine corrente
+  var targetUrl = window.location.origin + '/careassist/';
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    targetUrl = 'https://milella-suite.onrender.com/careassist/';
   }
 
-  var labelIp = document.getElementById('label-ip-smartphone');
-  var linkBrowser = document.getElementById('link-browser-smartphone');
-  var currentUrl = 'http://192.168.1.5:3000/launcher.html';
-  if (labelIp) labelIp.textContent = currentUrl;
-  if (linkBrowser) linkBrowser.href = currentUrl;
+  // Genera dinamicamente il QR Code con l'indirizzo esatto
+  var img = document.getElementById('img-qr-smartphone');
+  if (img) {
+    var encUrl = encodeURIComponent(targetUrl);
+    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encUrl;
+    img.onerror = function() {
+      this.onerror = null;
+      this.src = 'https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=' + encUrl;
+    };
+  }
 
-  // Verifica stato server locale
+  var labelUrl = document.getElementById('label-smartphone-url') || document.getElementById('label-ip-smartphone');
+  var btnBrowser = document.getElementById('btn-smartphone-open-browser') || document.getElementById('link-browser-smartphone');
+  if (labelUrl) labelUrl.textContent = targetUrl;
+  if (btnBrowser) btnBrowser.href = targetUrl;
+
+  // Verifica stato server locale o Cloud
   var dot = document.getElementById('dot-status-server');
   var txt = document.getElementById('text-status-server');
   var box = document.getElementById('status-server-smartphone');
+
+  if (dot && txt && box) {
+    dot.style.background = '#10b981';
+    dot.style.boxShadow = '0 0 8px #10b981';
+    txt.style.color = '#065f46';
+    txt.textContent = 'Server Cloud & Mobile Attivo & Pronto';
+    box.style.background = '#ecfdf5';
+    box.style.borderColor = '#a7f3d0';
+  }
 
   if (dot && txt && box) {
     fetch('http://127.0.0.1:3000/launcher.html', { method: 'HEAD', mode: 'no-cors' })
