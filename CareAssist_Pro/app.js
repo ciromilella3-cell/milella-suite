@@ -20184,7 +20184,46 @@ function stampaLetteraSpecialistica() {
   w.document.close();
 }
 
+var _careHumanAudio = null;
+function parlaConVoceUmanaCareAssist(testo) {
+  fermaVoceBriefing();
+  if (!testo) return;
+  try {
+    _careHumanAudio = new Audio('/api/tts-umano?text=' + encodeURIComponent(testo));
+    _careHumanAudio.play().catch(function () {
+      parlaFallbackBrowserCareAssist(testo);
+    });
+    _careHumanAudio.onerror = function () {
+      parlaFallbackBrowserCareAssist(testo);
+    };
+  } catch (e) {
+    parlaFallbackBrowserCareAssist(testo);
+  }
+}
+
+function parlaFallbackBrowserCareAssist(testo) {
+  if (!('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    var utter = new SpeechSynthesisUtterance(testo);
+    utter.lang = 'it-IT';
+    var voices = window.speechSynthesis.getVoices() || [];
+    var itV = voices.filter(function (v) { return v.lang && v.lang.toLowerCase().indexOf('it') === 0; });
+    var best = itV.find(function (v) { return /natural|neural|isabella|diego|giuseppe|google|alice|online/i.test(v.name); }) || itV[0];
+    if (best) utter.voice = best;
+    utter.rate = 0.96;
+    utter.pitch = 1.02;
+    window.speechSynthesis.speak(utter);
+  } catch (e) {}
+}
+
 function fermaVoceBriefing() {
+  try {
+    if (_careHumanAudio) {
+      _careHumanAudio.pause();
+      _careHumanAudio.currentTime = 0;
+    }
+  } catch (e) {}
   if ('speechSynthesis' in window) {
     try { window.speechSynthesis.cancel(); } catch (e) {}
   }
@@ -20260,21 +20299,12 @@ function avviaBriefingVocaleAssistitoDemo(modalita) {
     bodyEl.innerHTML =
       '<div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; padding:8px 12px; background:#eff6ff; border-radius:999px; width:fit-content;">' +
         '<span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#0284c7; box-shadow:0 0 8px #0284c7;"></span>' +
-        '<span style="font-size:12px; font-weight:800; color:#1e40af;">Sintesi Vocale Italiana Attiva</span>' +
+        '<span style="font-size:12px; font-weight:800; color:#1e40af;">Voce Umana Neurale Italiana Attiva</span>' +
       '</div>' + htmlPunti;
   }
   openModal('modal-briefing-vocale');
 
-  if ('speechSynthesis' in window) {
-    try {
-      window.speechSynthesis.cancel();
-      var utter = new SpeechSynthesisUtterance(testoVoce);
-      utter.lang = 'it-IT';
-      utter.rate = 0.98;
-      utter.pitch = 1.0;
-      window.speechSynthesis.speak(utter);
-    } catch (e) {}
-  }
+  parlaConVoceUmanaCareAssist(testoVoce);
 }
 
 window.apriModalPassaporto118 = apriModalPassaporto118;

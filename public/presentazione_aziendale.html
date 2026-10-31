@@ -1017,13 +1017,21 @@
                         Seleziona un'applicazione a sinistra e premi <strong>«▶️ Avvia Video-Presentazione»</strong> (anche con <strong>Voce Narrante Italiana</strong> automatica). Ogni schermata include il pulsante <strong>«💡 Per saperne di più»</strong>.
                     </p>
                 </div>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;" class="no-print">
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;" class="no-print">
                     <button type="button" id="btnPlayPauseVideo" class="btn-top btn-gold" onclick="togglePlayVideoPresentation()">
-                        ▶️ Avvia Video-Tour Automatico
+                        ▶️ Avvia Video-Tour con Voce Umana
+                    </button>
+                    <button type="button" class="btn-top btn-outline" style="border-color:#38bdf8; color:#bae6fd;" onclick="ascoltaScenaCorrenteSubito()">
+                        🎙️ Ascolta Questa Scena
                     </button>
                     <button type="button" id="btnToggleVoice" class="btn-top btn-blue" onclick="toggleVoceNarrante()">
-                        🔊 Voce Narrante: ATTIVA
+                        🔊 Voce Umana Neurale: ATTIVA
                     </button>
+                    <select id="selVoiceRate" onchange="cambiaVelocitaVoce(this.value)" style="background:rgba(15,23,42,0.9); border:1.5px solid rgba(212,175,55,0.4); color:#fef08a; padding:9px 12px; border-radius:12px; font-size:13.5px; font-weight:800; cursor:pointer; outline:none;">
+                        <option value="0.95">🎙️ Cadenza: Calma & Chiara (0.95x)</option>
+                        <option value="1.0" selected>🎙️ Cadenza: Umana Naturale (1.0x)</option>
+                        <option value="1.07">🎙️ Cadenza: Brillante (1.07x)</option>
+                    </select>
                 </div>
             </div>
 
@@ -1710,15 +1718,161 @@
             `;
         }
 
-        function speakText(text) {
-            if (!isVoiceEnabled || !('speechSynthesis' in window)) return;
+        let currentVoiceRate = 1.0;
+        let humanAudioPlayer = new Audio();
+        humanAudioPlayer.preload = 'auto';
+
+        function pulisciTestoPerVoce(txt) {
+            if (!txt) return '';
+            return String(txt)
+                .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}]/gu, ' ')
+                .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ' ')
+                .replace(/^\d+\.\s*/g, '')
+                .replace(/↔/g, ' e ')
+                .replace(/→|↗/g, ' verso ')
+                .replace(/\bH24\b/gi, 'ventiquattro ore su ventiquattro')
+                .replace(/\bADI\b/g, 'Assistenza Domiciliare')
+                .replace(/\b118\b/g, 'centodiciotto')
+                .replace(/\bcpr\b/gi, 'compresse')
+                .replace(/\bgg\b/gi, 'giorni')
+                .replace(/\bQR\b/g, 'Q R')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function scegliMiglioreVoceItalianaBrowser() {
+            if (!('speechSynthesis' in window)) return null;
+            const voices = window.speechSynthesis.getVoices() || [];
+            const itVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('it'));
+            if (!itVoices.length) return null;
+            // Priorità assoluta alle voci Neurali / Online Natural (Isabella, Diego, Giuseppe, Google, Alice Enhanced)
+            const priorityPatterns = [
+                /natural/i,
+                /neural/i,
+                /isabella/i,
+                /diego/i,
+                /giuseppe/i,
+                /google\s*italiano/i,
+                /alice/i,
+                /federica/i,
+                /online/i
+            ];
+            for (const pat of priorityPatterns) {
+                const match = itVoices.find(v => pat.test(v.name));
+                if (match) return match;
+            }
+            return itVoices[0];
+        }
+
+        function fermaQualsiasiVoce() {
+            try {
+                humanAudioPlayer.pause();
+                humanAudioPlayer.onended = null;
+                humanAudioPlayer.onerror = null;
+                humanAudioPlayer.ontimeupdate = null;
+            } catch (e) {}
+            try {
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            } catch (e) {}
+        }
+
+        function cambiaVelocitaVoce(val) {
+            currentVoiceRate = parseFloat(val) || 1.0;
+            try {
+                humanAudioPlayer.playbackRate = currentVoiceRate;
+            } catch (e) {}
+        }
+
+        function costruisciTestoUmanoScena(mod, scene) {
+            const titoloPulito = pulisciTestoPerVoce(mod.title);
+            const scenaPulita = pulisciTestoPerVoce(scene.title);
+            const subPulito = pulisciTestoPerVoce(scene.subtitle);
+            const puntiPuliti = (scene.bullets || []).map(b => pulisciTestoPerVoce(b)).join('. ');
+            return `${titoloPulito}. ${scenaPulita}. ${subPulito} In particolare: ${puntiPuliti}.`;
+        }
+
+        function speakText(text, onComplete) {
+            fermaQualsiasiVoce();
+            if (!isVoiceEnabled) {
+                if (typeof onComplete === 'function') setTimeout(onComplete, 8000);
+                return;
+            }
+
+            const cleanText = pulisciTestoPerVoce(text);
+            if (!cleanText) {
+                if (typeof onComplete === 'function') onComplete();
+                return;
+            }
+
+            // 1. Usa il motore Neurale Umano Cloud (/api/tts-umano) che suona caldo e reale su qualsiasi browser (anche Brave)
+            const ttsUrl = '/api/tts-umano?text=' + encodeURIComponent(cleanText);
+            humanAudioPlayer.src = ttsUrl;
+            humanAudioPlayer.playbackRate = currentVoiceRate;
+
+            humanAudioPlayer.ontimeupdate = () => {
+                if (humanAudioPlayer.duration && isFinite(humanAudioPlayer.duration)) {
+                    const pct = Math.min(100, (humanAudioPlayer.currentTime / humanAudioPlayer.duration) * 100);
+                    const bar = document.getElementById('videoProgressBar');
+                    if (bar) bar.style.width = pct + '%';
+                    const curS = Math.floor(humanAudioPlayer.currentTime);
+                    const totS = Math.floor(humanAudioPlayer.duration);
+                    const lbl = document.getElementById('videoTimeLabel');
+                    if (lbl) lbl.textContent = `00:${String(curS).padStart(2,'0')} / 00:${String(totS).padStart(2,'0')}`;
+                }
+            };
+
+            humanAudioPlayer.onended = () => {
+                if (typeof onComplete === 'function') {
+                    videoTimer = setTimeout(onComplete, 1100);
+                }
+            };
+
+            humanAudioPlayer.onerror = () => {
+                // Fallback su WebSpeech API con selezione voce naturale
+                parlaConFallbackBrowser(cleanText, onComplete);
+            };
+
+            humanAudioPlayer.play().then(() => {
+                humanAudioPlayer.playbackRate = currentVoiceRate;
+            }).catch(() => {
+                parlaConFallbackBrowser(cleanText, onComplete);
+            });
+        }
+
+        function parlaConFallbackBrowser(cleanText, onComplete) {
+            if (!('speechSynthesis' in window)) {
+                if (typeof onComplete === 'function') setTimeout(onComplete, 8000);
+                return;
+            }
             try {
                 window.speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(text);
+                const u = new SpeechSynthesisUtterance(cleanText);
                 u.lang = 'it-IT';
-                u.rate = 1.0;
+                const bestVoice = scegliMiglioreVoceItalianaBrowser();
+                if (bestVoice) u.voice = bestVoice;
+                u.rate = currentVoiceRate * 0.96;
+                u.pitch = 1.02;
+                u.onend = () => {
+                    if (typeof onComplete === 'function') {
+                        videoTimer = setTimeout(onComplete, 1000);
+                    }
+                };
                 window.speechSynthesis.speak(u);
-            } catch (e) {}
+            } catch (e) {
+                if (typeof onComplete === 'function') setTimeout(onComplete, 8000);
+            }
+        }
+
+        function ascoltaScenaCorrenteSubito() {
+            const mod = SUITE_MODULES[currentAppKey];
+            const scene = mod.scenes[currentSceneIdx] || mod.scenes[0];
+            isVoiceEnabled = true;
+            const btn = document.getElementById('btnToggleVoice');
+            if (btn) {
+                btn.innerHTML = '🔊 Voce Umana Neurale: ATTIVA';
+                btn.className = 'btn-top btn-blue';
+            }
+            speakText(costruisciTestoUmanoScena(mod, scene));
         }
 
         function startVideoPlayback() {
@@ -1730,11 +1884,11 @@
 
         function stopVideoPlayback() {
             isVideoPlaying = false;
-            document.getElementById('btnPlayPauseVideo').innerHTML = '▶️ Avvia Video-Tour Automatico';
+            document.getElementById('btnPlayPauseVideo').innerHTML = '▶️ Avvia Video-Tour con Voce Umana';
             document.getElementById('btnBottomPlay').innerHTML = '▶️ Play';
             if (videoTimer) clearTimeout(videoTimer);
             if (progressInterval) clearInterval(progressInterval);
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            fermaQualsiasiVoce();
         }
 
         function togglePlayVideoPresentation() {
@@ -1749,12 +1903,13 @@
             isVoiceEnabled = !isVoiceEnabled;
             const btn = document.getElementById('btnToggleVoice');
             if (isVoiceEnabled) {
-                btn.innerHTML = '🔊 Voce Narrante: ATTIVA';
+                btn.innerHTML = '🔊 Voce Umana Neurale: ATTIVA';
                 btn.className = 'btn-top btn-blue';
+                if (isVideoPlaying) playCurrentSceneCycle();
             } else {
-                btn.innerHTML = '🔇 Voce Narrante: MUTA';
+                btn.innerHTML = '🔇 Voce Umana Neurale: MUTA';
                 btn.className = 'btn-top btn-outline';
-                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                fermaQualsiasiVoce();
             }
         }
 
@@ -1765,22 +1920,30 @@
 
             const mod = SUITE_MODULES[currentAppKey];
             const scene = mod.scenes[currentSceneIdx] || mod.scenes[0];
-            speakText(`${mod.title}. ${scene.title}. ${scene.subtitle}`);
+            document.getElementById('videoProgressBar').style.width = '0%';
 
-            progressPercent = 0;
-            const durationMs = 11000; // 11 secondi per scena
-            const stepMs = 100;
-            progressInterval = setInterval(() => {
-                progressPercent += (stepMs / durationMs) * 100;
-                if (progressPercent > 100) progressPercent = 100;
-                document.getElementById('videoProgressBar').style.width = progressPercent + '%';
-                const sec = Math.floor((progressPercent / 100) * 11);
-                document.getElementById('videoTimeLabel').textContent = `00:${String(sec).padStart(2,'0')} / 00:11`;
-            }, stepMs);
+            if (isVoiceEnabled) {
+                // La scena avanza automaticamente appena la voce umana ha terminato di spiegare!
+                speakText(costruisciTestoUmanoScena(mod, scene), () => {
+                    if (isVideoPlaying) nextVideoScene(true);
+                });
+            } else {
+                // Modalità muta: timer di 10 secondi
+                progressPercent = 0;
+                const durationMs = 10000;
+                const stepMs = 100;
+                progressInterval = setInterval(() => {
+                    progressPercent += (stepMs / durationMs) * 100;
+                    if (progressPercent > 100) progressPercent = 100;
+                    document.getElementById('videoProgressBar').style.width = progressPercent + '%';
+                    const sec = Math.floor((progressPercent / 100) * 10);
+                    document.getElementById('videoTimeLabel').textContent = `00:${String(sec).padStart(2,'0')} / 00:10`;
+                }, stepMs);
 
-            videoTimer = setTimeout(() => {
-                if (isVideoPlaying) nextVideoScene(true);
-            }, durationMs);
+                videoTimer = setTimeout(() => {
+                    if (isVideoPlaying) nextVideoScene(true);
+                }, durationMs);
+            }
         }
 
         function nextVideoScene(fromAuto = false) {
@@ -1898,12 +2061,17 @@
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12);">
-                    <button type="button" class="btn-top btn-gold" onclick="chiudiModalApprofondimento(); scrollToSection('sec-video'); selectVideoModule('${mod.key}', true);">
-                        🎬 Guarda e Ascolta il Video di questo Modulo
-                    </button>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button type="button" class="btn-top btn-gold" onclick="leggiSchedaApprofondimento('${mod.key}')">
+                            🎙️ Ascolta Spiegazione con Voce Umana
+                        </button>
+                        <button type="button" class="btn-top btn-blue" onclick="chiudiModalApprofondimento(); scrollToSection('sec-video'); selectVideoModule('${mod.key}', true);">
+                            🎬 Guarda Video Animato
+                        </button>
+                    </div>
                     <div style="display:flex; gap:10px;">
-                        <a href="${mod.appUrl}" class="btn-top btn-blue">🚀 Apri Applicazione Reale ↗</a>
-                        <button type="button" class="btn-top btn-outline" onclick="chiudiModalApprofondimento()">Chiudi</button>
+                        <a href="${mod.appUrl}" class="btn-top btn-outline">🚀 Apri Applicazione Reale ↗</a>
+                        <button type="button" class="btn-top btn-outline" onclick="fermaQualsiasiVoce(); chiudiModalApprofondimento()">Chiudi</button>
                     </div>
                 </div>
             `;
@@ -1911,7 +2079,15 @@
             document.getElementById('modalSaperneDiPiu').style.display = 'flex';
         }
 
+        function leggiSchedaApprofondimento(appKey) {
+            const mod = SUITE_MODULES[appKey] || SUITE_MODULES.careassist;
+            isVoiceEnabled = true;
+            const testo = `${mod.title}. ${mod.shortDesc} Come si utilizza: ${mod.deepDive.howToUse.join(' ')} Piccole rifiniture: ${mod.deepDive.refinements.join(' ')} Vantaggio per il datore di lavoro: ${mod.deepDive.employerBenefits}`;
+            speakText(testo);
+        }
+
         function chiudiModalApprofondimento() {
+            fermaQualsiasiVoce();
             document.getElementById('modalSaperneDiPiu').style.display = 'none';
         }
 

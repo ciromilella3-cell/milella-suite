@@ -2482,6 +2482,128 @@ app.post('/api/generate-custom-version', requireAuth({ admin: true }), (req, res
     });
 });
 
+// ==============================================================================
+// 5. MOTORE VOCALE NEURALE UMANO ITALIANO (/api/tts-umano)
+// Converte qualsiasi testo in audio MP3 naturale con prosodia umana e pause
+// ==============================================================================
+const ttsAudioCache = new Map();
+
+function preparaTestoPerVoceUmana(rawText) {
+    if (!rawText) return '';
+    return String(rawText)
+        // Rimuovi emoji e simboli grafici
+        .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}]/gu, ' ')
+        .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ' ')
+        // Espandi simboli e abbreviazioni cliniche/aziendali per una lettura fluida
+        .replace(/↔/g, ' e ')
+        .replace(/→|↗/g, ' verso ')
+        .replace(/\bH24\b/gi, 'ventiquattro ore su ventiquattro')
+        .replace(/\bADI\b/g, 'Assistenza Domiciliare')
+        .replace(/\bRSA\b/g, 'R S A')
+        .replace(/\bASL\b/g, 'A S L')
+        .replace(/\b118\b/g, 'centodiciotto')
+        .replace(/\bP\.?\s*IVA\b/gi, 'Partita IVA')
+        .replace(/\bcpr\b/gi, 'compresse')
+        .replace(/\bgg\b/gi, 'giorni')
+        .replace(/\bUI\b/g, 'unità internazionali')
+        .replace(/\bmg\b/gi, 'milligrammi')
+        .replace(/\bml\b/gi, 'millilitri')
+        .replace(/\bQR\b/g, 'Q R')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function dividiInFrasiNaturali(text, maxLen = 170) {
+    const cleaned = preparaTestoPerVoceUmana(text);
+    if (!cleaned) return [];
+    const sentences = cleaned.split(/(?<=[.!?।:;])\s+/);
+    const chunks = [];
+    for (const sentence of sentences) {
+        if (sentence.length <= maxLen) {
+            if (sentence.trim()) chunks.push(sentence.trim());
+        } else {
+            // Spezza sulle virgole o sugli spazi
+            const subParts = sentence.split(/(?<=,)\s+/);
+            let current = '';
+            for (const sub of subParts) {
+                if ((current + ' ' + sub).trim().length <= maxLen) {
+                    current = (current + ' ' + sub).trim();
+                } else {
+                    if (current) chunks.push(current);
+                    if (sub.length <= maxLen) {
+                        current = sub.trim();
+                    } else {
+                        const words = sub.split(/\s+/);
+                        let wChunk = '';
+                        for (const w of words) {
+                            if ((wChunk + ' ' + w).trim().length <= maxLen) {
+                                wChunk = (wChunk + ' ' + w).trim();
+                            } else {
+                                if (wChunk) chunks.push(wChunk);
+                                wChunk = w;
+                            }
+                        }
+                        current = wChunk;
+                    }
+                }
+            }
+            if (current) chunks.push(current);
+        }
+    }
+    return chunks;
+}
+
+app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
+    try {
+        const rawText = String(req.query.text || '').slice(0, 1800);
+        const speed = req.query.speed === 'slow' ? '0.85' : '1';
+        if (!rawText.trim()) {
+            return res.status(400).json({ error: 'Testo mancante' });
+        }
+
+        const cacheKey = `${speed}:${rawText}`;
+        if (ttsAudioCache.has(cacheKey)) {
+            const cachedBuf = ttsAudioCache.get(cacheKey);
+            res.setHeader('Content-Type', 'audio/mpeg');
+            res.setHeader('Cache-Control', 'public, max-age=86400');
+            return res.send(cachedBuf);
+        }
+
+        const chunks = dividiInFrasiNaturali(rawText, 170);
+        const buffers = [];
+        for (const chunk of chunks) {
+            const url = 'https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=it&client=gtx&ttsspeed=' + speed + '&q=' + encodeURIComponent(chunk);
+            const response = await fetch(url, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+                }
+            });
+            if (response.ok) {
+                const arrBuf = await response.arrayBuffer();
+                buffers.push(Buffer.from(arrBuf));
+            }
+        }
+
+        if (buffers.length === 0) {
+            return res.status(502).json({ error: 'TTS upstream non disponibile' });
+        }
+
+        const finalBuffer = Buffer.concat(buffers);
+        if (ttsAudioCache.size > 150) {
+            const firstKey = ttsAudioCache.keys().next().value;
+            ttsAudioCache.delete(firstKey);
+        }
+        ttsAudioCache.set(cacheKey, finalBuffer);
+
+        res.setHeader('Content-Type', 'audio/mpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        return res.send(finalBuffer);
+    } catch (err) {
+        console.error('[TTS UMANO ERRORE]', err.message);
+        return res.status(500).json({ error: err.message });
+    }
+});
+
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Inventario Server running on http://localhost:${PORT}`);
     // Scrivi l'IP in un file per farlo leggere al Pannello HTA
