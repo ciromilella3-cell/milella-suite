@@ -3231,6 +3231,12 @@
                 wrapper.appendChild(card);
             }
         });
+
+        // Riapplica immediatamente l'eventuale ricerca digitata dall'utente nell'input
+        const searchInput = document.getElementById('globalAppSearch');
+        if (searchInput && searchInput.value) {
+            filtraAppLauncher(searchInput.value);
+        }
     }
 
     function apriGestioneProgettiModal() {
