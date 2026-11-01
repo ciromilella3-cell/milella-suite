@@ -3145,10 +3145,26 @@
         return [];
     }
     
+    let _ultimoHashCardProgetti = '';
     function renderCardProgetti() {
         const wrapper = document.querySelector('.cards-wrapper');
         if (!wrapper) return;
         const progetti = (listaProgettiAttuali && listaProgettiAttuali.length) ? listaProgettiAttuali : CATALOGO_APP_DEFAULT;
+
+        // Calcolo fingerprint per evitare il re-render distruttivo e il farfallio
+        const currentHash = JSON.stringify({
+            role: currentRole,
+            apps: currentAppAbilitate,
+            alertsVei: window.__smartVeicoliAlerts ? window.__smartVeicoliAlerts.length : 0,
+            alertSal: window.__smartSaluteAlert || '',
+            alertAtt: window.__smartAttrezziInUso ? window.__smartAttrezziInUso.length : 0,
+            progetti: progetti.map(p => p.id + p.titolo + p.attivo + p.visibilita)
+        });
+
+        if (_ultimoHashCardProgetti === currentHash && wrapper.children.length > 0) {
+            return; // Nessun cambiamento, evita farfallio!
+        }
+        _ultimoHashCardProgetti = currentHash;
 
         wrapper.innerHTML = '';
         progetti.forEach(p => {
@@ -4445,7 +4461,7 @@
         }, 1000);
     }
 
-    // Controllo automatico ogni 15 secondi anche mentre si resta fermi su launcher.html!
+    // Controllo automatico a basso carico ogni 60 secondi senza farfallio
     setInterval(() => {
         caricaKpiStats();
         if (window.__careAssistAlerts && window.__careAssistAlerts.some(a => a.isUrgente)) {
@@ -4456,7 +4472,7 @@
                 suonaSirenaBoostLauncher();
             }
         }
-    }, 15000);
+    }, 60000);
 
     // ==============================================================================
     // BLINDO TOTALE ANTI-SWIPE / GESTO INDIETRO / BFCACHE SU SMARTPHONE
