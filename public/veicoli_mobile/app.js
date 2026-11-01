@@ -1,28 +1,334 @@
 const STORAGE_KEY = 'flotta_veicoli_mobile_db';
 
 const defaultVeicoliData = {
-  spese: [
-    { id: 1, data: '2026-08-14', desc: 'Tagliando Completo & Filtri', costo: 207.00, note: 'Officina Autorizzata' },
-    { id: 2, data: '2026-07-20', desc: 'Sostituzione 4 Pneumatici Estivi', costo: 540.00, note: 'Gommista' },
-    { id: 3, data: '2026-06-10', desc: 'Rabbocco Liquido Tergicristalli & Lampadina', costo: 7.00, note: 'Fai da te' },
-    { id: 4, data: '2026-05-18', desc: 'Controllo Livelli & Spazzole', costo: 13.00, note: 'Ricambi' },
-    { id: 5, data: '2026-04-05', desc: 'Inversione Gomme & Convergenza', costo: 60.00, note: 'Gommista' }
+  "spese": [
+    {
+      "id": 20,
+      "data": "2026-09-18",
+      "desc": "olio,",
+      "costo": 150,
+      "note": "ORDINARIA"
+    },
+    {
+      "id": 19,
+      "data": "2026-08-03",
+      "desc": "stostituzione pompa acqua",
+      "costo": 207,
+      "note": "STRAORDINARIA"
+    },
+    {
+      "id": 16,
+      "data": "2026-07-31",
+      "desc": "soccorso stradale Barletta-Bari",
+      "costo": 130,
+      "note": "soccorso stradale Barletta-Bari"
+    },
+    {
+      "id": 17,
+      "data": "2026-07-31",
+      "desc": "termostato ventola",
+      "costo": 140,
+      "note": "termostato ventola"
+    },
+    {
+      "id": 15,
+      "data": "2026-07-22",
+      "desc": "Distributore di accensione, candele",
+      "costo": 270,
+      "note": "Distributore di accensione, candele"
+    },
+    {
+      "id": 14,
+      "data": "2026-06-08",
+      "desc": "LAVAGGIO ESTERNO",
+      "costo": 7,
+      "note": "STRAORDINARIA"
+    },
+    {
+      "id": 13,
+      "data": "2026-05-29",
+      "desc": "Lavaggio interni ed esterni",
+      "costo": 13,
+      "note": "Lavaggio interni ed esterni"
+    },
+    {
+      "id": 3,
+      "data": "2026-04-20",
+      "desc": "Lavaggio completo e Igienizzazione",
+      "costo": 15,
+      "note": "Lavaggio interni ed esterni"
+    },
+    {
+      "id": 4,
+      "data": "2026-04-17",
+      "desc": "cambio ruote estive",
+      "costo": 45,
+      "note": "CAMBIO RUOTE ESTIVE"
+    }
   ],
-  rifornimenti: [
-    { id: 1, data: '2026-08-20', litri: 28.5, costo: 55.00, km: 128450, note: 'Eni Station' },
-    { id: 2, data: '2026-08-05', litri: 35.0, costo: 68.00, km: 127920, note: 'Q8' },
-    { id: 3, data: '2026-07-22', litri: 40.0, costo: 78.00, km: 127200, note: 'IP' },
-    { id: 4, data: '2026-07-08', litri: 36.5, costo: 70.00, km: 126500, note: 'Eni' }
+  "rifornimenti": [
+    {
+      "id": 35,
+      "data": "2026-10-18",
+      "litri": 22.61,
+      "costo": 45.08,
+      "km": 149991,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 34,
+      "data": "2026-10-11",
+      "litri": 26.87,
+      "costo": 53.18,
+      "km": 149620,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 33,
+      "data": "2026-10-04",
+      "litri": 19.2,
+      "costo": 38,
+      "km": 149207,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 32,
+      "data": "2026-10-03",
+      "litri": 28.15,
+      "costo": 55.71,
+      "km": 0,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 31,
+      "data": "2026-09-25",
+      "litri": 12.99,
+      "costo": 27.53,
+      "km": 0,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 30,
+      "data": "2026-09-14",
+      "litri": 29,
+      "costo": 60,
+      "km": 148178,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 29,
+      "data": "2026-09-06",
+      "litri": 17.25,
+      "costo": 35,
+      "km": 147702,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 28,
+      "data": "2026-09-04",
+      "litri": 21.47,
+      "costo": 43.35,
+      "km": 147343,
+      "note": "Rifornimento"
+    },
+    {
+      "id": 27,
+      "data": "2026-07-31",
+      "litri": 22.97,
+      "costo": 45,
+      "km": 146036,
+      "note": "Centro commerciale casamassima"
+    },
+    {
+      "id": 26,
+      "data": "2026-07-23",
+      "litri": 25.82,
+      "costo": 50.06,
+      "km": 145074,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 24,
+      "data": "2026-07-13",
+      "litri": 16.59,
+      "costo": 30.34,
+      "km": 144674,
+      "note": "Rifornimento"
+    },
+    {
+      "id": 25,
+      "data": "2026-07-10",
+      "litri": 12,
+      "costo": 21.95,
+      "km": 144462,
+      "note": "Rifornimento"
+    },
+    {
+      "id": 23,
+      "data": "2026-07-05",
+      "litri": 18.19,
+      "costo": 33.27,
+      "km": 144159,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 22,
+      "data": "2026-07-04",
+      "litri": 24.16,
+      "costo": 44.19,
+      "km": 143811,
+      "note": "centro commerciale"
+    },
+    {
+      "id": 20,
+      "data": "2026-06-21",
+      "litri": 19.01,
+      "costo": 34.39,
+      "km": 143424,
+      "note": "Rifornimento"
+    },
+    {
+      "id": 21,
+      "data": "2026-06-19",
+      "litri": 26.66,
+      "costo": 48.23,
+      "km": 143049,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 19,
+      "data": "2026-06-14",
+      "litri": 16.71,
+      "costo": 31.06,
+      "km": 142572,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 18,
+      "data": "2026-06-13",
+      "litri": 20.48,
+      "costo": 38.07,
+      "km": 142226,
+      "note": "centro cemmerciale casamassima"
+    },
+    {
+      "id": 14,
+      "data": "2026-06-09",
+      "litri": 15.03,
+      "costo": 28.54,
+      "km": 141872,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 12,
+      "data": "2026-06-07",
+      "litri": 24.04,
+      "costo": 46.13,
+      "km": 141615,
+      "note": "CENTRO COMMERCIALE CASAMASSIMA"
+    },
+    {
+      "id": 9,
+      "data": "2026-05-30",
+      "litri": 17.1,
+      "costo": 32.81,
+      "km": 141183,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 8,
+      "data": "2026-05-29",
+      "litri": 19,
+      "costo": 36.46,
+      "km": 140845,
+      "note": "centro commerciale casamassima140845"
+    },
+    {
+      "id": 5,
+      "data": "2026-05-24",
+      "litri": 19.08,
+      "costo": 36.42,
+      "km": 140506,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 6,
+      "data": "2026-05-22",
+      "litri": 22.1,
+      "costo": 42.19,
+      "km": 140152,
+      "note": "centro commerciale casamassima"
+    },
+    {
+      "id": 4,
+      "data": "2026-05-05",
+      "litri": 34.41,
+      "costo": 65,
+      "km": 139856,
+      "note": "Centro commerciale Casamassima"
+    }
   ],
-  rimborsiMesi: [
-    { mese: 'Gennaio 2026', rimborsi: 131.31, benzina: 32.70, netto: 98.61 },
-    { mese: 'Febbraio 2026', rimborsi: 398.30, benzina: 99.18, netto: 299.12 },
-    { mese: 'Marzo 2026', rimborsi: 319.38, benzina: 79.53, netto: 239.85 },
-    { mese: 'Aprile 2026', rimborsi: 239.28, benzina: 59.58, netto: 119.70 },
-    { mese: 'Maggio 2026', rimborsi: 183.61, benzina: 46.21, netto: 124.40 },
-    { mese: 'Giugno 2026', rimborsi: 496.04, benzina: 121.56, netto: 367.48 },
-    { mese: 'Luglio 2026', rimborsi: 305.60, benzina: 75.29, netto: -309.69 },
-    { mese: 'Agosto 2026', rimborsi: 128.10, benzina: 33.08, netto: -111.98 }
+  "rimborsiMesi": [
+    {
+      "mese": "Gennaio 2026",
+      "rimborsi": 131.31,
+      "benzina": 32.7,
+      "netto": 98.61
+    },
+    {
+      "mese": "Febbraio 2026",
+      "rimborsi": 398.3,
+      "benzina": 99.18,
+      "netto": 299.12
+    },
+    {
+      "mese": "Marzo 2026",
+      "rimborsi": 319.38,
+      "benzina": 79.53,
+      "netto": 239.85
+    },
+    {
+      "mese": "Aprile 2026",
+      "rimborsi": 239.28,
+      "benzina": 59.58,
+      "netto": 119.7
+    },
+    {
+      "mese": "Maggio 2026",
+      "rimborsi": 280,
+      "benzina": 212.88,
+      "netto": 67.12
+    },
+    {
+      "mese": "Giugno 2026",
+      "rimborsi": 496.04,
+      "benzina": 226.42,
+      "netto": 269.62
+    },
+    {
+      "mese": "Luglio 2026",
+      "rimborsi": 305.6,
+      "benzina": 224.81,
+      "netto": 80.79
+    },
+    {
+      "mese": "Agosto 2026",
+      "rimborsi": 128.1,
+      "benzina": 33.08,
+      "netto": 95.02
+    },
+    {
+      "mese": "Settembre 2026",
+      "rimborsi": 310,
+      "benzina": 165.88,
+      "netto": 144.12
+    },
+    {
+      "mese": "Ottobre 2026",
+      "rimborsi": 380,
+      "benzina": 191.97,
+      "netto": 188.03
+    }
   ]
 };
 
@@ -31,6 +337,43 @@ let AppData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultVeicoliDat
 function saveAppData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(AppData));
   renderAll();
+  // Sincronizza su server in background
+  try {
+    fetch('/api/veicoli/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(AppData)
+    }).catch(() => {});
+  } catch(e) {}
+}
+
+async function caricaDatiDaServer() {
+  try {
+    const res = await fetch('/api/veicoli/data');
+    if (res.ok) {
+      const serverData = await res.json();
+      if (serverData && (serverData.rifornimenti?.length > 0 || serverData.spese?.length > 0)) {
+        // Unisci mantenendo eventuali record salvati di recente in locale
+        const localData = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+        if (localData && localData.rifornimenti) {
+          const mapRif = new Map();
+          (serverData.rifornimenti || []).forEach(r => mapRif.set(String(r.id), r));
+          (localData.rifornimenti || []).forEach(r => mapRif.set(String(r.id), r));
+          serverData.rifornimenti = Array.from(mapRif.values()).sort((a,b) => (b.data || '').localeCompare(a.data || ''));
+
+          const mapSpese = new Map();
+          (serverData.spese || []).forEach(s => mapSpese.set(String(s.id), s));
+          (localData.spese || []).forEach(s => mapSpese.set(String(s.id), s));
+          serverData.spese = Array.from(mapSpese.values()).sort((a,b) => (b.data || '').localeCompare(a.data || ''));
+        }
+        AppData = serverData;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(AppData));
+        renderAll();
+      }
+    }
+  } catch(e) {
+    console.warn('Offline mode: uso dati cache locali');
+  }
 }
 
 function switchView(tabName, btnElem) {
@@ -163,7 +506,13 @@ function salvaRifornimento(e) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  // Se i dati locali avevano solo i 4 rifornimenti demo, aggiorna ai dati reali
+  if (!AppData.rifornimenti || AppData.rifornimenti.length <= 4) {
+    AppData = defaultVeicoliData;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(AppData));
+  }
   renderAll();
+  caricaDatiDaServer();
 });
 
 

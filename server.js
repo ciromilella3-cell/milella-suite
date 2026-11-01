@@ -1422,6 +1422,45 @@ app.post('/api/mednutri/save-data', async (req, res) => {
 // ==============================================================================
 const saluteDbPath = path.join(__dirname, 'data', 'salute_db.json');
 
+// ==============================================================================
+// API SINCRONIZZAZIONE FLOTTA VEICOLI MOBILE (DATI REALI CLOUD & LOCALSTORAGE SYNC)
+// ==============================================================================
+const veicoliCloudDbPath = path.join(__dirname, 'data', 'veicoli_cloud_db.json');
+
+app.get(['/api/veicoli/data', '/veicoli_mobile/api/data'], async (req, res) => {
+    try {
+        let cloudData = await cloudGet('veicoli', null);
+        if (cloudData) return res.json(cloudData);
+        if (fs.existsSync(veicoliCloudDbPath)) {
+            const dataStr = fs.readFileSync(veicoliCloudDbPath, 'utf8');
+            return res.json(JSON.parse(dataStr || '{}'));
+        }
+        res.json({ spese: [], rifornimenti: [], rimborsiMesi: [] });
+    } catch(err) {
+        console.error('Errore get veicoli data:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post(['/api/veicoli/data', '/veicoli_mobile/api/data'], async (req, res) => {
+    try {
+        if (!req.body || typeof req.body !== 'object') {
+            return res.status(400).json({ error: 'Body non valido' });
+        }
+        let current = {};
+        if (fs.existsSync(veicoliCloudDbPath)) {
+            try { current = JSON.parse(fs.readFileSync(veicoliCloudDbPath, 'utf8')); } catch(e){}
+        }
+        const updated = Object.assign({}, current, req.body);
+        safeWriteAtomic(veicoliCloudDbPath, JSON.stringify(updated, null, 2));
+        await cloudSet('veicoli', updated, veicoliCloudDbPath);
+        res.json({ success: true, timestamp: Date.now() });
+    } catch(err) {
+        console.error('Errore save veicoli data:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.get(['/api/salute/data', '/salute/api/data'], (req, res) => {
     try {
         if (fs.existsSync(saluteDbPath)) {
