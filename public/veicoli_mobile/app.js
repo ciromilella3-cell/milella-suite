@@ -48,30 +48,37 @@ function switchView(tabName, btnElem) {
   if (target) target.classList.add('active');
 }
 
+
+function formattaDataItaliana(dStr) {
+  if (!dStr) return '--/--/----';
+  // Se è già GG/MM/AAAA o contiene barre
+  if (dStr.includes('/')) return dStr;
+  const parts = dStr.split('-');
+  if (parts.length === 3) {
+    // Formato YYYY-MM-DD -> DD/MM/YYYY
+    if (parts[0].length === 4) {
+      return parts[2] + '/' + parts[1] + '/' + parts[0];
+    }
+  }
+  return dStr;
+}
+
 function renderAll() {
   // 1. Spese
   const cSpese = document.getElementById('list-spese');
   if (cSpese) {
     cSpese.innerHTML = AppData.spese.map(s => `
       <div class="item-card">
-        <div class="item-left">
-          <div class="item-title">${s.desc}</div>
-          <div class="item-date">📅 ${s.data} ${s.note ? '• 🏢 ' + s.note : ''}</div>
-          <span class="item-tag tag-blue">Manutenzione Auto</span>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:44px; height:44px; min-width:44px; border-radius:50%; background:#fef3c7; border:1.5px solid #fde68a; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 2px 6px rgba(245,158,11,0.15); flex-shrink:0;">⛽</div>
+          <div class="item-left">
+            <div class="item-title">Rifornimento Carburante ${r.litri ? '(' + r.litri + ' L)' : ''}</div>
+            ${newRif}
+            <span class="item-tag tag-amber">Carburante</span>
+          </div>
         </div>
-        <div class="item-cost negative">-€ ${parseFloat(s.costo).toFixed(2)}</div>
+        <div class="item-cost negative">-€ ${parseFloat(r.costo).toFixed(2)}</div>
       </div>
-    `).join('');
-  }
-
-  // 2. Rifornimenti
-  const cRif = document.getElementById('list-rifornimenti');
-  if (cRif) {
-    cRif.innerHTML = AppData.rifornimenti.map(r => `
-      <div class="item-card">
-        <div class="item-left">
-          <div class="item-title">⛽ Rifornimento Carburante ${r.litri ? '(' + r.litri + ' Litri)' : ''}</div>
-          <div class="item-date">📅 ${r.data} ${r.km ? '• 🚗 ' + r.km + ' Km' : ''} ${r.note ? '• 📍 ' + r.note : ''}</div>
           <span class="item-tag tag-amber">Carburante</span>
         </div>
         <div class="item-cost negative">-€ ${parseFloat(r.costo).toFixed(2)}</div>
