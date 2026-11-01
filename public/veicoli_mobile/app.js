@@ -433,23 +433,28 @@ function renderAll() {
   const cRif = document.getElementById('list-rifornimenti');
   if (cRif) {
     cRif.innerHTML = AppData.rifornimenti.map(r => `
-      <div class="item-card">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div style="width:44px; height:44px; min-width:44px; border-radius:50%; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border:2px solid #ffffff; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(245,158,11,0.3); flex-shrink:0;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="3" y1="22" x2="15" y2="22"></line>
-              <line x1="4" y1="9" x2="14" y2="9"></line>
-              <path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"></path>
-              <path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"></path>
-            </svg>
+      <div class="item-card" style="border-radius:16px; border:1.5px solid #e2e8f0; padding:14px 16px; margin-bottom:10px; cursor:pointer; transition:all 0.2s;" onclick="apriModificaRifornimento('${r.id}')" title="Clicca per modificare questo rifornimento">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:44px; height:44px; min-width:44px; border-radius:50%; background:linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border:1.5px solid #f59e0b; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(245,158,11,0.25); flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="22" x2="15" y2="22"></line>
+                <line x1="4" y1="9" x2="14" y2="9"></line>
+                <path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"></path>
+                <path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"></path>
+              </svg>
+            </div>
+            <div class="item-left">
+              <div class="item-title" style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:14.5px; font-weight:800; color:#0f3d6c;">Rifornimento Carburante ${r.litri ? '(' + r.litri + ' Litri)' : ''}</span>
+                <span style="font-size:10.5px; background:#e0f2fe; color:#0284c7; padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid #bae6fd;">✏️ Modifica</span>
+              </div>
+              <div class="item-date" style="font-size:12px; color:#64748b; margin-top:3px;">📅 <b>${formattaDataItaliana(r.data)}</b> ${r.km ? ' &bull; 🚗 ' + Number(r.km).toLocaleString('it-IT') + ' Km' : ''} ${r.note ? ' &bull; 📍 ' + r.note : ''}</div>
+              <span class="item-tag tag-amber" style="margin-top:4px;">Carburante</span>
+            </div>
           </div>
-          <div class="item-left">
-            <div class="item-title">Rifornimento Carburante ${r.litri ? '(' + r.litri + ' Litri)' : ''}</div>
-            <div class="item-date">📅 <b>${formattaDataItaliana(r.data)}</b> ${r.km ? ' &bull; 🚗 ' + Number(r.km).toLocaleString('it-IT') + ' Km' : ''} ${r.note ? ' &bull; 📍 ' + r.note : ''}</div>
-            <span class="item-tag tag-amber">Carburante</span>
-          </div>
+          <div class="item-cost negative" style="font-size:16px; font-weight:800; white-space:nowrap;">-€ ${parseFloat(r.costo).toFixed(2)}</div>
         </div>
-        <div class="item-cost negative">-€ ${parseFloat(r.costo).toFixed(2)}</div>
       </div>
     `).join('');
   }
@@ -563,24 +568,78 @@ function apriModalSpesa() {
 }
 
 function apriModalRifornimento() {
+  document.getElementById('modal-rif-title').innerText = 'Registra Rifornimento Carburante';
+  document.getElementById('form-rif-id').value = '';
   document.getElementById('form-rif-data').value = new Date().toISOString().split('T')[0];
+  document.getElementById('form-rif-costo').value = '';
+  document.getElementById('form-rif-km').value = '';
+  document.getElementById('form-rif-prezzo-litro').value = '';
+  document.getElementById('form-rif-litri').value = '';
+  document.getElementById('form-rif-note').value = '';
+  const delBtn = document.getElementById('btn-rif-elimina');
+  if (delBtn) delBtn.style.display = 'none';
   document.getElementById('modal-rifornimento').classList.add('active');
 }
 
-function chiudiModali() {
-  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+function apriModificaRifornimento(id) {
+  const item = (AppData.rifornimenti || []).find(r => String(r.id) === String(id));
+  if (!item) return;
+
+  document.getElementById('modal-rif-title').innerText = 'Modifica Rifornimento Carburante';
+  document.getElementById('form-rif-id').value = item.id;
+  document.getElementById('form-rif-data').value = item.data || '';
+  document.getElementById('form-rif-costo').value = item.costo || '';
+  document.getElementById('form-rif-km').value = item.km || '';
+  document.getElementById('form-rif-litri').value = item.litri || '';
+  document.getElementById('form-rif-note').value = item.note || '';
+
+  if (item.costo && item.litri && parseFloat(item.litri) > 0) {
+    document.getElementById('form-rif-prezzo-litro').value = (parseFloat(item.costo) / parseFloat(item.litri)).toFixed(3);
+  } else {
+    document.getElementById('form-rif-prezzo-litro').value = '';
+  }
+
+  const delBtn = document.getElementById('btn-rif-elimina');
+  if (delBtn) delBtn.style.display = 'inline-block';
+
+  document.getElementById('modal-rifornimento').classList.add('active');
 }
 
-function salvaSpesa(e) {
-  e.preventDefault();
-  const data = document.getElementById('form-spesa-data').value;
-  const desc = document.getElementById('form-spesa-desc').value;
-  const costo = parseFloat(document.getElementById('form-spesa-costo').value) || 0;
-  const note = document.getElementById('form-spesa-note').value;
+function eliminaRifornimentoCorrente() {
+  const id = document.getElementById('form-rif-id').value;
+  if (!id) return;
+  if (!confirm('Vuoi eliminare definitivamente questo rifornimento?')) return;
 
-  AppData.spese.unshift({ id: Date.now(), data, desc, costo, note });
+  AppData.rifornimenti = (AppData.rifornimenti || []).filter(r => String(r.id) !== String(id));
   saveAppData();
   chiudiModali();
+  if (typeof showToast === 'function') showToast('Rifornimento eliminato con successo.', 'info');
+}
+
+function salvaRifornimento(e) {
+  e.preventDefault();
+  const id = document.getElementById('form-rif-id').value;
+  const data = document.getElementById('form-rif-data').value;
+  const costo = parseFloat(document.getElementById('form-rif-costo').value) || 0;
+  const km = parseInt(document.getElementById('form-rif-km').value) || 0;
+  const litri = parseFloat(document.getElementById('form-rif-litri').value) || 0;
+  const note = document.getElementById('form-rif-note').value;
+
+  if (id) {
+    // Modifica esistente
+    const idx = (AppData.rifornimenti || []).findIndex(r => String(r.id) === String(id));
+    if (idx !== -1) {
+      AppData.rifornimenti[idx] = { ...AppData.rifornimenti[idx], data, costo, km, litri, note };
+    }
+  } else {
+    // Nuovo rifornimento
+    AppData.rifornimenti.unshift({ id: Date.now(), data, costo, km, litri, note });
+  }
+
+  AppData.rifornimenti.sort((a,b) => (b.data || '').localeCompare(a.data || ''));
+  saveAppData();
+  chiudiModali();
+  if (typeof showToast === 'function') showToast('✅ Rifornimento salvato con successo!', 'success');
 }
 
 function salvaRifornimento(e) {
