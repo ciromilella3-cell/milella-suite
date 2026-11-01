@@ -661,6 +661,8 @@
             }
         }
   
+    
+        .card.search-hidden { display: none !important; }
     </style>
 <style>
 @media (max-width: 768px) { #btnLogistica { display: none !important; } }
@@ -4020,8 +4022,14 @@
             const title = (c.querySelector('.card-title')?.textContent || '').toLowerCase();
             const desc = (c.querySelector('.card-desc')?.textContent || '').toLowerCase();
             const match = !query || title.includes(query) || desc.includes(query);
-            c.style.display = match ? 'flex' : 'none';
-            if (match) visibleCount++;
+            if (match) {
+                c.classList.remove('search-hidden');
+                c.style.setProperty('display', 'flex', 'important');
+                visibleCount++;
+            } else {
+                c.classList.add('search-hidden');
+                c.style.setProperty('display', 'none', 'important');
+            }
         });
         let noResultsMsg = document.getElementById('noSearchResultsMsg');
         if (!noResultsMsg) {
