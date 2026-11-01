@@ -6344,10 +6344,13 @@ async function eliminaTerapia(id) {
     'Sposta nel Cestino'
   );
   if (ok) {
-    cestinoAggiungi('terapia', t.farmaco, (t.dosaggio || '') + (t.ora ? ' · ore ' + t.ora : ''), t, p);
+    var backupItem = JSON.parse(JSON.stringify(t));
+    var cestinoId = cestinoAggiungi('terapia', t.farmaco, (t.dosaggio || '') + (t.ora ? ' · ore ' + t.ora : ''), t, p);
     p.terapie = p.terapie.filter(x => x.id !== id);
     saveDb();
-    showToast('Farmaco spostato nel Cestino: puoi ripristinarlo da Opzioni → Cestino. 🗑️');
+    
+    // BANNER DI SICUREZZA FLOTTANTE "ANNULLA SUBITO" PER 12 SECONDI
+    mostraBannerAnnullaCancellazione(backupItem, cestinoId);
   }
 }
 
@@ -13256,9 +13259,22 @@ function renderDosiCards() {
       (!isFormatoPenna && _capsulaCurrentDosi.length > 1 ? '<button type="button" onclick="rimuoviDoseCard(' + idx + ')" style="background:#fee2e2; border:1px solid #f87171; color:#b91c1c; font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; cursor:pointer;" title="Rimuovi questa dose">✕ Elimina</button>' : '') +
       '</div>' +
 
+      // Pulsanti Scelta Rapida Orario a 1 Tocco (per chi ha fretta o non vuole digitare numeri)
+      (!isBisogno ?
+        '<div style="margin-bottom:8px;">' +
+        '<div style="font-size:10.5px; font-weight:800; color:#64748b; margin-bottom:4px; text-transform:uppercase;">⚡ Orario Rapido a 1 Tocco:</div>' +
+        '<div style="display:flex; gap:5px; flex-wrap:wrap;">' +
+        '<button type="button" onclick="impostaOrarioRapidoDose(' + idx + ', \'08:00\', \'Mattina (Colazione)\')" style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; border:1px solid #cbd5e1; background:#ffffff; color:#0f172a; cursor:pointer;">🌅 08:00 Colazione</button>' +
+        '<button type="button" onclick="impostaOrarioRapidoDose(' + idx + ', \'13:00\', \'Pranzo\')" style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; border:1px solid #cbd5e1; background:#ffffff; color:#0f172a; cursor:pointer;">☀️ 13:00 Pranzo</button>' +
+        '<button type="button" onclick="impostaOrarioRapidoDose(' + idx + ', \'20:00\', \'Sera (Cena)\')" style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; border:1px solid #cbd5e1; background:#ffffff; color:#0f172a; cursor:pointer;">🌆 20:00 Cena</button>' +
+        '<button type="button" onclick="impostaOrarioRapidoDose(' + idx + ', \'21:30\', \'Notte (Prima di dormire)\')" style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; border:1px solid #cbd5e1; background:#ffffff; color:#0f172a; cursor:pointer;">🌙 21:30 Notte</button>' +
+        '</div>' +
+        '</div>' : ''
+      ) +
+
       '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">' +
       '<div style="flex:1; min-width:130px;">' +
-      '<label style="font-size:11px; font-weight:800; color:#475569; display:block; margin-bottom:3px;">⏰ A CHE ORA:</label>' +
+      '<label style="font-size:11px; font-weight:800; color:#475569; display:block; margin-bottom:3px;">⏰ ORA ESATTA:</label>' +
       (isBisogno ?
         '<input type="text" class="dose-card-ora" value="Al Bisogno" readonly style="width:100%; font-weight:800; font-size:14px; padding:6px 10px; border-radius:8px; border:1.5px solid #cbd5e1; background:#fffbeb; color:#b45309;">' :
         '<input type="time" class="dose-card-ora" value="' + (d.ora || '08:00') + '" oninput="onDoseCardOraChanged(' + idx + ', this.value)" style="width:100%; font-weight:800; font-size:15px; padding:6px 10px; border-radius:8px; border:1.5px solid #0284c7; background:#f0f9ff; color:#0284c7;">'
@@ -13456,17 +13472,23 @@ function ricalcolaRiepilogoCapsula() {
     dataScadenzaStr = dFine.toLocaleDateString('it-IT');
   }
 
+  var avvisoScortaColore = (giorniAutonomia <= 7) ? '#ef4444' : ((giorniAutonomia <= 14) ? '#f59e0b' : '#10b981');
+  var avvisoScortaBg = (giorniAutonomia <= 7) ? '#fef2f2' : ((giorniAutonomia <= 14) ? '#fffbeb' : '#ecfdf5');
+
   box.innerHTML =
-    '<div class="capsula-summary-title">' +
-    '<span>📊</span> Piano Terapeutico: ' + _capsulaCurrentDosi.length + ' Somministrazion' + (_capsulaCurrentDosi.length > 1 ? 'i' : 'e') + ' al giorno' +
+    '<div style="background:' + avvisoScortaBg + '; border:2px solid ' + avvisoScortaColore + '; border-radius:12px; padding:12px; margin-top:8px;">' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
+    '<b style="font-size:13px; color:#0f172a; text-transform:uppercase;">📊 Calcolo Autonomia & Scadenza Scorte:</b>' +
+    '<span style="font-size:12px; font-weight:900; color:' + avvisoScortaColore + ';">' + (giorniAutonomia <= 7 ? '🚨 ATTENZIONE SCORTA' : '🟢 SCORTA SUFFICIENTE') + '</span>' +
     '</div>' +
-    '<div class="capsula-summary-desc">' +
-    descParti.join(' + ') +
+    '<div style="font-size:12px; color:#334155; margin-bottom:8px;">' +
+    'Assunzione: <b>' + descParti.join(' + ') + '</b> (Totale: <b>' + totCprDie + ' cpr / die</b>)' +
     '</div>' +
-    '<div class="capsula-summary-metrics">' +
-    '<div><b>⚖️ Consumo Giornaliero:</b> <span style="color:#166534; font-weight:800;">' + totCprDie + ' cpr / die</span></div>' +
-    '<div><b>📦 Scorte Attuali:</b> <span style="color:#0f172a; font-weight:800;">' + scorta + ' compresse</span></div>' +
-    '<div><b>⏳ Autonomia Stimata:</b> <span style="color:#1d4ed8; font-weight:800;">~' + giorniAutonomia + ' giorni (fino al ' + dataScadenzaStr + ')</span></div>' +
+    '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px; background:#fff; border-radius:8px; padding:8px 10px; border:1px solid #cbd5e1;">' +
+    '<div><b>📦 Scorta in Casa:</b><br><span style="font-size:14px; font-weight:900; color:#0f172a;">' + scorta + ' pillole</span></div>' +
+    '<div><b>⏱️ Dura per:</b><br><span style="font-size:14px; font-weight:900; color:#1d4ed8;">~' + giorniAutonomia + ' giorni</span></div>' +
+    '<div><b>📅 Fine Scorta:</b><br><span style="font-size:14px; font-weight:900; color:' + (giorniAutonomia <= 7 ? '#dc2626' : '#15803d') + ';">' + dataScadenzaStr + '</span></div>' +
+    '</div>' +
     '</div>';
 }
 
@@ -21196,3 +21218,45 @@ function avviaTestDisplaySpento10Secondi() {
 
 window.avviaTestDisplaySpento10Secondi = avviaTestDisplaySpento10Secondi;
 window.mostraNotificaSistemaSchermoSpento = mostraNotificaSistemaSchermoSpento;
+
+window.impostaOrarioRapidoDose = function(cardIdx, oraVal, fasciaVal) {
+  if (!_capsulaCurrentDosi[cardIdx]) return;
+  _capsulaCurrentDosi[cardIdx].ora = oraVal;
+  _capsulaCurrentDosi[cardIdx].fascia = fasciaVal;
+  renderDosiCards();
+  ricalcolaRiepilogoCapsula();
+};
+
+
+window.mostraBannerAnnullaCancellazione = function(item, cestinoId) {
+  var oldBanner = document.getElementById('banner-annulla-cancellazione-flottante');
+  if (oldBanner) oldBanner.remove();
+
+  var b = document.createElement('div');
+  b.id = 'banner-annulla-cancellazione-flottante';
+  b.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#0f172a; color:#fff; border:2px solid #ef4444; border-radius:30px; padding:10px 20px; z-index:999999; display:flex; align-items:center; gap:12px; box-shadow:0 8px 30px rgba(0,0,0,0.6); font-size:13px; font-weight:800;';
+  
+  b.innerHTML = 
+    '<span>🗑️ Hai rimosso: <b>' + (item.farmaco || 'Farmaco') + '</b></span>' +
+    '<button type="button" onclick="annullaCancellazioneFarmacoImmediata(' + item.id + ', \'' + (cestinoId || '') + '\')" style="background:#10b981; color:#fff; border:none; padding:6px 14px; border-radius:20px; font-weight:900; font-size:12px; cursor:pointer; box-shadow:0 2px 8px rgba(16,185,129,0.4);">' +
+    '↩️ ANNULLA SUBITO' +
+    '</button>' +
+    '<button type="button" onclick="this.parentElement.remove()" style="background:transparent; border:none; color:#94a3b8; font-size:16px; cursor:pointer; padding:0 4px;">✕</button>';
+
+  document.body.appendChild(b);
+  setTimeout(function() {
+    if (b && b.parentElement) b.remove();
+  }, 12000);
+};
+
+window.annullaCancellazioneFarmacoImmediata = function(farmacoId, cestinoId) {
+  var b = document.getElementById('banner-annulla-cancellazione-flottante');
+  if (b) b.remove();
+
+  // Usa la funzione di ripristino cestino
+  if (cestinoId && typeof cestinoRipristina === 'function') {
+    cestinoRipristina(cestinoId);
+  } else {
+    location.reload();
+  }
+};
