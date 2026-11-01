@@ -13171,15 +13171,34 @@ function renderDosiCards() {
     var quotaLabel = (quotaVal === 0.25 ? '¼ cpr' : (quotaVal === 0.5 ? '½ cpr' : (quotaVal === 1 ? '1 cpr' : (quotaVal === 1.5 ? '1½ cpr' : (quotaVal === 2 ? '2 cpr' : (quotaVal === 2.5 ? '2½ cpr' : (quotaVal === 3 ? '3 cpr' : (quotaVal === 3.5 ? '3½ cpr' : (quotaVal === 4 ? '4 cpr' : quotaVal + ' cpr')))))))));
 
     var isFormatoPenna = (window._currentFormatoModal === 'penna');
-    var badgeTitolo = isFormatoPenna ? ('💉 Iniezione alle ' + (d.ora || '08:00')) : ('Dose ' + doseNum + (_capsulaCurrentDosi.length > 1 ? ' di ' + _capsulaCurrentDosi.length : ''));
+    
+    // Tavolozza cromatica clinica alternata per facilitare il riconoscimento a colpo d'occhio:
+    // Dose 1 (Mattina/Inizio) = Giallo Caldo / Ambra pastello
+    // Dose 2 (Pranzo/Metà)    = Smeraldo / Verde fresco
+    // Dose 3 (Sera/Cena)      = Blu Cobalto / Indaco
+    // Dose 4 (Notte/Letto)    = Viola tenue
+    var dosePalette = [
+      { border: '#f59e0b', bg: '#fffbeb', headerBg: '#fef3c7', text: '#b45309', icon: '🌅', label: '1ª DOSE' },
+      { border: '#10b981', bg: '#f0fdf4', headerBg: '#dcfce7', text: '#15803d', icon: '☀️', label: '2ª DOSE' },
+      { border: '#3b82f6', bg: '#eff6ff', headerBg: '#dbeafe', text: '#1d4ed8', icon: '🌆', label: '3ª DOSE' },
+      { border: '#8b5cf6', bg: '#f5f3ff', headerBg: '#ede9fe', text: '#6d28d9', icon: '🌙', label: '4ª DOSE' },
+      { border: '#ec4899', bg: '#fdf2f8', headerBg: '#fce7f3', text: '#be185d', icon: '⏰', label: '5ª DOSE' }
+    ];
+    var colInfo = isFormatoPenna 
+      ? { border: '#2563eb', bg: '#eff6ff', headerBg: '#dbeafe', text: '#1e40af', icon: '💉', label: 'INIEZIONE PENNA' }
+      : (dosePalette[idx % dosePalette.length]);
 
-    html += '<div style="background:#ffffff; border:2px solid ' + (isFormatoPenna ? '#60a5fa' : '#38bdf8') + '; border-radius:12px; padding:12px; margin-bottom:10px; box-shadow:0 2px 8px rgba(0,0,0,0.04);">' +
-      '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
-      '<div style="display:flex; align-items:center; gap:6px;">' +
-      '<span style="font-size:18px;">' + (isFormatoPenna ? '💉' : '💊') + '</span>' +
-      '<b style="font-size:14px; color:#0f172a; text-transform:uppercase;">' + badgeTitolo + '</b>' +
+    var badgeTitolo = isFormatoPenna 
+      ? ('💉 INIEZIONE INSULINA (ore ' + (d.ora || '08:00') + ')') 
+      : (colInfo.icon + ' ' + colInfo.label + (_capsulaCurrentDosi.length > 1 ? ' di ' + _capsulaCurrentDosi.length : '') + ' • Ore ' + (d.ora || '08:00'));
+
+    html += '<div style="background:' + colInfo.bg + '; border:2.5px solid ' + colInfo.border + '; border-radius:14px; padding:12px 14px; margin-bottom:12px; box-shadow:0 3px 10px rgba(0,0,0,0.05);">' +
+      '<div style="background:' + colInfo.headerBg + '; border:1px solid ' + colInfo.border + '; border-radius:10px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">' +
+      '<div style="display:flex; align-items:center; gap:8px;">' +
+      '<span style="font-size:18px;">' + colInfo.icon + '</span>' +
+      '<b style="font-size:13.5px; color:' + colInfo.text + '; text-transform:uppercase; letter-spacing:0.4px;">' + badgeTitolo + '</b>' +
       '</div>' +
-      (!isFormatoPenna && _capsulaCurrentDosi.length > 1 ? '<button type="button" onclick="rimuoviDoseCard(' + idx + ')" style="background:#fee2e2; border:1px solid #f87171; color:#b91c1c; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; cursor:pointer;" title="Rimuovi questa dose">✕ Elimina</button>' : '') +
+      (!isFormatoPenna && _capsulaCurrentDosi.length > 1 ? '<button type="button" onclick="rimuoviDoseCard(' + idx + ')" style="background:#fee2e2; border:1px solid #f87171; color:#b91c1c; font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; cursor:pointer;" title="Rimuovi questa dose">✕ Elimina</button>' : '') +
       '</div>' +
 
       '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">' +
