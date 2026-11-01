@@ -525,80 +525,101 @@
        MODALE 3: MODIFICA SCADENZE E DOCUMENTI AUTO
        ========================================================================== -->
   <div class="modal-overlay" id="modal-scadenze">
-    <div class="modal-card">
-      <div class="modal-title">
-        <span>📅 Modifica Scadenze Documenti</span>
-        <button type="button" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;" onclick="chiudiModali()">✕</button>
+    <div class="modal-card" style="border-radius:24px; padding:22px; max-width:480px; box-shadow:0 15px 45px rgba(15,39,76,0.18);">
+      <div class="modal-title" style="margin-bottom:18px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:#e0f2fe; display:flex; align-items:center; justify-content:center; color:#0284c7; font-size:20px;">📅</div>
+          <div>
+            <div style="font-family:'Outfit',sans-serif; font-size:17px; font-weight:800; color:#0f3d6c;">Modifica Scadenze Documenti</div>
+            <div style="font-size:11px; color:#64748b; font-weight:600;">Aggiorna date, enti e stato dei documenti</div>
+          </div>
+        </div>
+        <button type="button" style="background:#f1f5f9; border:none; color:#64748b; font-size:18px; width:32px; height:32px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="chiudiModali()">✕</button>
       </div>
 
       <form onsubmit="salvaScadenzeForm(event)">
-        <!-- ASSICURAZIONE -->
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px; margin-bottom:12px;">
-          <div style="font-weight:800; color:#0f172a; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
-            <span style="color:#10b981;">🛡️</span> Assicurazione RCA
+        <!-- 1. ASSICURAZIONE AUTO -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:16px; padding:14px; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🚗</span>
+              <strong style="color:#0f3d6c; font-size:13.5px; font-weight:800;">Assicurazione Auto</strong>
+            </div>
+            <span style="font-size:10.5px; font-weight:800; color:#059669; background:#ecfdf5; border:1px solid #a7f3d0; padding:2px 8px; border-radius:10px;">RCA</span>
           </div>
           <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label">Data Scadenza Polizza</label>
-            <input type="date" class="form-control" id="form-scad-ass-data" required>
+            <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Data Scadenza Polizza</label>
+            <input type="date" class="form-control" id="form-scad-ass-data" style="font-weight:700; color:#0f172a; padding:8px 12px; border-radius:10px; border:1.5px solid #cbd5e1;" required>
           </div>
           <div style="display:flex; gap:8px;">
             <div class="form-group" style="flex:1; margin-bottom:0;">
-              <label class="form-label">Stato Badge</label>
-              <input type="text" class="form-control" id="form-scad-ass-stato" placeholder="es. OK">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Stato</label>
+              <input type="text" class="form-control" id="form-scad-ass-stato" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. In Regola">
             </div>
             <div class="form-group" style="flex:2; margin-bottom:0;">
-              <label class="form-label">Dettaglio / Compagnia</label>
-              <input type="text" class="form-control" id="form-scad-ass-nota" placeholder="es. Copertura Attiva">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Dettaglio / Compagnia</label>
+              <input type="text" class="form-control" id="form-scad-ass-nota" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. Guida senza pensieri">
             </div>
           </div>
         </div>
 
-        <!-- REVISIONE -->
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px; margin-bottom:12px;">
-          <div style="font-weight:800; color:#0f172a; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
-            <span style="color:#0284c7;">🔍</span> Revisione Ministeriale
+        <!-- 2. REVISIONE PERIODICA -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:16px; padding:14px; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🔍</span>
+              <strong style="color:#0f3d6c; font-size:13.5px; font-weight:800;">Revisione Ministeriale</strong>
+            </div>
+            <span style="font-size:10.5px; font-weight:800; color:#0284c7; background:#e0f2fe; border:1px solid #bae6fd; padding:2px 8px; border-radius:10px;">Motorizzazione</span>
           </div>
           <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label">Data Prossimo Controllo</label>
-            <input type="date" class="form-control" id="form-scad-rev-data" required>
+            <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Data Prossimo Controllo</label>
+            <input type="date" class="form-control" id="form-scad-rev-data" style="font-weight:700; color:#0f172a; padding:8px 12px; border-radius:10px; border:1.5px solid #cbd5e1;" required>
           </div>
           <div style="display:flex; gap:8px;">
             <div class="form-group" style="flex:1; margin-bottom:0;">
-              <label class="form-label">Stato Badge</label>
-              <input type="text" class="form-control" id="form-scad-rev-stato" placeholder="es. In Regola">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Stato</label>
+              <input type="text" class="form-control" id="form-scad-rev-stato" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. In Regola">
             </div>
             <div class="form-group" style="flex:2; margin-bottom:0;">
-              <label class="form-label">Centro Revisioni / Note</label>
-              <input type="text" class="form-control" id="form-scad-rev-nota" placeholder="es. Centro Autorizzato">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Centro Revisioni / Note</label>
+              <input type="text" class="form-control" id="form-scad-rev-nota" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. Centro Autorizzato">
             </div>
           </div>
         </div>
 
-        <!-- BOLLO -->
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px; margin-bottom:14px;">
-          <div style="font-weight:800; color:#0f172a; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
-            <span style="color:#d97706;">🏷️</span> Bollo Auto Annuale
+        <!-- 3. BOLLO AUTO -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:16px; padding:14px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🏷️</span>
+              <strong style="color:#0f3d6c; font-size:13.5px; font-weight:800;">Bollo Auto Annuale</strong>
+            </div>
+            <span style="font-size:10.5px; font-weight:800; color:#d97706; background:#fef3c7; border:1px solid #fde68a; padding:2px 8px; border-radius:10px;">Tassa ACI</span>
           </div>
           <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label">Termine Ultimo Pagamento</label>
-            <input type="date" class="form-control" id="form-scad-bollo-data" required>
+            <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Termine Ultimo Pagamento</label>
+            <input type="date" class="form-control" id="form-scad-bollo-data" style="font-weight:700; color:#0f172a; padding:8px 12px; border-radius:10px; border:1.5px solid #cbd5e1;" required>
           </div>
           <div style="display:flex; gap:8px;">
             <div class="form-group" style="flex:1; margin-bottom:0;">
-              <label class="form-label">Stato Badge</label>
-              <input type="text" class="form-control" id="form-scad-bollo-stato" placeholder="es. Pagato">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Stato</label>
+              <input type="text" class="form-control" id="form-scad-bollo-stato" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. Pagato">
             </div>
             <div class="form-group" style="flex:2; margin-bottom:0;">
-              <label class="form-label">Ente / Note</label>
-              <input type="text" class="form-control" id="form-scad-bollo-nota" placeholder="es. Regione Basilicata / ACI">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Ente / Note</label>
+              <input type="text" class="form-control" id="form-scad-bollo-nota" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. Regione Basilicata / ACI">
             </div>
           </div>
         </div>
 
-        <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">💾 Salva Modifiche Scadenze</button>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="modal-btn cancel" style="flex:1; border-radius:12px; padding:12px; background:#f1f5f9; color:#475569; font-weight:700; border:none; cursor:pointer;" onclick="chiudiModali()">Annulla</button>
+          <button type="submit" class="modal-btn save" style="flex:2; border-radius:12px; padding:12px; font-weight:800; font-size:13.5px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.35); cursor:pointer;">💾 Salva Modifiche</button>
+        </div>
       </form>
     </div>
-  </div>
+  </div>>
   <script src="app.js?v=153"></script>
 
   <!-- MODALE PROGRESSO OCR VEICOLI -->

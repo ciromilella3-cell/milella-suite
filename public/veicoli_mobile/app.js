@@ -478,28 +478,84 @@ function renderAll() {
   if (cScad) {
     const sc = AppData.scadenze || (typeof defaultVeicoliData !== "undefined" ? defaultVeicoliData.scadenze : {});
     const items = [
-      { key: "assicurazione", color: "#10b981", tagClass: "tag-green", labelPrefix: "Scadenza", data: sc.assicurazione },
-      { key: "revisione", color: "#38bdf8", tagClass: "tag-blue", labelPrefix: "Prossimo Controllo", data: sc.revisione },
-      { key: "bollo", color: "#f59e0b", tagClass: "tag-amber", labelPrefix: "Termine Pagamento", data: sc.bollo }
+      {
+        key: 'assicurazione',
+        titolo: 'Assicurazione Auto',
+        sottotitolo: 'Guida senza pensieri',
+        iconCircleBg: '#e0f2fe',
+        iconBorder: '#bae6fd',
+        iconSvg: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>',
+        labelPrefix: 'Scadenza',
+        badgeBg: '#ecfdf5',
+        badgeColor: '#059669',
+        badgeBorder: '#a7f3d0',
+        data: sc.assicurazione
+      },
+      {
+        key: 'revisione',
+        titolo: 'Revisione Periodica',
+        sottotitolo: 'In regola con la legge',
+        iconCircleBg: '#e0f2fe',
+        iconBorder: '#bae6fd',
+        iconSvg: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>',
+        labelPrefix: 'Prossimo Controllo',
+        badgeBg: '#eff6ff',
+        badgeColor: '#1d4ed8',
+        badgeBorder: '#bfdbfe',
+        data: sc.revisione
+      },
+      {
+        key: 'bollo',
+        titolo: 'Bollo Auto Annuale',
+        sottotitolo: 'Tassa automobilistica ACI',
+        iconCircleBg: '#fef3c7',
+        iconBorder: '#fde68a',
+        iconSvg: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>',
+        labelPrefix: 'Termine Pagamento',
+        badgeBg: '#fef3c7',
+        badgeColor: '#b45309',
+        badgeBorder: '#fde68a',
+        data: sc.bollo
+      }
     ];
 
-    cScad.innerHTML = items.map(it => {
+    cScad.innerHTML = '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; margin-bottom: 20px;">' + items.map(it => {
       const d = it.data || {};
-      const dataFmt = (typeof formattaDataItaliana === "function" && d.data) ? formattaDataItaliana(d.data) : (d.data || "---");
+      const dataFmt = (typeof formattaDataItaliana === 'function' && d.data) ? formattaDataItaliana(d.data) : (d.data || '---');
       return `
-        <div class="item-card" style="border-left: 4px solid ${it.color}; cursor:pointer;" onclick="apriModalModificaScadenze()" title="Clicca per modificare">
-          <div class="item-left">
-            <div class="item-title" style="display:flex; align-items:center; gap:8px;">
-              <span>${d.titolo || "Scadenza Documento"}</span>
-              <span style="font-size:11px; background:#f1f5f9; color:#0284c7; padding:2px 8px; border-radius:10px; font-weight:700; border:1px solid #bae6fd;">✏️ Modifica</span>
+        <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 20px; padding: 18px 20px; box-shadow: 0 4px 16px rgba(15,23,42,0.06); display: flex; flex-direction: column; justify-content: space-between;">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 46px; height: 46px; min-width: 46px; border-radius: 50%; background: ${it.iconCircleBg}; border: 1.5px solid ${it.iconBorder}; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                ${it.iconSvg}
+              </div>
+              <div>
+                <div style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; color: #0f3d6c; line-height: 1.2;">${it.titolo}</div>
+                <div style="font-size: 11.5px; color: #64748b; font-weight: 600; margin-top: 2px;">${it.sottotitolo}</div>
+              </div>
             </div>
-            <div class="item-date">📅 ${it.labelPrefix}: <b>${dataFmt}</b></div>
-            <span class="item-tag ${it.tagClass}">${d.nota || "Regolare"}</span>
+            <span style="font-size: 11px; font-weight: 800; background: ${it.badgeBg}; color: ${it.badgeColor}; border: 1px solid ${it.badgeBorder}; padding: 3px 10px; border-radius: 12px; white-space: nowrap;">
+              ${d.stato || 'In Regola'}
+            </span>
           </div>
-          <div class="item-cost positive" style="font-size:13px; font-weight:800;">${d.stato || "OK"}</div>
+
+          <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 14px; padding: 11px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">${it.labelPrefix}</div>
+              <div style="font-size: 14px; font-weight: 800; color: #0f172a; margin-top: 2px;">📅 ${dataFmt}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Dettaglio / Ente</div>
+              <div style="font-size: 11.5px; font-weight: 700; color: #475569; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${d.nota || 'Regolare'}</div>
+            </div>
+          </div>
+
+          <button type="button" onclick="apriModalModificaScadenze()" style="background: #e0f2fe; color: #0284c7; border: 1.5px solid #bae6fd; border-radius: 12px; padding: 10px 14px; font-size: 12.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; width: 100%; box-shadow: 0 2px 6px rgba(2,132,199,0.08);">
+            <span>✏️</span> Modifica Dati & Scadenza
+          </button>
         </div>
       `;
-    }).join("");
+    }).join('') + '</div>';
   }
 
 
