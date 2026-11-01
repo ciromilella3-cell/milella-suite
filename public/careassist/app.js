@@ -903,19 +903,78 @@ function getTerapieRosaFoto() {
     cprPerScatola: cpr, scorta: cpr, farmacia: F, fattoOggi: false
   });
   return [
-    mk(301, '07:30', 'Mattina (Digiuno)', 'SINEMET 100+25 mg (1ª dose)', 'Levodopa + Carbidopa', '100/25 mg (1 cpr)', '30 min prima di colazione (Parkinson)', 50),
-    mk(302, '08:00', 'Mattina (Colazione)', 'XULTOPHY penna', 'Insulina degludec + Liraglutide', '___ unità (sottocute)', 'Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete)', 15),
+    mk(305, '08:00', 'Mattina (Colazione)', 'CONGESCOR 2,5 mg', 'Bisoprololo', '2,5 mg (1 cpr)', 'A colazione (Beta-bloccante: frequenza cardiaca)', 28),
     mk(303, '08:00', 'Mattina (Colazione)', 'DIAMICRON 60 mg RM', 'Gliclazide', '60 mg (1 cpr rilascio modificato)', 'A colazione, non masticare (Diabete) - rischio ipoglicemia con insulina', 30),
     mk(304, '08:00', 'Mattina (Colazione)', 'FORXIGA 10 mg', 'Dapagliflozin', '10 mg (1 cpr)', 'Al mattino con acqua (Diabete / cuore / reni)', 28),
-    mk(305, '08:00', 'Mattina (Colazione)', 'CONGESCOR 2,5 mg', 'Bisoprololo', '2,5 mg (1 cpr)', 'A colazione (Beta-bloccante: frequenza cardiaca)', 28),
-    Object.assign(mk(306, '08:00', 'Mattina (Colazione)', 'TRIATEC 5 mg', 'Ramipril', '5 mg (Dose alternata: ½ cpr e 1 cpr)', 'A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno dopo su indicazione medica', 14), { cadenzaTipo: 'alternata_mezza_intera', quantitaQuota: 0.5, dataInizioAlterni: '2026-10-18', ultimaModificaClinica: { data: '22/10/2026', fonte: 'Visita Specialistica', medico: 'Cardiologo', motivo: 'Alternanza mezza compressa e una compressa per modulazione pressoria' } }),
+    {
+      id: 301,
+      gruppoFarmacoId: 'grp_sinemet_100_25_mg',
+      ora: '08:00',
+      fascia: 'Mattina (Colazione)',
+      farmaco: 'SINEMET 100+25 mg (1ª dose: 2 cpr - ore 08:00)',
+      principio: 'Levodopa + Carbidopa',
+      dosaggio: '100/25 mg (2 cpr)',
+      quantitaQuota: 2,
+      modo: '30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico',
+      cprPerScatola: 50,
+      scorta: 82,
+      giorniAlert: 7,
+      farmacia: F,
+      fattoOggi: false,
+      ultimaDoseSomministrata: 2
+    },
+    Object.assign(mk(306, '08:00', 'Mattina (Colazione)', 'TRIATEC 5 mg', 'Ramipril', '5 mg (Dose alternata: ½ cpr e 1 cpr)', 'A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno dopo su indicazione medica', 14), {
+      cadenzaTipo: 'alternata_mezza_intera',
+      quantitaQuota: 0.5,
+      dataInizioAlterni: '2026-10-18',
+      ultimaModificaClinica: { data: '22/10/2026', fonte: 'Visita Specialistica', medico: 'Cardiologo', motivo: 'Alternanza mezza compressa e una compressa per modulazione pressoria' }
+    }),
+    {
+      id: 302,
+      ora: '08:00',
+      fascia: 'Mattina (Colazione)',
+      farmaco: 'XULTOPHY penna',
+      principio: 'Insulina degludec + Liraglutide',
+      dosaggio: '16 Unità (sottocute)',
+      tipoFormulazione: 'penna',
+      unitaDoseDie: 16,
+      unitaPerPenna: 300,
+      penneScorta: 2,
+      pennePerScatola: 3,
+      scorta: 2,
+      giorniAlert: 15,
+      farmacia: F,
+      fattoOggi: false,
+      modo: 'Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete)' + V
+    },
     mk(307, '08:30', 'Mattina (Colazione)', 'LASIX 25 mg', 'Furosemide', '25 mg (1 cpr)', 'Al mattino (Diuretico: edemi / scompenso)', 30),
-    mk(308, '12:30', 'Pranzo', 'SINEMET 100+25 mg (2ª dose)', 'Levodopa + Carbidopa', '100/25 mg (1 cpr)', '30 min prima di pranzo (Parkinson)', 50),
     mk(314, '13:00', 'Pranzo', 'AVERELIX 75 mg', 'Clopidogrel', '75 mg (1 cpr rivestita)', 'A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare)', 28),
-    Object.assign(mk(309, '13:30', 'Pranzo', 'ADENURIC 80 mg', 'Febuxostat', '80 mg (1 cpr)', 'A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta)', 28), { cadenzaTipo: 'alterni', dataInizioAlterni: '2026-10-18' }),
+    Object.assign(mk(309, '13:30', 'Pranzo', 'ADENURIC 80 mg', 'Febuxostat', '80 mg (1 cpr)', 'A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta)', 28), {
+      cadenzaTipo: 'alterni',
+      dataInizioAlterni: '2026-10-18'
+    }),
     mk(310, '13:30', 'Pranzo', 'ARCOXIA 90 mg', 'Etoricoxib', '90 mg (1 cpr)', 'A stomaco pieno (Antinfiammatorio: dolore artrosi)', 28),
-    mk(311, '19:30', 'Sera (Cena)', 'SINEMET 100+25 mg (3ª dose)', 'Levodopa + Carbidopa', '100/25 mg (1 cpr)', '30 min prima di cena (Parkinson)', 50),
-    Object.assign(mk(313, '21:00', 'Notte (Prima di dormire)', 'SIVASTIN 20 mg', 'Simvastatina', '20 mg (1 cpr)', 'A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo)', 28), { cadenzaTipo: 'alterni', dataInizioAlterni: '2026-10-17' }),
+    {
+      id: 311,
+      gruppoFarmacoId: 'grp_sinemet_100_25_mg',
+      ora: '20:00',
+      fascia: 'Sera (Cena)',
+      farmaco: 'SINEMET 100+25 mg (2ª dose: 2 cpr - ore 20:00)',
+      principio: 'Levodopa + Carbidopa',
+      dosaggio: '100/25 mg (2 cpr)',
+      quantitaQuota: 2,
+      modo: '30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico',
+      cprPerScatola: 50,
+      scorta: 82,
+      giorniAlert: 7,
+      farmacia: F,
+      fattoOggi: false,
+      ultimaDoseSomministrata: 2
+    },
+    Object.assign(mk(313, '21:00', 'Notte (Prima di dormire)', 'SIVASTIN 20 mg', 'Simvastatina', '20 mg (1 cpr)', 'A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo)', 28), {
+      cadenzaTipo: 'alterni',
+      dataInizioAlterni: '2026-10-17'
+    }),
     mk(312, 'Al Bisogno', 'Al Bisogno (SOS)', 'FEDIVELLE 20.000 U.I.', 'Colecalciferolo (Vitamina D3)', '20.000 U.I. (1 capsula molle)', 'Dose periodica (di solito settimanale): registrare il giorno di assunzione (Vitamina D)', 10)
   ];
 }
@@ -1681,19 +1740,19 @@ function sincronizzaDbDalServer(callback) {
           }
         });
 
-        // Caso 1: Lo Smartphone o PC locale ha modifiche più recenti fatte offline
-        if (isPendingSync && localTime > serverTime) {
-          console.log('Rilevate modifiche offline sul dispositivo più recenti del server. Invio al Cloud...');
+        // Caso 1: Lo Smartphone o PC locale ha modifiche (anche con orario clock disallineato)
+        if (isPendingSync) {
+          console.log('Rilevate modifiche locali sullo Smartphone in attesa di sincronizzazione. Salvataggio prioritario sul Cloud...');
           if (addedFromServer) {
             localStorage.setItem(DB_KEY, JSON.stringify(AppData));
             renderAll();
           }
           inviaModificheAlServer(function () {
-            showSyncToast('Cloud aggiornato con le ultime modifiche!', true);
+            showSyncToast('Cloud aggiornato con le modifiche dello smartphone!', true);
           });
         }
-        // Caso 2: Il Server Cloud ha dati più recenti o profili aggiuntivi
-        else if (serverTime > localTime || addedFromServer) {
+        // Caso 2: Il Server Cloud ha dati più recenti e non ci sono modifiche locali in sospeso
+        else if (!isPendingSync && (serverTime > localTime || addedFromServer)) {
           console.log('Rilevate modifiche più recenti sul Cloud. Aggiornamento interfaccia...');
           var prevActiveId = AppData.activePazienteId;
           AppData = serverData;
