@@ -4494,9 +4494,12 @@
     // BLINDO TOTALE ANTI-SWIPE / GESTO INDIETRO / BFCACHE SU SMARTPHONE
     // ==============================================================================
     function applicaProtezioneAntiSwipeIndietro() {
+        const isFreshLocal = (localStorage.getItem('milella_session_unlocked') === 'true' && (Date.now() - Number(localStorage.getItem('milella_session_unlocked_time') || 0) < 4 * 60 * 60 * 1000));
+        const hasSession = sessionStorage.getItem('milella_session_unlocked') === 'true' || isFreshLocal;
         const isLocked = sessionStorage.getItem('milella_app_locked') === 'true' || 
                          localStorage.getItem('milella_app_locked') === 'true' ||
-                         sessionStorage.getItem('milella_session_unlocked') !== 'true';
+                         sessionStorage.getItem('milella_lock_requested') === 'true' ||
+                         !hasSession;
         
         if (isLocked) {
             const gate = document.getElementById('gateBloccoIngresso');
@@ -4512,9 +4515,12 @@
         try {
             history.pushState(null, document.title, window.location.href);
             window.addEventListener('popstate', function (event) {
+                const freshLocal = (localStorage.getItem('milella_session_unlocked') === 'true' && (Date.now() - Number(localStorage.getItem('milella_session_unlocked_time') || 0) < 4 * 60 * 60 * 1000));
+                const sessionActive = sessionStorage.getItem('milella_session_unlocked') === 'true' || freshLocal;
                 const stillLocked = sessionStorage.getItem('milella_app_locked') === 'true' || 
                                     localStorage.getItem('milella_app_locked') === 'true' ||
-                                    sessionStorage.getItem('milella_session_unlocked') !== 'true';
+                                    sessionStorage.getItem('milella_lock_requested') === 'true' ||
+                                    !sessionActive;
                 if (stillLocked) {
                     history.pushState(null, document.title, window.location.href);
                     const gate = document.getElementById('gateBloccoIngresso');
