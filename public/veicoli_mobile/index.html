@@ -274,56 +274,56 @@
   <!-- HEADER -->
   <header class="top-header">
     <div class="brand">
-      <div class="brand-icon">🚗</div>
+      <div class="brand-icon">­ƒÜù</div>
       <div>
         <div class="brand-title">Flotta & Veicoli</div>
-        <div class="brand-sub">Controllo Spese &bull; <span style="color:#f59e0b; font-weight:800;">👑 CIRO MILELLA</span></div>
+        <div class="brand-sub">Controllo Spese &bull; <span style="color:#f59e0b; font-weight:800;">­ƒææ CIRO MILELLA</span></div>
       </div>
     </div>
-    <a href="/launcher.html" class="btn-suite">👑 Ciro Milella</a>
+    <a href="/launcher.html" class="btn-suite">­ƒææ Ciro Milella</a>
   </header>
 
   <!-- STATS TILES LIVE -->
   <div class="summary-grid">
     <div class="stat-card primary">
-      <div class="stat-label"><span>💶</span> Rimborsi ACI</div>
-      <div class="stat-val" id="stat-rimborsi">€ 2.201,61</div>
+      <div class="stat-label"><span>­ƒÆÂ</span> Rimborsi ACI</div>
+      <div class="stat-val" id="stat-rimborsi">Ôé¼ 2.201,61</div>
       <div class="stat-sub">Totale Anno 2026</div>
     </div>
     <div class="stat-card warning">
-      <div class="stat-label"><span>⛽</span> Carburante</div>
-      <div class="stat-val" id="stat-carburante">€ 547,14</div>
+      <div class="stat-label"><span>Ôø¢</span> Carburante</div>
+      <div class="stat-val" id="stat-carburante">Ôé¼ 547,14</div>
       <div class="stat-sub">Spesa Lavoro</div>
     </div>
     <div class="stat-card danger">
-      <div class="stat-label"><span>🔧</span> Manutenzioni</div>
-      <div class="stat-val" id="stat-spese">€ 827,00</div>
+      <div class="stat-label"><span>­ƒöº</span> Manutenzioni</div>
+      <div class="stat-val" id="stat-spese">Ôé¼ 827,00</div>
       <div class="stat-sub">Officina & Tagliandi</div>
     </div>
     <div class="stat-card success">
-      <div class="stat-label"><span>📈</span> Guadagno Netto</div>
-      <div class="stat-val" style="color:#34d399;" id="stat-netto">+€ 827,48</div>
+      <div class="stat-label"><span>­ƒôê</span> Guadagno Netto</div>
+      <div class="stat-val" style="color:#34d399;" id="stat-netto">+Ôé¼ 827,48</div>
       <div class="stat-sub">Utile Rimborsi Netto</div>
     </div>
   </div>
 
   <!-- TABS NAV A SCORRIMENTO -->
   <div class="tabs-bar">
-    <button class="tab-btn active" data-tab="spese" onclick="switchView('spese', this)">🔧 Registro Spese</button>
-    <button class="tab-btn" data-tab="rifornimenti" onclick="switchView('rifornimenti', this)">⛽ Rifornimenti Benzina</button>
-    <button class="tab-btn" data-tab="rimborsi" onclick="switchView('rimborsi', this)">📊 Rimborsi Chilometrici</button>
-    <button class="tab-btn" data-tab="scadenze" onclick="switchView('scadenze', this)">📅 Scadenze Documenti</button>
+    <button class="tab-btn active" data-tab="spese" onclick="switchView('spese', this)">­ƒöº Registro Spese</button>
+    <button class="tab-btn" data-tab="rifornimenti" onclick="switchView('rifornimenti', this)">Ôø¢ Rifornimenti Benzina</button>
+    <button class="tab-btn" data-tab="rimborsi" onclick="switchView('rimborsi', this)">­ƒôè Rimborsi Chilometrici</button>
+    <button class="tab-btn" data-tab="scadenze" onclick="switchView('scadenze', this)">­ƒôà Scadenze Documenti</button>
   </div>
 
   <!-- VISTA 1: SPESE & INTERVENTI -->
   <div id="view-spese" class="section-view active">
     <!-- BARRA AZIONI SCANSIONE SMART RICEVUTA MECCANICO -->
     <label style="background: #e8f4fc; border: 1.5px dashed #0284c7; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: #0284c7; font-size: 12.5px; font-weight: 800; box-shadow: 0 2px 8px rgba(2,132,199,0.1);">
-      <span style="font-size:18px;">📷</span> Scansiona Ricevuta / Fattura Meccanico
+      <span style="font-size:18px;">­ƒôÀ</span> Scansiona Ricevuta / Fattura Meccanico
       <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="scansionaFatturaSpesa(event)">
     </label>
 
-    <button class="btn-quick-add" onclick="apriModalSpesa()">➕ Aggiungi Nuova Spesa / Tagliando</button>
+    <button class="btn-quick-add" onclick="apriModalSpesa()">Ô×ò Aggiungi Nuova Spesa / Tagliando</button>
     <div id="list-spese">
       <!-- Generato dinamicamente -->
     </div>
@@ -334,21 +334,21 @@
     <!-- BARRA AZIONI SCANSIONE SMART FOTOCAMERA -->
     <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
       <div style="font-size: 11px; font-weight: 800; color: #0f3d6c; text-transform: uppercase; margin-bottom: 8px; display:flex; align-items:center; gap:6px;">
-        <span>📷</span> Riconoscimento Smart da Fotocamera
+        <span>­ƒôÀ</span> Riconoscimento Smart da Fotocamera
       </div>
       <div style="display: flex; gap: 8px;">
         <label style="flex:1; background: #e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding: 10px 8px; border-radius: 12px; font-size: 11.5px; font-weight: 800; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          <span>📸</span> Cruscotto (Km)
+          <span>­ƒô©</span> Cruscotto (Km)
           <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="scansionaCruscotto(event)">
         </label>
         <label style="flex:1; background: #fef3c7; color:#b45309; border:1px solid #fde68a; padding: 10px 8px; border-radius: 12px; font-size: 11.5px; font-weight: 800; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          <span>🧾</span> Scontrino Pompa
+          <span>­ƒº¥</span> Scontrino Pompa
           <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="scansionaScontrino(event)">
         </label>
       </div>
     </div>
 
-    <button class="btn-quick-add" style="background:linear-gradient(135deg, #f97316 0%, #ea580c 100%); border:1px solid #fdba74; box-shadow:0 4px 14px rgba(249,115,22,0.35);" onclick="apriModalRifornimento()">⛽ Segna Nuovo Rifornimento</button>
+    <button class="btn-quick-add" style="background:linear-gradient(135deg, #f97316 0%, #ea580c 100%); border:1px solid #fdba74; box-shadow:0 4px 14px rgba(249,115,22,0.35);" onclick="apriModalRifornimento()">Ôø¢ Segna Nuovo Rifornimento</button>
     <div id="list-rifornimenti">
       <!-- Generato dinamicamente -->
     </div>
@@ -363,16 +363,15 @@
 
   <!-- VISTA 4: SCADENZE DOCUMENTI -->
   <div id="view-scadenze" class="section-view">
-    <button class="btn-quick-add" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); margin-bottom: 14px;" onclick="apriModalModificaScadenze()">✏️ Modifica Date & Stato Scadenze</button>
+    <button class="btn-quick-add" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); margin-bottom: 14px;" onclick="apriModalModificaScadenze()">Ô£Å´©Å Modifica Date & Stato Scadenze</button>
     <div id="list-scadenze">
       <!-- Generato dinamicamente da app.js -->
     </div>
   </div>
 
-  <!-- MODALE AGGIUNGI SPESA -->
   
   <!-- ==========================================================================
-       MODALE 1: SPESE E INTERVENTI D'OFFICINA
+       MODALE 1: SPESE E INTERVENTI D'OFFICINA (REGISTRA E MODIFICA)
        ========================================================================== -->
   <div class="modal-overlay" id="modal-spesa">
     <div class="modal-card" style="border-radius:24px; padding:22px; max-width:480px; box-shadow:0 15px 45px rgba(15,39,76,0.18);">
@@ -418,13 +417,190 @@
         </div>
       </form>
     </div>
-  </div>>>
-  <script src="app.js?v=160"></script>
+  </div>
+
+  <!-- ==========================================================================
+       MODALE 2: RIFORNIMENTI CARBURANTE (REGISTRA E MODIFICA)
+       ========================================================================== -->
+  <div class="modal-overlay" id="modal-rifornimento">
+    <div class="modal-card" style="border-radius:24px; padding:22px; max-width:480px; box-shadow:0 15px 45px rgba(15,39,76,0.18);">
+      <div class="modal-title" style="margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:#fef3c7; border:1.5px solid #fde68a; display:flex; align-items:center; justify-content:center; color:#d97706; font-size:20px;">⛽</div>
+          <div>
+            <div style="font-family:'Outfit',sans-serif; font-size:17px; font-weight:800; color:#0f3d6c;" id="modal-rif-title">Registra Rifornimento Carburante</div>
+            <div style="font-size:11px; color:#64748b; font-weight:600;">Gestione e modifica dati rifornimento</div>
+          </div>
+        </div>
+        <button type="button" style="background:#f1f5f9; border:none; color:#64748b; font-size:18px; width:32px; height:32px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="chiudiModali()">✕</button>
+      </div>
+
+      <!-- SCANNER SMART FOTOCAMERA CRUSCOTTO E SCONTRINO -->
+      <div style="background: linear-gradient(135deg, rgba(14,165,233,0.10) 0%, rgba(245,158,11,0.12) 100%); border: 1.5px dashed rgba(56,189,248,0.45); border-radius: 14px; padding: 10px 12px; margin-bottom: 14px;">
+        <div style="font-size: 11px; font-weight: 800; color: #0284c7; text-transform: uppercase; margin-bottom: 7px; display:flex; align-items:center; gap:5px;">
+          📷 Scansione Rapida Fotocamera
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <label style="flex:1; background: #0284c7; color:#fff; padding: 8px 6px; border-radius: 10px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            <span>📸</span> Cruscotto (Km)
+            <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="scansionaCruscotto(event)">
+          </label>
+          <label style="flex:1; background: #d97706; color:#fff; padding: 8px 6px; border-radius: 10px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            <span>🧾</span> Scontrino Pompa
+            <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="scansionaScontrino(event)">
+          </label>
+        </div>
+      </div>
+
+      <form onsubmit="salvaRifornimento(event)">
+        <input type="hidden" id="form-rif-id" value="">
+        <div class="form-group" style="margin-bottom:10px;">
+          <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Data Rifornimento *</label>
+          <input type="date" class="form-control" id="form-rif-data" style="font-weight:700; color:#0f172a; padding:8px 12px; border-radius:10px; border:1.5px solid #cbd5e1;" required>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom:10px;">
+          <div class="form-group" style="flex:1; margin-bottom:0;">
+            <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Importo (€) *</label>
+            <input type="number" step="0.01" class="form-control" id="form-rif-costo" placeholder="Es. 50.00" style="font-weight:800; font-size:15px; color:#d97706; padding:8px 12px; border-radius:10px; border:1.5px solid #cbd5e1;" required oninput="ricalcolaLitriRif()">
+          </div>
+          <div class="form-group" style="flex:1; margin-bottom:0;">
+            <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Km Attuali</label>
+            <input type="number" class="form-control" id="form-rif-km" placeholder="Es. 125400" style="font-weight:700; color:#0f172a; padding:8px 12px; border-radius:10px; border:1.5px solid #cbd5e1;">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom:10px;">
+          <div class="form-group" style="flex:1; margin-bottom:0;">
+            <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Prezzo/L (€)</label>
+            <input type="number" step="0.001" class="form-control" id="form-rif-prezzo-litro" placeholder="Es. 1.789" style="font-size:12.5px; padding:8px 10px; border-radius:10px; border:1.5px solid #cbd5e1;" oninput="ricalcolaLitriRif()">
+          </div>
+          <div class="form-group" style="flex:1; margin-bottom:0;">
+            <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Litri Erogati</label>
+            <input type="number" step="0.01" class="form-control" id="form-rif-litri" placeholder="Es. 27.95" style="font-size:12.5px; font-weight:700; padding:8px 10px; border-radius:10px; border:1.5px solid #cbd5e1;">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:16px;">
+          <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Distributore / Note</label>
+          <input type="text" class="form-control" id="form-rif-note" placeholder="Es. Eni Station, IP, Q8..." style="padding:8px 12px; border-radius:10px; border:1.5px solid #cbd5e1;">
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button type="button" id="btn-rif-elimina" style="display:none; background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; border-radius:12px; padding:11px 14px; font-size:12.5px; font-weight:800; cursor:pointer;" onclick="eliminaRifornimentoCorrente()">🗑️</button>
+          <button type="button" class="modal-btn cancel" style="flex:1; border-radius:12px; padding:11px; background:#f1f5f9; color:#475569; font-weight:700; border:none; cursor:pointer;" onclick="chiudiModali()">Annulla</button>
+          <button type="submit" class="modal-btn save" id="btn-rif-salva" style="flex:2; border-radius:12px; padding:11px; font-weight:800; font-size:13.5px; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#fff; border:none; box-shadow:0 4px 14px rgba(245,158,11,0.35); cursor:pointer;">💾 Salva Rifornimento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODALE 3: MODIFICA SCADENZE E DOCUMENTI AUTO
+       ========================================================================== -->
+  <div class="modal-overlay" id="modal-scadenze">
+    <div class="modal-card" style="border-radius:24px; padding:22px; max-width:480px; box-shadow:0 15px 45px rgba(15,39,76,0.18);">
+      <div class="modal-title" style="margin-bottom:18px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:#e0f2fe; display:flex; align-items:center; justify-content:center; color:#0284c7; font-size:20px;">📅</div>
+          <div>
+            <div style="font-family:'Outfit',sans-serif; font-size:17px; font-weight:800; color:#0f3d6c;">Modifica Scadenze Documenti</div>
+            <div style="font-size:11px; color:#64748b; font-weight:600;">Aggiorna date, enti e stato dei documenti</div>
+          </div>
+        </div>
+        <button type="button" style="background:#f1f5f9; border:none; color:#64748b; font-size:18px; width:32px; height:32px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="chiudiModali()">✕</button>
+      </div>
+
+      <form onsubmit="salvaScadenzeForm(event)">
+        <!-- 1. ASSICURAZIONE AUTO -->
+        <div style="background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:16px; padding:14px; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🚗</span>
+              <strong style="color:#0f3d6c; font-size:13.5px; font-weight:800;">Assicurazione Auto</strong>
+            </div>
+            <span style="font-size:10.5px; font-weight:800; color:#059669; background:#ecfdf5; border:1px solid #a7f3d0; padding:2px 8px; border-radius:10px;">RCA</span>
+          </div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Data Scadenza Polizza</label>
+            <input type="date" class="form-control" id="form-scad-ass-data" style="font-weight:700; color:#0f172a; padding:8px 12px; border-radius:10px; border:1.5px solid #cbd5e1;" required>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Stato</label>
+              <input type="text" class="form-control" id="form-scad-ass-stato" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. In Regola">
+            </div>
+            <div class="form-group" style="flex:2; margin-bottom:0;">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Dettaglio / Compagnia</label>
+              <input type="text" class="form-control" id="form-scad-ass-nota" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. Guida senza pensieri">
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. REVISIONE PERIODICA -->
+        <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:16px; padding:14px; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🔍</span>
+              <strong style="color:#0f3d6c; font-size:13.5px; font-weight:800;">Revisione Ministeriale</strong>
+            </div>
+            <span style="font-size:10.5px; font-weight:800; color:#0284c7; background:#e0f2fe; border:1px solid #bae6fd; padding:2px 8px; border-radius:10px;">Motorizzazione</span>
+          </div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Data Prossimo Controllo</label>
+            <input type="date" class="form-control" id="form-scad-rev-data" style="font-weight:700; color:#0f172a; padding:8px 12px; border-radius:10px; border:1.5px solid #cbd5e1;" required>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Stato</label>
+              <input type="text" class="form-control" id="form-scad-rev-stato" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. In Regola">
+            </div>
+            <div class="form-group" style="flex:2; margin-bottom:0;">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Centro Revisioni / Note</label>
+              <input type="text" class="form-control" id="form-scad-rev-nota" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. Centro Autorizzato">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. BOLLO AUTO -->
+        <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:16px; padding:14px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🏷️</span>
+              <strong style="color:#0f3d6c; font-size:13.5px; font-weight:800;">Bollo Auto Annuale</strong>
+            </div>
+            <span style="font-size:10.5px; font-weight:800; color:#d97706; background:#fef3c7; border:1px solid #fde68a; padding:2px 8px; border-radius:10px;">Tassa ACI</span>
+          </div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:10.5px; font-weight:800; color:#475569; text-transform:uppercase;">Termine Ultimo Pagamento</label>
+            <input type="date" class="form-control" id="form-scad-bollo-data" style="font-weight:700; color:#0f172a; padding:8px 12px; border-radius:10px; border:1.5px solid #cbd5e1;" required>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Stato</label>
+              <input type="text" class="form-control" id="form-scad-bollo-stato" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. Pagato">
+            </div>
+            <div class="form-group" style="flex:2; margin-bottom:0;">
+              <label style="font-size:10px; font-weight:700; color:#64748b;">Ente / Note</label>
+              <input type="text" class="form-control" id="form-scad-bollo-nota" style="font-size:12px; padding:7px 10px; border-radius:10px;" placeholder="es. Regione Basilicata / ACI">
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="modal-btn cancel" style="flex:1; border-radius:12px; padding:12px; background:#f1f5f9; color:#475569; font-weight:700; border:none; cursor:pointer;" onclick="chiudiModali()">Annulla</button>
+          <button type="submit" class="modal-btn save" style="flex:2; border-radius:12px; padding:12px; font-weight:800; font-size:13.5px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.35); cursor:pointer;">💾 Salva Modifiche</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js?v=161"></script>
 
   <!-- MODALE PROGRESSO OCR VEICOLI -->
   <div id="veicoli-ocr-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(5,10,22,0.92); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); z-index:999999; align-items:center; justify-content:center; padding:16px;">
     <div style="background: linear-gradient(145deg, #0f1c30 0%, #070d18 100%); border: 1px solid rgba(56,189,248,0.35); border-radius: 22px; padding: 24px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
-      <div style="font-size:2.4rem; margin-bottom:8px;" id="veicoli-ocr-icon">🔍</div>
+      <div style="font-size:2.4rem; margin-bottom:8px;" id="veicoli-ocr-icon">­ƒöì</div>
       <h3 style="color:#ffffff; font-size:1.15rem; font-weight:700; margin-bottom:4px;" id="veicoli-ocr-title">Analisi Foto in Corso...</h3>
       <p style="color:#94a3b8; font-size:0.8rem; margin-bottom:12px;" id="veicoli-ocr-sub">Lettura automatica dati con intelligenza ottica...</p>
       <div style="display:inline-block; width:28px; height:28px; border:3px solid rgba(56,189,248,0.3); border-radius:50%; border-top-color:#38bdf8; animation: spin 0.8s linear infinite; margin-bottom:10px;"></div>
