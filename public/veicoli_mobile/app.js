@@ -419,20 +419,25 @@ function renderAll() {
   const cSpese = document.getElementById('list-spese');
   if (cSpese) {
     cSpese.innerHTML = AppData.spese.map(s => `
-      <div class="item-card">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div style="width:44px; height:44px; min-width:44px; border-radius:50%; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:2px solid #ffffff; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(2,132,199,0.3); flex-shrink:0;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-            </svg>
+      <div class="item-card" style="border-radius:16px; border:1.5px solid #e2e8f0; padding:14px 16px; margin-bottom:10px; cursor:pointer; transition:all 0.2s;" onclick="apriModificaSpesa('${s.id}')" title="Clicca per modificare questo intervento">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:44px; height:44px; min-width:44px; border-radius:50%; background:linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); border:1.5px solid #0284c7; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(2,132,199,0.25); flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+              </svg>
+            </div>
+            <div class="item-left">
+              <div class="item-title" style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:14.5px; font-weight:800; color:#0f3d6c;">${s.desc}</span>
+                <span style="font-size:10.5px; background:#e0f2fe; color:#0284c7; padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid #bae6fd;">✏️ Modifica</span>
+              </div>
+              <div class="item-date" style="font-size:12px; color:#64748b; margin-top:3px;">📅 <b>${formattaDataItaliana(s.data)}</b> ${s.note ? ' &bull; 🏢 ' + s.note : ''}</div>
+              <span class="item-tag tag-blue" style="margin-top:4px;">Manutenzione Auto</span>
+            </div>
           </div>
-          <div class="item-left">
-            <div class="item-title">${s.desc}</div>
-            <div class="item-date">📅 <b>${formattaDataItaliana(s.data)}</b> ${s.note ? ' &bull; 🏢 ' + s.note : ''}</div>
-            <span class="item-tag tag-blue">Manutenzione Auto</span>
-          </div>
+          <div class="item-cost negative" style="font-size:16px; font-weight:800; white-space:nowrap;">-€ ${parseFloat(s.costo).toFixed(2)}</div>
         </div>
-        <div class="item-cost negative">-€ ${parseFloat(s.costo).toFixed(2)}</div>
       </div>
     `).join('');
   }
@@ -571,23 +576,68 @@ function renderAll() {
 }
 
 function apriModalSpesa() {
+  document.getElementById('modal-spesa-title').innerText = 'Registra Spesa / Intervento';
+  document.getElementById('form-spesa-id').value = '';
   document.getElementById('form-spesa-data').value = new Date().toISOString().split('T')[0];
+  document.getElementById('form-spesa-desc').value = '';
+  document.getElementById('form-spesa-costo').value = '';
+  document.getElementById('form-spesa-note').value = '';
+  const delBtn = document.getElementById('btn-spesa-elimina');
+  if (delBtn) delBtn.style.display = 'none';
   const mp = document.getElementById('modal-spesa'); mp.style.display = 'flex'; mp.classList.add('active');
 }
 
+function apriModificaSpesa(id) {
+  const item = (AppData.spese || []).find(s => String(s.id) === String(id));
+  if (!item) return;
+
+  document.getElementById('modal-spesa-title').innerText = 'Modifica Spesa / Intervento';
+  document.getElementById('form-spesa-id').value = item.id;
+  document.getElementById('form-spesa-data').value = item.data || '';
+  document.getElementById('form-spesa-desc').value = item.desc || '';
+  document.getElementById('form-spesa-costo').value = item.costo || '';
+  document.getElementById('form-spesa-note').value = item.note || '';
+
+  const delBtn = document.getElementById('btn-spesa-elimina');
+  if (delBtn) delBtn.style.display = 'inline-block';
+
+  const mp = document.getElementById('modal-spesa'); mp.style.display = 'flex'; mp.classList.add('active');
+}
+
+function eliminaSpesaCorrente() {
+  const id = document.getElementById('form-spesa-id').value;
+  if (!id) return;
+  if (!confirm('Vuoi eliminare definitivamente questa spesa?')) return;
+
+  AppData.spese = (AppData.spese || []).filter(s => String(s.id) !== String(id));
+  saveAppData();
+  chiudiModali();
+  if (typeof showToast === 'function') showToast('Spesa eliminata con successo.', 'info');
+}
 
 function salvaSpesa(e) {
   e.preventDefault();
-  const data = document.getElementById("form-spesa-data").value;
-  const desc = document.getElementById("form-spesa-desc").value;
-  const costo = parseFloat(document.getElementById("form-spesa-costo").value) || 0;
-  const note = document.getElementById("form-spesa-note").value;
+  const id = document.getElementById('form-spesa-id').value;
+  const data = document.getElementById('form-spesa-data').value;
+  const desc = document.getElementById('form-spesa-desc').value;
+  const costo = parseFloat(document.getElementById('form-spesa-costo').value) || 0;
+  const note = document.getElementById('form-spesa-note').value;
 
-  AppData.spese.unshift({ id: Date.now(), data, desc, costo, note });
-  AppData.spese.sort((a,b) => (b.data || "").localeCompare(a.data || ""));
+  if (id) {
+    // Modifica esistente
+    const idx = (AppData.spese || []).findIndex(s => String(s.id) === String(id));
+    if (idx !== -1) {
+      AppData.spese[idx] = { ...AppData.spese[idx], data, desc, costo, note };
+    }
+  } else {
+    // Nuova spesa
+    AppData.spese.unshift({ id: Date.now(), data, desc, costo, note });
+  }
+
+  AppData.spese.sort((a,b) => (b.data || '').localeCompare(a.data || ''));
   saveAppData();
   chiudiModali();
-  if (typeof showToast === "function") showToast("✅ Spesa registrata con successo!", "success");
+  if (typeof showToast === 'function') showToast('✅ Spesa salvata con successo!', 'success');
 }
 
 function apriModalRifornimento() {
