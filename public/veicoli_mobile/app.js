@@ -48,16 +48,33 @@ function switchView(tabName, btnElem) {
   if (target) target.classList.add('active');
 }
 
+function formattaDataItaliana(dStr) {
+  if (!dStr) return '--/--/----';
+  if (dStr.includes('/')) return dStr;
+  const parts = dStr.split('-');
+  if (parts.length === 3 && parts[0].length === 4) {
+    return parts[2] + '/' + parts[1] + '/' + parts[0];
+  }
+  return dStr;
+}
+
 function renderAll() {
   // 1. Spese
   const cSpese = document.getElementById('list-spese');
   if (cSpese) {
     cSpese.innerHTML = AppData.spese.map(s => `
       <div class="item-card">
-        <div class="item-left">
-          <div class="item-title">${s.desc}</div>
-          <div class="item-date">📅 ${s.data} ${s.note ? '• 🏢 ' + s.note : ''}</div>
-          <span class="item-tag tag-blue">Manutenzione Auto</span>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:44px; height:44px; min-width:44px; border-radius:50%; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:2px solid #ffffff; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(2,132,199,0.3); flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            </svg>
+          </div>
+          <div class="item-left">
+            <div class="item-title">${s.desc}</div>
+            <div class="item-date">📅 <b>${formattaDataItaliana(s.data)}</b> ${s.note ? ' &bull; 🏢 ' + s.note : ''}</div>
+            <span class="item-tag tag-blue">Manutenzione Auto</span>
+          </div>
         </div>
         <div class="item-cost negative">-€ ${parseFloat(s.costo).toFixed(2)}</div>
       </div>
@@ -69,10 +86,20 @@ function renderAll() {
   if (cRif) {
     cRif.innerHTML = AppData.rifornimenti.map(r => `
       <div class="item-card">
-        <div class="item-left">
-          <div class="item-title">⛽ Rifornimento Carburante ${r.litri ? '(' + r.litri + ' Litri)' : ''}</div>
-          <div class="item-date">📅 ${r.data} ${r.km ? '• 🚗 ' + r.km + ' Km' : ''} ${r.note ? '• 📍 ' + r.note : ''}</div>
-          <span class="item-tag tag-amber">Carburante</span>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:44px; height:44px; min-width:44px; border-radius:50%; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border:2px solid #ffffff; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(245,158,11,0.3); flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="22" x2="15" y2="22"></line>
+              <line x1="4" y1="9" x2="14" y2="9"></line>
+              <path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"></path>
+              <path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"></path>
+            </svg>
+          </div>
+          <div class="item-left">
+            <div class="item-title">Rifornimento Carburante ${r.litri ? '(' + r.litri + ' Litri)' : ''}</div>
+            <div class="item-date">📅 <b>${formattaDataItaliana(r.data)}</b> ${r.km ? ' &bull; 🚗 ' + Number(r.km).toLocaleString('it-IT') + ' Km' : ''} ${r.note ? ' &bull; 📍 ' + r.note : ''}</div>
+            <span class="item-tag tag-amber">Carburante</span>
+          </div>
         </div>
         <div class="item-cost negative">-€ ${parseFloat(r.costo).toFixed(2)}</div>
       </div>
@@ -86,7 +113,7 @@ function renderAll() {
       <div class="item-card">
         <div class="item-left">
           <div class="item-title">${m.mese}</div>
-          <div class="item-date">ACI: <b>€ ${m.rimborsi.toFixed(2)}</b> • Carburante: € ${m.benzina.toFixed(2)}</div>
+          <div class="item-date">ACI: <b>€ ${m.rimborsi.toFixed(2)}</b> &bull; Carburante: € ${m.benzina.toFixed(2)}</div>
           <span class="item-tag ${m.netto >= 0 ? 'tag-green' : 'tag-amber'}">${m.netto >= 0 ? 'Guadagno Netto' : 'Spese Mese Elevate'}</span>
         </div>
         <div class="item-cost ${m.netto >= 0 ? 'positive' : 'negative'}">
