@@ -44,12 +44,12 @@ window.onerror = function(msg, url, line) {
         var profiles = [];
         try { profiles = JSON.parse(localStorage.getItem('health_profiles') || '[]'); } catch(eProfiles){}
         if (!Array.isArray(profiles) || profiles.length === 0) profiles = ['marito', 'moglie'];
-        profiles = profiles.filter(function(p) { return p !== 'a' && p !== 'salvatoresalva'; });
+        profiles = profiles.filter(function(p) { return p !== 'a' && p !== 'salvatoresalva' && p !== 'esempiocompleto' && p !== 'luigiscappa'; });
         if (!profiles.includes('marito')) profiles.unshift('marito');
         if (!profiles.includes('moglie')) profiles.push('moglie');
         localStorage.setItem('health_profiles', JSON.stringify(profiles));
 
-        ['a', 'salvatoresalva'].forEach(function(stray) {
+        ['a', 'salvatoresalva', 'esempiocompleto', 'luigiscappa'].forEach(function(stray) {
             localStorage.removeItem('profileName_' + stray);
             localStorage.removeItem('profileStats_' + stray);
             localStorage.removeItem('weightLog_' + stray);
@@ -798,7 +798,7 @@ window.onerror = function(msg, url, line) {
         localStorage.setItem('anamnesi_moglie', anamMoglie.replace(/Elena Rossi/g, 'Maria Carmela'));
     }
     let globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
-    globalProfiles = globalProfiles.filter(p => p !== 'a' && p !== 'salvatoresalva');
+    globalProfiles = globalProfiles.filter(p => p !== 'a' && p !== 'salvatoresalva' && p !== 'esempiocompleto' && p !== 'luigiscappa');
     if (!globalProfiles.includes('marito')) globalProfiles.unshift('marito');
     if (!globalProfiles.includes('moglie')) globalProfiles.push('moglie');
     localStorage.setItem('health_profiles', JSON.stringify(globalProfiles));
@@ -3005,12 +3005,12 @@ async function forceUpdateSaluteApp() {
                 let pList = ['marito', 'moglie'];
                 try {
                     let parsed = JSON.parse(localStorage.getItem('health_profiles') || '[]');
-                    pList = parsed.filter(p => p !== 'a' && p !== 'salvatoresalva');
+                    pList = parsed.filter(p => p !== 'a' && p !== 'salvatoresalva' && p !== 'esempiocompleto' && p !== 'luigiscappa');
                     if (!pList.includes('marito')) pList.unshift('marito');
                     if (!pList.includes('moglie')) pList.push('moglie');
                 } catch(e) {}
                 localStorage.setItem('health_profiles', JSON.stringify(pList));
-                ['a', 'salvatoresalva'].forEach(stray => {
+                ['a', 'salvatoresalva', 'esempiocompleto', 'luigiscappa'].forEach(stray => {
                     localStorage.removeItem('profileName_' + stray);
                     localStorage.removeItem('profileStats_' + stray);
                     localStorage.removeItem('weightLog_' + stray);

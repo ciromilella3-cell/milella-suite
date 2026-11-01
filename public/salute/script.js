@@ -8052,6 +8052,7 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
                     const validProfiles = new Set(cloudPList);
                     validProfiles.add('marito');
                     validProfiles.add('moglie');
+                    ['esempiocompleto', 'luigiscappa', 'a', 'salvatoresalva'].forEach(sp => validProfiles.delete(sp));
                     
                     // Rimuovi da localStorage eventuali profili che sono stati eliminati dal Cloud
                     for (let i = 0; i < localStorage.length; i++) {

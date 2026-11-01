@@ -6,23 +6,8 @@
   "last_fasting_hydration_notif": 1792738604383,
   "syncTarget_marito": "moglie",
   "menuEdit_0_r2_c3": "Fette di pane tostato, crema di lenticchie, 1 filetto di alice, 1 cucch. olio evo",
-  "profileName_a": "Aldo",
   "saved_smart_shopping": "<div class=\"shopping-category\">\n        <h4>🥩 Carne, Pesce & Uova</h4>\n        <ul class=\"smart-list\"><li><label><input type=\"checkbox\"> <span>Petto di Pollo</span></label></li><li><label><input type=\"checkbox\"> <span>Fesa di Tacchino</span></label></li><li><label><input type=\"checkbox\"> <span>Salmone fresco/surgelato</span></label></li><li><label><input type=\"checkbox\"> <span>Sgombro</span></label></li><li><label><input type=\"checkbox\"> <span>Orata o Branzino</span></label></li><li><label><input type=\"checkbox\"> <span>Merluzzo o Nasello</span></label></li><li><label><input type=\"checkbox\"> <span>Uova fresche</span></label></li></ul></div><div class=\"shopping-category\">\n        <h4>🥗 Verdure & Frutta</h4>\n        <ul class=\"smart-list\"><li><label><input type=\"checkbox\"> <span>Insalata mista & Rucola</span></label></li><li><label><input type=\"checkbox\"> <span>Zucchine</span></label></li><li><label><input type=\"checkbox\"> <span>Broccoli o Cavolfiore</span></label></li><li><label><input type=\"checkbox\"> <span>Spinaci freschi</span></label></li><li><label><input type=\"checkbox\"> <span>Carciofi</span></label></li><li><label><input type=\"checkbox\"> <span>Finocchi & Cetrioli</span></label></li><li><label><input type=\"checkbox\"> <span>Pomodori & Pomodorini</span></label></li><li><label><input type=\"checkbox\"> <span>Limoni e Frutta di stagione</span></label></li></ul></div><div class=\"shopping-category\">\n        <h4>🌾 Carboidrati & Altro</h4>\n        <ul class=\"smart-list\"><li><label><input type=\"checkbox\"> <span>Riso integrale o Basmati</span></label></li><li><label><input type=\"checkbox\"> <span>Quinoa o Farro</span></label></li><li><label><input type=\"checkbox\"> <span>Pane integrale o di segale</span></label></li><li><label><input type=\"checkbox\"> <span>Lenticchie o Ceci</span></label></li><li><label><input type=\"checkbox\"> <span>Yogurt greco magro</span></label></li><li><label><input type=\"checkbox\"> <span>Olio Extra Vergine di Oliva (EVO)</span></label></li><li><label><input type=\"checkbox\"> <span>Frutta secca (Mandorle/Noci)</span></label></li></ul></div>",
   "syncTarget_moglie": "marito",
-  "anamnesi_a": {
-    "nome": "Aldo",
-    "altezza": "",
-    "cf": "",
-    "tel": "",
-    "email": "",
-    "patologie": "",
-    "farmaci": "",
-    "allergie": "",
-    "lavoro": "",
-    "sport": "",
-    "fumo": "",
-    "intestino": ""
-  },
   "fast_start_marito": "20:30",
   "menuEdit_1_r6_c1": "PASTO LIBERO MODERATO: (es. pasta pomodoro e carne magra) 🍝",
   "darkMode": "no",
@@ -43,7 +28,6 @@
   "menuEdit_0_r2_c1": "50g avena, 150g albume, 1 mela",
   "fast_type_marito": 23,
   "menuEdit_0_r3_c3": "200g orata al forno, patate novelle, pomodorini, 1 cucch. olio evo",
-  "syncTarget_esempiocompleto": "none",
   "profileName_moglie": "Maria Carmela",
   "walks_marito": [
     false,
@@ -72,9 +56,6 @@
   "menuEdit_0_r1_c2": "Zuppa di lenticchie con soffritto di alici (2-3 filetti), sedano, carota, cipolla, aglio, peperoncino, 1 cucch. olio evo",
   "coffeeCount_moglie": 3,
   "profileName_1": "Maria Carmela",
-  "syncTarget_luigiscappa": "moglie",
-  "profileName_esempiocompleto": "Esempio completo",
-  "profileName_luigiscappa": "Luigi Scappa",
   "menuEdit_1_r5_c2": "Carciofi crudi 🥗, 2 uova 🍳,  1 cucch. olio EVO",
   "fast_end_marito": "19:30",
   "coffeeCount_marito": 1,
@@ -109,25 +90,11 @@
   "menuEdit_0_r3_c2": "200g salmone in crosta di pistacchi, zucchine, 1 fetta pane segale, 1 cucch. olio evo",
   "profileName_0": "Ciro Milella",
   "menuEdit_0_r4_c3": "200g salmone in crosta di pistacchi, zucchine, 1 fetta pane segale, 1 cucch. olio evo",
-  "profileStats_luigiscappa": {
-    "dob": "1989-04-10",
-    "start": "110",
-    "goal": "70",
-    "kcal": "---",
-    "gender": "M",
-    "height": "160"
-  },
   "menuEdit_1_r2_c4": "Fette di pane tostato, crema di lenticchie, 1 filetto di alice, 1 cucch. olio evo",
   "moodLog_moglie": {
     "2026-09-30": "😎 Energia"
   },
   "menuEdit_1_r0_c4": "Fette di pane tostato, crema di lenticchie, 1 filetto di alice, 1 cucch. olio evo",
-  "weightLog_luigiscappa": [
-    {
-      "date": "2026-10-08",
-      "weight": 110
-    }
-  ],
   "menuEdit_1_r4_c4": "Fette di pane tostato, crema di lenticchie, 1 filetto di alice, 1 cucch. olio evo",
   "menuEdit_1_r3_c4": "Fette di pane tostato, crema di lenticchie, 1 filetto di alice, 1 cucch. olio evo",
   "menuEdit_1_r5_c4": "50g feta, 20g noci, mista, pomodori, olio evo",
