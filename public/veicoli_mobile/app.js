@@ -470,8 +470,6 @@ function renderAll() {
       </div>
     `).join('');
   }
-}
-
 
   // 4. Scadenze Documenti
   const cScad = document.getElementById("list-scadenze");
@@ -557,7 +555,7 @@ function renderAll() {
       `;
     }).join('') + '</div>';
   }
-
+}
 
 function apriModalSpesa() {
   document.getElementById('form-spesa-data').value = new Date().toISOString().split('T')[0];
