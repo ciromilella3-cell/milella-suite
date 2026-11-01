@@ -13231,7 +13231,7 @@ function renderDosiCards() {
         '<input type="hidden" class="dose-card-quota-val" value="1.0">' +
         '</div>' :
         '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">' +
-        '<div style="font-size:11.5px; font-weight:800; color:#334155; margin-bottom:6px;">QUANTA COMPRESSA PRENDE A QUEST'ORA?</div>' +
+        '<div style="font-size:11.5px; font-weight:800; color:#334155; margin-bottom:6px;">QUANTA COMPRESSA PRENDE A QUEST\'ORA?</div>' +
         '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
         '<button type="button" onclick="setDoseCardQuota(' + idx + ', 0.5)" style="flex:1; min-width:80px; padding:8px 4px; border-radius:8px; font-weight:900; font-size:13px; cursor:pointer; text-align:center; border:2px solid ' + (quotaVal === 0.5 ? '#f59e0b; background:#fef3c7; color:#b45309;' : '#cbd5e1; background:#fff; color:#475569;') + '">🌓 ½ cpr</button>' +
         '<button type="button" onclick="setDoseCardQuota(' + idx + ', 1)" style="flex:1.2; min-width:90px; padding:8px 4px; border-radius:8px; font-weight:900; font-size:13.5px; cursor:pointer; text-align:center; border:2px solid ' + (quotaVal === 1 ? '#10b981; background:#ecfdf5; color:#047857;' : '#cbd5e1; background:#fff; color:#475569;') + '">🌕 1 cpr (Intera)</button>' +
