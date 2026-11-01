@@ -10018,11 +10018,40 @@ function salvaModificaFarmaco(e) {
     return !isColl;
   });
 
-  // 2. Leggi le card dal form
+  // 2. Leggi le card dal form (con fallback sicuro su _capsulaCurrentDosi)
   var cardElements = document.querySelectorAll('#box-dosi-cards-container .dose-card-item');
   var totalDosi = cardElements.length;
 
-  cardElements.forEach(function (card, idx) {
+  // Se per qualsiasi motivo i cardElements nel DOM non avessero la classe, usa _capsulaCurrentDosi
+  if (totalDosi === 0 && Array.isArray(_capsulaCurrentDosi) && _capsulaCurrentDosi.length > 0) {
+    totalDosi = _capsulaCurrentDosi.length;
+    _capsulaCurrentDosi.forEach(function(d, idx) {
+      var oraVal = d.ora || '08:00';
+      var fasciaVal = d.fascia || deduciFasciaDaOrario(oraVal);
+      var quotaVal = parseFloat(d.quota) || 1.0;
+      var quotaLabel = (quotaVal === 0.5) ? '½ cpr' : (quotaVal === 1 ? '1 cpr' : (quotaVal === 1.5 ? '1½ cpr' : quotaVal + ' cpr'));
+      var farmacoNomeFinal = (totalDosi > 1) ? (cleanNome + ' (' + (idx + 1) + 'ª dose: ' + quotaLabel + ' - ore ' + oraVal + ')') : cleanNome;
+
+      p.terapie.push({
+        id: Date.now() + idx * 311,
+        ora: oraVal,
+        fascia: fasciaVal,
+        farmaco: farmacoNomeFinal,
+        principio: principio,
+        dosaggio: (window._currentFormatoModal === 'penna') ? ((parseFloat(document.getElementById('edit-penna-dose-die')?.value) || 16) + ' Unità (sottocute)') : (dosaggioBase + ' (' + quotaLabel + ')'),
+        quantitaQuota: quotaVal,
+        modo: modoBase,
+        cprPerScatola: cprPerScatola,
+        scorta: scorta,
+        giorniAlert: giorniAlert,
+        cadenzaTipo: cadenza,
+        fattoOggi: false,
+        tipoFormulazione: (window._currentFormatoModal === 'penna') ? 'penna' : 'compressa',
+        ultimaModificaClinica: ultimaMod
+      });
+    });
+  } else {
+    cardElements.forEach(function (card, idx) {
     var oraVal = card.querySelector('.dose-card-ora').value || '08:00';
     var fasciaVal = card.querySelector('.dose-card-fascia').value || deduciFasciaDaOrario(oraVal);
     var quotaVal = parseFloat(card.querySelector('.dose-card-quota-val').value) || 1.0;
@@ -10069,6 +10098,8 @@ function salvaModificaFarmaco(e) {
       ultimaModificaClinica: ultimaMod
     });
   });
+
+  }
 
   // 3. Ordina cronologicamente le terapie secondo il ciclo clinico
   p.terapie.sort(comparaOrariTerapie);
@@ -13216,7 +13247,7 @@ function renderDosiCards() {
       ? ('💉 INIEZIONE INSULINA (ore ' + (d.ora || '08:00') + ')') 
       : (colInfo.icon + ' ' + colInfo.label + (_capsulaCurrentDosi.length > 1 ? ' di ' + _capsulaCurrentDosi.length : '') + ' • Ore ' + (d.ora || '08:00'));
 
-    html += '<div style="background:' + colInfo.bg + '; border:2.5px solid ' + colInfo.border + '; border-radius:14px; padding:12px 14px; margin-bottom:12px; box-shadow:0 3px 10px rgba(0,0,0,0.05);">' +
+    html += '<div class="dose-card-item" id="dose-card-' + idx + '" style="background:' + colInfo.bg + '; border:2.5px solid ' + colInfo.border + '; border-radius:14px; padding:12px 14px; margin-bottom:12px; box-shadow:0 3px 10px rgba(0,0,0,0.05);">' +
       '<div style="background:' + colInfo.headerBg + '; border:1px solid ' + colInfo.border + '; border-radius:10px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">' +
       '<div style="display:flex; align-items:center; gap:8px;">' +
       '<span style="font-size:18px;">' + colInfo.icon + '</span>' +
