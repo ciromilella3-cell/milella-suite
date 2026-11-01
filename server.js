@@ -869,6 +869,7 @@ app.post('/api/operatori/gestione', (req, res) => {
         });
         cloudSet("operatori", ops, operatoriPath);
         return res.json({ success: true, operatori: ops });
+
     } else if (azione === 'toggle') {
         ops = ops.map(o => o.id === operatore.id && o.id !== 'op_master' ? { ...o, attivo: !o.attivo } : o);
         cloudSet("operatori", ops, operatoriPath);
@@ -1071,6 +1072,23 @@ app.post('/api/progetti/gestione', (req, res) => {
     let projs = loadProgetti();
     if (azione === 'list') {
         return res.json({ success: true, progetti: projs });
+    } else if (azione === 'reorder') {
+        const { orderedIds } = req.body || {};
+        if (Array.isArray(orderedIds)) {
+            const map = new Map(projs.map(p => [p.id, p]));
+            const reordered = [];
+            orderedIds.forEach(id => {
+                if (map.has(id)) {
+                    reordered.push(map.get(id));
+                    map.delete(id);
+                }
+            });
+            map.forEach(p => reordered.push(p));
+            projs = reordered;
+            cloudSet('progetti', projs, progettiConfigPath);
+            return res.json({ success: true, progetti: projs });
+        }
+        return res.status(400).json({ success: false, message: 'orderedIds array mancante' });
     } else if (azione === 'add') {
         if (!progetto || !progetto.titolo || !progetto.url) {
             return res.status(400).json({ success: false, message: 'Titolo e URL richiesti' });

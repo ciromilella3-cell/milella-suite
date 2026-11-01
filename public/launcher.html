@@ -993,8 +993,8 @@
                 <button id="btnManageOps" onclick="apriGestioneOperatoriModal()" style="display:none; background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
                     👥 OPERATORI
                 </button>
-                <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
-                    🛠️ MODULI
+                <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" title="Gestisci moduli e personalizza la posizione di ciascuna App" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
+                    ⇅ MODULI & ORDINE APP
                 </button>
                 
                 <button id="btnInstallApp" onclick="installaPwaApp()" title="Installa Suite su Telefono o Desktop" style="display:none; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#7dd3fc; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; align-items:center; gap:5px; transition:all 0.2s;">
@@ -1626,7 +1626,10 @@
             </div>
 
             <!-- Elenco Progetti Attuali con Tasti Modifica / Elimina -->
-            <h3 style="font-size:0.95rem; color:#94a3b8; margin-bottom:0.8rem; font-weight:600;">Progetti Attualmente nel Portale:</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:8px;">
+                <h3 style="font-size:0.95rem; color:#94a3b8; margin:0; font-weight:700;">⇅ Ordine e Posizione Applicazioni (Usa ⬆️ e ⬇️):</h3>
+                <span style="font-size:11px; color:#38bdf8; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:8px; border:1px solid rgba(56,189,248,0.3);">Modifica istantanea & Cloud Sync</span>
+            </div>
             <div id="projectsListContainer" style="display:flex; flex-direction:column; gap:10px;">
                 <!-- Caricati dinamicamente via JS -->
             </div>
@@ -3358,13 +3361,23 @@
     function renderListaPannelloProgetti(projs) {
         const container = document.getElementById('projectsListContainer');
         container.innerHTML = '';
-        projs.forEach(p => {
+        projs.forEach((p, idx) => {
             const isAdmin = p.visibilita === 'admin';
+            const isFirst = idx === 0;
+            const isLast = idx === projs.length - 1;
+
             const row = document.createElement('div');
-            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:12px; gap:10px;';
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:12px; gap:10px; flex-wrap:wrap;';
             row.innerHTML = `
-                <div style="display:flex; align-items:center; gap:12px; overflow:hidden; flex:1;">
-                    <span style="font-size:24px;">${p.icona || '📁'}</span>
+                <!-- Controlli Posizione Su/Giu -->
+                <div style="display:flex; flex-direction:column; gap:3px; justify-content:center; align-items:center; flex-shrink:0;">
+                    <button type="button" onclick="spostaPosizioneApp('${p.id}', -1)" title="Sposta più in alto" style="background:${isFirst ? 'rgba(255,255,255,0.03)' : 'rgba(56,189,248,0.2)'}; border:1px solid ${isFirst ? 'rgba(255,255,255,0.08)' : 'rgba(56,189,248,0.5)'}; color:${isFirst ? '#475569' : '#38bdf8'}; border-radius:6px; width:28px; height:24px; font-size:11px; font-weight:800; cursor:${isFirst ? 'not-allowed' : 'pointer'}; display:inline-flex; align-items:center; justify-content:center; transition:all 0.15s;" ${isFirst ? 'disabled' : ''}>▲</button>
+                    <span style="font-size:10px; font-weight:800; color:#94a3b8; font-family:monospace;">#${idx + 1}</span>
+                    <button type="button" onclick="spostaPosizioneApp('${p.id}', 1)" title="Sposta più in basso" style="background:${isLast ? 'rgba(255,255,255,0.03)' : 'rgba(56,189,248,0.2)'}; border:1px solid ${isLast ? 'rgba(255,255,255,0.08)' : 'rgba(56,189,248,0.5)'}; color:${isLast ? '#475569' : '#38bdf8'}; border-radius:6px; width:28px; height:24px; font-size:11px; font-weight:800; cursor:${isLast ? 'not-allowed' : 'pointer'}; display:inline-flex; align-items:center; justify-content:center; transition:all 0.15s;" ${isLast ? 'disabled' : ''}>▼</button>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:12px; overflow:hidden; flex:1; min-width:180px;">
+                    <span style="font-size:26px;">${p.icona || '📁'}</span>
                     <div style="overflow:hidden; width:100%;">
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-weight:700; color:${p.attivo ? '#fff' : '#64748b'}; font-size:14px;">
                             <span>${p.titolo}</span>
@@ -3375,13 +3388,62 @@
                         <div style="font-size:12px; color:#94a3b8; font-family:monospace; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:280px; margin-top:2px;">URL: ${p.url}</div>
                     </div>
                 </div>
-                <div style="display:flex; gap:6px; flex-shrink:0;">
+                <div style="display:flex; gap:6px; flex-shrink:0; align-items:center;">
                     <button onclick="toggleProgetto('${p.id}')" style="background:rgba(255,255,255,0.1); border:none; color:#cbd5e1; padding:6px 10px; border-radius:8px; font-size:11.5px; cursor:pointer;">${p.attivo ? 'Disattiva' : 'Attiva'}</button>
                     <button onclick="eliminaProgetto('${p.id}')" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:6px 10px; border-radius:8px; font-size:11.5px; cursor:pointer;">Elimina</button>
                 </div>
             `;
             container.appendChild(row);
         });
+    }
+
+    async function spostaPosizioneApp(appId, direzione) {
+        if (!listaProgettiAttuali || listaProgettiAttuali.length === 0) return;
+        const index = listaProgettiAttuali.findIndex(p => p.id === appId);
+        if (index === -1) return;
+
+        const targetIndex = index + direzione;
+        if (targetIndex < 0 || targetIndex >= listaProgettiAttuali.length) return;
+
+        // Scambia gli elementi nell'array locale
+        const clonato = [...listaProgettiAttuali];
+        const temp = clonato[index];
+        clonato[index] = clonato[targetIndex];
+        clonato[targetIndex] = temp;
+
+        const orderedIds = clonato.map(p => p.id);
+
+        // Aggiorna subito la UI locale
+        listaProgettiAttuali = clonato;
+        _ultimoHashCardProgetti = ''; // Invalida cache fingerprint per forzare re-render istantaneo delle card
+        renderListaPannelloProgetti(listaProgettiAttuali);
+        renderCardProgetti();
+
+        try {
+            const res = await fetch('/api/progetti/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pinAdmin: currentAdminPin || "",
+                    azione: 'reorder',
+                    orderedIds: orderedIds
+                })
+            });
+            const data = await res.json();
+            if (data.success && data.progetti) {
+                listaProgettiAttuali = data.progetti;
+                _ultimoHashCardProgetti = '';
+                renderListaPannelloProgetti(data.progetti);
+                renderCardProgetti();
+                if (typeof mostraToastNotifica === 'function') {
+                    mostraToastNotifica('✅ Ordine applicazioni salvato con successo!');
+                }
+            } else if (!data.success) {
+                alert('Errore riordino: ' + (data.message || 'operazione fallita'));
+            }
+        } catch(e) {
+            console.error('Errore chiamata riordino:', e);
+        }
     }
 
     async function toggleVisibilitaProgetto(id) {
