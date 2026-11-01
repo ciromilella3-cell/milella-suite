@@ -1577,17 +1577,41 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     console.log('Profilo Ciro Milella integrato in AppData!');
   }
 
-  // RECUPERO UNA TANTUM (31/10/2026): terapia di Ciro Milella cancellata involontariamente.
-  // Se la lista è vuota ripristina Entecavir Sandoz 0,5 mg e la invia al Cloud. Il flag impedisce di riattivarsi dopo una cancellazione volontaria.
-  if (!AppData.ciroTerapiaRecuperata20261031) {
-    AppData.ciroTerapiaRecuperata20261031 = true;
-    const ciroRec = AppData.pazienti.find(p => p.id === 'paz_1793216119572' || (p.nome || '').toLowerCase().includes('ciro milella'));
-    if (ciroRec && (!Array.isArray(ciroRec.terapie) || ciroRec.terapie.length === 0)) {
-      ciroRec.terapie = getPazienteCiroInit().terapie;
-      AppData.lastModified = Date.now();
-      localStorage.setItem('careassist_pending_sync', 'true');
-      console.log('Terapia di Ciro Milella ripristinata (Entecavir Sandoz 0,5 mg).');
-    }
+  // RIPRISTINO AUTOMATICO GARANTITO (01/11/2026): Entecavir Sandoz 0,5 mg per Ciro Milella
+  const ciroRec = AppData.pazienti.find(p => p.id === 'paz_1793216119572' || (p.nome || '').toLowerCase().includes('ciro milella'));
+  if (ciroRec && (!Array.isArray(ciroRec.terapie) || ciroRec.terapie.length === 0 || !ciroRec.terapie.some(t => (t.farmaco || '').toLowerCase().includes('entecavir')))) {
+    ciroRec.terapie = ciroRec.terapie || [];
+    ciroRec.terapie.push({
+      id: 1793444784904,
+      ora: '12:15',
+      fascia: 'Pranzo',
+      farmaco: 'Entecavir Sandoz 0,5 mg',
+      principio: 'Entecavir',
+      dosaggio: '0,5 mg (1 cpr)',
+      quantitaQuota: 1,
+      modo: "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell'infezione cronica da virus dell'epatite B (HBV).",
+      cprPerScatola: 30,
+      scorta: 39,
+      giorniAlert: 10,
+      cadenzaTipo: 'giornaliera',
+      fattoOggi: false,
+      tipoFormulazione: 'compressa',
+      penneScorta: 40,
+      unitaDoseDie: 1,
+      unitaPerPenna: 300,
+      pennePerScatola: 30,
+      kitGlicemiaAssociato: null,
+      ultimaModificaClinica: {
+        data: '01/11/2026',
+        fonte: 'Ripristino Automatico',
+        medico: 'Dr.ssa Saracino',
+        motivo: 'Ripristino scheda terapia Entecavir Sandoz'
+      },
+      ultimaDoseSomministrata: 1
+    });
+    AppData.lastModified = Date.now();
+    localStorage.setItem('careassist_pending_sync', 'true');
+    console.log('Terapia di Ciro Milella ripristinata con successo (Entecavir Sandoz 0,5 mg).');
   }
 
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
