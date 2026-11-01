@@ -472,6 +472,37 @@ function renderAll() {
   }
 }
 
+
+  // 4. Scadenze Documenti
+  const cScad = document.getElementById("list-scadenze");
+  if (cScad) {
+    const sc = AppData.scadenze || (typeof defaultVeicoliData !== "undefined" ? defaultVeicoliData.scadenze : {});
+    const items = [
+      { key: "assicurazione", color: "#10b981", tagClass: "tag-green", labelPrefix: "Scadenza", data: sc.assicurazione },
+      { key: "revisione", color: "#38bdf8", tagClass: "tag-blue", labelPrefix: "Prossimo Controllo", data: sc.revisione },
+      { key: "bollo", color: "#f59e0b", tagClass: "tag-amber", labelPrefix: "Termine Pagamento", data: sc.bollo }
+    ];
+
+    cScad.innerHTML = items.map(it => {
+      const d = it.data || {};
+      const dataFmt = (typeof formattaDataItaliana === "function" && d.data) ? formattaDataItaliana(d.data) : (d.data || "---");
+      return `
+        <div class="item-card" style="border-left: 4px solid ${it.color}; cursor:pointer;" onclick="apriModalModificaScadenze()" title="Clicca per modificare">
+          <div class="item-left">
+            <div class="item-title" style="display:flex; align-items:center; gap:8px;">
+              <span>${d.titolo || "Scadenza Documento"}</span>
+              <span style="font-size:11px; background:#f1f5f9; color:#0284c7; padding:2px 8px; border-radius:10px; font-weight:700; border:1px solid #bae6fd;">✏️ Modifica</span>
+            </div>
+            <div class="item-date">📅 ${it.labelPrefix}: <b>${dataFmt}</b></div>
+            <span class="item-tag ${it.tagClass}">${d.nota || "Regolare"}</span>
+          </div>
+          <div class="item-cost positive" style="font-size:13px; font-weight:800;">${d.stato || "OK"}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+
 function apriModalSpesa() {
   document.getElementById('form-spesa-data').value = new Date().toISOString().split('T')[0];
   document.getElementById('modal-spesa').classList.add('active');
@@ -773,5 +804,5 @@ function salvaScadenzeForm(e) {
 
   saveAppData();
   chiudiModali();
-  mostraNotifica('✅ Scadenze documenti aggiornate con successo!');
+  showToast('✅ Scadenze documenti aggiornate con successo!');
 }

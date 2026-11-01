@@ -363,31 +363,9 @@
 
   <!-- VISTA 4: SCADENZE DOCUMENTI -->
   <div id="view-scadenze" class="section-view">
-    <div class="item-card" style="border-left: 4px solid #10b981;">
-      <div class="item-left">
-        <div class="item-title">Assicurazione RCA Veicolo</div>
-        <div class="item-date">📅 Scadenza: <b>31/12/2026</b></div>
-        <span class="item-tag tag-green">Copertura Attiva Regolare</span>
-      </div>
-      <div class="item-cost positive">OK</div>
-    </div>
-
-    <div class="item-card" style="border-left: 4px solid #38bdf8;">
-      <div class="item-left">
-        <div class="item-title">Revisione Ministeriale Periodica</div>
-        <div class="item-date">📅 Prossimo Controllo: <b>Maggio 2027</b></div>
-        <span class="item-tag tag-blue">Centro Revisioni Autorizzato</span>
-      </div>
-      <div class="item-cost positive">In Regola</div>
-    </div>
-
-    <div class="item-card" style="border-left: 4px solid #f59e0b;">
-      <div class="item-left">
-        <div class="item-title">Bollo Auto Annuale</div>
-        <div class="item-date">📅 Termine Pagamento: <b>Gennaio 2027</b></div>
-        <span class="item-tag tag-amber">Regione Basilicata / ACI</span>
-      </div>
-      <div class="item-cost positive">Pagato</div>
+    <button class="btn-quick-add" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); margin-bottom: 14px;" onclick="apriModalModificaScadenze()">✏️ Modifica Date & Stato Scadenze</button>
+    <div id="list-scadenze">
+      <!-- Generato dinamicamente da app.js -->
     </div>
   </div>
 
