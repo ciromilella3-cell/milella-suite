@@ -70,16 +70,30 @@ function renderAll() {
     cSpese.innerHTML = AppData.spese.map(s => `
       <div class="item-card">
         <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:44px; height:44px; min-width:44px; border-radius:50%; background:#e0f2fe; border:1.5px solid #bae6fd; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 2px 6px rgba(2,132,199,0.15); flex-shrink:0;">🔧</div>
+          <div class="item-left">
+            <div class="item-title">${s.desc}</div>
+            <div class="item-date">📅 <b>${formattaDataItaliana(s.data)}</b> ${s.note ? ' &bull; 🏢 ' + s.note : ''}</div>
+            <span class="item-tag tag-blue">Manutenzione Auto</span>
+          </div>
+        </div>
+        <div class="item-cost negative">-€ ${parseFloat(s.costo).toFixed(2)}</div>
+      </div>
+    `).join('');
+  }
+
+  // 2. Rifornimenti
+  const cRif = document.getElementById('list-rifornimenti');
+  if (cRif) {
+    cRif.innerHTML = AppData.rifornimenti.map(r => `
+      <div class="item-card">
+        <div style="display:flex; align-items:center; gap:12px;">
           <div style="width:44px; height:44px; min-width:44px; border-radius:50%; background:#fef3c7; border:1.5px solid #fde68a; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 2px 6px rgba(245,158,11,0.15); flex-shrink:0;">⛽</div>
           <div class="item-left">
             <div class="item-title">Rifornimento Carburante ${r.litri ? '(' + r.litri + ' L)' : ''}</div>
-            ${newRif}
+            <div class="item-date">📅 <b>${formattaDataItaliana(r.data)}</b> ${r.km ? ' &bull; 🚗 ' + Number(r.km).toLocaleString('it-IT') + ' Km' : ''} ${r.note ? ' &bull; 📍 ' + r.note : ''}</div>
             <span class="item-tag tag-amber">Carburante</span>
           </div>
-        </div>
-        <div class="item-cost negative">-€ ${parseFloat(r.costo).toFixed(2)}</div>
-      </div>
-          <span class="item-tag tag-amber">Carburante</span>
         </div>
         <div class="item-cost negative">-€ ${parseFloat(r.costo).toFixed(2)}</div>
       </div>
@@ -93,7 +107,7 @@ function renderAll() {
       <div class="item-card">
         <div class="item-left">
           <div class="item-title">${m.mese}</div>
-          <div class="item-date">ACI: <b>€ ${m.rimborsi.toFixed(2)}</b> • Carburante: € ${m.benzina.toFixed(2)}</div>
+          <div class="item-date">ACI: <b>€ ${m.rimborsi.toFixed(2)}</b> &bull; Carburante: € ${m.benzina.toFixed(2)}</div>
           <span class="item-tag ${m.netto >= 0 ? 'tag-green' : 'tag-amber'}">${m.netto >= 0 ? 'Guadagno Netto' : 'Spese Mese Elevate'}</span>
         </div>
         <div class="item-cost ${m.netto >= 0 ? 'positive' : 'negative'}">
