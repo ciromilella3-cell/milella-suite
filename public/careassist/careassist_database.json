@@ -989,7 +989,7 @@
           "scorta": 39,
           "giorniAlert": 10,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": true,
+          "fattoOggi": false,
           "tipoFormulazione": "compressa",
           "penneScorta": 40,
           "unitaDoseDie": 1,
@@ -997,10 +997,10 @@
           "pennePerScatola": 30,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "31/10/2026",
+            "data": "01/11/2026",
             "fonte": "Visita Specialistica",
-            "medico": "",
-            "motivo": ""
+            "medico": "Prof.ssa Saracino",
+            "motivo": "Ripristino terapia antivirale Entecavir Sandoz"
           },
           "ultimaDoseSomministrata": 1
         }
@@ -1078,7 +1078,7 @@
       ]
     }
   ],
-  "lastModified": 1793446129669,
+  "lastModified": 1793527494292,
   "lastModifiedDevice": "smartphone",
   "lastModifiedBy": {
     "nome": "Ciro Milella",
