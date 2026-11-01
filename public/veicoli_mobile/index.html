@@ -9,23 +9,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #070d18;
-      --card-bg: rgba(15, 23, 42, 0.75);
-      --card-border: rgba(56, 189, 248, 0.18);
-      --primary: #0ea5e9;
-      --primary-glow: rgba(14, 165, 233, 0.35);
+      --bg: #f0f4f8;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --primary: #0284c7;
+      --primary-glow: rgba(2, 132, 199, 0.2);
       --accent-gold: #f59e0b;
-      --success: #10b981;
-      --danger: #ef4444;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --success: #059669;
+      --danger: #dc2626;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --segugio-blue: #0f3d6c;
     }
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; -webkit-tap-highlight-color:transparent; }
     body {
-      background: radial-gradient(circle at 50% 0%, #0f233d 0%, #070d18 100%);
+      background: #f0f4f8;
       color: var(--text);
       min-height: 100vh;
-      padding: 12px 14px 90px; /* Spazio per la Bottom Bar */
+      padding: 12px 14px 90px;
       overflow-x: hidden;
     }
     
@@ -36,65 +37,61 @@
       align-items: center;
       margin-bottom: 14px;
       padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid #e2e8f0;
     }
     .brand { display: flex; align-items: center; gap: 10px; }
     .brand-icon {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-      border-radius: 12px;
+      width: 44px;
+      height: 44px;
+      background: #e8f4fc;
+      border: 1.5px solid #d0e8f8;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      box-shadow: 0 4px 15px var(--primary-glow);
-      border: 1px solid rgba(255,255,255,0.2);
+      font-size: 24px;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12);
     }
     .brand-title {
       font-family: 'Outfit', sans-serif;
       font-size: 19px;
       font-weight: 800;
-      background: linear-gradient(90deg, #ffffff 0%, #7dd3fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--segugio-blue);
       line-height: 1.1;
     }
-    .brand-sub { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+    .brand-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; }
     .btn-suite {
-      background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
-      color: #050811;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
       font-weight: 800;
       font-size: 11.5px;
-      padding: 7px 14px;
+      padding: 8px 14px;
       border-radius: 20px;
       text-decoration: none;
       display: flex;
       align-items: center;
       gap: 5px;
-      box-shadow: 0 2px 10px rgba(212,175,55,0.35);
-      border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.25);
+      border: 1px solid #38bdf8;
     }
 
-    /* SUMMARY TILES (GLASS COCKPIT) */
+    /* SUMMARY TILES (SEGUGIO COCKPIT) */
     .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
     .stat-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1.5px solid var(--card-border);
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
       border-radius: 16px;
       padding: 12px 14px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
     }
-    .stat-card.primary { border-color: rgba(14, 165, 233, 0.45); }
-    .stat-card.warning { border-color: rgba(245, 158, 11, 0.45); }
-    .stat-card.danger { border-color: rgba(239, 68, 68, 0.45); }
-    .stat-card.success { border-color: rgba(16, 185, 129, 0.45); }
+    .stat-card.primary { border-top: 3.5px solid #0284c7; }
+    .stat-card.warning { border-top: 3.5px solid #f59e0b; }
+    .stat-card.danger { border-top: 3.5px solid #dc2626; }
+    .stat-card.success { border-top: 3.5px solid #059669; }
     .stat-label {
-      font-size: 10px;
+      font-size: 10.5px;
       font-weight: 800;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -102,15 +99,15 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.3px;
     }
-    .stat-val { font-size: 21px; font-weight: 900; color: #fff; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; }
+    .stat-val { font-size: 20px; font-weight: 900; color: var(--segugio-blue); font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; }
     .stat-sub { font-size: 10px; color: #64748b; margin-top: 3px; font-weight: 600; }
 
-    /* TABS SCORREVOLI IN ALTO */
+    /* TABS SCORREVOLI IN ALTO STILE SEGUGIO */
     .tabs-bar {
       display: flex;
-      gap: 6px;
+      gap: 7px;
       overflow-x: auto;
       margin-bottom: 14px;
       padding-bottom: 4px;
@@ -119,25 +116,26 @@
     }
     .tabs-bar::-webkit-scrollbar { display: none; }
     .tab-btn {
-      background: rgba(30, 41, 59, 0.65);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: #94a3b8;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      color: #64748b;
       font-size: 12px;
       font-weight: 700;
       padding: 8px 14px;
-      border-radius: 12px;
+      border-radius: 14px;
       white-space: nowrap;
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
       align-items: center;
       gap: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
     .tab-btn.active {
-      background: linear-gradient(135deg, #0ea5e9, #0284c7);
-      color: #fff;
-      border-color: #38bdf8;
-      box-shadow: 0 4px 14px var(--primary-glow);
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0369a1;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
     }
 
     /* SECTIONS */
@@ -145,52 +143,55 @@
     .section-view.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* CARDS LIST */
+    /* CARDS LIST STILE SEGUGIO */
     .item-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
       padding: 14px 16px;
       margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .item-card:active {
+      transform: scale(0.985);
+      border-color: #7dd3fc;
     }
     .item-left { display: flex; flex-direction: column; gap: 3px; }
-    .item-title { font-size: 14px; font-weight: 800; color: #fff; letter-spacing: -0.2px; }
-    .item-date { font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
-    .item-cost { font-size: 16px; font-weight: 900; font-family: 'Outfit', sans-serif; text-align: right; }
-    .item-cost.positive { color: #34d399; }
-    .item-cost.negative { color: #f87171; }
+    .item-title { font-size: 14.5px; font-weight: 800; color: var(--segugio-blue); letter-spacing: -0.2px; }
+    .item-date { font-size: 11.5px; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    .item-cost { font-size: 17px; font-weight: 900; font-family: 'Outfit', sans-serif; text-align: right; }
+    .item-cost.positive { color: #059669; }
+    .item-cost.negative { color: #dc2626; }
     .item-tag {
       font-size: 10.5px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 8px;
       display: inline-block;
       margin-top: 5px;
       width: fit-content;
     }
-    .tag-blue { background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25); }
-    .tag-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.25); }
-    .tag-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.25); }
+    .tag-blue { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .tag-green { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .tag-amber { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
 
     /* ACTION BUTTONS */
     .btn-quick-add {
       width: 100%;
-      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1.5px solid #38bdf8;
       font-weight: 800;
       font-size: 14px;
       padding: 13px;
       border-radius: 14px;
       margin-bottom: 14px;
       cursor: pointer;
-      box-shadow: 0 4px 18px var(--primary-glow);
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -198,22 +199,20 @@
     }
 
     /* MODAL */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.78); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 16px; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.active { display: flex; }
-    .modal-card { background: #0f172a; border: 1.5px solid var(--primary); border-radius: 20px; width: 100%; max-width: 440px; padding: 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
-    .modal-title { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .modal-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 20px; width: 100%; max-width: 440px; padding: 18px; box-shadow: 0 12px 35px rgba(0,0,0,0.2); }
+    .modal-title { font-size: 16px; font-weight: 800; color: var(--segugio-blue); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
     .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
-    .form-control { width: 100%; background: #070d18; border: 1px solid #334155; border-radius: 10px; padding: 11px 13px; color: #fff; font-size: 13.5px; outline: none; }
-    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(14, 165, 233, 0.3); }
+    .form-group label { display: block; font-size: 11px; font-weight: 800; color: #475569; margin-bottom: 4px; text-transform: uppercase; }
+    .form-control { width: 100%; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 11px 13px; color: #0f172a; font-size: 13.5px; font-weight: 600; outline: none; }
+    .form-control:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 10px rgba(2, 132, 199, 0.2); }
     .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
     .modal-btn { flex: 1; padding: 11px; border-radius: 10px; font-weight: 800; font-size: 13px; border: none; cursor: pointer; text-align: center; }
-    .modal-btn.cancel { background: #1e293b; color: #94a3b8; }
+    .modal-btn.cancel { background: #e2e8f0; color: #475569; }
     .modal-btn.save { background: var(--primary); color: #fff; }
 
-    /* ==========================================================================
-       BOTTOM NAVIGATION BAR (FLOATING GLASS WITH HOME, BACK, REFRESH, ADD)
-       ========================================================================== */
+    /* BOTTOM BAR */
     .mobile-bottom-bar {
       position: fixed;
       bottom: 12px;
@@ -222,16 +221,14 @@
       width: calc(100% - 24px);
       max-width: 440px;
       height: 64px;
-      background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
       border-radius: 22px;
       display: flex;
       justify-content: space-around;
       align-items: center;
       padding: 0 8px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(14, 165, 233, 0.15);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
       z-index: 999;
     }
     .bar-item {
@@ -239,9 +236,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #94a3b8;
+      color: #64748b;
       text-decoration: none;
-      font-size: 10px;
+      font-size: 10.5px;
       font-weight: 700;
       gap: 3px;
       cursor: pointer;
@@ -251,39 +248,22 @@
       height: 100%;
       transition: all 0.2s;
     }
-    .bar-item .icon {
-      font-size: 20px;
-      line-height: 1;
-      transition: transform 0.2s;
-    }
-    .bar-item:active .icon {
-      transform: scale(0.85);
-    }
-    .bar-item.active,
-    .bar-item:hover {
-      color: #38bdf8;
-    }
-    .bar-item.center-action {
-      position: relative;
-      top: -12px;
-    }
+    .bar-item .icon { font-size: 20px; line-height: 1; }
+    .bar-item.active, .bar-item:hover { color: #0284c7; }
+    .bar-item.center-action { position: relative; top: -12px; }
     .bar-item.center-action .btn-circle-add {
       width: 52px;
       height: 52px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-      border: 3px solid #070d18;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      border: 3px solid #ffffff;
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 24px;
-      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
+      box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4);
       cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .bar-item.center-action:active .btn-circle-add {
-      transform: scale(0.9);
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -338,7 +318,7 @@
   <!-- VISTA 1: SPESE & INTERVENTI -->
   <div id="view-spese" class="section-view active">
     <!-- BARRA AZIONI SCANSIONE SMART RICEVUTA MECCANICO -->
-    <label style="background: linear-gradient(135deg, rgba(14,165,233,0.18) 0%, rgba(2,132,199,0.18) 100%); border: 1.5px dashed rgba(56,189,248,0.45); border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: #38bdf8; font-size: 12px; font-weight: 800; box-shadow: 0 4px 15px rgba(2,132,199,0.25);">
+    <label style="background: #e8f4fc; border: 1.5px dashed #0284c7; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: #0284c7; font-size: 12.5px; font-weight: 800; box-shadow: 0 2px 8px rgba(2,132,199,0.1);">
       <span style="font-size:18px;">📷</span> Scansiona Ricevuta / Fattura Meccanico
       <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="scansionaFatturaSpesa(event)">
     </label>
@@ -352,23 +332,23 @@
   <!-- VISTA 2: RIFORNIMENTI -->
   <div id="view-rifornimenti" class="section-view">
     <!-- BARRA AZIONI SCANSIONE SMART FOTOCAMERA -->
-    <div style="background: linear-gradient(135deg, rgba(14,165,233,0.18) 0%, rgba(245,158,11,0.18) 100%); border: 1.5px dashed rgba(56,189,248,0.45); border-radius: 16px; padding: 12px 14px; margin-bottom: 12px;">
-      <div style="font-size: 11.5px; font-weight: 800; color: #38bdf8; text-transform: uppercase; margin-bottom: 8px; display:flex; align-items:center; gap:6px;">
+    <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+      <div style="font-size: 11px; font-weight: 800; color: #0f3d6c; text-transform: uppercase; margin-bottom: 8px; display:flex; align-items:center; gap:6px;">
         <span>📷</span> Riconoscimento Smart da Fotocamera
       </div>
       <div style="display: flex; gap: 8px;">
-        <label style="flex:1; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; padding: 10px 8px; border-radius: 12px; font-size: 11.5px; font-weight: 800; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 15px rgba(2,132,199,0.4);">
+        <label style="flex:1; background: #e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding: 10px 8px; border-radius: 12px; font-size: 11.5px; font-weight: 800; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
           <span>📸</span> Cruscotto (Km)
           <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="scansionaCruscotto(event)">
         </label>
-        <label style="flex:1; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#fff; padding: 10px 8px; border-radius: 12px; font-size: 11.5px; font-weight: 800; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 15px rgba(245,158,11,0.4);">
+        <label style="flex:1; background: #fef3c7; color:#b45309; border:1px solid #fde68a; padding: 10px 8px; border-radius: 12px; font-size: 11.5px; font-weight: 800; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
           <span>🧾</span> Scontrino Pompa
           <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="scansionaScontrino(event)">
         </label>
       </div>
     </div>
 
-    <button class="btn-quick-add" style="background:linear-gradient(135deg, #f59e0b, #d97706); box-shadow:0 4px 18px rgba(245,158,11,0.4);" onclick="apriModalRifornimento()">⛽ Segna Nuovo Rifornimento</button>
+    <button class="btn-quick-add" style="background:linear-gradient(135deg, #f97316 0%, #ea580c 100%); border:1px solid #fdba74; box-shadow:0 4px 14px rgba(249,115,22,0.35);" onclick="apriModalRifornimento()">⛽ Segna Nuovo Rifornimento</button>
     <div id="list-rifornimenti">
       <!-- Generato dinamicamente -->
     </div>
