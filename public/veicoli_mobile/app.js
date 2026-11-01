@@ -1,3 +1,11 @@
+
+window.chiudiModali = function() {
+  document.querySelectorAll(".modal-overlay").forEach(m => {
+    m.classList.remove("active");
+    m.style.display = "none";
+  });
+};
+
 const STORAGE_KEY = 'flotta_veicoli_mobile_db';
 
 const defaultVeicoliData = {
@@ -564,7 +572,7 @@ function renderAll() {
 
 function apriModalSpesa() {
   document.getElementById('form-spesa-data').value = new Date().toISOString().split('T')[0];
-  document.getElementById('modal-spesa').classList.add('active');
+  const mp = document.getElementById('modal-spesa'); mp.style.display = 'flex'; mp.classList.add('active');
 }
 
 function apriModalRifornimento() {
@@ -578,7 +586,7 @@ function apriModalRifornimento() {
   document.getElementById('form-rif-note').value = '';
   const delBtn = document.getElementById('btn-rif-elimina');
   if (delBtn) delBtn.style.display = 'none';
-  document.getElementById('modal-rifornimento').classList.add('active');
+  const mr = document.getElementById('modal-rifornimento'); mr.style.display = 'flex'; mr.classList.add('active');
 }
 
 function apriModificaRifornimento(id) {
@@ -602,7 +610,7 @@ function apriModificaRifornimento(id) {
   const delBtn = document.getElementById('btn-rif-elimina');
   if (delBtn) delBtn.style.display = 'inline-block';
 
-  document.getElementById('modal-rifornimento').classList.add('active');
+  const mr = document.getElementById('modal-rifornimento'); mr.style.display = 'flex'; mr.classList.add('active');
 }
 
 function eliminaRifornimentoCorrente() {
@@ -887,7 +895,7 @@ function apriModalModificaScadenze() {
   document.getElementById('form-scad-bollo-stato').value = sc.bollo?.stato || 'Pagato';
   document.getElementById('form-scad-bollo-nota').value = sc.bollo?.nota || 'Regione Basilicata / ACI';
 
-  document.getElementById('modal-scadenze').classList.add('active');
+  const ms = document.getElementById('modal-scadenze'); ms.style.display = 'flex'; ms.classList.add('active');
 }
 
 function salvaScadenzeForm(e) {
