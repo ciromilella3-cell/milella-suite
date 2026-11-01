@@ -327,5 +327,25 @@
       "benzina": 191.97,
       "netto": 188.03
     }
-  ]
+  ],
+  "scadenze": {
+    "assicurazione": {
+      "titolo": "Assicurazione RCA Veicolo",
+      "data": "2026-12-31",
+      "nota": "Copertura Attiva Regolare",
+      "stato": "OK"
+    },
+    "revisione": {
+      "titolo": "Revisione Ministeriale Periodica",
+      "data": "2027-05-31",
+      "nota": "Centro Revisioni Autorizzato",
+      "stato": "In Regola"
+    },
+    "bollo": {
+      "titolo": "Bollo Auto Annuale",
+      "data": "2027-01-31",
+      "nota": "Regione Basilicata / ACI",
+      "stato": "Pagato"
+    }
+  }
 }

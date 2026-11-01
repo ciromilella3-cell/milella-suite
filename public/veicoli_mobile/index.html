@@ -542,7 +542,86 @@
     </button>
   </nav>
 
-  <script src="app.js?v=151"></script>
+  
+  <!-- ==========================================================================
+       MODALE 3: MODIFICA SCADENZE E DOCUMENTI AUTO
+       ========================================================================== -->
+  <div class="modal-overlay" id="modal-scadenze">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span>📅 Modifica Scadenze Documenti</span>
+        <button type="button" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer;" onclick="chiudiModali()">✕</button>
+      </div>
+
+      <form onsubmit="salvaScadenzeForm(event)">
+        <!-- ASSICURAZIONE -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px; margin-bottom:12px;">
+          <div style="font-weight:800; color:#0f172a; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+            <span style="color:#10b981;">🛡️</span> Assicurazione RCA
+          </div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label class="form-label">Data Scadenza Polizza</label>
+            <input type="date" class="form-control" id="form-scad-ass-data" required>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+              <label class="form-label">Stato Badge</label>
+              <input type="text" class="form-control" id="form-scad-ass-stato" placeholder="es. OK">
+            </div>
+            <div class="form-group" style="flex:2; margin-bottom:0;">
+              <label class="form-label">Dettaglio / Compagnia</label>
+              <input type="text" class="form-control" id="form-scad-ass-nota" placeholder="es. Copertura Attiva">
+            </div>
+          </div>
+        </div>
+
+        <!-- REVISIONE -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px; margin-bottom:12px;">
+          <div style="font-weight:800; color:#0f172a; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+            <span style="color:#0284c7;">🔍</span> Revisione Ministeriale
+          </div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label class="form-label">Data Prossimo Controllo</label>
+            <input type="date" class="form-control" id="form-scad-rev-data" required>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+              <label class="form-label">Stato Badge</label>
+              <input type="text" class="form-control" id="form-scad-rev-stato" placeholder="es. In Regola">
+            </div>
+            <div class="form-group" style="flex:2; margin-bottom:0;">
+              <label class="form-label">Centro Revisioni / Note</label>
+              <input type="text" class="form-control" id="form-scad-rev-nota" placeholder="es. Centro Autorizzato">
+            </div>
+          </div>
+        </div>
+
+        <!-- BOLLO -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px; margin-bottom:14px;">
+          <div style="font-weight:800; color:#0f172a; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+            <span style="color:#d97706;">🏷️</span> Bollo Auto Annuale
+          </div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label class="form-label">Termine Ultimo Pagamento</label>
+            <input type="date" class="form-control" id="form-scad-bollo-data" required>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+              <label class="form-label">Stato Badge</label>
+              <input type="text" class="form-control" id="form-scad-bollo-stato" placeholder="es. Pagato">
+            </div>
+            <div class="form-group" style="flex:2; margin-bottom:0;">
+              <label class="form-label">Ente / Note</label>
+              <input type="text" class="form-control" id="form-scad-bollo-nota" placeholder="es. Regione Basilicata / ACI">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">💾 Salva Modifiche Scadenze</button>
+      </form>
+    </div>
+  </div>
+  <script src="app.js?v=153"></script>
 
   <!-- MODALE PROGRESSO OCR VEICOLI -->
   <div id="veicoli-ocr-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(5,10,22,0.92); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); z-index:999999; align-items:center; justify-content:center; padding:16px;">

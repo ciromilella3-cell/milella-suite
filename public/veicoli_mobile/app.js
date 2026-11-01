@@ -1,6 +1,11 @@
 const STORAGE_KEY = 'flotta_veicoli_mobile_db';
 
 const defaultVeicoliData = {
+  "scadenze": {
+    "assicurazione": { "titolo": "Assicurazione RCA Veicolo", "data": "2026-12-31", "nota": "Copertura Attiva Regolare", "stato": "OK" },
+    "revisione": { "titolo": "Revisione Ministeriale Periodica", "data": "2027-05-31", "nota": "Centro Revisioni Autorizzato", "stato": "In Regola" },
+    "bollo": { "titolo": "Bollo Auto Annuale", "data": "2027-01-31", "nota": "Regione Basilicata / ACI", "stato": "Pagato" }
+  },
   "spese": [
     {
       "id": 20,
@@ -721,4 +726,52 @@ async function scansionaFatturaSpesa(event) {
     chiudiVeicoliOcrModal();
     event.target.value = '';
   }
+}
+
+
+function apriModalModificaScadenze() {
+  const sc = AppData.scadenze || defaultVeicoliData.scadenze;
+  document.getElementById('form-scad-ass-data').value = sc.assicurazione?.data || '2026-12-31';
+  document.getElementById('form-scad-ass-stato').value = sc.assicurazione?.stato || 'OK';
+  document.getElementById('form-scad-ass-nota').value = sc.assicurazione?.nota || 'Copertura Attiva Regolare';
+
+  document.getElementById('form-scad-rev-data').value = sc.revisione?.data || '2027-05-31';
+  document.getElementById('form-scad-rev-stato').value = sc.revisione?.stato || 'In Regola';
+  document.getElementById('form-scad-rev-nota').value = sc.revisione?.nota || 'Centro Revisioni Autorizzato';
+
+  document.getElementById('form-scad-bollo-data').value = sc.bollo?.data || '2027-01-31';
+  document.getElementById('form-scad-bollo-stato').value = sc.bollo?.stato || 'Pagato';
+  document.getElementById('form-scad-bollo-nota').value = sc.bollo?.nota || 'Regione Basilicata / ACI';
+
+  document.getElementById('modal-scadenze').classList.add('active');
+}
+
+function salvaScadenzeForm(e) {
+  e.preventDefault();
+  if (!AppData.scadenze) AppData.scadenze = {};
+
+  AppData.scadenze.assicurazione = {
+    titolo: 'Assicurazione RCA Veicolo',
+    data: document.getElementById('form-scad-ass-data').value,
+    stato: document.getElementById('form-scad-ass-stato').value || 'OK',
+    nota: document.getElementById('form-scad-ass-nota').value || 'Copertura Attiva Regolare'
+  };
+
+  AppData.scadenze.revisione = {
+    titolo: 'Revisione Ministeriale Periodica',
+    data: document.getElementById('form-scad-rev-data').value,
+    stato: document.getElementById('form-scad-rev-stato').value || 'In Regola',
+    nota: document.getElementById('form-scad-rev-nota').value || 'Centro Revisioni Autorizzato'
+  };
+
+  AppData.scadenze.bollo = {
+    titolo: 'Bollo Auto Annuale',
+    data: document.getElementById('form-scad-bollo-data').value,
+    stato: document.getElementById('form-scad-bollo-stato').value || 'Pagato',
+    nota: document.getElementById('form-scad-bollo-nota').value || 'Regione Basilicata / ACI'
+  };
+
+  saveAppData();
+  chiudiModali();
+  mostraNotifica('✅ Scadenze documenti aggiornate con successo!');
 }
