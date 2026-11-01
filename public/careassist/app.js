@@ -4688,6 +4688,7 @@ function renderTerapie() {
 
   const activeFascia = window._activeFasciaFilter || 'tutte';
   const terapieFiltrate = (p.terapie || []).filter(t => {
+    if (window._soloDaPrendereOggi && t.fattoOggi) return false;
     if (activeFascia === 'tutte') return true;
     const f = (t.fascia || '').toLowerCase();
     return f.includes(activeFascia.toLowerCase());
@@ -11723,6 +11724,11 @@ function renderFiltroFasceTerapie() {
     { key: 'notte', label: 'Notte', icon: '😴', count: countFascia('notte'), isNow: fasciaAttuale === 'notte' }
   ];
 
+  // Calcolo farmaci rimanenti da prendere
+  const daPrendereTot = terapie.filter(t => !t.fattoOggi).length;
+  const targetFascia = (window._activeFasciaFilter || 'tutte').toLowerCase();
+  const daPrendereFascia = terapie.filter(t => !t.fattoOggi && (targetFascia === 'tutte' || (t.fascia || '').toLowerCase().includes(targetFascia))).length;
+
   container.innerHTML = `
     <div style="font-size:12px; font-weight:800; color:#334155; margin-right:4px; display:inline-flex; align-items:center; gap:4px; white-space:nowrap;">
       <span>Filtro Fascia:</span>
@@ -11738,6 +11744,32 @@ function renderFiltroFasceTerapie() {
         </button>
       `;
   }).join('')}
+
+    <!-- 3 MIGLIORIE DOMENICA & UX PRO: BARRA AZIONI RAPIDE -->
+    <div style="display:inline-flex; align-items:center; gap:8px; margin-left:auto; flex-wrap:wrap; padding:2px 0;">
+      <!-- Miglioria 1: Prendi Tutto Con 1 Tocco -->
+      ${daPrendereFascia > 0 ? `
+        <button type="button" class="btn btn-success" onclick="prendiTuttiFarmaciFascia()" style="font-size:11.5px; font-weight:800; padding:5px 12px; border-radius:20px; background:linear-gradient(135deg, #16a34a 0%, #15803d 100%); color:#fff; border:1.5px solid #86efac; box-shadow:0 2px 6px rgba(22,163,74,0.3); display:inline-flex; align-items:center; gap:5px; cursor:pointer;" title="Somministra e scarica contemporaneamente tutti i farmaci di questa fascia">
+          <span>✅ Prendi tutto ${targetFascia === 'tutte' ? 'oggi' : targetFascia.toUpperCase()}</span>
+          <span style="background:rgba(255,255,255,0.25); padding:1px 6px; border-radius:10px; font-size:11px;">${daPrendereFascia}</span>
+        </button>
+      ` : `
+        <span style="font-size:11px; font-weight:700; color:#16a34a; background:#dcfce7; padding:4px 10px; border-radius:20px; border:1px solid #86efac; display:inline-flex; align-items:center; gap:4px;">
+          ✓ Tutto somministrato per ${targetFascia === 'tutte' ? 'oggi' : targetFascia}
+        </span>
+      `}
+
+      <!-- Miglioria 3: Filtro Solo Da Prendere Oggi -->
+      <button type="button" class="btn" onclick="toggleFiltroSoloDaPrendere()" style="font-size:11px; font-weight:800; padding:5px 11px; border-radius:20px; background:${window._soloDaPrendereOggi ? '#0284c7' : '#f8fafc'}; color:${window._soloDaPrendereOggi ? '#ffffff' : '#475569'}; border:1.5px solid ${window._soloDaPrendereOggi ? '#0369a1' : '#cbd5e1'}; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Nascondi le compresse già somministrate e mostra solo quelle ancora da assumere">
+        <span>${window._soloDaPrendereOggi ? '👁️ Mostrando: Solo da Prendere' : '🔍 Mostra: Solo da Prendere'}</span>
+        <span style="background:${window._soloDaPrendereOggi ? '#0369a1' : '#e2e8f0'}; padding:1px 5px; border-radius:10px; font-size:10px;">${daPrendereTot}</span>
+      </button>
+
+      <!-- Miglioria 2: Stampa Foglio Frigo Promemoria A4 -->
+      <button type="button" class="btn" onclick="stampaFoglioFrigo()" style="font-size:11px; font-weight:800; padding:5px 11px; border-radius:20px; background:#fff7ed; color:#c2410c; border:1.5px solid #fed7aa; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Stampa o salva in PDF un promemoria essenziale e chiaro da attaccare al frigorifero o tenere a portata di mano">
+        <span>📄 Promemoria Frigo</span>
+      </button>
+    </div>
   `;
 }
 
@@ -21259,4 +21291,180 @@ window.annullaCancellazioneFarmacoImmediata = function(farmacoId, cestinoId) {
   } else {
     location.reload();
   }
+};
+
+
+// ==========================================
+// 3 MIGLIORIE DOMENICA & UX PRO (v131)
+// 1) Prendi Tutto Ora (Fascia o Prossimi)
+// 2) Stampa / Promemoria Foglio Frigo A4
+// 3) Filtro 'Solo da prendere oggi'
+// ==========================================
+
+window._soloDaPrendereOggi = false;
+
+window.prendiTuttiFarmaciFascia = async function(fasciaNome) {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+  const targetFascia = (fasciaNome || window._activeFasciaFilter || '').toLowerCase();
+  
+  let daPrendere = p.terapie.filter(t => {
+    if (t.fattoOggi) return false;
+    if (targetFascia && targetFascia !== 'tutte') {
+      return (t.fascia || '').toLowerCase().includes(targetFascia);
+    }
+    return true;
+  });
+
+  if (daPrendere.length === 0) {
+    if (typeof showToast === 'function') {
+      showToast('Nessun farmaco da prendere in questa fascia!', 'info');
+    } else {
+      alert('Tutti i farmaci di questa fascia sono già stati somministrati!');
+    }
+    return;
+  }
+
+  const elencoNomi = daPrendere.map(t => '• ' + t.farmaco + ' (' + (t.dosaggio || t.ora) + ')').join('\n');
+  const confirmMsg = 'Stai per confermare la somministrazione di ' + daPrendere.length + ' farmaci:\n\n' + elencoNomi + '\n\nConfermi l\'assunzione e lo scarico delle scorte?';
+  
+  let ok = false;
+  if (typeof customConfirm === 'function') {
+    ok = await customConfirm('✅ Prendi Tutto (' + (targetFascia === 'tutte' ? 'Oggi' : targetFascia.toUpperCase()) + ')', confirmMsg, '💊');
+  } else {
+    ok = window.confirm(confirmMsg);
+  }
+  if (!ok) return;
+
+  const now = new Date();
+  const oraFormattata = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  const dataFormattata = now.toLocaleDateString('it-IT');
+  const nomeOperatore = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore OSS / Caregiver';
+
+  let count = 0;
+  for (const t of daPrendere) {
+    t.fattoOggi = true;
+    t.orarioEffettivoAssunzione = oraFormattata;
+    t.operatoreAssunzione = nomeOperatore;
+    t.dataUltimaSomministrazione = dataFormattata;
+    if (typeof scaricaScortaFarmaco === 'function') {
+      scaricaScortaFarmaco(t);
+    }
+    count++;
+  }
+
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof renderAll === 'function') renderAll();
+  if (typeof showToast === 'function') {
+    showToast('✅ Somministrati con successo ' + count + ' farmaci!', 'success');
+  }
+};
+
+window.toggleFiltroSoloDaPrendere = function() {
+  window._soloDaPrendereOggi = !window._soloDaPrendereOggi;
+  if (typeof renderFiltroFasceTerapie === 'function') renderFiltroFasceTerapie();
+  if (typeof renderTerapie === 'function') renderTerapie();
+};
+
+window.stampaFoglioFrigo = function() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const terapie = (p.terapie || []).slice().sort((a,b) => (a.ora || '').localeCompare(b.ora || ''));
+  
+  const raggruppate = {
+    mattina: terapie.filter(t => (t.fascia || '').toLowerCase().includes('mattina')),
+    pranzo: terapie.filter(t => (t.fascia || '').toLowerCase().includes('pranzo')),
+    pomeriggio: terapie.filter(t => (t.fascia || '').toLowerCase().includes('pomeriggio')),
+    sera: terapie.filter(t => (t.fascia || '').toLowerCase().includes('sera')),
+    notte: terapie.filter(t => (t.fascia || '').toLowerCase().includes('notte')),
+    altri: terapie.filter(t => {
+      const f = (t.fascia || '').toLowerCase();
+      return !f.includes('mattina') && !f.includes('pranzo') && !f.includes('pomeriggio') && !f.includes('sera') && !f.includes('notte');
+    })
+  };
+
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('Consenti i popup per visualizzare e stampare il promemoria!');
+    return;
+  }
+
+  const renderColonna = (titolo, icona, bg, lista) => {
+    return `
+      <div style="background:${bg}; border-radius:12px; padding:12px 14px; margin-bottom:12px; border:1px solid rgba(0,0,0,0.08);">
+        <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+          <span>${icona}</span> <span>${titolo}</span>
+        </div>
+        ${lista.length === 0 ? '<div style="font-size:11px; color:#64748b; font-style:italic;">Nessun farmaco in questa fascia</div>' : 
+          lista.map(t => `
+            <div style="display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; border-bottom:1px dashed rgba(0,0,0,0.1); font-size:13px;">
+              <div>
+                <strong style="color:#0f172a;">${t.farmaco}</strong>
+                <span style="color:#475569; font-size:11.5px;"> (${t.dosaggio || '1 cpr'}${t.note ? ' - ' + t.note : ''})</span>
+              </div>
+              <div style="font-weight:800; color:#0369a1; font-size:13px; margin-left:12px; white-space:nowrap;">
+                ⏰ ${t.ora || '--:--'}
+              </div>
+            </div>
+          `).join('')}
+      </div>
+    `;
+  };
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Promemoria Terapie Frigo - ${p.nome}</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 24px; color: #0f172a; }
+        @media print {
+          body { margin: 10mm; }
+          .no-print { display: none !important; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="no-print" style="margin-bottom:16px; display:flex; gap:10px;">
+        <button onclick="window.print()" style="padding:10px 18px; font-size:14px; font-weight:bold; background:#0284c7; color:white; border:none; border-radius:8px; cursor:pointer;">🖨️ Stampa Adesso (A4)</button>
+        <button onclick="window.close()" style="padding:10px 14px; font-size:14px; background:#e2e8f0; border:none; border-radius:8px; cursor:pointer;">Chiudi</button>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0284c7; padding-bottom:8px; margin-bottom:14px;">
+        <div>
+          <h2 style="margin:0; font-size:20px; color:#0369a1;">📋 PROMEMORIA TERAPIE GIORNALIERE DA FRIGORIFERO</h2>
+          <div style="font-size:15px; font-weight:bold; margin-top:4px;">Assistito: ${p.nome} ${p.codiceFiscale ? '(' + p.codiceFiscale + ')' : ''}</div>
+        </div>
+        <div style="text-align:right; font-size:11px; color:#64748b;">
+          Aggiornato: ${new Date().toLocaleDateString('it-IT')} ${new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}<br>
+          CareAssist Pro Suite
+        </div>
+      </div>
+
+      ${renderColonna('MATTINA / COLAZIONE', '☀️', '#fef9c3', raggruppate.mattina)}
+      ${renderColonna('PRANZO', '🍽️', '#dcfce7', raggruppate.pranzo)}
+      ${renderColonna('POMERIGGIO', '☕', '#f3e8ff', raggruppate.pomeriggio)}
+      ${renderColonna('SERA / CENA', '🌙', '#e0f2fe', raggruppate.sera)}
+      ${renderColonna('NOTTE', '😴', '#ede9fe', raggruppate.notte)}
+      ${raggruppate.altri.length > 0 ? renderColonna('ALTRI ORARI / AL BISOGNO', '💊', '#f1f5f9', raggruppate.altri) : ''}
+
+      <div style="margin-top:20px; font-size:11px; color:#64748b; border-top:1px solid #e2e8f0; padding-top:6px; display:flex; justify-content:space-between;">
+        <span>Medico curante: ${p.medicoCurante || 'N.D.'}</span>
+        <span>Farmacia di riferimento: ${p.farmaciaDiRiferimento || 'Farmacia MACARIO'}</span>
+        <span>Emergenze: 118</span>
+      </div>
+    </body>
+    </html>
+  `;
+
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+};
+
+window.apriProspettoFarmaciPazienteAttivo = function() {
+  window.stampaFoglioFrigo();
+};
+window.apriProspettoFarmaciScelto = function(val) {
+  window.stampaFoglioFrigo();
 };
