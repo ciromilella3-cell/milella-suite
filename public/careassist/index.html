@@ -1885,12 +1885,12 @@
           </div>
 
           <!-- SEZIONE 2: PIANO SOMMINISTRAZIONI & DOSI GIORNALIERE -->
-          <div class="card-sezione-pro box-sanita-pro">
+          <div class="card-sezione-pro box-sanita-pro" id="sezione-frequenze-compresse">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <div class="sezione-titolo-pro" style="margin-bottom:0; border:none; padding:0;">
-                <span>⏰</span> Orari & Quota Somministrazioni
+                <span id="label-icon-orari-sez">⏰</span> <span id="label-titolo-orari-sez">Orari & Quota Somministrazioni</span>
               </div>
-              <span class="badge-mini-green">Tocca per impostare</span>
+              <span class="badge-mini-green" id="badge-info-orari-sez">Tocca per impostare</span>
             </div>
             
             <div class="capsula-freq-selector">
@@ -1962,7 +1962,7 @@
             <div class="sezione-titolo-pro">
               <span>📦</span> Scorte a Casa & Confezione Farmacia
             </div>
-            <div class="riga-doppia-pro" style="align-items:flex-end;">
+            <div class="riga-doppia-pro" id="box-scorte-compresse-standard" style="align-items:flex-end;">
               <div class="form-group-compact" style="flex:1;">
                 <label class="form-label-compact">Cpr per Scatola</label>
                 <input type="number" class="form-control-compact" id="edit-farm-cpr-scatola" min="1" value="28" oninput="ricalcolaRiepilogoCapsula()">

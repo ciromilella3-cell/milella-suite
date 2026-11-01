@@ -175,20 +175,21 @@ window._currentFormatoModal = 'compressa';
 
 function impostaFormatoFarmacoModal(formato, skipCalc) {
   window._currentFormatoModal = formato;
+  var isPen = (formato === 'penna');
   var btnComp = document.getElementById('btn-formato-compressa');
   var btnPen = document.getElementById('btn-formato-penna');
   var btnGocce = document.getElementById('btn-formato-gocce');
-  var boxPen = document.getElementById('box-scorte-penna');
 
+  // Pulsanti selettore formato
   if (btnComp) {
     btnComp.style.background = (formato === 'compressa') ? '#0284c7' : '#ffffff';
     btnComp.style.color = (formato === 'compressa') ? '#ffffff' : '#334155';
     btnComp.style.borderColor = (formato === 'compressa') ? '#0284c7' : '#cbd5e1';
   }
   if (btnPen) {
-    btnPen.style.background = (formato === 'penna') ? '#2563eb' : '#ffffff';
-    btnPen.style.color = (formato === 'penna') ? '#ffffff' : '#334155';
-    btnPen.style.borderColor = (formato === 'penna') ? '#2563eb' : '#cbd5e1';
+    btnPen.style.background = isPen ? '#2563eb' : '#ffffff';
+    btnPen.style.color = isPen ? '#ffffff' : '#334155';
+    btnPen.style.borderColor = isPen ? '#2563eb' : '#cbd5e1';
   }
   if (btnGocce) {
     btnGocce.style.background = (formato === 'gocce') ? '#0284c7' : '#ffffff';
@@ -196,14 +197,46 @@ function impostaFormatoFarmacoModal(formato, skipCalc) {
     btnGocce.style.borderColor = (formato === 'gocce') ? '#0284c7' : '#cbd5e1';
   }
 
-  if (boxPen) {
-    boxPen.style.display = (formato === 'penna') ? 'block' : 'none';
+  // 1. GESTIONE CONTROLLI SCORTE: mostra SOLO i controlli interessati
+  var boxPen = document.getElementById('box-scorte-penna');
+  var boxCompScorte = document.getElementById('box-scorte-compresse-standard');
+  if (boxPen) boxPen.style.display = isPen ? 'block' : 'none';
+  if (boxCompScorte) boxCompScorte.style.display = isPen ? 'none' : 'flex';
+
+  // 2. GESTIONE FREQUENZE: per la penna l'iniezione è standard 1 volta al giorno (sempre alla stessa ora)
+  var freqSelector = document.querySelector('.capsula-freq-selector');
+  var btnAddDose = document.querySelector('.btn-add-dose-mini');
+  var lblOrariIcon = document.getElementById('label-icon-orari-sez');
+  var lblOrariTitolo = document.getElementById('label-titolo-orari-sez');
+  var badgeOrari = document.getElementById('badge-info-orari-sez');
+
+  if (freqSelector) freqSelector.style.display = isPen ? 'none' : 'flex';
+  if (btnAddDose) btnAddDose.style.display = isPen ? 'none' : 'inline-block';
+
+  if (lblOrariIcon) lblOrariIcon.textContent = isPen ? '💉' : '⏰';
+  if (lblOrariTitolo) lblOrariTitolo.textContent = isPen ? 'Orario Iniezione Penna Insulina' : 'Orari & Quota Somministrazioni';
+  if (badgeOrari) badgeOrari.textContent = isPen ? '1 Iniezione al giorno' : 'Tocca per impostare';
+
+  // Se è penna, adatta la card orario per mostrare l'unità UI al posto di "cpr"
+  if (isPen) {
+    if (_capsulaCurrentDosi.length === 0 || _capsulaCurrentDosi.length > 1) {
+      _capsulaCurrentDosi = [{ ora: '08:00', fascia: 'Mattina (Colazione)', quota: 1.0 }];
+    }
+    var doseInp = document.getElementById('edit-penna-dose-die');
+    var uiVal = doseInp ? (parseFloat(doseInp.value) || 16) : 16;
+    var dosaggioTxt = document.getElementById('edit-farm-dosaggio');
+    if (dosaggioTxt && (!dosaggioTxt.value || dosaggioTxt.value.includes('cpr') || dosaggioTxt.value.includes('mg'))) {
+      dosaggioTxt.value = uiVal + ' Unità (sottocute)';
+    }
   }
 
+  // 3. Modifica icona header
   var iconHeader = document.querySelector('#modal-modifica-farmaco .modal-header span');
   if (iconHeader) {
-    iconHeader.textContent = (formato === 'penna') ? '💉' : (formato === 'gocce' ? '💧' : '💊');
+    iconHeader.textContent = isPen ? '💉' : (formato === 'gocce' ? '💧' : '💊');
   }
+
+  renderDosiCards();
 
   if (!skipCalc && typeof ricalcolaRiepilogoCapsula === 'function') {
     ricalcolaRiepilogoCapsula();
@@ -13137,16 +13170,19 @@ function renderDosiCards() {
 
     var quotaLabel = (quotaVal === 0.25 ? '¼ cpr' : (quotaVal === 0.5 ? '½ cpr' : (quotaVal === 1 ? '1 cpr' : (quotaVal === 1.5 ? '1½ cpr' : (quotaVal === 2 ? '2 cpr' : (quotaVal === 2.5 ? '2½ cpr' : (quotaVal === 3 ? '3 cpr' : (quotaVal === 3.5 ? '3½ cpr' : (quotaVal === 4 ? '4 cpr' : quotaVal + ' cpr')))))))));
 
+    var isFormatoPenna = (window._currentFormatoModal === 'penna');
+    var badgeTitolo = isFormatoPenna ? ('💉 Iniezione Penna alle ' + (d.ora || '08:00')) : ('Tempo ' + doseNum + ' di ' + _capsulaCurrentDosi.length + ' (' + (d.ora || '08:00') + ')');
+
     html += '<div class="dose-card-item" id="dose-card-' + idx + '">' +
       '<div class="dose-card-header">' +
       '<span class="dose-card-badge">' +
-      '<span>⏰</span> <b>Tempo ' + doseNum + ' di ' + _capsulaCurrentDosi.length + ' (' + (d.ora || '08:00') + ')</b>' +
+      '<span>' + (isFormatoPenna ? '💉' : '⏰') + '</span> <b>' + badgeTitolo + '</b>' +
       '</span>' +
-      (_capsulaCurrentDosi.length > 1 ? '<button type="button" class="btn-remove-dose-card" onclick="rimuoviDoseCard(' + idx + ')" title="Rimuovi questa dose">✕</button>' : '') +
+      (!isFormatoPenna && _capsulaCurrentDosi.length > 1 ? '<button type="button" class="btn-remove-dose-card" onclick="rimuoviDoseCard(' + idx + ')" title="Rimuovi questa dose">✕</button>' : '') +
       '</div>' +
       '<div class="form-row" style="margin-bottom:8px;">' +
       '<div class="form-group" style="flex:1; margin-bottom:0;">' +
-      '<label style="font-size:11px; font-weight:800; color:#1e3a8a; margin-bottom:2px; display:block;">⏰ Orario</label>' +
+      '<label style="font-size:11px; font-weight:800; color:#1e3a8a; margin-bottom:2px; display:block;">⏰ Orario Iniezione</label>' +
       (isBisogno ?
         '<input type="text" class="form-control dose-card-ora" value="Al Bisogno" readonly style="font-weight:800; font-size:13.5px; color:#b45309; background:#fffbeb;">' :
         '<input type="time" class="form-control dose-card-ora" value="' + (d.ora || '08:00') + '" oninput="onDoseCardOraChanged(' + idx + ', this.value)" style="font-weight:800; font-size:14px; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd;">'
@@ -13165,45 +13201,54 @@ function renderDosiCards() {
       '</select>' +
       '</div>' +
       '</div>' +
-      '<div>' +
-      '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
-      '<label style="font-size:11px; font-weight:800; color:#0f172a; margin:0;">' +
-      '💊 Assunzione per questo orario:' +
-      '</label>' +
-      '<span style="font-size:11.5px; font-weight:800; color:#1d4ed8; background:#eff6ff; padding:2px 8px; border-radius:6px; border:1px solid #bfdbfe;">' +
-      'Dose attiva: <b>' + quotaLabel + '</b>' +
-      '</span>' +
-      '</div>' +
-      '<div class="quota-pill-group">' +
-      '<button type="button" class="quota-pill' + (quotaVal === 0.5 ? ' active' : '') + '" data-quota="0.5" onclick="setDoseCardQuota(' + idx + ', 0.5)">' +
-      '🌓 ½ dose (0,5 cpr)' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 1 ? ' active' : '') + '" data-quota="1" onclick="setDoseCardQuota(' + idx + ', 1)">' +
-      '🌕 1 dose (1 cpr)' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 1.5 ? ' active' : '') + '" data-quota="1.5" onclick="setDoseCardQuota(' + idx + ', 1.5)">' +
-      '1½ cpr (1,5 cpr)' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 2 ? ' active' : '') + '" data-quota="2" onclick="setDoseCardQuota(' + idx + ', 2)">' +
-      '💊💊 2 compresse' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 2.5 ? ' active' : '') + '" data-quota="2.5" onclick="setDoseCardQuota(' + idx + ', 2.5)">' +
-      '2½ compresse' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 3 ? ' active' : '') + '" data-quota="3" onclick="setDoseCardQuota(' + idx + ', 3)">' +
-      '💊💊💊 3 compresse' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 4 ? ' active' : '') + '" data-quota="4" onclick="setDoseCardQuota(' + idx + ', 4)">' +
-      '4 compresse' +
-      '</button>' +
-      '</div>' +
-      '<div style="margin-top:8px; display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px 10px;">' +
-      '<label style="font-size:11px; font-weight:700; color:#475569; margin:0; white-space:nowrap;">✏️ Oppure inserisci quantità libera:</label>' +
-      '<input type="number" step="0.25" min="0.25" max="30" class="form-control" style="width:85px; height:32px; font-weight:800; font-size:13px; padding:2px 6px; color:#1e3a8a; border-color:#93c5fd;" value="' + quotaVal + '" oninput="setDoseCardQuotaCustom(' + idx + ', this.value)">' +
-      '<span style="font-size:11.5px; font-weight:700; color:#475569;">cpr</span>' +
-      '</div>' +
-      '<input type="hidden" class="dose-card-quota-val" value="' + quotaVal + '">' +
-      '</div>' +
+
+      // Se NON è penna, mostra la selezione pillole / compresse. Se è penna, la dose UI è già nel box penna!
+      (isFormatoPenna ?
+        '<div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:8px 10px; font-size:11.5px; color:#1e40af; display:flex; align-items:center; gap:8px;">' +
+        '<span style="font-size:18px;">💉</span>' +
+        '<span>Dose iniettata: configurata nel box <b>Parametri Penna</b> in basso (Unità UI).</span>' +
+        '<input type="hidden" class="dose-card-quota-val" value="1.0">' +
+        '</div>' :
+        '<div>' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
+        '<label style="font-size:11px; font-weight:800; color:#0f172a; margin:0;">' +
+        '💊 Assunzione per questo orario:' +
+        '</label>' +
+        '<span style="font-size:11.5px; font-weight:800; color:#1d4ed8; background:#eff6ff; padding:2px 8px; border-radius:6px; border:1px solid #bfdbfe;">' +
+        'Dose attiva: <b>' + quotaLabel + '</b>' +
+        '</span>' +
+        '</div>' +
+        '<div class="quota-pill-group">' +
+        '<button type="button" class="quota-pill' + (quotaVal === 0.5 ? ' active' : '') + '" data-quota="0.5" onclick="setDoseCardQuota(' + idx + ', 0.5)">' +
+        '🌓 ½ dose (0,5 cpr)' +
+        '</button>' +
+        '<button type="button" class="quota-pill' + (quotaVal === 1 ? ' active' : '') + '" data-quota="1" onclick="setDoseCardQuota(' + idx + ', 1)">' +
+        '🌕 1 dose (1 cpr)' +
+        '</button>' +
+        '<button type="button" class="quota-pill' + (quotaVal === 1.5 ? ' active' : '') + '" data-quota="1.5" onclick="setDoseCardQuota(' + idx + ', 1.5)">' +
+        '1½ cpr (1,5 cpr)' +
+        '</button>' +
+        '<button type="button" class="quota-pill' + (quotaVal === 2 ? ' active' : '') + '" data-quota="2" onclick="setDoseCardQuota(' + idx + ', 2)">' +
+        '💊💊 2 compresse' +
+        '</button>' +
+        '<button type="button" class="quota-pill' + (quotaVal === 2.5 ? ' active' : '') + '" data-quota="2.5" onclick="setDoseCardQuota(' + idx + ', 2.5)">' +
+        '2½ compresse' +
+        '</button>' +
+        '<button type="button" class="quota-pill' + (quotaVal === 3 ? ' active' : '') + '" data-quota="3" onclick="setDoseCardQuota(' + idx + ', 3)">' +
+        '💊💊💊 3 compresse' +
+        '</button>' +
+        '<button type="button" class="quota-pill' + (quotaVal === 4 ? ' active' : '') + '" data-quota="4" onclick="setDoseCardQuota(' + idx + ', 4)">' +
+        '4 compresse' +
+        '</button>' +
+        '</div>' +
+        '<div style="margin-top:8px; display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px 10px;">' +
+        '<label style="font-size:11px; font-weight:700; color:#475569; margin:0; white-space:nowrap;">✏️ Oppure inserisci quantità libera:</label>' +
+        '<input type="number" step="0.25" min="0.25" max="30" class="form-control" style="width:85px; height:32px; font-weight:800; font-size:13px; padding:2px 6px; color:#1e3a8a; border-color:#93c5fd;" value="' + quotaVal + '" oninput="setDoseCardQuotaCustom(' + idx + ', this.value)">' +
+        '<span style="font-size:11.5px; font-weight:700; color:#475569;">cpr</span>' +
+        '</div>' +
+        '<input type="hidden" class="dose-card-quota-val" value="' + quotaVal + '">' +
+        '</div>'
+      ) +
       '</div>';
   });
 
