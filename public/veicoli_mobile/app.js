@@ -575,6 +575,21 @@ function apriModalSpesa() {
   const mp = document.getElementById('modal-spesa'); mp.style.display = 'flex'; mp.classList.add('active');
 }
 
+
+function salvaSpesa(e) {
+  e.preventDefault();
+  const data = document.getElementById("form-spesa-data").value;
+  const desc = document.getElementById("form-spesa-desc").value;
+  const costo = parseFloat(document.getElementById("form-spesa-costo").value) || 0;
+  const note = document.getElementById("form-spesa-note").value;
+
+  AppData.spese.unshift({ id: Date.now(), data, desc, costo, note });
+  AppData.spese.sort((a,b) => (b.data || "").localeCompare(a.data || ""));
+  saveAppData();
+  chiudiModali();
+  if (typeof showToast === "function") showToast("✅ Spesa registrata con successo!", "success");
+}
+
 function apriModalRifornimento() {
   document.getElementById('modal-rif-title').innerText = 'Registra Rifornimento Carburante';
   document.getElementById('form-rif-id').value = '';
@@ -648,18 +663,6 @@ function salvaRifornimento(e) {
   saveAppData();
   chiudiModali();
   if (typeof showToast === 'function') showToast('✅ Rifornimento salvato con successo!', 'success');
-}
-
-function salvaRifornimento(e) {
-  e.preventDefault();
-  const data = document.getElementById('form-rif-data').value;
-  const costo = parseFloat(document.getElementById('form-rif-costo').value) || 0;
-  const km = parseInt(document.getElementById('form-rif-km').value) || 0;
-  const note = document.getElementById('form-rif-note').value;
-
-  AppData.rifornimenti.unshift({ id: Date.now(), data, costo, km, note });
-  saveAppData();
-  chiudiModali();
 }
 
 window.addEventListener('DOMContentLoaded', () => {
