@@ -2511,7 +2511,7 @@
         localStorage.removeItem('milella_token');
         localStorage.removeItem('milella_session_unlocked');
         localStorage.removeItem('milella_session_unlocked_time');
-        localStorage.setItem('milella_app_locked', 'true');
+        // localStorage.setItem('milella_app_locked', 'true');
         
         sessionStorage.clear();
         sessionStorage.setItem('milella_app_locked', 'true');
@@ -3916,15 +3916,13 @@
     } catch(e) { savedApps = ['all']; }
 
     // Considera la sessione sbloccata SOLO se esplicitamente attiva e NON bloccata
-    const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || 
-                               localStorage.getItem('milella_app_locked') === 'true' || 
-                               sessionStorage.getItem('milella_lock_requested') === 'true';
-    
-    // Rimosso savedLastRole === 'admin': nessun bypass senza PIN dopo il logout!
+    const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || sessionStorage.getItem('milella_lock_requested') === 'true';
     const isSessionUnlocked = !isExplicitlyLocked && (
         sessionStorage.getItem('milella_session_unlocked') === 'true' ||
-        (localStorage.getItem('milella_session_unlocked') === 'true' && (Date.now() - Number(localStorage.getItem('milella_session_unlocked_time') || 0) < 4 * 60 * 60 * 1000)) ||
-        window.location.search.includes('from=turni')
+        localStorage.getItem('milella_session_unlocked') === 'true' ||
+        savedLastRole === 'admin' ||
+        window.location.search.includes('from=turni') ||
+        window.location.search.includes('auth_role=admin')
     );
 
     if (isSessionUnlocked && savedLastRole === 'admin') {
@@ -4490,63 +4488,7 @@
         }
     }, 60000);
 
-    // ==============================================================================
-    // BLINDO TOTALE ANTI-SWIPE / GESTO INDIETRO / BFCACHE SU SMARTPHONE
-    // ==============================================================================
-    function applicaProtezioneAntiSwipeIndietro() {
-        const isFreshLocal = (localStorage.getItem('milella_session_unlocked') === 'true' && (Date.now() - Number(localStorage.getItem('milella_session_unlocked_time') || 0) < 4 * 60 * 60 * 1000));
-        const hasSession = sessionStorage.getItem('milella_session_unlocked') === 'true' || isFreshLocal;
-        const isLocked = sessionStorage.getItem('milella_app_locked') === 'true' || 
-                         localStorage.getItem('milella_app_locked') === 'true' ||
-                         sessionStorage.getItem('milella_lock_requested') === 'true' ||
-                         !hasSession;
-        
-        if (isLocked) {
-            const gate = document.getElementById('gateBloccoIngresso');
-            if (gate) {
-                gate.style.display = 'flex';
-                gate.style.opacity = '1';
-                aggiornaVisibilitaBiometriaGate();
-            }
-            applicaRuolo('bloccato', null, []);
-        }
-
-        // Intrappola la cronologia di navigazione per impedire che swipe indietro mostri la schermata precedente
-        try {
-            history.pushState(null, document.title, window.location.href);
-            window.addEventListener('popstate', function (event) {
-                const freshLocal = (localStorage.getItem('milella_session_unlocked') === 'true' && (Date.now() - Number(localStorage.getItem('milella_session_unlocked_time') || 0) < 4 * 60 * 60 * 1000));
-                const sessionActive = sessionStorage.getItem('milella_session_unlocked') === 'true' || freshLocal;
-                const stillLocked = sessionStorage.getItem('milella_app_locked') === 'true' || 
-                                    localStorage.getItem('milella_app_locked') === 'true' ||
-                                    sessionStorage.getItem('milella_lock_requested') === 'true' ||
-                                    !sessionActive;
-                if (stillLocked) {
-                    history.pushState(null, document.title, window.location.href);
-                    const gate = document.getElementById('gateBloccoIngresso');
-                    if (gate) {
-                        gate.style.display = 'flex';
-                        gate.style.opacity = '1';
-                        aggiornaVisibilitaBiometriaGate();
-                    }
-                    applicaRuolo('bloccato', null, []);
-                }
-            });
-        } catch(e) {}
-    }
-
-    // Evento pageshow: intercetta quando l'utente torna indietro usando lo swipe su Android/iPhone (bfcache)
-    window.addEventListener('pageshow', function(event) {
-        if (event.persisted || (window.performance && window.performance.navigation && window.performance.navigation.type === 2)) {
-            // Pagina caricata dalla memoria cache del gesto Indietro
-            applicaProtezioneAntiSwipeIndietro();
-        }
-    });
-
-    // Avvia controllo anti-swipe
-    applicaProtezioneAntiSwipeIndietro();
-
-</script>
+    </script>
 </body>
 </html>
 
