@@ -2336,26 +2336,51 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ testo: currentText, castMode: currentCastMode, sceneKey: 'scene-' + currentSceneIdx })
-                }).then(res => res.blob()).then(blob => {
+                }).then(res => {
+                    if (!res.ok) throw new Error('Status ' + res.status);
+                    return res.blob();
+                }).then(blob => {
+                    if (!isFilmPlaying) return;
                     const customUrl = URL.createObjectURL(blob);
-                    suiteAudio.src = customUrl;
-                    suiteAudio.playbackRate = audioConfig.speed;
-                    suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
-                    suiteAudio.ontimeupdate = () => {
-                        if (suiteAudio.duration && isFinite(suiteAudio.duration)) {
-                            const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
+                    
+                    if (suiteAudio) {
+                        try { suiteAudio.pause(); suiteAudio.src = ''; } catch(e){}
+                    }
+                    suiteAudio = new Audio(customUrl);
+                    suiteAudio.playbackRate = audioConfig.speed || 1.0;
+                    suiteAudio.volume = audioConfig.muted ? 0 : ((audioConfig.volume || 100) / 100);
+
+                    // Heartbeat timer continuo per fare avanzare la barra fluida al 100%
+                    let estimatedSec = 14;
+                    let startTime = Date.now();
+                    if (filmTimerFallback) clearInterval(filmTimerFallback);
+                    filmTimerFallback = setInterval(() => {
+                        if (!isFilmPlaying) { clearInterval(filmTimerFallback); return; }
+                        let elapsed = (Date.now() - startTime) / 1000;
+                        let dur = (suiteAudio.duration && isFinite(suiteAudio.duration) && suiteAudio.duration > 2) ? suiteAudio.duration : estimatedSec;
+                        let pct = Math.min(100, (elapsed / dur) * 100);
+                        if (document.getElementById('filmProgressBar')) {
                             document.getElementById('filmProgressBar').style.width = pct + '%';
-                            aggiornaSottotitoloKaraoke(currentText, pct);
                         }
-                    };
+                        aggiornaSottotitoloKaraoke(currentText, pct);
+
+                        if (elapsed >= dur) {
+                            clearInterval(filmTimerFallback);
+                            if (isFilmPlaying) prossimaScenaFilm();
+                        }
+                    }, 120);
+
                     suiteAudio.onended = () => {
+                        if (filmTimerFallback) clearInterval(filmTimerFallback);
                         if (!isFilmPlaying) return;
                         prossimaScenaFilm();
                     };
+
                     suiteAudio.play().catch(e => console.warn('Play custom scene warning:', e));
                 }).catch(err => {
+                    console.warn('Fallback to standard audio:', err);
                     suiteAudio.src = sc.audioUrl;
-                    suiteAudio.play();
+                    suiteAudio.play().catch(e => {});
                 });
                 return;
             }
