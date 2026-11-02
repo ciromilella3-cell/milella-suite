@@ -2166,6 +2166,7 @@ app.get('/api/tunnel-url', (req, res) => {
 app.get('/api/export-drives', (req, res) => {
     const { exec } = require('child_process');
     const desktopPath = path.join(process.env.USERPROFILE || 'C:\\Users\\Utente', 'Desktop');
+    const currentRoot = path.parse(__dirname).root.replace(/\\$/, '');
     const psCmd = 'powershell -NoProfile -Command "Get-CimInstance Win32_LogicalDisk | Select-Object DeviceID, VolumeName, DriveType, FreeSpace, Size | ConvertTo-Json -Compress"';
     
     exec(psCmd, (err, stdout) => {
@@ -2174,17 +2175,26 @@ app.get('/api/export-drives', (req, res) => {
             try {
                 let parsed = JSON.parse(stdout.trim());
                 if (!Array.isArray(parsed)) parsed = [parsed];
-                drives = parsed.map(d => ({
-                    id: d.DeviceID,
-                    name: d.VolumeName ? `${d.VolumeName} (${d.DeviceID})` : (d.DriveType === 2 ? `Chiavetta USB (${d.DeviceID})` : `Unità Esterna (${d.DeviceID})`),
-                    isUsb: d.DriveType === 2 || (d.DeviceID && d.DeviceID.toUpperCase() !== 'C:'),
-                    driveType: d.DriveType,
-                    freeGb: d.FreeSpace ? (d.FreeSpace / (1024 * 1024 * 1024)).toFixed(1) : '0',
-                    totalGb: d.Size ? (d.Size / (1024 * 1024 * 1024)).toFixed(1) : '0'
-                }));
+                drives = parsed.map(d => {
+                    const devId = d.DeviceID;
+                    const hasQuesta = fs.existsSync(devId + '\\questa');
+                    const isCurrent = devId.toUpperCase() === currentRoot.toUpperCase();
+                    let desc = d.VolumeName ? `${d.VolumeName} (${devId})` : (d.DriveType === 2 ? `Chiavetta USB (${devId})` : `Unità Esterna (${devId})`);
+                    if (isCurrent || hasQuesta) desc += ' ✦ ATTIVA';
+                    return {
+                        id: devId,
+                        name: desc,
+                        isUsb: d.DriveType === 2 || (devId && devId.toUpperCase() !== 'C:'),
+                        isCurrent: isCurrent || hasQuesta,
+                        hasQuesta: hasQuesta,
+                        driveType: d.DriveType,
+                        freeGb: d.FreeSpace ? (d.FreeSpace / (1024 * 1024 * 1024)).toFixed(1) : '0',
+                        totalGb: d.Size ? (d.Size / (1024 * 1024 * 1024)).toFixed(1) : '0'
+                    };
+                });
             } catch(e) {}
         }
-        res.json({ drives, desktopPath });
+        res.json({ drives, desktopPath, currentRoot });
     });
 });
 

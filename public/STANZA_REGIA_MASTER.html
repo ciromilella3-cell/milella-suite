@@ -1245,8 +1245,11 @@
                 <span class="pulse-dot"></span>
                 <span>CLOUD RENDER ATTIVO</span>
             </div>
-            <div class="status-chip usb-active" id="chipUsbStatus">
-                <span>🔌 USB: <strong id="chipUsbDrive">D:\ (BACKUP)</strong></span>
+            <div class="status-chip usb-active" id="chipUsbStatus" style="display:flex; align-items:center; gap:8px;">
+                <span>🔌 USB:</span>
+                <select id="selectGlobalDrive" onchange="cambiaUnitaGlobale(this.value)" style="background:rgba(15,23,42,0.85); color:#38bdf8; font-weight:800; border:1px solid rgba(56,189,248,0.4); border-radius:8px; padding:3px 8px; font-size:12px; cursor:pointer; outline:none;">
+                    <option value="D:">D:\ (BACKUP) ✦</option>
+                </select>
             </div>
             <div class="status-chip audio-chip" id="btnToggleAudio" onclick="toggleAudioFx()" title="Abilita/Disabilita effetti sonori">
                 <span id="audioIcon">🔊</span>
@@ -1349,13 +1352,18 @@
                 <div class="path-row">
                     <div class="path-info">
                         <span class="path-icon">🔌</span>
-                        <div>
-                            <div class="path-label">Unit&agrave; Chiavetta USB Rilevata</div>
-                            <div class="path-val" id="textPathUsb">D:\questa (Riconosciuta)</div>
+                        <div style="flex:1;">
+                            <div class="path-label">Unit&agrave; Chiavetta USB o Disco di Lavoro</div>
+                            <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
+                                <select id="selectPathUsbDrive" onchange="cambiaUnitaGlobale(this.value)" class="glass-input" style="padding:6px 10px; font-weight:800; font-size:13px; max-width:260px; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
+                                    <option value="D:">D:\ (Unità Principale) ✦</option>
+                                </select>
+                                <span class="path-val" id="textPathUsb" style="font-size:13px; color:#cbd5e1;">D:\questa</span>
+                            </div>
                         </div>
                     </div>
-                    <button class="path-action-btn" onclick="selezionaCartellaUsb()" title="Seleziona un'altra cartella o chiavetta">
-                        <span>📁 Sfoglia USB</span>
+                    <button class="path-action-btn" onclick="ricaricaUnitaSistema()" title="Scansiona di nuovo le memorie USB e i dischi collegati">
+                        <span>🔄 Rileva Unità</span>
                     </button>
                 </div>
 
@@ -1944,16 +1952,86 @@
         }
     }
 
-    // Carica dati unità
-    async function caricaDatiUnita() {
+    // Lettera unità USB/Disco attualmente attiva
+    let _activeDriveLetter = 'D:';
+
+    function cambiaUnitaGlobale(nuovaLettera) {
+        if (!nuovaLettera) return;
+        _activeDriveLetter = nuovaLettera.toUpperCase().replace(/\\$/, '');
+        if (!_activeDriveLetter.endsWith(':')) _activeDriveLetter += ':';
+
+        playAudio('click');
+        pathUsb = `${_activeDriveLetter}\\questa`;
+
+        // Aggiorna selettori a video
+        const sTop = document.getElementById('selectGlobalDrive');
+        const sPath = document.getElementById('selectPathUsbDrive');
+        if (sTop && sTop.value !== _activeDriveLetter) sTop.value = _activeDriveLetter;
+        if (sPath && sPath.value !== _activeDriveLetter) sPath.value = _activeDriveLetter;
+
+        const textUsb = document.getElementById('textPathUsb');
+        if (textUsb) textUsb.innerText = `${_activeDriveLetter}\\questa (Attiva)`;
+
+        const bpDest = document.getElementById('bpDestDrive');
+        if (bpDest) bpDest.innerText = `${_activeDriveLetter}\\VERSIONI_RILASCIATE`;
+
+        appendLog(`[UNITA] Impostata unit&agrave; attiva di lavoro: <strong>${_activeDriveLetter}</strong>`);
+        showToast('Unità Aggiornata', `Percorsi allineati a ${_activeDriveLetter}`, '🔌');
+    }
+
+    async function ricaricaUnitaSistema() {
+        showToast('Scansione Dischi', 'Rilevamento unità USB collegate...', '🔄');
+        await caricaDatiUnita(true);
+    }
+
+    // Carica dati unità con popolamento dropdown
+    async function caricaDatiUnita(forceToast = false) {
         try {
             const res = await fetch('/api/export-drives');
             const data = await res.json();
             if (data && data.drives && data.drives.length > 0) {
-                const usb = data.drives.find(d => d.id === 'D:' || d.id === 'E:') || data.drives[0];
-                document.getElementById('chipUsbDrive').innerText = `${usb.id} (${usb.name || 'Pronta'})`;
-                document.getElementById('textPathUsb').innerText = `${usb.id}\\questa (Connessa)`;
-                appendLog(`[DRIVES] Rilevata unit&agrave; USB: ${usb.id}`);
+                const sTop = document.getElementById('selectGlobalDrive');
+                const sPath = document.getElementById('selectPathUsbDrive');
+
+                // Auto-detect prioritario: o quello con isCurrent o D: o E: o la prima USB
+                let preferred = data.drives.find(d => d.isCurrent) || 
+                                data.drives.find(d => d.hasQuesta) ||
+                                data.drives.find(d => d.id === 'D:') || 
+                                data.drives.find(d => d.id === 'E:') || 
+                                data.drives[0];
+
+                if (sTop && sPath) {
+                    sTop.innerHTML = '';
+                    sPath.innerHTML = '';
+
+                    data.drives.forEach(d => {
+                        const opt1 = document.createElement('option');
+                        opt1.value = d.id;
+                        opt1.innerText = `${d.id}\\ ${d.name ? d.name.replace(/\s*\([A-Z]:\)/, '') : ''} (${d.freeGb} GB liberi)`;
+                        sTop.appendChild(opt1);
+
+                        const opt2 = document.createElement('option');
+                        opt2.value = d.id;
+                        opt2.innerText = `${d.id}\\ - ${d.name ? d.name.replace(/\s*\([A-Z]:\)/, '') : ''} (${d.freeGb} GB liberi)`;
+                        sPath.appendChild(opt2);
+                    });
+
+                    if (preferred && preferred.id) {
+                        _activeDriveLetter = preferred.id;
+                        sTop.value = preferred.id;
+                        sPath.value = preferred.id;
+                        pathUsb = `${preferred.id}\\questa`;
+                        const textUsb = document.getElementById('textPathUsb');
+                        if (textUsb) textUsb.innerText = `${preferred.id}\\questa (Attiva)`;
+                        const bpDest = document.getElementById('bpDestDrive');
+                        if (bpDest) bpDest.innerText = `${preferred.id}\\VERSIONI_RILASCIATE`;
+                        appendLog(`[DRIVES] Rilevata unit&agrave; attiva: ${preferred.id} (${preferred.name})`);
+                    }
+                }
+
+                if (forceToast && preferred) {
+                    showToast('Rilevamento Completato', `Trovate ${data.drives.length} unità. Attiva: ${preferred.id}`, '✅');
+                }
             }
         } catch(e) {}
     }
@@ -1999,33 +2077,43 @@
         // Genera Pacchetto Copia Utente con download/esecuzione batch automatica
         // Genera Pacchetto Copia Utente con chiamata reale al server locale e fallback
     async function avviaPresentazioneDaStanzaRegia() {
-        const destName = document.getElementById('inputDestName').value.trim() || 'Cliente';
-        const destCompany = document.getElementById('inputDestCompany').value.trim() || 'Azienda Selezionata';
+        playAudio('chime');
+        const destName = (document.getElementById('inputDestName') ? document.getElementById('inputDestName').value.trim() : '') || 'Mario Rossi';
+        const destCompany = (document.getElementById('inputDestCompany') ? document.getElementById('inputDestCompany').value.trim() : '') || 'Cooperativa C. Milella';
 
-        // Raccogli indici delle app selezionate (data-app va da 1 a 8, convertiamo in 0..7)
-        const selectedApps = [];
+        // Raccogli indici delle app selezionate (DOM ground truth)
+        let selectedApps = [];
         document.querySelectorAll('.app-select-card.selected').forEach(card => {
-            const num = parseInt(card.getAttribute('data-app'));
-            if (!isNaN(num)) {
+            const num = parseInt(card.getAttribute('data-app'), 10);
+            if (!isNaN(num) && num >= 1 && num <= 8) {
                 selectedApps.push(num - 1);
             }
         });
 
+        // Se nessuna è spuntata, per sicurezza seleziona tutte le 8 di default
         if (selectedApps.length === 0) {
-            alert('Seleziona almeno un\'applicazione per la presentazione!');
-            return;
+            selezionaPresetApp('all');
+            selectedApps = [0, 1, 2, 3, 4, 5, 6, 7];
         }
 
-        // Salva configurazione personalizzata
         const config = {
             azienda: destCompany,
             direttore: destName,
             selectedApps: selectedApps
         };
-        localStorage.setItem('suite_presentazione_personalizzata', JSON.stringify(config));
+        try {
+            localStorage.setItem('suite_presentazione_personalizzata', JSON.stringify(config));
+        } catch(e) {}
 
-        // Reindirizza direttamente alla presentazione su misura
-        window.location.href = '/presentazione_suite.html';
+        const appsQuery = selectedApps.join(',');
+        const presUrl = `/presentazione_suite.html?az=${encodeURIComponent(destName)}&dir=${encodeURIComponent(destCompany)}&apps=${appsQuery}&demo=1`;
+
+        showToast('Avvio Presentazione', `Apertura vetrina per ${destName} (${selectedApps.length} App attive)`, '🎬');
+        appendLog(`[PRESENTAZIONE] Apertura vetrina personalizzata per: <strong>${destName}</strong> (${destCompany})`);
+
+        setTimeout(() => {
+            window.open(presUrl, '_blank') || (window.location.href = presUrl);
+        }, 300);
     }
 
     function avviaGenerazioneCopiaMaster() {
@@ -2075,7 +2163,7 @@
         const batCmd = `@echo off\r\n` +
             `title COMPILAZIONE SUITE - ${destName}\r\n` +
             `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\\questa\\_Lanciatori_e_Utility_USB\\Generatore_Versioni.ps1" ` +
-            `-ParamDestName "${destName}" -ParamDestCompany "${destCompany}" -ParamTipo "${tipoParam}" -ParamModuli "${modulesParam}" -ParamDest "1" -ParamTargetDrive "D:" -ParamScadenza "${scadParam}"\r\n` +
+            `-ParamDestName "${destName}" -ParamDestCompany "${destCompany}" -ParamTipo "${tipoParam}" -ParamModuli "${modulesParam}" -ParamDest "1" -ParamTargetDrive "${_activeDriveLetter || "D:"}" -ParamScadenza "${scadParam}"\r\n` +
             `explorer.exe "D:\\VERSIONI_RILASCIATE"\r\n`;
 
         const blob = new Blob([batCmd], { type: 'text/plain' });
@@ -2099,7 +2187,7 @@
                     isDemo,
                     modules: modulesParam,
                     destinationType: 'usb',
-                    targetDrive: 'D:',
+                    targetDrive: (_activeDriveLetter || 'D:'),
                     scadenza: scadParam
                 })
             });
@@ -2149,11 +2237,13 @@
         }, 3600);
     }
 
-    // Apri cartella rilasciate
+    // Apri cartella rilasciate in Windows Explorer
     async function apriCartellaRilasciate(folderPath) {
         playAudio('click');
-        let decoded = decodeURIComponent(folderPath || 'D:\\VERSIONI_RILASCIATE');
-        decoded = decoded.replace(/^[Ee]:/, 'D:');
+        let decoded = decodeURIComponent(folderPath || (_activeDriveLetter + '\\VERSIONI_RILASCIATE'));
+        if (_activeDriveLetter) {
+            decoded = decoded.replace(/^[A-Za-z]:/, _activeDriveLetter);
+        }
 
         let aperto = false;
         try {
@@ -2169,9 +2259,8 @@
         if (aperto) {
             showToast('Cartella Aperta in Windows!', decoded, '📂');
         } else {
-            // Se sei aperto da file locale o da remoto cloud
-            showToast('Percorso Cartella:', decoded, '📂');
-            prompt('Percorso cartella pronta. Copialo ed incollalo in Esplora File (oppure premi Win + R):', decoded);
+            showToast('Percorso Generato:', decoded, '📂');
+            prompt('Cartella generata pronta. Puoi aprirla premendo Win+R e incollando:', decoded);
         }
     }
 
