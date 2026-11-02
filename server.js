@@ -2752,6 +2752,101 @@ app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
     }
 });
 
+
+// ==============================================================================
+// 5.1 GENERATORE MULTI-VOCE NEURALE UMANA PER DIALOGHI PERSONALIZZATI (/api/genera-dialogo-audio)
+// Genera al volo un file MP3 con voci umane (Isabella & Ciro/Giuseppe) dai testi inseriti dall'utente
+// ==============================================================================
+app.post(['/api/genera-dialogo-audio', '/careassist/api/genera-dialogo-audio'], async (req, res) => {
+    try {
+        const { testo } = req.body || {};
+        if (!testo || !testo.trim()) {
+            return res.status(400).json({ error: 'Testo dialogo mancante' });
+        }
+
+        const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
+
+        async function generaChunkVoce(voce, txt) {
+            const cleaned = preparaTestoPerVoceUmana(txt);
+            if (!cleaned) return Buffer.alloc(0);
+            const tts = new MsEdgeTTS();
+            await tts.setMetadata(voce, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
+            const { audioStream } = tts.toStream(cleaned);
+            const buf = await new Promise((resolve, reject) => {
+                const chunks = [];
+                audioStream.on('data', c => chunks.push(c));
+                audioStream.on('end', () => {
+                    try { tts.close(); } catch(e) {}
+                    resolve(Buffer.concat(chunks));
+                });
+                audioStream.on('error', err => {
+                    try { tts.close(); } catch(e) {}
+                    reject(err);
+                });
+            });
+            return buf;
+        }
+
+        const buffers = [];
+        let battute = [];
+        let rawText = testo.replace(/[«»]/g, '').trim();
+
+        // Rilevamento intelligente dei tag "Isabella:" e "Ciro:"
+        const tagRegex = /(Isabella\s*:|Ciro\s*:)/i;
+
+        if (tagRegex.test(rawText)) {
+            // Separa mantenendo i delimitatori
+            const parti = rawText.split(/(Isabella\s*:|Ciro\s*:)/i).filter(Boolean);
+            let currentVoice = 'it-IT-IsabellaNeural';
+            for (let i = 0; i < parti.length; i++) {
+                const seg = parti[i].trim();
+                if (/^Isabella\s*:/i.test(seg)) {
+                    currentVoice = 'it-IT-IsabellaNeural';
+                } else if (/^Ciro\s*:/i.test(seg)) {
+                    currentVoice = 'it-IT-GiuseppeNeural';
+                } else if (seg) {
+                    const cleanSeg = seg.replace(/^—\s*/, '').replace(/—$/, '').trim();
+                    if (cleanSeg) {
+                        battute.push({ voce: currentVoice, testo: cleanSeg });
+                    }
+                }
+            }
+        } else if (rawText.includes('—')) {
+            // Alternanza con trattino: 1° Isabella, 2° Ciro, 3° Isabella, ecc.
+            const parti = rawText.split('—');
+            parti.forEach((p, idx) => {
+                const cleanSeg = p.trim();
+                if (cleanSeg) {
+                    const voce = (idx % 2 === 0) ? 'it-IT-IsabellaNeural' : 'it-IT-GiuseppeNeural';
+                    battute.push({ voce, testo: cleanSeg });
+                }
+            });
+        } else {
+            battute.push({ voce: 'it-IT-IsabellaNeural', testo: rawText });
+        }
+
+        console.log('[DIALOGO GENERAZIONE] Battute individuate:', battute.length);
+        for (const item of battute) {
+            console.log(' - Voce:', item.voce, '| Testo:', item.testo);
+            const b = await generaChunkVoce(item.voce, item.testo);
+            if (b && b.length > 0) buffers.push(b);
+        }
+
+        if (buffers.length === 0) {
+            return res.status(400).json({ error: 'Nessun audio generato' });
+        }
+
+        const finalBuffer = Buffer.concat(buffers);
+        res.setHeader('Content-Type', 'audio/mpeg');
+        res.setHeader('Cache-Control', 'no-cache');
+        return res.send(finalBuffer);
+    } catch(err) {
+        console.error('[DIALOGO AUDIO ERRORE]', err);
+        return res.status(500).json({ error: err.message });
+    }
+});
+
+
 // --- SISTEMA ANTI-FURBI: FORZATURA VOLUME HARDWARE >= 70% SU PC WINDOWS + AUDIT LOG ---
 app.all(['/api/forza-volume-70', '/careassist/api/forza-volume-70'], (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
