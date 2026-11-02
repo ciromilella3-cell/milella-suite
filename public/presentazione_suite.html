@@ -647,7 +647,7 @@
     <!-- SOTTO-BARRA RAPIDA -->
     <nav class="amz-subbar">
         <div class="subbar-links">
-            <button type="button" onclick="attivaModalitaFilm(0, true)">🎬 Film Completo Suite (5 Atti)</button>
+            <button type="button" onclick="attivaModalitaFilm(0, true)">🎬 Film Completo Suite (5 Situazioni)</button>
             <button type="button" onclick="mostraAppDettaglio(0)">🩺 1. CareAssist</button>
             <button type="button" onclick="mostraAppDettaglio(1)">🚗 2. Flotta Veicoli</button>
             <button type="button" onclick="mostraAppDettaglio(2)">🛠️ 3. Inventario</button>
@@ -731,7 +731,7 @@
                         <div style="display:flex; align-items:center; gap:8px;">
                             <span style="width:10px; height:10px; border-radius:50%; background:#ef4444; display:inline-block; box-shadow:0 0 8px #ef4444;"></span>
                             <span id="viewerTopTitle" style="font-size:13px; font-weight:800; color:#fef08a;">
-                                🎬 SUITE GESTIONALE C. MILELLA — ATTO 1 DI 5
+                                🎬 SUITE GESTIONALE C. MILELLA — SITUAZIONE 1 DI 5
                             </span>
                         </div>
                         <button type="button" class="btn-per-saperne" style="padding:5px 12px; font-size:12px;" onclick="apriPerSaperneCorrente()">
@@ -762,7 +762,7 @@
                         <div class="cartoon-progress-wrap">
                             <div class="cartoon-progress-bar" id="filmProgressBar"></div>
                         </div>
-                        <span id="filmTimeLabel" style="font-size:12px; font-weight:800; color:#cbd5e1;">Atto 1/5</span>
+                        <span id="filmTimeLabel" style="font-size:12px; font-weight:800; color:#cbd5e1;">Situazione 1/5</span>
                         
                         <!-- PULSANTE REGIA & GESTIONE VOCI IN AUTONOMIA -->
                         <button type="button" onclick="apriRegiaVociModal()" style="background:linear-gradient(135deg, #a855f7, #6366f1); color:#fff; border:none; padding:7px 12px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow:0 2px 8px rgba(168,85,247,0.4);" title="Personalizza le voci, il volume, la velocità e i testi">
@@ -824,7 +824,7 @@
                 <!-- MINI PULSANTI SCENA RAPIDA -->
                 <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px; margin-bottom:14px;">
                     <div style="font-size:12.5px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:8px;">
-                        🎬 Scegli un Atto della Presentazione Suite:
+                        🎬 Scegli una Situazione della Presentazione Suite:
                     </div>
                     <div style="display:flex; flex-wrap:wrap; gap:6px;">
                         <button type="button" onclick="attivaModalitaFilm(0, true)" style="padding:6px 10px; border-radius:8px; border:1px solid #cbd5e1; background:#fff; font-size:12px; font-weight:800; cursor:pointer;">1. Portale &amp; Sicurezza</button>
@@ -1164,11 +1164,11 @@
                         <label style="display:block; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Seleziona Brano da Personalizzare:</label>
                         <select id="selectEditorItem" onchange="caricaTestoItemInEditor(this.value)" style="width:100%; background:#1e293b; color:#fff; border:1px solid #d4af37; padding:10px; border-radius:8px; font-weight:700; font-size:13.5px;">
                             <optgroup label="🎬 Le 5 Scene del Film Suite">
-                                <option value="scene-0">Atto 1: Il Portale Unificato &amp; La Sicurezza degli Accessi</option>
-                                <option value="scene-1">Atto 2: CareAssist Pro — Il Cuore Clinico &amp; Assistenziale</option>
-                                <option value="scene-2">Atto 3: Flotta Veicoli, Inventario Attrezzi &amp; Logistica</option>
-                                <option value="scene-3">Atto 4: Il Ricettario di Famiglia, MedNutri &amp; Progetto Salute</option>
-                                <option value="scene-4">Atto 5: La Sicurezza Totale — Cloud, USB e Partner Antigravity AI</option>
+                                <option value="scene-0">Situazione 1: Il Portale Unificato &amp; La Sicurezza degli Accessi</option>
+                                <option value="scene-1">Situazione 2: CareAssist Pro — Il Cuore Clinico &amp; Assistenziale</option>
+                                <option value="scene-2">Situazione 3: Flotta Veicoli, Inventario Attrezzi &amp; Logistica</option>
+                                <option value="scene-3">Situazione 4: Il Ricettario di Famiglia, MedNutri &amp; Progetto Salute</option>
+                                <option value="scene-4">Situazione 5: La Sicurezza Totale — Cloud, USB e Partner Antigravity AI</option>
                             </optgroup>
                             <optgroup label="📱 Le 8 Schede Applicative">
                                 <option value="app-0">App 1: CareAssist Pro</option>
@@ -1226,7 +1226,7 @@
         const SUITE_SCENES = [
             {
                 id: 0,
-                title: 'Atto 1: Il Portale Unificato & La Sicurezza degli Accessi',
+                title: 'Situazione 1: Il Portale Unificato & La Sicurezza degli Accessi',
                 audioUrl: '/assets/audio_suite/atto_1.mp3',
                 speaker: '👑 Dialogo: Isabella & Ciro (Voci Neurali HD)',
                 subtitle: '«Isabella: Ciro, come è nata l\'idea della Suite? — Ciro: Chi gestisce famiglia, lavoro e assistenza ha decine di foglietti sparsi. Con la Suite abbiamo unificato 8 programmi sotto un unico PIN, da PC e smartphone con QR Code!»',
@@ -1288,7 +1288,7 @@
             },
             {
                 id: 1,
-                title: 'Atto 2: CareAssist Pro — Il Cuore Clinico & Assistenziale',
+                title: 'Situazione 2: CareAssist Pro — Il Cuore Clinico & Assistenziale',
                 audioUrl: '/assets/audio_suite/atto_2.mp3',
                 speaker: '🩺 Dialogo: Isabella & Ciro (Voci Neurali HD)',
                 subtitle: '«Isabella: Ciro, perché CareAssist è il cuore clinico? — Ciro: Perché protegge i nostri cari a domicilio con sveglie vocali a volume forzato al 75%, scorte in frigo e conferma somministrazione tra telefono e PC in 2 secondi!»',
@@ -1335,7 +1335,7 @@
             },
             {
                 id: 2,
-                title: 'Atto 3: Flotta Veicoli, Inventario Attrezzi & Logistica',
+                title: 'Situazione 3: Flotta Veicoli, Inventario Attrezzi & Logistica',
                 audioUrl: '/assets/audio_suite/atto_3.mp3',
                 speaker: '🚗 Dialogo: Isabella & Ciro (Voci Neurali HD)',
                 subtitle: '«Isabella: Come ci aiutano nella pratica? — Ciro: Con Flotta niente multe per revisioni e bolli scaduti; con l\'Inventario sai sempre dove sta ogni attrezzo; con Logistica segui spedizioni e magazzino!»',
@@ -1379,7 +1379,7 @@
             },
             {
                 id: 3,
-                title: 'Atto 4: Il Ricettario di Famiglia, MedNutri & Progetto Salute',
+                title: 'Situazione 4: Il Ricettario di Famiglia, MedNutri & Progetto Salute',
                 audioUrl: '/assets/audio_suite/atto_4.mp3',
                 speaker: '🥗 Dialogo: Isabella & Ciro (Voci Neurali HD)',
                 subtitle: '«Isabella: Raccontami di cucina e benessere — Ciro: Il Ricettario prepara da solo la lista della spesa; MedNutri cura i piani alimentari clinici; Progetto Salute monitora pressione e acqua!»',
@@ -1423,7 +1423,7 @@
             },
             {
                 id: 4,
-                title: 'Atto 5: La Sicurezza Totale — Cloud, USB e Partner Antigravity AI',
+                title: 'Situazione 5: La Sicurezza Totale — Cloud, USB e Partner Antigravity AI',
                 audioUrl: '/assets/audio_suite/atto_5.mp3',
                 speaker: '👑 Dialogo: Isabella & Ciro (Voci Neurali HD)',
                 subtitle: '«Isabella: Cosa garantisce che i dati siano sempre al sicuro? — Ciro: Doppia protezione: Cloud per accedere ovunque e copia USB fisica con un clic. E con Antigravity AI, ogni nuova idea diventa realtà!»',
@@ -1900,7 +1900,7 @@
             document.getElementById('viewerTopTitle').textContent = `🎬 SUITE GESTIONALE C. MILELLA — ${sc.title.toUpperCase()}`;
             document.getElementById('speakerBadge').textContent = sc.speaker;
             aggiornaSottotitoloKaraoke(ottieniTestoAttualeScena(currentSceneIdx), 0);
-            document.getElementById('filmTimeLabel').textContent = `Atto ${currentSceneIdx + 1}/5`;
+            document.getElementById('filmTimeLabel').textContent = `Situazione ${currentSceneIdx + 1}/5`;
 
             const container = document.getElementById('mainStageContainer');
             container.innerHTML = sc.svgRender();
