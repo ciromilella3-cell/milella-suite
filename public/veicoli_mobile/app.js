@@ -762,44 +762,43 @@ async function scansionaCruscotto(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
 
+  // Apre subito il modale di inserimento per accogliere i dati
+  apriModalRifornimento();
   apriVeicoliOcrModal('Lettura Cruscotto Auto', 'Riconoscimento contachilometri digitale/analogico...', '🚗');
 
   try {
-    if (typeof Tesseract === 'undefined') throw new Error('Tesseract non pronto');
-    const worker = await Tesseract.createWorker('ita');
-    const ret = await worker.recognize(file);
-    await worker.terminate();
+    let text = '';
+    if (typeof Tesseract !== 'undefined') {
+      const worker = await Tesseract.createWorker(['ita', 'eng']);
+      const ret = await worker.recognize(file);
+      await worker.terminate();
+      text = ret.data.text || '';
+    }
 
-    const text = ret.data.text || '';
     console.log('Testo Cruscotto Riconosciuto:\n', text);
 
-    // Cerca sequenza numerica tipica contachilometri (es. tra 10.000 e 500.000 km)
-    // Rimuove punti e cerca numeri isolati
+    // Cerca numeri tipici contachilometri (es. tra 5.000 e 600.000 km)
     const cleanDigits = text.replace(/[^0-9\s]/g, ' ');
     const numbers = cleanDigits.match(/\b\d{4,6}\b/g);
 
     let detectedKm = null;
     if (numbers && numbers.length > 0) {
-      // Prendi il numero più plausibile (spesso il valore più alto sul display è il totale km)
       const parsed = numbers.map(n => parseInt(n, 10)).filter(n => n >= 5000 && n <= 600000);
-      if (parsed.length > 0) {
-        detectedKm = Math.max(...parsed);
-      }
+      if (parsed.length > 0) detectedKm = Math.max(...parsed);
     }
 
     if (detectedKm) {
       document.getElementById('form-rif-km').value = detectedKm;
-      showToast('Km rilevati da cruscotto: ' + detectedKm + ' km!', 'success');
+      showToast('Km rilevati da cruscotto: ' + detectedKm.toLocaleString('it-IT') + ' km!', 'success');
     } else {
-      showToast('Foto analizzata. Inserisci i km visualizzati se non perfetti.', 'info');
+      showToast('Cruscotto aperto. Inserisci i km se non letti perfettamente.', 'info');
     }
-
   } catch(err) {
-    console.warn('OCR Cruscotto fallback:', err);
-    showToast('Immagine cruscotto caricata con successo.', 'info');
+    console.warn('OCR Cruscotto:', err);
+    showToast('Scheda rifornimento pronta: verifica i km rilevati.', 'info');
   } finally {
     chiudiVeicoliOcrModal();
-    event.target.value = '';
+    try { event.target.value = ''; } catch(e){}
   }
 }
 
@@ -808,15 +807,20 @@ async function scansionaScontrino(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
 
-  apriVeicoliOcrModal('Lettura Scontrino Pompa', 'Estrazione importo totale, litri e data...', '🧾');
+  // 1. APRE IMMEDIATAMENTE LA SCHEDA DI COMPILAZIONE RIFORNIMENTO
+  apriModalRifornimento();
+  apriVeicoliOcrModal('Lettura Scontrino Pompa', 'Estrazione importo totale, litri e distributore...', '🧾');
 
   try {
-    if (typeof Tesseract === 'undefined') throw new Error('Tesseract non pronto');
-    const worker = await Tesseract.createWorker('ita');
-    const ret = await worker.recognize(file);
-    await worker.terminate();
+    let text = '';
+    if (typeof Tesseract !== 'undefined') {
+      // Carica worker bilingue ita + eng per massima compatibilita pompe carburante
+      const worker = await Tesseract.createWorker(['ita', 'eng']);
+      const ret = await worker.recognize(file);
+      await worker.terminate();
+      text = ret.data.text || '';
+    }
 
-    const text = ret.data.text || '';
     const upper = text.toUpperCase();
     console.log('Testo Scontrino Riconosciuto:\n', text);
 
@@ -830,8 +834,8 @@ async function scansionaScontrino(event) {
       if (dateInp) dateInp.value = formattedDate;
     }
 
-    // Distributore (Eni, IP, Q8, Tamoil, Esso, Repsol...)
-    const brands = ['ENI', 'AGIP', 'Q8', 'IP', 'TAMOIL', 'ESSO', 'REPSOL', 'CONAD', 'TOTAL'];
+    // Distributore (Eni, IP, Q8, Tamoil, Esso, Repsol, Conad, Total, Beyfin...)
+    const brands = ['ENI', 'AGIP', 'Q8', 'IP', 'TAMOIL', 'ESSO', 'REPSOL', 'CONAD', 'TOTAL', 'BEYFIN', 'RETI', 'KEROPETROL'];
     let foundBrand = '';
     for (const b of brands) {
       if (upper.includes(b)) {
@@ -843,17 +847,26 @@ async function scansionaScontrino(event) {
       document.getElementById('form-rif-note').value = foundBrand;
     }
 
-    // Totale Euro (es. EURO 50,00 o TOTALE € 45.20)
-    const totalMatch = upper.match(/(?:TOTALE|IMPORTO|PAGATO|EURO|€)[^0-9]*([0-9]{1,3}[,\.][0-9]{2})/);
+    // Totale Euro (cerca importi preceduti da TOTALE, IMPORTO, PAGATO, EURO o €)
+    let detectedTotal = null;
+    const totalMatch = upper.match(/(?:TOTALE|IMPORTO|PAGATO|EURO|€|IMP|TOT)[^0-9]*([0-9]{1,3}[,\.][0-9]{2})/);
     if (totalMatch) {
-      const tot = parseFloat(totalMatch[1].replace(',', '.'));
-      if (tot > 0 && tot < 500) {
-        document.getElementById('form-rif-costo').value = tot.toFixed(2);
+      detectedTotal = parseFloat(totalMatch[1].replace(',', '.'));
+    } else {
+      // Fallback: cerca qualsiasi numero con due decimali tra 10.00 e 200.00 (tipica spesa rifornimento)
+      const allPrices = upper.match(/\b([1-9][0-9]{1,2}[,\.][0-9]{2})\b/g);
+      if (allPrices && allPrices.length > 0) {
+        const floatPrices = allPrices.map(p => parseFloat(p.replace(',', '.'))).filter(p => p >= 10 && p <= 250);
+        if (floatPrices.length > 0) detectedTotal = Math.max(...floatPrices);
       }
     }
 
-    // Prezzo al Litro (es. 1,789 €/L o 1.820)
-    const priceLitroMatch = upper.match(/(?:PREZZO|EURO\/L|€\/L)[^0-9]*([12][,\.][0-9]{3})/);
+    if (detectedTotal && detectedTotal > 0 && detectedTotal < 500) {
+      document.getElementById('form-rif-costo').value = detectedTotal.toFixed(2);
+    }
+
+    // Prezzo al Litro (es. 1,659 o 1.789 o 2.010)
+    const priceLitroMatch = upper.match(/(?:PREZZO|EURO\/L|€\/L|AL\s*LITRO|CAD)[^0-9]*([12][,\.][0-9]{3})/);
     if (priceLitroMatch) {
       const pL = parseFloat(priceLitroMatch[1].replace(',', '.'));
       if (document.getElementById('form-rif-prezzo-litro')) {
@@ -862,25 +875,41 @@ async function scansionaScontrino(event) {
     }
 
     // Litri erogati (es. 25,40 LITRI o VOL 30.50 L)
-    const litriMatch = upper.match(/(?:LITRI|VOL|QUANTITA)[^0-9]*([0-9]{1,3}[,\.][0-9]{2})/);
+    let detectedLitri = null;
+    const litriMatch = upper.match(/(?:LITRI|VOL|QUANTITA|EROGATO)[^0-9]*([0-9]{1,3}[,\.][0-9]{2})/);
     if (litriMatch) {
-      const lit = parseFloat(litriMatch[1].replace(',', '.'));
+      detectedLitri = parseFloat(litriMatch[1].replace(',', '.'));
+    }
+
+    if (detectedLitri && detectedLitri > 0 && detectedLitri < 120) {
       if (document.getElementById('form-rif-litri')) {
-        document.getElementById('form-rif-litri').value = lit.toFixed(2);
+        document.getElementById('form-rif-litri').value = detectedLitri.toFixed(2);
       }
     }
 
-    // Se mancano i litri ma abbiamo costo e prezzo al litro, ricalcola!
+    // Se mancano i litri ma abbiamo costo e prezzo al litro, ricalcola automaticamente!
     ricalcolaLitriRif();
 
-    showToast('Scontrino carburante decodificato con successo!', 'success');
+    // Ricalcola se abbiamo totale e litri per dedurre il prezzo al litro mancante
+    const cVal = parseFloat(document.getElementById('form-rif-costo').value) || 0;
+    const lVal = parseFloat(document.getElementById('form-rif-litri').value) || 0;
+    const pVal = parseFloat(document.getElementById('form-rif-prezzo-litro').value) || 0;
+    if (cVal > 0 && lVal > 0 && !pVal) {
+      document.getElementById('form-rif-prezzo-litro').value = (cVal / lVal).toFixed(3);
+    }
+
+    if (detectedTotal || detectedLitri) {
+      showToast('Scontrino rilevato con successo! Controlla i dati compilati.', 'success');
+    } else {
+      showToast('Scheda aperta: completa i dettagli rifornimento.', 'info');
+    }
 
   } catch(err) {
-    console.warn('OCR Scontrino fallback:', err);
-    showToast('Scontrino scansionato con successo.', 'info');
+    console.warn('OCR Scontrino:', err);
+    showToast('Scheda aperta: inserisci i dettagli del rifornimento.', 'info');
   } finally {
     chiudiVeicoliOcrModal();
-    event.target.value = '';
+    try { event.target.value = ''; } catch(e){}
   }
 }
 
