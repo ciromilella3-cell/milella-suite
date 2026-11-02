@@ -268,6 +268,7 @@ app.use(cors());
 app.use(express.json());
 
 // Endpoint leggero di Healthcheck e Keep-Alive H24 (risposta immediata)
+app.get('/ping', (req, res) => res.status(200).send('PONG'));
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'active', time: new Date().toISOString(), suite: 'C. Milella' });
 });
@@ -2929,6 +2930,47 @@ app.listen(PORT, '0.0.0.0', () => {
                 fs.copyFileSync(careAssistDbFile, path.join(todayFolder, 'careassist_database.json'));
             }
 
+            // 6. Flotta Veicoli
+            const veiSrc = path.join(__dirname, 'data', 'veicoli_db.json');
+            if (fs.existsSync(veiSrc)) {
+                fs.copyFileSync(veiSrc, path.join(todayFolder, 'veicoli_db.json'));
+            }
+            // 7. Configurazione Progetti & Operatori
+            const projsSrc = path.join(__dirname, 'data', 'progetti_config.json');
+            if (fs.existsSync(projsSrc)) {
+                fs.copyFileSync(projsSrc, path.join(todayFolder, 'progetti_config.json'));
+            }
+            const opSrc = path.join(__dirname, 'data', 'operatori.json');
+            if (fs.existsSync(opSrc)) {
+                fs.copyFileSync(opSrc, path.join(todayFolder, 'operatori.json'));
+            }
+
+            // --- AUTO-SINCRONIZZAZIONE SILENZIOSA NELLA CARTELLA DI SICUREZZA USB ---
+            try {
+                const usbDrive = path.parse(__dirname).root; // Es. 'D:\'
+                const safetyDir = path.join(usbDrive, 'CARTELLA_DI_SICUREZZA', 'DATI_E_DATABASE_COPIA_DIRETTA');
+                if (fs.existsSync(path.join(usbDrive, 'CARTELLA_DI_SICUREZZA'))) {
+                    const safetyDataDir = path.join(safetyDir, 'data');
+                    if (!fs.existsSync(safetyDataDir)) fs.mkdirSync(safetyDataDir, { recursive: true });
+                    
+                    const filesToSync = [
+                        [veiSrc, path.join(safetyDataDir, 'veicoli_db.json')],
+                        [projsSrc, path.join(safetyDataDir, 'progetti_config.json')],
+                        [opSrc, path.join(safetyDataDir, 'operatori.json')],
+                        [invSrc, path.join(safetyDataDir, 'inventario.json')],
+                        [careAssistDbFile, path.join(safetyDir, 'careassist_database.json')]
+                    ];
+                    filesToSync.forEach(([src, dst]) => {
+                        if (src && fs.existsSync(src)) {
+                            fs.copyFileSync(src, dst);
+                        }
+                    });
+                    console.log(`[AUTO-BACKUP USB] Database sincronizzati silenziosamente in ${safetyDir}`);
+                }
+            } catch(eUsb) {
+                // Silenzioso se la cartella di sicurezza non è montata su questa macchina
+            }
+
             // Pulizia automatica: conserva solo gli ultimi 14 backup giornalieri
             const allBackups = fs.readdirSync(autoBackupDir)
                 .filter(name => name.startsWith('Backup_'))
@@ -2949,7 +2991,7 @@ app.listen(PORT, '0.0.0.0', () => {
 
     // Esegui backup all'avvio (dopo 5 secondi) e poi ogni 12 ore
     setTimeout(runAutoBackup, 5000);
-    setInterval(runAutoBackup, 12 * 60 * 60 * 1000);
+    setInterval(runAutoBackup, 4 * 60 * 60 * 1000);
 
     // Sistema Anti-Sospensione H24 (Keep-Alive per Render Cloud)
     // Invia un auto-ping leggero ogni 10 minuti per evitare che il server vada in standby
