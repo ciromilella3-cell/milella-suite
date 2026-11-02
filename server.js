@@ -2644,6 +2644,18 @@ function dividiInFrasiNaturali(text, maxLen = 170) {
     return chunks;
 }
 
+// Frame MP3 di silenzio naturale (MPEG Audio Layer III silence frame - circa 300ms)
+function generaPausaNaturaleAudio() {
+    // Un frame MP3 valido di silenzio stereo/mono a 24/32/44.1kHz
+    // Ripetuto 8-10 volte genera circa 250-300ms di pausa perfettamente silenziosa e pulita
+    const frameSilenzio = Buffer.from([
+        0xFF, 0xFB, 0x50, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    ]);
+    return Buffer.concat([frameSilenzio, frameSilenzio, frameSilenzio, frameSilenzio, frameSilenzio, frameSilenzio, frameSilenzio, frameSilenzio]);
+}
+
 app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
     try {
         const rawText = String(req.query.text || '').slice(0, 1800);
