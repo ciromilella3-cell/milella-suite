@@ -1227,7 +1227,7 @@
             {
                 id: 0,
                 title: 'Situazione 1: Il Portale Unificato & La Sicurezza degli Accessi',
-                audioUrl: '/assets/audio_suite/atto_1.mp3',
+                audioUrl: '/assets/audio_suite/atto_1.mp3?v=186',
                 speaker: '👑 Dialogo: Isabella & Ciro (Voci Neurali HD)',
                 subtitle: '«Isabella: Ciro, come è nata l\'idea della Suite? — Ciro: Chi gestisce famiglia, lavoro e assistenza ha decine di foglietti sparsi. Con la Suite abbiamo unificato 8 programmi sotto un unico PIN, da PC e smartphone con QR Code!»',
                 linkedAppIdx: 0,
@@ -1289,7 +1289,7 @@
             {
                 id: 1,
                 title: 'Situazione 2: CareAssist Pro — Il Cuore Clinico & Assistenziale',
-                audioUrl: '/assets/audio_suite/atto_2.mp3',
+                audioUrl: '/assets/audio_suite/atto_2.mp3?v=186',
                 speaker: '🩺 Dialogo: Isabella & Ciro (Voci Neurali HD)',
                 subtitle: '«Isabella: Ciro, perché CareAssist è il cuore clinico? — Ciro: Perché protegge i nostri cari a domicilio con sveglie vocali a volume forzato al 75%, scorte in frigo e conferma somministrazione tra telefono e PC in 2 secondi!»',
                 linkedAppIdx: 0,
@@ -1336,7 +1336,7 @@
             {
                 id: 2,
                 title: 'Situazione 3: Flotta Veicoli, Inventario Attrezzi & Logistica',
-                audioUrl: '/assets/audio_suite/atto_3.mp3',
+                audioUrl: '/assets/audio_suite/atto_3.mp3?v=186',
                 speaker: '🚗 Dialogo: Isabella & Ciro (Voci Neurali HD)',
                 subtitle: '«Isabella: Come ci aiutano nella pratica? — Ciro: Con Flotta niente multe per revisioni e bolli scaduti; con l\'Inventario sai sempre dove sta ogni attrezzo; con Logistica segui spedizioni e magazzino!»',
                 linkedAppIdx: 1,
@@ -1380,7 +1380,7 @@
             {
                 id: 3,
                 title: 'Situazione 4: Il Ricettario di Famiglia, MedNutri & Progetto Salute',
-                audioUrl: '/assets/audio_suite/atto_4.mp3',
+                audioUrl: '/assets/audio_suite/atto_4.mp3?v=186',
                 speaker: '🥗 Dialogo: Isabella & Ciro (Voci Neurali HD)',
                 subtitle: '«Isabella: Raccontami di cucina e benessere — Ciro: Il Ricettario prepara da solo la lista della spesa; MedNutri cura i piani alimentari clinici; Progetto Salute monitora pressione e acqua!»',
                 linkedAppIdx: 4,
@@ -1424,7 +1424,7 @@
             {
                 id: 4,
                 title: 'Situazione 5: La Sicurezza Totale — Cloud, USB e Partner Antigravity AI',
-                audioUrl: '/assets/audio_suite/atto_5.mp3',
+                audioUrl: '/assets/audio_suite/atto_5.mp3?v=186',
                 speaker: '👑 Dialogo: Isabella & Ciro (Voci Neurali HD)',
                 subtitle: '«Isabella: Cosa garantisce che i dati siano sempre al sicuro? — Ciro: Doppia protezione: Cloud per accedere ovunque e copia USB fisica con un clic. E con Antigravity AI, ogni nuova idea diventa realtà!»',
                 linkedAppIdx: 7,
@@ -2501,6 +2501,15 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+        // FORZA SVUOTAMENTO CACHE BROWSER LOCALE PER NUOVI AUDIO
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                for (let name of names) {
+                    if (name !== 'milella-suite-v186') caches.delete(name);
+                }
+            });
+        }
+        
             applicaAudioConfig();
             popolaListaVociBrowser();
             caricaPresentazionePersonalizzata();
@@ -2508,7 +2517,7 @@
             renderAplusGallery();
             inizializzaDaParametriUrl();
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js?v=115').catch(() => {});
+                navigator.serviceWorker.register('/sw.js?v=186').catch(() => {});
             }
         });
     </script>
