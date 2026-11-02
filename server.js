@@ -2780,23 +2780,26 @@ app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
 
 // ==============================================================================
 // 5.1 GENERATORE MULTI-VOCE NEURALE UMANA PER DIALOGHI PERSONALIZZATI (/api/genera-dialogo-audio)
-// Genera al volo un file MP3 con voci umane (Isabella & Ciro/Giuseppe) dai testi inseriti dall'utente
+// Supporta cast vocale espanso: 1, 2 o 3 Donne (Isabella, Elsa, Elena) e 1, 2 o 3 Uomini (Ciro/Giuseppe, Diego, Marco)
 // ==============================================================================
 app.post(['/api/genera-dialogo-audio', '/careassist/api/genera-dialogo-audio'], async (req, res) => {
     try {
-        const { testo } = req.body || {};
+        const { testo, castMode } = req.body || {};
         if (!testo || !testo.trim()) {
             return res.status(400).json({ error: 'Testo dialogo mancante' });
         }
 
         const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
 
-        async function generaChunkVoce(voce, txt) {
+        async function generaChunkVoce(speakerConfig, txt) {
             const cleaned = preparaTestoPerVoceUmana(txt);
             if (!cleaned) return Buffer.alloc(0);
             const tts = new MsEdgeTTS();
-            await tts.setMetadata(voce, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
-            const { audioStream } = tts.toStream(cleaned);
+            const voiceName = (typeof speakerConfig === 'string') ? speakerConfig : (speakerConfig.voice || 'it-IT-IsabellaNeural');
+            const streamOptions = (typeof speakerConfig === 'object') ? speakerConfig.options : undefined;
+
+            await tts.setMetadata(voiceName, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
+            const { audioStream } = tts.toStream(cleaned, streamOptions);
             const buf = await new Promise((resolve, reject) => {
                 const chunks = [];
                 audioStream.on('data', c => chunks.push(c));
@@ -2812,52 +2815,83 @@ app.post(['/api/genera-dialogo-audio', '/careassist/api/genera-dialogo-audio'], 
             return buf;
         }
 
+        // Mappa dei personaggi riconosciuti e delle loro voci neurali Studio HD
+        const speakerMap = {
+            // Donne
+            'isabella': { voice: 'it-IT-IsabellaNeural', label: 'Isabella' },
+            'elsa':     { voice: 'it-IT-ElsaNeural', label: 'Elsa' },
+            'elena':    { voice: 'it-IT-IsabellaNeural', options: { pitch: '+18Hz', rate: '+5%' }, label: 'Elena' },
+            'anna':     { voice: 'it-IT-ElsaNeural', options: { pitch: '-15Hz', rate: '-4%' }, label: 'Anna' },
+            'donna':    { voice: 'it-IT-IsabellaNeural', label: 'Donna' },
+            // Uomini
+            'ciro':     { voice: 'it-IT-GiuseppeNeural', label: 'Ciro' },
+            'giuseppe': { voice: 'it-IT-GiuseppeNeural', label: 'Giuseppe' },
+            'diego':    { voice: 'it-IT-DiegoNeural', label: 'Diego' },
+            'marco':    { voice: 'it-IT-GiuseppeNeural', options: { pitch: '-20Hz', rate: '-5%' }, label: 'Marco' },
+            'antonio':  { voice: 'it-IT-DiegoNeural', options: { pitch: '+20Hz', rate: '+6%' }, label: 'Antonio' },
+            'uomo':     { voice: 'it-IT-GiuseppeNeural', label: 'Uomo' }
+        };
+
         const buffers = [];
         let battute = [];
         let rawText = testo.replace(/[«»]/g, '').trim();
 
-        // Rilevamento intelligente dei tag "Isabella:" e "Ciro:"
-        const tagRegex = /(Isabella\s*:|Ciro\s*:)/i;
+        // Rilevamento intelligente dei tag dei personaggi (es: "Isabella:", "Elsa:", "Ciro:", "Diego:", ecc.)
+        const tagNames = Object.keys(speakerMap).join('|');
+        const tagRegex = new RegExp(`(^|\\n|—)\\s*(${tagNames})\\s*:`, 'i');
 
         if (tagRegex.test(rawText)) {
-            // Separa mantenendo i delimitatori
-            const parti = rawText.split(/(Isabella\s*:|Ciro\s*:)/i).filter(Boolean);
-            let currentVoice = 'it-IT-IsabellaNeural';
+            // Separa con regex globale mantenendo i delimitatori
+            const splitRegex = new RegExp(`(${tagNames})\\s*:`, 'gi');
+            const parti = rawText.split(splitRegex).filter(Boolean);
+            
+            let currentSpeakerKey = 'isabella';
             for (let i = 0; i < parti.length; i++) {
                 const seg = parti[i].trim();
-                if (/^Isabella\s*:/i.test(seg)) {
-                    currentVoice = 'it-IT-IsabellaNeural';
-                } else if (/^Ciro\s*:/i.test(seg)) {
-                    currentVoice = 'it-IT-GiuseppeNeural';
+                const segLower = seg.toLowerCase();
+                if (speakerMap[segLower]) {
+                    currentSpeakerKey = segLower;
                 } else if (seg) {
-                    const cleanSeg = seg.replace(/^—\s*/, '').replace(/—$/, '').trim();
+                    const cleanSeg = seg.replace(/^[—\-\s]+/, '').replace(/[—\-\s]+$/, '').trim();
                     if (cleanSeg) {
-                        battute.push({ voce: currentVoice, testo: cleanSeg });
+                        battute.push({ 
+                            speaker: currentSpeakerKey,
+                            speakerConfig: speakerMap[currentSpeakerKey], 
+                            testo: cleanSeg 
+                        });
                     }
                 }
             }
         } else if (rawText.includes('—')) {
-            // Alternanza con trattino: 1° Isabella, 2° Ciro, 3° Isabella, ecc.
+            // Alternanza automatica in base a castMode o default (Isabella / Ciro)
             const parti = rawText.split('—');
+            let roster = [speakerMap['isabella'], speakerMap['ciro']];
+            if (castMode === 'due_donne') roster = [speakerMap['isabella'], speakerMap['elsa']];
+            else if (castMode === 'tre_donne') roster = [speakerMap['isabella'], speakerMap['elsa'], speakerMap['elena']];
+            else if (castMode === 'due_uomini') roster = [speakerMap['ciro'], speakerMap['diego']];
+            else if (castMode === 'tre_uomini') roster = [speakerMap['ciro'], speakerMap['diego'], speakerMap['marco']];
+
             parti.forEach((p, idx) => {
                 const cleanSeg = p.trim();
                 if (cleanSeg) {
-                    const voce = (idx % 2 === 0) ? 'it-IT-IsabellaNeural' : 'it-IT-GiuseppeNeural';
-                    battute.push({ voce, testo: cleanSeg });
+                    const cfg = roster[idx % roster.length];
+                    battute.push({ speaker: cfg.label.toLowerCase(), speakerConfig: cfg, testo: cleanSeg });
                 }
             });
         } else {
-            battute.push({ voce: 'it-IT-IsabellaNeural', testo: rawText });
+            // Testo singolo: usa la prima voce del cast o Isabella
+            const defaultSpeaker = (castMode === 'due_uomini' || castMode === 'tre_uomini') ? speakerMap['ciro'] : speakerMap['isabella'];
+            battute.push({ speaker: defaultSpeaker.label.toLowerCase(), speakerConfig: defaultSpeaker, testo: rawText });
         }
 
         console.log('[DIALOGO GENERAZIONE] Battute individuate:', battute.length);
         for (let i = 0; i < battute.length; i++) {
             const item = battute[i];
-            console.log(' - Voce:', item.voce, '| Testo:', item.testo);
-            const b = await generaChunkVoce(item.voce, item.testo);
+            console.log(` - Battuta ${i+1}: [${item.speakerConfig.label}] -> ${item.testo.substring(0, 50)}...`);
+            const b = await generaChunkVoce(item.speakerConfig, item.testo);
             if (b && b.length > 0) {
                 buffers.push(b);
-                // Inserisce una pausa naturale tra una battuta e la successiva
+                // Inserisce una pausa naturale (circa 300ms di silenzio pulito) tra battute
                 if (i < battute.length - 1) {
                     buffers.push(generaPausaNaturaleAudio());
                 }

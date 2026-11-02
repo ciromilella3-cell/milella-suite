@@ -1187,21 +1187,34 @@
                     </div>
 
                     
-                    <!-- TEMPLATE RAPIDI 1-CLICK PER SETTORE -->
+                    <!-- TEMPLATE RAPIDI 1-CLICK PER SETTORE E CAST VOCALE -->
                     <div style="margin-bottom:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px 12px;">
-                        <div style="font-size:11.5px; font-weight:800; color:#94a3b8; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">⚡ Inserisci Esempio Pronto (1-Click):</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+                            <div style="font-size:11.5px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">🎭 Scegli la Formazione Vocale (Cast):</div>
+                            <select id="selectCastMode" onchange="cambiaCastMode(this.value)" style="background:#0f172a; color:#fde047; border:1px solid #d4af37; border-radius:6px; padding:4px 8px; font-size:12px; font-weight:800; cursor:pointer;">
+                                <option value="misto">👫 1 Donna + 1 Uomo (Isabella & Ciro)</option>
+                                <option value="due_donne">👭 2 Donne (Isabella & Elsa)</option>
+                                <option value="tre_donne">👩‍👩‍👧 3 Donne (Isabella, Elsa & Elena)</option>
+                                <option value="due_uomini">👬 2 Uomini (Ciro & Diego)</option>
+                                <option value="tre_uomini">👨‍👨‍👦 3 Uomini (Ciro, Diego & Marco)</option>
+                            </select>
+                        </div>
+                        <div style="font-size:11px; font-weight:800; color:#64748b; margin-bottom:6px; text-transform:uppercase;">⚡ Esempi Pronti 1-Click:</div>
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
                             <button type="button" onclick="applicaTemplateDialogo('sanita')" style="background:rgba(56,189,248,0.15); border:1px solid #38bdf8; color:#7dd3fc; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
-                                🩺 Sanità &amp; RSA
+                                🩺 Sanità &amp; RSA (2 Donne)
                             </button>
-                            <button type="button" onclick="applicaTemplateDialogo('logistica')" style="background:rgba(251,191,36,0.15); border:1px solid #fbbf24; color:#fde047; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
-                                🚚 Cantieri &amp; Trasporti
+                            <button type="button" onclick="applicaTemplateDialogo('tre_donne')" style="background:rgba(244,114,182,0.15); border:1px solid #f472b6; color:#fbcfe8; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
+                                👩‍⚕️ Ospedale (3 Donne)
                             </button>
-                            <button type="button" onclick="applicaTemplateDialogo('azienda')" style="background:rgba(168,85,247,0.15); border:1px solid #a855f7; color:#e9d5ff; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
-                                🏢 Azienda &amp; PMI
+                            <button type="button" onclick="applicaTemplateDialogo('due_uomini')" style="background:rgba(251,191,36,0.15); border:1px solid #fbbf24; color:#fde047; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
+                                🚚 Flotta &amp; Cantiere (2 Uomini)
+                            </button>
+                            <button type="button" onclick="applicaTemplateDialogo('tre_uomini')" style="background:rgba(168,85,247,0.15); border:1px solid #a855f7; color:#e9d5ff; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
+                                🛡️ IT &amp; Logistica (3 Uomini)
                             </button>
                             <button type="button" onclick="applicaTemplateDialogo('sicurezza')" style="background:rgba(16,185,129,0.15); border:1px solid #10b981; color:#6ee7b7; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
-                                🛡️ Backup &amp; Sicurezza USB
+                                🔐 USB &amp; Cloud (Misto)
                             </button>
                         </div>
                     </div>
@@ -1209,8 +1222,8 @@
 <div style="margin-bottom:14px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                             <label style="font-weight:800; color:#cbd5e1; font-size:13.5px;">Scrivi il Tuo Dialogo Personalizzato (Voci Umane Reali):</label>
-                            <span style="font-size:11.5px; color:#38bdf8; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.3);">
-                                💡 Separa la voce femminile da quella maschile con "—"
+                            <span id="labelHintSeparatore" style="font-size:11.5px; color:#38bdf8; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.3);">
+                                💡 Puoi scrivere direttamente i nomi (es: Isabella:, Elsa:, Ciro:, Diego:) o separare con "—"
                             </span>
                         </div>
                         
@@ -1218,18 +1231,19 @@
                         <div style="position:relative;">
                             <textarea id="editorCopioneText" rows="5" placeholder="Scrivi o incolla qui il testo... Puoi modificare parole, aggiungere battute o cambiare completamente il senso!" style="width:100%; background:#040711; color:#fde047; border:2px solid #38bdf8; border-radius:10px; padding:14px; font-family:inherit; font-size:14px; line-height:1.55; resize:vertical; box-sizing:border-box; box-shadow:inset 0 2px 8px rgba(0,0,0,0.6);"></textarea>
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; flex-wrap:wrap; gap:8px;">
-                                <div style="font-size:12px; color:#94a3b8; display:flex; gap:12px;">
-                                    <span>👑 <strong>Isabella:</strong> prima di "—"</span>
-                                    <span>🎙️ <strong>Ciro:</strong> dopo "—"</span>
+                                <div id="legendSpeakerCast" style="font-size:12px; color:#94a3b8; display:flex; gap:12px; flex-wrap:wrap;">
+                                    <span style="color:#f472b6;">👑 <strong>Isabella:</strong> Donna 1</span>
+                                    <span style="color:#c084fc;">🌸 <strong>Elsa:</strong> Donna 2</span>
+                                    <span style="color:#f59e0b;">🎙️ <strong>Ciro:</strong> Uomo 1</span>
+                                    <span style="color:#38bdf8;">⚡ <strong>Diego:</strong> Uomo 2</span>
                                 </div>
                                 <button type="button" onclick="caricaOriginaleInEditor()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;" title="Ricarica la frase originale esatta dentro questo riquadro per poterla modificare subito">
                                     📋 Ricarica Testo Originale nel Riquadro
                                 </button>
                             </div>
                         </div>
-                        <div style="margin-top:6px; font-size:12px; color:#94a3b8; display:flex; gap:16px;">
-                            <span>👑 <strong>Prima parte:</strong> Voce Isabella (Donna)</span>
-                            <span>🎙️ <strong>Dopo il trattino "—":</strong> Voce Ciro (Uomo)</span>
+                        <div style="margin-top:6px; font-size:12px; color:#94a3b8;">
+                            ✨ <em>Supporto Voci Umane HD Studio:</em> puoi creare dialoghi tra 2 o 3 donne, tra 2 o 3 uomini o gruppi misti indicando semplicemente il nome all'inizio della frase.
                         </div>
                     </div>
 
@@ -1960,11 +1974,49 @@
         
         // TEMPLATE DIALOGHI RAPIDI PER PRESENTAZIONI DI SUCCESSO
         const TEMPLATE_DIALOGHI = {
-            sanita: 'Isabella: Dottore, come riusciamo a proteggere ogni paziente senza errori? — Ciro: Con CareAssist registriamo le terapie al secondo, forziamo il volume vocale al settantacinque percento e abbiamo la scheda salvavita centodiciotto pronta in caso di emergenza. — Isabella: Straordinario, un vero supporto per gli operatori!',
-            logistica: 'Isabella: Ciro, quante ore di lavoro risparmiamo nella gestione del cantiere? — Ciro: Decine di ore a settimana! Con la flotta azzeriamo le multe sui bolli, con l\'inventario troviamo ogni attrezzo in tre secondi e la logistica organizza le consegne automaticamente. — Isabella: Efficienza pura e costi sotto controllo.',
-            azienda: 'Isabella: Qual è il vero vantaggio di una Suite integrata rispetto a tanti programmi separati? — Ciro: Che basta un solo accesso con PIN per coordinare personale, mezzi, inventario e documenti, sia dall\'ufficio sia dallo smartphone con codice QR. — Isabella: La soluzione ideale per far crescere l\'impresa.',
+            sanita: 'Isabella: Dottoressa Elsa, abbiamo aggiornato il diario clinico di Mario? — Elsa: Sì Isabella, parametri glicemici stabili e scorta predittiva dell\'insulina già confermata nel frigo. — Isabella: Ottimo, così abbiamo azzerato ogni rischio di errore!',
+            tre_donne: 'Isabella: Benvenute al passaggio consegne del reparto. — Elsa: Tutti i parametri dei pazienti del settore B sono allineati sul Cloud. — Elena: Perfetto, procedo con la somministrazione terapeutica con controllo vocale automatico!',
+            due_uomini: 'Ciro: Diego, hai verificato la scadenza della revisione del furgone e il livello carburante? — Diego: Controllato Ciro: la Suite mi segnalava cinque giorni alla scadenza, revisione prenotata e tagliando registrato!',
+            tre_uomini: 'Ciro: Ragazzi, confermiamo lo stato dei backup della giornata? — Diego: Copia fisica su chiavetta USB completata con un clic e crittografata. — Marco: Allineamento con il server Cloud di Render attivo al cento percento!',
             sicurezza: 'Isabella: Cosa garantisce che i dati dell\'azienda siano sempre al sicuro da guasti o attacchi? — Ciro: La protezione a doppio livello: copia Cloud per lavorare ovunque e backup istantaneo su chiavetta USB fisica con un solo clic. — Isabella: Massima serenità per titolare e collaboratori!'
         };
+
+        let currentCastMode = 'misto';
+
+        function cambiaCastMode(mode) {
+            playAudio('click');
+            currentCastMode = mode;
+            const leg = document.getElementById('legendSpeakerCast');
+            if (!leg) return;
+            if (mode === 'due_donne') {
+                leg.innerHTML = `
+                    <span style="color:#f472b6;">👑 <strong>Isabella:</strong> Prima battuta</span>
+                    <span style="color:#c084fc;">🌸 <strong>Elsa:</strong> Seconda battuta</span>
+                `;
+            } else if (mode === 'tre_donne') {
+                leg.innerHTML = `
+                    <span style="color:#f472b6;">👑 <strong>Isabella:</strong> Donna 1</span>
+                    <span style="color:#c084fc;">🌸 <strong>Elsa:</strong> Donna 2</span>
+                    <span style="color:#fb7185;">🌺 <strong>Elena:</strong> Donna 3</span>
+                `;
+            } else if (mode === 'due_uomini') {
+                leg.innerHTML = `
+                    <span style="color:#f59e0b;">🎙️ <strong>Ciro:</strong> Primo uomo</span>
+                    <span style="color:#38bdf8;">⚡ <strong>Diego:</strong> Secondo uomo</span>
+                `;
+            } else if (mode === 'tre_uomini') {
+                leg.innerHTML = `
+                    <span style="color:#f59e0b;">🎙️ <strong>Ciro:</strong> Uomo 1</span>
+                    <span style="color:#38bdf8;">⚡ <strong>Diego:</strong> Uomo 2</span>
+                    <span style="color:#34d399;">🛡️ <strong>Marco:</strong> Uomo 3</span>
+                `;
+            } else {
+                leg.innerHTML = `
+                    <span style="color:#f472b6;">👑 <strong>Isabella:</strong> Voce Femminile</span>
+                    <span style="color:#f59e0b;">🎙️ <strong>Ciro:</strong> Voce Maschile</span>
+                `;
+            }
+        }
 
         function applicaTemplateDialogo(tipo) {
             playAudio('click');
@@ -1976,6 +2028,14 @@
                     txtArea.focus();
                     showToast('Esempio Applicato', 'Puoi ascoltarlo subito o modificarlo a piacimento', '✨');
                 }
+            }
+            const castSel = document.getElementById('selectCastMode');
+            if (castSel) {
+                if (tipo === 'sanita') { castSel.value = 'due_donne'; cambiaCastMode('due_donne'); }
+                else if (tipo === 'tre_donne') { castSel.value = 'tre_donne'; cambiaCastMode('tre_donne'); }
+                else if (tipo === 'due_uomini') { castSel.value = 'due_uomini'; cambiaCastMode('due_uomini'); }
+                else if (tipo === 'tre_uomini') { castSel.value = 'tre_uomini'; cambiaCastMode('tre_uomini'); }
+                else { castSel.value = 'misto'; cambiaCastMode('misto'); }
             }
         }
 
@@ -2008,33 +2068,69 @@
             }
         }
 
-        // TELEPROMPTER MULTI-BATTUTA CON EVIDENZIAZIONE DINAMICA FRASE PER FRASE
+        // TELEPROMPTER MULTI-BATTUTA CON EVIDENZIAZIONE DINAMICA FRASE PER FRASE E CAST MULTI-RUOLO
         function aggiornaSottotitoloKaraoke(testoCompleto, percentualeProgresso = 0) {
             const box = document.getElementById('subtitleText');
             if (!box) return;
 
-            // Riconosce sia trattini "—" che tag Isabella: / Ciro:
-            let parti = [];
-            if (testoCompleto.includes('—')) {
-                parti = testoCompleto.split('—').map(p => p.trim()).filter(Boolean);
-            } else if (/(Isabella\s*:|Ciro\s*:)/i.test(testoCompleto)) {
-                parti = testoCompleto.split(/(Isabella\s*:|Ciro\s*:)/i).map(p => p.trim()).filter(Boolean);
+            const speakerColors = {
+                'isabella': { color: '#f472b6', label: '👑 Isabella' },
+                'elsa':     { color: '#c084fc', label: '🌸 Elsa' },
+                'elena':    { color: '#fb7185', label: '🌺 Elena' },
+                'anna':     { color: '#e879f9', label: '🌷 Anna' },
+                'ciro':     { color: '#f59e0b', label: '🎙️ Ciro' },
+                'giuseppe': { color: '#f59e0b', label: '🎙️ Giuseppe' },
+                'diego':    { color: '#38bdf8', label: '⚡ Diego' },
+                'marco':    { color: '#34d399', label: '🛡️ Marco' },
+                'antonio':  { color: '#fbbf24', label: '🔨 Antonio' }
+            };
+
+            let battute = [];
+            const tagRegex = /(Isabella\s*:|Elsa\s*:|Elena\s*:|Anna\s*:|Ciro\s*:|Giuseppe\s*:|Diego\s*:|Marco\s*:|Antonio\s*:)/i;
+
+            if (tagRegex.test(testoCompleto)) {
+                const parti = testoCompleto.split(/(Isabella\s*:|Elsa\s*:|Elena\s*:|Anna\s*:|Ciro\s*:|Giuseppe\s*:|Diego\s*:|Marco\s*:|Antonio\s*:)/i).filter(Boolean);
+                let curSpeaker = 'isabella';
+                for (let i = 0; i < parti.length; i++) {
+                    const s = parti[i].trim();
+                    const m = s.match(/^(Isabella|Elsa|Elena|Anna|Ciro|Giuseppe|Diego|Marco|Antonio)\s*:/i);
+                    if (m) {
+                        curSpeaker = m[1].toLowerCase();
+                    } else if (s) {
+                        const clean = s.replace(/^[—\-\s]+/, '').replace(/[—\-\s]+$/, '').trim();
+                        if (clean) {
+                            battute.push({ speaker: curSpeaker, text: clean });
+                        }
+                    }
+                }
+            } else if (testoCompleto.includes('—')) {
+                const parti = testoCompleto.split('—').map(p => p.trim()).filter(Boolean);
+                let roster = ['isabella', 'ciro'];
+                if (currentCastMode === 'due_donne') roster = ['isabella', 'elsa'];
+                else if (currentCastMode === 'tre_donne') roster = ['isabella', 'elsa', 'elena'];
+                else if (currentCastMode === 'due_uomini') roster = ['ciro', 'diego'];
+                else if (currentCastMode === 'tre_uomini') roster = ['ciro', 'diego', 'marco'];
+
+                parti.forEach((p, idx) => {
+                    const spk = roster[idx % roster.length];
+                    battute.push({ speaker: spk, text: p });
+                });
+            } else {
+                battute.push({ speaker: 'isabella', text: testoCompleto });
             }
 
-            if (parti.length > 1) {
-                // Calcola quale battuta è attiva in base alla percentuale (da 0 a 100%)
-                const segmentSize = 100 / parti.length;
-                const activeIdx = Math.min(parti.length - 1, Math.floor(percentualeProgresso / segmentSize));
+            if (battute.length > 1) {
+                const segmentSize = 100 / battute.length;
+                const activeIdx = Math.min(battute.length - 1, Math.floor(percentualeProgresso / segmentSize));
 
                 let htmlContent = '';
-                parti.forEach((p, idx) => {
+                battute.forEach((b, idx) => {
                     const isCurrent = (idx === activeIdx);
-                    const isWoman = (idx % 2 === 0);
-                    const speakerTag = isWoman ? '👑 Isabella' : '🎙️ Ciro';
+                    const spkInfo = speakerColors[b.speaker] || { color: '#fde047', label: b.speaker.toUpperCase() };
                     htmlContent += `
                         <div style="margin:4px 0; transition:all 0.3s ease; opacity:${isCurrent ? '1' : '0.45'}; transform:${isCurrent ? 'scale(1.02)' : 'scale(1)'};">
-                            <span style="font-weight:900; font-size:11.5px; color:${isWoman ? '#f0abfc' : '#38bdf8'}; text-transform:uppercase;">${speakerTag}:</span>
-                            <span class="${isCurrent ? 'karaoke-active-phrase' : 'karaoke-dimmed-phrase'}" style="font-size:${isCurrent ? '14px' : '13px'}; color:${isCurrent ? '#fef08a' : '#94a3b8'};">${p.replace(/^(Isabella|Ciro)\s*:/i, '').trim()}</span>
+                            <span style="font-weight:900; font-size:11.5px; color:${spkInfo.color}; text-transform:uppercase;">${spkInfo.label}:</span>
+                            <span class="${isCurrent ? 'karaoke-active-phrase' : 'karaoke-dimmed-phrase'}" style="font-size:${isCurrent ? '14px' : '13px'}; color:${isCurrent ? '#fef08a' : '#94a3b8'};">${b.text}</span>
                         </div>
                     `;
                 });
@@ -2087,6 +2183,36 @@
 
             // Riproduzione Voci Umane Reali MP3 Studio
             audioConfig.mode = 'neural';
+
+            // Se per questa scena l'utente ha inserito un copione personalizzato, genera o usa la traccia multi-voce
+            if (customCopioni['scene-' + currentSceneIdx]) {
+                fetch('/api/genera-dialogo-audio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ testo: currentText, castMode: currentCastMode, sceneKey: 'scene-' + currentSceneIdx })
+                }).then(res => res.blob()).then(blob => {
+                    const customUrl = URL.createObjectURL(blob);
+                    suiteAudio.src = customUrl;
+                    suiteAudio.playbackRate = audioConfig.speed;
+                    suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
+                    suiteAudio.ontimeupdate = () => {
+                        if (suiteAudio.duration && isFinite(suiteAudio.duration)) {
+                            const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
+                            document.getElementById('filmProgressBar').style.width = pct + '%';
+                            aggiornaSottotitoloKaraoke(currentText, pct);
+                        }
+                    };
+                    suiteAudio.onended = () => {
+                        if (!isFilmPlaying) return;
+                        prossimaScenaFilm();
+                    };
+                    suiteAudio.play().catch(e => console.warn('Play custom scene warning:', e));
+                }).catch(err => {
+                    suiteAudio.src = sc.audioUrl;
+                    suiteAudio.play();
+                });
+                return;
+            }
 
             // Modalità 3: Voce Studio Neurale Ufficiale MP3 (Isabella & Ciro)
             suiteAudio.src = sc.audioUrl;
@@ -2372,10 +2498,11 @@
             }
 
             try {
+                const castMode = document.getElementById('selectCastMode') ? document.getElementById('selectCastMode').value : currentCastMode;
                 const res = await fetch('/api/genera-dialogo-audio', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ testo: text })
+                    body: JSON.stringify({ testo: text, castMode: castMode })
                 });
 
                 if (!res.ok) throw new Error('Errore generazione audio');
