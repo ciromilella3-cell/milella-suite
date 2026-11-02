@@ -1821,16 +1821,11 @@
     </script>
 
     <script>
-        // Logistica Launch
-        document.getElementById('btnLogistica').addEventListener('click', async (e) => {
+        // Logistica Launch: navigazione diretta fluida
+        document.getElementById('btnLogistica').addEventListener('click', function(e) {
             e.preventDefault();
-            const btn = e.currentTarget;
-            const originalHTML = btn.innerHTML;
-            btn.style.pointerEvents = 'none';
-            btn.innerHTML = `<div class="card-icon">⏳</div><div class="card-title">Avvio in corso...</div><div class="card-desc">Apertura della finestra Logistica a schermo intero...</div>`;
-            
-            try {
-                await fetch('/api/launch-logistica', { method: 'POST' });
+            navigaVersoApp('/veicoli/dashboard.html');
+        });
                 btn.innerHTML = `<div class="card-icon">✅</div><div class="card-title">Avviato!</div><div class="card-desc">L'applicazione è aperta a schermo intero!</div>`;
                 setTimeout(() => {
                     btn.innerHTML = originalHTML;
