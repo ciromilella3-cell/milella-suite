@@ -1184,8 +1184,17 @@
                     </div>
 
                     <div style="margin-bottom:14px;">
-                        <label style="display:block; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Testo del Copione Recitato:</label>
-                        <textarea id="editorCopioneText" rows="4" style="width:100%; background:#0f172a; color:#fff; border:1.5px solid rgba(255,255,255,0.2); border-radius:8px; padding:12px; font-family:inherit; font-size:13.5px; line-height:1.45; resize:vertical; box-sizing:border-box;"></textarea>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <label style="font-weight:800; color:#cbd5e1; font-size:13.5px;">Scrivi il Tuo Dialogo Personalizzato (Voci Umane Reali):</label>
+                            <span style="font-size:11.5px; color:#38bdf8; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.3);">
+                                💡 Separa la voce femminile da quella maschile con "—"
+                            </span>
+                        </div>
+                        <textarea id="editorCopioneText" rows="4" placeholder="Es: Isabella: Ciro, parliamo di questo modulo? — Ciro: Certamente, ecco come aiuta la tua azienda ogni giorno..." style="width:100%; background:#090d16; color:#fde047; border:1.5px solid #d4af37; border-radius:10px; padding:12px 14px; font-family:inherit; font-size:14px; line-height:1.5; resize:vertical; box-sizing:border-box;"></textarea>
+                        <div style="margin-top:6px; font-size:12px; color:#94a3b8; display:flex; gap:16px;">
+                            <span>👑 <strong>Prima parte:</strong> Voce Isabella (Donna)</span>
+                            <span>🎙️ <strong>Dopo il trattino "—":</strong> Voce Ciro (Uomo)</span>
+                        </div>
                     </div>
 
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -2094,6 +2103,31 @@
 
             if (audioConfig.mode === 'silent' || audioConfig.muted) return;
 
+            if (customCopioni['app-' + idx]) {
+                fetch('/api/genera-dialogo-audio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ testo: testoApp, sceneKey: 'app-' + idx })
+                }).then(res => res.blob()).then(blob => {
+                    const customUrl = URL.createObjectURL(blob);
+                    suiteAudio.src = customUrl;
+                    suiteAudio.playbackRate = audioConfig.speed;
+                    suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
+                    suiteAudio.ontimeupdate = () => {
+                        if (suiteAudio.duration && isFinite(suiteAudio.duration)) {
+                            const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
+                            document.getElementById('filmProgressBar').style.width = pct + '%';
+                            aggiornaSottotitoloKaraoke(testoApp, pct);
+                        }
+                    };
+                    suiteAudio.play().catch(e => console.warn('Play app custom warning:', e));
+                }).catch(err => {
+                    suiteAudio.src = app.audioUrl;
+                    suiteAudio.play();
+                });
+                return;
+            }
+
             // Usa sempre e solo la voce umana reale registrata in studio per l'app
             suiteAudio.src = app.audioUrl;
             suiteAudio.playbackRate = audioConfig.speed;
@@ -2184,10 +2218,46 @@
             else mostraAppDettaglio(currentAppIdx);
         }
 
-        function anteprimaVoceEditor() {
+        // Generazione al volo di voce umana HD dal dialogo scritto dall'utente
+        async function anteprimaVoceEditor() {
             fermaAudioSuite();
-            const text = document.getElementById('editorCopioneText').value;
-            parlaConBrowserSpeech(text);
+            const text = document.getElementById('editorCopioneText').value.trim();
+            if (!text) {
+                alert('Inserisci prima il testo o il dialogo da ascoltare!');
+                return;
+            }
+
+            const btn = event ? event.target.closest('button') : null;
+            const oldHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.innerHTML = '<span>⏳ Generazione Voce Umana HD...</span>';
+                btn.disabled = true;
+            }
+
+            try {
+                const res = await fetch('/api/genera-dialogo-audio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ testo: text })
+                });
+
+                if (!res.ok) throw new Error('Errore generazione audio');
+                const blob = await res.blob();
+                const audioBlobUrl = URL.createObjectURL(blob);
+
+                suiteAudio.src = audioBlobUrl;
+                suiteAudio.playbackRate = audioConfig.speed;
+                suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
+                suiteAudio.play();
+            } catch(e) {
+                console.warn('Errore generazione audio umano personalizzato:', e);
+                alert('Impossibile generare l\'audio personalizzato al momento. Verifica la connessione o riprova tra poco.');
+            } finally {
+                if (btn) {
+                    btn.innerHTML = oldHtml;
+                    btn.disabled = false;
+                }
+            }
         }
 
         function apriPerSaperneCorrente() {

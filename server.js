@@ -2725,6 +2725,66 @@ app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
     }
 });
 
+
+// ==============================================================================
+// 5.1 GENERATORE MULTI-VOCE NEURALE UMANA PER DIALOGHI PERSONALIZZATI (/api/genera-dialogo-audio)
+// Genera al volo un file MP3 con voci umane (Isabella & Ciro/Giuseppe) dai testi inseriti dall'utente
+// ==============================================================================
+app.post(['/api/genera-dialogo-audio', '/careassist/api/genera-dialogo-audio'], async (req, res) => {
+    try {
+        const { testo, sceneKey } = req.body || {};
+        if (!testo || !testo.trim()) {
+            return res.status(400).json({ error: 'Testo dialogo mancante' });
+        }
+
+        const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
+
+        async function generaChunkVoce(voce, txt) {
+            const tts = new MsEdgeTTS();
+            await tts.setMetadata(voce, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
+            const { audioStream } = tts.toStream(preparaTestoPerVoceUmana(txt));
+            const buf = await new Promise((resolve, reject) => {
+                const chunks = [];
+                audioStream.on('data', c => chunks.push(c));
+                audioStream.on('end', () => resolve(Buffer.concat(chunks)));
+                audioStream.on('error', reject);
+            });
+            try { tts.close(); } catch(e) {}
+            return buf;
+        }
+
+        const buffers = [];
+        // Se contiene dialogo tipo "Isabella: ... — Ciro: ..." oppure separato da "—"
+        if (testo.includes('—')) {
+            const parti = testo.split('—');
+            // Parte 1 (Isabella - Voce Femminile)
+            const p1 = parti[0].replace(/«|»|Isabellas*:/gi, '').trim();
+            if (p1) {
+                const b1 = await generaChunkVoce('it-IT-IsabellaNeural', p1);
+                buffers.push(b1);
+            }
+            // Parte 2 (Ciro - Voce Maschile)
+            const p2 = parti.slice(1).join(' ').replace(/«|»|Ciros*:/gi, '').trim();
+            if (p2) {
+                const b2 = await generaChunkVoce('it-IT-GiuseppeNeural', p2);
+                buffers.push(b2);
+            }
+        } else {
+            // Singolo testo parlato (Isabella)
+            const b = await generaChunkVoce('it-IT-IsabellaNeural', testo.replace(/«|»/g, ''));
+            buffers.push(b);
+        }
+
+        const finalBuffer = Buffer.concat(buffers);
+        res.setHeader('Content-Type', 'audio/mpeg');
+        res.setHeader('Cache-Control', 'no-cache');
+        return res.send(finalBuffer);
+    } catch(err) {
+        console.error('[DIALOGO AUDIO ERRORE]', err);
+        return res.status(500).json({ error: err.message });
+    }
+});
+
 // --- SISTEMA ANTI-FURBI: FORZATURA VOLUME HARDWARE >= 70% SU PC WINDOWS + AUDIT LOG ---
 app.all(['/api/forza-volume-70', '/careassist/api/forza-volume-70'], (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
