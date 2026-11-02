@@ -2227,79 +2227,51 @@
             const box = document.getElementById('subtitleText');
             if (!box) return;
 
-            const paletteColori = [
-                '#f472b6', '#38bdf8', '#c084fc', '#f59e0b', '#34d399', '#fb7185', '#fbbf24', '#38bdf8'
-            ];
+            // Pulizia virgolette/caporali iniziali e finali « » "
+            let clean = (testoCompleto || '').replace(/[«»"]/g, '').trim();
+            const parti = clean.split(/—|\n/).map(s => s.trim()).filter(Boolean);
 
             let battute = [];
-            // Riconosce QUALSIASI nome arbitrario prima dei due punti (es: "Maria:", "Laura:", "Roberto:", "Paolo:")
-            const genericTagRegex = /(?:^|\n|—)\s*([A-Za-zÀ-ÿ0-9_\s]{2,20})\s*:/g;
-            const matches = [...testoCompleto.matchAll(genericTagRegex)];
-
-            if (matches.length > 0) {
-                const uniqueNames = [...new Set(matches.map(m => m[1].trim()))];
-                const nameRegexStr = uniqueNames.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-                const splitPattern = new RegExp(`(?:^|\\n|—)\\s*(${nameRegexStr})\\s*:`, 'gi');
-                const rawParts = testoCompleto.split(splitPattern).filter(Boolean);
-
-                let curSpeaker = uniqueNames[0];
-                for (let i = 0; i < rawParts.length; i++) {
-                    const s = rawParts[i].trim();
-                    const matchedName = uniqueNames.find(un => un.toLowerCase() === s.toLowerCase());
-                    if (matchedName) {
-                        curSpeaker = matchedName;
-                    } else if (s) {
-                        const clean = s.replace(/^[—\-\s]+/, '').replace(/[—\-\s]+$/, '').trim();
-                        if (clean) {
-                            battute.push({ speaker: curSpeaker, text: clean });
-                        }
-                    }
+            parti.forEach((p, idx) => {
+                const colonIdx = p.indexOf(':');
+                if (colonIdx !== -1) {
+                    const spk = p.substring(0, colonIdx).trim();
+                    const txt = p.substring(colonIdx + 1).trim();
+                    battute.push({ speaker: spk, text: txt });
+                } else {
+                    let defaultSpk = (idx % 2 === 0) ? (nomiPersonaggi.p1 || 'Isabella') : (nomiPersonaggi.p2 || 'Ciro');
+                    battute.push({ speaker: defaultSpk, text: p });
                 }
-            } else if (testoCompleto.includes('—')) {
-                const parti = testoCompleto.split('—').map(p => p.trim()).filter(Boolean);
-                let roster = ['Isabella', 'Ciro'];
-                if (currentCastMode === 'due_donne') roster = ['Isabella', 'Elsa'];
-                else if (currentCastMode === 'tre_donne') roster = ['Isabella', 'Elsa', 'Elena'];
-                else if (currentCastMode === 'due_uomini') roster = ['Ciro', 'Diego'];
-                else if (currentCastMode === 'tre_uomini') roster = ['Ciro', 'Diego', 'Marco'];
+            });
 
-                parti.forEach((p, idx) => {
-                    const spk = roster[idx % roster.length];
-                    battute.push({ speaker: spk, text: p });
-                });
-            } else {
-                battute.push({ speaker: 'Voce Narrante', text: testoCompleto });
+            if (battute.length === 0) {
+                box.textContent = clean;
+                return;
             }
 
-            if (battute.length > 1) {
-                const segmentSize = 100 / battute.length;
-                const activeIdx = Math.min(battute.length - 1, Math.floor(percentualeProgresso / segmentSize));
+            const activeIdx = Math.min(battute.length - 1, Math.floor((percentualeProgresso / 100) * battute.length));
+            const paletteColori = ['#38bdf8', '#f472b6', '#facc15', '#4ade80', '#c084fc', '#fb923c'];
+            const speakerColors = {};
+            let cIndex = 0;
 
-                // Mappa colori per speaker
-                const speakerColorMap = {};
-                let colorCounter = 0;
+            let html = '';
+            battute.forEach((b, idx) => {
+                if (!speakerColors[b.speaker]) {
+                    speakerColors[b.speaker] = paletteColori[cIndex % paletteColori.length];
+                    cIndex++;
+                }
+                const isCurrent = (idx === activeIdx);
+                const color = speakerColors[b.speaker];
+                html += `
+                    <div style="margin:6px 0; transition:all 0.25s ease; opacity:${isCurrent ? '1' : '0.4'}; transform:${isCurrent ? 'scale(1.02)' : 'scale(1)'};">
+                        <span style="font-weight:900; font-size:12px; color:${color}; text-transform:uppercase; letter-spacing:0.5px;">🗣️ ${b.speaker}:</span>
+                        <span style="font-size:${isCurrent ? '14.5px' : '13px'}; font-weight:${isCurrent ? '700' : '400'}; color:${isCurrent ? '#ffffff' : '#94a3b8'}; margin-left:4px;">${b.text}</span>
+                    </div>
+                `;
+            });
 
-                let htmlContent = '';
-                battute.forEach((b, idx) => {
-                    if (!speakerColorMap[b.speaker]) {
-                        speakerColorMap[b.speaker] = paletteColori[colorCounter % paletteColori.length];
-                        colorCounter++;
-                    }
-                    const isCurrent = (idx === activeIdx);
-                    const spkColor = speakerColorMap[b.speaker];
-                    htmlContent += `
-                        <div style="margin:4px 0; transition:all 0.3s ease; opacity:${isCurrent ? '1' : '0.45'}; transform:${isCurrent ? 'scale(1.02)' : 'scale(1)'};">
-                            <span style="font-weight:900; font-size:11.5px; color:${spkColor}; text-transform:uppercase;">🗣️ ${b.speaker}:</span>
-                            <span class="${isCurrent ? 'karaoke-active-phrase' : 'karaoke-dimmed-phrase'}" style="font-size:${isCurrent ? '14px' : '13px'}; color:${isCurrent ? '#fef08a' : '#94a3b8'};">${b.text}</span>
-                        </div>
-                    `;
-                });
-                box.innerHTML = htmlContent;
-            } else {
-                box.textContent = testoCompleto;
-            }
+            box.innerHTML = html;
         }
-    
 
         // CONDIVISIONE WHATSAPP AUTOMATICA
         function condividiSuiteWhatsApp() {
