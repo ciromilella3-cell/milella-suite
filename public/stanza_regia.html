@@ -2299,17 +2299,28 @@
             document.getElementById('modalIcon').innerText = '🏆';
             document.getElementById('modalTitle').innerText = 'PACCHETTO PRONTO SUL DISCO!';
             document.getElementById('modalSub').innerHTML = `
-                Destinatario: <strong style="color:#fff;">${destName}</strong><br>
-                Cartella generata in: <span style="color:#38bdf8; font-weight:700;">${createdFolder}</span><br>
-                Licenza: <strong style="color:#10b981;">${scadLabel}</strong><br>
-                <div style="margin-top:14px; font-size:13px; color:#cbd5e1;">La cartella è presente in <strong>D:\\VERSIONI_RILASCIATE</strong> pronta da usare o inviare.</div>
+                <div style="font-size:14px; margin-bottom:12px; color:#e2e8f0;">
+                    Destinatario: <strong style="color:#fde047;">${destName}</strong> &bull; Licenza: <strong style="color:#10b981;">${scadLabel}</strong>
+                </div>
+                <div style="background:rgba(0,0,0,0.55); border:1px solid rgba(56,189,248,0.5); border-radius:14px; padding:12px 16px; margin:12px 0; text-align:left;">
+                    <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.8px; color:#94a3b8; font-weight:800; margin-bottom:4px;">Percorso sul disco:</div>
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#38bdf8; word-break:break-all; font-weight:700; user-select:all;">
+                        ${createdFolder}
+                    </div>
+                </div>
+                <div style="font-size:12.5px; color:#cbd5e1; margin-top:10px;">
+                    La cartella è pronta per essere aperta, avviata o copiata su un'altra chiavetta.
+                </div>
             `;
             document.getElementById('modalActionButtons').innerHTML = `
                 <button class="btn-modal-primary" onclick="apriCartellaRilasciate('${encodeURIComponent(createdFolder)}')">
-                    <span>📂 Apri Cartella in Esplora Risorse</span>
+                    <span>📂 Apri in Esplora Risorse</span>
+                </button>
+                <button type="button" class="btn-modal-close" id="btnCopiaRapidaSuccess" onclick="copiaPercorsoNegliAppunti('${createdFolder.replace(/\\/g, '\\\\')}', 'btnCopiaRapidaSuccess')" style="background:rgba(56,189,248,0.18); border-color:#38bdf8; color:#38bdf8;">
+                    <span>📋 Copia Percorso</span>
                 </button>
                 <a href="${batUrl}" download="COMPILA_${destName.replace(/\\s+/g, '_')}.bat" class="btn-modal-close" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                    <span>⚡ Scarica Script Batch</span>
+                    <span>⚡ Script .bat</span>
                 </a>
                 <button class="btn-modal-close" onclick="chiudiModalExtra()">
                     <span>Chiudi</span>
@@ -2319,7 +2330,47 @@
         }, 3600);
     }
 
-    // Apri cartella rilasciate in Windows Explorer
+    // Copia percorso negli appunti con feedback luxury visivo
+    function copiaPercorsoNegliAppunti(testo, btnId) {
+        playAudio('click');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(testo).then(() => {
+                mostraFeedbackCopia(btnId);
+            }).catch(() => fallbackCopiaTesto(testo, btnId));
+        } else {
+            fallbackCopiaTesto(testo, btnId);
+        }
+    }
+
+    function fallbackCopiaTesto(testo, btnId) {
+        const inp = document.createElement('textarea');
+        inp.value = testo;
+        document.body.appendChild(inp);
+        inp.select();
+        try {
+            document.execCommand('copy');
+            mostraFeedbackCopia(btnId);
+        } catch(e) {}
+        document.body.removeChild(inp);
+    }
+
+    function mostraFeedbackCopia(btnId) {
+        showToast('Percorso Copiato!', 'Incollalo in Esplora File o nella finestra Esegui (Win+R)', '📋');
+        const btn = document.getElementById(btnId || 'btnCopiaPercorsoModal');
+        if (btn) {
+            const oldHtml = btn.innerHTML;
+            btn.innerHTML = '<span>✅ Copiato negli Appunti!</span>';
+            btn.style.background = '#10b981';
+            btn.style.borderColor = '#34d399';
+            setTimeout(() => {
+                btn.innerHTML = oldHtml;
+                btn.style.background = '';
+                btn.style.borderColor = '';
+            }, 2500);
+        }
+    }
+
+    // Apri cartella rilasciate in Windows Explorer (MAI PIÙ prompt brutti del browser!)
     async function apriCartellaRilasciate(folderPath) {
         playAudio('click');
         let decoded = decodeURIComponent(folderPath || (_activeDriveLetter + '\\VERSIONI_RILASCIATE'));
@@ -2340,10 +2391,39 @@
 
         if (aperto) {
             showToast('Cartella Aperta in Windows!', decoded, '📂');
+            appendLog('[EXPLORER] Cartella aperta con successo: ' + decoded);
         } else {
-            showToast('Percorso Generato:', decoded, '📂');
-            prompt('Cartella generata pronta. Puoi aprirla premendo Win+R e incollando:', decoded);
+            // Se siamo online su Render Cloud o il server locale non risponde, mostra modale elegante con 1-click copy
+            mostraModalePercorsoCopiatore(decoded);
         }
+    }
+
+    function mostraModalePercorsoCopiatore(percorso) {
+        document.getElementById('modalIcon').innerText = '📂';
+        document.getElementById('modalTitle').innerText = 'PERCORSO PRONTO SUL DISCO';
+        document.getElementById('modalBarWrap').style.display = 'none';
+        document.getElementById('modalStepsList').style.display = 'none';
+        document.getElementById('modalSub').innerHTML = `
+            <div style="font-size:13.5px; color:#cbd5e1; margin-bottom:14px;">
+                La cartella autonoma è stata compilata con successo su questa chiavetta/disco:
+            </div>
+            <div style="background:rgba(0,0,0,0.6); border:1px solid #38bdf8; border-radius:12px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#38bdf8; word-break:break-all; user-select:all; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                <span>${percorso}</span>
+            </div>
+            <div style="margin-top:14px; font-size:12.5px; color:#94a3b8; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <span>💡</span> Clicca <strong>Copia Percorso</strong> qui sotto per aprirla in 1 secondo in Esplora Risorse
+            </div>
+        `;
+
+        document.getElementById('modalActionButtons').innerHTML = `
+            <button class="btn-modal-primary" id="btnCopiaPercorsoModal" onclick="copiaPercorsoNegliAppunti('${percorso.replace(/\\/g, '\\\\')}', 'btnCopiaPercorsoModal')">
+                <span>📋 Copia Percorso negli Appunti</span>
+            </button>
+            <button class="btn-modal-close" onclick="chiudiModalExtra()">
+                <span>Chiudi</span>
+            </button>
+        `;
+        document.getElementById('modalExtra').style.display = 'flex';
     }
 
     function generaBatchSincronizzazione() {
