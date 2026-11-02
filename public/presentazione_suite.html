@@ -628,6 +628,7 @@
             <button type="button" onclick="condividiSuiteWhatsApp()" id="btnShareSuiteTop" style="background:#25D366; color:#ffffff; border:none; padding:9px 16px; border-radius:10px; font-weight:900; font-size:13.5px; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(37,211,102,0.35);" title="Condividi la presentazione su WhatsApp con testo e link automatico">
                 <span>💬</span> Condividi su WhatsApp
             </button>
+            <button type="button" onclick="apriRegiaVociModal()" id="btnHeaderGestisciVoci" style="background:linear-gradient(135deg, #a855f7, #6366f1); color:#ffffff; border:1px solid #c084fc; padding:9px 16px; border-radius:10px; font-weight:800; font-size:13.5px; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 14px rgba(168,85,247,0.35);" title="Gestisci le voci, sorgente studio/sintesi, velocita e volume"><span>🎛️</span> Gestisci Voci &amp; Audio</button>
             <button type="button" onclick="attivaModalitaFilm(0, true)" style="background:#ffd814; color:#0f172a; border:none; padding:9px 16px; border-radius:10px; font-weight:900; font-size:13.5px; cursor:pointer;">
                 🎬 Avvia Presentazione
             </button>
@@ -657,9 +658,9 @@
             <button type="button" onclick="mostraAppDettaglio(7)">🎰 8. Gioco</button>
             <button type="button" onclick="document.getElementById('sec-aplus').scrollIntoView({behavior:'smooth'})">💡 Tutte le 8 Schede A+</button>
         </div>
-        <div style="color:#fde047;">
-            🔊 Voci Umane Neurali Studio 24kHz Attive (Isabella HD &amp; Ciro Milella)
-        </div>
+        <button type="button" onclick="apriRegiaVociModal()" class="subbar-voice-pill" style="background:rgba(253,224,71,0.12); border:1px solid rgba(253,224,71,0.5); color:#fde047; padding:6px 14px; border-radius:20px; font-weight:800; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(253,224,71,0.25)'" onmouseout="this.style.background='rgba(253,224,71,0.12)'" title="Clicca per aprire la Regia Voci e personalizzare audio o testi">
+            <span id="subbarVoiceIcon">🔊</span> <span id="subbarVoiceLabel">Voci Studio HD Neurali (Isabella &amp; Ciro)</span> <span style="background:#fde047; color:#0f172a; padding:2px 7px; border-radius:10px; font-size:10.5px;">🎛️ Gestisci</span>
+        </button>
     </nav>
 
     <div class="amz-container">
@@ -1735,6 +1736,26 @@
             suiteAudio.playbackRate = audioConfig.speed;
             suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
 
+            // Aggiorna indicatore Vocale interattivo nella barra
+            const subIcon = document.getElementById('subbarVoiceIcon');
+            const subLbl = document.getElementById('subbarVoiceLabel');
+            if (subLbl) {
+                if (audioConfig.mode === 'silent' || audioConfig.muted) {
+                    if (subIcon) subIcon.textContent = '🔇';
+                    subLbl.textContent = 'Audio Muto (Solo Sottotitoli)';
+                } else if (audioConfig.mode === 'browser') {
+                    if (subIcon) subIcon.textContent = '🗣️';
+                    subLbl.textContent = 'Voce Sintetica Browser (' + audioConfig.speed + 'x)';
+                } else {
+                    if (subIcon) subIcon.textContent = '🔊';
+                    subLbl.textContent = 'Voci Studio HD Neurali (' + audioConfig.speed + 'x)';
+                }
+            }
+            const modalSel = document.getElementById('modalSelectVoiceMode');
+            if (modalSel) modalSel.value = audioConfig.mode;
+            const modalSpeed = document.getElementById('modalSelectAudioSpeed');
+            if (modalSpeed) modalSpeed.value = audioConfig.speed.toString();
+
             const selMode = document.getElementById('selectVoiceMode');
             if (selMode) selMode.value = audioConfig.mode;
             const selSpeed = document.getElementById('selectAudioSpeed');
@@ -2505,6 +2526,12 @@
                     if (isDemoParam) {
                         console.log('⚡ Modalità DEMO interattiva attiva per:', _customPresState.azienda);
                     }
+                }
+
+                if (params.get('openVoices') === '1') {
+                    setTimeout(() => {
+                        apriRegiaVociModal();
+                    }, 400);
                 }
             } catch(e) {
                 console.warn('Errore parsing parametri URL:', e);
