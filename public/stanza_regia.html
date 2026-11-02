@@ -2116,7 +2116,7 @@
         }, 300);
     }
 
-    function avviaGenerazioneCopiaMaster() {
+    async function avviaGenerazioneCopiaMaster() {
         const destName = document.getElementById('inputDestName').value.trim();
         if (!destName) {
             playAudio('warn');
