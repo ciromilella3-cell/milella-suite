@@ -1161,7 +1161,10 @@
                     </p>
 
                     <div style="margin-bottom:14px;">
-                        <label style="display:block; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Seleziona Brano da Personalizzare:</label>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <label style="font-weight:700; color:#cbd5e1;">Seleziona Scena o Modulo da Modificare:</label>
+                            <span id="badgeStatoTesto" style="font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3);">Testo Originale di Fabbrica</span>
+                        </div>
                         <select id="selectEditorItem" onchange="caricaTestoItemInEditor(this.value)" style="width:100%; background:#1e293b; color:#fff; border:1px solid #d4af37; padding:10px; border-radius:8px; font-weight:700; font-size:13.5px;">
                             <optgroup label="🎬 Le 5 Scene del Film Suite">
                                 <option value="scene-0">Situazione 1: Il Portale Unificato &amp; La Sicurezza degli Accessi</option>
@@ -1190,7 +1193,20 @@
                                 💡 Separa la voce femminile da quella maschile con "—"
                             </span>
                         </div>
-                        <textarea id="editorCopioneText" rows="4" placeholder="Es: Isabella: Ciro, parliamo di questo modulo? — Ciro: Certamente, ecco come aiuta la tua azienda ogni giorno..." style="width:100%; background:#090d16; color:#fde047; border:1.5px solid #d4af37; border-radius:10px; padding:12px 14px; font-family:inherit; font-size:14px; line-height:1.5; resize:vertical; box-sizing:border-box;"></textarea>
+                        
+                        <!-- BOX EDITOR ATTIVO E TOTALMENTE MODIFICABILE -->
+                        <div style="position:relative;">
+                            <textarea id="editorCopioneText" rows="5" placeholder="Scrivi o incolla qui il testo... Puoi modificare parole, aggiungere battute o cambiare completamente il senso!" style="width:100%; background:#040711; color:#fde047; border:2px solid #38bdf8; border-radius:10px; padding:14px; font-family:inherit; font-size:14px; line-height:1.55; resize:vertical; box-sizing:border-box; box-shadow:inset 0 2px 8px rgba(0,0,0,0.6);"></textarea>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; flex-wrap:wrap; gap:8px;">
+                                <div style="font-size:12px; color:#94a3b8; display:flex; gap:12px;">
+                                    <span>👑 <strong>Isabella:</strong> prima di "—"</span>
+                                    <span>🎙️ <strong>Ciro:</strong> dopo "—"</span>
+                                </div>
+                                <button type="button" onclick="caricaOriginaleInEditor()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;" title="Ricarica la frase originale esatta dentro questo riquadro per poterla modificare subito">
+                                    📋 Ricarica Testo Originale nel Riquadro
+                                </button>
+                            </div>
+                        </div>
                         <div style="margin-top:6px; font-size:12px; color:#94a3b8; display:flex; gap:16px;">
                             <span>👑 <strong>Prima parte:</strong> Voce Isabella (Donna)</span>
                             <span>🎙️ <strong>Dopo il trattino "—":</strong> Voce Ciro (Uomo)</span>
@@ -2176,21 +2192,49 @@
             else mostraAppDettaglio(currentAppIdx);
         }
 
+        function ottieniTestoOriginaleItem(key) {
+            if (key.startsWith('scene-')) {
+                const sIdx = parseInt(key.replace('scene-', ''));
+                return (SUITE_SCENES[sIdx] || SUITE_SCENES[0]).subtitle;
+            } else if (key.startsWith('app-')) {
+                const aIdx = parseInt(key.replace('app-', ''));
+                return (SUITE_APPS[aIdx] || SUITE_APPS[0]).summary;
+            }
+            return '';
+        }
+
         function caricaTestoItemInEditor(key) {
             const txtArea = document.getElementById('editorCopioneText');
+            const badge = document.getElementById('badgeStatoTesto');
             if (!txtArea) return;
 
             if (customCopioni[key]) {
                 txtArea.value = customCopioni[key];
-                return;
+                if (badge) {
+                    badge.textContent = '✏️ Testo Personalizzato da Te';
+                    badge.style.background = 'rgba(253,224,71,0.18)';
+                    badge.style.color = '#fde047';
+                    badge.style.borderColor = 'rgba(253,224,71,0.4)';
+                }
+            } else {
+                txtArea.value = ottieniTestoOriginaleItem(key);
+                if (badge) {
+                    badge.textContent = '🔒 Testo Originale di Fabbrica';
+                    badge.style.background = 'rgba(16,185,129,0.15)';
+                    badge.style.color = '#10b981';
+                    badge.style.borderColor = 'rgba(16,185,129,0.3)';
+                }
             }
+        }
 
-            if (key.startsWith('scene-')) {
-                const sIdx = parseInt(key.replace('scene-', ''));
-                txtArea.value = (SUITE_SCENES[sIdx] || SUITE_SCENES[0]).subtitle;
-            } else if (key.startsWith('app-')) {
-                const aIdx = parseInt(key.replace('app-', ''));
-                txtArea.value = (SUITE_APPS[aIdx] || SUITE_APPS[0]).summary;
+        function caricaOriginaleInEditor() {
+            playAudio('click');
+            const key = document.getElementById('selectEditorItem').value;
+            const txtArea = document.getElementById('editorCopioneText');
+            if (txtArea) {
+                txtArea.value = ottieniTestoOriginaleItem(key);
+                txtArea.focus();
+                showToast('Testo Caricato', 'Ora puoi modificare liberamente le parole e cliccare Salva Copione', '✏️');
             }
         }
 
@@ -2203,7 +2247,7 @@
                 customCopioni[key] = text;
             }
             localStorage.setItem('milella_suite_custom_copioni', JSON.stringify(customCopioni));
-            alert('✓ Copione salvato con successo! La presentazione reciterà le tue nuove parole.');
+            showToast('Copione Salvato!', 'La presentazione reciterà il tuo nuovo testo con voce umana', '✨');
             if (viewMode === 'film') renderFilmStage();
             else mostraAppDettaglio(currentAppIdx);
         }
@@ -2213,7 +2257,7 @@
             delete customCopioni[key];
             localStorage.setItem('milella_suite_custom_copioni', JSON.stringify(customCopioni));
             caricaTestoItemInEditor(key);
-            alert('✓ Testo originale di fabbrica ripristinato!');
+            showToast('Ripristino Completato', 'Riaccreditato il testo ufficiale originale di fabbrica', '🔄');
             if (viewMode === 'film') renderFilmStage();
             else mostraAppDettaglio(currentAppIdx);
         }
