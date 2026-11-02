@@ -2794,25 +2794,44 @@ app.post(['/api/genera-dialogo-audio', '/careassist/api/genera-dialogo-audio'], 
         async function generaChunkVoce(speakerConfig, txt) {
             const cleaned = preparaTestoPerVoceUmana(txt);
             if (!cleaned) return Buffer.alloc(0);
-            const tts = new MsEdgeTTS();
             const voiceName = (typeof speakerConfig === 'string') ? speakerConfig : (speakerConfig.voice || 'it-IT-IsabellaNeural');
             const streamOptions = (typeof speakerConfig === 'object') ? speakerConfig.options : undefined;
 
-            await tts.setMetadata(voiceName, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
-            const { audioStream } = tts.toStream(cleaned, streamOptions);
-            const buf = await new Promise((resolve, reject) => {
-                const chunks = [];
-                audioStream.on('data', c => chunks.push(c));
-                audioStream.on('end', () => {
-                    try { tts.close(); } catch(e) {}
-                    resolve(Buffer.concat(chunks));
-                });
-                audioStream.on('error', err => {
-                    try { tts.close(); } catch(e) {}
-                    reject(err);
-                });
-            });
-            return buf;
+            // Tentativi multipli (con fallback immediato se la connessione web socket si chiude anzitempo)
+            for (let attempt = 1; attempt <= 3; attempt++) {
+                try {
+                    const tts = new MsEdgeTTS();
+                    await tts.setMetadata(voiceName, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
+                    const { audioStream } = tts.toStream(cleaned, streamOptions);
+                    const buf = await new Promise((resolve, reject) => {
+                        const chunks = [];
+                        let hasData = false;
+                        audioStream.on('data', c => {
+                            chunks.push(c);
+                            hasData = true;
+                        });
+                        audioStream.on('end', () => {
+                            try { tts.close(); } catch(e) {}
+                            resolve(Buffer.concat(chunks));
+                        });
+                        audioStream.on('error', err => {
+                            try { tts.close(); } catch(e) {}
+                            // Se abbiamo già ricevuto chunk audio validi, usiamo quelli senza fallire!
+                            if (chunks.length > 0) {
+                                resolve(Buffer.concat(chunks));
+                            } else {
+                                reject(err);
+                            }
+                        });
+                    });
+                    if (buf && buf.length > 500) return buf;
+                } catch(retryErr) {
+                    console.warn(`[TTS Retry ${attempt}/3 per ${voiceName}]:`, retryErr.message);
+                    if (attempt === 3) break;
+                    await new Promise(r => setTimeout(r, 400));
+                }
+            }
+            return Buffer.alloc(0);
         }
 
         // Mappa dei personaggi e voci base predefinite
