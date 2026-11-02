@@ -1246,7 +1246,7 @@
                 <span>CLOUD RENDER ATTIVO</span>
             </div>
             <div class="status-chip usb-active" id="chipUsbStatus">
-                <span>🔌 USB: <strong id="chipUsbDrive">E:\ (BACKUP)</strong></span>
+                <span>🔌 USB: <strong id="chipUsbDrive">D:\ (BACKUP)</strong></span>
             </div>
             <div class="status-chip audio-chip" id="btnToggleAudio" onclick="toggleAudioFx()" title="Abilita/Disabilita effetti sonori">
                 <span id="audioIcon">🔊</span>
@@ -1351,7 +1351,7 @@
                         <span class="path-icon">🔌</span>
                         <div>
                             <div class="path-label">Unit&agrave; Chiavetta USB Rilevata</div>
-                            <div class="path-val" id="textPathUsb">E:\questa (Riconosciuta)</div>
+                            <div class="path-val" id="textPathUsb">D:\questa (Riconosciuta)</div>
                         </div>
                     </div>
                     <button class="path-action-btn" onclick="selezionaCartellaUsb()" title="Seleziona un'altra cartella o chiavetta">
@@ -1647,7 +1647,7 @@
                 <div class="blueprint-preview-name" id="bpPackageName">SUITE_COMPLETA_8APP_per_Mario_Rossi_PROD</div>
                 <div class="blueprint-meta-row">
                     <span>📦 Moduli inclusi: <strong id="bpCountModules" style="color:#fff;">8 App Selezionate</strong></span>
-                    <span>💾 Destinazione: <strong id="bpDestDrive" style="color:var(--text-gold);">E:\COPIE_UTENTI</strong></span>
+                    <span>💾 Destinazione: <strong id="bpDestDrive" style="color:var(--text-gold);">D:\VERSIONI_RILASCIATE</strong></span>
                     <span>🔑 Modalità: <strong id="bpLicenzaType" style="color:#38bdf8;">Illimitata Gold</strong></span>
                 </div>
             </div>
@@ -1679,7 +1679,7 @@
         </div>
         <div class="terminal-body" id="terminalLog">
             <div class="log-entry"><span class="log-time">[08:40:01]</span> <span class="log-ok">● SISTEMA PRONTO</span> Stanza di Regia Master V3.5 inizializzata.</div>
-            <div class="log-entry"><span class="log-time">[08:40:02]</span> <span class="log-info">[INFO]</span> Rilevata cartella sorgente USB: <strong style="color:#fff;">E:\questa</strong></div>
+            <div class="log-entry"><span class="log-time">[08:40:02]</span> <span class="log-info">[INFO]</span> Rilevata cartella sorgente USB: <strong style="color:#fff;">D:\questa</strong></div>
             <div class="log-entry"><span class="log-time">[08:40:03]</span> <span class="log-skip">[TURBO]</span> Protezione attiva: 0 blocchi, 16 flussi paralleli, Robocopy differenziale.</div>
         </div>
     </div>
@@ -1950,7 +1950,7 @@
             const res = await fetch('/api/export-drives');
             const data = await res.json();
             if (data && data.drives && data.drives.length > 0) {
-                const usb = data.drives.find(d => d.id === 'E:' || d.id === 'D:') || data.drives[0];
+                const usb = data.drives.find(d => d.id === 'D:' || d.id === 'E:') || data.drives[0];
                 document.getElementById('chipUsbDrive').innerText = `${usb.id} (${usb.name || 'Pronta'})`;
                 document.getElementById('textPathUsb').innerText = `${usb.id}\\questa (Connessa)`;
                 appendLog(`[DRIVES] Rilevata unit&agrave; USB: ${usb.id}`);
@@ -2075,7 +2075,7 @@
         const batCmd = `@echo off\r\n` +
             `title COMPILAZIONE SUITE - ${destName}\r\n` +
             `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\\questa\\_Lanciatori_e_Utility_USB\\Generatore_Versioni.ps1" ` +
-            `-ParamDestName "${destName}" -ParamDestCompany "${destCompany}" -ParamTipo "${tipoParam}" -ParamModuli "${modulesParam}" -ParamDest "1" -ParamTargetDrive "E:" -ParamScadenza "${scadParam}"\r\n` +
+            `-ParamDestName "${destName}" -ParamDestCompany "${destCompany}" -ParamTipo "${tipoParam}" -ParamModuli "${modulesParam}" -ParamDest "1" -ParamTargetDrive "D:" -ParamScadenza "${scadParam}"\r\n` +
             `explorer.exe "D:\\VERSIONI_RILASCIATE"\r\n`;
 
         const blob = new Blob([batCmd], { type: 'text/plain' });
@@ -2099,7 +2099,7 @@
                     isDemo,
                     modules: modulesParam,
                     destinationType: 'usb',
-                    targetDrive: 'E:',
+                    targetDrive: 'D:',
                     scadenza: scadParam
                 })
             });

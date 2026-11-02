@@ -1246,7 +1246,7 @@
                 <span>CLOUD RENDER ATTIVO</span>
             </div>
             <div class="status-chip usb-active" id="chipUsbStatus">
-                <span>🔌 USB: <strong id="chipUsbDrive">E:\ (BACKUP)</strong></span>
+                <span>🔌 USB: <strong id="chipUsbDrive">D:\ (BACKUP)</strong></span>
             </div>
             <div class="status-chip audio-chip" id="btnToggleAudio" onclick="toggleAudioFx()" title="Abilita/Disabilita effetti sonori">
                 <span id="audioIcon">🔊</span>
@@ -1254,6 +1254,9 @@
             </div>
             <a href="/launcher.html" class="btn-header-back" onclick="playAudio('click')">
                 <span>◀ Torna alla Suite</span>
+            </a>
+            <a href="/presentazione_suite.html" class="btn-header-back" style="background:linear-gradient(135deg, #a855f7, #6b21a8); border-color:#d8b4fe; color:#fff;" onclick="playAudio('click')">
+                <span>🎬 Apri Presentazione Personalizzata</span>
             </a>
         </div>
     </header>
@@ -1348,7 +1351,7 @@
                         <span class="path-icon">🔌</span>
                         <div>
                             <div class="path-label">Unit&agrave; Chiavetta USB Rilevata</div>
-                            <div class="path-val" id="textPathUsb">E:\questa (Riconosciuta)</div>
+                            <div class="path-val" id="textPathUsb">D:\questa (Riconosciuta)</div>
                         </div>
                     </div>
                     <button class="path-action-btn" onclick="selezionaCartellaUsb()" title="Seleziona un'altra cartella o chiavetta">
@@ -1644,15 +1647,20 @@
                 <div class="blueprint-preview-name" id="bpPackageName">SUITE_COMPLETA_8APP_per_Mario_Rossi_PROD</div>
                 <div class="blueprint-meta-row">
                     <span>📦 Moduli inclusi: <strong id="bpCountModules" style="color:#fff;">8 App Selezionate</strong></span>
-                    <span>💾 Destinazione: <strong id="bpDestDrive" style="color:var(--text-gold);">E:\COPIE_UTENTI</strong></span>
+                    <span>💾 Destinazione: <strong id="bpDestDrive" style="color:var(--text-gold);">D:\VERSIONI_RILASCIATE</strong></span>
                     <span>🔑 Modalità: <strong id="bpLicenzaType" style="color:#38bdf8;">Illimitata Gold</strong></span>
                 </div>
             </div>
 
             <!-- Pulsante Generazione Pacchetto -->
-            <button class="btn-mega-action btn-mega-clone" id="btnGeneraCopia" onclick="avviaGenerazioneCopiaMaster()">
-                <span>✨</span> GENERA PACCHETTO UTENTE AUTONOMO
-            </button>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px;">
+                <button type="button" class="btn-mega-action" style="background:linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); box-shadow:0 10px 25px rgba(168,85,247,0.4);" onclick="avviaPresentazioneDaStanzaRegia()">
+                    <span>🎬</span> MOSTRA PRESENTAZIONE CON QUESTE APP
+                </button>
+                <button class="btn-mega-action btn-mega-clone" id="btnGeneraCopia" style="margin-top:0;" onclick="avviaGenerazioneCopiaMaster()">
+                    <span>📦</span> GENERA PACCHETTO UTENTE AUTONOMO
+                </button>
+            </div>
         </section>
 
     </div>
@@ -1671,7 +1679,7 @@
         </div>
         <div class="terminal-body" id="terminalLog">
             <div class="log-entry"><span class="log-time">[08:40:01]</span> <span class="log-ok">● SISTEMA PRONTO</span> Stanza di Regia Master V3.5 inizializzata.</div>
-            <div class="log-entry"><span class="log-time">[08:40:02]</span> <span class="log-info">[INFO]</span> Rilevata cartella sorgente USB: <strong style="color:#fff;">E:\questa</strong></div>
+            <div class="log-entry"><span class="log-time">[08:40:02]</span> <span class="log-info">[INFO]</span> Rilevata cartella sorgente USB: <strong style="color:#fff;">D:\questa</strong></div>
             <div class="log-entry"><span class="log-time">[08:40:03]</span> <span class="log-skip">[TURBO]</span> Protezione attiva: 0 blocchi, 16 flussi paralleli, Robocopy differenziale.</div>
         </div>
     </div>
@@ -1717,7 +1725,7 @@
 <script>
     // STATO APPLICATIVO
     let currentSyncDirection = 'usb_desktop';
-    let pathUsb = 'E:\\questa';
+    let pathUsb = 'D:\\questa';
     let pathDesktop = 'C:\\Users\\Utente\\Desktop\\questa';
     let audioEnabled = true;
     let audioCtx = null;
@@ -1942,7 +1950,7 @@
             const res = await fetch('/api/export-drives');
             const data = await res.json();
             if (data && data.drives && data.drives.length > 0) {
-                const usb = data.drives.find(d => d.id === 'E:' || d.id === 'D:') || data.drives[0];
+                const usb = data.drives.find(d => d.id === 'D:' || d.id === 'E:') || data.drives[0];
                 document.getElementById('chipUsbDrive').innerText = `${usb.id} (${usb.name || 'Pronta'})`;
                 document.getElementById('textPathUsb').innerText = `${usb.id}\\questa (Connessa)`;
                 appendLog(`[DRIVES] Rilevata unit&agrave; USB: ${usb.id}`);
@@ -1990,7 +1998,37 @@
     // Genera Pacchetto Copia Utente (CON CONTROLLI ELEGANTI, MAI PIÙ ALERT!)
         // Genera Pacchetto Copia Utente con download/esecuzione batch automatica
         // Genera Pacchetto Copia Utente con chiamata reale al server locale e fallback
-    async function avviaGenerazioneCopiaMaster() {
+    async function avviaPresentazioneDaStanzaRegia() {
+        const destName = document.getElementById('inputDestName').value.trim() || 'Cliente';
+        const destCompany = document.getElementById('inputDestCompany').value.trim() || 'Azienda Selezionata';
+
+        // Raccogli indici delle app selezionate (data-app va da 1 a 8, convertiamo in 0..7)
+        const selectedApps = [];
+        document.querySelectorAll('.app-select-card.selected').forEach(card => {
+            const num = parseInt(card.getAttribute('data-app'));
+            if (!isNaN(num)) {
+                selectedApps.push(num - 1);
+            }
+        });
+
+        if (selectedApps.length === 0) {
+            alert('Seleziona almeno un\'applicazione per la presentazione!');
+            return;
+        }
+
+        // Salva configurazione personalizzata
+        const config = {
+            azienda: destCompany,
+            direttore: destName,
+            selectedApps: selectedApps
+        };
+        localStorage.setItem('suite_presentazione_personalizzata', JSON.stringify(config));
+
+        // Reindirizza direttamente alla presentazione su misura
+        window.location.href = '/presentazione_suite.html';
+    }
+
+    function avviaGenerazioneCopiaMaster() {
         const destName = document.getElementById('inputDestName').value.trim();
         if (!destName) {
             playAudio('warn');
@@ -2036,15 +2074,15 @@
         // Generiamo il comando batch per apertura istantanea
         const batCmd = `@echo off\r\n` +
             `title COMPILAZIONE SUITE - ${destName}\r\n` +
-            `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "E:\\questa\\_Lanciatori_e_Utility_USB\\Generatore_Versioni.ps1" ` +
-            `-ParamDestName "${destName}" -ParamDestCompany "${destCompany}" -ParamTipo "${tipoParam}" -ParamModuli "${modulesParam}" -ParamDest "1" -ParamTargetDrive "E:" -ParamScadenza "${scadParam}"\r\n` +
-            `explorer.exe "E:\\VERSIONI_RILASCIATE"\r\n`;
+            `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\\questa\\_Lanciatori_e_Utility_USB\\Generatore_Versioni.ps1" ` +
+            `-ParamDestName "${destName}" -ParamDestCompany "${destCompany}" -ParamTipo "${tipoParam}" -ParamModuli "${modulesParam}" -ParamDest "1" -ParamTargetDrive "D:" -ParamScadenza "${scadParam}"\r\n` +
+            `explorer.exe "D:\\VERSIONI_RILASCIATE"\r\n`;
 
         const blob = new Blob([batCmd], { type: 'text/plain' });
         const batUrl = URL.createObjectURL(blob);
 
         let realSuccess = false;
-        let createdFolder = `E:\\VERSIONI_RILASCIATE\\Suite_Aziendale_per_${destName.replace(/\\s+/g, '_')}_DEMO`;
+        let createdFolder = `D:\\VERSIONI_RILASCIATE\\Suite_Aziendale_per_${destName.replace(/\\s+/g, '_')}_DEMO`;
 
         // Tentativo di chiamata diretta al backend locale Node
         try {
@@ -2061,7 +2099,7 @@
                     isDemo,
                     modules: modulesParam,
                     destinationType: 'usb',
-                    targetDrive: 'E:',
+                    targetDrive: 'D:',
                     scadenza: scadParam
                 })
             });
@@ -2094,7 +2132,7 @@
                 Destinatario: <strong style="color:#fff;">${destName}</strong><br>
                 Cartella generata in: <span style="color:#38bdf8; font-weight:700;">${createdFolder}</span><br>
                 Licenza: <strong style="color:#10b981;">${scadLabel}</strong><br>
-                <div style="margin-top:14px; font-size:13px; color:#cbd5e1;">La cartella è presente in <strong>E:\\VERSIONI_RILASCIATE</strong> pronta da usare o inviare.</div>
+                <div style="margin-top:14px; font-size:13px; color:#cbd5e1;">La cartella è presente in <strong>D:\\VERSIONI_RILASCIATE</strong> pronta da usare o inviare.</div>
             `;
             document.getElementById('modalActionButtons').innerHTML = `
                 <button class="btn-modal-primary" onclick="apriCartellaRilasciate('${encodeURIComponent(createdFolder)}')">
@@ -2114,17 +2152,28 @@
     // Apri cartella rilasciate
     async function apriCartellaRilasciate(folderPath) {
         playAudio('click');
+        let decoded = decodeURIComponent(folderPath || 'D:\\VERSIONI_RILASCIATE');
+        decoded = decoded.replace(/^[Ee]:/, 'D:');
+
+        let aperto = false;
         try {
-            const decoded = decodeURIComponent(folderPath);
-            await fetch('/api/open-exported-folder', {
+            const res = await fetch('/api/open-exported-folder', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ folderPath: decoded })
             });
+            const data = await res.json();
+            if (data && data.success) aperto = true;
         } catch(e) {}
-        showToast('Cartella Rilasciate', 'E:\\VERSIONI_RILASCIATE', '📂');
-    }
 
+        if (aperto) {
+            showToast('Cartella Aperta in Windows!', decoded, '📂');
+        } else {
+            // Se sei aperto da file locale o da remoto cloud
+            showToast('Percorso Cartella:', decoded, '📂');
+            prompt('Percorso cartella pronta. Copialo ed incollalo in Esplora File (oppure premi Win + R):', decoded);
+        }
+    }
 
     function generaBatchSincronizzazione() {
         playAudio('click');
@@ -2135,8 +2184,8 @@
             `echo      ✦ SINCRONIZZAZIONE INTELLIGENTE SUITE AZIENDALE C. MILELLA ✦\r\n` +
             `echo ========================================================================\r\n` +
             `echo.\r\n` +
-            `echo [*] Allineamento USB (E:\\questa) -> Desktop (questa)...\r\n` +
-            `robocopy "E:\\questa" "%USERPROFILE%\\Desktop\\questa" /E /MT:16 /XO /R:1 /W:1 /NP /XD "Cache" "Code Cache" "GPUCache" "node_modules" /XF "*.pma" "*.tmp" "*lock*"\r\n` +
+            `echo [*] Allineamento USB (D:\\questa) -> Desktop (questa)...\r\n` +
+            `robocopy "D:\\questa" "%USERPROFILE%\\Desktop\\questa" /E /MT:16 /XO /R:1 /W:1 /NP /XD "Cache" "Code Cache" "GPUCache" "node_modules" /XF "*.pma" "*.tmp" "*lock*"\r\n` +
             `echo.\r\n` +
             `echo [OK] Sincronizzazione completata con successo!\r\n` +
             `pause\r\n`;
