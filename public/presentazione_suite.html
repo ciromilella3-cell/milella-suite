@@ -2350,30 +2350,27 @@
                     suiteAudio.playbackRate = audioConfig.speed || 1.0;
                     suiteAudio.volume = audioConfig.muted ? 0 : ((audioConfig.volume || 100) / 100);
 
-                    // Heartbeat timer continuo per fare avanzare la barra fluida al 100%
-                    let estimatedSec = 14;
-                    let startTime = Date.now();
+                    // Sincronizzazione precisa: fa parlare l'audio fino alla sua reale conclusione naturale (senza tagliare Diego e Marco!)
                     if (filmTimerFallback) clearInterval(filmTimerFallback);
-                    filmTimerFallback = setInterval(() => {
-                        if (!isFilmPlaying) { clearInterval(filmTimerFallback); return; }
-                        let elapsed = (Date.now() - startTime) / 1000;
-                        let dur = (suiteAudio.duration && isFinite(suiteAudio.duration) && suiteAudio.duration > 2) ? suiteAudio.duration : estimatedSec;
-                        let pct = Math.min(100, (elapsed / dur) * 100);
-                        if (document.getElementById('filmProgressBar')) {
-                            document.getElementById('filmProgressBar').style.width = pct + '%';
-                        }
-                        aggiornaSottotitoloKaraoke(currentText, pct);
 
-                        if (elapsed >= dur) {
-                            clearInterval(filmTimerFallback);
-                            if (isFilmPlaying) prossimaScenaFilm();
+                    suiteAudio.ontimeupdate = () => {
+                        if (!isFilmPlaying) return;
+                        if (suiteAudio.duration && isFinite(suiteAudio.duration) && suiteAudio.duration > 0) {
+                            const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
+                            const bar = document.getElementById('filmProgressBar');
+                            if (bar) bar.style.width = pct + '%';
+                            aggiornaSottotitoloKaraoke(currentText, pct);
                         }
-                    }, 120);
+                    };
 
                     suiteAudio.onended = () => {
                         if (filmTimerFallback) clearInterval(filmTimerFallback);
                         if (!isFilmPlaying) return;
-                        prossimaScenaFilm();
+                        document.getElementById('filmProgressBar').style.width = '100%';
+                        aggiornaSottotitoloKaraoke(currentText, 100);
+                        setTimeout(() => {
+                            if (isFilmPlaying) prossimaScenaFilm();
+                        }, 500);
                     };
 
                     suiteAudio.play().catch(e => console.warn('Play custom scene warning:', e));
