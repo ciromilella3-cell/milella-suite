@@ -1187,60 +1187,58 @@
                     </div>
 
                     
-                    <!-- TEMPLATE RAPIDI 1-CLICK PER SETTORE E CAST VOCALE -->
-                    <div style="margin-bottom:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px 12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
-                            <div style="font-size:11.5px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">🎭 Scegli la Formazione Vocale (Cast):</div>
-                            <select id="selectCastMode" onchange="cambiaCastMode(this.value)" style="background:#0f172a; color:#fde047; border:1px solid #d4af37; border-radius:6px; padding:4px 8px; font-size:12px; font-weight:800; cursor:pointer;">
-                                <option value="misto">👫 1 Donna + 1 Uomo (Isabella & Ciro)</option>
-                                <option value="due_donne">👭 2 Donne (Isabella & Elsa)</option>
-                                <option value="tre_donne">👩‍👩‍👧 3 Donne (Isabella, Elsa & Elena)</option>
-                                <option value="due_uomini">👬 2 Uomini (Ciro & Diego)</option>
-                                <option value="tre_uomini">👨‍👨‍👦 3 Uomini (Ciro, Diego & Marco)</option>
-                            </select>
-                        </div>
-                        <div style="font-size:11px; font-weight:800; color:#64748b; margin-bottom:6px; text-transform:uppercase;">⚡ Esempi Pronti 1-Click:</div>
-                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                            <button type="button" onclick="applicaTemplateDialogo('sanita')" style="background:rgba(56,189,248,0.15); border:1px solid #38bdf8; color:#7dd3fc; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
-                                🩺 Sanità &amp; RSA (2 Donne)
-                            </button>
-                            <button type="button" onclick="applicaTemplateDialogo('tre_donne')" style="background:rgba(244,114,182,0.15); border:1px solid #f472b6; color:#fbcfe8; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
-                                👩‍⚕️ Ospedale (3 Donne)
-                            </button>
-                            <button type="button" onclick="applicaTemplateDialogo('due_uomini')" style="background:rgba(251,191,36,0.15); border:1px solid #fbbf24; color:#fde047; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
-                                🚚 Flotta &amp; Cantiere (2 Uomini)
-                            </button>
-                            <button type="button" onclick="applicaTemplateDialogo('tre_uomini')" style="background:rgba(168,85,247,0.15); border:1px solid #a855f7; color:#e9d5ff; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
-                                🛡️ IT &amp; Logistica (3 Uomini)
-                            </button>
-                            <button type="button" onclick="applicaTemplateDialogo('sicurezza')" style="background:rgba(16,185,129,0.15); border:1px solid #10b981; color:#6ee7b7; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
-                                🔐 USB &amp; Cloud (Misto)
-                            </button>
-                        </div>
-                    </div>
-    
-<!-- CAMPI VISIBILI PER MODIFICARE I NOMI DELLE VOCI -->
-                    <div style="margin-bottom:14px; background:linear-gradient(135deg, rgba(2,132,199,0.12) 0%, rgba(15,23,42,0.6) 100%); border:1.5px solid #0284c7; border-radius:12px; padding:12px 14px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <div style="font-size:12.5px; font-weight:900; color:#38bdf8; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
-                                <span>✏️</span> Modifica i Nomi dei Personaggi per Questo Dialogo:
+<!-- PANNELLO SCELTA CAST & PERSONAGGI SUPER CHIARO -->
+                    <div style="margin-bottom:14px; background:linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.95) 100%); border:2px solid #38bdf8; border-radius:14px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+                        
+                        <!-- 1. PULSANTIERA SCELTA FORMAZIONE AD ALTA VISIBILITÀ -->
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:12px; font-weight:900; color:#38bdf8; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                                <span>👥</span> 1. SCEGLI CHI DEVE PARLARE NEL DIALOGO (Clicca il tipo che preferisci):
                             </div>
-                            <span style="font-size:11px; color:#94a3b8;">I nomi si aggiornano anche nel riquadro sotto</span>
+                            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">
+                                <button type="button" id="btnCast_due_uomini" onclick="selezionaFormazioneRapida('due_uomini')" style="padding:10px 8px; border-radius:8px; font-size:12.5px; font-weight:900; cursor:pointer; background:#0f172a; border:1.5px solid #fbbf24; color:#fde047; transition:all 0.2s;">
+                                    👬 2 UOMINI
+                                </button>
+                                <button type="button" id="btnCast_tre_uomini" onclick="selezionaFormazioneRapida('tre_uomini')" style="padding:10px 8px; border-radius:8px; font-size:12.5px; font-weight:900; cursor:pointer; background:#0f172a; border:1.5px solid #38bdf8; color:#7dd3fc; transition:all 0.2s;">
+                                    👨‍👨‍👦 3 UOMINI
+                                </button>
+                                <button type="button" id="btnCast_due_donne" onclick="selezionaFormazioneRapida('due_donne')" style="padding:10px 8px; border-radius:8px; font-size:12.5px; font-weight:900; cursor:pointer; background:#0f172a; border:1.5px solid #f472b6; color:#fbcfe8; transition:all 0.2s;">
+                                    👭 2 DONNE
+                                </button>
+                                <button type="button" id="btnCast_tre_donne" onclick="selezionaFormazioneRapida('tre_donne')" style="padding:10px 8px; border-radius:8px; font-size:12.5px; font-weight:900; cursor:pointer; background:#0f172a; border:1.5px solid #c084fc; color:#e9d5ff; transition:all 0.2s;">
+                                    👩‍👩‍👧 3 DONNE
+                                </button>
+                                <button type="button" id="btnCast_misto" onclick="selezionaFormazioneRapida('misto')" style="padding:10px 8px; border-radius:8px; font-size:12.5px; font-weight:900; cursor:pointer; background:#0f172a; border:1.5px solid #10b981; color:#6ee7b7; transition:all 0.2s;">
+                                    👫 MISTO (Donna + Uomo)
+                                </button>
+                            </div>
+                            <input type="hidden" id="selectCastMode" value="misto">
                         </div>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                            <div style="flex:1; min-width:130px;">
-                                <label id="lblNomeP1" style="display:block; font-size:11px; font-weight:800; color:#f472b6; margin-bottom:3px;">1° Voce (Nome):</label>
-                                <input type="text" id="inputNomeP1" value="Isabella" oninput="cambiaNomePersonaggio(1, this.value)" style="width:100%; background:#040711; color:#fef08a; border:1.5px solid #f472b6; border-radius:8px; padding:7px 10px; font-size:13.5px; font-weight:800; box-sizing:border-box;">
+
+                        <!-- 2. I CAMPI CON I NOMI BEN VISIBILI E COLORATI -->
+                        <div style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+                                <div style="font-size:12px; font-weight:900; color:#fde047; text-transform:uppercase;">
+                                    🏷️ 2. NOMI DEI PERSONAGGI (Modifica il nome dentro il riquadro):
+                                </div>
+                                <span style="font-size:11px; color:#94a3b8;">Si aggiornano automaticamente anche nel testo sotto</span>
                             </div>
-                            <div style="flex:1; min-width:130px;">
-                                <label id="lblNomeP2" style="display:block; font-size:11px; font-weight:800; color:#c084fc; margin-bottom:3px;">2° Voce (Nome):</label>
-                                <input type="text" id="inputNomeP2" value="Elsa" oninput="cambiaNomePersonaggio(2, this.value)" style="width:100%; background:#040711; color:#fef08a; border:1.5px solid #c084fc; border-radius:8px; padding:7px 10px; font-size:13.5px; font-weight:800; box-sizing:border-box;">
-                            </div>
-                            <div id="boxNomeP3" style="flex:1; min-width:130px;">
-                                <label id="lblNomeP3" style="display:block; font-size:11px; font-weight:800; color:#fb7185; margin-bottom:3px;">3° Voce (Nome):</label>
-                                <input type="text" id="inputNomeP3" value="Elena" oninput="cambiaNomePersonaggio(3, this.value)" style="width:100%; background:#040711; color:#fef08a; border:1.5px solid #fb7185; border-radius:8px; padding:7px 10px; font-size:13.5px; font-weight:800; box-sizing:border-box;">
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <div id="boxColNome1" style="flex:1; min-width:140px;">
+                                    <label id="lblNomeP1" style="display:block; font-size:11.5px; font-weight:900; color:#38bdf8; margin-bottom:4px;">1° Personaggio:</label>
+                                    <input type="text" id="inputNomeP1" value="Ciro" oninput="cambiaNomePersonaggio(1, this.value)" style="width:100%; background:#040711; color:#fff; border:2px solid #38bdf8; border-radius:8px; padding:8px 12px; font-size:14px; font-weight:800; box-sizing:border-box;">
+                                </div>
+                                <div id="boxColNome2" style="flex:1; min-width:140px;">
+                                    <label id="lblNomeP2" style="display:block; font-size:11.5px; font-weight:900; color:#fbbf24; margin-bottom:4px;">2° Personaggio:</label>
+                                    <input type="text" id="inputNomeP2" value="Diego" oninput="cambiaNomePersonaggio(2, this.value)" style="width:100%; background:#040711; color:#fff; border:2px solid #fbbf24; border-radius:8px; padding:8px 12px; font-size:14px; font-weight:800; box-sizing:border-box;">
+                                </div>
+                                <div id="boxNomeP3" style="flex:1; min-width:140px;">
+                                    <label id="lblNomeP3" style="display:block; font-size:11.5px; font-weight:900; color:#34d399; margin-bottom:4px;">3° Personaggio:</label>
+                                    <input type="text" id="inputNomeP3" value="Marco" oninput="cambiaNomePersonaggio(3, this.value)" style="width:100%; background:#040711; color:#fff; border:2px solid #34d399; border-radius:8px; padding:8px 12px; font-size:14px; font-weight:800; box-sizing:border-box;">
+                                </div>
                             </div>
                         </div>
+
                     </div>
 
                     <div style="margin-bottom:14px;">
@@ -2005,6 +2003,39 @@
 
         let currentCastMode = 'misto';
         let nomiPersonaggi = { p1: 'Isabella', p2: 'Elsa', p3: 'Elena' };
+
+        function selezionaFormazioneRapida(mode) {
+            playAudio('click');
+            const castInput = document.getElementById('selectCastMode');
+            if (castInput) castInput.value = mode;
+
+            // Evidenzia visivamente il pulsante selezionato
+            ['due_uomini', 'tre_uomini', 'due_donne', 'tre_donne', 'misto'].forEach(m => {
+                const b = document.getElementById('btnCast_' + m);
+                if (b) {
+                    if (m === mode) {
+                        b.style.boxShadow = '0 0 15px rgba(253,224,71,0.6)';
+                        b.style.transform = 'scale(1.05)';
+                        b.style.background = '#1e293b';
+                    } else {
+                        b.style.boxShadow = 'none';
+                        b.style.transform = 'scale(1)';
+                        b.style.background = '#0f172a';
+                    }
+                }
+            });
+
+            cambiaCastMode(mode);
+
+            // Carica un testo di esempio immediato coerente col cast selezionato se richiesto o aggiorna battute
+            const txtArea = document.getElementById('editorCopioneText');
+            if (txtArea && !txtArea.value.trim()) {
+                if (mode === 'due_uomini') txtArea.value = 'Ciro: Diego, hai verificato la scadenza della revisione del furgone? — Diego: Controllato Ciro, revisione prenotata e tagliando registrato!';
+                else if (mode === 'tre_uomini') txtArea.value = 'Ciro: Ragazzi, confermiamo lo stato dei backup della giornata? — Diego: Copia fisica su chiavetta USB completata con un clic! — Marco: Allineamento con il Cloud di Render attivo al cento percento!';
+                else if (mode === 'due_donne') txtArea.value = 'Isabella: Dottoressa Elsa, abbiamo aggiornato il diario clinico di Mario? — Elsa: Sì Isabella, parametri glicemici stabili e scorta insulina già confermata nel frigo!';
+                else if (mode === 'tre_donne') txtArea.value = 'Isabella: Benvenute al passaggio consegne del reparto. — Elsa: Tutti i parametri dei pazienti sono allineati sul Cloud. — Elena: Perfetto, procedo con la somministrazione terapeutica!';
+            }
+        }
 
         function cambiaCastMode(mode) {
             playAudio('click');
