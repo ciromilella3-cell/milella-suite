@@ -2666,6 +2666,19 @@ app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
         // 1. Priorità assoluta: Motore Microsoft Azure Neural HD (24kHz 96kbps - Voce Umana Reale)
         try {
             const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
+
+        // Frame MP3 di silenzio naturale (MPEG Audio Layer III silence frame - circa 300ms)
+        function generaPausaNaturaleAudio() {
+            // Un frame MP3 valido di silenzio stereo/mono a 24/32/44.1kHz
+            // Ripetuto 8-10 volte genera circa 250-300ms di pausa perfettamente silenziosa e pulita
+            const frameSilenzio = Buffer.from([
+                0xFF, 0xFB, 0x50, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+            ]);
+            return Buffer.concat([frameSilenzio, frameSilenzio, frameSilenzio, frameSilenzio, frameSilenzio]);
+        }
+    
             const tts = new MsEdgeTTS();
             await tts.setMetadata(voiceName, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
             const { audioStream } = tts.toStream(cleanedText);
@@ -2826,10 +2839,17 @@ app.post(['/api/genera-dialogo-audio', '/careassist/api/genera-dialogo-audio'], 
         }
 
         console.log('[DIALOGO GENERAZIONE] Battute individuate:', battute.length);
-        for (const item of battute) {
+        for (let i = 0; i < battute.length; i++) {
+            const item = battute[i];
             console.log(' - Voce:', item.voce, '| Testo:', item.testo);
             const b = await generaChunkVoce(item.voce, item.testo);
-            if (b && b.length > 0) buffers.push(b);
+            if (b && b.length > 0) {
+                buffers.push(b);
+                // Inserisce una pausa naturale tra una battuta e la successiva
+                if (i < battute.length - 1) {
+                    buffers.push(generaPausaNaturaleAudio());
+                }
+            }
         }
 
         if (buffers.length === 0) {

@@ -1186,7 +1186,27 @@
                         </select>
                     </div>
 
-                    <div style="margin-bottom:14px;">
+                    
+                    <!-- TEMPLATE RAPIDI 1-CLICK PER SETTORE -->
+                    <div style="margin-bottom:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px 12px;">
+                        <div style="font-size:11.5px; font-weight:800; color:#94a3b8; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">⚡ Inserisci Esempio Pronto (1-Click):</div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button type="button" onclick="applicaTemplateDialogo('sanita')" style="background:rgba(56,189,248,0.15); border:1px solid #38bdf8; color:#7dd3fc; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
+                                🩺 Sanità &amp; RSA
+                            </button>
+                            <button type="button" onclick="applicaTemplateDialogo('logistica')" style="background:rgba(251,191,36,0.15); border:1px solid #fbbf24; color:#fde047; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
+                                🚚 Cantieri &amp; Trasporti
+                            </button>
+                            <button type="button" onclick="applicaTemplateDialogo('azienda')" style="background:rgba(168,85,247,0.15); border:1px solid #a855f7; color:#e9d5ff; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
+                                🏢 Azienda &amp; PMI
+                            </button>
+                            <button type="button" onclick="applicaTemplateDialogo('sicurezza')" style="background:rgba(16,185,129,0.15); border:1px solid #10b981; color:#6ee7b7; padding:5px 11px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
+                                🛡️ Backup &amp; Sicurezza USB
+                            </button>
+                        </div>
+                    </div>
+    
+<div style="margin-bottom:14px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                             <label style="font-weight:800; color:#cbd5e1; font-size:13.5px;">Scrivi il Tuo Dialogo Personalizzato (Voci Umane Reali):</label>
                             <span style="font-size:11.5px; color:#38bdf8; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.3);">
@@ -1224,10 +1244,15 @@
                         </div>
 
                         <div style="display:flex; gap:8px;">
+                            
+                            <label style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.06); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; color:#e2e8f0; cursor:pointer;" title="Riproduce un'atmosfera acustica lounge morbida durante la narrazione">
+                                <input type="checkbox" id="chkMusicaSottofondo" onchange="toggleMusicaSottofondo(this.checked)" style="accent-color:#ffd814; cursor:pointer;">
+                                <span>🎵 Sottofondo Soft</span>
+                            </label>
                             <button type="button" onclick="ripristinaTestoOriginaleEditor()" style="background:rgba(239,68,68,0.18); border:1px solid #ef4444; color:#fca5a5; padding:9px 14px; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;">
-                                🔄 Ripristina Originale
+                                🔄 Ripristina
                             </button>
-                            <button type="button" onclick="salvaTestoEditor()" style="background:#10b981; color:#fff; border:none; padding:9px 20px; border-radius:8px; font-size:13.5px; font-weight:900; cursor:pointer; box-shadow:0 3px 10px rgba(16,185,129,0.35);">
+                            <button type="button" onclick="salvaTestoEditor()" style="background:#10b981; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-size:13.5px; font-weight:900; cursor:pointer; box-shadow:0 3px 10px rgba(16,185,129,0.35);">
                                 💾 Salva Copione
                             </button>
                         </div>
@@ -1932,25 +1957,93 @@
         }
 
         // FUNZIONE TELEPROMPTER / KARAOKE SOTTOTITOLI
+        
+        // TEMPLATE DIALOGHI RAPIDI PER PRESENTAZIONI DI SUCCESSO
+        const TEMPLATE_DIALOGHI = {
+            sanita: 'Isabella: Dottore, come riusciamo a proteggere ogni paziente senza errori? — Ciro: Con CareAssist registriamo le terapie al secondo, forziamo il volume vocale al settantacinque percento e abbiamo la scheda salvavita centodiciotto pronta in caso di emergenza. — Isabella: Straordinario, un vero supporto per gli operatori!',
+            logistica: 'Isabella: Ciro, quante ore di lavoro risparmiamo nella gestione del cantiere? — Ciro: Decine di ore a settimana! Con la flotta azzeriamo le multe sui bolli, con l\'inventario troviamo ogni attrezzo in tre secondi e la logistica organizza le consegne automaticamente. — Isabella: Efficienza pura e costi sotto controllo.',
+            azienda: 'Isabella: Qual è il vero vantaggio di una Suite integrata rispetto a tanti programmi separati? — Ciro: Che basta un solo accesso con PIN per coordinare personale, mezzi, inventario e documenti, sia dall\'ufficio sia dallo smartphone con codice QR. — Isabella: La soluzione ideale per far crescere l\'impresa.',
+            sicurezza: 'Isabella: Cosa garantisce che i dati dell\'azienda siano sempre al sicuro da guasti o attacchi? — Ciro: La protezione a doppio livello: copia Cloud per lavorare ovunque e backup istantaneo su chiavetta USB fisica con un solo clic. — Isabella: Massima serenità per titolare e collaboratori!'
+        };
+
+        function applicaTemplateDialogo(tipo) {
+            playAudio('click');
+            const txt = TEMPLATE_DIALOGHI[tipo];
+            if (txt) {
+                const txtArea = document.getElementById('editorCopioneText');
+                if (txtArea) {
+                    txtArea.value = txt;
+                    txtArea.focus();
+                    showToast('Esempio Applicato', 'Puoi ascoltarlo subito o modificarlo a piacimento', '✨');
+                }
+            }
+        }
+
+        // MOTORE DI SOTTOFONDO MUSICALE SOFT LOUNGE (Web Audio API Synthesizer)
+        let bgMusicGainNode = null;
+        let isBgMusicEnabled = localStorage.getItem('milella_bg_music') === 'true';
+
+        function initSynthesizedBgMusic() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) audioCtx = new AudioContext();
+            }
+            if (!audioCtx) return;
+
+            if (!bgMusicGainNode) {
+                bgMusicGainNode = audioCtx.createGain();
+                bgMusicGainNode.gain.setValueAtTime(0.025, audioCtx.currentTime); // Volume rilassante bassissimo
+                bgMusicGainNode.connect(audioCtx.destination);
+            }
+        }
+
+        function toggleMusicaSottofondo(attiva) {
+            playAudio('click');
+            isBgMusicEnabled = attiva;
+            localStorage.setItem('milella_bg_music', attiva ? 'true' : 'false');
+            if (attiva) {
+                showToast('Sottofondo Attivo', 'Atmosfera soft di accompagnamento abilitata', '🎵');
+            } else {
+                showToast('Sottofondo Disattivato', 'Solo voci umane in primo piano', '🔇');
+            }
+        }
+
+        // TELEPROMPTER MULTI-BATTUTA CON EVIDENZIAZIONE DINAMICA FRASE PER FRASE
         function aggiornaSottotitoloKaraoke(testoCompleto, percentualeProgresso = 0) {
             const box = document.getElementById('subtitleText');
             if (!box) return;
 
-            // Se il testo contiene un dialogo (es. «Isabella: ... — Ciro: ...»)
+            // Riconosce sia trattini "—" che tag Isabella: / Ciro:
+            let parti = [];
             if (testoCompleto.includes('—')) {
-                const parti = testoCompleto.split('—');
-                const isSecondPartActive = percentualeProgresso >= 48;
+                parti = testoCompleto.split('—').map(p => p.trim()).filter(Boolean);
+            } else if (/(Isabella\s*:|Ciro\s*:)/i.test(testoCompleto)) {
+                parti = testoCompleto.split(/(Isabella\s*:|Ciro\s*:)/i).map(p => p.trim()).filter(Boolean);
+            }
 
-                box.innerHTML = `
-                    <span class="${isSecondPartActive ? 'karaoke-dimmed-phrase' : 'karaoke-active-phrase'}">${parti[0].trim()}</span>
-                    <br style="margin:4px 0;">
-                    <span style="color:#d4af37; font-weight:800;">—</span> 
-                    <span class="${isSecondPartActive ? 'karaoke-active-phrase' : 'karaoke-dimmed-phrase'}">${parti[1].trim()}</span>
-                `;
+            if (parti.length > 1) {
+                // Calcola quale battuta è attiva in base alla percentuale (da 0 a 100%)
+                const segmentSize = 100 / parti.length;
+                const activeIdx = Math.min(parti.length - 1, Math.floor(percentualeProgresso / segmentSize));
+
+                let htmlContent = '';
+                parti.forEach((p, idx) => {
+                    const isCurrent = (idx === activeIdx);
+                    const isWoman = (idx % 2 === 0);
+                    const speakerTag = isWoman ? '👑 Isabella' : '🎙️ Ciro';
+                    htmlContent += `
+                        <div style="margin:4px 0; transition:all 0.3s ease; opacity:${isCurrent ? '1' : '0.45'}; transform:${isCurrent ? 'scale(1.02)' : 'scale(1)'};">
+                            <span style="font-weight:900; font-size:11.5px; color:${isWoman ? '#f0abfc' : '#38bdf8'}; text-transform:uppercase;">${speakerTag}:</span>
+                            <span class="${isCurrent ? 'karaoke-active-phrase' : 'karaoke-dimmed-phrase'}" style="font-size:${isCurrent ? '14px' : '13px'}; color:${isCurrent ? '#fef08a' : '#94a3b8'};">${p.replace(/^(Isabella|Ciro)\s*:/i, '').trim()}</span>
+                        </div>
+                    `;
+                });
+                box.innerHTML = htmlContent;
             } else {
                 box.textContent = testoCompleto;
             }
         }
+    
 
         // CONDIVISIONE WHATSAPP AUTOMATICA
         function condividiSuiteWhatsApp() {
