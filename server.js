@@ -2698,81 +2698,48 @@ app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
         // 2. Fallback secondario
         const chunks = dividiInFrasiNaturali(rawText, 170);
         const buffers = [];
-        for (const chunk of chunks) {
-            const url = 'https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=it&client=gtx&ttsspeed=1&q=' + encodeURIComponent(chunk);
-            const response = await fetch(url, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+
+        // RICONOSCITORE MULTI-BATTUTA INTELLIGENTE (Isabella & Ciro a quante battute vuoi!)
+        let battute = [];
+        let cleaned = testo.replace(/[«»]/g, '').trim();
+
+        // Se usa i trattini "—", possiamo normalizzare per separare
+        // Ma soprattutto cerchiamo la presenza dei tag "Isabella:" e "Ciro:"
+        const tagRegex = /(Isabella\s*:|Ciro\s*:)/i;
+
+        if (tagRegex.test(cleaned)) {
+            // Separa mantenendo i delimitatori
+            const parti = cleaned.split(/(Isabella\s*:|Ciro\s*:)/i).filter(Boolean);
+            let currentVoice = 'it-IT-IsabellaNeural';
+            for (let i = 0; i < parti.length; i++) {
+                const seg = parti[i].trim();
+                if (/^Isabella\s*:/i.test(seg)) {
+                    currentVoice = 'it-IT-IsabellaNeural';
+                } else if (/^Ciro\s*:/i.test(seg)) {
+                    currentVoice = 'it-IT-GiuseppeNeural';
+                } else if (seg) {
+                    battute.push({ voce: currentVoice, testo: seg.replace(/^—\s*/, '').trim() });
+                }
+            }
+        } else if (cleaned.includes('—')) {
+            // Se usa solo i trattini "—", alterna: 1° Isabella, 2° Ciro, 3° Isabella, 4° Ciro...
+            const parti = cleaned.split('—');
+            parti.forEach((p, idx) => {
+                const trimmed = p.trim();
+                if (trimmed) {
+                    const voce = (idx % 2 === 0) ? 'it-IT-IsabellaNeural' : 'it-IT-GiuseppeNeural';
+                    battute.push({ voce, testo: trimmed });
                 }
             });
-            if (response.ok) {
-                const arrBuf = await response.arrayBuffer();
-                buffers.push(Buffer.from(arrBuf));
-            }
-        }
-
-        if (buffers.length === 0) {
-            return res.status(502).json({ error: 'TTS upstream non disponibile' });
-        }
-
-        const finalBuffer = Buffer.concat(buffers);
-        res.setHeader('Content-Type', 'audio/mpeg');
-        res.setHeader('Cache-Control', 'public, max-age=86400');
-        return res.send(finalBuffer);
-    } catch (err) {
-        console.error('[TTS UMANO ERRORE]', err.message);
-        return res.status(500).json({ error: err.message });
-    }
-});
-
-
-// ==============================================================================
-// 5.1 GENERATORE MULTI-VOCE NEURALE UMANA PER DIALOGHI PERSONALIZZATI (/api/genera-dialogo-audio)
-// Genera al volo un file MP3 con voci umane (Isabella & Ciro/Giuseppe) dai testi inseriti dall'utente
-// ==============================================================================
-app.post(['/api/genera-dialogo-audio', '/careassist/api/genera-dialogo-audio'], async (req, res) => {
-    try {
-        const { testo, sceneKey } = req.body || {};
-        if (!testo || !testo.trim()) {
-            return res.status(400).json({ error: 'Testo dialogo mancante' });
-        }
-
-        const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
-
-        async function generaChunkVoce(voce, txt) {
-            const tts = new MsEdgeTTS();
-            await tts.setMetadata(voce, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
-            const { audioStream } = tts.toStream(preparaTestoPerVoceUmana(txt));
-            const buf = await new Promise((resolve, reject) => {
-                const chunks = [];
-                audioStream.on('data', c => chunks.push(c));
-                audioStream.on('end', () => resolve(Buffer.concat(chunks)));
-                audioStream.on('error', reject);
-            });
-            try { tts.close(); } catch(e) {}
-            return buf;
-        }
-
-        const buffers = [];
-        // Se contiene dialogo tipo "Isabella: ... — Ciro: ..." oppure separato da "—"
-        if (testo.includes('—')) {
-            const parti = testo.split('—');
-            // Parte 1 (Isabella - Voce Femminile)
-            const p1 = parti[0].replace(/«|»|Isabellas*:/gi, '').trim();
-            if (p1) {
-                const b1 = await generaChunkVoce('it-IT-IsabellaNeural', p1);
-                buffers.push(b1);
-            }
-            // Parte 2 (Ciro - Voce Maschile)
-            const p2 = parti.slice(1).join(' ').replace(/«|»|Ciros*:/gi, '').trim();
-            if (p2) {
-                const b2 = await generaChunkVoce('it-IT-GiuseppeNeural', p2);
-                buffers.push(b2);
-            }
         } else {
-            // Singolo testo parlato (Isabella)
-            const b = await generaChunkVoce('it-IT-IsabellaNeural', testo.replace(/«|»/g, ''));
-            buffers.push(b);
+            battute.push({ voce: 'it-IT-IsabellaNeural', testo: cleaned });
+        }
+
+        for (const item of battute) {
+            if (item.testo && item.testo.trim()) {
+                const b = await generaChunkVoce(item.voce, item.testo);
+                buffers.push(b);
+            }
         }
 
         const finalBuffer = Buffer.concat(buffers);
