@@ -2006,44 +2006,83 @@
 
         function selezionaFormazioneRapida(mode) {
             playAudio('click');
+            currentCastMode = mode;
             const castInput = document.getElementById('selectCastMode');
             if (castInput) castInput.value = mode;
 
-            // Evidenzia visivamente il pulsante selezionato con bordo e bagliore evidente
+            // Evidenzia con massima visibilità il pulsante cliccato
             ['due_uomini', 'tre_uomini', 'due_donne', 'tre_donne', 'misto'].forEach(m => {
                 const b = document.getElementById('btnCast_' + m);
                 if (b) {
                     if (m === mode) {
-                        b.style.boxShadow = '0 0 20px rgba(56,189,248,0.85), inset 0 0 10px rgba(56,189,248,0.4)';
-                        b.style.border = '2.5px solid #38bdf8';
-                        b.style.transform = 'scale(1.06)';
-                        b.style.background = '#1e293b';
+                        b.style.boxShadow = '0 0 25px #38bdf8, inset 0 0 12px #38bdf8';
+                        b.style.border = '3px solid #38bdf8';
+                        b.style.background = '#0284c7';
+                        b.style.color = '#ffffff';
+                        b.style.transform = 'scale(1.08)';
                     } else {
                         b.style.boxShadow = 'none';
-                        b.style.border = '1px solid rgba(255,255,255,0.15)';
-                        b.style.transform = 'scale(1)';
+                        b.style.border = '1px solid rgba(255,255,255,0.2)';
                         b.style.background = '#0f172a';
+                        b.style.color = '#94a3b8';
+                        b.style.transform = 'scale(1)';
                     }
                 }
             });
 
-            cambiaCastMode(mode);
-
-            // Adatta SUBITO il testo nel riquadro nero per riflettere i nuovi personaggi scelti
+            const p1 = document.getElementById('inputNomeP1');
+            const p2 = document.getElementById('inputNomeP2');
+            const p3 = document.getElementById('inputNomeP3');
+            const box3 = document.getElementById('boxNomeP3');
+            const l1 = document.getElementById('lblNomeP1');
+            const l2 = document.getElementById('lblNomeP2');
+            const l3 = document.getElementById('lblNomeP3');
             const txtArea = document.getElementById('editorCopioneText');
-            if (txtArea) {
-                if (mode === 'tre_uomini') {
-                    txtArea.value = 'Ciro: Diego, hai verificato la scadenza della revisione del furgone? — Diego: Controllato Ciro, tutto registrato nel gestionale. — Marco: Confermato, attrezzi caricati e pronti a partire!';
-                } else if (mode === 'due_uomini') {
-                    txtArea.value = 'Ciro: Diego, hai verificato la scadenza della revisione del furgone e il livello carburante? — Diego: Controllato Ciro: revisione prenotata e tagliando registrato!';
-                } else if (mode === 'tre_donne') {
-                    txtArea.value = 'Isabella: Dottoressa Elsa, abbiamo aggiornato il diario clinico di Mario? — Elsa: Sì Isabella, glicemia stabile e insulina confermata in frigo. — Elena: Perfetto, procedo con la somministrazione terapeutica!';
-                } else if (mode === 'due_donne') {
-                    txtArea.value = 'Isabella: Dottoressa Elsa, abbiamo aggiornato il diario clinico di Mario? — Elsa: Sì Isabella, parametri glicemici stabili e scorta insulina già confermata nel frigo!';
-                } else {
-                    txtArea.value = 'Isabella: Ciro, come è nata l\'idea della Suite? — Ciro: Chi gestisce famiglia, lavoro e assistenza ha decine di foglietti sparsi. Con la Suite abbiamo unificato 8 programmi sotto un unico PIN!';
-                }
+
+            if (mode === 'tre_uomini') {
+                if (p1) p1.value = 'Ciro';
+                if (p2) p2.value = 'Diego';
+                if (p3) p3.value = 'Marco';
+                if (l1) l1.textContent = '1° Uomo:';
+                if (l2) l2.textContent = '2° Uomo:';
+                if (l3) l3.textContent = '3° Uomo:';
+                if (box3) box3.style.display = 'block';
+                if (txtArea) txtArea.value = 'Ciro: Diego, hai verificato la scadenza della revisione del furgone? — Diego: Controllato Ciro, tutto registrato nel gestionale. — Marco: Confermato, attrezzi caricati e pronti a partire!';
+            } else if (mode === 'due_uomini') {
+                if (p1) p1.value = 'Ciro';
+                if (p2) p2.value = 'Diego';
+                if (l1) l1.textContent = '1° Uomo:';
+                if (l2) l2.textContent = '2° Uomo:';
+                if (box3) box3.style.display = 'none';
+                if (txtArea) txtArea.value = 'Ciro: Diego, hai verificato la scadenza della revisione del furgone e il livello carburante? — Diego: Controllato Ciro: revisione prenotata e tagliando registrato!';
+            } else if (mode === 'tre_donne') {
+                if (p1) p1.value = 'Isabella';
+                if (p2) p2.value = 'Elsa';
+                if (p3) p3.value = 'Elena';
+                if (l1) l1.textContent = '1ª Donna:';
+                if (l2) l2.textContent = '2ª Donna:';
+                if (l3) l3.textContent = '3ª Donna:';
+                if (box3) box3.style.display = 'block';
+                if (txtArea) txtArea.value = 'Isabella: Dottoressa Elsa, abbiamo aggiornato il diario clinico di Mario? — Elsa: Sì Isabella, glicemia stabile e insulina confermata in frigo. — Elena: Perfetto, procedo con la somministrazione terapeutica!';
+            } else if (mode === 'due_donne') {
+                if (p1) p1.value = 'Isabella';
+                if (p2) p2.value = 'Elsa';
+                if (l1) l1.textContent = '1ª Donna:';
+                if (l2) l2.textContent = '2ª Donna:';
+                if (box3) box3.style.display = 'none';
+                if (txtArea) txtArea.value = 'Isabella: Dottoressa Elsa, abbiamo aggiornato il diario clinico di Mario? — Elsa: Sì Isabella, parametri glicemici stabili e scorta insulina già confermata nel frigo!';
+            } else {
+                if (p1) p1.value = 'Isabella';
+                if (p2) p2.value = 'Ciro';
+                if (l1) l1.textContent = '1ª Voce (Donna):';
+                if (l2) l2.textContent = '2ª Voce (Uomo):';
+                if (box3) box3.style.display = 'none';
+                if (txtArea) txtArea.value = 'Isabella: Ciro, come è nata l\'idea della Suite? — Ciro: Chi gestisce famiglia, lavoro e assistenza ha decine di foglietti sparsi. Con la Suite abbiamo unificato 8 programmi sotto un unico PIN!';
             }
+
+            nomiPersonaggi.p1 = p1 ? p1.value : 'Ciro';
+            nomiPersonaggi.p2 = p2 ? p2.value : 'Diego';
+            nomiPersonaggi.p3 = p3 ? p3.value : 'Marco';
         }
 
         function cambiaCastMode(mode) {
