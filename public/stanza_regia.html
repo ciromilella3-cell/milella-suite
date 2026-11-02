@@ -248,6 +248,48 @@
             box-shadow: 0 5px 20px rgba(255,255,255,0.15);
         }
 
+        
+        /* MODALITA TAB E LAYOUT DINAMICO */
+        .regia-grid.view-sync #panelClone { display: none !important; }
+        .regia-grid.view-sync #panelSync { grid-column: span 2; max-width: 1100px; margin: 0 auto; width: 100%; }
+        .regia-grid.view-clone #panelSync { display: none !important; }
+        .regia-grid.view-clone #panelClone { grid-column: span 2; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .regia-grid.view-split { display: grid; grid-template-columns: 1.15fr 1fr; }
+
+        .tab-btn.active.tab-split {
+            background: linear-gradient(135deg, #0ea5e9 0%, #a855f7 100%);
+            color: #fff;
+            box-shadow: 0 6px 25px rgba(168, 85, 247, 0.45);
+        }
+
+        /* CARD SELEZIONATA CON BORDO ORO & GLOW EVIDENTE */
+        .app-select-card.selected {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.28) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+            border-color: #fde047 !important;
+            box-shadow: 0 0 25px rgba(253, 224, 71, 0.25), 0 0 15px rgba(168, 85, 247, 0.4) !important;
+            transform: translateY(-2px);
+        }
+        .app-select-card.selected .app-checkbox {
+            background: #fde047 !important;
+            border-color: #fde047 !important;
+            color: #0f172a !important;
+            font-weight: 900 !important;
+            box-shadow: 0 0 12px rgba(253, 224, 71, 0.7) !important;
+        }
+
+        /* PILL GENERATORE DEMO RAPIDO */
+        .quick-pill-demo {
+            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+            color: #fff !important;
+            border: 1px solid #fbbf24 !important;
+            font-weight: 900 !important;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4) !important;
+        }
+        .quick-pill-demo:hover {
+            transform: scale(1.05) translateY(-1px) !important;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+        }
+
         /* NAVIGATION BAR */
         .regia-navbar {
             display: flex;
@@ -1270,11 +1312,14 @@
     <!-- NAVIGATION BAR -->
     <div class="regia-navbar">
         <div class="regia-tabs">
-            <button class="tab-btn active tab-sync" id="tabBtnSync" onclick="switchMainTab('sync')">
-                <span>⚡</span> Centro Sincronizzazione Intelligente
+            <button class="tab-btn active tab-clone" id="tabBtnClone" onclick="switchMainTab('clone')">
+                <span>📦</span> Fabbrica Copie &amp; Presentazione Utenti (Consigliata)
             </button>
-            <button class="tab-btn" id="tabBtnClone" onclick="switchMainTab('clone')">
-                <span>📦</span> Fabbrica Copie &amp; Distribuzione Utenti
+            <button class="tab-btn" id="tabBtnSync" onclick="switchMainTab('sync')">
+                <span>⚡</span> Centro Sincronizzazione
+            </button>
+            <button class="tab-btn" id="tabBtnSplit" onclick="switchMainTab('split')">
+                <span>🔲</span> Vista Cockpit Affiancata
             </button>
         </div>
 
@@ -1288,7 +1333,7 @@
     </div>
 
     <!-- MAIN TWO COLUMN GRID -->
-    <div class="regia-grid">
+    <div class="regia-grid view-clone" id="mainRegiaGrid">
 
         <!-- ============================================================= -->
         <!-- COLONNA 1: CENTRO SINCRONIZZAZIONE INTELLIGENTE               -->
@@ -1464,10 +1509,11 @@
                     <label class="input-label">Nome Destinatario / Utente</label>
                     <input type="text" id="inputDestName" class="glass-input" placeholder="es. Mario Rossi" value="Mario Rossi" oninput="aggiornaBlueprint()">
                     <div class="quick-pills">
-                        <span class="quick-pill" onclick="setNomeRapido('Mario Rossi', 'Ufficio Tecnico')">Mario Rossi</span>
-                        <span class="quick-pill" onclick="setNomeRapido('Squadra Cantiere Nord', 'Logistica Operativa')">Squadra Nord</span>
-                        <span class="quick-pill" onclick="setNomeRapido('Magazzino Centrale', 'Gestione Merci')">Magazzino</span>
-                        <span class="quick-pill" onclick="setNomeRapido('Assistenza Domiciliare', 'CareAssist')">CareAssist</span>
+                        <span class="quick-pill quick-pill-demo" onclick="generaClienteDemoRapido()" title="Genera istantaneamente un nominativo realistico per la presentazione">🎲 Genera Cliente Demo</span>
+                        <span class="quick-pill" onclick="setNomeRapido('Dott.ssa Laura Bianchi', 'RSA Villa Salus', 'demo30')">RSA Villa Salus</span>
+                        <span class="quick-pill" onclick="setNomeRapido('Geom. Marco Ferri', 'EdilCantieri SpA', 'demo30')">EdilCantieri</span>
+                        <span class="quick-pill" onclick="setNomeRapido('Mario Rossi', 'Ufficio Tecnico', 'unlimited')">Mario Rossi</span>
+                        <span class="quick-pill" onclick="setNomeRapido('Magazzino Centrale', 'Gestione Merci', 'unlimited')">Magazzino</span>
                     </div>
                 </div>
 
@@ -1826,23 +1872,55 @@
         return Array.from(cards).map(c => c.getAttribute('data-app')).filter(Boolean);
     }
 
-    // Cambia Tab principale
+    // Cambia Tab principale con gestione layout dinamico a schermo intero o affiancato
     function switchMainTab(tab) {
         playAudio('click');
         const btnSync = document.getElementById('tabBtnSync');
         const btnClone = document.getElementById('tabBtnClone');
-        const panelSync = document.getElementById('panelSync');
-        const panelClone = document.getElementById('panelClone');
+        const btnSplit = document.getElementById('tabBtnSplit');
+        const grid = document.getElementById('mainRegiaGrid');
+
+        btnSync.className = 'tab-btn';
+        btnClone.className = 'tab-btn';
+        if (btnSplit) btnSplit.className = 'tab-btn';
 
         if (tab === 'sync') {
             btnSync.className = 'tab-btn active tab-sync';
-            btnClone.className = 'tab-btn';
-            panelSync.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
+            grid.className = 'regia-grid view-sync';
+            showToast('Modalità Sincronizzazione', 'Vista focalizzata su flussi dati e USB', '⚡');
+        } else if (tab === 'clone') {
             btnClone.className = 'tab-btn active tab-clone';
-            btnSync.className = 'tab-btn';
-            panelClone.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            grid.className = 'regia-grid view-clone';
+            showToast('Fabbrica Copie & Clienti', 'Vista espansa per presentazione e creazione demo', '📦');
+        } else {
+            if (btnSplit) btnSplit.className = 'tab-btn active tab-split';
+            grid.className = 'regia-grid view-split';
+            showToast('Vista Cockpit', 'Entrambe le sezioni affiancate a schermo', '🔲');
         }
+    }
+
+    // Genera istantaneamente un profilo cliente demo fittizio ma altamente credibile
+    const DEMO_PRESETS = [
+        { nome: 'Dott.ssa Elena Moretti', azienda: 'RSA Bellaria & Sanitas', appPreset: 'salute', lic: 'demo30' },
+        { nome: 'Ing. Roberto Santoro', azienda: 'Logistica & Trasporti Adriatica', appPreset: 'logistica', lic: 'demo30' },
+        { nome: 'Dott. Valerio De Luca', azienda: 'Cooperativa Sociale Andromeda', appPreset: 'all', lic: 'demo30' },
+        { nome: 'Geom. Claudio Barbieri', azienda: 'Edil Strade & Cantieri Nord', appPreset: 'logistica', lic: 'demo30' },
+        { nome: 'Dott.ssa Michela Ferrara', azienda: 'Centro Clinico MedCare', appPreset: 'salute', lic: 'demo30' }
+    ];
+    let demoPresetIdx = 0;
+
+    function generaClienteDemoRapido() {
+        playAudio('chime');
+        const preset = DEMO_PRESETS[demoPresetIdx % DEMO_PRESETS.length];
+        demoPresetIdx++;
+
+        document.getElementById('inputDestName').value = preset.nome;
+        document.getElementById('inputDestCompany').value = preset.azienda;
+        document.getElementById('selectLicenza').value = preset.lic;
+        selezionaPresetApp(preset.appPreset);
+        aggiornaBlueprint();
+        showToast('Profilo Demo Caricato', `Destinatario: ${preset.nome} (${preset.azienda})`, '✨');
+        appendLog(`[DEMO PRESET] Caricato profilo per presentazione: <strong>${preset.nome}</strong> - ${preset.azienda}`);
     }
 
     // Seleziona Direzione Sincronizzazione
@@ -1893,10 +1971,11 @@
     }
 
     // Imposta nome rapido
-    function setNomeRapido(nome, azienda) {
+    function setNomeRapido(nome, azienda, licenza) {
         playAudio('click');
         document.getElementById('inputDestName').value = nome;
         document.getElementById('inputDestCompany').value = azienda;
+        if (licenza) document.getElementById('selectLicenza').value = licenza;
         aggiornaBlueprint();
     }
 
