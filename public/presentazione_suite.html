@@ -2022,7 +2022,7 @@
             sicurezza: 'Isabella: Cosa garantisce che i dati dell\'azienda siano sempre al sicuro da guasti o attacchi? — Ciro: La protezione a doppio livello: copia Cloud per lavorare ovunque e backup istantaneo su chiavetta USB fisica con un solo clic. — Isabella: Massima serenità per titolare e collaboratori!'
         };
 
-        let currentCastMode = 'misto';
+        let currentCastMode = localStorage.getItem('milella_suite_cast_mode') || 'tre_uomini';
         let nomiPersonaggi = { p1: 'Isabella', p2: 'Elsa', p3: 'Elena' };
 
         function selezionaFormazioneRapida(mode) {
@@ -2335,7 +2335,7 @@
                 fetch('/api/genera-dialogo-audio', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ testo: currentText, castMode: currentCastMode, sceneKey: 'scene-' + currentSceneIdx })
+                    body: JSON.stringify({ testo: currentText, castMode: (currentText.includes('Marco:') || currentText.includes('Elena:')) ? (currentText.includes('Marco:') ? 'tre_uomini' : 'tre_donne') : currentCastMode, sceneKey: 'scene-' + currentSceneIdx })
                 }).then(res => {
                     if (!res.ok) throw new Error('Status ' + res.status);
                     return res.blob();
