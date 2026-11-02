@@ -2486,8 +2486,9 @@
             const badge = document.getElementById('badgeStatoTesto');
             if (!txtArea) return;
 
+            let curText = '';
             if (customCopioni[key]) {
-                txtArea.value = customCopioni[key];
+                curText = customCopioni[key];
                 if (badge) {
                     badge.textContent = '✏️ Testo Personalizzato da Te';
                     badge.style.background = 'rgba(253,224,71,0.18)';
@@ -2495,13 +2496,49 @@
                     badge.style.borderColor = 'rgba(253,224,71,0.4)';
                 }
             } else {
-                txtArea.value = ottieniTestoOriginaleItem(key);
+                curText = ottieniTestoOriginaleItem(key);
                 if (badge) {
                     badge.textContent = '🔒 Testo Originale di Fabbrica';
                     badge.style.background = 'rgba(16,185,129,0.15)';
                     badge.style.color = '#10b981';
                     badge.style.borderColor = 'rgba(16,185,129,0.3)';
                 }
+            }
+            txtArea.value = curText;
+            sincronizzaCampiNomiDaTesto(curText);
+        }
+
+        function sincronizzaCampiNomiDaTesto(testo) {
+            const genericTagRegex = /(?:^|\n|—)\s*([A-Za-zÀ-ÿ0-9_\s]{2,20})\s*:/g;
+            const matches = [...(testo || '').matchAll(genericTagRegex)];
+            const names = [...new Set(matches.map(m => m[1].trim()))];
+            const p1 = document.getElementById('inputNomeP1');
+            const p2 = document.getElementById('inputNomeP2');
+            const p3 = document.getElementById('inputNomeP3');
+            const box3 = document.getElementById('boxNomeP3');
+            const l1 = document.getElementById('lblNomeP1');
+            const l2 = document.getElementById('lblNomeP2');
+            const l3 = document.getElementById('lblNomeP3');
+            const castSel = document.getElementById('selectCastMode');
+            const isMale = (castSel && (castSel.value === 'due_uomini' || castSel.value === 'tre_uomini'));
+
+            if (names.length >= 1 && p1) {
+                p1.value = names[0];
+                nomiPersonaggi.p1 = names[0];
+                if (l1) l1.textContent = isMale ? '1° Uomo (Nome):' : '1ª Voce (Nome):';
+            }
+            if (names.length >= 2 && p2) {
+                p2.value = names[1];
+                nomiPersonaggi.p2 = names[1];
+                if (l2) l2.textContent = isMale ? '2° Uomo (Nome):' : '2ª Voce (Nome):';
+            }
+            if (names.length >= 3 && p3) {
+                p3.value = names[2];
+                nomiPersonaggi.p3 = names[2];
+                if (l3) l3.textContent = isMale ? '3° Uomo (Nome):' : '3ª Voce (Nome):';
+                if (box3) box3.style.display = 'block';
+            } else if (names.length < 3 && box3 && (currentCastMode === 'due_donne' || currentCastMode === 'due_uomini' || currentCastMode === 'misto')) {
+                box3.style.display = 'none';
             }
         }
 
