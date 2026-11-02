@@ -1219,7 +1219,31 @@
                         </div>
                     </div>
     
-<div style="margin-bottom:14px;">
+<!-- CAMPI VISIBILI PER MODIFICARE I NOMI DELLE VOCI -->
+                    <div style="margin-bottom:14px; background:linear-gradient(135deg, rgba(2,132,199,0.12) 0%, rgba(15,23,42,0.6) 100%); border:1.5px solid #0284c7; border-radius:12px; padding:12px 14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <div style="font-size:12.5px; font-weight:900; color:#38bdf8; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+                                <span>✏️</span> Modifica i Nomi dei Personaggi per Questo Dialogo:
+                            </div>
+                            <span style="font-size:11px; color:#94a3b8;">I nomi si aggiornano anche nel riquadro sotto</span>
+                        </div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <div style="flex:1; min-width:130px;">
+                                <label id="lblNomeP1" style="display:block; font-size:11px; font-weight:800; color:#f472b6; margin-bottom:3px;">1° Voce (Nome):</label>
+                                <input type="text" id="inputNomeP1" value="Isabella" oninput="cambiaNomePersonaggio(1, this.value)" style="width:100%; background:#040711; color:#fef08a; border:1.5px solid #f472b6; border-radius:8px; padding:7px 10px; font-size:13.5px; font-weight:800; box-sizing:border-box;">
+                            </div>
+                            <div style="flex:1; min-width:130px;">
+                                <label id="lblNomeP2" style="display:block; font-size:11px; font-weight:800; color:#c084fc; margin-bottom:3px;">2° Voce (Nome):</label>
+                                <input type="text" id="inputNomeP2" value="Elsa" oninput="cambiaNomePersonaggio(2, this.value)" style="width:100%; background:#040711; color:#fef08a; border:1.5px solid #c084fc; border-radius:8px; padding:7px 10px; font-size:13.5px; font-weight:800; box-sizing:border-box;">
+                            </div>
+                            <div id="boxNomeP3" style="flex:1; min-width:130px;">
+                                <label id="lblNomeP3" style="display:block; font-size:11px; font-weight:800; color:#fb7185; margin-bottom:3px;">3° Voce (Nome):</label>
+                                <input type="text" id="inputNomeP3" value="Elena" oninput="cambiaNomePersonaggio(3, this.value)" style="width:100%; background:#040711; color:#fef08a; border:1.5px solid #fb7185; border-radius:8px; padding:7px 10px; font-size:13.5px; font-weight:800; box-sizing:border-box;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:14px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                             <label style="font-weight:800; color:#cbd5e1; font-size:13.5px;">Scrivi il Tuo Dialogo Personalizzato (Voci Umane Reali):</label>
                             <span id="labelHintSeparatore" style="font-size:11.5px; color:#38bdf8; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.3);">
@@ -1980,39 +2004,70 @@
         };
 
         let currentCastMode = 'misto';
+        let nomiPersonaggi = { p1: 'Isabella', p2: 'Elsa', p3: 'Elena' };
 
         function cambiaCastMode(mode) {
             playAudio('click');
             currentCastMode = mode;
-            const leg = document.getElementById('legendSpeakerCast');
-            if (!leg) return;
+            const p1 = document.getElementById('inputNomeP1');
+            const p2 = document.getElementById('inputNomeP2');
+            const p3 = document.getElementById('inputNomeP3');
+            const box3 = document.getElementById('boxNomeP3');
+            const l1 = document.getElementById('lblNomeP1');
+            const l2 = document.getElementById('lblNomeP2');
+            const l3 = document.getElementById('lblNomeP3');
+
             if (mode === 'due_donne') {
-                leg.innerHTML = `
-                    <span style="color:#f472b6;">👑 <strong>Isabella:</strong> Prima battuta</span>
-                    <span style="color:#c084fc;">🌸 <strong>Elsa:</strong> Seconda battuta</span>
-                `;
+                if (p1) p1.value = 'Isabella';
+                if (p2) p2.value = 'Elsa';
+                if (l1) l1.textContent = '1ª Donna:';
+                if (l2) l2.textContent = '2ª Donna:';
+                if (box3) box3.style.display = 'none';
             } else if (mode === 'tre_donne') {
-                leg.innerHTML = `
-                    <span style="color:#f472b6;">👑 <strong>Isabella:</strong> Donna 1</span>
-                    <span style="color:#c084fc;">🌸 <strong>Elsa:</strong> Donna 2</span>
-                    <span style="color:#fb7185;">🌺 <strong>Elena:</strong> Donna 3</span>
-                `;
+                if (p1) p1.value = 'Isabella';
+                if (p2) p2.value = 'Elsa';
+                if (p3) p3.value = 'Elena';
+                if (l1) l1.textContent = '1ª Donna:';
+                if (l2) l2.textContent = '2ª Donna:';
+                if (l3) l3.textContent = '3ª Donna:';
+                if (box3) box3.style.display = 'block';
             } else if (mode === 'due_uomini') {
-                leg.innerHTML = `
-                    <span style="color:#f59e0b;">🎙️ <strong>Ciro:</strong> Primo uomo</span>
-                    <span style="color:#38bdf8;">⚡ <strong>Diego:</strong> Secondo uomo</span>
-                `;
+                if (p1) p1.value = 'Ciro';
+                if (p2) p2.value = 'Diego';
+                if (l1) l1.textContent = '1° Uomo:';
+                if (l2) l2.textContent = '2° Uomo:';
+                if (box3) box3.style.display = 'none';
             } else if (mode === 'tre_uomini') {
-                leg.innerHTML = `
-                    <span style="color:#f59e0b;">🎙️ <strong>Ciro:</strong> Uomo 1</span>
-                    <span style="color:#38bdf8;">⚡ <strong>Diego:</strong> Uomo 2</span>
-                    <span style="color:#34d399;">🛡️ <strong>Marco:</strong> Uomo 3</span>
-                `;
+                if (p1) p1.value = 'Ciro';
+                if (p2) p2.value = 'Diego';
+                if (p3) p3.value = 'Marco';
+                if (l1) l1.textContent = '1° Uomo:';
+                if (l2) l2.textContent = '2° Uomo:';
+                if (l3) l3.textContent = '3° Uomo:';
+                if (box3) box3.style.display = 'block';
             } else {
-                leg.innerHTML = `
-                    <span style="color:#f472b6;">👑 <strong>Isabella:</strong> Voce Femminile</span>
-                    <span style="color:#f59e0b;">🎙️ <strong>Ciro:</strong> Voce Maschile</span>
-                `;
+                if (p1) p1.value = 'Isabella';
+                if (p2) p2.value = 'Ciro';
+                if (l1) l1.textContent = '1ª Voce (Donna):';
+                if (l2) l2.textContent = '2ª Voce (Uomo):';
+                if (box3) box3.style.display = 'none';
+            }
+            nomiPersonaggi.p1 = p1 ? p1.value : 'Isabella';
+            nomiPersonaggi.p2 = p2 ? p2.value : 'Ciro';
+            nomiPersonaggi.p3 = p3 ? p3.value : 'Elena';
+        }
+
+        function cambiaNomePersonaggio(index, nuovoNome) {
+            const oldName = (index === 1 ? nomiPersonaggi.p1 : (index === 2 ? nomiPersonaggi.p2 : nomiPersonaggi.p3));
+            const cleanNew = (nuovoNome || '').trim();
+            if (!cleanNew) return;
+            if (index === 1) nomiPersonaggi.p1 = cleanNew;
+            else if (index === 2) nomiPersonaggi.p2 = cleanNew;
+            else if (index === 3) nomiPersonaggi.p3 = cleanNew;
+            const txtArea = document.getElementById('editorCopioneText');
+            if (txtArea && oldName && oldName !== cleanNew) {
+                const reg = new RegExp('(^|\\n|—)\\s*' + oldName + '\\s*:', 'gi');
+                txtArea.value = txtArea.value.replace(reg, '$1 ' + cleanNew + ':');
             }
         }
 
