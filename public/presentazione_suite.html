@@ -2467,11 +2467,57 @@
             chiudiModalComponiPresentazione();
         }
 
+        function inizializzaDaParametriUrl() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const az = params.get('az') || params.get('cliente') || params.get('nome') || '';
+                const dir = params.get('dir') || params.get('reparto') || params.get('azienda') || '';
+                const appsParam = params.get('apps') || params.get('moduli') || '';
+                const isDemoParam = params.get('demo') === '1' || params.get('isDemo') === 'true';
+
+                let aggiornato = false;
+                if (az) {
+                    _customPresState.azienda = az.trim();
+                    aggiornato = true;
+                }
+                if (dir) {
+                    _customPresState.direttore = dir.trim();
+                    aggiornato = true;
+                }
+                if (appsParam) {
+                    const parsed = appsParam.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n) && n >= 0 && n <= 7);
+                    if (parsed.length > 0) {
+                        _customPresState.selectedApps = parsed;
+                        aggiornato = true;
+                    }
+                }
+
+                if (aggiornato) {
+                    localStorage.setItem('suite_presentazione_personalizzata', JSON.stringify(_customPresState));
+                    const azInp = document.getElementById('componiNomeAz');
+                    const dirInp = document.getElementById('componiDirAz');
+                    if (azInp) azInp.value = _customPresState.azienda || '';
+                    if (dirInp) dirInp.value = _customPresState.direttore || '';
+                    renderComponiAppsGrid();
+                    eseguiRenderingPresentazionePersonalizzata();
+
+                    // Se è in modalità demo da URL o eseguibile, avvia automaticamente presentazione/film se desiderato
+                    if (isDemoParam) {
+                        console.log('⚡ Modalità DEMO interattiva attiva per:', _customPresState.azienda);
+                    }
+                }
+            } catch(e) {
+                console.warn('Errore parsing parametri URL:', e);
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             applicaAudioConfig();
             popolaListaVociBrowser();
+            caricaPresentazionePersonalizzata();
             renderFilmStage();
             renderAplusGallery();
+            inizializzaDaParametriUrl();
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/sw.js?v=115').catch(() => {});
             }

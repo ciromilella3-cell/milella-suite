@@ -2152,17 +2152,28 @@
     // Apri cartella rilasciate
     async function apriCartellaRilasciate(folderPath) {
         playAudio('click');
+        let decoded = decodeURIComponent(folderPath || 'D:\\VERSIONI_RILASCIATE');
+        decoded = decoded.replace(/^[Ee]:/, 'D:');
+
+        let aperto = false;
         try {
-            const decoded = decodeURIComponent(folderPath);
-            await fetch('/api/open-exported-folder', {
+            const res = await fetch('/api/open-exported-folder', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ folderPath: decoded })
             });
+            const data = await res.json();
+            if (data && data.success) aperto = true;
         } catch(e) {}
-        showToast('Cartella Rilasciate', 'D:\\VERSIONI_RILASCIATE', '📂');
-    }
 
+        if (aperto) {
+            showToast('Cartella Aperta in Windows!', decoded, '📂');
+        } else {
+            // Se sei aperto da file locale o da remoto cloud
+            showToast('Percorso Cartella:', decoded, '📂');
+            prompt('Percorso cartella pronta. Copialo ed incollalo in Esplora File (oppure premi Win + R):', decoded);
+        }
+    }
 
     function generaBatchSincronizzazione() {
         playAudio('click');
