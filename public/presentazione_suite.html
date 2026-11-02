@@ -2683,40 +2683,53 @@
         }
 
         // Generazione al volo di voce umana HD dal dialogo scritto dall'utente
-        async function anteprimaVoceEditor() {
+        async function anteprimaVoceEditor(btnElement) {
             fermaAudioSuite();
-            const text = document.getElementById('editorCopioneText').value.trim();
+            const textInp = document.getElementById('editorCopioneText');
+            const text = textInp ? textInp.value.trim() : '';
             if (!text) {
                 alert('Inserisci prima il testo o il dialogo da ascoltare!');
                 return;
             }
 
-            const btn = event ? event.target.closest('button') : null;
+            const btn = btnElement || (window.event ? window.event.target.closest('button') : null) || document.querySelector('button[onclick*="anteprimaVoceEditor"]');
             const oldHtml = btn ? btn.innerHTML : '';
             if (btn) {
-                btn.innerHTML = '<span>⏳ Generazione Voce Umana HD...</span>';
+                btn.innerHTML = '<span>⏳ Generazione Voci Umane...</span>';
                 btn.disabled = true;
             }
 
             try {
-                const castMode = document.getElementById('selectCastMode') ? document.getElementById('selectCastMode').value : currentCastMode;
+                const castMode = document.getElementById('selectCastMode') ? document.getElementById('selectCastMode').value : (currentCastMode || 'tre_uomini');
                 const res = await fetch('/api/genera-dialogo-audio', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ testo: text, castMode: castMode })
                 });
 
-                if (!res.ok) throw new Error('Errore generazione audio');
+                if (!res.ok) throw new Error('Risposta server non valida: ' + res.status);
                 const blob = await res.blob();
                 const audioBlobUrl = URL.createObjectURL(blob);
 
-                suiteAudio.src = audioBlobUrl;
-                suiteAudio.playbackRate = audioConfig.speed;
-                suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
-                suiteAudio.play();
+                // Riproduzione immediata tramite nuova istanza Audio sbloccata
+                if (suiteAudio) {
+                    try { suiteAudio.pause(); } catch(e){}
+                }
+                suiteAudio = new Audio(audioBlobUrl);
+                suiteAudio.playbackRate = 1.0;
+                suiteAudio.volume = 1.0;
+
+                const p = suiteAudio.play();
+                if (p && p.catch) {
+                    p.catch(err => {
+                        console.warn('Play audio catch:', err);
+                        suiteAudio.controls = true;
+                        suiteAudio.play();
+                    });
+                }
             } catch(e) {
-                console.warn('Errore generazione audio umano personalizzato:', e);
-                alert('Impossibile generare l\'audio personalizzato al momento. Verifica la connessione o riprova tra poco.');
+                console.warn('Errore generazione audio:', e);
+                alert('Impossibile riprodurre l\'audio al momento. Riprova tra poco.');
             } finally {
                 if (btn) {
                     btn.innerHTML = oldHtml;
