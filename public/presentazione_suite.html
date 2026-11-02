@@ -2307,122 +2307,47 @@
             fermaAudioSuite();
             isFilmPlaying = true;
             document.getElementById('btnPlayFilm').innerHTML = '⏸️ Pausa';
+            
             const sc = SUITE_SCENES[currentSceneIdx] || SUITE_SCENES[0];
-            const currentText = ottieniTestoAttualeScena(currentSceneIdx);
+            const currentText = sc.subtitle;
 
-            // Modalità 1: Muto (Solo lettura visiva e avanzamento)
-            if (audioConfig.mode === 'silent') {
-                let simulatedSec = 12;
-                let cur = 0;
-                const interval = setInterval(() => {
-                    if (!isFilmPlaying) { clearInterval(interval); return; }
-                    cur++;
-                    const pct = Math.min(100, (cur / simulatedSec) * 100);
-                    document.getElementById('filmProgressBar').style.width = pct + '%';
-                    if (cur >= simulatedSec) {
-                        clearInterval(interval);
-                        prossimaScenaFilm();
-                    }
-                }, 1000);
-                return;
-            }
-
-            // Riproduzione Voci Umane Reali MP3 Studio
+            // Riproduzione Voci Umane Reali MP3 Studio Ufficiali (Isabella & Ciro)
             audioConfig.mode = 'neural';
 
-            // Se per questa scena l'utente ha inserito un copione personalizzato, genera o usa la traccia multi-voce
-            if (customCopioni['scene-' + currentSceneIdx]) {
-                fetch('/api/genera-dialogo-audio', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ testo: currentText, castMode: (currentText.includes('Marco:') || currentText.includes('Elena:')) ? (currentText.includes('Marco:') ? 'tre_uomini' : 'tre_donne') : currentCastMode, sceneKey: 'scene-' + currentSceneIdx })
-                }).then(res => {
-                    if (!res.ok) throw new Error('Status ' + res.status);
-                    return res.blob();
-                }).then(blob => {
-                    if (!isFilmPlaying) return;
-                    const customUrl = URL.createObjectURL(blob);
-                    
-                    if (suiteAudio) {
-                        try { suiteAudio.pause(); suiteAudio.src = ''; } catch(e){}
-                    }
-                    suiteAudio = new Audio(customUrl);
-                    suiteAudio.playbackRate = audioConfig.speed || 1.0;
-                    suiteAudio.volume = audioConfig.muted ? 0 : ((audioConfig.volume || 100) / 100);
-
-                    // Sincronizzazione precisa: fa parlare l'audio fino alla sua reale conclusione naturale (senza tagliare Diego e Marco!)
-                    if (filmTimerFallback) clearInterval(filmTimerFallback);
-
-                    suiteAudio.ontimeupdate = () => {
-                        if (!isFilmPlaying) return;
-                        if (suiteAudio.duration && isFinite(suiteAudio.duration) && suiteAudio.duration > 0) {
-                            const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
-                            const bar = document.getElementById('filmProgressBar');
-                            if (bar) bar.style.width = pct + '%';
-                            aggiornaSottotitoloKaraoke(currentText, pct);
-                        }
-                    };
-
-                    suiteAudio.onended = () => {
-                        if (filmTimerFallback) clearInterval(filmTimerFallback);
-                        if (!isFilmPlaying) return;
-                        document.getElementById('filmProgressBar').style.width = '100%';
-                        aggiornaSottotitoloKaraoke(currentText, 100);
-                        setTimeout(() => {
-                            if (isFilmPlaying) prossimaScenaFilm();
-                        }, 500);
-                    };
-
-                    suiteAudio.play().catch(e => console.warn('Play custom scene warning:', e));
-                }).catch(err => {
-                    console.warn('Fallback to standard audio:', err);
-                    suiteAudio.src = sc.audioUrl;
-                    suiteAudio.play().catch(e => {});
-                });
-                return;
+            if (suiteAudio) {
+                try { suiteAudio.pause(); suiteAudio.src = ''; } catch(e){}
             }
+            suiteAudio = new Audio(sc.audioUrl);
+            suiteAudio.playbackRate = audioConfig.speed || 1.0;
+            suiteAudio.volume = audioConfig.muted ? 0 : ((audioConfig.volume || 100) / 100);
 
-            // Modalità 3: Voce Studio Neurale Ufficiale MP3 (Isabella & Ciro)
-            suiteAudio.src = sc.audioUrl;
-            suiteAudio.playbackRate = audioConfig.speed;
-            suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
-
+            // Avanzamento barra e sottotitoli in tempo reale con l'audio
             suiteAudio.ontimeupdate = () => {
-                if (suiteAudio.duration && isFinite(suiteAudio.duration)) {
+                if (!isFilmPlaying) return;
+                if (suiteAudio.duration && isFinite(suiteAudio.duration) && suiteAudio.duration > 0) {
                     const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
-                    document.getElementById('filmProgressBar').style.width = pct + '%';
+                    const bar = document.getElementById('filmProgressBar');
+                    if (bar) bar.style.width = pct + '%';
                     aggiornaSottotitoloKaraoke(currentText, pct);
                 }
             };
+
             suiteAudio.onended = () => {
                 if (!isFilmPlaying) return;
-                prossimaScenaFilm();
-            };
-            // Timer continuo per garantire movimento fluido anche su audio lenti o browser mobili
-            let expectedDuration = (suiteAudio.duration && isFinite(suiteAudio.duration) && suiteAudio.duration > 3) ? suiteAudio.duration : 14;
-            let startAudioTime = Date.now();
-            filmTimerFallback = setInterval(() => {
-                if (!isFilmPlaying) { clearInterval(filmTimerFallback); return; }
-                let elapsed = (Date.now() - startAudioTime) / 1000;
-                let actualDuration = (suiteAudio.duration && isFinite(suiteAudio.duration) && suiteAudio.duration > 3) ? suiteAudio.duration : expectedDuration;
-                let progressPct = Math.min(100, (elapsed / actualDuration) * 100);
-                if (document.getElementById('filmProgressBar')) {
-                    document.getElementById('filmProgressBar').style.width = progressPct + '%';
-                }
-                aggiornaSottotitoloKaraoke(currentText, progressPct);
-                if (elapsed >= actualDuration && (!suiteAudio || suiteAudio.paused || suiteAudio.ended)) {
-                    clearInterval(filmTimerFallback);
-                    if (isFilmPlaying) prossimaScenaFilm();
-                }
-            }, 120);
-
-            suiteAudio.play().catch(err => {
-                console.warn('Play audio suite human recording:', err);
-                // Non usare mai sintesi vocale robotica
+                document.getElementById('filmProgressBar').style.width = '100%';
+                aggiornaSottotitoloKaraoke(currentText, 100);
                 setTimeout(() => {
                     if (isFilmPlaying) prossimaScenaFilm();
-                }, 8000);
-            });
+                }, 600);
+            };
+
+            // Avvio riproduzione sicuro
+            const playPromise = suiteAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(err => {
+                    console.warn('Autoplay ristretto, audio pronto al tocco:', err);
+                });
+            }
         }
 
         function prossimaScenaFilm() {
