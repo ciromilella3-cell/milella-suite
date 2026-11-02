@@ -2692,10 +2692,12 @@
                 return;
             }
 
-            const btn = btnElement || (window.event ? window.event.target.closest('button') : null) || document.querySelector('button[onclick*="anteprimaVoceEditor"]');
+            const btn = btnElement || document.getElementById('btnAnteprimaVoceEditor');
             const oldHtml = btn ? btn.innerHTML : '';
+            const player = document.getElementById('audioPlayerAnteprima');
+
             if (btn) {
-                btn.innerHTML = '<span>⏳ Generazione Voci Umane...</span>';
+                btn.innerHTML = '<span>⏳ Generazione Audio...</span>';
                 btn.disabled = true;
             }
 
@@ -2711,25 +2713,25 @@
                 const blob = await res.blob();
                 const audioBlobUrl = URL.createObjectURL(blob);
 
-                // Riproduzione immediata tramite nuova istanza Audio sbloccata
+                // Mostra e collega il lettore audio visibile
+                if (player) {
+                    player.src = audioBlobUrl;
+                    player.style.display = 'inline-block';
+                    player.volume = 1.0;
+                    player.play().catch(e => console.warn('Player inline play warning:', e));
+                }
+
+                // Avvia anche tramite istanza globale
                 if (suiteAudio) {
                     try { suiteAudio.pause(); } catch(e){}
                 }
                 suiteAudio = new Audio(audioBlobUrl);
-                suiteAudio.playbackRate = 1.0;
                 suiteAudio.volume = 1.0;
+                suiteAudio.play().catch(e => console.warn('Global audio play warning:', e));
 
-                const p = suiteAudio.play();
-                if (p && p.catch) {
-                    p.catch(err => {
-                        console.warn('Play audio catch:', err);
-                        suiteAudio.controls = true;
-                        suiteAudio.play();
-                    });
-                }
             } catch(e) {
-                console.warn('Errore generazione audio:', e);
-                alert('Impossibile riprodurre l\'audio al momento. Riprova tra poco.');
+                console.warn('Errore riproduzione dialogo:', e);
+                alert('Errore generazione voce: verifica la connessione internet e riprova.');
             } finally {
                 if (btn) {
                     btn.innerHTML = oldHtml;
