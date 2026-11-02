@@ -2263,9 +2263,9 @@
                 const isCurrent = (idx === activeIdx);
                 const color = speakerColors[b.speaker];
                 html += `
-                    <div style="margin:6px 0; transition:all 0.25s ease; opacity:${isCurrent ? '1' : '0.4'}; transform:${isCurrent ? 'scale(1.02)' : 'scale(1)'};">
-                        <span style="font-weight:900; font-size:12px; color:${color}; text-transform:uppercase; letter-spacing:0.5px;">🗣️ ${b.speaker}:</span>
-                        <span style="font-size:${isCurrent ? '14.5px' : '13px'}; font-weight:${isCurrent ? '700' : '400'}; color:${isCurrent ? '#ffffff' : '#94a3b8'}; margin-left:4px;">${b.text}</span>
+                    <div style="margin:8px 0; padding:6px 10px; border-radius:8px; transition:all 0.25s ease; background:${isCurrent ? 'rgba(255,255,255,0.08)' : 'transparent'}; border-left:${isCurrent ? '3px solid #ffd814' : '3px solid transparent'};">
+                        <span style="font-weight:900; font-size:13px; color:${color}; text-transform:uppercase; letter-spacing:0.5px;">🗣️ ${b.speaker}:</span>
+                        <span style="font-size:14px; font-weight:${isCurrent ? '800' : '600'}; color:${isCurrent ? '#ffd814' : '#e2e8f0'}; margin-left:6px; line-height:1.5;">${b.text}</span>
                     </div>
                 `;
             });
