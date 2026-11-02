@@ -996,6 +996,9 @@
                 <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" title="Gestisci moduli e personalizza la posizione di ciascuna App" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
                     ⇅ MODULI & ORDINE APP
                 </button>
+                <button id="btnOpenPresentation" onclick="window.location.href='/presentazione_suite.html'" title="Apri e mostra la Presentazione creata per il cliente" style="display:none; background:linear-gradient(135deg, #a855f7, #7c3aed); border:1px solid #c084fc; color:#fff; padding:6px 14px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(168,85,247,0.35);">
+                    🎬 VETRINA &amp; PRESENTAZIONI
+                </button>
                 
                 <button id="btnInstallApp" onclick="installaPwaApp()" title="Installa Suite su Telefono o Desktop" style="display:none; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#7dd3fc; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; align-items:center; gap:5px; transition:all 0.2s;">
                     <span>📲</span> <span id="installBtnText">Installa App</span>
@@ -2179,6 +2182,8 @@
             btnSwitch.style.display = 'none';
             btnManage.style.display = 'inline-flex';
             if (btnProjects) btnProjects.style.display = 'inline-flex';
+            const btnPres = document.getElementById('btnOpenPresentation');
+            if (btnPres) btnPres.style.display = 'inline-flex';
             btnLogout.style.display = 'inline-flex';
 
             adminCards.forEach(c => c.style.display = 'flex');
@@ -2191,6 +2196,8 @@
             btnSwitch.style.display = 'inline-flex';
             btnManage.style.display = 'none';
             if (btnProjects) btnProjects.style.display = 'none';
+            const btnPres = document.getElementById('btnOpenPresentation');
+            if (btnPres) btnPres.style.display = 'none';
             btnLogout.style.display = nome ? 'inline-flex' : 'none';
 
             adminCards.forEach(c => c.style.display = 'none');
