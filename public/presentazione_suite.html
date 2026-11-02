@@ -941,10 +941,23 @@
 
             <!-- COLONNA 3: BUY BOX AZIONI SUITE -->
             <aside class="amz-buy-box">
-                <div class="amz-status-green">🟢 Suite Completa Attiva</div>
-                <p style="font-size:13px; color:#475569; margin-bottom:12px;">
-                    Accedi direttamente a tutti i moduli o apri la Suite sul tuo smartphone tramite QR Code:
+                <div class="amz-status-green">🟢 Scegli: Intera Suite o Singole App</div>
+                <p style="font-size:12.5px; color:#475569; margin-bottom:12px; line-height:1.4;">
+                    Massima flessibilità commerciale: puoi adottare <strong>l'Intera Suite Unificata</strong> oppure <strong>attivare solo le App necessarie</strong> per ciascun collaboratore o reparto:
                 </p>
+
+                <!-- Selettore Pacchetto o Singole App -->
+                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:10px 12px; margin-bottom:12px;">
+                    <label style="font-size:11.5px; font-weight:800; color:#1e293b; display:block; margin-bottom:4px;">🎯 MODALITÀ DI ADOZIONE:</label>
+                    <select id="modalitaSuiteSelect" onchange="cambiaModalitaPresentazione(this.value)" style="width:100%; padding:8px 10px; border-radius:8px; border:1.5px solid #0284c7; background:#fff; font-size:13px; font-weight:700; color:#0f172a; outline:none; cursor:pointer;">
+                        <option value="all">🌟 Intera Suite Completa (Tutti gli 8 Moduli)</option>
+                        <option value="careassist">🩺 Solo CareAssist Pro (Sanitario / RSA / Domiciliare)</option>
+                        <option value="veicoli">🚗 Solo Flotta Veicoli & Spese (Autisti / Spese ACI)</option>
+                        <option value="logistica">📦 Solo Logistica & Magazzino Attrezzi</option>
+                        <option value="mednutri">🥗 Solo Nutrizione Clinica & Ricettario</option>
+                        <option value="personal">✨ Configurazione Su Misura (Scegli Tu)</option>
+                    </select>
+                </div>
 
                 <button type="button" class="btn-amz-primary" onclick="window.location.href='/launcher.html'">
                     🚀 Apri la Suite Completa (Launcher)
@@ -1409,14 +1422,14 @@
                 visualHtml: `
                     <div style="background:#0f172a; color:#fff; border-radius:12px; padding:14px; border:2px solid #fbbf24;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <strong style="color:#fde047; font-size:13px;">🚗 PARCO VEICOLI AZIENDALE &amp; PERSONALE</strong>
-                            <span style="background:#78350f; color:#fef08a; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800;">PREAVVISO AUTOMATICO</span>
+                            <strong style="color:#fde047; font-size:13px;">🚗 FLOTTA VEICOLI &amp; SPESE STILE SEGUGIO</strong>
+                            <span style="background:#78350f; color:#fef08a; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:800;">MODIFICA &amp; RICALCOLO LIVE</span>
                         </div>
                         <div style="font-size:12.5px; line-height:1.4; color:#cbd5e1;">
-                            • Calendario scadenze Revisione Periodica, Bollo e Polizza<br>
-                            • Registro interventi meccanici, cambio gomme e tagliandi<br>
-                            • Monitoraggio consumi carburante e storico rifornimenti<br>
-                            • Calcolo automatico rimborsi chilometrici ACI per trasferte
+                            • Box contabili: Rimborsi ACI, Carburante, Officina e Utile Netto<br>
+                            • Scheda spesa dettagliata con modifica e cancellazione istantanea<br>
+                            • Scadenze Bollo, Revisione e Assicurazione con semaforo verde/giallo/rosso<br>
+                            • Barra di navigazione universale per tornare al Menù con un tocco
                         </div>
                     </div>
                 `,
@@ -2205,6 +2218,24 @@
         function chiudiModalInfoApp() {
             fermaAudioSuite();
             document.getElementById('modalInfoApp').style.display = 'none';
+        }
+
+        function cambiaModalitaPresentazione(val) {
+            const cards = document.querySelectorAll('.aplus-card');
+            const toast = document.getElementById('btnShareWhatsapp');
+            if (val === 'all') {
+                cards.forEach(c => c.style.display = 'flex');
+            } else if (val === 'careassist') {
+                cards.forEach((c, i) => c.style.display = (i === 0) ? 'flex' : 'none');
+            } else if (val === 'veicoli') {
+                cards.forEach((c, i) => c.style.display = (i === 1) ? 'flex' : 'none');
+            } else if (val === 'logistica') {
+                cards.forEach((c, i) => c.style.display = (i === 2 || i === 3) ? 'flex' : 'none');
+            } else if (val === 'mednutri') {
+                cards.forEach((c, i) => c.style.display = (i === 4 || i === 5) ? 'flex' : 'none');
+            } else if (val === 'personal') {
+                cards.forEach(c => c.style.display = 'flex');
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
