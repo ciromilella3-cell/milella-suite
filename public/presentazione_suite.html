@@ -777,7 +777,7 @@
                                 <span>Modalità Voce:</span>
                                 <select id="selectVoiceMode" onchange="cambiaVoiceMode(this.value)" style="background:#1e293b; color:#ffd814; border:1px solid #d4af37; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:800;">
                                     <option value="neural" selected>🎙️ Voci Reali Studio Umane HD (Isabella &amp; Ciro - Consigliato)</option>
-                                    <option value="browser">🤖 Sintesi Vocale del Computer (Se personalizzi il testo)</option>
+                                    
                                     <option value="silent">🔇 Modalità Silenziosa (Solo Sottotitoli)</option>
                                 </select>
                             </label>
@@ -1121,7 +1121,7 @@
                             <label style="display:block; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Sorgente Vocale:</label>
                             <select id="modalSelectVoiceMode" onchange="cambiaVoiceMode(this.value); document.getElementById('selectVoiceMode').value=this.value;" style="width:100%; background:#1e293b; color:#ffd814; border:1px solid #a855f7; padding:8px 10px; border-radius:8px; font-weight:800;">
                                 <option value="neural">🎙️ Voci Studio HD Neurali (Isabella &amp; Ciro)</option>
-                                <option value="browser">🗣️ Voce Sintetica Locale del Tuo Dispositivo</option>
+                                
                                 <option value="silent">🔇 Solo Sottotitoli (Muto)</option>
                             </select>
                         </div>
@@ -1713,16 +1713,14 @@
         let suiteAudio = new Audio();
         suiteAudio.preload = 'auto';
 
-        // Preferenze Audio Autonome salvate in LocalStorage
-        // Di default attiva la modalità Voci Umane Studio Neurali MP3
-        let storedMode = localStorage.getItem('milella_suite_voicemode');
-        if (storedMode === 'browser') storedMode = 'neural'; // Forza ripristino alle Voci Umane HD
+        // Preferenze Audio: VOCI UMANE REALI IN STUDIO DI DEFAULT E PERMANENTI
+        localStorage.setItem('milella_suite_voicemode', 'neural');
         let audioConfig = {
-            mode: storedMode || 'neural', // 'neural' (Voci Umane Reali) | 'browser' | 'silent'
+            mode: 'neural', // ESCLUSIVAMENTE Voci Umane Reali MP3 Studio
             speed: parseFloat(localStorage.getItem('milella_suite_audiospeed')) || 1.0,
             volume: parseInt(localStorage.getItem('milella_suite_volume')) || 85,
             muted: localStorage.getItem('milella_suite_muted') === 'true',
-            browserVoice: localStorage.getItem('milella_suite_browservoice') || ''
+            browserVoice: ''
         };
 
         // Cache dei copioni personalizzati dall'utente
@@ -1856,32 +1854,11 @@
             localStorage.setItem('milella_suite_browservoice', name);
         }
 
+        // DISTRUZIONE TOTALE SINTESI VOCALE ROBOTICA
         function parlaConBrowserSpeech(testo, onEndCallback) {
-            if (!('speechSynthesis' in window) || audioConfig.muted) {
-                if (onEndCallback) setTimeout(onEndCallback, 1500);
-                return;
-            }
-            window.speechSynthesis.cancel();
-            const cleanText = testo.replace(/[«»]/g, '').trim();
-            const utt = new SpeechSynthesisUtterance(cleanText);
-            utt.rate = audioConfig.speed;
-            utt.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
-            utt.lang = 'it-IT';
-
-            if (audioConfig.browserVoice) {
-                const found = availableBrowserVoices.find(v => v.name === audioConfig.browserVoice);
-                if (found) utt.voice = found;
-            } else if (availableBrowserVoices.length > 0) {
-                utt.voice = availableBrowserVoices[0];
-            }
-
-            utt.onend = () => {
-                if (onEndCallback) onEndCallback();
-            };
-            utt.onerror = () => {
-                if (onEndCallback) onEndCallback();
-            };
-            window.speechSynthesis.speak(utt);
+            console.log('[AUDIO] Sintesi vocale artificiale disattivata in favore delle Voci Umane Reali MP3 Studio.');
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+            if (onEndCallback) setTimeout(onEndCallback, 1000);
         }
 
         function ottieniTestoAttualeScena(sceneIdx) {
@@ -1990,15 +1967,8 @@
                 return;
             }
 
-            // Modalità 2: Voce Locale Browser (o testo personalizzato dall'utente)
-            if (audioConfig.mode === 'browser' || customCopioni['scene-' + currentSceneIdx]) {
-                document.getElementById('filmProgressBar').style.width = '30%';
-                parlaConBrowserSpeech(currentText, () => {
-                    document.getElementById('filmProgressBar').style.width = '100%';
-                    if (isFilmPlaying) prossimaScenaFilm();
-                });
-                return;
-            }
+            // Riproduzione Voci Umane Reali MP3 Studio
+            audioConfig.mode = 'neural';
 
             // Modalità 3: Voce Studio Neurale Ufficiale MP3 (Isabella & Ciro)
             suiteAudio.src = sc.audioUrl;
@@ -2017,11 +1987,11 @@
                 prossimaScenaFilm();
             };
             suiteAudio.play().catch(err => {
-                console.warn('Play audio suite warning:', err);
-                // Fallback trasparente su sintesi vocale se rete offline o bloccata
-                parlaConBrowserSpeech(currentText, () => {
+                console.warn('Play audio suite human recording:', err);
+                // Non usare mai sintesi vocale robotica
+                setTimeout(() => {
                     if (isFilmPlaying) prossimaScenaFilm();
-                });
+                }, 8000);
             });
         }
 
@@ -2122,16 +2092,9 @@
             const app = SUITE_APPS[idx] || SUITE_APPS[0];
             const testoApp = ottieniTestoAttualeApp(idx);
 
-            if (audioConfig.mode === 'silent') return;
+            if (audioConfig.mode === 'silent' || audioConfig.muted) return;
 
-            if (audioConfig.mode === 'browser' || customCopioni['app-' + idx]) {
-                document.getElementById('filmProgressBar').style.width = '40%';
-                parlaConBrowserSpeech(testoApp, () => {
-                    document.getElementById('filmProgressBar').style.width = '100%';
-                });
-                return;
-            }
-
+            // Usa sempre e solo la voce umana reale registrata in studio per l'app
             suiteAudio.src = app.audioUrl;
             suiteAudio.playbackRate = audioConfig.speed;
             suiteAudio.volume = audioConfig.muted ? 0 : (audioConfig.volume / 100);
@@ -2140,12 +2103,11 @@
                 if (suiteAudio.duration && isFinite(suiteAudio.duration)) {
                     const pct = Math.min(100, (suiteAudio.currentTime / suiteAudio.duration) * 100);
                     document.getElementById('filmProgressBar').style.width = pct + '%';
-                    aggiornaSottotitoloKaraoke(currentText, pct);
+                    aggiornaSottotitoloKaraoke(testoApp, pct);
                 }
             };
             suiteAudio.play().catch(e => {
-                console.warn('Fallback speech app:', e);
-                parlaConBrowserSpeech(testoApp);
+                console.warn('Riproduzione audio umano:', e);
             });
         }
 
