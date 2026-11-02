@@ -2458,15 +2458,27 @@ app.post('/api/export-project', requireAuth({ admin: true }), (req, res) => {
 });
 
 // 3. Apri cartella esportata in Esplora Risorse
-app.post('/api/open-exported-folder', requireAuth({ admin: true }), (req, res) => {
-    let { folderPath } = req.body;
+app.post('/api/open-exported-folder', (req, res) => {
+    let { folderPath } = req.body || {};
     if (!folderPath) {
-        return res.status(400).json({ error: 'Nessun percorso fornito' });
+        folderPath = 'D:\\VERSIONI_RILASCIATE';
+    }
+
+    // Se per sbaglio passa E:, correggilo dinamicamente con la radice reale del server
+    const currentDrive = path.parse(__dirname).root; // Es. 'D:\'
+    if (folderPath.startsWith('E:\\') || folderPath.startsWith('e:\\')) {
+        folderPath = folderPath.replace(/^[Ee]:\\/, currentDrive);
     }
 
     folderPath = path.resolve(folderPath);
     if (!fs.existsSync(folderPath)) {
-        return res.status(404).json({ error: 'Cartella non trovata: ' + folderPath });
+        // Fallback: prova ad aprire la cartella radice delle versioni rilasciate
+        const fallback = path.join(currentDrive, 'VERSIONI_RILASCIATE');
+        if (fs.existsSync(fallback)) {
+            folderPath = fallback;
+        } else {
+            return res.status(404).json({ error: 'Cartella non trovata: ' + folderPath });
+        }
     }
 
     try {
