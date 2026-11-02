@@ -1223,19 +1223,17 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                             <label style="font-weight:800; color:#cbd5e1; font-size:13.5px;">Scrivi il Tuo Dialogo Personalizzato (Voci Umane Reali):</label>
                             <span id="labelHintSeparatore" style="font-size:11.5px; color:#38bdf8; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.3);">
-                                💡 Puoi scrivere direttamente i nomi (es: Isabella:, Elsa:, Ciro:, Diego:) o separare con "—"
+                                💡 Puoi scrivere QUALSIASI nome (es: Maria:, Paolo:, Dottore:, Roberto:)
                             </span>
                         </div>
                         
                         <!-- BOX EDITOR ATTIVO E TOTALMENTE MODIFICABILE -->
                         <div style="position:relative;">
-                            <textarea id="editorCopioneText" rows="5" placeholder="Scrivi o incolla qui il testo... Puoi modificare parole, aggiungere battute o cambiare completamente il senso!" style="width:100%; background:#040711; color:#fde047; border:2px solid #38bdf8; border-radius:10px; padding:14px; font-family:inherit; font-size:14px; line-height:1.55; resize:vertical; box-sizing:border-box; box-shadow:inset 0 2px 8px rgba(0,0,0,0.6);"></textarea>
+                            <textarea id="editorCopioneText" rows="5" placeholder="Scrivi liberamente con qualsiasi nome, ad esempio:&#10;Maria: Hai controllato la terapia?&#10;Laura: Sì dottoressa, tutto pronto nel frigo.&#10;Oppure per uomini:&#10;Roberto: Matteo, hai verificato il furgone?&#10;Matteo: Tutto ok Roberto, revisione prenotata." style="width:100%; background:#040711; color:#fde047; border:2px solid #38bdf8; border-radius:10px; padding:14px; font-family:inherit; font-size:14px; line-height:1.55; resize:vertical; box-sizing:border-box; box-shadow:inset 0 2px 8px rgba(0,0,0,0.6);"></textarea>
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; flex-wrap:wrap; gap:8px;">
                                 <div id="legendSpeakerCast" style="font-size:12px; color:#94a3b8; display:flex; gap:12px; flex-wrap:wrap;">
-                                    <span style="color:#f472b6;">👑 <strong>Isabella:</strong> Donna 1</span>
-                                    <span style="color:#c084fc;">🌸 <strong>Elsa:</strong> Donna 2</span>
-                                    <span style="color:#f59e0b;">🎙️ <strong>Ciro:</strong> Uomo 1</span>
-                                    <span style="color:#38bdf8;">⚡ <strong>Diego:</strong> Uomo 2</span>
+                                    <span style="color:#f472b6;">👑 <strong>Libertà Totale:</strong> Riconosce qualsiasi nome inserito</span>
+                                    <span style="color:#38bdf8;">⚡ Assegna automaticamente voci distinte a ciascun personaggio</span>
                                 </div>
                                 <button type="button" onclick="caricaOriginaleInEditor()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; padding:4px 10px; border-radius:6px; font-size:11.5px; font-weight:700; cursor:pointer;" title="Ricarica la frase originale esatta dentro questo riquadro per poterla modificare subito">
                                     📋 Ricarica Testo Originale nel Riquadro
@@ -1243,7 +1241,7 @@
                             </div>
                         </div>
                         <div style="margin-top:6px; font-size:12px; color:#94a3b8;">
-                            ✨ <em>Supporto Voci Umane HD Studio:</em> puoi creare dialoghi tra 2 o 3 donne, tra 2 o 3 uomini o gruppi misti indicando semplicemente il nome all'inizio della frase.
+                            ✨ <em>Massima Personalizzazione:</em> Scrivi qualsiasi nome seguito dai due punti (es: <code>Dottoressa:</code>, <code>Mario:</code>, <code>Chiara:</code>, <code>Giampiero:</code>). Il sistema assegnerà automaticamente una voce neurale umana dedicata a ciascuno!
                         </div>
                     </div>
 
@@ -2073,29 +2071,27 @@
             const box = document.getElementById('subtitleText');
             if (!box) return;
 
-            const speakerColors = {
-                'isabella': { color: '#f472b6', label: '👑 Isabella' },
-                'elsa':     { color: '#c084fc', label: '🌸 Elsa' },
-                'elena':    { color: '#fb7185', label: '🌺 Elena' },
-                'anna':     { color: '#e879f9', label: '🌷 Anna' },
-                'ciro':     { color: '#f59e0b', label: '🎙️ Ciro' },
-                'giuseppe': { color: '#f59e0b', label: '🎙️ Giuseppe' },
-                'diego':    { color: '#38bdf8', label: '⚡ Diego' },
-                'marco':    { color: '#34d399', label: '🛡️ Marco' },
-                'antonio':  { color: '#fbbf24', label: '🔨 Antonio' }
-            };
+            const paletteColori = [
+                '#f472b6', '#38bdf8', '#c084fc', '#f59e0b', '#34d399', '#fb7185', '#fbbf24', '#38bdf8'
+            ];
 
             let battute = [];
-            const tagRegex = /(Isabella\s*:|Elsa\s*:|Elena\s*:|Anna\s*:|Ciro\s*:|Giuseppe\s*:|Diego\s*:|Marco\s*:|Antonio\s*:)/i;
+            // Riconosce QUALSIASI nome arbitrario prima dei due punti (es: "Maria:", "Laura:", "Roberto:", "Paolo:")
+            const genericTagRegex = /(?:^|\n|—)\s*([A-Za-zÀ-ÿ0-9_\s]{2,20})\s*:/g;
+            const matches = [...testoCompleto.matchAll(genericTagRegex)];
 
-            if (tagRegex.test(testoCompleto)) {
-                const parti = testoCompleto.split(/(Isabella\s*:|Elsa\s*:|Elena\s*:|Anna\s*:|Ciro\s*:|Giuseppe\s*:|Diego\s*:|Marco\s*:|Antonio\s*:)/i).filter(Boolean);
-                let curSpeaker = 'isabella';
-                for (let i = 0; i < parti.length; i++) {
-                    const s = parti[i].trim();
-                    const m = s.match(/^(Isabella|Elsa|Elena|Anna|Ciro|Giuseppe|Diego|Marco|Antonio)\s*:/i);
-                    if (m) {
-                        curSpeaker = m[1].toLowerCase();
+            if (matches.length > 0) {
+                const uniqueNames = [...new Set(matches.map(m => m[1].trim()))];
+                const nameRegexStr = uniqueNames.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+                const splitPattern = new RegExp(`(?:^|\\n|—)\\s*(${nameRegexStr})\\s*:`, 'gi');
+                const rawParts = testoCompleto.split(splitPattern).filter(Boolean);
+
+                let curSpeaker = uniqueNames[0];
+                for (let i = 0; i < rawParts.length; i++) {
+                    const s = rawParts[i].trim();
+                    const matchedName = uniqueNames.find(un => un.toLowerCase() === s.toLowerCase());
+                    if (matchedName) {
+                        curSpeaker = matchedName;
                     } else if (s) {
                         const clean = s.replace(/^[—\-\s]+/, '').replace(/[—\-\s]+$/, '').trim();
                         if (clean) {
@@ -2105,31 +2101,39 @@
                 }
             } else if (testoCompleto.includes('—')) {
                 const parti = testoCompleto.split('—').map(p => p.trim()).filter(Boolean);
-                let roster = ['isabella', 'ciro'];
-                if (currentCastMode === 'due_donne') roster = ['isabella', 'elsa'];
-                else if (currentCastMode === 'tre_donne') roster = ['isabella', 'elsa', 'elena'];
-                else if (currentCastMode === 'due_uomini') roster = ['ciro', 'diego'];
-                else if (currentCastMode === 'tre_uomini') roster = ['ciro', 'diego', 'marco'];
+                let roster = ['Isabella', 'Ciro'];
+                if (currentCastMode === 'due_donne') roster = ['Isabella', 'Elsa'];
+                else if (currentCastMode === 'tre_donne') roster = ['Isabella', 'Elsa', 'Elena'];
+                else if (currentCastMode === 'due_uomini') roster = ['Ciro', 'Diego'];
+                else if (currentCastMode === 'tre_uomini') roster = ['Ciro', 'Diego', 'Marco'];
 
                 parti.forEach((p, idx) => {
                     const spk = roster[idx % roster.length];
                     battute.push({ speaker: spk, text: p });
                 });
             } else {
-                battute.push({ speaker: 'isabella', text: testoCompleto });
+                battute.push({ speaker: 'Voce Narrante', text: testoCompleto });
             }
 
             if (battute.length > 1) {
                 const segmentSize = 100 / battute.length;
                 const activeIdx = Math.min(battute.length - 1, Math.floor(percentualeProgresso / segmentSize));
 
+                // Mappa colori per speaker
+                const speakerColorMap = {};
+                let colorCounter = 0;
+
                 let htmlContent = '';
                 battute.forEach((b, idx) => {
+                    if (!speakerColorMap[b.speaker]) {
+                        speakerColorMap[b.speaker] = paletteColori[colorCounter % paletteColori.length];
+                        colorCounter++;
+                    }
                     const isCurrent = (idx === activeIdx);
-                    const spkInfo = speakerColors[b.speaker] || { color: '#fde047', label: b.speaker.toUpperCase() };
+                    const spkColor = speakerColorMap[b.speaker];
                     htmlContent += `
                         <div style="margin:4px 0; transition:all 0.3s ease; opacity:${isCurrent ? '1' : '0.45'}; transform:${isCurrent ? 'scale(1.02)' : 'scale(1)'};">
-                            <span style="font-weight:900; font-size:11.5px; color:${spkInfo.color}; text-transform:uppercase;">${spkInfo.label}:</span>
+                            <span style="font-weight:900; font-size:11.5px; color:${spkColor}; text-transform:uppercase;">🗣️ ${b.speaker}:</span>
                             <span class="${isCurrent ? 'karaoke-active-phrase' : 'karaoke-dimmed-phrase'}" style="font-size:${isCurrent ? '14px' : '13px'}; color:${isCurrent ? '#fef08a' : '#94a3b8'};">${b.text}</span>
                         </div>
                     `;

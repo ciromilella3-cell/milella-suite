@@ -2815,73 +2815,120 @@ app.post(['/api/genera-dialogo-audio', '/careassist/api/genera-dialogo-audio'], 
             return buf;
         }
 
-        // Mappa dei personaggi riconosciuti e delle loro voci neurali Studio HD
-        const speakerMap = {
-            // Donne
+        // Mappa dei personaggi e voci base predefinite
+        const baseVoices = {
             'isabella': { voice: 'it-IT-IsabellaNeural', label: 'Isabella' },
             'elsa':     { voice: 'it-IT-ElsaNeural', label: 'Elsa' },
             'elena':    { voice: 'it-IT-IsabellaNeural', options: { pitch: '+18Hz', rate: '+5%' }, label: 'Elena' },
             'anna':     { voice: 'it-IT-ElsaNeural', options: { pitch: '-15Hz', rate: '-4%' }, label: 'Anna' },
-            'donna':    { voice: 'it-IT-IsabellaNeural', label: 'Donna' },
-            // Uomini
             'ciro':     { voice: 'it-IT-GiuseppeNeural', label: 'Ciro' },
             'giuseppe': { voice: 'it-IT-GiuseppeNeural', label: 'Giuseppe' },
             'diego':    { voice: 'it-IT-DiegoNeural', label: 'Diego' },
             'marco':    { voice: 'it-IT-GiuseppeNeural', options: { pitch: '-20Hz', rate: '-5%' }, label: 'Marco' },
-            'antonio':  { voice: 'it-IT-DiegoNeural', options: { pitch: '+20Hz', rate: '+6%' }, label: 'Antonio' },
-            'uomo':     { voice: 'it-IT-GiuseppeNeural', label: 'Uomo' }
+            'antonio':  { voice: 'it-IT-DiegoNeural', options: { pitch: '+20Hz', rate: '+6%' }, label: 'Antonio' }
         };
+
+        // Roster di voci per genere da assegnare dinamicamente a QUALSIASI nome personalizzato
+        const femaleVoicePool = [
+            { voice: 'it-IT-IsabellaNeural', label: 'Voce Femminile 1' },
+            { voice: 'it-IT-ElsaNeural', label: 'Voce Femminile 2' },
+            { voice: 'it-IT-IsabellaNeural', options: { pitch: '+18Hz', rate: '+5%' }, label: 'Voce Femminile 3' },
+            { voice: 'it-IT-ElsaNeural', options: { pitch: '-15Hz', rate: '-4%' }, label: 'Voce Femminile 4' }
+        ];
+
+        const maleVoicePool = [
+            { voice: 'it-IT-GiuseppeNeural', label: 'Voce Maschile 1' },
+            { voice: 'it-IT-DiegoNeural', label: 'Voce Maschile 2' },
+            { voice: 'it-IT-GiuseppeNeural', options: { pitch: '-20Hz', rate: '-5%' }, label: 'Voce Maschile 3' },
+            { voice: 'it-IT-DiegoNeural', options: { pitch: '+20Hz', rate: '+6%' }, label: 'Voce Maschile 4' }
+        ];
 
         const buffers = [];
         let battute = [];
         let rawText = testo.replace(/[«»]/g, '').trim();
 
-        // Rilevamento intelligente dei tag dei personaggi (es: "Isabella:", "Elsa:", "Ciro:", "Diego:", ecc.)
-        const tagNames = Object.keys(speakerMap).join('|');
-        const tagRegex = new RegExp(`(^|\\n|—)\\s*(${tagNames})\\s*:`, 'i');
+        // Riconosce QUALSIASI nome all'inizio riga o frase nel formato "Nome:" (es: "Maria:", "Roberto:", "Dottoressa:", "Paolo:")
+        const genericTagRegex = /(?:^|\n|—)\s*([A-Za-zÀ-ÿ0-9_\s]{2,20})\s*:/g;
+        const matches = [...rawText.matchAll(genericTagRegex)];
 
-        if (tagRegex.test(rawText)) {
-            // Separa con regex globale mantenendo i delimitatori
-            const splitRegex = new RegExp(`(${tagNames})\\s*:`, 'gi');
-            const parti = rawText.split(splitRegex).filter(Boolean);
-            
-            let currentSpeakerKey = 'isabella';
-            for (let i = 0; i < parti.length; i++) {
-                const seg = parti[i].trim();
-                const segLower = seg.toLowerCase();
-                if (speakerMap[segLower]) {
-                    currentSpeakerKey = segLower;
+        if (matches.length > 0) {
+            // Mappa dinamica per associare voci coerenti a qualsiasi nome inserito dall'utente
+            const dynamicNameMap = {};
+            let fIdx = 0;
+            let mIdx = 0;
+
+            // Determina se il contesto scelto è tutto al femminile o tutto al maschile
+            const isAllWomen = (castMode === 'due_donne' || castMode === 'tre_donne');
+            const isAllMen = (castMode === 'due_uomini' || castMode === 'tre_uomini');
+
+            matches.forEach(m => {
+                const nameClean = m[1].trim();
+                const nameKey = nameClean.toLowerCase();
+                if (!dynamicNameMap[nameKey]) {
+                    if (baseVoices[nameKey]) {
+                        dynamicNameMap[nameKey] = { ...baseVoices[nameKey], label: nameClean };
+                    } else if (isAllWomen) {
+                        dynamicNameMap[nameKey] = { ...femaleVoicePool[fIdx % femaleVoicePool.length], label: nameClean };
+                        fIdx++;
+                    } else if (isAllMen) {
+                        dynamicNameMap[nameKey] = { ...maleVoicePool[mIdx % maleVoicePool.length], label: nameClean };
+                        mIdx++;
+                    } else {
+                        // Misto: assegna alternando Donna / Uomo o riconoscendo nomi femminili tipici italiani che finiscono per 'a'
+                        const isLikelyFemale = /[aà]$/i.test(nameClean) || ['lucia', 'maria', 'giulia', 'elena', 'sara', 'francesca', 'dottoressa', 'infermiera'].includes(nameKey);
+                        if (isLikelyFemale) {
+                            dynamicNameMap[nameKey] = { ...femaleVoicePool[fIdx % femaleVoicePool.length], label: nameClean };
+                            fIdx++;
+                        } else {
+                            dynamicNameMap[nameKey] = { ...maleVoicePool[mIdx % maleVoicePool.length], label: nameClean };
+                            mIdx++;
+                        }
+                    }
+                }
+            });
+
+            // Splitta il testo rispettando tutti i nomi individuati
+            const escapedNames = Object.keys(dynamicNameMap).map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+            const splitPattern = new RegExp(`(?:^|\\n|—)\\s*(${escapedNames})\\s*:`, 'gi');
+            const rawParts = rawText.split(splitPattern).filter(Boolean);
+
+            let currentSpeaker = Object.keys(dynamicNameMap)[0];
+            for (let i = 0; i < rawParts.length; i++) {
+                const seg = rawParts[i].trim();
+                const segKey = seg.toLowerCase();
+                if (dynamicNameMap[segKey]) {
+                    currentSpeaker = segKey;
                 } else if (seg) {
-                    const cleanSeg = seg.replace(/^[—\-\s]+/, '').replace(/[—\-\s]+$/, '').trim();
-                    if (cleanSeg) {
-                        battute.push({ 
-                            speaker: currentSpeakerKey,
-                            speakerConfig: speakerMap[currentSpeakerKey], 
-                            testo: cleanSeg 
+                    const cleanText = seg.replace(/^[—\-\s]+/, '').replace(/[—\-\s]+$/, '').trim();
+                    if (cleanText) {
+                        battute.push({
+                            speaker: currentSpeaker,
+                            speakerConfig: dynamicNameMap[currentSpeaker],
+                            testo: cleanText
                         });
                     }
                 }
             }
         } else if (rawText.includes('—')) {
-            // Alternanza automatica in base a castMode o default (Isabella / Ciro)
+            // Alternanza automatica su trattino in base alla modalità selezionata
             const parti = rawText.split('—');
-            let roster = [speakerMap['isabella'], speakerMap['ciro']];
-            if (castMode === 'due_donne') roster = [speakerMap['isabella'], speakerMap['elsa']];
-            else if (castMode === 'tre_donne') roster = [speakerMap['isabella'], speakerMap['elsa'], speakerMap['elena']];
-            else if (castMode === 'due_uomini') roster = [speakerMap['ciro'], speakerMap['diego']];
-            else if (castMode === 'tre_uomini') roster = [speakerMap['ciro'], speakerMap['diego'], speakerMap['marco']];
+            let roster = [femaleVoicePool[0], maleVoicePool[0]];
+            if (castMode === 'due_donne') roster = [femaleVoicePool[0], femaleVoicePool[1]];
+            else if (castMode === 'tre_donne') roster = [femaleVoicePool[0], femaleVoicePool[1], femaleVoicePool[2]];
+            else if (castMode === 'due_uomini') roster = [maleVoicePool[0], maleVoicePool[1]];
+            else if (castMode === 'tre_uomini') roster = [maleVoicePool[0], maleVoicePool[1], maleVoicePool[2]];
 
             parti.forEach((p, idx) => {
                 const cleanSeg = p.trim();
                 if (cleanSeg) {
                     const cfg = roster[idx % roster.length];
-                    battute.push({ speaker: cfg.label.toLowerCase(), speakerConfig: cfg, testo: cleanSeg });
+                    battute.push({ speaker: `voce_${idx+1}`, speakerConfig: cfg, testo: cleanSeg });
                 }
             });
         } else {
-            // Testo singolo: usa la prima voce del cast o Isabella
-            const defaultSpeaker = (castMode === 'due_uomini' || castMode === 'tre_uomini') ? speakerMap['ciro'] : speakerMap['isabella'];
-            battute.push({ speaker: defaultSpeaker.label.toLowerCase(), speakerConfig: defaultSpeaker, testo: rawText });
+            // Testo unico
+            const defaultSpeaker = (castMode === 'due_uomini' || castMode === 'tre_uomini') ? maleVoicePool[0] : femaleVoicePool[0];
+            battute.push({ speaker: 'principale', speakerConfig: defaultSpeaker, testo: rawText });
         }
 
         console.log('[DIALOGO GENERAZIONE] Battute individuate:', battute.length);
