@@ -2009,16 +2009,18 @@
             const castInput = document.getElementById('selectCastMode');
             if (castInput) castInput.value = mode;
 
-            // Evidenzia visivamente il pulsante selezionato
+            // Evidenzia visivamente il pulsante selezionato con bordo e bagliore evidente
             ['due_uomini', 'tre_uomini', 'due_donne', 'tre_donne', 'misto'].forEach(m => {
                 const b = document.getElementById('btnCast_' + m);
                 if (b) {
                     if (m === mode) {
-                        b.style.boxShadow = '0 0 15px rgba(253,224,71,0.6)';
-                        b.style.transform = 'scale(1.05)';
+                        b.style.boxShadow = '0 0 20px rgba(56,189,248,0.85), inset 0 0 10px rgba(56,189,248,0.4)';
+                        b.style.border = '2.5px solid #38bdf8';
+                        b.style.transform = 'scale(1.06)';
                         b.style.background = '#1e293b';
                     } else {
                         b.style.boxShadow = 'none';
+                        b.style.border = '1px solid rgba(255,255,255,0.15)';
                         b.style.transform = 'scale(1)';
                         b.style.background = '#0f172a';
                     }
@@ -2027,13 +2029,20 @@
 
             cambiaCastMode(mode);
 
-            // Carica un testo di esempio immediato coerente col cast selezionato se richiesto o aggiorna battute
+            // Adatta SUBITO il testo nel riquadro nero per riflettere i nuovi personaggi scelti
             const txtArea = document.getElementById('editorCopioneText');
-            if (txtArea && !txtArea.value.trim()) {
-                if (mode === 'due_uomini') txtArea.value = 'Ciro: Diego, hai verificato la scadenza della revisione del furgone? — Diego: Controllato Ciro, revisione prenotata e tagliando registrato!';
-                else if (mode === 'tre_uomini') txtArea.value = 'Ciro: Ragazzi, confermiamo lo stato dei backup della giornata? — Diego: Copia fisica su chiavetta USB completata con un clic! — Marco: Allineamento con il Cloud di Render attivo al cento percento!';
-                else if (mode === 'due_donne') txtArea.value = 'Isabella: Dottoressa Elsa, abbiamo aggiornato il diario clinico di Mario? — Elsa: Sì Isabella, parametri glicemici stabili e scorta insulina già confermata nel frigo!';
-                else if (mode === 'tre_donne') txtArea.value = 'Isabella: Benvenute al passaggio consegne del reparto. — Elsa: Tutti i parametri dei pazienti sono allineati sul Cloud. — Elena: Perfetto, procedo con la somministrazione terapeutica!';
+            if (txtArea) {
+                if (mode === 'tre_uomini') {
+                    txtArea.value = 'Ciro: Diego, hai verificato la scadenza della revisione del furgone? — Diego: Controllato Ciro, tutto registrato nel gestionale. — Marco: Confermato, attrezzi caricati e pronti a partire!';
+                } else if (mode === 'due_uomini') {
+                    txtArea.value = 'Ciro: Diego, hai verificato la scadenza della revisione del furgone e il livello carburante? — Diego: Controllato Ciro: revisione prenotata e tagliando registrato!';
+                } else if (mode === 'tre_donne') {
+                    txtArea.value = 'Isabella: Dottoressa Elsa, abbiamo aggiornato il diario clinico di Mario? — Elsa: Sì Isabella, glicemia stabile e insulina confermata in frigo. — Elena: Perfetto, procedo con la somministrazione terapeutica!';
+                } else if (mode === 'due_donne') {
+                    txtArea.value = 'Isabella: Dottoressa Elsa, abbiamo aggiornato il diario clinico di Mario? — Elsa: Sì Isabella, parametri glicemici stabili e scorta insulina già confermata nel frigo!';
+                } else {
+                    txtArea.value = 'Isabella: Ciro, come è nata l\'idea della Suite? — Ciro: Chi gestisce famiglia, lavoro e assistenza ha decine di foglietti sparsi. Con la Suite abbiamo unificato 8 programmi sotto un unico PIN!';
+                }
             }
         }
 
