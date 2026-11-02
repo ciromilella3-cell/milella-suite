@@ -759,7 +759,7 @@
                         </button>
                         <button type="button" class="btn-cartoon-step" onclick="scenaPrecedente()">⏮️</button>
                         <button type="button" class="btn-cartoon-step" onclick="scenaSuccessiva()">⏭️</button>
-                        <div class="cartoon-progress-wrap">
+                        <div class="cartoon-progress-wrap" onclick="saltaPosizioneFilm(event)" style="cursor:pointer;" title="Clicca per avanzare o riavvolgere">
                             <div class="cartoon-progress-bar" id="filmProgressBar"></div>
                         </div>
                         <span id="filmTimeLabel" style="font-size:12px; font-weight:800; color:#cbd5e1;">Situazione 1/5</span>
@@ -2289,7 +2289,21 @@
             window.print();
         }
 
+        let filmTimerFallback = null;
+        function saltaPosizioneFilm(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const pct = Math.max(0, Math.min(100, (clickX / rect.width) * 100));
+            if (suiteAudio && suiteAudio.duration && isFinite(suiteAudio.duration)) {
+                suiteAudio.currentTime = (pct / 100) * suiteAudio.duration;
+            }
+            document.getElementById('filmProgressBar').style.width = pct + '%';
+            const currentText = ottieniTestoAttualeScena(currentSceneIdx);
+            aggiornaSottotitoloKaraoke(currentText, pct);
+        }
+
         function avviaRiproduzioneFilm() {
+            if (filmTimerFallback) clearInterval(filmTimerFallback);
             fermaAudioSuite();
             isFilmPlaying = true;
             document.getElementById('btnPlayFilm').innerHTML = '⏸️ Pausa';
@@ -2362,6 +2376,24 @@
                 if (!isFilmPlaying) return;
                 prossimaScenaFilm();
             };
+            // Timer continuo per garantire movimento fluido anche su audio lenti o browser mobili
+            let expectedDuration = (suiteAudio.duration && isFinite(suiteAudio.duration) && suiteAudio.duration > 3) ? suiteAudio.duration : 14;
+            let startAudioTime = Date.now();
+            filmTimerFallback = setInterval(() => {
+                if (!isFilmPlaying) { clearInterval(filmTimerFallback); return; }
+                let elapsed = (Date.now() - startAudioTime) / 1000;
+                let actualDuration = (suiteAudio.duration && isFinite(suiteAudio.duration) && suiteAudio.duration > 3) ? suiteAudio.duration : expectedDuration;
+                let progressPct = Math.min(100, (elapsed / actualDuration) * 100);
+                if (document.getElementById('filmProgressBar')) {
+                    document.getElementById('filmProgressBar').style.width = progressPct + '%';
+                }
+                aggiornaSottotitoloKaraoke(currentText, progressPct);
+                if (elapsed >= actualDuration && (!suiteAudio || suiteAudio.paused || suiteAudio.ended)) {
+                    clearInterval(filmTimerFallback);
+                    if (isFilmPlaying) prossimaScenaFilm();
+                }
+            }, 120);
+
             suiteAudio.play().catch(err => {
                 console.warn('Play audio suite human recording:', err);
                 // Non usare mai sintesi vocale robotica
