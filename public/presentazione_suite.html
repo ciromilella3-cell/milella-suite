@@ -775,8 +775,8 @@
                             <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-weight:700;">
                                 <span>Modalità Voce:</span>
                                 <select id="selectVoiceMode" onchange="cambiaVoiceMode(this.value)" style="background:#1e293b; color:#ffd814; border:1px solid #d4af37; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:800;">
-                                    <option value="neural">🎙️ Voce Studio HD Neurale (Isabella &amp; Ciro)</option>
-                                    <option value="browser">🗣️ Voce Sintetica del Browser (Locale)</option>
+                                    <option value="neural" selected>🎙️ Voci Reali Studio Umane HD (Isabella &amp; Ciro - Consigliato)</option>
+                                    <option value="browser">🤖 Sintesi Vocale del Computer (Se personalizzi il testo)</option>
                                     <option value="silent">🔇 Modalità Silenziosa (Solo Sottotitoli)</option>
                                 </select>
                             </label>
@@ -1713,8 +1713,11 @@
         suiteAudio.preload = 'auto';
 
         // Preferenze Audio Autonome salvate in LocalStorage
+        // Di default attiva la modalità Voci Umane Studio Neurali MP3
+        let storedMode = localStorage.getItem('milella_suite_voicemode');
+        if (storedMode === 'browser') storedMode = 'neural'; // Forza ripristino alle Voci Umane HD
         let audioConfig = {
-            mode: localStorage.getItem('milella_suite_voicemode') || 'neural', // 'neural' | 'browser' | 'silent'
+            mode: storedMode || 'neural', // 'neural' (Voci Umane Reali) | 'browser' | 'silent'
             speed: parseFloat(localStorage.getItem('milella_suite_audiospeed')) || 1.0,
             volume: parseInt(localStorage.getItem('milella_suite_volume')) || 85,
             muted: localStorage.getItem('milella_suite_muted') === 'true',
@@ -1795,8 +1798,18 @@
             if (!('speechSynthesis' in window)) return;
             const voices = window.speechSynthesis.getVoices();
             if (!voices || voices.length === 0) return;
-            availableBrowserVoices = voices.filter(v => v.lang.startsWith('it'));
-            if (availableBrowserVoices.length === 0) availableBrowserVoices = voices;
+            let itVoices = voices.filter(v => v.lang.startsWith('it'));
+            // Ordina mettendo per prime le voci Umane Neurali / Naturali di Microsoft Edge e Google
+            itVoices.sort((a, b) => {
+                const aName = a.name.toLowerCase();
+                const bName = b.name.toLowerCase();
+                const aIsNatural = aName.includes('natural') || aName.includes('online') || aName.includes('neural') || aName.includes('google');
+                const bIsNatural = bName.includes('natural') || bName.includes('online') || bName.includes('neural') || bName.includes('google');
+                if (aIsNatural && !bIsNatural) return -1;
+                if (!aIsNatural && bIsNatural) return 1;
+                return 0;
+            });
+            availableBrowserVoices = itVoices.length > 0 ? itVoices : voices;
 
             const sel = document.getElementById('selectBrowserVoiceList');
             if (!sel) return;
