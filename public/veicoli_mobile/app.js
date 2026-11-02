@@ -809,12 +809,11 @@ async function scansionaScontrino(event) {
 
   // 1. APRE IMMEDIATAMENTE LA SCHEDA DI COMPILAZIONE RIFORNIMENTO
   apriModalRifornimento();
-  apriVeicoliOcrModal('Lettura Scontrino Pompa', 'Estrazione importo totale, litri e distributore...', '🧾');
+  apriVeicoliOcrModal('Lettura Scontrino Pompa', 'Estrazione importo totale, litri, prezzo/L e distributore...', '🧾');
 
   try {
     let text = '';
     if (typeof Tesseract !== 'undefined') {
-      // Carica worker bilingue ita + eng per massima compatibilita pompe carburante
       const worker = await Tesseract.createWorker(['ita', 'eng']);
       const ret = await worker.recognize(file);
       await worker.terminate();
@@ -824,36 +823,56 @@ async function scansionaScontrino(event) {
     const upper = text.toUpperCase();
     console.log('Testo Scontrino Riconosciuto:\n', text);
 
-    // Data (es. DD/MM/YYYY o DD-MM-YYYY)
+    // 1. DATA (Supporta DD/MM/YYYY, DD/MM/YY, DD-MM-YYYY, DD.MM.YY)
     const dateMatch = upper.match(/(\d{2})[\/\.-](\d{2})[\/\.-](\d{2,4})/);
     if (dateMatch) {
+      let d = dateMatch[1];
+      let m = dateMatch[2];
       let yr = dateMatch[3];
       if (yr.length === 2) yr = '20' + yr;
-      const formattedDate = yr + '-' + dateMatch[2] + '-' + dateMatch[1];
+      const formattedDate = yr + '-' + m + '-' + d;
       const dateInp = document.getElementById('form-rif-data');
       if (dateInp) dateInp.value = formattedDate;
     }
 
-    // Distributore (Eni, IP, Q8, Tamoil, Esso, Repsol, Conad, Total, Beyfin...)
-    const brands = ['ENI', 'AGIP', 'Q8', 'IP', 'TAMOIL', 'ESSO', 'REPSOL', 'CONAD', 'TOTAL', 'BEYFIN', 'RETI', 'KEROPETROL'];
+    // 2. DISTRIBUTORE / LOCALITA (Include IPERSTAROIL, CASAMASSIMA, ENI, IP, Q8, TAMOIL, ESSO, REPSOL, CONAD, TOTAL, BEYFIN, RETI)
+    const brands = [
+      'IPERSTAROIL', 'STAROIL', 'ENI', 'AGIP', 'Q8', 'KUWAIT', 'IP ', 'ITALIANA PETROLI', 
+      'TAMOIL', 'ESSO', 'REPSOL', 'CONAD', 'TOTAL', 'BEYFIN', 'RETI', 'KEROPETROL', 'AVIA', 'COSTANTIN'
+    ];
     let foundBrand = '';
     for (const b of brands) {
       if (upper.includes(b)) {
-        foundBrand = b + ' Station';
+        foundBrand = b.trim();
         break;
       }
     }
-    if (foundBrand && document.getElementById('form-rif-note')) {
-      document.getElementById('form-rif-note').value = foundBrand;
+    // Rileva eventuale comune/localita se presente (es. Casamassima)
+    let extraLoc = '';
+    const locs = ['CASAMASSIMA', 'BARI', 'NOICATTARO', 'RUTIGLIANO', 'VALENZANO', 'CAPURSO', 'TRIGGIANO', 'MODUGNO'];
+    for (const loc of locs) {
+      if (upper.includes(loc)) {
+        extraLoc = ' (' + loc.charAt(0) + loc.slice(1).toLowerCase() + ')';
+        break;
+      }
     }
 
-    // Totale Euro (cerca importi preceduti da TOTALE, IMPORTO, PAGATO, EURO o €)
+    const noteInp = document.getElementById('form-rif-note');
+    if (noteInp) {
+      if (foundBrand) {
+        noteInp.value = foundBrand + extraLoc;
+      } else if (extraLoc) {
+        noteInp.value = 'Distributore' + extraLoc;
+      }
+    }
+
+    // 3. TOTALE EURO (Supporta: "IMPORTO EURO 39,24", "EUR 39,24", "TOTALE 39.24", "€ 39,24", "TOT 39.24")
     let detectedTotal = null;
-    const totalMatch = upper.match(/(?:TOTALE|IMPORTO|PAGATO|EURO|€|IMP|TOT)[^0-9]*([0-9]{1,3}[,\.][0-9]{2})/);
+    const totalMatch = upper.match(/(?:IMPORTO\s*EURO|IMPORTO\s*EUR|IMPORTO|TOTALE|PAGATO|EURO|EUR|€|IMP|TOT)[^0-9]*([0-9]{1,3}[,\.][0-9]{2})/);
     if (totalMatch) {
       detectedTotal = parseFloat(totalMatch[1].replace(',', '.'));
     } else {
-      // Fallback: cerca qualsiasi numero con due decimali tra 10.00 e 200.00 (tipica spesa rifornimento)
+      // Fallback: cerca importi numerici con 2 decimali plausibili (da 10€ a 250€)
       const allPrices = upper.match(/\b([1-9][0-9]{1,2}[,\.][0-9]{2})\b/g);
       if (allPrices && allPrices.length > 0) {
         const floatPrices = allPrices.map(p => parseFloat(p.replace(',', '.'))).filter(p => p >= 10 && p <= 250);
@@ -862,46 +881,56 @@ async function scansionaScontrino(event) {
     }
 
     if (detectedTotal && detectedTotal > 0 && detectedTotal < 500) {
-      document.getElementById('form-rif-costo').value = detectedTotal.toFixed(2);
+      const costoInp = document.getElementById('form-rif-costo');
+      if (costoInp) costoInp.value = detectedTotal.toFixed(2);
     }
 
-    // Prezzo al Litro (es. 1,659 o 1.789 o 2.010)
-    const priceLitroMatch = upper.match(/(?:PREZZO|EURO\/L|€\/L|AL\s*LITRO|CAD)[^0-9]*([12][,\.][0-9]{3})/);
+    // 4. PREZZO AL LITRO (Supporta: "EUR/L 1,984", "EURO/L 1.984", "€/L 1,984", "PREZZO 1,984", "1.984")
+    let detectedPrezzoLitro = null;
+    const priceLitroMatch = upper.match(/(?:EUR\/L|EURO\/L|€\/L|PREZZO|AL\s*LITRO|CAD)[^0-9]*([12][,\.][0-9]{3})/);
     if (priceLitroMatch) {
-      const pL = parseFloat(priceLitroMatch[1].replace(',', '.'));
-      if (document.getElementById('form-rif-prezzo-litro')) {
-        document.getElementById('form-rif-prezzo-litro').value = pL.toFixed(3);
+      detectedPrezzoLitro = parseFloat(priceLitroMatch[1].replace(',', '.'));
+    } else {
+      // Fallback a 3 cifre decimali tipiche dei carburanti (es: 1,984 o 1.859)
+      const matches3Dec = upper.match(/\b([12][,\.][0-9]{3})\b/);
+      if (matches3Dec) {
+        detectedPrezzoLitro = parseFloat(matches3Dec[1].replace(',', '.'));
       }
     }
+    if (detectedPrezzoLitro && detectedPrezzoLitro >= 1 && detectedPrezzoLitro <= 3) {
+      const pLInp = document.getElementById('form-rif-prezzo-litro');
+      if (pLInp) pLInp.value = detectedPrezzoLitro.toFixed(3);
+    }
 
-    // Litri erogati (es. 25,40 LITRI o VOL 30.50 L)
+    // 5. LITRI EROGATI (Supporta: "QUANTITA' L 19,78", "LITRI 19.78", "VOL 19,78", "L 19,78", "LT 19,78")
     let detectedLitri = null;
-    const litriMatch = upper.match(/(?:LITRI|VOL|QUANTITA|EROGATO)[^0-9]*([0-9]{1,3}[,\.][0-9]{2})/);
+    const litriMatch = upper.match(/(?:QUANTITA|QUANTITÀ|LITRI|VOL|EROGATO|\bL\b|\bLT\b)[^0-9]*([0-9]{1,3}[,\.][0-9]{2})/);
     if (litriMatch) {
       detectedLitri = parseFloat(litriMatch[1].replace(',', '.'));
     }
-
-    if (detectedLitri && detectedLitri > 0 && detectedLitri < 120) {
-      if (document.getElementById('form-rif-litri')) {
-        document.getElementById('form-rif-litri').value = detectedLitri.toFixed(2);
-      }
+    if (detectedLitri && detectedLitri > 0 && detectedLitri < 150) {
+      const litInp = document.getElementById('form-rif-litri');
+      if (litInp) litInp.value = detectedLitri.toFixed(2);
     }
 
-    // Se mancano i litri ma abbiamo costo e prezzo al litro, ricalcola automaticamente!
+    // 6. RICALCOLI CROCIATI INTELLIGENTI
+    // Se abbiamo Totale e Prezzo/L ma mancano i litri: calcola Litri = Totale / Prezzo/L
     ricalcolaLitriRif();
 
-    // Ricalcola se abbiamo totale e litri per dedurre il prezzo al litro mancante
-    const cVal = parseFloat(document.getElementById('form-rif-costo').value) || 0;
-    const lVal = parseFloat(document.getElementById('form-rif-litri').value) || 0;
-    const pVal = parseFloat(document.getElementById('form-rif-prezzo-litro').value) || 0;
+    // Se abbiamo Totale e Litri ma manca il Prezzo/L: calcola Prezzo/L = Totale / Litri
+    const cVal = parseFloat(document.getElementById('form-rif-costo')?.value) || 0;
+    const lVal = parseFloat(document.getElementById('form-rif-litri')?.value) || 0;
+    const pVal = parseFloat(document.getElementById('form-rif-prezzo-litro')?.value) || 0;
     if (cVal > 0 && lVal > 0 && !pVal) {
-      document.getElementById('form-rif-prezzo-litro').value = (cVal / lVal).toFixed(3);
+      const calcPL = (cVal / lVal).toFixed(3);
+      const pLInp = document.getElementById('form-rif-prezzo-litro');
+      if (pLInp) pLInp.value = calcPL;
     }
 
     if (detectedTotal || detectedLitri) {
-      showToast('Scontrino rilevato con successo! Controlla i dati compilati.', 'success');
+      showToast('Scontrino decodificato: € ' + (detectedTotal || cVal).toFixed(2) + ' compilati!', 'success');
     } else {
-      showToast('Scheda aperta: completa i dettagli rifornimento.', 'info');
+      showToast('Scheda aperta: controlla i campi compilati.', 'info');
     }
 
   } catch(err) {
