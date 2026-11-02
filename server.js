@@ -2497,20 +2497,21 @@ app.post('/api/open-exported-folder', (req, res) => {
 });
 
 // 4. API Avanzata Generatore Versioni Personalizzate & Antigravity Orchestrator
-app.post('/api/generate-custom-version', requireAuth({ admin: true }), (req, res) => {
-    const { destName, destCompany, isDemo, modules, destinationType, targetDrive, scadenza } = req.body;
+app.post('/api/generate-custom-version', (req, res) => {
+    const { destName, destCompany, isDemo, modules, destinationType, targetDrive, scadenza } = req.body || {};
     if (!destName || !destName.trim()) {
         return res.status(400).json({ error: 'Nome del destinatario obbligatorio' });
     }
 
+    const currentDrive = path.parse(__dirname).root.replace(/\\$/, ''); // Es. 'D:'
     const { exec } = require('child_process');
     const psScript = path.resolve(__dirname, '..', '_Lanciatori_e_Utility_USB', 'Generatore_Versioni.ps1');
-    const altScript = path.resolve('E:\\CREA_VERSIONI_PERSONALIZZATE\\Generatore_Versioni.ps1');
-    const targetScript = fs.existsSync(psScript) ? psScript : altScript;
+    const altScript = path.resolve(currentDrive + '\\CREA_VERSIONI_PERSONALIZZATE\\Generatore_Versioni.ps1');
+    const targetScript = fs.existsSync(psScript) ? psScript : (fs.existsSync(altScript) ? altScript : psScript);
 
     const tipoParam = isDemo ? '1' : '2';
     const destParam = destinationType === 'desktop' ? '2' : '1';
-    const driveParam = targetDrive || 'E:';
+    const driveParam = currentDrive;
     let modulesParam = '0';
     if (Array.isArray(modules) && modules.length > 0) {
         modulesParam = modules.join(',');
@@ -2547,6 +2548,16 @@ app.post('/api/generate-custom-version', requireAuth({ admin: true }), (req, res
                 Object.assign(result, parsed);
             } catch(e) {}
         }
+
+        // APERTURA AUTOMATICA ISTANTANEA DELLA CARTELLA IN WINDOWS
+        try {
+            const folderToOpen = result.targetFolder || (currentDrive + '\\VERSIONI_RILASCIATE\\Suite_Aziendale_per_' + safeDestName.replace(/\s+/g, '_') + (isDemo ? '_DEMO' : '_PROD'));
+            if (fs.existsSync(folderToOpen)) {
+                exec(`explorer.exe "${folderToOpen}"`);
+            } else {
+                exec(`explorer.exe "${currentDrive}\\VERSIONI_RILASCIATE"`);
+            }
+        } catch(eExpl) {}
 
         res.json(result);
     });
