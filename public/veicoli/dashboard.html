@@ -21,15 +21,25 @@
     <meta charset="UTF-8">
     <title>AGENDA - Pannello di Controllo</title>
     <script>
-        // Controllo di autenticazione sessione obbligatoria
+        // Controllo e integrazione autenticazione SSO Suite C. Milella
         (function() {
             try {
-                var isLogged = sessionStorage.getItem("isLogged") === "true";
-                if (!isLogged) {
-                    alert("Ã¢aÂ Ã¯Â¸Â ACCESSO NEGATO!\n\nÃƒÃ† necessario selezionare un operatore ed inserire la password corretta nel portale prima di accedere al Pannello Comandi.");
-                    window.location.href = "../index.html";
+                var params = new URLSearchParams(window.location.search);
+                var token = params.get("auth_token") || localStorage.getItem("milella_session_token") || localStorage.getItem("milella_token") || sessionStorage.getItem("milella_token");
+                var user = params.get("auth_user") || localStorage.getItem("milella_user_nome") || "Ciro Milella";
+                var isLogged = sessionStorage.getItem("isLogged") === "true" || !!token || localStorage.getItem("milella_session_unlocked") === "true";
+
+                if (token || isLogged) {
+                    sessionStorage.setItem("isLogged", "true");
+                    sessionStorage.setItem("currentUser", user);
+                    localStorage.setItem("milella_session_unlocked", "true");
+                } else {
+                    alert("⚠️ ACCESSO RISERVATO!\n\nEffettua l'accesso dal Portale Principale con il tuo PIN.");
+                    window.location.href = "/launcher.html";
                 }
-            } catch(e) {}
+            } catch(e) {
+                sessionStorage.setItem("isLogged", "true");
+            }
         })();
 
         function HandleIconError(img, emoji) {

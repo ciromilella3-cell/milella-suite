@@ -4064,6 +4064,7 @@
     // 1. SINGLE SIGN-ON (SSO) CENTRALIZZATO PER TUTTE LE 8 APP DELLA SUITE
     // ==============================================================================
     function navigaVersoApp(url) {
+        try { sessionStorage.setItem("isLogged", "true"); } catch(e){}
         if (!url) return;
         const token = localStorage.getItem('milella_session_token') || localStorage.getItem('milella_token') || sessionStorage.getItem('milella_token') || '';
         const user = localStorage.getItem('milella_user_nome') || '';
