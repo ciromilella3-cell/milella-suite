@@ -858,11 +858,11 @@
 <script>
     (function(){
       try {
-        var isLocked = sessionStorage.getItem('milella_app_locked') === 'true' || localStorage.getItem('milella_app_locked') === 'true';
-        var hasUnlocked = (sessionStorage.getItem('milella_session_unlocked') === 'true' || localStorage.getItem('milella_session_unlocked') === 'true');
-        var unlockTime = parseInt(localStorage.getItem('milella_session_unlocked_time') || '0', 10);
-        var isExpired = unlockTime > 0 && (Date.now() - unlockTime > 12 * 60 * 60 * 1000);
-        var unlocked = !isLocked && hasUnlocked && !isExpired;
+        localStorage.removeItem('milella_session_unlocked');
+        localStorage.removeItem('milella_session_unlocked_time');
+        var isLocked = sessionStorage.getItem('milella_app_locked') === 'true';
+        var hasUnlocked = sessionStorage.getItem('milella_session_unlocked') === 'true';
+        var unlocked = !isLocked && hasUnlocked;
         if (unlocked) {
           document.documentElement.classList.add('suite-already-unlocked');
         } else {
@@ -2647,9 +2647,9 @@
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                     sessionStorage.setItem('milella_session_unlocked', 'true');
                     sessionStorage.setItem('salute_session_unlocked', 'true');
-                    localStorage.setItem('milella_session_unlocked', 'true');
+                    sessionStorage.removeItem('milella_app_locked');
+                    localStorage.removeItem('milella_session_unlocked');
                     localStorage.removeItem('milella_app_locked');
-                    localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
                     currentAdminPin = '';
@@ -2667,9 +2667,9 @@
                     localStorage.setItem('milella_last_authenticated_pin', pin);
                     sessionStorage.setItem('milella_session_unlocked', 'true');
                     sessionStorage.setItem('salute_session_unlocked', 'true');
-                    localStorage.setItem('milella_session_unlocked', 'true');
+                    sessionStorage.removeItem('milella_app_locked');
+                    localStorage.removeItem('milella_session_unlocked');
                     localStorage.removeItem('milella_app_locked');
-                    localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
                     localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
@@ -2706,8 +2706,9 @@
         const sbloccaSessioneCompletata = () => {
             sessionStorage.setItem('milella_session_unlocked', 'true');
             sessionStorage.setItem('salute_session_unlocked', 'true');
-            localStorage.setItem('milella_session_unlocked', 'true');
-            localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
+            sessionStorage.removeItem('milella_app_locked');
+            localStorage.removeItem('milella_session_unlocked');
+            localStorage.removeItem('milella_session_unlocked_time');
             sessionStorage.removeItem('milella_app_locked');
             localStorage.removeItem('milella_app_locked');
 
@@ -2926,6 +2927,30 @@
         }
     }
 
+    
+    // AUTO-LOCK SICUREZZA QUANDO L'APP VIENE CHIUSA O MESSA IN BACKGROUND
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') {
+            sessionStorage.setItem('milella_hidden_timestamp', String(Date.now()));
+        } else if (document.visibilityState === 'visible') {
+            const hiddenTime = parseInt(sessionStorage.getItem('milella_hidden_timestamp') || '0', 10);
+            if (hiddenTime > 0 && (Date.now() - hiddenTime > 30 * 1000)) {
+                // Più di 30 secondi in background: blocca e richiedi PIN
+                sessionStorage.removeItem('milella_session_unlocked');
+                sessionStorage.setItem('milella_app_locked', 'true');
+                document.documentElement.classList.remove('suite-already-unlocked');
+                const gate = document.getElementById('gateBloccoIngresso');
+                if (gate) {
+                    gate.style.transition = 'none';
+                    gate.style.opacity = '1';
+                    gate.style.display = 'flex';
+                    const inp = document.getElementById('gatePinInput');
+                    if (inp) { inp.value = ''; inp.focus(); }
+                }
+            }
+        }
+    });
+    
     function esciAdmin() {
         // BLOCCO SESSIONE ESPLICITO SU TUTTE LE APP
         sessionStorage.clear();
@@ -4433,11 +4458,11 @@
     } catch(e) { savedApps = ['all']; }
 
     // Considera la sessione sbloccata SOLO se esplicitamente attiva e NON bloccata
-    const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || localStorage.getItem('milella_app_locked') === 'true';
-    const hasUnlocked = sessionStorage.getItem('milella_session_unlocked') === 'true' || localStorage.getItem('milella_session_unlocked') === 'true';
-    const unlockTime = parseInt(localStorage.getItem('milella_session_unlocked_time') || '0', 10);
-    const isExpired = unlockTime > 0 && (Date.now() - unlockTime > 12 * 60 * 60 * 1000);
-    const isSessionUnlocked = !isExplicitlyLocked && hasUnlocked && !isExpired;
+    localStorage.removeItem('milella_session_unlocked');
+    localStorage.removeItem('milella_session_unlocked_time');
+    const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true';
+    const hasUnlocked = sessionStorage.getItem('milella_session_unlocked') === 'true';
+    const isSessionUnlocked = !isExplicitlyLocked && hasUnlocked;
 
     if (isSessionUnlocked && savedLastRole === 'admin') {
         const gate = document.getElementById('gateBloccoIngresso');
@@ -4562,7 +4587,7 @@
     // ==============================================================================
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js?v=205').then(reg => {
+            navigator.serviceWorker.register('/sw.js?v=210').then(reg => {
                 if (reg) reg.update();
                 console.log('[PWA] Service Worker attivo:', reg.scope);
             }).catch(err => console.warn('[PWA] SW register notice:', err));

@@ -498,7 +498,7 @@
 
     if (isMaster || serverOk || localMatch) {
       sessionStorage.setItem(SESSION_KEY, 'true');
-      localStorage.setItem(SESSION_KEY, 'true');
+      // localStorage.setItem(SESSION_KEY, 'true');
       localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
       sessionStorage.removeItem(LOCK_FLAG);
 

@@ -134,7 +134,7 @@
                 }
 
                 sessionStorage.setItem(SESSION_KEY, 'true');
-                localStorage.setItem(SESSION_KEY, 'true');
+                // localStorage.setItem(SESSION_KEY, 'true');
                 localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                 sessionStorage.setItem('milella_user_nome', data.nome || 'Operatore');
                 localStorage.setItem('milella_user_nome', data.nome || 'Operatore');
@@ -230,11 +230,9 @@
     function checkGateState() {
         const SESSION_KEY = 'milella_session_unlocked';
         const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || localStorage.getItem('milella_app_locked') === 'true';
-        const hasSession = sessionStorage.getItem(SESSION_KEY) === 'true' || localStorage.getItem(SESSION_KEY) === 'true';
-        const unlockTime = parseInt(localStorage.getItem('milella_session_unlocked_time') || '0', 10);
-        const isExpired = unlockTime > 0 && (Date.now() - unlockTime > 12 * 60 * 60 * 1000);
-
-        if (!isExplicitlyLocked && hasSession && !isExpired) {
+        localStorage.removeItem(SESSION_KEY);
+        const hasSession = sessionStorage.getItem(SESSION_KEY) === 'true';
+        if (!isExplicitlyLocked && hasSession) {
             const overlay = document.getElementById('suiteSecurityGateOverlay');
             if (overlay) overlay.style.display = 'none';
             document.body.classList.remove('modal-open');
@@ -244,30 +242,7 @@
         let isUnlocked = sessionStorage.getItem(SESSION_KEY) === 'true';
 
         // 2. Se non è sbloccata nel tab, controlla se l'utente ha una sessione recente valida
-        if (!isUnlocked) {
-            const localUnlocked = localStorage.getItem(SESSION_KEY) === 'true';
-            const unlockTime = parseInt(localStorage.getItem('milella_session_unlocked_time') || '0', 10);
-            const isFresh = (Date.now() - unlockTime) < (60 * 60 * 1000); // 1 ora di sessione attiva condivisa
-            const role = localStorage.getItem('milella_last_authenticated_role');
-            if (localUnlocked && isFresh) {
-                if (role === 'admin') {
-                    sessionStorage.setItem(SESSION_KEY, 'true');
-                    isUnlocked = true;
-                } else if (role === 'operatore') {
-                    // Controlla se l'operatore corrente è abilitato a questa specifica app
-                    const savedApps = JSON.parse(localStorage.getItem('milella_app_abilitate') || '[]');
-                    const currentAppKey = (path.includes('veicoli') ? 'veicoli' : (path.includes('salute') ? 'salute' : (path.includes('careassist') ? 'careassist' : (path.includes('inventario') ? 'inventario' : (path.includes('ricettario') ? 'ricettario' : (path.includes('mednutri') ? 'mednutri' : (path.includes('gioco') ? 'gioco' : '')))))));
-                    const hasAccess = savedApps.includes('all') || 
-                                      savedApps.includes(currentAppKey) || 
-                                      savedApps.includes('app_' + currentAppKey) ||
-                                      (currentAppKey === 'inventario' && (savedApps.includes('attrezzi') || savedApps.includes('app_attrezzi')));
-                    if (hasAccess) {
-                        sessionStorage.setItem(SESSION_KEY, 'true');
-                        isUnlocked = true;
-                    }
-                }
-            }
-        }
+        // Sessione stretta: se la sessione non è attiva nel tab, richiedi sempre PIN
 
         if (!isUnlocked) {
             injectGateUI();
