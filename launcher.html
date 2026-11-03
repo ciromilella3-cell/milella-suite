@@ -1269,12 +1269,9 @@
             </div>
             
             <h2 style="font-size:1.3rem; font-weight:800; color:#fff; margin:0 0 4px 0; letter-spacing:0.8px;">Area Riservata Master</h2>
-            <p style="color:#94a3b8; font-size:12px; margin:0 0 0.9rem 0; line-height:1.4;">Inserisci il PIN Master riservato o usa l'impronta digitale.</p>
+            <p style="color:#94a3b8; font-size:12px; margin:0 0 0.9rem 0; line-height:1.4;">Inserisci il PIN Master riservato per accedere.</p>
             
-            <!-- Tasto Accesso con Impronta Digitale / Biometria -->
-            <button id="btnBiometriaModal" type="button" onclick="accediConImprontaModal()" style="width:100%; background:linear-gradient(135deg, rgba(56,189,248,0.2) 0%, rgba(2,132,199,0.3) 100%); border:1.5px solid rgba(56,189,248,0.55); color:#7dd3fc; font-weight:800; font-size:13px; padding:11px; border-radius:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 15px rgba(2,132,199,0.25); margin-bottom:0.9rem; transition:transform 0.15s;" onactive="this.style.transform='scale(0.98)'">
-                <span style="font-size:20px;">👆</span> SBLOCCA CON IMPRONTA DIGITALE
-            </button>
+            
 
             <!-- Input PIN con visualizzazione chiara e toggle occhietto -->
             <div style="position:relative; width:100%; margin-bottom:0.7rem;">
@@ -2302,35 +2299,6 @@
             if (b123) { b123.style.background = 'rgba(255,255,255,0.06)'; b123.style.borderColor = 'rgba(255,255,255,0.2)'; b123.style.color = '#94a3b8'; }
         }
     }
-    async function accediConImprontaModal() {
-        const inp = document.getElementById('inputPinLogin');
-        const err = document.getElementById('loginErrorMsg');
-        if (err) err.style.display = 'none';
-
-        // 1. Prova credenziale salvata o PIN Master pre-configurato
-        const savedLastPin = localStorage.getItem('milella_last_authenticated_pin') || localStorage.getItem('milella_admin_pin') || 'SOS999';
-
-        // 2. Se supportato WebAuthn nativo (TouchID/FaceID/Sensore Impronta Android)
-        if (window.PublicKeyCredential) {
-            try {
-                const challenge = new Uint8Array(32);
-                window.crypto.getRandomValues(challenge);
-                // Prompt biometrico al dispositivo
-                if (inp) inp.value = savedLastPin;
-                await verificaPinLogin();
-                return;
-            } catch(e) {
-                console.warn('Fallback impronta:', e);
-            }
-        }
-
-        // Fallback immediato con PIN salvato
-        if (inp) {
-            inp.value = savedLastPin;
-            verificaPinLogin();
-        }
-    }
-
     function apriLoginModal() {
         const m = document.getElementById('modalAdminLogin');
         const input = document.getElementById('inputPinLogin');
@@ -2713,6 +2681,7 @@
         localStorage.removeItem('milella_token');
         localStorage.removeItem('milella_session_unlocked');
         localStorage.removeItem('milella_session_unlocked_time');
+        localStorage.removeItem('milella_last_authenticated_pin');
         // localStorage.setItem('milella_app_locked', 'true');
         
         sessionStorage.clear();
