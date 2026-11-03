@@ -11,20 +11,21 @@ async function caricaAnagrafeCondivisaSuite() {
     const res = await fetch('/api/suite/anagrafe-condivisa');
     if (res.ok) {
       const data = await res.json();
-      if (data && Array.isArray(data.soggetti)) {
+      if (data && Array.isArray(data.soggetti) && data.soggetti.length > 0) {
         _soggettiSuiteCache = data.soggetti;
         popolaSelettoreImportSuite();
+        return;
       }
     }
   } catch(e) {
-    console.warn('Caricamento anagrafe condivisa da API non riuscito, uso fallback locale:', e.message);
-    costruisciFallbackLocaleAnagrafe();
+    console.warn('API non raggiungibile, fallback locale:', e.message);
   }
+  costruisciFallbackLocaleAnagrafe();
 }
 
 function costruisciFallbackLocaleAnagrafe() {
   const map = new Map();
-  // CareAssist
+  // 1. CareAssist
   if (typeof AppData !== 'undefined' && Array.isArray(AppData.pazienti)) {
     AppData.pazienti.forEach(p => {
       if (p && p.nome) {
@@ -33,26 +34,32 @@ function costruisciFallbackLocaleAnagrafe() {
           dataNascita: p.dataNascita || '',
           sesso: p.sesso || 'M',
           indirizzo: p.indirizzo || '',
+          telefono: p.telefono || p.cellulare || '',
           origini: ['CareAssist Pro']
         });
       }
     });
   }
-  // Salute da localStorage
+
+  // 2. Soggetti noti della Suite (Maria Carmela & Ciro Milella da Progetto Salute)
   const ciroNome = localStorage.getItem('profileName_marito') || 'Ciro Milella';
   const mariaNome = localStorage.getItem('profileName_moglie') || 'Maria Carmela';
-  map.set(ciroNome.toLowerCase(), {
-    nome: ciroNome,
-    dataNascita: '1967-12-16',
-    sesso: 'M',
-    indirizzo: 'Via Giulio Petroni, 69 - BARI (BA)',
-    origini: ['Progetto Salute']
-  });
-  map.set(mariaNome.toLowerCase(), {
-    nome: mariaNome,
+
+  map.set(mariaNome.trim().toLowerCase(), {
+    nome: mariaNome.trim(),
     dataNascita: '1969-03-20',
     sesso: 'F',
     indirizzo: 'Via Giulio Petroni, 69 - BARI (BA)',
+    telefono: '',
+    origini: ['Progetto Salute']
+  });
+
+  map.set(ciroNome.trim().toLowerCase(), {
+    nome: ciroNome.trim(),
+    dataNascita: '1967-12-16',
+    sesso: 'M',
+    indirizzo: 'Via Giulio Petroni, 69 - BARI (BA)',
+    telefono: '',
     origini: ['Progetto Salute']
   });
 
@@ -71,15 +78,19 @@ function popolaSelettoreImportSuite() {
 
   const importabili = _soggettiSuiteCache.filter(s => !nomiEsistenti.includes(s.nome.trim().toLowerCase()));
 
-  sel.innerHTML = '<option value="">-- Seleziona un soggetto registrato nella Suite --</option>' +
-    importabili.map((s, idx) => {
-      const originiBadge = s.origini.join(', ');
-      return `<option value="${idx}">✨ ${s.nome} (${originiBadge}${s.dataNascita ? ' • Nato il ' + s.dataNascita : ''})</option>`;
-    }).join('');
+  if (importabili.length === 0) {
+    sel.innerHTML = '<option value="">-- Tutti i soggetti della Suite sono già registrati --</option>';
+  } else {
+    sel.innerHTML = '<option value="">-- Seleziona un soggetto da autocompilare (' + importabili.length + ' disponibili) --</option>' +
+      importabili.map((s, idx) => {
+        const originiBadge = s.origini.join(', ');
+        return `<option value="${idx}">✨ ${s.nome} (${originiBadge}${s.dataNascita ? ' • Nato il ' + s.dataNascita : ''})</option>`;
+      }).join('');
+  }
 
   const container = document.getElementById('box-importa-suite');
   if (container) {
-    container.style.display = importabili.length > 0 ? 'block' : 'none';
+    container.style.display = 'block';
   }
 }
 
@@ -110,8 +121,8 @@ function applicaImportazionePazienteSuite(indexStr) {
   // 3. Compila Sesso
   if (s.sesso) {
     const isFem = (s.sesso.toUpperCase() === 'F' || s.sesso.toLowerCase().includes('donna') || s.sesso.toLowerCase().includes('moglie'));
-    const rFem = document.querySelector('input[name="nuovo-sesso"][value="F"]') || document.getElementById('nuovo-paz-sesso-f');
-    const rMas = document.querySelector('input[name="nuovo-sesso"][value="M"]') || document.getElementById('nuovo-paz-sesso-m');
+    const rFem = document.getElementById('nuovo-paz-sesso-f') || document.querySelector('input[name="nuovo-sesso"][value="F"]');
+    const rMas = document.getElementById('nuovo-paz-sesso-m') || document.querySelector('input[name="nuovo-sesso"][value="M"]');
     if (isFem && rFem) rFem.checked = true;
     else if (!isFem && rMas) rMas.checked = true;
   }
@@ -132,16 +143,29 @@ function applicaImportazionePazienteSuite(indexStr) {
   const banner = document.getElementById('import-suite-feedback');
   if (banner) {
     banner.style.display = 'block';
-    banner.innerHTML = `✅ Dati di <b>${s.nome}</b> importati con successo da <i>${s.origini.join(', ')}</i>! Controlla e premi Salva.`;
-    setTimeout(() => { if (banner) banner.style.display = 'none'; }, 6000);
+    banner.innerHTML = `✅ Dati di <b>${s.nome}</b> importati con successo! Controlla e clicca su "Crea Cartella Clinica".`;
   }
 }
 
-// Intercetta l'apertura del modal nuovo paziente
-const origOpenModal = window.openModal;
-window.openModal = function(modalId) {
-  if (typeof origOpenModal === 'function') origOpenModal(modalId);
-  if (modalId === 'modal-nuovo-paziente') {
+// Esegui caricamento immediato all'avvio
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    caricaAnagrafeCondivisaSuite();
+  });
+} else {
+  caricaAnagrafeCondivisaSuite();
+}
+
+// Aggancia l'evento openModal
+const originalOpenModalNuovo = window.openModal;
+window.openModal = function(id) {
+  if (typeof originalOpenModalNuovo === 'function') {
+    originalOpenModalNuovo(id);
+  } else {
+    const el = document.getElementById(id);
+    if (el) { el.classList.add('active'); el.style.display = 'flex'; }
+  }
+  if (id === 'modal-nuovo-paziente') {
     caricaAnagrafeCondivisaSuite();
   }
 };
