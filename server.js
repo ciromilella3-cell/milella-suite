@@ -15,6 +15,22 @@ process.on('exit', (code) => {
     try { fs.appendFileSync(path.join(__dirname, 'server_exit.log'), `Exit code: ${code} at ${new Date().toISOString()}\n`); } catch(e){}
 });
 
+// Helper per scrittura atomica sicura contro corruzione dati e cali di corrente
+function safeWriteAtomic(filePath, data) {
+    const tempPath = filePath + '.tmp.' + Date.now();
+    try {
+        fs.writeFileSync(tempPath, data, 'utf8');
+        fs.renameSync(tempPath, filePath);
+        return true;
+    } catch(err) {
+        console.error('[ERRORE SCRITTURA ATOMICA]', filePath, err);
+        try { if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath); } catch(e){}
+        // Fallback diretto
+        try { fs.writeFileSync(filePath, data, 'utf8'); } catch(e){}
+        return true;
+    }
+}
+
 
 // ==============================================================================
 // CLOUD DATABASE LAYER (MONGODB ATLAS) CON FALLBACK LOCALE TRASPARENTE
@@ -176,22 +192,6 @@ async function startServer() {
     }
     const app = express();
     const PORT = process.env.PORT || 3000;
-
-    // Helper per scrittura atomica sicura contro corruzione dati e cali di corrente
-    function safeWriteAtomic(filePath, data) {
-        const tempPath = filePath + '.tmp.' + Date.now();
-        try {
-            fs.writeFileSync(tempPath, data, 'utf8');
-            fs.renameSync(tempPath, filePath);
-            return true;
-        } catch(err) {
-            console.error('[ERRORE SCRITTURA ATOMICA]', filePath, err);
-            try { if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath); } catch(e){}
-            // Fallback diretto
-            fs.writeFileSync(filePath, data, 'utf8');
-            return true;
-        }
-    }
 
     // Servizio statico diretto per foto e uploads (istantaneo, nessun ritardo o errore proxy)
     app.use('/Foto_Attrezzi', express.static(path.join(__dirname, 'data', 'Foto_Attrezzi')));
