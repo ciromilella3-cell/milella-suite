@@ -119,30 +119,169 @@ function garantisciPazientiNelContestoLocale() {
 }
 
 function popolaSelettoreImportSuite() {
-  const sel = document.getElementById('select-importa-suite-paziente');
-  if (!sel) return;
-
-  const nomiEsistenti = (typeof AppData !== 'undefined' && Array.isArray(AppData.pazienti))
-    ? AppData.pazienti.map(p => (p.nome || '').trim().toLowerCase())
-    : [];
-
-  const importabili = _soggettiSuiteCache.filter(s => !nomiEsistenti.includes(s.nome.trim().toLowerCase()));
-
-  if (importabili.length === 0) {
-    sel.innerHTML = '<option value="">-- Tutti i soggetti della Suite sono già registrati --</option>';
-  } else {
-    sel.innerHTML = '<option value="">-- Seleziona un soggetto da autocompilare (' + importabili.length + ' disponibili) --</option>' +
-      importabili.map((s, idx) => {
-        const originiBadge = s.origini.join(', ');
-        return `<option value="${idx}">✨ ${s.nome} (${originiBadge}${s.dataNascita ? ' • Nato il ' + s.dataNascita : ''})</option>`;
-      }).join('');
-  }
-
   const container = document.getElementById('box-importa-suite');
-  if (container) {
-    container.style.display = 'block';
-  }
+  if (!container) return;
+
+  container.style.display = 'block';
+  container.innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+      <span style="font-size:12.5px; font-weight:800; color:#0369a1; display:flex; align-items:center; gap:6px;">
+        <span>🏛️</span> <span>Importa Paziente dalla Suite (Condivisione Master)</span>
+      </span>
+      <span style="font-size:11px; background:#0284c7; color:#ffffff; padding:2px 8px; border-radius:10px; font-weight:700;">
+        ${_soggettiSuiteCache.length} Pazienti Condivisi
+      </span>
+    </div>
+
+    <!-- BARRA DI RICERCA SMART CON AUTOCOMPLETAMENTO AD ALTO CONTRASTO -->
+    <div style="position:relative; width:100%;" id="careassist-search-box-wrapper">
+      <div style="display:flex; align-items:center; background:#ffffff; border:1.5px solid #0284c7; border-radius:10px; padding:2px 10px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        <span style="font-size:15px; margin-right:8px; color:#64748b;">🔍</span>
+        <input type="text" id="careassist-suite-search-input" 
+               placeholder="Cerca per Nome, Anno o Telefono (es. Rosa, 1938, Zamparino)..." 
+               autocomplete="off"
+               onfocus="mostraDropdownCareAssistSuite(true)" 
+               oninput="filtraPazientiCareAssistSuite(this.value)"
+               style="border:none !important; outline:none !important; width:100%; padding:8px 0; font-size:13px; font-weight:600; color:#0f172a; background:transparent !important; box-shadow:none !important;">
+        <button type="button" id="careassist-suite-clear-btn" onclick="pulisciRicercaCareAssistSuite()" style="display:none; background:none; border:none; color:#94a3b8; font-size:16px; cursor:pointer; padding:0 4px;">✕</button>
+      </div>
+
+      <!-- DROPDOWN RISULTATI SCALABILE CON SCROLL ELEGANTE -->
+      <div id="careassist-suite-dropdown" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; background:#ffffff; border:1.5px solid #0284c7; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.18); max-height:240px; overflow-y:auto; z-index:99999; padding:4px 0;">
+      </div>
+    </div>
+
+    <!-- CHIP RAPIDI AD ALTO CONTRASTO (I PRIMI 4) -->
+    <div style="display:flex; align-items:center; gap:6px; margin-top:8px; flex-wrap:wrap; font-size:11.5px;">
+      <span style="font-weight:700; color:#475569;">Rapidi:</span>
+      <div id="careassist-suite-chips-row" style="display:inline-flex; gap:6px; flex-wrap:wrap;"></div>
+    </div>
+
+    <div id="import-suite-feedback" style="display:none; margin-top:8px; font-size:12px; color:#15803d; font-weight:800; background:#dcfce7; padding:6px 12px; border-radius:8px; border:1px solid #86efac;"></div>
+  `;
+
+  aggiornaChipRapidiCareAssist();
 }
+
+function aggiornaChipRapidiCareAssist() {
+  const container = document.getElementById('careassist-suite-chips-row');
+  if (!container) return;
+
+  const rapidi = _soggettiSuiteCache.slice(0, 4);
+  container.innerHTML = rapidi.map((s, idx) => {
+    const isFem = (s.sesso && (s.sesso.toUpperCase() === 'F' || s.sesso.toLowerCase().includes('donna')));
+    const emoji = isFem ? '👩' : '👨';
+    const borderCol = isFem ? '#f472b6' : '#38bdf8';
+    const year = s.dataNascita ? s.dataNascita.split('-')[0] : '';
+
+    return `
+      <button type="button" onclick="selezionaPazienteCareAssistSuite('${idx}')" 
+              style="background:#ffffff; color:#0f172a; border:1px solid ${borderCol}; padding:4px 10px; border-radius:8px; font-weight:700; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all 0.15s;"
+              onmouseover="this.style.background='#f0f9ff'; this.style.borderColor='#0284c7';"
+              onmouseout="this.style.background='#ffffff'; this.style.borderColor='${borderCol}';">
+        <span>${emoji}</span>
+        <span>${s.nome}</span>
+        ${year ? `<span style="font-size:10px; color:#64748b; background:#f1f5f9; padding:1px 4px; border-radius:4px;">${year}</span>` : ''}
+      </button>
+    `;
+  }).join('') + (_soggettiSuiteCache.length > 4 ? `<span style="font-size:11px; color:#0284c7; font-weight:600; margin-left:4px;">+ altri ${_soggettiSuiteCache.length - 4} nella ricerca 🔍</span>` : '');
+}
+
+window.filtraPazientiCareAssistSuite = function(query) {
+  const dropdown = document.getElementById('careassist-suite-dropdown');
+  const clearBtn = document.getElementById('careassist-suite-clear-btn');
+  if (!dropdown) return;
+
+  const q = (query || '').toLowerCase().trim();
+  if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+  if (!_soggettiSuiteCache || _soggettiSuiteCache.length === 0) {
+    dropdown.innerHTML = '<div style="padding:12px; color:#64748b; font-size:12px; text-align:center;">Nessun assistito in memoria</div>';
+    dropdown.style.display = 'block';
+    return;
+  }
+
+  const filtrati = _soggettiSuiteCache.map((s, idx) => ({ ...s, originalIdx: idx })).filter(s => {
+    if (!q) return true;
+    const nomeMatch = (s.nome || '').toLowerCase().includes(q);
+    const dobMatch = (s.dataNascita || '').includes(q);
+    const telMatch = (s.telefono || '').includes(q);
+    const indMatch = (s.indirizzo || '').toLowerCase().includes(q);
+    return nomeMatch || dobMatch || telMatch || indMatch;
+  });
+
+  if (filtrati.length === 0) {
+    dropdown.innerHTML = `<div style="padding:12px; color:#64748b; font-size:12px; text-align:center;">Nessun assistito corrisponde a "<strong>${query}</strong>"</div>`;
+    dropdown.style.display = 'block';
+    return;
+  }
+
+  dropdown.innerHTML = filtrati.map(s => {
+    const isFem = (s.sesso && (s.sesso.toUpperCase() === 'F' || s.sesso.toLowerCase().includes('donna')));
+    const emoji = isFem ? '👩' : '👨';
+    const year = s.dataNascita ? s.dataNascita.split('-')[0] : '';
+    const originiStr = (s.origini || []).join(' • ');
+
+    return `
+      <div onclick="selezionaPazienteCareAssistSuite('${s.originalIdx}')" 
+           style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; cursor:pointer; border-bottom:1px solid #f1f5f9; transition:background 0.15s;"
+           onmouseover="this.style.background='#f0f9ff';" 
+           onmouseout="this.style.background='#ffffff';">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:16px;">${emoji}</span>
+          <div>
+            <div style="font-weight:800; font-size:13px; color:#0f172a;">${s.nome}</div>
+            <div style="font-size:11px; color:#64748b;">${originiStr ? originiStr + ' • ' : ''}${s.dataNascita || 'Data n.d.'}${s.indirizzo ? ' • ' + s.indirizzo : ''}</div>
+          </div>
+        </div>
+        <span style="font-size:11px; font-weight:700; color:#0284c7; background:#e0f2fe; padding:2px 8px; border-radius:6px;">
+          ${year ? 'Anno ' + year : '1-Click'}
+        </span>
+      </div>
+    `;
+  }).join('');
+
+  dropdown.style.display = 'block';
+};
+
+window.mostraDropdownCareAssistSuite = function(mostra) {
+  const input = document.getElementById('careassist-suite-search-input');
+  if (mostra) {
+    filtraPazientiCareAssistSuite(input ? input.value : '');
+  } else {
+    setTimeout(() => {
+      const dropdown = document.getElementById('careassist-suite-dropdown');
+      if (dropdown) dropdown.style.display = 'none';
+    }, 250);
+  }
+};
+
+window.pulisciRicercaCareAssistSuite = function() {
+  const input = document.getElementById('careassist-suite-search-input');
+  if (input) { input.value = ''; input.focus(); }
+  filtraPazientiCareAssistSuite('');
+};
+
+window.selezionaPazienteCareAssistSuite = function(idxStr) {
+  applicaImportazionePazienteSuite(idxStr);
+  const dropdown = document.getElementById('careassist-suite-dropdown');
+  if (dropdown) dropdown.style.display = 'none';
+  const s = _soggettiSuiteCache[parseInt(idxStr, 10)];
+  const input = document.getElementById('careassist-suite-search-input');
+  if (input && s) {
+    input.value = s.nome;
+    const clearBtn = document.getElementById('careassist-suite-clear-btn');
+    if (clearBtn) clearBtn.style.display = 'block';
+  }
+};
+
+document.addEventListener('click', function(e) {
+  const box = document.getElementById('careassist-search-box-wrapper');
+  const dropdown = document.getElementById('careassist-suite-dropdown');
+  if (dropdown && box && !box.contains(e.target) && !dropdown.contains(e.target)) {
+    dropdown.style.display = 'none';
+  }
+});
 
 function applicaImportazionePazienteSuite(indexStr) {
   if (indexStr === '' || indexStr === null || indexStr === undefined) return;
@@ -151,7 +290,7 @@ function applicaImportazionePazienteSuite(indexStr) {
     ? AppData.pazienti.map(p => (p.nome || '').trim().toLowerCase())
     : [];
   const importabili = _soggettiSuiteCache.filter(s => !nomiEsistenti.includes(s.nome.trim().toLowerCase()));
-  const s = importabili[idx];
+  const s = _soggettiSuiteCache[idx] || importabili[idx];
   if (!s) return;
 
   // 1. Compila Nome
