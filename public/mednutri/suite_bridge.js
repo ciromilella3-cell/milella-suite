@@ -190,28 +190,45 @@
   window.applicaImportMedNutriDaSuite = function(idxStr) {
     if (idxStr === '' || idxStr === null || idxStr === undefined) return;
     
-    // CASO 1: L'UTENTE VUOLE INSERIRE UN PAZIENTE DEL TUTTO NUOVO (NON ANCORA IN NESSUNA APP)
+    // CASO 1: L'UTENTE VUOLE INSERIRE UN PAZIENTE DEL TUTTO NUOVO (PULIZIA TOTALE)
     if (idxStr === 'NUOVO') {
+      try {
+        localStorage.removeItem('milella_active_patient_name');
+        localStorage.removeItem('milella_active_patient_dob');
+        localStorage.removeItem('milella_active_patient_gender');
+      } catch(e) {}
+
+      const fields = ['patient-name', 'patient-dob', 'patient-height', 'patient-weight', 'patient-wrist', 'patient-notes'];
+      fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+
       const nameEl = document.getElementById('patient-name');
-      if (nameEl) { nameEl.value = ''; nameEl.focus(); }
-      const dobEl = document.getElementById('patient-dob');
-      if (dobEl) dobEl.value = '';
-      const heightEl = document.getElementById('patient-height');
-      if (heightEl) heightEl.value = '';
-      const weightEl = document.getElementById('patient-weight');
-      if (weightEl) weightEl.value = '';
-      const wristEl = document.getElementById('patient-wrist');
-      if (wristEl) wristEl.value = '';
-      const notesEl = document.getElementById('patient-notes');
-      if (notesEl) notesEl.value = '';
+      if (nameEl) nameEl.focus();
+
+      const genderEl = document.getElementById('patient-gender');
+      if (genderEl) genderEl.value = 'M';
+
+      const ageEl = document.getElementById('calculated-age');
+      if (ageEl) ageEl.textContent = '';
+
+      const bmiBadge = document.getElementById('bmi-badge');
+      if (bmiBadge) bmiBadge.innerHTML = '';
+
+      const frameBadge = document.getElementById('frame-badge');
+      if (frameBadge) frameBadge.innerHTML = '';
+
+      const tdeeBadge = document.getElementById('tdee-badge');
+      if (tdeeBadge) tdeeBadge.innerHTML = '';
 
       if (typeof calculateBMI === 'function') calculateBMI();
-      
+
       const feed = document.getElementById('mednutri-sync-feedback');
       if (feed) {
         feed.style.display = 'block';
-        feed.textContent = '✨ Modalità Nuovo Paziente: inserisci i dati nei campi sottostanti e salva. Verrà condiviso con tutta la Suite!';
-        setTimeout(() => { if (feed) feed.style.display = 'none'; }, 7000);
+        feed.textContent = '✨ Scheda paziente azzerata: inserisci i nuovi dati e premi Salva Paziente!';
+        setTimeout(() => { if (feed) feed.style.display = 'none'; }, 5000);
       }
       return;
     }
