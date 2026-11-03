@@ -86,3 +86,4 @@
     setTimeout(sincronizzaProfiloSaluteDaSuite, 250);
   }
 })();
+

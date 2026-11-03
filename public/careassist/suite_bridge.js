@@ -97,3 +97,4 @@
     setTimeout(sincronizzaPazienteInIngresso, 300);
   }
 })();
+
