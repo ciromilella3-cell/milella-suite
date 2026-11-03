@@ -1,14 +1,5 @@
 [
   {
-    "id": "app_logistica",
-    "titolo": "Logistica Consegne",
-    "icona": "📦",
-    "url": "/logistica/",
-    "descrizione": "Gestione completa spedizioni, tracciamento consegne e ausili sanitari.",
-    "visibilita": "admin",
-    "attivo": true
-  },
-  {
     "id": "app_veicoli",
     "titolo": "Flotta Veicoli & Spese",
     "icona": "🚗",

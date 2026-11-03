@@ -1052,8 +1052,7 @@ function loadProgetti() {
         }
         if (!Array.isArray(projs) || projs.length === 0) {
             projs = [
-                { id: "app_logistica", titolo: "Logistica Consegne", icona: "📦", url: "/logistica/", descrizione: "Gestione completa spedizioni, tracciamento consegne e ausili sanitari.", visibilita: "admin", attivo: true },
-                { id: "app_veicoli", titolo: "Flotta Veicoli & Spese", icona: "🚗", url: "/veicoli_mobile/", descrizione: "Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.", visibilita: "tutti", attivo: true },
+                                { id: "app_veicoli", titolo: "Flotta Veicoli & Spese", icona: "🚗", url: "/veicoli_mobile/", descrizione: "Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.", visibilita: "tutti", attivo: true },
                 { id: "app_inventario", titolo: "Inventario Attrezzi", icona: "🛠️", url: "/inventario.html", descrizione: "Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.", visibilita: "tutti", attivo: true },
                 { id: "app_ricettario", titolo: "Il Ricettario", icona: "👨‍🍳", url: "/ricettario/", descrizione: "L'archivio prezioso delle tue ricette personali con lista della spesa automatica.", visibilita: "tutti", attivo: true },
                 { id: "app_mednutri", titolo: "MedNutri Pro", icona: "🥗", url: "/mednutri/", descrizione: "Software avanzato per piani nutrizionali personalizzati e gestione clinica.", visibilita: "admin", attivo: true },
