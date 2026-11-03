@@ -1116,7 +1116,12 @@
         <div class="modal-title" style="display:flex; align-items:center; gap:8px; font-size:15.5px; font-weight:800; color:#ffffff !important;">
           <span>👤</span> <span>Crea Nuova Cartella Assistito</span>
         </div>
-        <button type="button" class="btn-close-modal" onclick="closeModal('modal-nuovo-paziente')">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" onclick="azzeraFormNuovoPaziente()" style="background:#0284c7; color:#ffffff; border:1px solid #38bdf8; padding:5px 12px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3); transition:all 0.15s;" onmouseover="this.style.background='#0369a1'" onmouseout="this.style.background='#0284c7'" title="Svuota tutti i campi per inserire un assistito da zero">
+            ➕ Nuovo (Pulisci)
+          </button>
+          <button type="button" class="btn-close-modal" onclick="closeModal('modal-nuovo-paziente')" style="margin:0;">✕</button>
+        </div>
       </div>
 
       <form id="form-nuovo-paziente" onsubmit="salvaNuovoPaziente(event)" style="display:flex; flex-direction:column; overflow:hidden;">
@@ -1326,6 +1331,7 @@
         <!-- FOOTER AZIONI FISSO BILANCIATO -->
         <div class="modal-footer modal-footer-anagrafica">
           <div class="modal-footer-actions">
+            <button type="button" class="btn btn-outline" onclick="azzeraFormNuovoPaziente()" style="border-color:#0284c7; color:#0284c7; font-weight:700; margin-right:auto;" title="Azzera e svuota tutti i campi">🔄 Pulisci Campi</button>
             <button type="button" class="btn btn-outline" onclick="closeModal('modal-nuovo-paziente')">✕ Annulla</button>
             <button type="submit" id="btn-submit-nuovo-paziente" class="btn btn-primary" style="background:linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%);">
               ✨ Crea Cartella Clinica
@@ -5663,6 +5669,55 @@ main, .main-content, .dashboard-container {
 
   </div>
 </div>
+
+
+<script>
+function azzeraFormNuovoPaziente() {
+  const form = document.getElementById("form-nuovo-paziente");
+  if (form) form.reset();
+
+  // Campi manuali specifici
+  const elIds = [
+    "nuovo-paz-nome", "nuovo-paz-indirizzo", "nuovo-paz-cellulare", "nuovo-paz-telefono",
+    "nuovo-paz-parente-nome", "nuovo-paz-parente-cell", "nuovo-paz-patologie-testo",
+    "nuovo-paz-medico-nome", "nuovo-paz-medico-tel", "nuovo-paz-medico-email",
+    "nuovo-paz-farmacia", "nuovo-paz-farmacia-tel", "nuovo-paz-nascita"
+  ];
+  elIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ""; try { el.dispatchEvent(new Event("input")); } catch(e){} }
+  });
+
+  // Re-imposta allergie su predefinito sicuro
+  const alg = document.getElementById("nuovo-paz-allergie");
+  if (alg) alg.value = "Nessuna nota";
+
+  // Re-imposta eta preview
+  const eta = document.getElementById("nuovo-paz-eta-preview");
+  if (eta) eta.value = "";
+
+  // Reset tendine data
+  const g = document.getElementById("nuovo-paz-nascita-giorno");
+  const m = document.getElementById("nuovo-paz-nascita-mese");
+  const a = document.getElementById("nuovo-paz-nascita-anno");
+  if (g) g.selectedIndex = 0;
+  if (m) m.selectedIndex = 0;
+  if (a) a.selectedIndex = 0;
+
+  // Rimuovi selezione chip patologie
+  document.querySelectorAll("#container-chip-patologie .chip-patologia.active").forEach(ch => {
+    ch.classList.remove("active");
+  });
+
+  // Focus sul primo campo
+  const nomeEl = document.getElementById("nuovo-paz-nome");
+  if (nomeEl) nomeEl.focus();
+
+  if (typeof showToast === "function") {
+    showToast("✨ Scheda assistito azzerata: puoi inserire un nuovo assistito!");
+  }
+}
+</script>
 
 </body>
 </html>
