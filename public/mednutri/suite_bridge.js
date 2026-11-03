@@ -142,29 +142,56 @@
   function aggiornaTendinaMedNutri() {
     const sel = document.getElementById('select-import-mednutri-suite');
     if (!sel) return;
-    sel.innerHTML = '<option value="">-- Seleziona un assistito per autocompilare --</option>' +
+    sel.innerHTML = '<option value="NUOVO" style="background:#0284c7; color:#ffffff; font-weight:800; padding:10px;">➕ INSERISCI UN PAZIENTE DEL TUTTO NUOVO (Pulisci campi)</option>' +
+      '<option value="" disabled selected style="background:#1e293b; color:#94a3b8;">-- Oppure seleziona un assistito registrato nella Suite --</option>' +
       _mednutriSuiteSoggetti.map((s, idx) => {
-        return `<option value="${idx}" style="color:#0f172a; background:#ffffff; font-weight:700; padding:6px;">✨ ${s.nome} (${s.origini.join(', ')}${s.dataNascita ? ' • Nato il ' + s.dataNascita : ''})</option>`;
+        const originiStr = (s.origini || []).join(', ');
+        return `<option value="${idx}" style="background:#0f172a; color:#ffffff; font-weight:700; padding:10px; border-bottom:1px solid #1e293b;">👤 ${s.nome} (${originiStr}${s.dataNascita ? ' • Nato il ' + s.dataNascita : ''})</option>`;
       }).join('');
   }
 
   window.applicaImportMedNutriDaSuite = function(idxStr) {
-    if (idxStr === '' || idxStr === null) return;
+    if (idxStr === '' || idxStr === null || idxStr === undefined) return;
+    
+    // CASO 1: L'UTENTE VUOLE INSERIRE UN PAZIENTE DEL TUTTO NUOVO (NON ANCORA IN NESSUNA APP)
+    if (idxStr === 'NUOVO') {
+      const nameEl = document.getElementById('patient-name');
+      if (nameEl) { nameEl.value = ''; nameEl.focus(); }
+      const dobEl = document.getElementById('patient-dob');
+      if (dobEl) dobEl.value = '';
+      const heightEl = document.getElementById('patient-height');
+      if (heightEl) heightEl.value = '';
+      const weightEl = document.getElementById('patient-weight');
+      if (weightEl) weightEl.value = '';
+      const wristEl = document.getElementById('patient-wrist');
+      if (wristEl) wristEl.value = '';
+      const notesEl = document.getElementById('patient-notes');
+      if (notesEl) notesEl.value = '';
+
+      if (typeof calculateBMI === 'function') calculateBMI();
+      
+      const feed = document.getElementById('mednutri-sync-feedback');
+      if (feed) {
+        feed.style.display = 'block';
+        feed.textContent = '✨ Modalità Nuovo Paziente: inserisci i dati nei campi sottostanti e salva. Verrà condiviso con tutta la Suite!';
+        setTimeout(() => { if (feed) feed.style.display = 'none'; }, 7000);
+      }
+      return;
+    }
+
+    // CASO 2: SELEZIONE DI UN PAZIENTE ESISTENTE DALLA SUITE
     const idx = parseInt(idxStr, 10);
     const s = _mednutriSuiteSoggetti[idx];
     if (!s) return;
 
-    // Compila nome
     const nameEl = document.getElementById('patient-name');
     if (nameEl) nameEl.value = s.nome;
 
-    // Compila genere
     const genderEl = document.getElementById('patient-gender');
     if (genderEl && s.sesso) {
       genderEl.value = (s.sesso.toUpperCase().startsWith('F') || s.sesso.toLowerCase() === 'donna') ? 'F' : 'M';
     }
 
-    // Compila data di nascita
     const dobEl = document.getElementById('patient-dob');
     if (dobEl && s.dataNascita) {
       dobEl.value = s.dataNascita;
@@ -176,7 +203,6 @@
     }
   };
 
-  // Esegui caricamento della tendina
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => setTimeout(popolaSelectImportMedNutri, 300));
   } else {

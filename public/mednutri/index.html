@@ -8,24 +8,30 @@
     <link rel="stylesheet" href="style.css?v=20261019_mobile6">
 
     <style id="custom-suite-select-contrast">
-      /* CONTRASTO NITIDO AD ALTA LEGGIBILITÀ */
-      #select-import-mednutri-suite,
-      #select-import-mednutri-suite option {
-        color: #0f172a !important;
-        background-color: #ffffff !important;
+      /* EXECUTIVE HIGH-CONTRAST SELECT BOX PERFETTAMENTE LEGGIBILE */
+      #select-import-mednutri-suite {
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+        border: 2px solid #38bdf8 !important;
         font-weight: 800 !important;
         font-size: 14.5px !important;
-        line-height: 1.5 !important;
-        -webkit-text-fill-color: #0f172a !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.4) !important;
+        cursor: pointer !important;
+        width: 100% !important;
+        outline: none !important;
       }
-      #select-import-mednutri-suite {
-        border: 2px solid #0284c7 !important;
-        background: #ffffff !important;
-        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15) !important;
-      }
+      #select-import-mednutri-suite:hover,
       #select-import-mednutri-suite:focus {
-        border-color: #0369a1 !important;
-        outline: 3px solid rgba(2, 132, 199, 0.3) !important;
+        border-color: #0284c7 !important;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35) !important;
+      }
+      #select-import-mednutri-suite option {
+        background-color: #0f172a !important;
+        color: #f8fafc !important;
+        font-weight: 700 !important;
+        padding: 10px !important;
       }
     </style>
 </head>
@@ -362,14 +368,18 @@
                     <h3>Anagrafica Paziente</h3>
                     <div class="input-grid">
                         <!-- BOX 1-CLICK IMPORT SUITE IN MEDNUTRI -->
-                        <div class="input-group" style="grid-column: span 2; background:rgba(14,165,233,0.12); border:1.5px solid rgba(56,189,248,0.4); padding:10px 14px; border-radius:12px; margin-bottom:6px;">
-                            <label style="color:#38bdf8; font-weight:800; display:flex; justify-content:space-between; align-items:center;">
-                                <span>✨ Importa Assistito dalla Suite (CareAssist / Progetto Salute)</span>
-                                <span style="font-size:10px; background:#0284c7; color:#fff; padding:2px 8px; border-radius:8px;">1-Click</span>
-                            </label>
-                            <select id="select-import-mednutri-suite" onchange="applicaImportMedNutriDaSuite(this.value)" style="background:#ffffff; color:#0f172a; border:2px solid #0284c7; font-weight:800; width:100%; padding:10px 14px; border-radius:10px; cursor:pointer; font-size:14px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-                                <option value="">-- Seleziona un assistito per autocompilare --</option>
+                        <div class="input-group" style="grid-column: span 2; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1.5px solid #38bdf8; padding: 14px 18px; border-radius: 16px; margin-bottom: 8px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.3);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <label style="color:#38bdf8; font-weight:800; font-size:13px; display:flex; align-items:center; gap:8px; margin:0;">
+                                    <span>🏛️</span> <span>Scegli Paziente dalla Suite o Inserisci Nuovo</span>
+                                </label>
+                                <span style="font-size:11px; background:#0284c7; color:#ffffff; padding:3px 10px; border-radius:12px; font-weight:800; letter-spacing:0.5px;">DATABASE CONDIVISO</span>
+                            </div>
+                            <select id="select-import-mednutri-suite" onchange="applicaImportMedNutriDaSuite(this.value)">
+                                <option value="NUOVO">➕ INSERISCI UN PAZIENTE DEL TUTTO NUOVO (Pulisci campi)</option>
+                                <option value="" disabled selected>-- Oppure seleziona un assistito registrato nella Suite --</option>
                             </select>
+                            <div id="mednutri-sync-feedback" style="display:none; margin-top:8px; font-size:12px; color:#4ade80; font-weight:700;"></div>
                         </div>
 
                         <div class="input-group" style="grid-column: span 2;">

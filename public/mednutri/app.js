@@ -712,6 +712,24 @@ function savePatient() {
     localStorage.setItem('mednutri_pat_' + name.toLowerCase(), JSON.stringify(patientData));
     showToast(`Scheda di ${name} salvata in archivio (incluso piano pasti personalizzato)!`, "success");
 
+    // TRASMISSIONE AUTOMATICA AL DATABASE UNIFICATO DELLA SUITE (CAREASSIST & SALUTE)
+    try {
+        fetch('/api/suite/pazienti', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: 'paz_' + Date.now(),
+                nome: name,
+                dataNascita: document.getElementById('patient-dob').value,
+                sesso: document.getElementById('patient-gender').value,
+                patologie: pathologies,
+                origini: ['Ambulatorio Medico', 'CareAssist Pro', 'Progetto Salute']
+            })
+        }).then(r => r.json()).then(res => {
+            console.log('Paziente sincronizzato su Suite centrale:', res);
+        }).catch(err => console.warn('Errore sync suite da MedNutri:', err.message));
+    } catch(eSync) {}
+
     // Sincronizzazione automatica su Cloud in background
     if (typeof triggerAutoCloudSync === 'function') {
         triggerAutoCloudSync(false);
