@@ -1761,7 +1761,7 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
   font-family: 'Outfit', sans-serif;
   font-size: 18px;
   font-weight: 800;
-  color: var(--text-main);
+  color: #ffffff !important;
   display: flex;
   align-items: center;
   flex-wrap: wrap;

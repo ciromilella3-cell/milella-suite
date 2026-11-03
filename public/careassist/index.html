@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=118">
+  <link rel="stylesheet" href="style.css?v=1793710323006">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -225,15 +225,14 @@
       <!-- SELETTORE ASSISTITO ATTIVO (CAPSULE EXECUTIVE CARD) -->
       <div class="header-center-patient">
         <div class="patient-picker-box">
-          <div class="patient-picker-chip" onclick="apriRegistroSanitarioAsl()" title="Apri Registro Sanitario & Triage ASL (Tasto F2 o Click)" style="cursor:pointer;">
-            <span class="patient-picker-icon">🏛️</span>
-            <span class="patient-picker-label">REGISTRO ASL:</span>
+          <div class="patient-picker-chip" onclick="apriSwitchPazienteRapido()" title="Tocca per cambiare rapidamente assistito (4 schede con avatar)" style="cursor:pointer;">
+            <span class="patient-picker-icon">👥</span>
+            <span class="patient-picker-label">ASSISTITO:</span>
             <span style="font-size:10px; color:#0284c7; margin-left:2px; font-weight:900;">▾</span>
           </div>
           <select id="select-paziente-attivo" class="patient-select-input" onchange="cambiaPaziente(this.value)">
             <!-- popolato dinamicamente -->
           </select>
-          
           <button class="btn btn-new-patient" onclick="openModal('modal-nuovo-paziente')" title="Aggiungi una nuova cartella assistito">
             <span>➕</span> <span class="btn-new-patient-full-label">Nuovo Assistito</span><span class="btn-new-patient-mobile-label" style="display:none;">Nuovo</span>
           </button>
@@ -1114,7 +1113,7 @@
       
       <!-- HEADER CLINICO MODERNO -->
       <div class="modal-header" style="background:linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:white; padding:12px 16px;">
-        <div class="modal-title" style="display:flex; align-items:center; gap:8px; font-size:15.5px; font-weight:800;">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px; font-size:15.5px; font-weight:800; color:#ffffff !important;">
           <span>👤</span> <span>Crea Nuova Cartella Assistito</span>
         </div>
         <button type="button" class="btn-close-modal" onclick="closeModal('modal-nuovo-paziente')">✕</button>
@@ -1127,20 +1126,6 @@
           <div class="card-sezione-pro">
             <div class="sezione-titolo-pro">
               <span>📋</span> <span>1. Dati Anagrafici & Mobilità</span>
-            </div>
-
-            <!-- BOX SMART 1-CLICK IMPORT SUITE -->
-            <div id="box-importa-suite" style="display:none; background:linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border:1.5px solid #38bdf8; border-radius:14px; padding:12px 14px; margin-bottom:12px; box-shadow:0 4px 12px rgba(2,132,199,0.08);">
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                <span style="font-size:12.5px; font-weight:800; color:#0369a1; display:flex; align-items:center; gap:6px;">
-                  <span>✨</span> Importa da Altra App della Suite (1-Click)
-                </span>
-                <span style="font-size:11px; background:#0284c7; color:#ffffff; padding:2px 7px; border-radius:10px; font-weight:700;">Zero Errori</span>
-              </div>
-              <select id="select-importa-suite-paziente" class="form-control" onchange="applicaImportazionePazienteSuite(this.value)" style="background:#ffffff; font-weight:700; color:#0f172a; border:1.5px solid #0284c7; cursor:pointer;">
-                <!-- Popolato automaticamente via API Anagrafe Federata -->
-              </select>
-              <div id="import-suite-feedback" style="display:none; margin-top:8px; font-size:12px; color:#15803d; font-weight:700; background:#dcfce7; padding:6px 10px; border-radius:8px;"></div>
             </div>
 
             <div class="form-group" style="margin-bottom:8px;">
@@ -1797,44 +1782,87 @@
       <form id="form-maschera-capsula" onsubmit="salvaModificaFarmaco(event)" style="display:flex; flex-direction:column; width:100%; flex:1; min-height:0; overflow:hidden;">
         <input type="hidden" id="edit-farm-id">
         <div class="modal-body modal-body-farmaco-pro" style="width:100%; flex:1; overflow-y:auto;">
-          <!-- SELETTORE FORMATO CLINICO PULITO (COMPRESSA VS PENNA) -->
-          <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:10px 12px; margin-bottom:12px; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span style="font-size:12px; font-weight:800; color:#334155; text-transform:uppercase;">
-                Cosa stai configurando?
-              </span>
-              <button type="button" onclick="var s=document.getElementById('box-scanner-pro-fold'); if(s) s.style.display=(s.style.display==='none'?'block':'none');" style="background:#f1f5f9; border:1px solid #cbd5e1; color:#475569; font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; cursor:pointer;">
-                📷 Usa Scanner / Foto
+          
+          <!-- SCANNER INTELLIGENTE FARMACO AI -->
+          <div class="box-scanner-farmaco-pro">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:18px;">📸</span>
+                <span style="font-size:12px; font-weight:800; color:#ffffff; letter-spacing:0.3px;">SCANNER VISIVO FARMACO AI</span>
+              </div>
+              <span class="badge-scanner-ai">AI VISION</span>
+            </div>
+            <div style="font-size:11px; color:#7dd3fc; margin-bottom:8px;">Fotografa o carica la scatola: compila nome, dosaggio e istruzioni</div>
+
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <label class="btn-scan-act" style="flex:1; min-width:92px;" onclick="var inp=this.querySelector('input'); if(inp) inp.value='';">
+                <span>📷</span> Fotocamera
+                <input type="file" id="scan-farm-camera" accept="image/*" capture="environment" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
+              </label>
+
+              <button type="button" class="btn-scan-act" style="flex:1; min-width:92px; background:linear-gradient(135deg, #059669 0%, #047857 100%); border-color:#34d399; color:#ffffff;" onclick="toggleMirinoLiveScanner('capsula')" title="Apri mirino fotocamera live con puntatore laser per scatti multipli">
+                <span>🎯</span> Mirino Live
+              </button>
+
+              <label class="btn-scan-act btn-scan-gallery" style="flex:0.9; min-width:82px;" onclick="var inp=this.querySelector('input'); if(inp) inp.value='';">
+                <span>🖼️</span> Galleria
+                <input type="file" id="scan-farm-gallery" accept="image/*" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
+              </label>
+
+              <button type="button" class="btn-scan-act btn-scan-gallery" style="flex:0.8; min-width:76px; border-color:rgba(52,211,153,0.5); color:#6ee7b7;" onclick="avviaDettaturaVocaleFarmacoScanner('capsula')" title="Pronuncia il nome sulla scatola e l'AI compila e spiega tutto a voce">
+                <span>🎤</span> Voce AI
               </button>
             </div>
 
-            <div style="display:flex; gap:6px;" id="group-formato-selector">
-              <button type="button" id="btn-formato-compressa" class="btn-formato-pill active" onclick="impostaFormatoFarmacoModal('compressa')" style="flex:1; padding:9px 6px; border-radius:10px; border:2px solid #0284c7; background:#0284c7; color:#fff; font-weight:900; font-size:12.5px; cursor:pointer; text-align:center;">
-                💊 Pillola / Compressa
-              </button>
-              <button type="button" id="btn-formato-penna" class="btn-formato-pill" onclick="impostaFormatoFarmacoModal('penna')" style="flex:1.2; padding:9px 6px; border-radius:10px; border:2px solid #cbd5e1; background:#ffffff; color:#334155; font-weight:900; font-size:12.5px; cursor:pointer; text-align:center;">
-                💉 Penna Insulina
-              </button>
-              <button type="button" id="btn-formato-gocce" class="btn-formato-pill" onclick="impostaFormatoFarmacoModal('gocce')" style="flex:0.8; padding:9px 6px; border-radius:10px; border:2px solid #cbd5e1; background:#ffffff; color:#334155; font-weight:900; font-size:12.5px; cursor:pointer; text-align:center;">
-                💧 Gocce
-              </button>
-            </div>
-
-            <!-- SCANNER AI PIEGHEVOLE (NON INTRUSIVO, RIMANE NASCOSTO) -->
-            <div id="box-scanner-pro-fold" style="display:none; margin-top:10px; padding:10px; background:#0f172a; border-radius:10px; border:1px solid #38bdf8;">
-              <div style="font-size:11.5px; color:#38bdf8; font-weight:700; margin-bottom:6px;">📸 Scanner Visivo Scatola:</div>
-              <div style="display:flex; gap:6px;">
-                <label class="btn btn-sm" style="flex:1; background:#0284c7; color:#fff; text-align:center; cursor:pointer; padding:6px; font-size:11px; font-weight:700; border-radius:6px;">
-                  📷 Fotocamera
-                  <input type="file" id="scan-farm-camera" accept="image/*" capture="environment" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
-                </label>
-                <label class="btn btn-sm" style="flex:1; background:#334155; color:#fff; text-align:center; cursor:pointer; padding:6px; font-size:11px; font-weight:700; border-radius:6px;">
-                  🖼️ Galleria
-                  <input type="file" id="scan-farm-gallery" accept="image/*" style="display:none;" onchange="gestisciFotoFarmaco(event, 'capsula')">
-                </label>
+            <!-- MIRINO LIVE IN-APP CON PUNTATORE LASER AI -->
+            <div id="live-scanner-box-capsula" style="display:none; margin-top:8px; position:relative; border-radius:10px; overflow:hidden; border:2px solid #34d399; background:#000;">
+              <video id="live-scanner-video-capsula" playsinline muted style="width:100%; max-height:210px; object-fit:cover; display:block;"></video>
+              <div style="position:absolute; inset:14% 8%; border:2px dashed rgba(52,211,153,0.85); border-radius:10px; pointer-events:none; box-shadow:0 0 0 9999px rgba(0,0,0,0.32);">
+                <div style="position:absolute; top:50%; left:4%; right:4%; height:2px; background:linear-gradient(90deg, transparent, #10b981, #34d399, #10b981, transparent); box-shadow:0 0 8px #10b981;"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 10px; background:rgba(15,23,42,0.92);">
+                <span style="font-size:11px; color:#6ee7b7; font-weight:700;">🎯 Inquadra la scatola nel riquadro</span>
+                <div style="display:flex; gap:6px;">
+                  <button type="button" onclick="catturaFrameMirinoLive('capsula')" style="padding:5px 12px; border-radius:7px; border:none; background:#10b981; color:#fff; font-size:11.5px; font-weight:800; cursor:pointer;">📸 Scatta & Analizza</button>
+                  <button type="button" onclick="fermaMirinoLiveScanner()" style="padding:5px 9px; border-radius:7px; border:1px solid #64748b; background:transparent; color:#cbd5e1; font-size:11px; font-weight:700; cursor:pointer;">✕</button>
+                </div>
               </div>
             </div>
+
+            <!-- Box di Analisi & Risultato Rilevato -->
+            <div id="scan-result-capsula" style="display:none; margin-top:8px; padding:8px 10px; background:rgba(15, 23, 42, 0.75); border:1.5px solid #10b981; border-radius:10px;">
+              <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                <span id="scan-status-icon" style="font-size:14px;">⚡</span>
+                <span id="scan-status-text" style="font-size:11.5px; font-weight:800; color:#34d399;">Analisi completata!</span>
+              </div>
+              <div id="scan-detected-info" style="font-size:11px; color:#e2e8f0; line-height:1.35;"></div>
+            </div>
           </div>
+
+          
+          <!-- SELETTORE FORMATO CLINICO (AUTO-RILEVANTE PER PENNE / INSULINA) -->
+          <div class="card-sezione-pro" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1.5px solid #7dd3fc; margin-bottom: 12px; padding: 10px 14px; border-radius: 12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:12px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.4px; display:flex; align-items:center; gap:6px;">
+                <span>🧬</span> Formato & Formulazione Presidio
+              </span>
+              <span id="badge-auto-rilevato-formato" style="font-size:10px; font-weight:800; background:#0284c7; color:#fff; padding:2px 8px; border-radius:12px; display:none; box-shadow:0 1px 4px rgba(2,132,199,0.3);">
+                ✨ Auto-Riconosciuto
+              </span>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;" id="group-formato-selector">
+              <button type="button" id="btn-formato-compressa" class="btn-formato-pill active" onclick="impostaFormatoFarmacoModal('compressa')" style="flex:1; min-width:110px; padding:8px 10px; border-radius:9px; border:1.5px solid #0284c7; background:#0284c7; color:#fff; font-weight:800; font-size:12px; cursor:pointer; text-align:center; transition:all 0.15s ease;">
+                💊 Compressa / Pillola
+              </button>
+              <button type="button" id="btn-formato-penna" class="btn-formato-pill" onclick="impostaFormatoFarmacoModal('penna')" style="flex:1.3; min-width:145px; padding:8px 10px; border-radius:9px; border:1.5px solid #cbd5e1; background:#ffffff; color:#334155; font-weight:800; font-size:12px; cursor:pointer; text-align:center; transition:all 0.15s ease;">
+                💉 Penna Iniettabile (Insulina)
+              </button>
+              <button type="button" id="btn-formato-gocce" class="btn-formato-pill" onclick="impostaFormatoFarmacoModal('gocce')" style="flex:0.9; min-width:90px; padding:8px 10px; border-radius:9px; border:1.5px solid #cbd5e1; background:#ffffff; color:#334155; font-weight:800; font-size:12px; cursor:pointer; text-align:center; transition:all 0.15s ease;">
+                💧 Gocce / Orale
+              </button>
+            </div>
+          </div>
+
           <!-- SEZIONE 1: IDENTIFICATIVO & PRINCIPIO ATTIVO -->
           <div class="card-sezione-pro">
             <div class="sezione-titolo-pro">
@@ -1880,12 +1908,12 @@
           </div>
 
           <!-- SEZIONE 2: PIANO SOMMINISTRAZIONI & DOSI GIORNALIERE -->
-          <div class="card-sezione-pro box-sanita-pro" id="sezione-frequenze-compresse">
+          <div class="card-sezione-pro box-sanita-pro">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <div class="sezione-titolo-pro" style="margin-bottom:0; border:none; padding:0;">
-                <span id="label-icon-orari-sez">⏰</span> <span id="label-titolo-orari-sez">Orari & Quota Somministrazioni</span>
+                <span>⏰</span> Orari & Quota Somministrazioni
               </div>
-              <span class="badge-mini-green" id="badge-info-orari-sez">Tocca per impostare</span>
+              <span class="badge-mini-green">Tocca per impostare</span>
             </div>
             
             <div class="capsula-freq-selector">
@@ -1957,7 +1985,7 @@
             <div class="sezione-titolo-pro">
               <span>📦</span> Scorte a Casa & Confezione Farmacia
             </div>
-            <div class="riga-doppia-pro" id="box-scorte-compresse-standard" style="align-items:flex-end;">
+            <div class="riga-doppia-pro" style="align-items:flex-end;">
               <div class="form-group-compact" style="flex:1;">
                 <label class="form-label-compact">Cpr per Scatola</label>
                 <input type="number" class="form-control-compact" id="edit-farm-cpr-scatola" min="1" value="28" oninput="ricalcolaRiepilogoCapsula()">
@@ -2325,54 +2353,6 @@
             <a id="btn-smartphone-open-browser" href="https://milella-suite.onrender.com/careassist/" target="_blank" class="btn btn-outline" style="font-size:11.5px; padding:4px 10px; text-decoration:none; background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:700; white-space:nowrap;">
               🌐 Apri nel Browser
             </a>
-          </div>
-        </div>
-
-        <!-- SEZIONE SPECIALE: SVEGLIE A SCHERMO SPENTO / TELEFONO BLOCCATO -->
-        <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 2px solid #f59e0b; border-radius: 12px; padding: 14px; text-align: left; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 8px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:22px;">🚨</span>
-              <div>
-                <div style="font-size:13.5px; font-weight:900; color:#b45309; text-transform:uppercase; letter-spacing:0.5px;">
-                  Sveglie a Display Spento / Telefono Bloccato
-                </div>
-                <div style="font-size:11px; color:#92400e; font-weight:600;">
-                  Ricevi allarmi acustici e vibrazione anche se il cellulare è in standby
-                </div>
-              </div>
-            </div>
-            <span style="background:#f59e0b; color:white; font-size:10px; font-weight:800; padding:3px 8px; border-radius:20px;">CANALE ATTIVO</span>
-          </div>
-
-          <div style="background:white; border:1px solid #fde68a; border-radius:8px; padding:10px; margin-bottom:10px;">
-            <div style="font-size:12px; font-weight:700; color:#1e293b; margin-bottom:4px;">
-              📲 1. Collega il cellulare al canale allarmi di CareAssist:
-            </div>
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:6px;">
-              <a href="https://ntfy.sh/suite-milella-careassist" target="_blank" class="btn btn-primary" style="font-size:12px; padding:6px 14px; text-decoration:none; background:#ea580c; border:none; font-weight:800; border-radius:8px;">
-                🔔 Apri Canale Allarmi (ntfy.sh)
-              </a>
-              <span style="font-size:11px; color:#64748b;">Oppure scarica l'app gratuita <b>ntfy</b> su Google Play o App Store</span>
-            </div>
-          </div>
-
-          <!-- SCHEDA DIALOGO OPZIONI TELEGRAM / CANALE AZIENDALE -->
-          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px; margin-bottom:10px;">
-            <div style="display:flex; align-items:center; justify-content:space-between;">
-              <span style="font-size:12px; font-weight:700; color:#166534;">💬 In alternativa: Notifiche su Gruppo Telegram</span>
-              <span style="font-size:10px; background:#dcfce7; color:#15803d; font-weight:800; padding:2px 6px; border-radius:4px;">ZERO APP NUOVE</span>
-            </div>
-            <div style="font-size:11px; color:#14532d; margin-top:3px; line-height:1.4;">
-              Se il personale o il capo preferiscono non installare app, gli allarmi possono arrivare direttamente su un canale o gruppo riservato Telegram.
-            </div>
-          </div>
-
-          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            <button type="button" onclick="testSvegliaSmartphonePush()" id="btn-test-push-sveglia" class="btn" style="flex:1; background:#b45309; color:white; font-size:12px; font-weight:800; padding:8px 12px; border-radius:8px; border:none; cursor:pointer; box-shadow:0 2px 6px rgba(180,83,9,0.3);">
-              ⚡ Fai Squillare il Telefono Adesso (Test Urgente)
-            </button>
-            <span id="stato-test-push" style="font-size:11px; font-weight:700; color:#047857;"></span>
           </div>
         </div>
 
@@ -5684,6 +5664,5 @@ main, .main-content, .dashboard-container {
   </div>
 </div>
 
-  <script src="anagrafe_federata.js"></script>
 </body>
 </html>
