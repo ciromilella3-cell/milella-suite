@@ -1641,14 +1641,25 @@ body {
 }
 
 .custom-table td {
-  padding: 14px 16px;
+  padding: 13px 16px;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
-  background: white;
+  background: transparent;
 }
 
-.custom-table tr:hover td {
-  background: #f8fafc;
+/* RIGHE ALTERNATE ELEGANTE CHIARO / AZZURRO SOFT */
+.custom-table tbody tr:nth-child(odd) td {
+  background-color: #ffffff !important;
+}
+
+.custom-table tbody tr:nth-child(even) td {
+  background-color: #f1f8fe !important; /* Delicato azzurro clinico chiarissimo */
+}
+
+/* Riga evidenziata al passaggio del cursore */
+.custom-table tbody tr:hover td {
+  background-color: #dbeafe !important; /* Blu tenue brillante */
+  transition: background-color 0.12s ease-in-out;
 }
 
 .custom-table tr:last-child td {
