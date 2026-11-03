@@ -6643,3 +6643,25 @@ textarea.form-control {
     max-height: 52px !important;
   }
 }
+
+
+/* MARGINE DI SICUREZZA INFERIORE PER BARRA DI NAVIGAZIONE SUITE (ANTI-SOVRAPPOSIZIONE) */
+body {
+  padding-bottom: 100px !important;
+}
+
+main, .main-content, .dashboard-container {
+  padding-bottom: 50px !important;
+}
+
+/* Larghezza confortevole per le colonne Data e padding tabella */
+.custom-table th:first-child,
+.custom-table td:first-child {
+  min-width: 95px !important;
+  white-space: nowrap !important;
+  font-weight: 700 !important;
+}
+
+.custom-table td {
+  padding: 14px 18px !important;
+}
