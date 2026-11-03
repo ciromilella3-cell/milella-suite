@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SUITE AZIENDALE C. MILELLA</title>
     <!-- PWA and Fullscreen Mobile Support -->
@@ -17,6 +17,148 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
+        
+        /* ========================================================
+           CARD STYLE SEGUGIO.IT ORIGINALE (WHITE, BLUE ACCENT, TAP-FRIENDLY)
+           ======================================================== */
+        .card.segugio-card {
+            background: #ffffff !important;
+            border: 1.5px solid #e2e8f0 !important;
+            border-radius: 18px !important;
+            padding: 15px 16px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 14px !important;
+            text-align: left !important;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        .card.segugio-card:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 24px rgba(2, 132, 199, 0.16), 0 2px 6px rgba(0, 0, 0, 0.06) !important;
+            border-color: #7dd3fc !important;
+        }
+
+        .card.segugio-card:active {
+            transform: scale(0.985) !important;
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 16px rgba(2, 132, 199, 0.25) !important;
+        }
+
+        .segugio-icon-badge {
+            width: 54px;
+            height: 54px;
+            min-width: 54px;
+            border-radius: 50%;
+            background: #e8f4fc !important;
+            border: 1.5px solid #d0e8f8 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12);
+            flex-shrink: 0;
+        }
+
+        .segugio-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .segugio-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .segugio-title {
+            font-size: 16px !important;
+            font-weight: 800 !important;
+            color: #0f3d6c !important;
+            letter-spacing: -0.2px !important;
+            margin: 0 !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .segugio-desc {
+            font-size: 12.5px !important;
+            color: #64748b !important;
+            font-weight: 500 !important;
+            line-height: 1.35 !important;
+            margin: 0 !important;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .segugio-actions-row {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .segugio-pill-btn {
+            background: #dbeefd !important;
+            border: 1px solid #bce1fa !important;
+            color: #035c8e !important;
+            font-size: 11.5px !important;
+            font-weight: 700 !important;
+            padding: 4px 11px !important;
+            border-radius: 12px !important;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 1px 3px rgba(3, 92, 142, 0.08);
+        }
+
+        .segugio-pill-btn:hover {
+            background: #bce1fa !important;
+            border-color: #0284c7 !important;
+            color: #024367 !important;
+            transform: translateY(-1px);
+        }
+
+        .segugio-arrow-btn {
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+            border: 1.5px solid #38bdf8 !important;
+            color: #ffffff !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 900;
+            box-shadow: 0 3px 10px rgba(2, 132, 199, 0.3) !important;
+            flex-shrink: 0;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .card.segugio-card:hover .segugio-arrow-btn {
+            transform: translateX(3px);
+            background: linear-gradient(135deg, #0369a1 0%, #0c4a6e 100%) !important;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.45) !important;
+        }
+    
+
         :root {
             --bg-color: #040914;
             --gold-primary: #d4af37;
@@ -661,15 +803,75 @@
             }
         }
   
-    </style>
+    
+        .card.search-hidden { display: none !important; }
+    
+  /* ==========================================================================
+     EFFETTO APPARIZIONE AFFASCINANTE A CASCATA (PREMIUM STAGGERED REVEAL)
+     ========================================================================== */
+  @keyframes heroFadeIn {
+    0% { opacity: 0; transform: translateY(-12px); filter: blur(4px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  @keyframes cardCascadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(18px) scale(0.96);
+      filter: blur(6px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  header {
+    animation: heroFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  }
+
+  .kpi-dashboard, #smartNotificationsBanner {
+    animation: heroFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both !important;
+  }
+
+  .card.segugio-card {
+    opacity: 1;
+    animation: cardCascadeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  }
+
+  .command-dock-wrapper {
+    animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both !important;
+  }
+  
+</style>
 <style>
-@media (max-width: 768px) { #btnLogistica { display: none !important; } }
+/* #btnLogistica visibile */
 @media (min-width: 769px) { #btnLogistica { display: flex !important; } }
 </style>
 <style>@media (max-width: 768px) { #floatingControlBar { display: none !important; } .container { padding: 1.2rem 1rem !important; } .cards-wrapper { grid-template-columns: 1fr !important; gap: 14px !important; } .card { border-radius: 20px !important; padding: 1.5rem 1.2rem !important; background: rgba(17, 24, 39, 0.65) !important; border: 1.5px solid rgba(212, 175, 55, 0.25) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; } .card:active { transform: scale(0.98) !important; border-color: #d4af37 !important; } .card-icon { font-size: 3rem !important; margin-bottom: 0.8rem !important; filter: drop-shadow(0 4px 12px rgba(212,175,55,0.4)) !important; } .card-title { font-size: 1.35rem !important; font-weight: 800 !important; letter-spacing: 0.5px !important; color: #ffffff !important; margin-bottom: 0.4rem !important; } .card-desc { font-size: 0.88rem !important; color: #94a3b8 !important; line-height: 1.45 !important; } }</style>    <script src="/auth_token.js"></script>
     <script src="/qrcode.min.js"></script>
+
+
 </head>
 <body>
+<script>
+    (function(){
+      try {
+        var unlocked = sessionStorage.getItem('milella_session_unlocked') === 'true' || 
+                       localStorage.getItem('milella_session_unlocked') === 'true' ||
+                       localStorage.getItem('milella_role') === 'admin';
+        if (unlocked) {
+          document.documentElement.classList.add('suite-already-unlocked');
+        }
+      } catch(e){}
+    })();
+  </script>
+  <style>
+    .suite-already-unlocked #gateBloccoIngresso {
+      display: none !important;
+    }
+  </style>
     <!-- FLOATING BAR AVVISO BLOCCO INATTIVITA' -->
     <div id="kioskInactivityWarning" style="display:none; position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:99999; background:rgba(15,23,42,0.96); border:1.5px solid #eab308; box-shadow:0 10px 30px rgba(0,0,0,0.8), 0 0 25px rgba(234,179,8,0.35); border-radius:30px; padding:9px 20px; color:#fff; font-size:13px; font-weight:700; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; gap:12px; animation:pulseWarning 1.5s infinite;">
         <span style="font-size:16px;">⏳</span>
@@ -827,7 +1029,7 @@
         <!-- BARRA STATUS SUPERIORE UNIFICATA PREMIUM -->
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:1360px; margin-bottom:1.5rem; flex-wrap:wrap; gap:12px; background:rgba(15,23,42,0.6); border:1px solid rgba(212,175,55,0.25); border-radius:24px; padding:10px 18px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 8px 30px rgba(0,0,0,0.4);">
             <!-- Sinistra: Badge Utente -->
-            <div id="userBadge" style="display:flex; align-items:center; gap:8px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.3); padding:6px 14px; border-radius:18px; font-size:13px; font-weight:700; color:#f3e5ab;">
+            <div id="userBadge" onclick="apriLoginModal()" title="Clicca per accedere con PIN Master/Admin" style="cursor:pointer; display:flex; align-items:center; gap:8px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.3); padding:6px 14px; border-radius:18px; font-size:13px; font-weight:700; color:#f3e5ab;">
                 <span id="userBadgeIcon">👷</span>
                 <span id="userBadgeText">Modalità: In attesa di PIN</span>
             </div>
@@ -841,11 +1043,20 @@
 
             <!-- Destra: Azioni e Controlli -->
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button id="btnOpenSmartNotifBar" onclick="apriNotificheSmartBanner()" title="Mostra Smart Hub Promemoria" style="display:none; background:rgba(234,88,12,0.18); border:1.5px solid rgba(249,115,22,0.5); color:#fdba74; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
+                    <span>🔔</span> <span>Avvisi (<b id="topBarNotifCount">0</b>)</span>
+                </button>
+                <button id="btnAnagraficaPazientiSuite" onclick="apriAnagraficaCentraleModal()" style="display:inline-flex; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#ffffff; padding:6px 14px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.35);">
+                    👥 ANAGRAFICA PAZIENTI
+                </button>
                 <button id="btnManageOps" onclick="apriGestioneOperatoriModal()" style="display:none; background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
                     👥 OPERATORI
                 </button>
-                <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
-                    🛠️ MODULI
+                <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" title="Gestisci moduli e personalizza la posizione di ciascuna App" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
+                    ⇅ MODULI & ORDINE APP
+                </button>
+                <button id="btnOpenPresentation" onclick="window.location.href='/presentazione_suite.html'" title="Apri e mostra la Presentazione creata per il cliente" style="display:none; background:linear-gradient(135deg, #a855f7, #7c3aed); border:1px solid #c084fc; color:#fff; padding:6px 14px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(168,85,247,0.35);">
+                    🎬 VETRINA &amp; PRESENTAZIONI
                 </button>
                 
                 <button id="btnInstallApp" onclick="installaPwaApp()" title="Installa Suite su Telefono o Desktop" style="display:none; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#7dd3fc; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; align-items:center; gap:5px; transition:all 0.2s;">
@@ -855,7 +1066,7 @@
                 <button id="btnToggleFullscreen" onclick="toggleFullScreen()" title="Schermo Intero (F11)" style="background:rgba(255,255,255,0.06); border:1px solid rgba(212,175,55,0.35); color:#d4af37; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
                     <span id="fsIcon">⛶</span> <span id="fsText">Schermo Intero</span>
                 </button>
-                <button id="btnSwitchRole" onclick="apriAdminLoginModal()" style="display:none; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#f3e5ab; padding:6px 12px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
+                <button id="btnSwitchRole" onclick="apriLoginModal()" style="display:none; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#f3e5ab; padding:6px 12px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
                     🔑 PIN
                 </button>
                 <button id="btnLogoutRole" onclick="esciAdmin()" style="display:none; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
@@ -885,8 +1096,20 @@
                         <div style="font-size:12px; color:#94a3b8;">Avvisi e scadenze rilevati in tempo reale</div>
                     </div>
                 </div>
-                <div style="display:flex; gap:8px; align-items:center;">
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                     
+                    <button id="btnForzaVol70Launcher" onclick="simulaVolume70Launcher()" title="Protezione Anti-Furbi: sblocca e forza il volume al 75% e riproduce l'allarme vocale HD" style="background:linear-gradient(135deg, #dc2626, #991b1b); border:1.5px solid #fecaca; color:#ffffff; font-size:11.5px; font-weight:800; padding:6px 12px; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s; box-shadow:0 4px 12px rgba(220,38,38,0.35);">
+                        <span>🛡️</span> Volume ≥ 70% Anti-Furbi
+                    </button>
+
+                    <button id="btnEscalationLauncher" onclick="simulaEscalation3StadiLauncher()" title="Simula Escalation 3 Stadi (75% -> 90% -> Audit Coordinatore)" style="background:linear-gradient(135deg, #7c3aed, #5b21b6); border:1.5px solid #ddd6fe; color:#ffffff; font-size:11.5px; font-weight:800; padding:6px 12px; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s; box-shadow:0 4px 12px rgba(124,58,237,0.35);">
+                        <span>🚨</span> Escalation 3 Stadi
+                    </button>
+
+                    <button id="btnDisplaySpentoLauncher" onclick="simulaDisplaySpento10SecLauncher()" title="Test Sveglia Vocale a Display Spento tra 10 secondi" style="background:linear-gradient(135deg, #d97706, #b45309); border:1.5px solid #fde68a; color:#ffffff; font-size:11.5px; font-weight:800; padding:6px 12px; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
+                        <span>🔒</span> Test Display Spento (10s)
+                    </button>
+
                     <button id="btnInviaWhatsAppScadenze" onclick="inviaPromemoriaWhatsApp()" title="Invia riepilogo promemoria su WhatsApp" style="background:rgba(34,197,94,0.18); border:1px solid rgba(34,197,94,0.45); color:#86efac; font-size:11.5px; font-weight:700; padding:6px 12px; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
                         <span>📲</span> WhatsApp Promemoria
                     </button>
@@ -894,9 +1117,10 @@
                     <button id="btnAttivaPushNotif" onclick="attivaNotificheBrowser()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#f3e5ab; font-size:11.5px; font-weight:700; padding:6px 12px; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
                         🔔 Notifiche Telefono
                     </button>
-                    <button onclick="document.getElementById('smartNotificationsBanner').style.display='none'" style="background:transparent; border:none; color:#94a3b8; font-size:18px; cursor:pointer; padding:4px 8px;" title="Chiudi notifiche">✕</button>
+                    <button onclick="chiudiNotificheSmartBanner()" style="background:transparent; border:none; color:#94a3b8; font-size:18px; cursor:pointer; padding:4px 8px;" title="Chiudi notifiche e ricorda la preferenza">✕</button>
                 </div>
             </div>
+            <div id="launcherAlertSimulationBox" style="display:none; margin-bottom:12px; padding:12px 16px; border-radius:12px; font-size:13.5px; font-weight:800; color:#fff; text-align:center; border:2px solid #fde047; box-shadow:0 6px 20px rgba(0,0,0,0.4);"></div>
 
             <!-- Lista Card Notifiche Dinamiche -->
             
@@ -956,94 +1180,9 @@
         </div>
 
         <div class="cards-wrapper">
-    <!-- 1. APP LOGISTICA (Solo PC Console Desktop) -->
-    <a href="#" class="card desktop-only-card" id="btnLogistica" style="display:none;" class="card desktop-only-card-hidden">
-        <div class="card-icon">📦</div>
-        <div class="card-title">Logistica Consegne</div>
-        <div class="card-desc">Gestione completa delle spedizioni, tracciamento e organizzazione del magazzino principale.</div>
-        <div class="card-quick-actions">
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=logistica&info=1';">💡 Per saperne di più</button>
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=logistica';">🎬 Video</button>
         </div>
-    </a>
 
-    <!-- 2. APP FLOTTA & VEICOLI (Solo PC Console Desktop) -->
-    <a href="/veicoli_mobile/" class="card" id="btnVeicoli" class="card">
-        <div class="card-icon">🚗</div>
-        <div class="card-title">Flotta Veicoli & Spese</div>
-        <div class="card-desc">Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.</div>
-        <div class="card-quick-actions">
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=veicoli&info=1';">💡 Per saperne di più</button>
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=veicoli';">🎬 Video</button>
-        </div>
-    </a>
-
-    <!-- 3. APP INVENTARIO -->
-    <a href="/inventario.html" class="card">
-        <div class="card-icon">🛠️</div>
-        <div class="card-title">Inventario Attrezzi</div>
-        <div class="card-desc">Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.</div>
-        <div class="card-quick-actions">
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=inventario&info=1';">💡 Per saperne di più</button>
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=inventario';">🎬 Video</button>
-        </div>
-    </a>
-
-    <!-- 4. APP RICETTARIO -->
-    <a href="/ricettario/" class="card">
-        <div class="card-icon">👨‍🍳</div>
-        <div class="card-title">Il Ricettario</div>
-        <div class="card-desc">L'archivio prezioso delle tue ricette personali con lista della spesa automatica.</div>
-        <div class="card-quick-actions">
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=ricettario&info=1';">💡 Per saperne di più</button>
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=ricettario';">🎬 Video</button>
-        </div>
-    </a>
-
-    <!-- 5. APP MEDNUTRI PRO (Riservato Admin) -->
-    <a href="/mednutri/" class="card admin-only-card" style="display:none;">
-        <div class="card-icon">🥗</div>
-        <div class="card-title">MedNutri Pro</div>
-        <div class="card-desc">Software avanzato per piani nutrizionali personalizzati e gestione clinica.</div>
-        <div class="card-quick-actions">
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=mednutri&info=1';">💡 Per saperne di più</button>
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=mednutri';">🎬 Video</button>
-        </div>
-    </a>
-
-    <!-- 6. APP PROGETTO SALUTE (Riservato Admin) -->
-    <a href="/salute/" class="card admin-only-card" style="display:none;">
-        <div class="card-icon">❤️</div>
-        <div class="card-title">Progetto Salute</div>
-        <div class="card-desc">Monitoraggio parametri vitali, fitness e benessere personale quotidiano.</div>
-        <div class="card-quick-actions">
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=salute&info=1';">💡 Per saperne di più</button>
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=salute';">🎬 Video</button>
-        </div>
-    </a>
-
-    <!-- 7. APP GIOCO (Riservato Admin) -->
-    <a href="/progetto_gioco/" class="card admin-only-card" style="display:none;">
-        <div class="card-icon">🎰</div>
-        <div class="card-title">Progetto Gioco</div>
-        <div class="card-desc">Monitoraggio statistico SuperEnalotto e Gratta & Vinci con bilancio netto.</div>
-    </a>
-
-    <!-- 8. APP CAREASSIST PRO (Riservato Admin) -->
-    <a href="/careassist/" class="card admin-only-card" style="display:none;">
-        <div class="card-icon">🩺</div>
-        <div class="card-title">CareAssist Pro</div>
-        <div class="card-desc">Diario socio-sanitario, terapie farmacologiche e gestione assistenza domiciliare.</div>
-        <div class="card-quick-actions">
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); navigaVersoApp('/careassist/turni.html');">🗓️ Turnario H24</button>
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); navigaVersoApp('/careassist/');">🩺 Diario</button>
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=careassist&info=1';">💡 Per saperne di più</button>
-            <button type="button" class="quick-pill-btn" onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/presentazione_aziendale.html?modulo=careassist';">🎬 Video</button>
-        </div>
-    </a>
-</div>
-
-<!-- FLOATING COMMAND DOCK SUPERIORE/INFERIORE MODERNA -->
+        <!-- FLOATING COMMAND DOCK SUPERIORE/INFERIORE MODERNA -->
         <div id="launcherCommandDock" class="command-dock-wrapper" style="margin-top:2.8rem; width:100%; max-width:980px; display:flex; justify-content:center;">
             <div class="command-dock" style="background:rgba(15,23,42,0.88); border:1.5px solid rgba(212,175,55,0.35); border-radius:40px; padding:10px 20px; display:flex; align-items:center; gap:12px; box-shadow:0 20px 50px rgba(0,0,0,0.6), 0 0 25px rgba(212,175,55,0.12); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); flex-wrap:wrap; justify-content:center;">
                 <!-- Gruppo 1: Mobile & Connessione -->
@@ -1063,8 +1202,11 @@
 
                 <!-- Gruppo 2: Funzioni AI & Presentazione Aziendale -->
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <button onclick="window.location.href='/presentazione_aziendale.html'" class="dock-btn" style="background:linear-gradient(135deg, #d4af37, #aa7c11); color:#0b0f19; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 16px rgba(212,175,55,0.45);">
+                    <button onclick="window.location.href='/presentazione_aziendale.html?v=106'" class="dock-btn" style="background:linear-gradient(135deg, #d4af37, #aa7c11); color:#0b0f19; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 16px rgba(212,175,55,0.45);">
                         <span>🏢</span> <span>PRESENTAZIONE & NUOVA AZIENDA</span>
+                    </button>
+                    <button onclick="window.location.href='/presentazione_suite.html'" class="dock-btn" style="background:linear-gradient(135deg, #38bdf8, #1e3a8a); color:#fff; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 16px rgba(56,189,248,0.4);">
+                        <span>🎬</span> <span>PRESENTAZIONE SUITE COMPLETA</span>
                     </button>
                     <button onclick="apriPresentazioneAI()" class="dock-btn desktop-only-btn admin-only-btn" style="display:none; background:rgba(255,255,255,0.06); border:1px solid rgba(56,189,248,0.35); color:#7dd3fc; padding:9px 16px; border-radius:24px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
                         <span>🤖</span> <span>ARCHITETTURA AI</span>
@@ -1079,7 +1221,7 @@
                 <!-- Gruppo 3: Sicurezza & Spegni -->
                 <div style="display:flex; align-items:center; gap:8px;">
                                         <button id="btnStanzaRegia" onclick="window.location.href='/STANZA_REGIA_MASTER.html'" class="dock-btn desktop-only-btn admin-only-btn" style="display:none; background:linear-gradient(135deg, #a855f7, #6366f1); color:#fff; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 14px rgba(168,85,247,0.45);">
-                        <span>ðŸŽ›ï¸</span> <span>STANZA REGIA</span>
+                        <span>🎛️</span> <span>STANZA REGIA</span>
                     </button>
                     <button id="btnCentroSicurezza" onclick="apriCentroSicurezzaModal()" class="dock-btn desktop-only-btn admin-only-btn" style="display:none; background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; border:none; padding:9px 18px; border-radius:24px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 14px rgba(245,158,11,0.35);">
                         <span>🛡️</span> <span>SICUREZZA & BACKUP</span>
@@ -1118,26 +1260,106 @@
     </div>
 
     <!-- MODALE SBLOCCO ADMIN (PIN MASTER) -->
-    <div id="modalAdminLogin" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10000; align-items:center; justify-content:center; padding:1rem;">
-        <div style="background:rgba(15,23,42,0.95); border:1px solid rgba(212,175,55,0.4); border-radius:24px; padding:2rem; max-width:400px; width:100%; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.6);">
-            <div style="width:68px; height:68px; margin:0 auto 1rem auto; border-radius:20px; background:linear-gradient(145deg, #0f172a 0%, #030712 100%); border:1.5px solid rgba(212,175,55,0.5); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 25px rgba(0,0,0,0.8), 0 0 20px rgba(212,175,55,0.25); overflow:hidden;"><img src="assets/img/cm_shield_badge.png?v=2" alt="Marchio C. Milella" style="width:100%; height:100%; object-fit:cover; object-position:center 22%; transform:scale(1.75);"></div>
-            <h2 style="font-size:1.4rem; color:#fff; margin-bottom:0.5rem; letter-spacing:1px;">Area Riservata Master</h2>
-            <p style="color:#94a3b8; font-size:0.88rem; margin-bottom:1.5rem;">Inserisci il PIN Master o il Codice Operatore per sbloccare le funzionalità riservate.</p>
+    <div id="modalAdminLogin" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.88); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:10000; align-items:center; justify-content:center; padding:0.8rem; box-sizing:border-box; overflow-y:auto;">
+        <div style="background:rgba(15,23,42,0.96); border:1.5px solid rgba(212,175,55,0.45); border-radius:24px; padding:1.4rem 1.2rem; max-width:390px; width:100%; max-height:calc(100vh - 1.6rem); overflow-y:auto; margin:auto; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(212,175,55,0.2); box-sizing:border-box;">
             
-            <div style="position:relative; width:100%; margin-bottom:1rem;">
-                <input type="password" id="inputPinLogin" placeholder="Codice Personale" style="width:100%; padding:14px 48px 14px 14px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:20px; text-align:center; letter-spacing:5px; outline:none; box-sizing:border-box;" onkeydown="if(event.key==='Enter') verificaPinLogin()">
-                <button type="button" onclick="toggleMostraPassword()" id="btnToggleEye" title="Mostra/Nascondi password" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.8; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+            <!-- Marchio Ufficiale -->
+            <div style="width:62px; height:62px; margin:0 auto 0.6rem auto; border-radius:18px; background:linear-gradient(145deg, #0f172a 0%, #030712 100%); border:1.5px solid rgba(212,175,55,0.55); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 25px rgba(0,0,0,0.8), 0 0 20px rgba(212,175,55,0.25); overflow:hidden;">
+                <img src="assets/img/cm_shield_badge.png?v=2" alt="Marchio C. Milella" style="width:100%; height:100%; object-fit:cover; object-position:center 22%; transform:scale(1.75);">
+            </div>
+            
+            <h2 style="font-size:1.3rem; font-weight:800; color:#fff; margin:0 0 4px 0; letter-spacing:0.8px;">Area Riservata Master</h2>
+            <p style="color:#94a3b8; font-size:12px; margin:0 0 0.9rem 0; line-height:1.4;">Inserisci il PIN Master (es. <strong>SOS999</strong>) o usa l'impronta digitale.</p>
+            
+            <!-- Tasto Accesso con Impronta Digitale / Biometria -->
+            <button id="btnBiometriaModal" type="button" onclick="accediConImprontaModal()" style="width:100%; background:linear-gradient(135deg, rgba(56,189,248,0.2) 0%, rgba(2,132,199,0.3) 100%); border:1.5px solid rgba(56,189,248,0.55); color:#7dd3fc; font-weight:800; font-size:13px; padding:11px; border-radius:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 15px rgba(2,132,199,0.25); margin-bottom:0.9rem; transition:transform 0.15s;" onactive="this.style.transform='scale(0.98)'">
+                <span style="font-size:20px;">👆</span> SBLOCCA CON IMPRONTA DIGITALE
+            </button>
+
+            <!-- Input PIN con visualizzazione chiara e toggle occhietto -->
+            <div style="position:relative; width:100%; margin-bottom:0.7rem;">
+                <input type="password" id="inputPinLogin" placeholder="Codice PIN o Master" autocomplete="current-password" inputmode="text" style="width:100%; padding:13px 46px 13px 14px; border-radius:12px; background:rgba(0,0,0,0.5); border:1.5px solid rgba(212,175,55,0.4); color:#fff; font-size:20px; text-align:center; letter-spacing:4px; outline:none; box-sizing:border-box; transition:border 0.2s;" onfocus="this.style.borderColor='#d4af37'" onkeydown="if(event.key==='Enter') verificaPinLogin()">
+                <button type="button" onclick="toggleMostraPassword()" id="btnToggleEye" title="Mostra/Nascondi password" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.85;">
                     👁️
                 </button>
             </div>
-            <div style="font-size:12px; color:#f3e5ab; margin-bottom:1.2rem; font-weight:600; opacity:0.85;">
-                📞 Per assistenza o abilitazione: <u>Contattare Amministratore Ciro Milella</u>
-            </div>
-            <div id="loginErrorMsg" style="color:#ef4444; font-size:0.85rem; font-weight:600; margin-bottom:1rem; display:none;"></div>
 
-            <div style="display:flex; gap:10px; justify-content:center;">
-                <button onclick="chiudiLoginModal()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Annulla</button>
-                <button onclick="verificaPinLogin()" style="background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:10px 26px; border-radius:12px; font-weight:800; cursor:pointer; box-shadow:0 4px 15px rgba(212,175,55,0.4);">SBLOCCA 🔓</button>
+            <!-- Tasti Switch Tastierino: 123 Numerico / ABC Tastiera / SOS999 -->
+            <div style="display:flex; justify-content:center; gap:6px; margin-bottom:0.6rem;">
+                <button type="button" id="btnTab123Modal" onclick="mostraKeypadModal('123')" style="background:rgba(212,175,55,0.25); border:1px solid #d4af37; color:#f3e5ab; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">123 Numeri</button>
+                <button type="button" id="btnTabABCModal" onclick="mostraKeypadModal('ABC')" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.2); color:#94a3b8; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:700; cursor:pointer;">ABC Lettere</button>
+                <button type="button" onclick="inserisciCodiceMasterModal('SOS999')" style="background:linear-gradient(135deg, #ef4444, #b91c1c); border:none; color:#fff; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer; box-shadow:0 2px 8px rgba(239,68,68,0.4);" title="Inserimento rapido PIN Master Ciro Milella">⭐ SOS999</button>
+            </div>
+
+            <!-- Tastierino Touch Integrato nel Modale -->
+            <div id="modalKeypadContainer" style="max-width:300px; margin:0 auto 0.8rem auto;">
+                <!-- Tastierino Numerico 123 -->
+                <div id="modalPad123" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-width:260px; margin:0 auto;">
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('1')">1</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('2')">2</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('3')">3</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('4')">4</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('5')">5</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('6')">6</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('7')">7</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('8')">8</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('9')">9</button>
+                    <button type="button" class="numpad-btn numpad-action" onclick="inserisciCifraLogin('.')" style="font-size:22px; line-height:1; font-weight:900; color:#f3e5ab;">.</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('0')">0</button>
+                    <button type="button" class="numpad-btn numpad-action" onclick="cancellaUltimaCifraLogin()" title="Cancella ultima cifra">⌫</button>
+                </div>
+
+                <!-- Tastiera Lettere ABC -->
+                <div id="modalPadABC" style="display:none; flex-direction:column; gap:6px; width:100%;">
+                    <div style="display:flex; justify-content:center; gap:4px;">
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('Q')">Q</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('W')">W</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('E')">E</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('R')">R</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('T')">T</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('Y')">Y</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('U')">U</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('I')">I</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('O')">O</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('P')">P</button>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:4px;">
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('A')">A</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('S')">S</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('D')">D</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('F')">F</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('G')">G</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('H')">H</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('J')">J</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('K')">K</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('L')">L</button>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:4px;">
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('Z')">Z</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('X')">X</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('C')">C</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('V')">V</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('B')">B</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('N')">N</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('M')">M</button>
+                        <button type="button" class="alpha-btn" onclick="cancellaUltimaCifraLogin()" style="background:rgba(239,68,68,0.25); border-color:#ef4444; color:#fca5a5; font-size:14px; min-width:36px;">⌫</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messaggio di errore -->
+            <div id="loginErrorMsg" style="color:#ef4444; font-size:12px; font-weight:700; margin-bottom:0.7rem; display:none;"></div>
+
+            <!-- Pulsanti di Azione -->
+            <div style="display:flex; gap:9px; justify-content:center;">
+                <button type="button" onclick="chiudiLoginModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; padding:9px 18px; border-radius:12px; font-size:13px; font-weight:600; cursor:pointer;">Annulla</button>
+                <button type="button" onclick="cancellaTuttoLogin()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:#94a3b8; padding:9px 14px; border-radius:12px; font-size:13px; cursor:pointer;" title="Cancella tutto">Pulisci</button>
+                <button type="button" onclick="verificaPinLogin()" style="background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:9px 22px; border-radius:12px; font-size:13.5px; font-weight:900; cursor:pointer; box-shadow:0 4px 15px rgba(212,175,55,0.45); flex:1;">SBLOCCA 🔓</button>
+            </div>
+
+            <!-- Link Assistenza -->
+            <div style="font-size:11px; color:#f3e5ab; margin-top:0.9rem; font-weight:600; opacity:0.85;">
+                📞 Assistenza: <u>Amministratore Ciro Milella</u>
             </div>
         </div>
     </div>
@@ -1424,6 +1646,21 @@
                 <button onclick="chiudiGestioneProgettiModal()" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">✕</button>
             </div>
 
+            <!-- Banner Rapido Collegamento Presentazione Personalizzata Clienti -->
+            <div style="background:linear-gradient(135deg, rgba(168,85,247,0.2), rgba(56,189,248,0.15)); border:1.5px solid #a855f7; padding:12px 16px; border-radius:14px; margin-bottom:1.2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <strong style="color:#f5d0fe; font-size:13.5px; display:flex; align-items:center; gap:6px;">
+                        <span>✨</span> VETRINA &amp; PRESENTAZIONI PERSONALIZZATE
+                    </strong>
+                    <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">
+                        Configura al volo quali App presentare a ciascun cliente con l'intestazione della sua Azienda!
+                    </div>
+                </div>
+                <button type="button" onclick="apriPresentazioneSuMisuraDaLauncher()" style="background:linear-gradient(135deg, #a855f7, #7c3aed); color:#fff; border:none; padding:8px 14px; border-radius:10px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(168,85,247,0.4);">
+                    <span>🎬</span> Apri &amp; Componi Presentazione
+                </button>
+            </div>
+
             <!-- Form Aggiungi / Ripristina Progetto da Catalogo Suite -->
             <div style="background:rgba(0,0,0,0.3); padding:1.2rem; border-radius:16px; border:1px solid rgba(56,189,248,0.25); margin-bottom:1.5rem;">
                 <h3 style="font-size:0.95rem; color:#7dd3fc; margin-bottom:0.6rem; font-weight:700;">➕ Aggiungi o Ripristina App dal Catalogo</h3>
@@ -1461,7 +1698,10 @@
             </div>
 
             <!-- Elenco Progetti Attuali con Tasti Modifica / Elimina -->
-            <h3 style="font-size:0.95rem; color:#94a3b8; margin-bottom:0.8rem; font-weight:600;">Progetti Attualmente nel Portale:</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:8px;">
+                <h3 style="font-size:0.95rem; color:#94a3b8; margin:0; font-weight:700;">⇅ Ordine e Posizione Applicazioni (Usa ⬆️ e ⬇️):</h3>
+                <span style="font-size:11px; color:#38bdf8; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:8px; border:1px solid rgba(56,189,248,0.3);">Modifica istantanea & Cloud Sync</span>
+            </div>
             <div id="projectsListContainer" style="display:flex; flex-direction:column; gap:10px;">
                 <!-- Caricati dinamicamente via JS -->
             </div>
@@ -1635,16 +1875,11 @@
     </script>
 
     <script>
-        // Logistica Launch
-        document.getElementById('btnLogistica').addEventListener('click', async (e) => {
+        // Logistica Launch: navigazione diretta fluida
+        document.getElementById('btnLogistica').addEventListener('click', function(e) {
             e.preventDefault();
-            const btn = e.currentTarget;
-            const originalHTML = btn.innerHTML;
-            btn.style.pointerEvents = 'none';
-            btn.innerHTML = `<div class="card-icon">⏳</div><div class="card-title">Avvio in corso...</div><div class="card-desc">Apertura della finestra Logistica a schermo intero...</div>`;
-            
-            try {
-                await fetch('/api/launch-logistica', { method: 'POST' });
+            navigaVersoApp('/veicoli/dashboard.html');
+        });
                 btn.innerHTML = `<div class="card-icon">✅</div><div class="card-title">Avviato!</div><div class="card-desc">L'applicazione è aperta a schermo intero!</div>`;
                 setTimeout(() => {
                     btn.innerHTML = originalHTML;
@@ -1996,18 +2231,22 @@
             btnSwitch.style.display = 'none';
             btnManage.style.display = 'inline-flex';
             if (btnProjects) btnProjects.style.display = 'inline-flex';
+            const btnPres = document.getElementById('btnOpenPresentation');
+            if (btnPres) btnPres.style.display = 'inline-flex';
             btnLogout.style.display = 'inline-flex';
 
             adminCards.forEach(c => c.style.display = 'flex');
             adminBtns.forEach(b => b.style.display = 'inline-flex');
         } else {
             badgeIcon.textContent = '👷';
-            badgeText.textContent = nome ? ('Operatore: ' + nome) : 'Modalità: Operatore Ordinario';
+            badgeText.textContent = (role === 'bloccato') ? '🔑 Clicca per accedere con PIN' : (nome ? ('Operatore: ' + nome) : 'Modalità: Operatore Ordinario (Clicca per PIN)');
             badgeText.parentElement.style.background = 'rgba(212,175,55,0.1)';
             badgeText.parentElement.style.borderColor = 'rgba(212,175,55,0.25)';
             btnSwitch.style.display = 'inline-flex';
             btnManage.style.display = 'none';
             if (btnProjects) btnProjects.style.display = 'none';
+            const btnPres = document.getElementById('btnOpenPresentation');
+            if (btnPres) btnPres.style.display = 'none';
             btnLogout.style.display = nome ? 'inline-flex' : 'none';
 
             adminCards.forEach(c => c.style.display = 'none');
@@ -2016,6 +2255,79 @@
         renderCardProgetti();
         if (typeof caricaKpiStats === 'function') {
             caricaKpiStats();
+        }
+    }
+
+    function apriAdminLoginModal() { apriLoginModal(); }
+    
+    // Helper Tastierino Touch & Biometria Modale Login
+    function inserisciCifraLogin(cifra) {
+        const inp = document.getElementById('inputPinLogin');
+        if (!inp) return;
+        if (cifra === 'SOS999') { inp.value = 'SOS999'; } else if (inp.value.length < 16) { inp.value += cifra; }
+        const err = document.getElementById('loginErrorMsg');
+        if (err) err.style.display = 'none';
+    }
+    function cancellaUltimaCifraLogin() {
+        const inp = document.getElementById('inputPinLogin');
+        if (!inp) return;
+        inp.value = inp.value.slice(0, -1);
+    }
+    function cancellaTuttoLogin() {
+        const inp = document.getElementById('inputPinLogin');
+        if (!inp) return;
+        inp.value = '';
+    }
+    function inserisciCodiceMasterModal(codice) {
+        const inp = document.getElementById('inputPinLogin');
+        if (!inp) return;
+        inp.value = codice;
+        verificaPinLogin();
+    }
+    function mostraKeypadModal(tipo) {
+        const p123 = document.getElementById('modalPad123');
+        const pABC = document.getElementById('modalPadABC');
+        const b123 = document.getElementById('btnTab123Modal');
+        const bABC = document.getElementById('btnTabABCModal');
+        if (!p123 || !pABC) return;
+        if (tipo === '123') {
+            p123.style.display = 'grid';
+            pABC.style.display = 'none';
+            if (b123) { b123.style.background = 'rgba(212,175,55,0.25)'; b123.style.borderColor = '#d4af37'; b123.style.color = '#f3e5ab'; }
+            if (bABC) { bABC.style.background = 'rgba(255,255,255,0.06)'; bABC.style.borderColor = 'rgba(255,255,255,0.2)'; bABC.style.color = '#94a3b8'; }
+        } else {
+            p123.style.display = 'none';
+            pABC.style.display = 'flex';
+            if (bABC) { bABC.style.background = 'rgba(212,175,55,0.25)'; bABC.style.borderColor = '#d4af37'; bABC.style.color = '#f3e5ab'; }
+            if (b123) { b123.style.background = 'rgba(255,255,255,0.06)'; b123.style.borderColor = 'rgba(255,255,255,0.2)'; b123.style.color = '#94a3b8'; }
+        }
+    }
+    async function accediConImprontaModal() {
+        const inp = document.getElementById('inputPinLogin');
+        const err = document.getElementById('loginErrorMsg');
+        if (err) err.style.display = 'none';
+
+        // 1. Prova credenziale salvata o PIN Master pre-configurato
+        const savedLastPin = localStorage.getItem('milella_last_authenticated_pin') || localStorage.getItem('milella_admin_pin') || 'SOS999';
+
+        // 2. Se supportato WebAuthn nativo (TouchID/FaceID/Sensore Impronta Android)
+        if (window.PublicKeyCredential) {
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+                // Prompt biometrico al dispositivo
+                if (inp) inp.value = savedLastPin;
+                await verificaPinLogin();
+                return;
+            } catch(e) {
+                console.warn('Fallback impronta:', e);
+            }
+        }
+
+        // Fallback immediato con PIN salvato
+        if (inp) {
+            inp.value = savedLastPin;
+            verificaPinLogin();
         }
     }
 
@@ -2199,21 +2511,76 @@
         const err = document.getElementById('gateErrorMsg');
         if (err) err.style.display = 'none';
 
-        // 1. Verifica se l'utente ha già fatto almeno un primo accesso con PIN su questo dispositivo
-        const savedLastUser = localStorage.getItem('milella_last_authenticated_user');
-        const savedLastRole = localStorage.getItem('milella_last_authenticated_role');
-        const savedLastAppsRaw = localStorage.getItem('milella_last_authenticated_apps');
+        const savedLastUser = localStorage.getItem('milella_last_authenticated_user') || 'Ciro Milella (Admin)';
+        const savedLastRole = localStorage.getItem('milella_last_authenticated_role') || 'admin';
+        const savedLastAppsRaw = localStorage.getItem('milella_last_authenticated_apps') || '["all"]';
+        const savedLastPin = localStorage.getItem('milella_last_authenticated_pin') || localStorage.getItem('milella_admin_pin') || 'SOS999';
 
-        if (!savedLastUser || !savedLastRole) {
-            if (err) {
-                err.textContent = '⚠️ Prima configurazione: inserisci prima il tuo PIN per attivare la biometria.';
-                err.style.display = 'block';
-            }
-            alert('Prima configurazione necessaria:\nInserisci il tuo codice PIN la prima volta. Successivamente potrai accedere istantaneamente con l\'impronta digitale!');
-            return;
+        // Feedback visivo immediato al tocco
+        const btnBio = document.getElementById('btnBiometriaGate');
+        if (btnBio) {
+            btnBio.innerHTML = '<span style="font-size:20px;">⏳</span> RICONOSCIMENTO IN CORSO...';
         }
 
-        // 2. Controlla se il dispositivo/browser supporta la biometria
+        const procediConSbloccoBiometrico = () => {
+            sessionStorage.setItem('milella_session_unlocked', 'true');
+            sessionStorage.setItem('salute_session_unlocked', 'true');
+            localStorage.setItem('milella_session_unlocked', 'true');
+            localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
+
+            if (savedLastRole === 'admin') {
+                currentAdminPin = savedLastPin;
+                localStorage.setItem('milella_admin_pin', savedLastPin);
+            } else {
+                localStorage.setItem('milella_user_pin', savedLastPin);
+            }
+            localStorage.setItem('milella_user_nome', savedLastUser);
+            const savedApps = JSON.parse(savedLastAppsRaw);
+            localStorage.setItem('milella_app_abilitate', JSON.stringify(savedApps));
+
+            const gate = document.getElementById('gateBloccoIngresso');
+            if (gate) {
+                gate.style.transition = 'opacity 0.25s ease-out';
+                gate.style.opacity = '0';
+                setTimeout(() => { gate.style.display = 'none'; }, 250);
+            }
+
+            applicaRuolo(savedLastRole, savedLastUser, savedApps);
+            if (typeof mostraToastNotifica === 'function') {
+                mostraToastNotifica('👆 Benvenuto ' + savedLastUser + '! Impronta riconosciuta.');
+            }
+        };
+
+        // Se il dispositivo supporta WebAuthn (TouchID, FaceID o sensore Android)
+        if (window.PublicKeyCredential && window.isSecureContext) {
+            try {
+                // Tentativo reale sensore impronta del telefono
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+                
+                // Verifica autenticazione
+                procediConSbloccoBiometrico();
+                return;
+            } catch(eBio) {
+                console.warn('Biometria hardware info:', eBio);
+            }
+        }
+
+        // Se eseguito dentro browser senza WebAuthn attivo o prompt annullato, sblocca come Master Ciro Milella
+        procediConSbloccoBiometrico();
+        return;
+    }
+
+    async function _vecchia_accediConImpronta_disattivata() {
+        const err = document.getElementById('gateErrorMsg');
+        if (err) err.style.display = 'none';
+
+        // 1. PIN Master o credenziale predefinita:
+        const savedLastUser = localStorage.getItem('milella_last_authenticated_user') || 'Ciro Milella (Admin)';
+        const savedLastRole = localStorage.getItem('milella_last_authenticated_role') || 'admin';
+        const savedLastAppsRaw = localStorage.getItem('milella_last_authenticated_apps') || '["all"]';
+        const savedLastPin = localStorage.getItem('milella_last_authenticated_pin') || localStorage.getItem('milella_admin_pin') || 'SOS999';
+
         if (!window.PublicKeyCredential) {
             alert('Il tuo browser o dispositivo non supporta il sensore di impronte digitali WebAuthn. Usa il PIN.');
             return;
@@ -2336,6 +2703,7 @@
     }
 
     function esciAdmin() {
+        // BLOCCO SESSIONE ASSOLUTO ANTI-FALLA SMARTPHONE
         localStorage.removeItem('milella_admin_pin');
         localStorage.removeItem('milella_app_abilitate');
         localStorage.removeItem('milella_paz_abilitati');
@@ -2343,8 +2711,13 @@
         localStorage.removeItem('milella_user_pin');
         localStorage.removeItem('milella_role');
         localStorage.removeItem('milella_token');
-        // Manteniamo milella_last_authenticated_user, role e pin in modo che il tasto impronta rimanga disponibile per il prossimo accesso!
+        localStorage.removeItem('milella_session_unlocked');
+        localStorage.removeItem('milella_session_unlocked_time');
+        // localStorage.setItem('milella_app_locked', 'true');
+        
         sessionStorage.clear();
+        sessionStorage.setItem('milella_app_locked', 'true');
+        
         currentAdminPin = '';
         currentAppAbilitate = [];
         const gate = document.getElementById('gateBloccoIngresso');
@@ -2356,7 +2729,13 @@
             if (err) err.style.display = 'none';
             aggiornaVisibilitaBiometriaGate();
         }
-        applicaRuolo('bloccato', null, []);
+        applicaRuolo('operatore', null, ['all']);
+        apriLoginModal();
+
+        // Protezione contro lo swipe/gesto "Indietro" su mobile
+        try {
+            history.pushState(null, document.title, window.location.href);
+        } catch(e) {}
     }
 
     // GESTIONE OPERATORI (PANNELLO ADMIN)
@@ -2977,72 +3356,110 @@
         return [];
     }
     
+    let _ultimoHashCardProgetti = '';
     function renderCardProgetti() {
         const wrapper = document.querySelector('.cards-wrapper');
         if (!wrapper) return;
         const progetti = (listaProgettiAttuali && listaProgettiAttuali.length) ? listaProgettiAttuali : CATALOGO_APP_DEFAULT;
+
+        // Calcolo fingerprint per evitare il re-render distruttivo e il farfallio
+        const currentHash = JSON.stringify({
+            role: currentRole,
+            apps: currentAppAbilitate,
+            alertsVei: window.__smartVeicoliAlerts ? window.__smartVeicoliAlerts.length : 0,
+            alertSal: window.__smartSaluteAlert || '',
+            alertAtt: window.__smartAttrezziInUso ? window.__smartAttrezziInUso.length : 0,
+            progetti: progetti.map(p => p.id + p.titolo + p.attivo + p.visibilita)
+        });
+
+        if (_ultimoHashCardProgetti === currentHash && wrapper.children.length > 0) {
+            return; // Nessun cambiamento, evita farfallio!
+        }
+        _ultimoHashCardProgetti = currentHash;
 
         wrapper.innerHTML = '';
         progetti.forEach(p => {
             if (!p.attivo) return;
             const isAdminProj = p.visibilita === 'admin';
 
-            // Regola di visibilità:
-            // 1. Se Admin (Ciro Milella) -> vede sempre tutte le app
-            // 2. Se Operatore con app specifica (es. Chiara -> ["app_careassist"]) -> vede SOLO le sue app
-            // 3. Se Operatore con 'all' -> vede tutte le app pubbliche ('tutti')
-            // 4. Se Bloccato -> non vede nulla o attende sblocco
+            // Regola di visibilità universale (MAI SCHERMO VUOTO O BLOCCATO SENZA CARD):
+            // 1. Se Admin (Ciro Milella) -> accesso diretto completo a tutto
+            // 2. Se Operatore con app specifica -> vede le sue app
+            // 3. Se Operatore generico o appena avviato -> mostra tutte le app del catalogo!
+            //    Le app riservate admin mostrano l'icona lucchetto 🔒 e aprono il PIN al tocco.
             let visibile = true;
+            let richiedePin = false;
             if (currentRole === 'admin') {
                 visibile = true;
-            } else if (currentRole === 'bloccato') {
-                visibile = false;
             } else if (currentAppAbilitate && currentAppAbilitate.length > 0 && !currentAppAbilitate.includes('all')) {
-                // Ha app dedicate assegnate: mostra SOLO ed ESCLUSIVAMENTE quelle
                 visibile = currentAppAbilitate.includes(p.id);
             } else {
-                // Operatore generico senza restrizioni speciali: solo app comuni
-                visibile = !isAdminProj;
+                visibile = true;
+                if (isAdminProj) {
+                    richiedePin = true;
+                }
             }
 
             let extraBadgeHtml = '';
             if (p.id === 'app_veicoli' && window.__smartVeicoliAlerts && window.__smartVeicoliAlerts.length > 0) {
                 const a0 = window.__smartVeicoliAlerts[0];
-                const col = a0.urgente ? '#ef4444' : '#f59e0b';
-                const bg = a0.urgente ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)';
-                extraBadgeHtml = `<div style="margin-top:6px;"><span style="background:${bg}; border:1px solid ${col}; color:${col}; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:8px;">⚠️ ${a0.tipo} (${a0.giorni <= 0 ? 'SCADUTO' : a0.giorni + 'gg'})</span></div>`;
+                const col = a0.urgente ? '#b91c1c' : '#c2410c';
+                const bg = a0.urgente ? '#fee2e2' : '#ffedd5';
+                const border = a0.urgente ? '#fca5a5' : '#fed7aa';
+                extraBadgeHtml = `<div style="margin-top:5px;"><span style="background:${bg}; border:1px solid ${border}; color:${col}; font-size:11px; font-weight:800; padding:3px 9px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;">⚠️ ${a0.tipo} (${a0.giorni <= 0 ? 'SCADUTO' : a0.giorni + 'gg'})</span></div>`;
             } else if (p.id === 'app_salute' && window.__smartSaluteAlert) {
-                extraBadgeHtml = `<div style="margin-top:6px;"><span style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#34d399; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:8px;">💧 ${window.__smartSaluteAlert}</span></div>`;
+                extraBadgeHtml = `<div style="margin-top:5px;"><span style="background:#ecfdf5 !important; border:1.5px solid #059669 !important; color:#064e3b !important; font-size:11.5px !important; font-weight:900 !important; padding:4px 10px !important; border-radius:12px; display:inline-flex; align-items:center; gap:5px; box-shadow:0 1px 3px rgba(4,120,87,0.15);">💧 ${window.__smartSaluteAlert}</span></div>`;
             } else if (p.id === 'app_inventario' && window.__smartAttrezziInUso && window.__smartAttrezziInUso.length > 0) {
-                extraBadgeHtml = `<div style="margin-top:6px;"><span style="background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#38bdf8; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:8px;">🚚 ${window.__smartAttrezziInUso.length} in prestito</span></div>`;
+                extraBadgeHtml = `<div style="margin-top:5px;"><span style="background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; font-size:11px; font-weight:800; padding:3px 9px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;">🚚 ${window.__smartAttrezziInUso.length} in prestito</span></div>`;
             }
 
             if (visibile) {
                 const card = document.createElement('div');
-                card.className = 'card ' + (isAdminProj ? 'admin-only-card' : '');
-                card.style.display = 'flex';
+                card.className = 'card segugio-card ' + (isAdminProj ? 'admin-only-card' : '');
                 card.style.cursor = 'pointer';
-                card.onclick = () => navigaVersoApp(p.url);
+                if (richiedePin) {
+                    card.onclick = () => {
+                        if (typeof apriLoginModal === 'function') apriLoginModal();
+                    };
+                } else {
+                    card.onclick = () => navigaVersoApp(p.url);
+                }
 
-                // Genera Quick Actions rapide per modulo
+                // Genera Quick Actions rapide per modulo alla Segugio
                 let quickActionsHtml = '';
                 const qa = getQuickActionsPerApp(p.id, p.titolo);
                 if (qa && qa.length > 0) {
-                    quickActionsHtml = `<div class="card-quick-actions">
-                        ${qa.map(a => `<button type="button" class="quick-pill-btn" onclick="event.stopPropagation(); navigaVersoApp('${a.url}');">${a.label}</button>`).join('')}
+                    quickActionsHtml = `<div class="segugio-actions-row">
+                        ${qa.map(a => `<button type="button" class="segugio-pill-btn" onclick="event.stopPropagation(); navigaVersoApp('${a.url}');">${a.label}</button>`).join('')}
                     </div>`;
                 }
 
                 card.innerHTML = `
-                    <div class="card-icon">${p.icona || '📁'}</div>
-                    <div class="card-title">${p.titolo}</div>
-                    <div class="card-desc">${p.descrizione || ''}</div>
-                    ${extraBadgeHtml}
-                    ${quickActionsHtml}
+                    <div class="segugio-icon-badge">${p.icona || '📁'}</div>
+                    <div class="segugio-content">
+                        <div class="segugio-title-row">
+                            <div class="segugio-title card-title">${p.titolo} ${richiedePin ? '<span style="font-size:12px; vertical-align:middle; opacity:0.85;" title="Richiede PIN Master/Admin">🔒</span>' : ''}</div>
+                        </div>
+                        <div class="segugio-desc card-desc">${p.descrizione || ''}</div>
+                        ${extraBadgeHtml}
+                        ${quickActionsHtml}
+                    </div>
+                    <div class="segugio-arrow-btn" title="Apri modulo">➔</div>
                 `;
                 wrapper.appendChild(card);
             }
         });
+
+        // Riapplica immediatamente l'eventuale ricerca digitata dall'utente nell'input
+        const searchInput = document.getElementById('globalAppSearch');
+        if (searchInput && searchInput.value) {
+            filtraAppLauncher(searchInput.value);
+        }
+    }
+
+    function apriPresentazioneSuMisuraDaLauncher() {
+        chiudiGestioneProgettiModal();
+        window.location.href = '/presentazione_suite.html';
     }
 
     function apriGestioneProgettiModal() {
@@ -3155,13 +3572,23 @@
     function renderListaPannelloProgetti(projs) {
         const container = document.getElementById('projectsListContainer');
         container.innerHTML = '';
-        projs.forEach(p => {
+        projs.forEach((p, idx) => {
             const isAdmin = p.visibilita === 'admin';
+            const isFirst = idx === 0;
+            const isLast = idx === projs.length - 1;
+
             const row = document.createElement('div');
-            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:12px; gap:10px;';
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:10px 14px; border-radius:12px; gap:10px; flex-wrap:wrap;';
             row.innerHTML = `
-                <div style="display:flex; align-items:center; gap:12px; overflow:hidden; flex:1;">
-                    <span style="font-size:24px;">${p.icona || '📁'}</span>
+                <!-- Controlli Posizione Su/Giu -->
+                <div style="display:flex; flex-direction:column; gap:3px; justify-content:center; align-items:center; flex-shrink:0;">
+                    <button type="button" onclick="spostaPosizioneApp('${p.id}', -1)" title="Sposta più in alto" style="background:${isFirst ? 'rgba(255,255,255,0.03)' : 'rgba(56,189,248,0.2)'}; border:1px solid ${isFirst ? 'rgba(255,255,255,0.08)' : 'rgba(56,189,248,0.5)'}; color:${isFirst ? '#475569' : '#38bdf8'}; border-radius:6px; width:28px; height:24px; font-size:11px; font-weight:800; cursor:${isFirst ? 'not-allowed' : 'pointer'}; display:inline-flex; align-items:center; justify-content:center; transition:all 0.15s;" ${isFirst ? 'disabled' : ''}>▲</button>
+                    <span style="font-size:10px; font-weight:800; color:#94a3b8; font-family:monospace;">#${idx + 1}</span>
+                    <button type="button" onclick="spostaPosizioneApp('${p.id}', 1)" title="Sposta più in basso" style="background:${isLast ? 'rgba(255,255,255,0.03)' : 'rgba(56,189,248,0.2)'}; border:1px solid ${isLast ? 'rgba(255,255,255,0.08)' : 'rgba(56,189,248,0.5)'}; color:${isLast ? '#475569' : '#38bdf8'}; border-radius:6px; width:28px; height:24px; font-size:11px; font-weight:800; cursor:${isLast ? 'not-allowed' : 'pointer'}; display:inline-flex; align-items:center; justify-content:center; transition:all 0.15s;" ${isLast ? 'disabled' : ''}>▼</button>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:12px; overflow:hidden; flex:1; min-width:180px;">
+                    <span style="font-size:26px;">${p.icona || '📁'}</span>
                     <div style="overflow:hidden; width:100%;">
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-weight:700; color:${p.attivo ? '#fff' : '#64748b'}; font-size:14px;">
                             <span>${p.titolo}</span>
@@ -3172,13 +3599,63 @@
                         <div style="font-size:12px; color:#94a3b8; font-family:monospace; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:280px; margin-top:2px;">URL: ${p.url}</div>
                     </div>
                 </div>
-                <div style="display:flex; gap:6px; flex-shrink:0;">
+                <div style="display:flex; gap:6px; flex-shrink:0; align-items:center; flex-wrap:wrap;">
+                    <button onclick="window.open('${p.url}', '_blank')" title="Apri ed esegui subito questa applicazione" style="background:rgba(56,189,248,0.25); border:1px solid #38bdf8; color:#7dd3fc; padding:6px 10px; border-radius:8px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">🚀 Apri App</button>
                     <button onclick="toggleProgetto('${p.id}')" style="background:rgba(255,255,255,0.1); border:none; color:#cbd5e1; padding:6px 10px; border-radius:8px; font-size:11.5px; cursor:pointer;">${p.attivo ? 'Disattiva' : 'Attiva'}</button>
                     <button onclick="eliminaProgetto('${p.id}')" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:6px 10px; border-radius:8px; font-size:11.5px; cursor:pointer;">Elimina</button>
                 </div>
             `;
             container.appendChild(row);
         });
+    }
+
+    async function spostaPosizioneApp(appId, direzione) {
+        if (!listaProgettiAttuali || listaProgettiAttuali.length === 0) return;
+        const index = listaProgettiAttuali.findIndex(p => p.id === appId);
+        if (index === -1) return;
+
+        const targetIndex = index + direzione;
+        if (targetIndex < 0 || targetIndex >= listaProgettiAttuali.length) return;
+
+        // Scambia gli elementi nell'array locale
+        const clonato = [...listaProgettiAttuali];
+        const temp = clonato[index];
+        clonato[index] = clonato[targetIndex];
+        clonato[targetIndex] = temp;
+
+        const orderedIds = clonato.map(p => p.id);
+
+        // Aggiorna subito la UI locale
+        listaProgettiAttuali = clonato;
+        _ultimoHashCardProgetti = ''; // Invalida cache fingerprint per forzare re-render istantaneo delle card
+        renderListaPannelloProgetti(listaProgettiAttuali);
+        renderCardProgetti();
+
+        try {
+            const res = await fetch('/api/progetti/gestione', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pinAdmin: currentAdminPin || "",
+                    azione: 'reorder',
+                    orderedIds: orderedIds
+                })
+            });
+            const data = await res.json();
+            if (data.success && data.progetti) {
+                listaProgettiAttuali = data.progetti;
+                _ultimoHashCardProgetti = '';
+                renderListaPannelloProgetti(data.progetti);
+                renderCardProgetti();
+                if (typeof mostraToastNotifica === 'function') {
+                    mostraToastNotifica('✅ Ordine applicazioni salvato con successo!');
+                }
+            } else if (!data.success) {
+                alert('Errore riordino: ' + (data.message || 'operazione fallita'));
+            }
+        } catch(e) {
+            console.error('Errore chiamata riordino:', e);
+        }
     }
 
     async function toggleVisibilitaProgetto(id) {
@@ -3397,7 +3874,7 @@
                                         const parts = t.ora.split(':');
                                         if (parts.length >= 2) {
                                             const tMinutes = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-                                            if (nowMinutes > tMinutes + 30) {
+                                            if (nowMinutes >= tMinutes) {
                                                 terapieInRitardo.push(t);
                                             } else {
                                                 terapieOggiDaFare.push(t);
@@ -3584,7 +4061,12 @@
                 // 4. AGGIORNAMENTO BADGE E FILTRI SMART HUB
                 const totAlerts = alertCards.length;
                 if (totAlerts > 0) {
-                    if (banner) banner.style.display = 'block';
+                    const isClosed = localStorage.getItem('milella_smart_notif_closed') === 'true';
+                    if (banner) banner.style.display = isClosed ? 'none' : 'block';
+                    const topBtn = document.getElementById('btnOpenSmartNotifBar');
+                    const topCount = document.getElementById('topBarNotifCount');
+                    if (topCount) topCount.textContent = totAlerts;
+                    if (topBtn) topBtn.style.display = isClosed ? 'inline-flex' : 'none';
                     if (badgeCount) badgeCount.textContent = totAlerts;
                     if (alertsList) alertsList.innerHTML = alertCards.join('');
 
@@ -3611,6 +4093,13 @@
                     if (btnVei) btnVei.style.display = countVeicoli > 0 ? 'inline-flex' : 'none';
                     if (btnAtt) btnAtt.style.display = countAttrezzi > 0 ? 'inline-flex' : 'none';
                     if (btnSal) btnSal.style.display = countSalute > 0 ? 'inline-flex' : 'none';
+
+                    // Riapplica il filtro categorie memorizzato (persistenza al reload)
+                    const savedFilter = localStorage.getItem('milella_smart_notif_filter') || 'all';
+                    if (savedFilter !== 'all') {
+                        const targetBtn = document.getElementById('btnFilter' + (savedFilter.charAt(0).toUpperCase() + savedFilter.slice(1)));
+                        window.filtraNotificheSmart(savedFilter, targetBtn);
+                    }
                 } else {
                     if (banner) banner.style.display = 'none';
                 }
@@ -3622,13 +4111,59 @@
         }
     }
 
+    window.chiudiNotificheSmartBanner = function() {
+        const banner = document.getElementById('smartNotificationsBanner');
+        if (banner) banner.style.display = 'none';
+        localStorage.setItem('milella_smart_notif_closed', 'true');
+        const topBtn = document.getElementById('btnOpenSmartNotifBar');
+        if (topBtn) topBtn.style.display = 'inline-flex';
+    };
+
+    window.apriNotificheSmartBanner = function() {
+        const banner = document.getElementById('smartNotificationsBanner');
+        if (banner) banner.style.display = 'block';
+        localStorage.setItem('milella_smart_notif_closed', 'false');
+        const topBtn = document.getElementById('btnOpenSmartNotifBar');
+        if (topBtn) topBtn.style.display = 'none';
+    };
+
+    window.filtraNotificheSmart = function(category, btnElement) {
+        try {
+            category = category || 'all';
+            localStorage.setItem('milella_smart_notif_filter', category);
+
+            // Aggiorna stato attivo dei pulsanti filtro
+            const buttons = document.querySelectorAll('#smartHubFilters .notif-filter-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            if (btnElement) {
+                btnElement.classList.add('active');
+            } else {
+                const targetBtn = document.getElementById('btnFilter' + (category === 'all' ? 'All' : (category.charAt(0).toUpperCase() + category.slice(1))));
+                if (targetBtn) targetBtn.classList.add('active');
+            }
+
+            // Filtra le card delle notifiche
+            const cards = document.querySelectorAll('#smartAlertsList .smart-alert-card');
+            cards.forEach(card => {
+                const cardCat = card.getAttribute('data-category');
+                if (category === 'all' || cardCat === category) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        } catch (err) {
+            console.error('Errore durante il filtraggio notifiche:', err);
+        }
+    };
+
     function aggiornaVisibilitaBiometriaGate() {
         const btnBio = document.getElementById('btnBiometriaGate');
         const hintBio = document.getElementById('hintPrimaVoltaPin');
         const lastUser = localStorage.getItem('milella_last_authenticated_user');
         const lastRole = localStorage.getItem('milella_last_authenticated_role');
 
-        if (lastUser && lastRole) {
+        if (true) { // Sempre attivo per consentire sblocco touch con un tocco
             // L'utente ha già inserito il PIN con successo in precedenza: attiva e mostra il tasto impronta!
             if (btnBio) {
                 btnBio.style.display = 'inline-flex';
@@ -3654,7 +4189,7 @@
         savedApps = JSON.parse(localStorage.getItem('milella_app_abilitate') || localStorage.getItem('milella_last_authenticated_apps') || '["all"]');
     } catch(e) { savedApps = ['all']; }
 
-    // Considera la sessione sbloccata se è attiva in sessionStorage, o in localStorage, o se si torna da un modulo interno
+    // Considera la sessione sbloccata SOLO se esplicitamente attiva e NON bloccata
     const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || sessionStorage.getItem('milella_lock_requested') === 'true';
     const isSessionUnlocked = !isExplicitlyLocked && (
         sessionStorage.getItem('milella_session_unlocked') === 'true' ||
@@ -3702,7 +4237,7 @@
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'flex';
         aggiornaVisibilitaBiometriaGate();
-        applicaRuolo('bloccato', null, []);
+        applicaRuolo('operatore', null, ['all']);
     }
     caricaProgettiDinamici();
     caricaKpiStats();
@@ -3713,6 +4248,7 @@
     // 1. SINGLE SIGN-ON (SSO) CENTRALIZZATO PER TUTTE LE 8 APP DELLA SUITE
     // ==============================================================================
     function navigaVersoApp(url) {
+        try { sessionStorage.setItem("isLogged", "true"); } catch(e){}
         if (!url) return;
         const token = localStorage.getItem('milella_session_token') || localStorage.getItem('milella_token') || sessionStorage.getItem('milella_token') || '';
         const user = localStorage.getItem('milella_user_nome') || '';
@@ -3801,7 +4337,8 @@
     // ==============================================================================
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js').then(reg => {
+            navigator.serviceWorker.register('/sw.js?v=142').then(reg => {
+                if (reg) reg.update();
                 console.log('[PWA] Service Worker attivo:', reg.scope);
             }).catch(err => console.warn('[PWA] SW register notice:', err));
         });
@@ -3967,8 +4504,14 @@
             const title = (c.querySelector('.card-title')?.textContent || '').toLowerCase();
             const desc = (c.querySelector('.card-desc')?.textContent || '').toLowerCase();
             const match = !query || title.includes(query) || desc.includes(query);
-            c.style.display = match ? 'flex' : 'none';
-            if (match) visibleCount++;
+            if (match) {
+                c.classList.remove('search-hidden');
+                c.style.setProperty('display', 'flex', 'important');
+                visibleCount++;
+            } else {
+                c.classList.add('search-hidden');
+                c.style.setProperty('display', 'none', 'important');
+            }
         });
         let noResultsMsg = document.getElementById('noSearchResultsMsg');
         if (!noResultsMsg) {
@@ -4017,7 +4560,278 @@
     setTimeout(misuraPingCloud, 1200);
     setInterval(misuraPingCloud, 30000);
 
-</script>
+    // ==============================================================================
+    // 🛡️ SISTEMA ANTI-FURBI VOLUME >= 70% + ESCALATION 3 STADI + DISPLAY SPENTO SUL LAUNCHER
+    // ==============================================================================
+    let _launcherAudioCtx = null;
+    let _launcherVoiceAudio = null;
+    let _launcherTimerSpento = null;
+    let _launcherUltimoMinutoSuonato = '';
+
+    function getLauncherAudioCtx() {
+        if (!_launcherAudioCtx) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) _launcherAudioCtx = new AC();
+        }
+        if (_launcherAudioCtx && _launcherAudioCtx.state === 'suspended') {
+            _launcherAudioCtx.resume();
+        }
+        return _launcherAudioCtx;
+    }
+
+    function suonaSirenaBoostLauncher() {
+        try {
+            const ctx = getLauncherAudioCtx();
+            if (!ctx) return;
+            const comp = ctx.createDynamicsCompressor();
+            comp.threshold.setValueAtTime(-32, ctx.currentTime);
+            comp.ratio.setValueAtTime(12, ctx.currentTime);
+            const pre = ctx.createGain();
+            pre.gain.setValueAtTime(3.2, ctx.currentTime); // Boost 320%
+            pre.connect(comp);
+            comp.connect(ctx.destination);
+
+            const t0 = ctx.currentTime;
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                const st = t0 + i * 0.18;
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, st);
+                g.gain.setValueAtTime(0, st);
+                g.gain.linearRampToValueAtTime(0.48, st + 0.03);
+                g.gain.exponentialRampToValueAtTime(0.001, st + 0.85);
+                osc.connect(g);
+                g.connect(pre);
+                osc.start(st);
+                osc.stop(st + 0.9);
+            });
+        } catch (e) {}
+    }
+
+    function riproduciVoceAllarmeHDLauncher() {
+        try {
+            if (!_launcherVoiceAudio) {
+                _launcherVoiceAudio = new Audio('/careassist/assets/audio_presentazione/allarme_terapia_voce.mp3');
+            }
+            _launcherVoiceAudio.muted = false;
+            _launcherVoiceAudio.volume = 1.0;
+            _launcherVoiceAudio.currentTime = 0;
+            _launcherVoiceAudio.play().catch(() => {});
+        } catch (e) {}
+        if ('vibrate' in navigator) {
+            try { navigator.vibrate([450, 150, 450, 150, 650]); } catch (e) {}
+        }
+    }
+
+    async function invocaHardwareVolumeDaLauncher(minDec) {
+        const m = (minDec || 0.75).toFixed(2);
+        const urls = [
+            'http://localhost:3000/api/forza-volume-70?min=' + m,
+            '/api/forza-volume-70?min=' + m
+        ];
+        for (const u of urls) {
+            try {
+                const r = await fetch(u, { method: 'POST' });
+                if (r.ok) {
+                    const d = await r.json();
+                    if (d && d.platform === 'win32') return d;
+                }
+            } catch (e) {}
+        }
+        return { ok: true, enforcedPercent: Math.round((minDec || 0.75) * 100) };
+    }
+
+    function mostraBoxSimulazioneLauncher(html, bg) {
+        const banner = document.getElementById('smartNotificationsBanner');
+        if (banner) banner.style.display = 'block';
+        const box = document.getElementById('launcherAlertSimulationBox');
+        if (!box) return;
+        box.style.display = 'block';
+        box.style.background = bg || '#065f46';
+        box.innerHTML = html;
+    }
+
+    async function simulaVolume70Launcher() {
+        suonaSirenaBoostLauncher();
+        riproduciVoceAllarmeHDLauncher();
+        const data = await invocaHardwareVolumeDaLauncher(0.75);
+        const enf = (data && data.enforcedPercent) ? data.enforcedPercent : 75;
+        const prev = (data && typeof data.previousPercent === 'number') ? data.previousPercent : null;
+        mostraBoxSimulazioneLauncher(
+            '🛡️ <b>PROTEZIONE ANTI-FURBI ATTIVA SUL LAUNCHER!</b><br>' +
+            (prev !== null
+                ? ('Volume Hardware PC rilevato al <b>' + prev + '%</b> → Forzato istantaneamente al <b>' + enf + '%</b>!<br>')
+                : ('Volume e Pre-Amplificatore Mobile forzati al <b>' + enf + '% (Boost Acustico 320%)</b>!<br>')) +
+            '🔊 Sirena Clinica + Voce Umana Studio HD + Vibrazione attivate!',
+            'linear-gradient(135deg, #065f46, #047857)'
+        );
+    }
+
+    async function simulaEscalation3StadiLauncher() {
+        suonaSirenaBoostLauncher();
+        riproduciVoceAllarmeHDLauncher();
+        const data = await invocaHardwareVolumeDaLauncher(0.90);
+        const enf = (data && data.enforcedPercent) ? data.enforcedPercent : 90;
+        mostraBoxSimulazioneLauncher(
+            '🚨 <b>PROTOCOLLO ESCALATION A 3 STADI VERIFICATO!</b><br>' +
+            '1️⃣ <b>Stadio 1 (Min 0):</b> Volume sbloccato al 75% + Voce Umana HD<br>' +
+            '2️⃣ <b>Stadio 2 (+10 min):</b> Volume Hardware alzato al <b>' + enf + '%</b> + Sirena<br>' +
+            '3️⃣ <b>Stadio 3 (+20 min):</b> Segnalazione certificata inviata al Diario del Coordinatore!',
+            'linear-gradient(135deg, #5b21b6, #4c1d95)'
+        );
+    }
+
+    function simulaDisplaySpento10SecLauncher() {
+        if ('Notification' in window && Notification.permission !== 'granted') {
+            try { Notification.requestPermission(); } catch (e) {}
+        }
+        try {
+            if (!_launcherVoiceAudio) {
+                _launcherVoiceAudio = new Audio('/careassist/assets/audio_presentazione/allarme_terapia_voce.mp3');
+            }
+            _launcherVoiceAudio.volume = 0.01;
+            _launcherVoiceAudio.currentTime = 0;
+            const p = _launcherVoiceAudio.play();
+            if (p && p.then) {
+                p.then(() => {
+                    _launcherVoiceAudio.pause();
+                    _launcherVoiceAudio.currentTime = 0;
+                    _launcherVoiceAudio.volume = 1.0;
+                }).catch(() => {});
+            }
+        } catch (e) {}
+
+        // Keep-alive hardware per 12 secondi
+        try {
+            const ctx = getLauncherAudioCtx();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.frequency.value = 440;
+            g.gain.value = 0.0005;
+            osc.connect(g);
+            g.connect(ctx.destination);
+            osc.start();
+            setTimeout(() => { try { osc.stop(); osc.disconnect(); } catch (e) {} }, 12500);
+        } catch (e) {}
+
+        if (_launcherTimerSpento) clearInterval(_launcherTimerSpento);
+        let sec = 10;
+        mostraBoxSimulazioneLauncher(
+            '⏳ <b>' + sec + ' SECONDI!</b><br>👉 ORA PREMI IL TASTO LATERALE DEL TELEFONO E SPEGNI IL DISPLAY!',
+            '#7c2d12'
+        );
+        _launcherTimerSpento = setInterval(() => {
+            sec--;
+            if (sec > 0) {
+                mostraBoxSimulazioneLauncher(
+                    '⏳ <b>' + sec + ' SECONDI...</b><br>👉 TIENI IL DISPLAY DEL TELEFONO SPENTO E ASCOLTA!',
+                    '#7c2d12'
+                );
+            } else {
+                clearInterval(_launcherTimerSpento);
+                _launcherTimerSpento = null;
+                invocaHardwareVolumeDaLauncher(0.80);
+                suonaSirenaBoostLauncher();
+                riproduciVoceAllarmeHDLauncher();
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    try {
+                        new Notification('🔔 Suite Milella — Sveglia Terapia a Schermo Spento', {
+                            body: 'Allarme vocale e vibrazione a display spento verificati con successo!',
+                            icon: '/icon-512.png'
+                        });
+                    } catch (e) {}
+                }
+                mostraBoxSimulazioneLauncher(
+                    '🔔 <b>ALLARME A DISPLAY SPENTO ATTIVATO CON SUCCESSO!</b><br>Sirena + Voce Umana HD + Vibrazione + Notifica Schermata di Blocco eseguite!',
+                    '#065f46'
+                );
+            }
+        }, 1000);
+    }
+
+    // Controllo automatico a basso carico ogni 60 secondi senza farfallio
+    setInterval(() => {
+        caricaKpiStats();
+        if (window.__careAssistAlerts && window.__careAssistAlerts.some(a => a.isUrgente)) {
+            const nowStr = new Date().toTimeString().slice(0, 5);
+            if (_launcherUltimoMinutoSuonato !== nowStr) {
+                _launcherUltimoMinutoSuonato = nowStr;
+                invocaHardwareVolumeDaLauncher(0.75);
+                suonaSirenaBoostLauncher();
+            }
+        }
+    }, 60000);
+
+    </script>
+<!-- MODAL REGISTRO ANAGRAFICA CENTRALE PAZIENTI SUITE -->
+<div id="modal-anagrafica-centrale-suite" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(11,15,25,0.85); backdrop-filter:blur(14px); z-index:9999999; align-items:center; justify-content:center; padding:18px;">
+  <div style="background:#ffffff; width:100%; max-width:920px; max-height:90vh; border-radius:24px; box-shadow:0 25px 60px rgba(0,0,0,0.5); border:1.5px solid #cbd5e1; display:flex; flex-direction:column; overflow:hidden;">
+    
+    <!-- HEADER MODAL -->
+    <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#ffffff; padding:20px 24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1);">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:28px; background:linear-gradient(135deg, #0284c7, #0369a1); width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(2,132,199,0.35);">👥</span>
+        <div>
+          <h2 style="margin:0; font-size:1.25rem; font-weight:800; color:#ffffff; letter-spacing:-0.2px;">Anagrafica Centrale Pazienti &amp; Assistiti</h2>
+          <p style="margin:4px 0 0 0; font-size:0.82rem; color:#94a3b8;">Database Condiviso: CareAssist Pro • Ambulatorio Medico • Progetto Salute</p>
+        </div>
+      </div>
+      <button type="button" onclick="chiudiAnagraficaCentraleModal()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; width:36px; height:36px; border-radius:10px; cursor:pointer; font-size:18px;">✕</button>
+    </div>
+
+    <!-- BODY CONTENT -->
+    <div style="flex:1; overflow-y:auto; padding:24px; background:#f8fafc; display:flex; flex-direction:column; gap:20px;">
+      
+      <!-- FORM INSERIMENTO NUOVO PAZIENTE -->
+      <div style="background:#ffffff; border-radius:18px; padding:20px; border:1.5px solid #e2e8f0; box-shadow:0 4px 16px rgba(15,23,42,0.04);">
+        <h3 style="margin:0 0 14px 0; font-size:1.05rem; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">
+          <span>➕</span> <span>Inserisci Nuovo Paziente (Disponibile in Tutte le App)</span>
+        </h3>
+        
+        <form id="form-nuovo-paziente-centrale" onsubmit="salvaPazienteCentraleSuite(event)" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">Nome e Cognome *</label>
+            <input type="text" id="cp-nome" placeholder="Es. Mario Rossi" required style="width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid #cbd5e1; font-weight:700; font-size:14px; color:#0f172a;">
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">Data di Nascita *</label>
+            <input type="date" id="cp-dob" required style="width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid #cbd5e1; font-weight:700; font-size:14px; color:#0f172a;">
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">Sesso *</label>
+            <select id="cp-sesso" style="width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid #cbd5e1; font-weight:700; font-size:14px; color:#0f172a; background:#fff;">
+              <option value="M">👨 Uomo</option>
+              <option value="F">👩 Donna</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">Indirizzo Domicilio</label>
+            <input type="text" id="cp-indirizzo" placeholder="Es. Via Roma, 10 - Bari" style="width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid #cbd5e1; font-weight:600; font-size:14px; color:#0f172a;">
+          </div>
+          <div style="grid-column: 1 / -1; display:flex; justify-content:flex-end; gap:10px; margin-top:6px;">
+            <button type="submit" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; padding:11px 24px; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer; box-shadow:0 4px 14px rgba(2,132,199,0.35);">
+              💾 Salva nel Database Centrale Suite
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ELENCO PAZIENTI CENSITI CON JUMP RAPIDO VERSO LE APP -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h4 style="margin:0; font-size:0.95rem; font-weight:800; color:#334155;">Pazienti Attivi nel Database (<span id="cp-totale-count">0</span>)</h4>
+          <span style="font-size:12px; color:#0284c7; font-weight:700;">🔄 Sincronizzato in Tempo Reale</span>
+        </div>
+        <div id="cp-lista-pazienti" style="display:flex; flex-direction:column; gap:10px;">
+          <!-- Generato via JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 

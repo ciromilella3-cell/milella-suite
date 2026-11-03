@@ -269,6 +269,14 @@ app.use(express.json());
 
 // Endpoint leggero di Healthcheck e Keep-Alive H24 (risposta immediata)
 app.get('/ping', (req, res) => res.status(200).send('PONG'));
+app.get('/api/suite/version-info', (req, res) => {
+    res.json({
+        deployId: '20261103_1222_FORCE_UPDATE',
+        timestamp: new Date().toISOString(),
+        publicMedNutriExists: fs.existsSync(path.join(__dirname, 'public', 'mednutri', 'index.html')),
+        publicLauncherExists: fs.existsSync(path.join(__dirname, 'public', 'launcher.html'))
+    });
+});
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'active', time: new Date().toISOString(), suite: 'C. Milella' });
 });
