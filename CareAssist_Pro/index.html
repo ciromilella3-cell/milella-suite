@@ -193,6 +193,7 @@
     }
   </script>
 
+  <link rel="stylesheet" href="registro_asl.css">
 </head>
 <body>
 
@@ -338,6 +339,11 @@
     <!-- LIVELLO 2: TOOLBAR CLINICA OPERATIVA (COMANDI ARMONIOSI & EXECUTIVE) -->
     <div class="header-toolbar-row">
       <div class="header-toolbar-inner">
+        <button class="btn btn-clinical-tool btn-tool-asl" onclick="apriRegistroSanitarioAsl()" title="Apri Registro Cartelle Cliniche & Triage ADI (F2)" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#38bdf8; border:1px solid rgba(56,189,248,0.4); box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+          <span class="tool-icon">🏛️</span>
+          <span class="tool-label" style="font-weight:800; color:#ffffff;">Registro ASL</span>
+          <span class="tool-badge-pill" style="background:#0284c7; color:#fff;">F2</span>
+        </button>
         <!-- TRIADE SANITARIA SUITE BRIDGES (COESI & PERFETTAMENTE ALLINEATI) -->
         <button class="btn btn-clinical-tool btn-tool-bridge-med" onclick="navigaAdAmbulatorio()" title="Apri Ambulatorio Medico & Nutrizione Clinica per questo Assistito" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:1px solid rgba(255,255,255,0.4); box-shadow:0 2px 8px rgba(2,132,199,0.35);">
           <span class="tool-icon">🩺</span>
@@ -5592,5 +5598,71 @@ main, .main-content, .dashboard-container {
 </nav>
 
   <script src="suite_bridge.js"></script>
+  <script src="registro_asl.js"></script>
+<!-- ==========================================================================
+     MASCHERA REGISTRO ANAGRAFE SANITARIA & TRIAGE ADI/ASL ENTERPRISE
+     ========================================================================== -->
+<div id="modal-registro-asl-enterprise" class="asl-modal-overlay" style="display:none;" onclick="if(event.target===this) chiudiRegistroSanitarioAsl()">
+  <div class="asl-modal-window">
+    
+    <!-- HEADER MASCHERA ASL -->
+    <div class="asl-header-top">
+      <div class="asl-header-branding">
+        <div class="asl-brand-badge-icon">🏛️</div>
+        <div class="asl-title-box">
+          <h2>
+            Registro Anagrafico & Triage ADI 
+            <span class="asl-tag-protocol">Protocollo ASL Enterprise</span>
+          </h2>
+          <p>Motore Master Patient Index (MPI) • Gestione Cartelle Cliniche ad Alta Densità</p>
+        </div>
+      </div>
+      <button type="button" class="asl-close-btn" onclick="chiudiRegistroSanitarioAsl()" title="Chiudi Registro (Esc)">✕</button>
+    </div>
+
+    <!-- CONTROLLI RICERCA E FILTRI TRIAGE -->
+    <div class="asl-controls-section">
+      <div class="asl-search-bar-row">
+        <div class="asl-search-input-wrapper">
+          <span class="asl-search-icon-inside">🔍</span>
+          <input type="text" id="asl-search-input" class="asl-input-field" placeholder="Cerca per Nome, Cognome, Indirizzo o Patologia..." oninput="filtraPazientiAsl(this.value)">
+          <span class="asl-kbd-shortcut">F2</span>
+        </div>
+        <button type="button" class="asl-new-patient-btn" onclick="chiudiRegistroSanitarioAsl(); openModal('modal-nuovo-paziente')" title="Aggiungi una nuova cartella clinica">
+          <span>➕</span> Nuovo Assistito
+        </button>
+      </div>
+
+      <div class="asl-filters-row">
+        <div class="asl-pills-group">
+          <button type="button" class="asl-pill-filter active" data-filter="tutti" onclick="impostaFiltroAsl('tutti', this)">
+            👥 Tutti gli Assistiti
+          </button>
+          <button type="button" class="asl-pill-filter alert" data-filter="ritardi" onclick="impostaFiltroAsl('ritardi', this)">
+            🚨 Triage / Con Ritardi Farmaco
+          </button>
+          <button type="button" class="asl-pill-filter" data-filter="allettati" onclick="impostaFiltroAsl('allettati', this)">
+            🛏️ Pazienti Allettati (q2h)
+          </button>
+          <button type="button" class="asl-pill-filter" data-filter="deambulanti" onclick="impostaFiltroAsl('deambulanti', this)">
+            🚶 Deambulanti
+          </button>
+        </div>
+        <div class="asl-stats-counter" id="asl-total-count">
+          Caricamento cartelle...
+        </div>
+      </div>
+    </div>
+
+    <!-- GRIGLIA ASSISTITI SCORREVOLE -->
+    <div class="asl-body-scrollable">
+      <div class="asl-cards-grid" id="asl-grid-pazienti">
+        <!-- Generato dinamicamente da registro_asl.js -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
