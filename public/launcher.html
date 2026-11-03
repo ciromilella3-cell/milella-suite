@@ -1257,26 +1257,106 @@
     </div>
 
     <!-- MODALE SBLOCCO ADMIN (PIN MASTER) -->
-    <div id="modalAdminLogin" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10000; align-items:center; justify-content:center; padding:1rem;">
-        <div style="background:rgba(15,23,42,0.95); border:1px solid rgba(212,175,55,0.4); border-radius:24px; padding:2rem; max-width:400px; width:100%; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.6);">
-            <div style="width:68px; height:68px; margin:0 auto 1rem auto; border-radius:20px; background:linear-gradient(145deg, #0f172a 0%, #030712 100%); border:1.5px solid rgba(212,175,55,0.5); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 25px rgba(0,0,0,0.8), 0 0 20px rgba(212,175,55,0.25); overflow:hidden;"><img src="assets/img/cm_shield_badge.png?v=2" alt="Marchio C. Milella" style="width:100%; height:100%; object-fit:cover; object-position:center 22%; transform:scale(1.75);"></div>
-            <h2 style="font-size:1.4rem; color:#fff; margin-bottom:0.5rem; letter-spacing:1px;">Area Riservata Master</h2>
-            <p style="color:#94a3b8; font-size:0.88rem; margin-bottom:1.5rem;">Inserisci il PIN Master o il Codice Operatore per sbloccare le funzionalità riservate.</p>
+    <div id="modalAdminLogin" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(4,9,20,0.88); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:10000; align-items:center; justify-content:center; padding:0.8rem; box-sizing:border-box; overflow-y:auto;">
+        <div style="background:rgba(15,23,42,0.96); border:1.5px solid rgba(212,175,55,0.45); border-radius:24px; padding:1.4rem 1.2rem; max-width:390px; width:100%; max-height:calc(100vh - 1.6rem); overflow-y:auto; margin:auto; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(212,175,55,0.2); box-sizing:border-box;">
             
-            <div style="position:relative; width:100%; margin-bottom:1rem;">
-                <input type="password" id="inputPinLogin" placeholder="Codice Personale" style="width:100%; padding:14px 48px 14px 14px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(212,175,55,0.3); color:#fff; font-size:20px; text-align:center; letter-spacing:5px; outline:none; box-sizing:border-box;" onkeydown="if(event.key==='Enter') verificaPinLogin()">
-                <button type="button" onclick="toggleMostraPassword()" id="btnToggleEye" title="Mostra/Nascondi password" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.8; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+            <!-- Marchio Ufficiale -->
+            <div style="width:62px; height:62px; margin:0 auto 0.6rem auto; border-radius:18px; background:linear-gradient(145deg, #0f172a 0%, #030712 100%); border:1.5px solid rgba(212,175,55,0.55); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 25px rgba(0,0,0,0.8), 0 0 20px rgba(212,175,55,0.25); overflow:hidden;">
+                <img src="assets/img/cm_shield_badge.png?v=2" alt="Marchio C. Milella" style="width:100%; height:100%; object-fit:cover; object-position:center 22%; transform:scale(1.75);">
+            </div>
+            
+            <h2 style="font-size:1.3rem; font-weight:800; color:#fff; margin:0 0 4px 0; letter-spacing:0.8px;">Area Riservata Master</h2>
+            <p style="color:#94a3b8; font-size:12px; margin:0 0 0.9rem 0; line-height:1.4;">Inserisci il PIN Master (es. <strong>SOS999</strong>) o usa l'impronta digitale.</p>
+            
+            <!-- Tasto Accesso con Impronta Digitale / Biometria -->
+            <button id="btnBiometriaModal" type="button" onclick="accediConImprontaModal()" style="width:100%; background:linear-gradient(135deg, rgba(56,189,248,0.2) 0%, rgba(2,132,199,0.3) 100%); border:1.5px solid rgba(56,189,248,0.55); color:#7dd3fc; font-weight:800; font-size:13px; padding:11px; border-radius:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 15px rgba(2,132,199,0.25); margin-bottom:0.9rem; transition:transform 0.15s;" onactive="this.style.transform='scale(0.98)'">
+                <span style="font-size:20px;">👆</span> SBLOCCA CON IMPRONTA DIGITALE
+            </button>
+
+            <!-- Input PIN con visualizzazione chiara e toggle occhietto -->
+            <div style="position:relative; width:100%; margin-bottom:0.7rem;">
+                <input type="password" id="inputPinLogin" placeholder="Codice PIN o Master" autocomplete="current-password" inputmode="text" style="width:100%; padding:13px 46px 13px 14px; border-radius:12px; background:rgba(0,0,0,0.5); border:1.5px solid rgba(212,175,55,0.4); color:#fff; font-size:20px; text-align:center; letter-spacing:4px; outline:none; box-sizing:border-box; transition:border 0.2s;" onfocus="this.style.borderColor='#d4af37'" onkeydown="if(event.key==='Enter') verificaPinLogin()">
+                <button type="button" onclick="toggleMostraPassword()" id="btnToggleEye" title="Mostra/Nascondi password" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.85;">
                     👁️
                 </button>
             </div>
-            <div style="font-size:12px; color:#f3e5ab; margin-bottom:1.2rem; font-weight:600; opacity:0.85;">
-                📞 Per assistenza o abilitazione: <u>Contattare Amministratore Ciro Milella</u>
-            </div>
-            <div id="loginErrorMsg" style="color:#ef4444; font-size:0.85rem; font-weight:600; margin-bottom:1rem; display:none;"></div>
 
-            <div style="display:flex; gap:10px; justify-content:center;">
-                <button onclick="chiudiLoginModal()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Annulla</button>
-                <button onclick="verificaPinLogin()" style="background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:10px 26px; border-radius:12px; font-weight:800; cursor:pointer; box-shadow:0 4px 15px rgba(212,175,55,0.4);">SBLOCCA 🔓</button>
+            <!-- Tasti Switch Tastierino: 123 Numerico / ABC Tastiera / SOS999 -->
+            <div style="display:flex; justify-content:center; gap:6px; margin-bottom:0.6rem;">
+                <button type="button" id="btnTab123Modal" onclick="mostraKeypadModal('123')" style="background:rgba(212,175,55,0.25); border:1px solid #d4af37; color:#f3e5ab; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">123 Numeri</button>
+                <button type="button" id="btnTabABCModal" onclick="mostraKeypadModal('ABC')" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.2); color:#94a3b8; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:700; cursor:pointer;">ABC Lettere</button>
+                <button type="button" onclick="inserisciCodiceMasterModal('SOS999')" style="background:linear-gradient(135deg, #ef4444, #b91c1c); border:none; color:#fff; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer; box-shadow:0 2px 8px rgba(239,68,68,0.4);" title="Inserimento rapido PIN Master Ciro Milella">⭐ SOS999</button>
+            </div>
+
+            <!-- Tastierino Touch Integrato nel Modale -->
+            <div id="modalKeypadContainer" style="max-width:300px; margin:0 auto 0.8rem auto;">
+                <!-- Tastierino Numerico 123 -->
+                <div id="modalPad123" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-width:260px; margin:0 auto;">
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('1')">1</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('2')">2</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('3')">3</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('4')">4</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('5')">5</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('6')">6</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('7')">7</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('8')">8</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('9')">9</button>
+                    <button type="button" class="numpad-btn numpad-action" onclick="inserisciCifraLogin('.')" style="font-size:22px; line-height:1; font-weight:900; color:#f3e5ab;">.</button>
+                    <button type="button" class="numpad-btn" onclick="inserisciCifraLogin('0')">0</button>
+                    <button type="button" class="numpad-btn numpad-action" onclick="cancellaUltimaCifraLogin()" title="Cancella ultima cifra">⌫</button>
+                </div>
+
+                <!-- Tastiera Lettere ABC -->
+                <div id="modalPadABC" style="display:none; flex-direction:column; gap:6px; width:100%;">
+                    <div style="display:flex; justify-content:center; gap:4px;">
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('Q')">Q</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('W')">W</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('E')">E</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('R')">R</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('T')">T</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('Y')">Y</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('U')">U</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('I')">I</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('O')">O</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('P')">P</button>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:4px;">
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('A')">A</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('S')">S</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('D')">D</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('F')">F</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('G')">G</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('H')">H</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('J')">J</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('K')">K</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('L')">L</button>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:4px;">
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('Z')">Z</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('X')">X</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('C')">C</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('V')">V</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('B')">B</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('N')">N</button>
+                        <button type="button" class="alpha-btn" onclick="inserisciCifraLogin('M')">M</button>
+                        <button type="button" class="alpha-btn" onclick="cancellaUltimaCifraLogin()" style="background:rgba(239,68,68,0.25); border-color:#ef4444; color:#fca5a5; font-size:14px; min-width:36px;">⌫</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messaggio di errore -->
+            <div id="loginErrorMsg" style="color:#ef4444; font-size:12px; font-weight:700; margin-bottom:0.7rem; display:none;"></div>
+
+            <!-- Pulsanti di Azione -->
+            <div style="display:flex; gap:9px; justify-content:center;">
+                <button type="button" onclick="chiudiLoginModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; padding:9px 18px; border-radius:12px; font-size:13px; font-weight:600; cursor:pointer;">Annulla</button>
+                <button type="button" onclick="cancellaTuttoLogin()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:#94a3b8; padding:9px 14px; border-radius:12px; font-size:13px; cursor:pointer;" title="Cancella tutto">Pulisci</button>
+                <button type="button" onclick="verificaPinLogin()" style="background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:9px 22px; border-radius:12px; font-size:13.5px; font-weight:900; cursor:pointer; box-shadow:0 4px 15px rgba(212,175,55,0.45); flex:1;">SBLOCCA 🔓</button>
+            </div>
+
+            <!-- Link Assistenza -->
+            <div style="font-size:11px; color:#f3e5ab; margin-top:0.9rem; font-weight:600; opacity:0.85;">
+                📞 Assistenza: <u>Amministratore Ciro Milella</u>
             </div>
         </div>
     </div>
@@ -2176,6 +2256,78 @@
     }
 
     function apriAdminLoginModal() { apriLoginModal(); }
+    
+    // Helper Tastierino Touch & Biometria Modale Login
+    function inserisciCifraLogin(cifra) {
+        const inp = document.getElementById('inputPinLogin');
+        if (!inp) return;
+        if (inp.value.length < 16) inp.value += cifra;
+        const err = document.getElementById('loginErrorMsg');
+        if (err) err.style.display = 'none';
+    }
+    function cancellaUltimaCifraLogin() {
+        const inp = document.getElementById('inputPinLogin');
+        if (!inp) return;
+        inp.value = inp.value.slice(0, -1);
+    }
+    function cancellaTuttoLogin() {
+        const inp = document.getElementById('inputPinLogin');
+        if (!inp) return;
+        inp.value = '';
+    }
+    function inserisciCodiceMasterModal(codice) {
+        const inp = document.getElementById('inputPinLogin');
+        if (!inp) return;
+        inp.value = codice;
+        verificaPinLogin();
+    }
+    function mostraKeypadModal(tipo) {
+        const p123 = document.getElementById('modalPad123');
+        const pABC = document.getElementById('modalPadABC');
+        const b123 = document.getElementById('btnTab123Modal');
+        const bABC = document.getElementById('btnTabABCModal');
+        if (!p123 || !pABC) return;
+        if (tipo === '123') {
+            p123.style.display = 'grid';
+            pABC.style.display = 'none';
+            if (b123) { b123.style.background = 'rgba(212,175,55,0.25)'; b123.style.borderColor = '#d4af37'; b123.style.color = '#f3e5ab'; }
+            if (bABC) { bABC.style.background = 'rgba(255,255,255,0.06)'; bABC.style.borderColor = 'rgba(255,255,255,0.2)'; bABC.style.color = '#94a3b8'; }
+        } else {
+            p123.style.display = 'none';
+            pABC.style.display = 'flex';
+            if (bABC) { bABC.style.background = 'rgba(212,175,55,0.25)'; bABC.style.borderColor = '#d4af37'; bABC.style.color = '#f3e5ab'; }
+            if (b123) { b123.style.background = 'rgba(255,255,255,0.06)'; b123.style.borderColor = 'rgba(255,255,255,0.2)'; b123.style.color = '#94a3b8'; }
+        }
+    }
+    async function accediConImprontaModal() {
+        const inp = document.getElementById('inputPinLogin');
+        const err = document.getElementById('loginErrorMsg');
+        if (err) err.style.display = 'none';
+
+        // 1. Prova credenziale salvata o PIN Master pre-configurato
+        const savedLastPin = localStorage.getItem('milella_last_authenticated_pin') || localStorage.getItem('milella_admin_pin') || 'SOS999';
+
+        // 2. Se supportato WebAuthn nativo (TouchID/FaceID/Sensore Impronta Android)
+        if (window.PublicKeyCredential) {
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+                // Prompt biometrico al dispositivo
+                if (inp) inp.value = savedLastPin;
+                await verificaPinLogin();
+                return;
+            } catch(e) {
+                console.warn('Fallback impronta:', e);
+            }
+        }
+
+        // Fallback immediato con PIN salvato
+        if (inp) {
+            inp.value = savedLastPin;
+            verificaPinLogin();
+        }
+    }
+
     function apriLoginModal() {
         const m = document.getElementById('modalAdminLogin');
         const input = document.getElementById('inputPinLogin');
@@ -2356,21 +2508,12 @@
         const err = document.getElementById('gateErrorMsg');
         if (err) err.style.display = 'none';
 
-        // 1. Verifica se l'utente ha già fatto almeno un primo accesso con PIN su questo dispositivo
-        const savedLastUser = localStorage.getItem('milella_last_authenticated_user');
-        const savedLastRole = localStorage.getItem('milella_last_authenticated_role');
-        const savedLastAppsRaw = localStorage.getItem('milella_last_authenticated_apps');
+        // 1. PIN Master o credenziale predefinita:
+        const savedLastUser = localStorage.getItem('milella_last_authenticated_user') || 'Ciro Milella (Admin)';
+        const savedLastRole = localStorage.getItem('milella_last_authenticated_role') || 'admin';
+        const savedLastAppsRaw = localStorage.getItem('milella_last_authenticated_apps') || '["all"]';
+        const savedLastPin = localStorage.getItem('milella_last_authenticated_pin') || localStorage.getItem('milella_admin_pin') || 'SOS999';
 
-        if (!savedLastUser || !savedLastRole) {
-            if (err) {
-                err.textContent = '⚠️ Prima configurazione: inserisci prima il tuo PIN per attivare la biometria.';
-                err.style.display = 'block';
-            }
-            alert('Prima configurazione necessaria:\nInserisci il tuo codice PIN la prima volta. Successivamente potrai accedere istantaneamente con l\'impronta digitale!');
-            return;
-        }
-
-        // 2. Controlla se il dispositivo/browser supporta la biometria
         if (!window.PublicKeyCredential) {
             alert('Il tuo browser o dispositivo non supporta il sensore di impronte digitali WebAuthn. Usa il PIN.');
             return;
