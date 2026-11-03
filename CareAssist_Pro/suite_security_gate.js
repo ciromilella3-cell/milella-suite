@@ -228,6 +228,14 @@
     }
 
     function checkGateState() {
+        // Verifica immediata sincrona prima di qualsiasi rendering per evitare flicker
+        const SESSION_KEY = 'milella_session_unlocked';
+        const hasSession = sessionStorage.getItem(SESSION_KEY) === 'true' || localStorage.getItem(SESSION_KEY) === 'true';
+        if (hasSession) {
+            const overlay = document.getElementById('suiteSecurityGateOverlay');
+            if (overlay) overlay.style.display = 'none';
+            return;
+        }
         // 1. Se la sessione è già sbloccata nel tab corrente (sessionStorage)
         let isUnlocked = sessionStorage.getItem(SESSION_KEY) === 'true';
 

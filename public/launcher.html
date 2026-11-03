@@ -1,17 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<style id="suite-anti-flicker-style">
-  html {
-    background-color: #0b0f19 !important;
-  }
-  body {
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-</style>
-
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SUITE AZIENDALE C. MILELLA</title>
     <!-- PWA and Fullscreen Mobile Support -->
@@ -826,6 +816,23 @@
 
 </head>
 <body>
+<script>
+    (function(){
+      try {
+        var unlocked = sessionStorage.getItem('milella_session_unlocked') === 'true' || 
+                       localStorage.getItem('milella_session_unlocked') === 'true' ||
+                       localStorage.getItem('milella_role') === 'admin';
+        if (unlocked) {
+          document.documentElement.classList.add('suite-already-unlocked');
+        }
+      } catch(e){}
+    })();
+  </script>
+  <style>
+    .suite-already-unlocked #gateBloccoIngresso {
+      display: none !important;
+    }
+  </style>
     <!-- FLOATING BAR AVVISO BLOCCO INATTIVITA' -->
     <div id="kioskInactivityWarning" style="display:none; position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:99999; background:rgba(15,23,42,0.96); border:1.5px solid #eab308; box-shadow:0 10px 30px rgba(0,0,0,0.8), 0 0 25px rgba(234,179,8,0.35); border-radius:30px; padding:9px 20px; color:#fff; font-size:13px; font-weight:700; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; gap:12px; animation:pulseWarning 1.5s infinite;">
         <span style="font-size:16px;">⏳</span>
