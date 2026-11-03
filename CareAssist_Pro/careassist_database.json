@@ -5,14 +5,18 @@
       "id": "paz_aldo",
       "nome": "Aldo Zamparino",
       "dataNascita": "1935-04-18",
-      "eta": 91,
       "sesso": "M",
-      "medico": "Dott. Roberto Scarcia",
-      "telMedico": "",
-      "allergie": "Nessuna nota",
-      "catetere": false,
+      "indirizzo": "Via Giovanni Modugno, 25 - Bari",
+      "telefono": "338 306 69 05",
       "allettato": true,
-      "note": "Paziente allettato 91 anni. Terapia cardiologica, neurologica e urologica con scarico pressorio q2h.",
+      "patologie": [
+        "Paziente geriatrico allettato ad alto rischio di lesioni da decubito (Scala Braden: Rischio Elevato)",
+        "Cardiopatia / Aritmia (in terapia con Bisoprololo 1,25 mg)",
+        "Epilessia / Disturbo neurologico focale (in terapia con VIMPAT Lacosamide 100 mg b.i.d.)",
+        "Ipertrofia Prostatica Benigna (IPB) con difficoltà minzionali (in terapia con SILODYX 8 mg)",
+        "Disturbo comportamentale del sonno / Agitazione notturna (in terapia con Quetiapina 25 mg)",
+        "Gastroprotezione per terapia cronica (in terapia con Pantoprazolo 40 mg)"
+      ],
       "terapie": [
         {
           "id": 101,
@@ -102,58 +106,6 @@
           "fattoOggi": false
         }
       ],
-      "registrazioni": [
-        {
-          "id": "log_1793429832502",
-          "tipo": "postura",
-          "timestamp": "2026-10-31T06:57:12.501Z",
-          "posizione": "Supino (Schiena a letto)",
-          "cute": "Integra e rosea (Iniziale)",
-          "operatore": "Sistema Automatico CareAssist"
-        },
-        {
-          "id": "log_1793429926768",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T06:58:46.768Z",
-          "farmacoId": 101,
-          "farmaco": "Pantoprazolo 40 mg",
-          "dosaggio": "40 mg (1 cpr gastroresistente)",
-          "orarioPrevisto": "07:30",
-          "orarioReale": "07:58",
-          "minutiRitardo": 28,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 28 minuti! Orario previsto: 07:30 - Orario effettivo assunzione: 07:58. Rimanenza scorta: 27 cpr.",
-          "operatore": "Ciro Milella"
-        },
-        {
-          "id": "log_1793432150107",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:35:50.107Z",
-          "farmacoId": 102,
-          "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
-          "dosaggio": "1,25 mg (1 cpr rivestita)",
-          "orarioPrevisto": "08:30",
-          "orarioReale": "08:35",
-          "minutiRitardo": 5,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 5 minuti! Orario previsto: 08:30 - Orario effettivo assunzione: 08:35. Rimanenza scorta: 27 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793432152314",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:35:52.313Z",
-          "farmacoId": 103,
-          "farmaco": "VIMPAT 100 mg (1ª dose)",
-          "dosaggio": "100 mg (1 capsula)",
-          "orarioPrevisto": "08:30",
-          "orarioReale": "08:35",
-          "minutiRitardo": 5,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 5 minuti! Orario previsto: 08:30 - Orario effettivo assunzione: 08:35. Rimanenza scorta: 55 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        }
-      ],
       "visite": [
         {
           "id": 1,
@@ -164,56 +116,28 @@
           "fatto": false
         }
       ],
-      "indirizzo": "Via Giovanni Modugno, 25 - Bari",
-      "telefonoFisso": "080 561 57 14",
-      "cellulare": "338 306 69 05",
-      "moglieNome": "Mazzicone Angela",
-      "moglieCellulare": "338 944 96 10",
-      "medicoNome": "Dott. Roberto Scarcia",
-      "medicoIndirizzo": "Via Muciaccia 11, 70121 Bari",
-      "medicoStudio": "Via Muciaccia 11, 70121 Bari",
-      "medicoTelStudio": "080 557 44 90",
-      "medicoTel": "347 126 59 71",
-      "medicoOrari": "Lunedì: 10:00-13:00. Martedì: 10:00-13:00 e 16:00-19:00. Mercoledì: 10:00-13:00. Giovedì: 16:00-19:00. Venerdì: 10:00-13:00 (Bari - Via Muciaccia 11)",
-      "medicoEmail": "scarcia.roberto@alice.it",
-      "patologie": [
-        "Paziente geriatrico allettato ad alto rischio di lesioni da decubito (Scala Braden: Rischio Elevato)",
-        "Cardiopatia / Aritmia (in terapia con Bisoprololo 1,25 mg)",
-        "Epilessia / Disturbo neurologico focale (in terapia con VIMPAT Lacosamide 100 mg b.i.d.)",
-        "Ipertrofia Prostatica Benigna (IPB) con difficoltà minzionali (in terapia con SILODYX 8 mg)",
-        "Disturbo comportamentale del sonno / Agitazione notturna (in terapia con Quetiapina 25 mg)",
-        "Gastroprotezione per terapia cronica (in terapia con Pantoprazolo 40 mg)"
+      "diario": [],
+      "origini": [
+        "CareAssist Pro"
       ],
-      "ausili": [
-        {
-          "tipo": "Materasso Antidecubito a Pressione Alternata",
-          "utilizzo": "Gonfiaggio continuo a ciclo alternato per prevenzione piaghe da decubito",
-          "accessori": "Compressore elettrico con regolazione del peso paziente",
-          "stato": "In uso attivo h24"
-        },
-        {
-          "tipo": "Protocollo Posturale Rotatorio (q2h)",
-          "utilizzo": "Rotazione obbligatoria ogni 2 ore: Supino, Fianco Dx, Fianco Sx, Semiseduto",
-          "accessori": "Cuscini di posizionamento a 30° e crema barriera protettiva cutanea",
-          "stato": "Monitoraggio attivo con segnale sonoro e timer"
-        }
-      ],
-      "farmaciaDiRiferimento": "Farmacia Dott. MACARIO",
-      "farmaciaIndirizzo": "Via G. Petroni, 69/b - Bari",
-      "farmaciaTelefono": "080 542 8061"
+      "creatoIl": "2026-11-03T10:05:10.534Z"
     },
     {
       "id": "paz_angela",
       "nome": "Angela Mazzicone",
       "dataNascita": "1938-05-29",
-      "eta": 88,
       "sesso": "F",
-      "medico": "Dott. Curante",
-      "telMedico": "",
-      "allergie": "Nessuna nota",
-      "catetere": false,
+      "indirizzo": "Via Giovanni Modugno, 25 - BARI (BA)",
+      "telefono": "338 944 96 10",
       "allettato": false,
-      "note": "Coniuge di Aldo. Terapia cardiologica, ipertensiva, dislipidemica, uricosurica, gastroprotettiva e integrazione vit. D3.",
+      "patologie": [
+        "Ipertensione arteriosa sistemica in polichemioterapia",
+        "Sindrome delle Apnee Ostruttive nel Sonno (OSAS) con indicazione ausilio CPAP notturna",
+        "Dislipidemia / Ipercolesterolemia",
+        "Iperuricemia con rischio gotta",
+        "Ipovitaminosi D3 (in integrazione ciclica con DIBASE)",
+        "Reflusso gastroesofageo / gastrite"
+      ],
       "terapie": [
         {
           "id": 201,
@@ -325,64 +249,6 @@
           "fattoOggi": false
         }
       ],
-      "registrazioni": [
-        {
-          "id": "log_1793430453106",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:07:33.106Z",
-          "farmacoId": 201,
-          "farmaco": "Bisoprololo Sandoz 1,25 mg",
-          "dosaggio": "1,25 mg (1 cpr rivestita con film)",
-          "orarioPrevisto": "08:00",
-          "orarioReale": "08:07",
-          "minutiRitardo": 7,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 7 minuti! Orario previsto: 08:00 - Orario effettivo assunzione: 08:07. Rimanenza scorta: 27 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793432168297",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:36:08.297Z",
-          "farmacoId": 202,
-          "farmaco": "Irbesartan/Idroclorotiazide Teva 300 mg/12,5 mg",
-          "dosaggio": "300 mg / 12,5 mg (1 cpr rivestita)",
-          "orarioPrevisto": "08:30",
-          "orarioReale": "08:36",
-          "minutiRitardo": 6,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 6 minuti! Orario previsto: 08:30 - Orario effettivo assunzione: 08:36. Rimanenza scorta: 27 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793436110216",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T08:41:50.215Z",
-          "farmacoId": 203,
-          "farmaco": "Lasix 25 mg (Furosemide)",
-          "dosaggio": "25 mg (1 compressa)",
-          "orarioPrevisto": "09:00",
-          "orarioReale": "09:41",
-          "minutiRitardo": 41,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 41 minuti! Orario previsto: 09:00 - Orario effettivo assunzione: 09:41. Rimanenza scorta: 29 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793437534641",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T09:05:34.641Z",
-          "farmacoId": 208,
-          "farmaco": "DIBASE 50.000 U.I. / 2,5 ml (Colecalciferolo)",
-          "dosaggio": "50.000 U.I. in 2,5 ml flaconcino monodose",
-          "orarioPrevisto": "10:00",
-          "orarioReale": "10:05",
-          "minutiRitardo": 5,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 5 minuti! Orario previsto: 10:00 - Orario effettivo assunzione: 10:05. Rimanenza scorta: 0.93 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        }
-      ],
       "visite": [
         {
           "id": 201,
@@ -401,138 +267,30 @@
           "fatto": false
         }
       ],
-      "indirizzo": "Via Giovanni Modugno, 25 - BARI (BA)",
-      "telefonoFisso": "080 561 57 14",
-      "cellulare": "338 944 96 10",
-      "maritoNome": "Aldo Zamparino",
-      "maritoCellulare": "338 306 69 05",
-      "farmaciaDiRiferimento": "Farmacia Dott. MACARIO",
-      "farmaciaIndirizzo": "Via G. Petroni, 69/b - Bari",
-      "farmaciaTelefono": "080 542 8061",
-      "medicoNome": "Dott. Roberto Scarcia",
-      "medicoIndirizzo": "Via Muciaccia, 11 - 70121 Bari",
-      "medicoStudio": "Via Muciaccia, 11 - 70121 Bari",
-      "medicoTelStudio": "080 557 44 90",
-      "medicoTel": "347 126 59 71",
-      "medicoOrari": "Lunedì: 10:00-13:00. Martedì: 10:00-13:00 e 16:00-19:00. Mercoledì: 10:00-13:00. Giovedì: 16:00-19:00. Venerdì: 10:00-13:00 (Bari - Via Muciaccia 11)",
-      "medicoEmail": "scarcia.roberto@alice.it",
-      "patologie": [
-        "Ipertensione arteriosa sistemica in polichemioterapia",
-        "Sindrome delle Apnee Ostruttive nel Sonno (OSAS) con indicazione ausilio CPAP notturna",
-        "Dislipidemia / Ipercolesterolemia",
-        "Iperuricemia con rischio gotta",
-        "Ipovitaminosi D3 (in integrazione ciclica con DIBASE)",
-        "Reflusso gastroesofageo / gastrite"
+      "diario": [],
+      "origini": [
+        "CareAssist Pro"
       ],
-      "ausili": [
-        {
-          "tipo": "CPAP Notturna (Ventilazione a Pressione Positiva Continua)",
-          "utilizzo": "Tutte le notti durante il riposo per prevenire le apnee notturne e desaturazione",
-          "accessori": "Maschera nasale/oro-facciale, circuito, umidificatore con acqua distillata",
-          "stato": "In uso attivo"
-        },
-        {
-          "tipo": "Bombola di Ossigeno Terapeutico / Concentratore O2",
-          "utilizzo": "Ossigenoterapia domiciliare / Scorta di emergenza",
-          "prossimaRichiesta": "2026-10-19",
-          "stato": "Da ordinare / Rinnovo ricetta con il Dott. Scarcia"
-        }
-      ],
-      "schedaCardioMetabolica": {
-        "dataProssimoControllo": "2026-11-18",
-        "medicoCurante": "Dott. Roberto Scarcia",
-        "centroRiferimento": "Cardiologia Territoriale ASL Bari",
-        "esami": [
-          {
-            "id": "angela_1",
-            "nome": "Visita Cardiologica di Controllo & ECG",
-            "categoria": "Cardiologia",
-            "note": "Valutazione funzione cardiaca e compenso pressorio",
-            "spuntato": true,
-            "richiestoMMG": true,
-            "prenotatoCUP": true,
-            "dataPrenotazioneCUP": "2026-11-18",
-            "luogoPrenotazione": "Cardiologia Territoriale"
-          },
-          {
-            "id": "angela_2",
-            "nome": "Monitoraggio Pressione Arteriosa (Diario PA)",
-            "categoria": "Cardiologia",
-            "note": "Controllo settimanale valori pressori clino/orto",
-            "spuntato": true,
-            "richiestoMMG": true,
-            "refertato": true,
-            "valoreReferto": "Media PA: 125/75 mmHg"
-          },
-          {
-            "id": "angela_3",
-            "nome": "Dosaggio Acido Urico / Uricemia",
-            "categoria": "Laboratorio",
-            "note": "Verifica efficacia terapia uricosurica",
-            "spuntato": true,
-            "richiestoMMG": true,
-            "prenotatoCUP": false
-          },
-          {
-            "id": "angela_4",
-            "nome": "Assetto Lipidico Completo (Colesterolo Tot, HDL, LDL, Trigliceridi)",
-            "categoria": "Laboratorio",
-            "note": "Monitoraggio dislipidemia e target cardiovascolare",
-            "spuntato": true,
-            "richiestoMMG": true,
-            "prenotatoCUP": false
-          },
-          {
-            "id": "angela_5",
-            "nome": "Dosaggio 25-OH Vitamina D3 & Calcemia",
-            "categoria": "Laboratorio",
-            "note": "Salute osteo-articolare e integrazione vit. D3",
-            "spuntato": true,
-            "richiestoMMG": true,
-            "prenotatoCUP": false
-          },
-          {
-            "id": "angela_6",
-            "nome": "Creatininemia, Azotemia ed Elettroliti (K+, Na+)",
-            "categoria": "Laboratorio",
-            "note": "Funzione renale in terapia antipertensiva combinata",
-            "spuntato": true,
-            "richiestoMMG": false,
-            "prenotatoCUP": false
-          },
-          {
-            "id": "angela_7",
-            "nome": "Glicemia a Digiuno & Profilo Glucidico",
-            "categoria": "Laboratorio",
-            "note": "Sorveglianza metabolica periodica",
-            "spuntato": true,
-            "richiestoMMG": false,
-            "prenotatoCUP": false
-          },
-          {
-            "id": "angela_8",
-            "nome": "Eco-Color-Doppler Tronchi Sovraaortici (TSA)",
-            "categoria": "Strumentale",
-            "note": "Screening vascolare carotideo e cerebrale",
-            "spuntato": true,
-            "richiestoMMG": false,
-            "prenotatoCUP": false
-          }
-        ]
-      }
+      "creatoIl": "2026-11-03T10:05:10.542Z"
     },
     {
       "id": "paz_rosa",
       "nome": "Rosa Annunziata Cavalcante",
       "dataNascita": "1938-06-16",
-      "eta": 88,
       "sesso": "F",
-      "medico": "Dott. Curante",
-      "telMedico": "",
-      "allergie": "Nessuna nota",
-      "catetere": false,
+      "indirizzo": "Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)",
+      "telefono": "338 379 76 71",
       "allettato": false,
-      "note": "Paziente di 88 anni. Cardiopatia ipertensiva in buon compenso, osteoartrosi diffusa e insufficienza venosa periferica.",
+      "patologie": [
+        "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga)",
+        "Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga)",
+        "Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel)",
+        "Morbo di Parkinson / parkinsonismo (Sinemet)",
+        "Iperuricemia / gotta (Adenuric)",
+        "Osteoartrosi con dolore cronico (Arcoxia)",
+        "Ipovitaminosi D (Fedivelle)",
+        "Dislipidemia / Ipercolesterolemia (Sivastin)"
+      ],
       "terapie": [
         {
           "id": 305,
@@ -749,106 +507,6 @@
           "fattoOggi": false
         }
       ],
-      "registrazioni": [
-        {
-          "id": "log_1793430472078",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:07:52.077Z",
-          "farmacoId": 305,
-          "farmaco": "CONGESCOR 2,5 mg",
-          "dosaggio": "2,5 mg (1 cpr)",
-          "orarioPrevisto": "08:00",
-          "orarioReale": "08:07",
-          "minutiRitardo": 7,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 7 minuti! Orario previsto: 08:00 - Orario effettivo assunzione: 08:07. Rimanenza scorta: 27 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793430473811",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:07:53.811Z",
-          "farmacoId": 303,
-          "farmaco": "DIAMICRON 60 mg RM",
-          "dosaggio": "60 mg (1 cpr rilascio modificato)",
-          "orarioPrevisto": "08:00",
-          "orarioReale": "08:07",
-          "minutiRitardo": 7,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 7 minuti! Orario previsto: 08:00 - Orario effettivo assunzione: 08:07. Rimanenza scorta: 29 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793430505846",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:08:25.846Z",
-          "farmacoId": 304,
-          "farmaco": "FORXIGA 10 mg",
-          "dosaggio": "10 mg (1 cpr)",
-          "orarioPrevisto": "08:00",
-          "orarioReale": "08:08",
-          "minutiRitardo": 8,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 8 minuti! Orario previsto: 08:00 - Orario effettivo assunzione: 08:08. Rimanenza scorta: 27 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793430511641",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:08:31.641Z",
-          "farmacoId": 301,
-          "farmaco": "SINEMET 100+25 mg (1ª dose: 2 cpr - ore 08:00)",
-          "dosaggio": "100/25 mg (2 cpr)",
-          "orarioPrevisto": "08:00",
-          "orarioReale": "08:08",
-          "minutiRitardo": 8,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 8 minuti! Orario previsto: 08:00 - Orario effettivo assunzione: 08:08. Rimanenza scorta: 80 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793430528021",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:08:48.02Z",
-          "farmacoId": 306,
-          "farmaco": "TRIATEC 5 mg",
-          "dosaggio": "5 mg (Dose alternata: ½ cpr e 1 cpr)",
-          "orarioPrevisto": "08:00",
-          "orarioReale": "08:08",
-          "minutiRitardo": 8,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 8 minuti! Orario previsto: 08:00 - Orario effettivo assunzione: 08:08. Rimanenza scorta: 13 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793430532917",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:08:52.916Z",
-          "farmacoId": 302,
-          "farmaco": "XULTOPHY penna",
-          "dosaggio": "16 Unità (sottocute)",
-          "orarioPrevisto": "08:00",
-          "orarioReale": "08:08",
-          "minutiRitardo": 8,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 8 minuti! Orario previsto: 08:00 - Orario effettivo assunzione: 08:08. Rimanenza scorta: 1.94 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793432185611",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:36:25.61Z",
-          "farmacoId": 307,
-          "farmaco": "LASIX 25 mg",
-          "dosaggio": "25 mg (1 cpr)",
-          "orarioPrevisto": "08:30",
-          "orarioReale": "08:36",
-          "minutiRitardo": 6,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 6 minuti! Orario previsto: 08:30 - Orario effettivo assunzione: 08:36. Rimanenza scorta: 29 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        }
-      ],
       "visite": [
         {
           "id": 401,
@@ -867,114 +525,24 @@
           "fatto": false
         }
       ],
-      "indirizzo": "Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)",
-      "telefonoFisso": "097 169 32 21",
-      "cellulare": "338 379 76 71",
-      "moglieNome": "Maria Carmela (Figlia / Caregiver)",
-      "moglieCellulare": "338 739 76 71",
-      "farmaciaDiRiferimento": "Farmacia Girasole Picconi",
-      "farmaciaIndirizzo": "Via Ariosto, 4 / 16 - 85012 Corleto Perticara (PZ)",
-      "farmaciaTelefono": "0971 963055",
-      "medicoNome": "Dr.ssa Carolina Potenza",
-      "medicoStudio": "Sarconi: Via Provinciale 1 / Moliterno: Via Parco del Seggio 1",
-      "medicoTel": "338 379 05 64",
-      "medicoEmail": "carolina.potenza@aspbasilicata.it",
-      "medicoOrari": "Moliterno: Lun 15:00-18:00, Gio 9:00-13:00. Sarconi: Lun-Mer-Ven 9:30-13:00, Mar-Gio 15:00-18:30 (su appuntamento)",
-      "patologie": [
-        "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga)",
-        "Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga)",
-        "Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel)",
-        "Morbo di Parkinson / parkinsonismo (Sinemet)",
-        "Iperuricemia / gotta (Adenuric)",
-        "Osteoartrosi con dolore cronico (Arcoxia)",
-        "Ipovitaminosi D (Fedivelle)",
-        "Dislipidemia / Ipercolesterolemia (Sivastin)"
+      "diario": [],
+      "origini": [
+        "CareAssist Pro"
       ],
-      "ausili": [
-        {
-          "tipo": "Deambulatore rollator con freno per interni/esterni",
-          "stato": "In uso regolare",
-          "utilizzo": "Uso quotidiano per deambulazione interna ed esterna in sicurezza"
-        },
-        {
-          "tipo": "Calze elastiche antitrombo a compressione graduata",
-          "stato": "In uso",
-          "utilizzo": "In uso diurno per favorire il ritorno venoso e prevenzione edemi"
-        },
-        {
-          "tipo": "Mutandina Assorbente PANTS (Pull-Up monouso)",
-          "taglia": "L (Extra) - Girovita 110-150 cm",
-          "cartoni": "10 confezioni (140 pezzi)",
-          "scortaPacchi": 10,
-          "pezziTotali": 140,
-          "pezziPerPacco": 14,
-          "utilizzo": "PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021) - 10 conf. x 14 pz = 140 pz. DDT Serenity N. 2286626418 del 21/08/2026. Ord. ASP 0060448686 - Distretto Villa D'Agri 02 02. Codice Utente: 002713. Prossima consegna indicativa: 24/11/2026 con preavviso telefonico (3383797671). Scadenza Piano: 18/02/2027.",
-          "fabbisogno": "Fornitura programmata ogni 90 giorni (ASP Potenza)",
-          "fornitore": "Serenity S.p.A. / ASP Potenza (Distretto Villa D'Agri)",
-          "ddtNumero": "2286626418",
-          "ddtData": "2026-08-21",
-          "codiceUtente": "002713",
-          "codiceArticolo": "00037212200021",
-          "numConfezioni": 10,
-          "pezziConsegnati": 140,
-          "prossimaConsegnaIndicativa": "2026-11-24",
-          "scadenzaPiano": "2027-02-18",
-          "stato": "In uso attivo regolare",
-          "dataRifornimento": "2026-08-21",
-          "dataScadenza": "2027-02-18",
-          "prossimaRichiesta": "2026-11-24",
-          "giorniAlert": 15,
-          "marca": "Serenity S.p.A. - PANTS SD SENSITIVE BE FREE EXTRA L 8",
-          "ordineAsp": "0060448686 del 03.08.2026",
-          "codiceDistretto": "02 02 - DISTRETTO VILLA D'AGRI"
-        },
-        {
-          "tipo": "Sensori Glicemia - GlucoMen areo Sensor",
-          "marca": "A. Menarini Diagnostics - GlucoMen areo Sensor (25 sensori)",
-          "utilizzo": "Sensori reattivi per l'autocontrollo della glicemia con glucometro linea GlucoMen areo (Diabete mellito in terapia con Xultophy)",
-          "cartoni": "1 confezione (25 sensori)",
-          "scortaPacchi": 1,
-          "pezziPerPacco": 25,
-          "pezziTotali": 25,
-          "dataRifornimento": "2026-10-30",
-          "prossimaRichiesta": "2026-11-24",
-          "dataScadenza": "2026-11-24",
-          "giorniAlert": 7,
-          "stato": "In uso attivo regolare",
-          "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
-          "fabbisogno": "Autocontrollo glicemico domiciliare pre-colazione e monitoraggio terapia insulinica"
-        },
-        {
-          "tipo": "Lancette Pungidito - Glucoject Lancets Extra 33G",
-          "marca": "A. Menarini Diagnostics - Glucoject Lancets Extra 33G (25 lancette)",
-          "utilizzo": "Lancette sterili monouso calibro 33G (extra-sottili) per dispositivo pungidito per prelievo capillare glicemia",
-          "cartoni": "1 confezione (25 lancette)",
-          "scortaPacchi": 1,
-          "pezziPerPacco": 25,
-          "pezziTotali": 25,
-          "dataRifornimento": "2026-10-30",
-          "prossimaRichiesta": "2026-11-24",
-          "dataScadenza": "2026-11-24",
-          "giorniAlert": 7,
-          "stato": "In uso attivo regolare",
-          "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
-          "fabbisogno": "1 lancetta monouso per ciascun controllo glicemico"
-        }
-      ],
-      "medicoIndirizzo": "Sarconi: Via Provinciale 1 / Moliterno: Via Parco del Seggio 1"
+      "creatoIl": "2026-11-03T10:05:10.542Z"
     },
     {
       "id": "paz_1793216119572",
       "nome": "Ciro Milella",
       "dataNascita": "1967-12-15",
-      "eta": 58,
       "sesso": "M",
-      "medico": "Dott. Curante",
-      "telMedico": "",
-      "allergie": "Nessuna nota",
-      "catetere": false,
+      "indirizzo": "Via Giulio Petroni, 69",
+      "telefono": "366 460 73 96",
       "allettato": false,
-      "note": "Paziente in follow-up specialistico per epatopatia HBV correlata presso Clinica Malattie Infettive Policlinico Bari (Prof.ssa Saracino).",
+      "patologie": [
+        "Epatite B cronica (HBV) in trattamento antivirale con Entecavir 0,5 mg",
+        "Follow-up periodico semestrale presso U.O. Malattie Infettive ed Epatologia - Policlinico di Bari"
+      ],
       "terapie": [
         {
           "id": 1793444784904,
@@ -989,7 +557,7 @@
           "scorta": 39,
           "giorniAlert": 10,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": true,
+          "fattoOggi": false,
           "tipoFormulazione": "compressa",
           "penneScorta": 40,
           "unitaDoseDie": 1,
@@ -997,88 +565,45 @@
           "pennePerScatola": 30,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "31/10/2026",
+            "data": "01/11/2026",
             "fonte": "Visita Specialistica",
-            "medico": "",
-            "motivo": ""
+            "medico": "Prof.ssa Saracino",
+            "motivo": "Ripristino terapia antivirale Entecavir Sandoz"
           },
           "ultimaDoseSomministrata": 1
         }
       ],
-      "registrazioni": [
-        {
-          "id": "log_1793429977481",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T06:59:37.481Z",
-          "farmacoId": 1793218169955,
-          "farmaco": "Entecavir Sandoz 0,5 mg",
-          "dosaggio": "0,5 mg (1 cpr)",
-          "orarioPrevisto": "07:00",
-          "orarioReale": "07:59",
-          "minutiRitardo": 59,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 59 minuti! Orario previsto: 07:00 - Orario effettivo assunzione: 07:59. Rimanenza scorta: 40 cpr.",
-          "operatore": "Ciro Milella"
-        },
-        {
-          "id": "log_1793430562994",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:09:22.994Z",
-          "farmacoId": 1793218169955,
-          "farmaco": "Entecavir Sandoz 0,5 mg",
-          "dosaggio": "0,5 mg (1 cpr)",
-          "orarioPrevisto": "07:00",
-          "orarioReale": "08:09",
-          "minutiRitardo": 69,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 9 min! Orario previsto: 07:00 - Orario effettivo assunzione: 08:09. Rimanenza scorta: 40 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793430686209",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T07:11:26.208Z",
-          "farmacoId": 1793430680166,
-          "farmaco": "Entecavir Sandoz 0,5 mg",
-          "dosaggio": "0,5 mg (1 cpr)",
-          "orarioPrevisto": "07:00",
-          "orarioReale": "08:11",
-          "minutiRitardo": 71,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 11 min! Orario previsto: 07:00 - Orario effettivo assunzione: 08:11. Rimanenza scorta: 39 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1793446129667",
-          "tipo": "farmaco_ritardo",
-          "timestamp": "2026-10-31T11:28:49.667Z",
-          "farmacoId": 1793444784904,
-          "farmaco": "Entecavir Sandoz 0,5 mg",
-          "dosaggio": "0,5 mg (1 cpr)",
-          "orarioPrevisto": "12:15",
-          "orarioReale": "12:28",
-          "minutiRitardo": 13,
-          "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 13 minuti! Orario previsto: 12:15 - Orario effettivo assunzione: 12:28. Rimanenza scorta: 39 cpr.",
-          "operatore": "Ciro Milella"
-        }
-      ],
       "visite": [],
-      "indirizzo": "Via Giulio Petroni, 69",
-      "telefonoFisso": "366 460 73 96",
-      "cellulare": "366 460 73 96",
-      "moglieNome": "Maria Carmela Stoppelli",
-      "moglieCellulare": "338 739 76 71",
-      "medicoNome": "Dott. Curante",
-      "medicoEmail": "scarcia.roberto@alice.it",
-      "farmaciaDiRiferimento": "Farmacia di Riferimento",
+      "diario": [],
+      "origini": [
+        "CareAssist Pro",
+        "Progetto Salute",
+        "MedNutri Pro"
+      ],
+      "creatoIl": "2026-11-03T10:05:10.542Z"
+    },
+    {
+      "id": "paz_mariacarmela",
+      "nome": "Maria Carmela",
+      "dataNascita": "1969-03-20",
+      "sesso": "F",
+      "indirizzo": "Via Giulio Petroni, 69 - BARI (BA)",
+      "telefono": "347 123 4567",
+      "allettato": false,
       "patologie": [
-        "Epatite B cronica (HBV) in trattamento antivirale con Entecavir 0,5 mg",
-        "Follow-up periodico semestrale presso U.O. Malattie Infettive ed Epatologia - Policlinico di Bari"
-      ]
+        "Nutrizione & Benessere"
+      ],
+      "terapie": [],
+      "visite": [],
+      "diario": [],
+      "origini": [
+        "Progetto Salute",
+        "CareAssist Pro"
+      ],
+      "creatoIl": "2026-11-03T10:05:10.542Z"
     }
   ],
-  "lastModified": 1793446129669,
+  "lastModified": 1793527494292,
   "lastModifiedDevice": "smartphone",
   "lastModifiedBy": {
     "nome": "Ciro Milella",

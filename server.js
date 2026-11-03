@@ -929,7 +929,8 @@ app.get('/api/careassist/turnario', (req, res) => {
         if (memoryCache.has("turnario_settimanale")) return res.json(memoryCache.get("turnario_settimanale"));
         if (fs.existsSync(turnarioPath)) {
             const data = JSON.parse(fs.readFileSync(turnarioPath, 'utf8') || '{}');
-            return res.json(data);
+            return sincronizzaPazientiInCareAssist(data);
+        res.json(data);
         }
     } catch(e) {}
     res.json({});
@@ -1360,6 +1361,106 @@ app.post('/api/gioco/save-data', (req, res) => {
     }
 });
 
+// Percorso Database Unificato Pazienti Suite
+const suitePazientiDbFile = path.join(__dirname, 'data', 'suite_pazienti.json');
+
+// Sincronizza i pazienti tra suite_pazienti.json e careassist_database.json
+function sincronizzaPazientiInCareAssist(caData) {
+    if (!caData || !Array.isArray(caData.pazienti)) return;
+    try {
+        let suiteDb = { pazienti: [] };
+        if (fs.existsSync(suitePazientiDbFile)) {
+            suiteDb = JSON.parse(fs.readFileSync(suitePazientiDbFile, 'utf8') || '{"pazienti":[]}');
+        }
+        if (!Array.isArray(suiteDb.pazienti)) suiteDb.pazienti = [];
+
+        // Mappa per unire e arricchire senza duplicati
+        const pzMap = new Map();
+        suiteDb.pazienti.forEach(p => { if (p && p.nome) pzMap.set(p.nome.trim().toLowerCase(), p); });
+        caData.pazienti.forEach(p => { if (p && p.nome) pzMap.set(p.nome.trim().toLowerCase(), p); });
+
+        // Assicurati che Maria Carmela sia sempre presente
+        if (!pzMap.has('maria carmela')) {
+            pzMap.set('maria carmela', {
+                id: 'paz_mariacarmela',
+                nome: 'Maria Carmela',
+                dataNascita: '1969-03-20',
+                sesso: 'F',
+                indirizzo: 'Via Giulio Petroni, 69 - BARI (BA)',
+                telefono: '347 123 4567',
+                allettato: false,
+                patologie: ['Nutrizione & Benessere'],
+                terapie: [],
+                origini: ['Progetto Salute', 'CareAssist Pro']
+            });
+        }
+
+        const listaAggiornata = Array.from(pzMap.values());
+        suiteDb.pazienti = listaAggiornata;
+        suiteDb.ultimoAggiornamento = new Date().toISOString();
+        safeWriteAtomic(suitePazientiDbFile, JSON.stringify(suiteDb, null, 2));
+
+        // Aggiorna anche l'oggetto passato a CareAssist
+        caData.pazienti = listaAggiornata;
+    } catch(err) {
+        console.error('Errore sincronizzazione pazienti:', err.message);
+    }
+}
+
+// ============================================================================
+// SUITE MILELLA - API DATABASE UNIFICATO PAZIENTI
+// ============================================================================
+app.get(['/api/suite/pazienti', '/careassist/api/suite/pazienti'], async (req, res) => {
+    try {
+        let suiteDb = { pazienti: [] };
+        if (fs.existsSync(suitePazientiDbFile)) {
+            suiteDb = JSON.parse(fs.readFileSync(suitePazientiDbFile, 'utf8') || '{"pazienti":[]}');
+        }
+        res.json({ success: true, count: (suiteDb.pazienti || []).length, pazienti: suiteDb.pazienti || [] });
+    } catch(e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.post(['/api/suite/pazienti', '/careassist/api/suite/pazienti'], async (req, res) => {
+    try {
+        const nuovoP = req.body;
+        if (!nuovoP || !nuovoP.nome) return res.status(400).json({ error: 'Nome obbligatorio' });
+
+        let suiteDb = { pazienti: [] };
+        if (fs.existsSync(suitePazientiDbFile)) {
+            suiteDb = JSON.parse(fs.readFileSync(suitePazientiDbFile, 'utf8') || '{"pazienti":[]}');
+        }
+        if (!Array.isArray(suiteDb.pazienti)) suiteDb.pazienti = [];
+
+        const k = nuovoP.nome.trim().toLowerCase();
+        const exIdx = suiteDb.pazienti.findIndex(p => p.nome && p.nome.trim().toLowerCase() === k);
+        if (exIdx >= 0) {
+            suiteDb.pazienti[exIdx] = Object.assign({}, suiteDb.pazienti[exIdx], nuovoP);
+        } else {
+            if (!nuovoP.id) nuovoP.id = 'paz_' + Date.now();
+            suiteDb.pazienti.push(nuovoP);
+        }
+
+        suiteDb.ultimoAggiornamento = new Date().toISOString();
+        safeWriteAtomic(suitePazientiDbFile, JSON.stringify(suiteDb, null, 2));
+
+        // Sincronizza anche su careassist_database.json
+        if (fs.existsSync(careAssistDbFile)) {
+            try {
+                let ca = JSON.parse(fs.readFileSync(careAssistDbFile, 'utf8') || '{}');
+                ca.pazienti = suiteDb.pazienti;
+                safeWriteAtomic(careAssistDbFile, JSON.stringify(ca, null, 2));
+                await cloudSet('careassist', ca, careAssistDbFile);
+            } catch(eCa) {}
+        }
+
+        res.json({ success: true, paziente: nuovoP, total: suiteDb.pazienti.length });
+    } catch(e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 app.get('/api/get-db', async (req, res) => {
     try {
         let data = await cloudGet('careassist', null);
@@ -1376,6 +1477,8 @@ app.post('/api/save-db', async (req, res) => {
     try {
         const payload = JSON.stringify(req.body, null, 2);
         // Salva nel percorso primario
+        sincronizzaPazientiInCareAssist(req.body);
+        const payload = JSON.stringify(req.body, null, 2);
         safeWriteAtomic(careAssistDbFile, payload);
         
         // SALVATAGGIO CLOUD MONGODB & MEMORY CACHE (FONDAMENTALE PER SYNC MULTI-DEVICE SU RENDER)
