@@ -124,18 +124,33 @@
   // ==============================================================
   let _mednutriSuiteSoggetti = [];
 
+  // LISTA FALLBACK ISTANTANEA IMMEDIATA (ZERO ATTESE - CARICAMENTO IN 0 MILLISECONDI)
+  const _soggettiDefault = [
+    { nome: 'Aldo Zamparino', dataNascita: '1935-04-18', sesso: 'M', origini: ['CareAssist Pro'] },
+    { nome: 'Angela Mazzicone', dataNascita: '1938-05-29', sesso: 'F', origini: ['CareAssist Pro'] },
+    { nome: 'Rosa Annunziata Cavalcante', dataNascita: '1938-06-16', sesso: 'F', origini: ['CareAssist Pro'] },
+    { nome: 'Ciro Milella', dataNascita: '1967-12-16', sesso: 'M', origini: ['Progetto Salute', 'CareAssist Pro'] },
+    { nome: 'Maria Carmela Stoppelli', dataNascita: '1969-03-20', sesso: 'F', origini: ['Progetto Salute', 'CareAssist Pro'] }
+  ];
+
+  _mednutriSuiteSoggetti = _soggettiDefault;
+
   async function popolaSelectImportMedNutri() {
+    // 1. Mostra subito la lista locale senza attendere la rete
+    aggiornaTendinaMedNutri();
+
+    // 2. Prova ad aggiornare dal server se connesso
     try {
       const res = await fetch('/api/suite/anagrafe-condivisa');
       if (res.ok) {
         const data = await res.json();
-        if (data && Array.isArray(data.soggetti)) {
+        if (data && Array.isArray(data.soggetti) && data.soggetti.length > 0) {
           _mednutriSuiteSoggetti = data.soggetti;
           aggiornaTendinaMedNutri();
         }
       }
     } catch(e) {
-      console.warn('Fallback anagrafe in MedNutri:', e.message);
+      console.warn('Uso lista precaricata MedNutri:', e.message);
     }
   }
 
