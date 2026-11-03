@@ -161,31 +161,132 @@
     if (!container) return;
 
     if (!_mednutriSuiteSoggetti || _mednutriSuiteSoggetti.length === 0) {
-      container.innerHTML = '<div style="color:#64748b; font-size:12.5px;">Nessun paziente trovato nella suite.</div>';
+      container.innerHTML = '<span style="color:#94a3b8; font-size:11.5px;">Nessun assistito in lista</span>';
       return;
     }
 
-    container.innerHTML = _mednutriSuiteSoggetti.map((s, idx) => {
-      const originiStr = (s.origini || []).join(', ');
+    // Mostra al massimo i primi 4 come chip rapidi compatti per lasciare la schermata pulita
+    const rapidi = _mednutriSuiteSoggetti.slice(0, 4);
+
+    container.innerHTML = rapidi.map((s, idx) => {
       const isFem = (s.sesso && (s.sesso.toUpperCase() === 'F' || s.sesso.toLowerCase() === 'donna'));
       const emoji = isFem ? '👩' : '👨';
-      const bgHover = isFem ? '#fdf2f8' : '#f0f9ff';
       const borderCol = isFem ? '#f472b6' : '#38bdf8';
+      const year = s.dataNascita ? s.dataNascita.split('-')[0] : '';
       
       return `
         <button type="button" 
-                onclick="applicaImportMedNutriDaSuite('${idx}')" 
-                title="Clicca per compilare la cartella di ${s.nome}"
-                style="background:#ffffff; color:#0f172a; border:1.5px solid ${borderCol}; padding:8px 14px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(0,0,0,0.06); transition:all 0.2s;"
-                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(2,132,199,0.2)';"
-                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.06)';">
+                onclick="selezionaPazienteDaRicerca('${idx}')" 
+                title="Compila istantaneamente: ${s.nome}"
+                style="background:#ffffff; color:#0f172a; border:1px solid ${borderCol}; padding:4px 10px; border-radius:8px; font-weight:700; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all 0.15s;"
+                onmouseover="this.style.background='#f0f9ff'; this.style.borderColor='#0284c7';"
+                onmouseout="this.style.background='#ffffff'; this.style.borderColor='${borderCol}';">
           <span>${emoji}</span>
-          <span style="color:#0f172a; font-weight:800;">${s.nome}</span>
-          <span style="font-size:11px; color:#64748b; font-weight:600; background:#f1f5f9; padding:2px 6px; border-radius:6px;">${s.dataNascita ? s.dataNascita.split('-')[0] : ''}</span>
+          <span>${s.nome}</span>
+          ${year ? `<span style="font-size:10px; color:#64748b; background:#f1f5f9; padding:1px 4px; border-radius:4px;">${year}</span>` : ''}
         </button>
       `;
-    }).join('');
+    }).join('') + (_mednutriSuiteSoggetti.length > 4 ? `<span style="font-size:11px; color:#0284c7; font-weight:600; margin-left:4px;">+ altri ${_mednutriSuiteSoggetti.length - 4} nella ricerca 🔍</span>` : '');
   }
+
+  // MOTORE DI RICERCA LIVE ED AUTOCOMPLETAMENTO ENTERPRISE (SCALABILE 1-5000+ PAZIENTI)
+  window.filtraPazientiSuite = function(query) {
+    const dropdown = document.getElementById('suite-patient-dropdown');
+    const clearBtn = document.getElementById('suite-search-clear-btn');
+    if (!dropdown) return;
+
+    const q = (query || '').toLowerCase().trim();
+    if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+    if (!_mednutriSuiteSoggetti || _mednutriSuiteSoggetti.length === 0) {
+      dropdown.innerHTML = '<div style="padding:12px 16px; color:#64748b; font-size:12px; text-align:center;">Nessun assistito trovato</div>';
+      dropdown.style.display = 'block';
+      return;
+    }
+
+    const filtrati = _mednutriSuiteSoggetti.map((s, idx) => ({ ...s, originalIdx: idx })).filter(s => {
+      if (!q) return true;
+      const nomeMatch = (s.nome || '').toLowerCase().includes(q);
+      const dobMatch = (s.dataNascita || '').includes(q);
+      const cfMatch = (s.codiceFiscale || '').toLowerCase().includes(q);
+      const origMatch = (s.origini || []).some(o => o.toLowerCase().includes(q));
+      return nomeMatch || dobMatch || cfMatch || origMatch;
+    });
+
+    if (filtrati.length === 0) {
+      dropdown.innerHTML = `<div style="padding:12px 16px; color:#64748b; font-size:12px; text-align:center;">
+        Nessun assistito corrisponde a "<strong>${query}</strong>"
+      </div>`;
+      dropdown.style.display = 'block';
+      return;
+    }
+
+    dropdown.innerHTML = filtrati.map(s => {
+      const isFem = (s.sesso && (s.sesso.toUpperCase() === 'F' || s.sesso.toLowerCase() === 'donna'));
+      const emoji = isFem ? '👩' : '👨';
+      const year = s.dataNascita ? s.dataNascita.split('-')[0] : '';
+      const originiStr = (s.origini || []).join(' • ');
+
+      return `
+        <div onclick="selezionaPazienteDaRicerca('${s.originalIdx}')" 
+             style="display:flex; justify-content:space-between; align-items:center; padding:9px 16px; cursor:pointer; border-bottom:1px solid #f1f5f9; transition:background 0.15s;"
+             onmouseover="this.style.background='#f0f9ff';" 
+             onmouseout="this.style.background='#ffffff';">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:17px;">${emoji}</span>
+            <div>
+              <div style="font-weight:800; font-size:13px; color:#0f172a;">${s.nome}</div>
+              <div style="font-size:11px; color:#64748b;">${originiStr ? originiStr + ' • ' : ''}${s.dataNascita || 'Data n.d.'}</div>
+            </div>
+          </div>
+          <span style="font-size:11px; font-weight:700; color:#0284c7; background:#e0f2fe; padding:2px 8px; border-radius:6px;">
+            ${year ? 'Anno ' + year : '1-Click'}
+          </span>
+        </div>
+      `;
+    }).join('');
+
+    dropdown.style.display = 'block';
+  };
+
+  window.mostraDropdownPazienti = function(mostra) {
+    const input = document.getElementById('suite-patient-search-input');
+    if (mostra) {
+      filtraPazientiSuite(input ? input.value : '');
+    } else {
+      setTimeout(() => {
+        const dropdown = document.getElementById('suite-patient-dropdown');
+        if (dropdown) dropdown.style.display = 'none';
+      }, 250);
+    }
+  };
+
+  window.pulisciRicercaPazienti = function() {
+    const input = document.getElementById('suite-patient-search-input');
+    if (input) { input.value = ''; input.focus(); }
+    filtraPazientiSuite('');
+  };
+
+  window.selezionaPazienteDaRicerca = function(idxStr) {
+    applicaImportMedNutriDaSuite(idxStr);
+    const dropdown = document.getElementById('suite-patient-dropdown');
+    if (dropdown) dropdown.style.display = 'none';
+    const s = _mednutriSuiteSoggetti[parseInt(idxStr, 10)];
+    const input = document.getElementById('suite-patient-search-input');
+    if (input && s) {
+      input.value = s.nome;
+      const clearBtn = document.getElementById('suite-search-clear-btn');
+      if (clearBtn) clearBtn.style.display = 'block';
+    }
+  };
+
+  document.addEventListener('click', function(e) {
+    const box = document.getElementById('suite-search-box-wrapper');
+    const dropdown = document.getElementById('suite-patient-dropdown');
+    if (dropdown && box && !box.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
 
   window.applicaImportMedNutriDaSuite = function(idxStr) {
     if (idxStr === '' || idxStr === null || idxStr === undefined) return;
@@ -196,6 +297,8 @@
         localStorage.removeItem('milella_active_patient_name');
         localStorage.removeItem('milella_active_patient_dob');
         localStorage.removeItem('milella_active_patient_gender');
+        const sInp = document.getElementById('suite-patient-search-input'); if (sInp) sInp.value = '';
+        const clBtn = document.getElementById('suite-search-clear-btn'); if (clBtn) clBtn.style.display = 'none';
       } catch(e) {}
 
       const fields = ['patient-name', 'patient-dob', 'patient-height', 'patient-weight', 'patient-wrist', 'patient-notes'];

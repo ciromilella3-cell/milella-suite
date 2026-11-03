@@ -368,21 +368,43 @@
                     <h3>Anagrafica Paziente</h3>
                     <div class="input-grid">
                         <!-- BOX 1-CLICK IMPORT SUITE IN MEDNUTRI -->
-                        <!-- COMPONENTE ANAGRAFICA SUITE CON CHIP AD ALTISSIMO CONTRASTO (100% LEGGIBILE) -->
-                        <div class="input-group" style="grid-column: span 2; background:#f8fafc; border:2px solid #0284c7; padding:14px 16px; border-radius:16px; margin-bottom:12px; box-shadow:0 4px 16px rgba(2, 132, 199, 0.12);">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:6px;">
+                        <!-- MODULO ENTERPRISE: RICERCA SMART PAZIENTI SUITE & AZZERAMENTO (SCALABILE 1-5000+ PAZIENTI) -->
+                        <div class="input-group" style="grid-column: span 2; background:#f8fafc; border:1.5px solid #0284c7; padding:12px 16px; border-radius:14px; margin-bottom:12px; box-shadow:0 3px 12px rgba(2, 132, 199, 0.08); position:relative;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
                                 <label style="color:#0f172a; font-weight:800; font-size:13.5px; display:flex; align-items:center; gap:8px; margin:0;">
-                                    <span>🏛️</span> <span>PAZIENTI SUITE CONDIVISI (1-Click per Autocompilare)</span>
+                                    <span>🏛️</span> <span>CARICA ASSISTITO DALLA SUITE (Condivisione Master)</span>
                                 </label>
-                                <button type="button" onclick="applicaImportMedNutriDaSuite('NUOVO')" style="background:#0284c7; color:#ffffff; border:none; padding:5px 12px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
+                                <button type="button" onclick="applicaImportMedNutriDaSuite('NUOVO')" style="background:#0284c7; color:#ffffff; border:none; padding:6px 14px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3); transition:all 0.2s;" onmouseover="this.style.background='#0369a1'" onmouseout="this.style.background='#0284c7'">
                                     ➕ Nuovo Paziente (Pulisci)
                                 </button>
                             </div>
-                            <!-- CONTENITORE CHIP PAZIENTI DINAMICO -->
-                            <div id="suite-patients-chips-container" style="display:flex; flex-wrap:wrap; gap:8px;">
-                                <div style="color:#64748b; font-size:13px; font-weight:600;">Caricamento assistiti Suite in corso...</div>
+
+                            <!-- BARRA DI RICERCA LIVE SMART CON AUTOCOMPLETAMENTO AD ALTA EFFICIENZA -->
+                            <div style="position:relative; width:100%;">
+                                <div style="display:flex; align-items:center; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:2px 10px; transition:border 0.2s; box-shadow:inset 0 1px 2px rgba(0,0,0,0.03);" id="suite-search-box-wrapper">
+                                    <span style="font-size:16px; margin-right:8px; color:#64748b;">🔍</span>
+                                    <input type="text" id="suite-patient-search-input" 
+                                           placeholder="Digita per cercare assistito (es. Zamparino, Mazzicone, 1938, Stoppelli...)" 
+                                           autocomplete="off"
+                                           onfocus="mostraDropdownPazienti(true)" 
+                                           oninput="filtraPazientiSuite(this.value)"
+                                           style="border:none !important; outline:none !important; width:100%; padding:9px 0; font-size:13.5px; font-weight:600; color:#0f172a; background:transparent !important; box-shadow:none !important;">
+                                    <button type="button" id="suite-search-clear-btn" onclick="pulisciRicercaPazienti()" style="display:none; background:none; border:none; color:#94a3b8; font-size:16px; cursor:pointer; padding:0 4px;" title="Cancella ricerca">✕</button>
+                                </div>
+
+                                <!-- DROPDOWN RISULTATI SCALABILE (MAX 300px ALTEZZA CON SCROLL ELEGANTE) -->
+                                <div id="suite-patient-dropdown" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; background:#ffffff; border:1.5px solid #0284c7; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.15); max-height:280px; overflow-y:auto; z-index:9999; padding:6px 0;">
+                                    <!-- Inserimento dinamico risultati -->
+                                </div>
                             </div>
-                            <div id="mednutri-sync-feedback" style="display:none; margin-top:10px; font-size:12.5px; color:#15803d; font-weight:800; background:#dcfce7; padding:8px 12px; border-radius:8px; border:1px solid #86efac;"></div>
+
+                            <!-- ACCESSI RAPIDI (I PIÙ FREQUENTI / RECENTI) -->
+                            <div id="suite-quick-chips-row" style="display:flex; align-items:center; gap:6px; margin-top:8px; overflow-x:auto; padding-bottom:2px; font-size:11.5px; color:#64748b;">
+                                <span style="font-weight:700; color:#475569; white-space:nowrap;">Rapidi:</span>
+                                <div id="suite-patients-chips-container" style="display:inline-flex; gap:6px; flex-wrap:wrap;"></div>
+                            </div>
+
+                            <div id="mednutri-sync-feedback" style="display:none; margin-top:8px; font-size:12.5px; color:#15803d; font-weight:800; background:#dcfce7; padding:7px 12px; border-radius:8px; border:1px solid #86efac;"></div>
                         </div>
 
                         <div class="input-group" style="grid-column: span 2;">
@@ -777,6 +799,6 @@
   </button>
 </nav>
 
-  <script src="suite_bridge.js?v=1793709034243"></script>
+  <script src="suite_bridge.js?v=1793709547219"></script>
 </body>
 </html>
