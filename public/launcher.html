@@ -805,7 +805,46 @@
   
     
         .card.search-hidden { display: none !important; }
-    </style>
+    
+  /* ==========================================================================
+     EFFETTO APPARIZIONE AFFASCINANTE A CASCATA (PREMIUM STAGGERED REVEAL)
+     ========================================================================== */
+  @keyframes heroFadeIn {
+    0% { opacity: 0; transform: translateY(-12px); filter: blur(4px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  @keyframes cardCascadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(18px) scale(0.96);
+      filter: blur(6px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  header {
+    animation: heroFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  }
+
+  .kpi-dashboard, #smartNotificationsBanner {
+    animation: heroFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both !important;
+  }
+
+  .card.segugio-card {
+    opacity: 0;
+    animation: cardCascadeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  }
+
+  .command-dock-wrapper {
+    animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both !important;
+  }
+  
+</style>
 <style>
 /* #btnLogistica visibile */
 @media (min-width: 769px) { #btnLogistica { display: flex !important; } }
