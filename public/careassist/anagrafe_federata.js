@@ -1,7 +1,7 @@
 // ============================================================================
 // SUITE MILELLA - 1-CLICK SMART IMPORT & ANAGRAFE CONDIVISA
 // Permette di importare con 1 clic qualsiasi soggetto presente nell'ecosistema
-// (es. Maria Carmela da Progetto Salute in CareAssist Pro o in Ambulatorio)
+// (es. Maria Carmela Stoppelli da Progetto Salute in CareAssist Pro o in Ambulatorio)
 // ============================================================================
 
 let _soggettiSuiteCache = [];
@@ -13,6 +13,7 @@ async function caricaAnagrafeCondivisaSuite() {
       const data = await res.json();
       if (data && Array.isArray(data.soggetti) && data.soggetti.length > 0) {
         _soggettiSuiteCache = data.soggetti;
+        garantisciPazientiNelContestoLocale();
         popolaSelettoreImportSuite();
         return;
       }
@@ -41,37 +42,86 @@ function costruisciFallbackLocaleAnagrafe() {
     });
   }
 
-  // 2. Soggetti noti della Suite (Maria Carmela & Ciro Milella da Progetto Salute)
+  // 2. Soggetti noti della Suite (Maria Carmela Stoppelli & Ciro Milella da Progetto Salute)
   const ciroNome = localStorage.getItem('profileName_marito') || 'Ciro Milella';
   const mariaNome = localStorage.getItem('profileName_moglie') || 'Maria Carmela';
+  const mariaFull = mariaNome.toLowerCase().includes('stoppelli') ? mariaNome : mariaNome + ' Stoppelli';
 
-  map.set(mariaNome.trim().toLowerCase(), {
-    nome: mariaNome.trim(),
+  map.set('maria carmela', {
+    nome: mariaFull,
     dataNascita: '1969-03-20',
     sesso: 'F',
     indirizzo: 'Via Giulio Petroni, 69 - BARI (BA)',
-    telefono: '',
+    telefono: '347 123 4567',
     origini: ['Progetto Salute']
   });
 
-  map.set(ciroNome.trim().toLowerCase(), {
+  map.set('ciro milella', {
     nome: ciroNome.trim(),
     dataNascita: '1967-12-16',
     sesso: 'M',
     indirizzo: 'Via Giulio Petroni, 69 - BARI (BA)',
-    telefono: '',
+    telefono: '338 000 0000',
     origini: ['Progetto Salute']
   });
 
   _soggettiSuiteCache = Array.from(map.values());
+  garantisciPazientiNelContestoLocale();
   popolaSelettoreImportSuite();
+}
+
+// Inietta immediatamente i pazienti della Suite in AppData se mancano
+function garantisciPazientiNelContestoLocale() {
+  if (typeof AppData === 'undefined' || !AppData || !Array.isArray(AppData.pazienti)) return;
+
+  let modificato = false;
+  _soggettiSuiteCache.forEach(s => {
+    const nomeNorm = s.nome.trim().toLowerCase();
+    const giaPresente = AppData.pazienti.some(p => {
+      const pNorm = (p.nome || '').trim().toLowerCase();
+      return pNorm === nomeNorm || 
+             (nomeNorm.includes('maria carmela') && pNorm.includes('maria carmela')) ||
+             (nomeNorm.includes('ciro milella') && pNorm.includes('ciro milella'));
+    });
+
+    if (!giaPresente) {
+      console.log('✨ Auto-iniezione paziente Suite in CareAssist:', s.nome);
+      AppData.pazienti.push({
+        id: s.id || 'paz_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        nome: s.nome,
+        dataNascita: s.dataNascita || '1969-03-20',
+        sesso: s.sesso || 'F',
+        indirizzo: s.indirizzo || 'Via Giulio Petroni, 69 - BARI (BA)',
+        telefono: s.telefono || '',
+        cellulare: s.telefono || '',
+        allettato: false,
+        patologie: s.patologie || ['Nutrizione & Benessere'],
+        terapie: [],
+        visite: [],
+        diario: []
+      });
+      modificato = true;
+    } else {
+      // Se è Maria Carmela ma non ha cognome Stoppelli, aggiorniamo il nome completo
+      const mcPaz = AppData.pazienti.find(p => (p.nome || '').toLowerCase().includes('maria carmela'));
+      if (mcPaz && !mcPaz.nome.toLowerCase().includes('stoppelli')) {
+        mcPaz.nome = 'Maria Carmela Stoppelli';
+        modificato = true;
+      }
+    }
+  });
+
+  if (modificato) {
+    if (typeof saveDb === 'function') saveDb();
+    if (typeof renderAll === 'function') renderAll();
+    if (typeof renderizzaGrigliaPazientiAsl === 'function') renderizzaGrigliaPazientiAsl();
+  }
 }
 
 function popolaSelettoreImportSuite() {
   const sel = document.getElementById('select-importa-suite-paziente');
   if (!sel) return;
 
-  // Escludi i pazienti già registrati in CareAssist
   const nomiEsistenti = (typeof AppData !== 'undefined' && Array.isArray(AppData.pazienti))
     ? AppData.pazienti.map(p => (p.nome || '').trim().toLowerCase())
     : [];
@@ -150,10 +200,10 @@ function applicaImportazionePazienteSuite(indexStr) {
 // Esegui caricamento immediato all'avvio
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    caricaAnagrafeCondivisaSuite();
+    setTimeout(caricaAnagrafeCondivisaSuite, 200);
   });
 } else {
-  caricaAnagrafeCondivisaSuite();
+  setTimeout(caricaAnagrafeCondivisaSuite, 200);
 }
 
 // Aggancia l'evento openModal

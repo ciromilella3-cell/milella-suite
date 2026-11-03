@@ -1467,6 +1467,9 @@ app.get('/api/get-db', async (req, res) => {
         if (data === null) {
             data = fs.existsSync(careAssistDbFile) ? JSON.parse(fs.readFileSync(careAssistDbFile, 'utf8') || '{}') : {};
         }
+        if (data && typeof data === 'object') {
+            sincronizzaPazientiInCareAssist(data);
+        }
         res.json(data);
     } catch(e) {
         res.status(500).json({ error: e.message });
