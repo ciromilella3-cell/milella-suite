@@ -1,0 +1,119 @@
+// ============================================================================
+// SUITE MILELLA - MEDNUTRI PRO (AMBULATORIO MEDICO) ECOSYSTEM BRIDGE
+// Riceve e sincronizza in tempo reale il paziente attivo dalla Suite
+// ============================================================================
+(function() {
+  function getQueryParam(name) {
+    try {
+      const u = new URLSearchParams(window.location.search);
+      return u.get(name);
+    } catch(e) { return null; }
+  }
+
+  function formatItalianDateToInput(dateStr) {
+    if (!dateStr) return '';
+    if (dateStr.includes('-')) return dateStr;
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+      return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    }
+    return '';
+  }
+
+  function caricaPazienteDaSuite() {
+    const paramPaziente = getQueryParam('patient') || getQueryParam('paziente');
+    const storedPaziente = localStorage.getItem('milella_active_patient_name');
+    const targetNome = paramPaziente ? decodeURIComponent(paramPaziente).trim() : (storedPaziente ? storedPaziente.trim() : null);
+
+    if (!targetNome) return;
+
+    console.log('🩺 Sincronizzazione Ambulatorio Medico con paziente:', targetNome);
+
+    // Controlla se il paziente esiste nell'archivio locale di MedNutri
+    const key = 'mednutri_pat_' + targetNome.toLowerCase();
+    const data = localStorage.getItem(key);
+
+    const nameInput = document.getElementById('patient-name');
+    if (!nameInput) {
+      setTimeout(caricaPazienteDaSuite, 150);
+      return;
+    }
+
+    if (data) {
+      try {
+        const p = JSON.parse(data);
+        if (typeof loadPatient === 'function') {
+          loadPatient(targetNome);
+          mostraBannerPazienteSincronizzato(p.name);
+          return;
+        }
+      } catch(e) {}
+    }
+
+    // Se non presente nell'archivio interno di MedNutri, precompiliamo con i dati passati dalla Suite
+    nameInput.value = targetNome;
+    
+    // Aggiorna anche sesso e data se disponibili nella memoria condivisa Suite
+    const storedDob = localStorage.getItem('milella_active_patient_dob');
+    const storedGender = localStorage.getItem('milella_active_patient_gender');
+    
+    if (storedDob && document.getElementById('patient-dob')) {
+      const fmtDob = formatItalianDateToInput(storedDob);
+      if (fmtDob) document.getElementById('patient-dob').value = fmtDob;
+    }
+    if (storedGender && document.getElementById('patient-gender')) {
+      const gVal = (storedGender.toUpperCase().startsWith('F') || storedGender.toLowerCase() === 'donna') ? 'F' : 'M';
+      document.getElementById('patient-gender').value = gVal;
+    }
+
+    if (typeof calculateBMI === 'function') calculateBMI();
+    mostraBannerPazienteSincronizzato(targetNome);
+  }
+
+  function mostraBannerPazienteSincronizzato(nome) {
+    let banner = document.getElementById('suite-patient-synced-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'suite-patient-synced-banner';
+      banner.style.cssText = 'position:fixed; top:16px; right:16px; background:linear-gradient(135deg, #0284c7, #0369a1); color:#ffffff; padding:10px 18px; border-radius:14px; font-size:13px; font-weight:700; box-shadow:0 8px 24px rgba(2,132,199,0.35); z-index:999999; display:flex; align-items:center; gap:8px; border:1px solid rgba(255,255,255,0.3); animation:fadeIn 0.3s ease;';
+      document.body.appendChild(banner);
+    }
+    banner.innerHTML = `<span>👥 Cartella Sincronizzata: <b>${nome}</b></span> <span onclick="this.parentElement.remove()" style="cursor:pointer; font-size:16px; margin-left:6px;">✕</span>`;
+    setTimeout(() => { if (banner && banner.parentElement) banner.remove(); }, 5000);
+  }
+
+  // Notifica la Suite al cambio/salvataggio paziente in MedNutri
+  function attivaAscoltoInput() {
+    const nameInput = document.getElementById('patient-name');
+    if (nameInput) {
+      nameInput.addEventListener('change', function() {
+        if (this.value && this.value.trim().length > 2) {
+          localStorage.setItem('milella_active_patient_name', this.value.trim());
+        }
+      });
+    }
+  }
+
+  // Navigazione rapida cross-app da MedNutri
+  window.navigaDaMedNutriACareAssist = function() {
+    const nome = (document.getElementById('patient-name') || {}).value || localStorage.getItem('milella_active_patient_name') || '';
+    if (nome) localStorage.setItem('milella_active_patient_name', nome);
+    window.location.href = '/careassist/?patient=' + encodeURIComponent(nome);
+  };
+
+  window.navigaDaMedNutriASalute = function() {
+    const nome = (document.getElementById('patient-name') || {}).value || localStorage.getItem('milella_active_patient_name') || '';
+    if (nome) localStorage.setItem('milella_active_patient_name', nome);
+    window.location.href = '/salute/?profile=' + encodeURIComponent(nome);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(caricaPazienteDaSuite, 200);
+      setTimeout(attivaAscoltoInput, 300);
+    });
+  } else {
+    setTimeout(caricaPazienteDaSuite, 200);
+    setTimeout(attivaAscoltoInput, 300);
+  }
+})();

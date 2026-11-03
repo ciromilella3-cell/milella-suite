@@ -2566,6 +2566,13 @@ function renderPazientiSelector() {
             <button id="btn-report-whatsapp" class="btn-hero-action btn-hero-wa" onclick="apriModalReportWhatsApp()" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
               <span>💬</span> <span>Report WA</span>
             </button>
+            <!-- TRIADE SANITARIA BRIDGES HERO -->
+            <button type="button" class="btn-hero-action btn-hero-med" onclick="navigaAdAmbulatorio()" title="Apri Ambulatorio Medico & Nutrizione Clinica per questo Assistito" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:1px solid rgba(255,255,255,0.4);">
+              <span>🩺</span> <span>Ambulatorio</span>
+            </button>
+            <button type="button" class="btn-hero-action btn-hero-salute" onclick="navigaAProgettoSalute()" title="Apri Progetto Salute & Dieta per questo Assistito" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:1px solid rgba(255,255,255,0.4);">
+              <span>🥗</span> <span>Salute</span>
+            </button>
             <button class="btn-hero-action btn-hero-edit" onclick="apriModificaAnagrafica()" title="Modifica dati anagrafici e clinici dell'assistito">
               <span>✏️</span> <span>Modifica</span>
             </button>
