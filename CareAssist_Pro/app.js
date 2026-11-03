@@ -920,6 +920,34 @@ function getTerapieRosaFoto() {
   ];
 }
 
+
+function getPazienteMariaCarmelaInit() {
+  const mc = createPazienteTemplate('paz_mariacarmela', 'Maria Carmela Stoppelli', '1969-03-20', 'Paziente assistita a domicilio • Follow-up Benessere & Nutrizione.');
+  mc.eta = calcolaAnniDaData('1969-03-20');
+  mc.sesso = 'F';
+  mc.indirizzo = 'Via Giulio Petroni, 69 - BARI (BA)';
+  mc.telefonoFisso = '080 542 80 61';
+  mc.cellulare = '338 739 76 71';
+  mc.maritoNome = 'Ciro Milella';
+  mc.maritoCellulare = '366 460 73 96';
+  mc.medico = 'Dott. Curante';
+  mc.medicoNome = 'Dott. Curante';
+  mc.farmaciaDiRiferimento = 'Farmacia Dott. MACARIO';
+  mc.farmaciaIndirizzo = 'Via G. Petroni, 69/b - Bari';
+  mc.allettato = false;
+  mc.catetere = false;
+  mc.patologie = [
+    'Piano Nutrizionale & Benessere Domiciliare (Progetto Salute)',
+    'Monitoraggio Pressione Arteriosa & Peso Corporeo'
+  ];
+  mc.ausili = [];
+  mc.terapie = [];
+  mc.visite = [];
+  mc.diario = [];
+  mc.origini = ['Progetto Salute', 'CareAssist Pro'];
+  return mc;
+}
+
 function getPazienteCiroInit() {
   const ciro = createPazienteTemplate('paz_1793216119572', 'Ciro Milella', '1967-12-15', 'Paziente assistito a domicilio.');
   ciro.eta = calcolaAnniDaData('1967-12-15');
@@ -972,7 +1000,8 @@ const defaultState = {
     getPazienteAldoInit(),
     getPazienteAngelaInit(),
     getPazienteRosaInit(),
-    getPazienteCiroInit()
+    getPazienteCiroInit(),
+    getPazienteMariaCarmelaInit()
   ]
 };
 
