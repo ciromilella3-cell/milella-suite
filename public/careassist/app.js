@@ -6449,11 +6449,15 @@ async function eliminaAnnotazioniSelezionate(scope) {
 
   if (ok) {
     const daArchiviare = (p.registrazioni || []).filter(r => idsToDelete.has(String(r.id)));
-    if (daArchiviare.length) cestinoAggiungi('annotazione', daArchiviare.length + ' annotazion' + (daArchiviare.length === 1 ? 'e' : 'i') + ' del diario', (daArchiviare[0].desc || daArchiviare[0].tipo || '').toString().slice(0, 110), daArchiviare, p);
+    if (daArchiviare.length && typeof cestinoAggiungi === 'function') {
+      cestinoAggiungi('annotazione', daArchiviare.length + ' annotazion' + (daArchiviare.length === 1 ? 'e' : 'i') + ' del diario', (daArchiviare[0].desc || daArchiviare[0].tipo || '').toString().slice(0, 110), daArchiviare, p);
+    }
     p.registrazioni = (p.registrazioni || []).filter(r => !idsToDelete.has(String(r.id)));
     saveDb();
     renderDiario();
-    showToast(`${count} annotazion${count === 1 ? 'e spostata' : 'i spostate'} nel Cestino.`);
+    if (typeof showToast === 'function') {
+      showToast(`${count} annotazion${count === 1 ? 'e eliminata' : 'i eliminate'} con successo! 🗑️`);
+    }
   }
 }
 
@@ -6582,7 +6586,7 @@ function renderDiario() {
         <td><span class="badge ${badge}">${icon} ${r.tipo.toUpperCase()}</span></td>
         <td>${desc}</td>
         <td><small>${r.operatore || 'Caregiver'}</small></td>
-        <td style="text-align:center;"><button class="btn btn-outline" style="padding:2px 6px; font-size:10px; border-radius:4px;" onclick="eliminaLog('${r.id}')" title="Elimina singola riga">✕</button></td>
+        <td style="text-align:center;"><button class="btn-delete-row-diario" onclick="eliminaLog('${r.id}')" title="Elimina questa annotazione">✕</button></td>
       </tr>
     `;
   }).join('');
@@ -6612,11 +6616,13 @@ async function eliminaLog(id) {
 
   if (ok) {
     const rec = (p.registrazioni || []).find(r => String(r.id) === String(id));
-    if (rec) cestinoAggiungi('annotazione', 'Annotazione del diario', (rec.desc || rec.tipo || '').toString().slice(0, 140), [rec], p);
+    if (rec && typeof cestinoAggiungi === 'function') {
+      cestinoAggiungi('annotazione', 'Annotazione del diario', (rec.desc || rec.tipo || '').toString().slice(0, 140), [rec], p);
+    }
     p.registrazioni = (p.registrazioni || []).filter(r => String(r.id) !== String(id));
     saveDb();
     renderDiario();
-    showToast('Annotazione spostata nel Cestino. 🗑️');
+    if (typeof showToast === 'function') showToast('Annotazione spostata nel Cestino. 🗑️');
   }
 }
 window.eliminaLog = eliminaLog;
