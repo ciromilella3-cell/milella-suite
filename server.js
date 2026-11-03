@@ -642,6 +642,21 @@ app.get('/launcher.html', (req, res) => {
     res.status(404).send('launcher.html non trovato');
 });
 
+// ROUTE DIRETTE ANTI-CACHE PER MEDNUTRI (AMBULATORIO) E CAREASSIST
+app.get(['/mednutri', '/mednutri/', '/mednutri/index.html'], (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    const f = path.join(__dirname, 'public', 'mednutri', 'index.html');
+    if (fs.existsSync(f)) return res.sendFile(f);
+    res.status(404).send('MedNutri index non trovato');
+});
+
+app.get(['/careassist', '/careassist/', '/careassist/index.html'], (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    const f = path.join(__dirname, 'public', 'careassist', 'index.html');
+    if (fs.existsSync(f)) return res.sendFile(f);
+    res.status(404).send('CareAssist index non trovato');
+});
+
 // LINK BREVI PER ACCESSO ISTANTANEO DA QUALSIASI DISPOSITIVO ESTERNO (FACILI DA RICORDARE)
 app.get(['/turni', '/roster', '/turnario'], (req, res) => {
     res.redirect('/careassist/turni.html');
