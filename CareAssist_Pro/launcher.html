@@ -4160,13 +4160,7 @@
 
     // Considera la sessione sbloccata SOLO se esplicitamente attiva e NON bloccata
     const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || sessionStorage.getItem('milella_lock_requested') === 'true';
-    const isSessionUnlocked = !isExplicitlyLocked && (
-        sessionStorage.getItem('milella_session_unlocked') === 'true' ||
-        localStorage.getItem('milella_session_unlocked') === 'true' ||
-        savedLastRole === 'admin' ||
-        window.location.search.includes('from=turni') ||
-        window.location.search.includes('auth_role=admin')
-    );
+    const isSessionUnlocked = !isExplicitlyLocked && (sessionStorage.getItem('milella_session_unlocked') === 'true');
 
     if (isSessionUnlocked && savedLastRole === 'admin') {
         // ACCESSO DIRETTO ADMIN COORDINATORE (NESSUN GATE BLOCCANTE)
@@ -4801,6 +4795,31 @@
   </div>
 </div>
 
+<script>
+(function() {
+  function bloccaSessioneImmediata() {
+    try {
+      sessionStorage.removeItem('milella_session_unlocked');
+      sessionStorage.setItem('milella_app_locked', 'true');
+      localStorage.removeItem('milella_session_unlocked');
+      const gate = document.getElementById('gateBloccoIngresso');
+      if (gate) {
+        gate.style.display = 'flex';
+        const pinIn = document.getElementById('inputPinGate');
+        if (pinIn) pinIn.value = '';
+      }
+    } catch(e) {}
+  }
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') {
+      bloccaSessioneImmediata();
+    }
+  });
+  window.addEventListener('pagehide', function() {
+    bloccaSessioneImmediata();
+  });
+})();
+</script>
 </body>
 </html>
 
