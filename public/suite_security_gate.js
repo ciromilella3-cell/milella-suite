@@ -228,12 +228,16 @@
     }
 
     function checkGateState() {
-        // Verifica immediata sincrona prima di qualsiasi rendering per evitare flicker
         const SESSION_KEY = 'milella_session_unlocked';
+        const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || localStorage.getItem('milella_app_locked') === 'true';
         const hasSession = sessionStorage.getItem(SESSION_KEY) === 'true' || localStorage.getItem(SESSION_KEY) === 'true';
-        if (hasSession) {
+        const unlockTime = parseInt(localStorage.getItem('milella_session_unlocked_time') || '0', 10);
+        const isExpired = unlockTime > 0 && (Date.now() - unlockTime > 12 * 60 * 60 * 1000);
+
+        if (!isExplicitlyLocked && hasSession && !isExpired) {
             const overlay = document.getElementById('suiteSecurityGateOverlay');
             if (overlay) overlay.style.display = 'none';
+            document.body.classList.remove('modal-open');
             return;
         }
         // 1. Se la sessione è già sbloccata nel tab corrente (sessionStorage)

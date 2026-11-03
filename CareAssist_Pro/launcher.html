@@ -858,8 +858,11 @@
 <script>
     (function(){
       try {
-        var isLocked = sessionStorage.getItem('milella_app_locked') === 'true';
-        var unlocked = !isLocked && (sessionStorage.getItem('milella_session_unlocked') === 'true');
+        var isLocked = sessionStorage.getItem('milella_app_locked') === 'true' || localStorage.getItem('milella_app_locked') === 'true';
+        var hasUnlocked = (sessionStorage.getItem('milella_session_unlocked') === 'true' || localStorage.getItem('milella_session_unlocked') === 'true');
+        var unlockTime = parseInt(localStorage.getItem('milella_session_unlocked_time') || '0', 10);
+        var isExpired = unlockTime > 0 && (Date.now() - unlockTime > 12 * 60 * 60 * 1000);
+        var unlocked = !isLocked && hasUnlocked && !isExpired;
         if (unlocked) {
           document.documentElement.classList.add('suite-already-unlocked');
         } else {
@@ -2668,9 +2671,10 @@
     }
 
     function esciAdmin() {
-        // BLOCCO SESSIONE RIGIDO E IMMEDIATO
+        // BLOCCO SESSIONE ESPLICITO SU TUTTE LE APP
         sessionStorage.clear();
         sessionStorage.setItem('milella_app_locked', 'true');
+        localStorage.setItem('milella_app_locked', 'true');
         sessionStorage.removeItem('milella_session_unlocked');
         sessionStorage.removeItem('salute_session_unlocked');
         sessionStorage.removeItem('isLogged');
@@ -2683,10 +2687,8 @@
         currentAdminPin = '';
         currentAppAbilitate = [];
 
-        // Rimuove classe CSS sbloccata
         document.documentElement.classList.remove('suite-already-unlocked');
 
-        // Mostra il Gate di Benvenuto & Blocco PIN
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) {
             gate.style.transition = 'none';
@@ -2702,10 +2704,8 @@
             if (err) err.style.display = 'none';
         }
 
-        // Reimposta ruolo neutro
         applicaRuolo('operatore', null, ['all']);
 
-        // Chiudi tutti i modali secondari
         const modLogin = document.getElementById('modalLoginOperatore');
         if (modLogin) modLogin.style.display = 'none';
         const modAdmin = document.getElementById('modalAdminLogin');
@@ -4169,22 +4169,28 @@
     } catch(e) { savedApps = ['all']; }
 
     // Considera la sessione sbloccata SOLO se esplicitamente attiva e NON bloccata
-    localStorage.removeItem('milella_session_unlocked');
-    const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || sessionStorage.getItem('milella_lock_requested') === 'true';
-    const isSessionUnlocked = !isExplicitlyLocked && (sessionStorage.getItem('milella_session_unlocked') === 'true');
+    const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || localStorage.getItem('milella_app_locked') === 'true';
+    const hasUnlocked = sessionStorage.getItem('milella_session_unlocked') === 'true' || localStorage.getItem('milella_session_unlocked') === 'true';
+    const unlockTime = parseInt(localStorage.getItem('milella_session_unlocked_time') || '0', 10);
+    const isExpired = unlockTime > 0 && (Date.now() - unlockTime > 12 * 60 * 60 * 1000);
+    const isSessionUnlocked = !isExplicitlyLocked && hasUnlocked && !isExpired;
 
     if (isSessionUnlocked && savedLastRole === 'admin') {
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
+        document.documentElement.classList.add('suite-already-unlocked');
         currentAdminPin = savedAdminPin || 'SOS999';
+        localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
         applicaRuolo('admin', savedUserNome || 'Ciro Milella (Admin)', ['all']);
-    } else if (isSessionUnlocked && savedUserNome && savedLastRole === 'operatore') {
+    } else if (isSessionUnlocked && savedUserNome && (savedLastRole === 'operatore' || savedLastRole === 'admin')) {
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
+        document.documentElement.classList.add('suite-already-unlocked');
         currentAppAbilitate = savedApps;
-        applicaRuolo('operatore', savedUserNome, savedApps);
+        localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
+        applicaRuolo(savedLastRole, savedUserNome, savedApps);
     } else {
-        // NESSUNA SESSIONE (Avvio iniziale, riapertura app o blocco esplicito): Richiedi PIN
+        // NESSUNA SESSIONE (Primo accesso, sessione scaduta o blocco esplicito): Richiedi PIN
         document.documentElement.classList.remove('suite-already-unlocked');
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) {
@@ -4787,31 +4793,7 @@
   </div>
 </div>
 
-<script>
-(function() {
-  function bloccaSessioneImmediata() {
-    try {
-      sessionStorage.removeItem('milella_session_unlocked');
-      sessionStorage.setItem('milella_app_locked', 'true');
-      localStorage.removeItem('milella_session_unlocked');
-      const gate = document.getElementById('gateBloccoIngresso');
-      if (gate) {
-        gate.style.display = 'flex';
-        const pinIn = document.getElementById('inputPinGate');
-        if (pinIn) pinIn.value = '';
-      }
-    } catch(e) {}
-  }
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'hidden') {
-      bloccaSessioneImmediata();
-    }
-  });
-  window.addEventListener('pagehide', function() {
-    bloccaSessioneImmediata();
-  });
-})();
-</script>
+
 </body>
 </html>
 
