@@ -1052,7 +1052,7 @@ function loadProgetti() {
         }
         if (!Array.isArray(projs) || projs.length === 0) {
             projs = [
-                { id: "app_logistica", titolo: "Logistica Consegne", icona: "📦", url: "/veicoli/dashboard.html", descrizione: "Gestione completa spedizioni, tracciamento consegne e magazzino aziendale.", visibilita: "admin", attivo: true },
+                { id: "app_logistica", titolo: "Logistica Consegne", icona: "📦", url: "/logistica/", descrizione: "Gestione completa spedizioni, tracciamento consegne e ausili sanitari.", visibilita: "admin", attivo: true },
                 { id: "app_veicoli", titolo: "Flotta Veicoli & Spese", icona: "🚗", url: "/veicoli_mobile/", descrizione: "Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.", visibilita: "tutti", attivo: true },
                 { id: "app_inventario", titolo: "Inventario Attrezzi", icona: "🛠️", url: "/inventario.html", descrizione: "Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.", visibilita: "tutti", attivo: true },
                 { id: "app_ricettario", titolo: "Il Ricettario", icona: "👨‍🍳", url: "/ricettario/", descrizione: "L'archivio prezioso delle tue ricette personali con lista della spesa automatica.", visibilita: "tutti", attivo: true },
@@ -1573,6 +1573,41 @@ const saluteDbPath = path.join(__dirname, 'data', 'salute_db.json');
 // API SINCRONIZZAZIONE FLOTTA VEICOLI MOBILE (DATI REALI CLOUD & LOCALSTORAGE SYNC)
 // ==============================================================================
 const veicoliCloudDbPath = path.join(__dirname, 'data', 'veicoli_cloud_db.json');
+const consegneDbPath = path.join(__dirname, 'data', 'consegne_db.json');
+
+app.get(['/api/logistica/consegne', '/logistica/api/consegne'], async (req, res) => {
+    try {
+        let cloudData = await cloudGet('logistica_consegne', null);
+        if (cloudData) return res.json(cloudData);
+        if (fs.existsSync(consegneDbPath)) {
+            const dataStr = fs.readFileSync(consegneDbPath, 'utf8');
+            return res.json(JSON.parse(dataStr || '{"consegne":[]}'));
+        }
+        res.json({ consegne: [] });
+    } catch(err) {
+        console.error('Errore get consegne data:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post(['/api/logistica/consegne', '/logistica/api/consegne'], async (req, res) => {
+    try {
+        if (!req.body || typeof req.body !== 'object') {
+            return res.status(400).json({ error: 'Body non valido' });
+        }
+        let current = { consegne: [] };
+        if (fs.existsSync(consegneDbPath)) {
+            try { current = JSON.parse(fs.readFileSync(consegneDbPath, 'utf8')); } catch(e){}
+        }
+        const updated = Object.assign({}, current, req.body);
+        safeWriteAtomic(consegneDbPath, JSON.stringify(updated, null, 2));
+        await cloudSet('logistica_consegne', updated, consegneDbPath);
+        res.json({ success: true, timestamp: Date.now() });
+    } catch(err) {
+        console.error('Errore save consegne data:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
 app.get(['/api/veicoli/data', '/veicoli_mobile/api/data'], async (req, res) => {
     try {

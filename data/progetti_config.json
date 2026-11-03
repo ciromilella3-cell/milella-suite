@@ -3,8 +3,8 @@
     "id": "app_logistica",
     "titolo": "Logistica Consegne",
     "icona": "📦",
-    "url": "/veicoli/dashboard.html",
-    "descrizione": "Gestione completa spedizioni, tracciamento consegne e magazzino principale.",
+    "url": "/logistica/",
+    "descrizione": "Gestione completa spedizioni, tracciamento consegne e ausili sanitari.",
     "visibilita": "admin",
     "attivo": true
   },
