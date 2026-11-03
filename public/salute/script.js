@@ -980,7 +980,7 @@ const foodAlternativesDb = {
         emoji: "🌿",
         items: [
             {
-                pattern: /fritt(?:ata|o|e|i)?/i,
+                pattern: /\bfritt(?:ata|o|e|i)?\b/i,
                 keyword: 'frittata / fritti',
                 explain: "I grassi cotti e le fritture sovraccaricano le cellule epatiche e stimolano l'accumulo di trigliceridi nel fegato.",
                 replaceRegex: /(?:\d+\s+uova\s+in\s+)?fritt(?:ata|o|e|i)?(?:\s+al\s+forno|\s+in\s+padella)?/i,
@@ -1212,6 +1212,7 @@ function findBadFoodInText(text, pathologyKey) {
     if (patObj.bad && patObj.bad.length > 0) {
         for (let b of patObj.bad) {
             if ((b === 'dolce' || b === 'dolci') && lowText.includes('patate dolci')) continue;
+            if ((b === 'fritto' || b === 'fritti' || b === 'frittura') && lowText.includes('soffritto')) continue;
             if (lowText.includes(b)) {
                 // Trova la parola corrispondente nel testo originale
                 let regex = new RegExp('(\\b\\w*' + escapeRegexString(b) + '\\w*\\b)', 'i');

@@ -2317,3 +2317,37 @@ body.dark-mode .proc-step-row {
 
 
 
+
+
+/* ==========================================================================
+   MARGINE DI SICUREZZA ANTI-SOVRAPPOSIZIONE PER BARRA FLOTTANTE & RIGHE ALTERNATE
+   ========================================================================== */
+body {
+  padding-bottom: 100px !important;
+}
+
+.app-container, .main-container, .dashboard {
+  padding-bottom: 50px !important;
+}
+
+/* Stile righe alternate per la tabella settimanale dieta */
+.weekly-table tbody tr:nth-child(odd) td {
+  background-color: #ffffff;
+}
+
+.weekly-table tbody tr:nth-child(even) td {
+  background-color: #f8fafc;
+}
+
+/* Evidenziazione colonna giorno */
+.weekly-table td.day-cell {
+  font-weight: 800 !important;
+  color: #1e3a8a !important;
+  background-color: #f1f5f9 !important;
+}
+
+/* Hover interattivo per seguire facilmente la riga del giorno */
+.weekly-table tbody tr:hover td {
+  background-color: #e0f2fe !important;
+  transition: background-color 0.15s ease-in-out;
+}
