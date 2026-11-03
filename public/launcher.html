@@ -858,11 +858,12 @@
 <script>
     (function(){
       try {
-        var unlocked = sessionStorage.getItem('milella_session_unlocked') === 'true' || 
-                       localStorage.getItem('milella_session_unlocked') === 'true' ||
-                       localStorage.getItem('milella_role') === 'admin';
+        var isLocked = sessionStorage.getItem('milella_app_locked') === 'true';
+        var unlocked = !isLocked && (sessionStorage.getItem('milella_session_unlocked') === 'true');
         if (unlocked) {
           document.documentElement.classList.add('suite-already-unlocked');
+        } else {
+          document.documentElement.classList.remove('suite-already-unlocked');
         }
       } catch(e){}
     })();
@@ -1006,12 +1007,8 @@
                         ACCEDI AL SISTEMA (PIN) 🔓
                     </button>
 
-                    <!-- Tasto Impronta: disattivato/nascosto al primo accesso, si attiva SOLO dopo aver inserito il PIN la prima volta -->
-                    <button id="btnBiometriaGate" type="button" onclick="accediConImpronta()" style="display:none; width:100%; background:rgba(56,189,248,0.12); border:1.5px solid rgba(56,189,248,0.45); color:#7dd3fc; font-weight:800; font-size:13.5px; padding:12px; border-radius:14px; cursor:pointer; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 15px rgba(2,132,199,0.2); transition:all 0.2s;">
-                        <span style="font-size:20px;">👆</span> ACCEDI CON IMPRONTA / BIOMETRIA
-                    </button>
-                    <div id="hintPrimaVoltaPin" style="font-size:11.5px; color:#94a3b8; line-height:1.4; margin-top:2px;">
-                        ℹ️ <em>Al primo utilizzo inserisci il tuo PIN. L'accesso con impronta digitale si abiliterà automaticamente per i prossimi accessi.</em>
+                    <div style="font-size:11.5px; color:#94a3b8; line-height:1.4; margin-top:4px;">
+                        🔒 <em>Accesso rigorosamente protetto da PIN. Per bloccare la Suite in qualsiasi momento usa il tasto rosso 'Esci / Blocca'.</em>
                     </div>
                 </div>
 
@@ -1069,8 +1066,8 @@
                 <button id="btnSwitchRole" onclick="apriLoginModal()" style="display:none; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#f3e5ab; padding:6px 12px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
                     🔑 PIN
                 </button>
-                <button id="btnLogoutRole" onclick="esciAdmin()" style="display:none; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
-                    🔒 Esci
+                <button id="btnLogoutRole" onclick="esciAdmin()" title="Blocca la Suite e richiedi il PIN" style="display:inline-flex !important; align-items:center; gap:6px; background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); border:none; color:#ffffff; padding:7px 15px; border-radius:20px; font-size:12px; font-weight:800; cursor:pointer; box-shadow:0 3px 12px rgba(239,68,68,0.5); letter-spacing:0.3px; transition:transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                    🔒 Esci / Blocca
                 </button>
             </div>
         </div>
@@ -2244,7 +2241,7 @@
             if (btnProjects) btnProjects.style.display = 'none';
             const btnPres = document.getElementById('btnOpenPresentation');
             if (btnPres) btnPres.style.display = 'none';
-            btnLogout.style.display = nome ? 'inline-flex' : 'none';
+            btnLogout.style.display = 'inline-flex';
 
             adminCards.forEach(c => c.style.display = 'none');
             adminBtns.forEach(b => b.style.display = 'none');
@@ -2436,7 +2433,7 @@
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                     sessionStorage.setItem('milella_session_unlocked', 'true');
                     sessionStorage.setItem('salute_session_unlocked', 'true');
-                    localStorage.setItem('milella_session_unlocked', 'true');
+                    localStorage.removeItem('milella_session_unlocked');
                     localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
@@ -2455,14 +2452,14 @@
                     localStorage.setItem('milella_last_authenticated_pin', pin);
                     sessionStorage.setItem('milella_session_unlocked', 'true');
                     sessionStorage.setItem('salute_session_unlocked', 'true');
-                    localStorage.setItem('milella_session_unlocked', 'true');
+                    localStorage.removeItem('milella_session_unlocked');
                     localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
                     localStorage.setItem('milella_last_authenticated_can_edit', data.canEditTerapie ? 'true' : 'false');
                     applicaRuolo('operatore', data.nome, data.appAbilitate || []);
                 }
-                document.getElementById('gateBloccoIngresso').style.display = 'none';
+                sessionStorage.removeItem('milella_app_locked'); document.documentElement.classList.add('suite-already-unlocked'); document.getElementById('gateBloccoIngresso').style.display = 'none';
             } else {
                 err.textContent = data.message || 'Codice PIN non valido';
                 err.style.display = 'block';
@@ -2493,7 +2490,7 @@
         const procediConSbloccoBiometrico = () => {
             sessionStorage.setItem('milella_session_unlocked', 'true');
             sessionStorage.setItem('salute_session_unlocked', 'true');
-            localStorage.setItem('milella_session_unlocked', 'true');
+            localStorage.removeItem('milella_session_unlocked');
             localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
 
             if (savedLastRole === 'admin') {
@@ -2637,7 +2634,7 @@
             // Accesso consentito solo dopo verifica dell'impronta
             sessionStorage.setItem('milella_session_unlocked', 'true');
             sessionStorage.setItem('salute_session_unlocked', 'true');
-            localStorage.setItem('milella_session_unlocked', 'true');
+            localStorage.removeItem('milella_session_unlocked');
             localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
 
             if (savedLastRole === 'admin') {
@@ -2671,43 +2668,56 @@
     }
 
     function esciAdmin() {
-        // BLOCCO SESSIONE ASSOLUTO ANTI-FALLA SMARTPHONE
-        localStorage.removeItem('milella_admin_pin');
-        localStorage.removeItem('milella_app_abilitate');
-        localStorage.removeItem('milella_paz_abilitati');
-        localStorage.removeItem('milella_user_nome');
-        localStorage.removeItem('milella_user_pin');
-        localStorage.removeItem('milella_role');
-        localStorage.removeItem('milella_token');
-        localStorage.removeItem('milella_session_unlocked');
-        localStorage.removeItem('milella_session_unlocked_time');
-        localStorage.removeItem('milella_last_authenticated_pin');
-        // localStorage.setItem('milella_app_locked', 'true');
-        
+        // BLOCCO SESSIONE RIGIDO E IMMEDIATO
         sessionStorage.clear();
         sessionStorage.setItem('milella_app_locked', 'true');
-        
+        sessionStorage.removeItem('milella_session_unlocked');
+        sessionStorage.removeItem('salute_session_unlocked');
+        sessionStorage.removeItem('isLogged');
+
+        localStorage.removeItem('milella_session_unlocked');
+        localStorage.removeItem('milella_session_unlocked_time');
+        localStorage.removeItem('milella_admin_pin');
+        localStorage.removeItem('milella_token');
+
         currentAdminPin = '';
         currentAppAbilitate = [];
+
+        // Rimuove classe CSS sbloccata
+        document.documentElement.classList.remove('suite-already-unlocked');
+
+        // Mostra il Gate di Benvenuto & Blocco PIN
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) {
+            gate.style.transition = 'none';
+            gate.style.opacity = '1';
             gate.style.display = 'flex';
             const pinIn = document.getElementById('inputPinGate');
-            if (pinIn) { pinIn.value = ''; pinIn.type = 'password'; }
+            if (pinIn) {
+                pinIn.value = '';
+                pinIn.type = 'password';
+                try { pinIn.focus(); } catch(e){}
+            }
             const err = document.getElementById('gateErrorMsg');
             if (err) err.style.display = 'none';
-            aggiornaVisibilitaBiometriaGate();
         }
-        applicaRuolo('operatore', null, ['all']);
-        apriLoginModal();
 
-        // Protezione contro lo swipe/gesto "Indietro" su mobile
+        // Reimposta ruolo neutro
+        applicaRuolo('operatore', null, ['all']);
+
+        // Chiudi tutti i modali secondari
+        const modLogin = document.getElementById('modalLoginOperatore');
+        if (modLogin) modLogin.style.display = 'none';
+        const modAdmin = document.getElementById('modalAdminLogin');
+        if (modAdmin) modAdmin.style.display = 'none';
+        const modOps = document.getElementById('modalGestioneOperatori');
+        if (modOps) modOps.style.display = 'none';
+
         try {
             history.pushState(null, document.title, window.location.href);
         } catch(e) {}
     }
 
-    // GESTIONE OPERATORI (PANNELLO ADMIN)
     function apriGestioneOperatoriModal() {
         document.getElementById('modalGestioneOperatori').style.display = 'flex';
         caricaOperatori();
@@ -4159,47 +4169,28 @@
     } catch(e) { savedApps = ['all']; }
 
     // Considera la sessione sbloccata SOLO se esplicitamente attiva e NON bloccata
+    localStorage.removeItem('milella_session_unlocked');
     const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || sessionStorage.getItem('milella_lock_requested') === 'true';
     const isSessionUnlocked = !isExplicitlyLocked && (sessionStorage.getItem('milella_session_unlocked') === 'true');
 
     if (isSessionUnlocked && savedLastRole === 'admin') {
-        // ACCESSO DIRETTO ADMIN COORDINATORE (NESSUN GATE BLOCCANTE)
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
-        sessionStorage.setItem('milella_session_unlocked', 'true');
-        localStorage.setItem('milella_session_unlocked', 'true');
-        sessionStorage.removeItem('milella_app_locked');
         currentAdminPin = savedAdminPin || 'SOS999';
         applicaRuolo('admin', savedUserNome || 'Ciro Milella (Admin)', ['all']);
-    } else if (isSessionUnlocked && savedUserNome) {
-        // ACCESSO OPERATORE ABILITATO CON SESSIONE ATTIVA
+    } else if (isSessionUnlocked && savedUserNome && savedLastRole === 'operatore') {
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'none';
-        sessionStorage.setItem('milella_session_unlocked', 'true');
-        localStorage.setItem('milella_session_unlocked', 'true');
-        sessionStorage.removeItem('milella_app_locked');
         currentAppAbilitate = savedApps;
         applicaRuolo('operatore', savedUserNome, savedApps);
-        
-        if (savedUserPin) {
-            fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ codice: savedUserPin })
-            }).then(r => r.json()).then(data => {
-                if (data.success) {
-                    localStorage.setItem('milella_app_abilitate', JSON.stringify(data.appAbilitate || []));
-                    localStorage.setItem('milella_paz_abilitati', JSON.stringify(data.pazAbilitati || []));
-                    localStorage.setItem('milella_profili_salute', JSON.stringify(data.profiliSalute || []));
-                    localStorage.setItem('milella_can_edit_terapie', data.canEditTerapie ? 'true' : 'false');
-                }
-            }).catch(() => {});
-        }
     } else {
-        // NESSUNA SESSIONE (Primo accesso assoluto o blocco esplicito): Mostra il Gate di Benvenuto & Blocco PIN
+        // NESSUNA SESSIONE (Avvio iniziale, riapertura app o blocco esplicito): Richiedi PIN
+        document.documentElement.classList.remove('suite-already-unlocked');
         const gate = document.getElementById('gateBloccoIngresso');
-        if (gate) gate.style.display = 'flex';
-        aggiornaVisibilitaBiometriaGate();
+        if (gate) {
+            gate.style.display = 'flex';
+            gate.style.opacity = '1';
+        }
         applicaRuolo('operatore', null, ['all']);
     }
     caricaProgettiDinamici();
@@ -4211,6 +4202,7 @@
     // 1. SINGLE SIGN-ON (SSO) CENTRALIZZATO PER TUTTE LE 8 APP DELLA SUITE
     // ==============================================================================
     function navigaVersoApp(url) {
+        isNavigatingInternalApp = true;
         try { sessionStorage.setItem("isLogged", "true"); } catch(e){}
         if (!url) return;
         const token = localStorage.getItem('milella_session_token') || localStorage.getItem('milella_token') || sessionStorage.getItem('milella_token') || '';
