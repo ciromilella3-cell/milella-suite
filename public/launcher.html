@@ -1046,6 +1046,9 @@
                 <button id="btnOpenSmartNotifBar" onclick="apriNotificheSmartBanner()" title="Mostra Smart Hub Promemoria" style="display:none; background:rgba(234,88,12,0.18); border:1.5px solid rgba(249,115,22,0.5); color:#fdba74; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
                     <span>🔔</span> <span>Avvisi (<b id="topBarNotifCount">0</b>)</span>
                 </button>
+                <button id="btnAnagraficaPazientiSuite" onclick="apriAnagraficaCentraleModal()" style="display:inline-flex; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#ffffff; padding:6px 14px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.35);">
+                    👥 ANAGRAFICA PAZIENTI
+                </button>
                 <button id="btnManageOps" onclick="apriGestioneOperatoriModal()" style="display:none; background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
                     👥 OPERATORI
                 </button>
@@ -4761,6 +4764,74 @@
     }, 60000);
 
     </script>
+<!-- MODAL REGISTRO ANAGRAFICA CENTRALE PAZIENTI SUITE -->
+<div id="modal-anagrafica-centrale-suite" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(11,15,25,0.85); backdrop-filter:blur(14px); z-index:9999999; align-items:center; justify-content:center; padding:18px;">
+  <div style="background:#ffffff; width:100%; max-width:920px; max-height:90vh; border-radius:24px; box-shadow:0 25px 60px rgba(0,0,0,0.5); border:1.5px solid #cbd5e1; display:flex; flex-direction:column; overflow:hidden;">
+    
+    <!-- HEADER MODAL -->
+    <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#ffffff; padding:20px 24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1);">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:28px; background:linear-gradient(135deg, #0284c7, #0369a1); width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(2,132,199,0.35);">👥</span>
+        <div>
+          <h2 style="margin:0; font-size:1.25rem; font-weight:800; color:#ffffff; letter-spacing:-0.2px;">Anagrafica Centrale Pazienti &amp; Assistiti</h2>
+          <p style="margin:4px 0 0 0; font-size:0.82rem; color:#94a3b8;">Database Condiviso: CareAssist Pro • Ambulatorio Medico • Progetto Salute</p>
+        </div>
+      </div>
+      <button type="button" onclick="chiudiAnagraficaCentraleModal()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; width:36px; height:36px; border-radius:10px; cursor:pointer; font-size:18px;">✕</button>
+    </div>
+
+    <!-- BODY CONTENT -->
+    <div style="flex:1; overflow-y:auto; padding:24px; background:#f8fafc; display:flex; flex-direction:column; gap:20px;">
+      
+      <!-- FORM INSERIMENTO NUOVO PAZIENTE -->
+      <div style="background:#ffffff; border-radius:18px; padding:20px; border:1.5px solid #e2e8f0; box-shadow:0 4px 16px rgba(15,23,42,0.04);">
+        <h3 style="margin:0 0 14px 0; font-size:1.05rem; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">
+          <span>➕</span> <span>Inserisci Nuovo Paziente (Disponibile in Tutte le App)</span>
+        </h3>
+        
+        <form id="form-nuovo-paziente-centrale" onsubmit="salvaPazienteCentraleSuite(event)" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">Nome e Cognome *</label>
+            <input type="text" id="cp-nome" placeholder="Es. Mario Rossi" required style="width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid #cbd5e1; font-weight:700; font-size:14px; color:#0f172a;">
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">Data di Nascita *</label>
+            <input type="date" id="cp-dob" required style="width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid #cbd5e1; font-weight:700; font-size:14px; color:#0f172a;">
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">Sesso *</label>
+            <select id="cp-sesso" style="width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid #cbd5e1; font-weight:700; font-size:14px; color:#0f172a; background:#fff;">
+              <option value="M">👨 Uomo</option>
+              <option value="F">👩 Donna</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">Indirizzo Domicilio</label>
+            <input type="text" id="cp-indirizzo" placeholder="Es. Via Roma, 10 - Bari" style="width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid #cbd5e1; font-weight:600; font-size:14px; color:#0f172a;">
+          </div>
+          <div style="grid-column: 1 / -1; display:flex; justify-content:flex-end; gap:10px; margin-top:6px;">
+            <button type="submit" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; padding:11px 24px; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer; box-shadow:0 4px 14px rgba(2,132,199,0.35);">
+              💾 Salva nel Database Centrale Suite
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ELENCO PAZIENTI CENSITI CON JUMP RAPIDO VERSO LE APP -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h4 style="margin:0; font-size:0.95rem; font-weight:800; color:#334155;">Pazienti Attivi nel Database (<span id="cp-totale-count">0</span>)</h4>
+          <span style="font-size:12px; color:#0284c7; font-weight:700;">🔄 Sincronizzato in Tempo Reale</span>
+        </div>
+        <div id="cp-lista-pazienti" style="display:flex; flex-direction:column; gap:10px;">
+          <!-- Generato via JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 
