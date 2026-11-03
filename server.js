@@ -1043,16 +1043,17 @@ if (!fs.existsSync(progettiConfigPath) && fs.existsSync(path.join(__dirname, 'pr
 
 function loadProgetti() {
     try {
-        if (memoryCache.has("progetti")) return memoryCache.get("progetti");
         let projs = [];
-        if (fs.existsSync(progettiConfigPath)) {
+        if (memoryCache.has("progetti")) {
+            projs = memoryCache.get("progetti");
+        } else if (fs.existsSync(progettiConfigPath)) {
             try {
                 projs = JSON.parse(fs.readFileSync(progettiConfigPath, 'utf8'));
             } catch(e) {}
         }
         if (!Array.isArray(projs) || projs.length === 0) {
             projs = [
-                                { id: "app_veicoli", titolo: "Flotta Veicoli & Spese", icona: "🚗", url: "/veicoli_mobile/", descrizione: "Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.", visibilita: "tutti", attivo: true },
+                { id: "app_veicoli", titolo: "Flotta Veicoli & Spese", icona: "🚗", url: "/veicoli_mobile/", descrizione: "Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.", visibilita: "tutti", attivo: true },
                 { id: "app_inventario", titolo: "Inventario Attrezzi", icona: "🛠️", url: "/inventario.html", descrizione: "Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.", visibilita: "tutti", attivo: true },
                 { id: "app_ricettario", titolo: "Il Ricettario", icona: "👨‍🍳", url: "/ricettario/", descrizione: "L'archivio prezioso delle tue ricette personali con lista della spesa automatica.", visibilita: "tutti", attivo: true },
                 { id: "app_mednutri", titolo: "MedNutri Pro", icona: "🥗", url: "/mednutri/", descrizione: "Software avanzato per piani nutrizionali personalizzati e gestione clinica.", visibilita: "admin", attivo: true },
@@ -1061,19 +1062,11 @@ function loadProgetti() {
                 { id: "app_careassist", titolo: "CareAssist Pro", icona: "🩺", url: "/careassist/", descrizione: "Diario socio-sanitario, terapie farmacologiche e gestione assistenza domiciliare.", visibilita: "admin", attivo: true }
             ];
             try { fs.writeFileSync(progettiConfigPath, JSON.stringify(projs, null, 2), 'utf8'); } catch(e) {}
-        } else if (!projs.some(p => p.id === 'app_logistica')) {
-            projs.unshift({
-                id: "app_logistica",
-                titolo: "Logistica Consegne",
-                icona: "📦",
-                url: "/veicoli/dashboard.html",
-                descrizione: "Gestione completa spedizioni, tracciamento consegne e magazzino aziendale.",
-                visibilita: "admin",
-                attivo: true
-            });
-            try { fs.writeFileSync(progettiConfigPath, JSON.stringify(projs, null, 2), 'utf8'); } catch(e) {}
         }
+        projs = projs.filter(p => p && p.id !== 'app_logistica');
         memoryCache.set("progetti", projs);
+        try { fs.writeFileSync(progettiConfigPath, JSON.stringify(projs, null, 2), 'utf8'); } catch(e) {}
+        try { cloudSet("progetti", projs, progettiConfigPath); } catch(e) {}
         return projs;
     } catch(e) {
         return [];

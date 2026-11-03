@@ -3321,7 +3321,7 @@
             const res = await fetch('/api/progetti/lista');
             const data = await res.json();
             if (Array.isArray(data) && data.length > 0) {
-                listaProgettiAttuali = data;
+                listaProgettiAttuali = data.filter(p => p && p.id !== "app_logistica");
             }
             renderCardProgetti();
         } catch(e) {
@@ -3410,7 +3410,7 @@
 
         wrapper.innerHTML = '';
         progetti.forEach(p => {
-            if (!p.attivo) return;
+            if (!p.attivo || p.id === "app_logistica") return;
             const isAdminProj = p.visibilita === 'admin';
 
             // Regola di visibilità universale (MAI SCHERMO VUOTO O BLOCCATO SENZA CARD):
