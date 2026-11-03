@@ -7,7 +7,7 @@
  * 5. Transizioni fluide di pagina (Page Fade / Slide Transition)
  */
 (function() {
-  if (document.getElementById('suite-unified-bottom-nav')) return;
+  if (document.getElementById('suite-unified-bottom-nav') || document.getElementById('mednutri-mobile-bar') || document.querySelector('.mobile-bottom-bar')) return;
 
   // 1. INIEZIONE STILI CSS
   const style = document.createElement('style');
@@ -670,6 +670,7 @@
   
   // INSERIMENTO A CARICAMENTO DOM
   function mount() {
+    if (document.getElementById('suite-unified-bottom-nav') || document.getElementById('mednutri-mobile-bar') || document.querySelector('.mobile-bottom-bar')) return;
     document.body.appendChild(nav);
     bindNavEvents();
   }
