@@ -201,7 +201,7 @@
       const fields = ['patient-name', 'patient-dob', 'patient-height', 'patient-weight', 'patient-wrist', 'patient-notes'];
       fields.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.value = '';
+        if (el) { el.value = ""; try { el.dispatchEvent(new Event("input")); el.dispatchEvent(new Event("change")); } catch(e){} }
       });
 
       const nameEl = document.getElementById('patient-name');
