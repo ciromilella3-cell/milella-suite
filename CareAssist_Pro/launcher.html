@@ -1036,51 +1036,253 @@
             @keyframes fadeInGate { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
         </style>
 
-        <!-- BARRA STATUS SUPERIORE UNIFICATA PREMIUM -->
-        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:1360px; margin-bottom:1.5rem; flex-wrap:wrap; gap:12px; background:rgba(15,23,42,0.6); border:1px solid rgba(212,175,55,0.25); border-radius:24px; padding:10px 18px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 8px 30px rgba(0,0,0,0.4);">
-            <!-- Sinistra: Badge Utente -->
-            <div id="userBadge" onclick="apriLoginModal()" title="Clicca per accedere con PIN Master/Admin" style="cursor:pointer; display:flex; align-items:center; gap:8px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.3); padding:6px 14px; border-radius:18px; font-size:13px; font-weight:700; color:#f3e5ab;">
-                <span id="userBadgeIcon">👷</span>
-                <span id="userBadgeText">Modalità: In attesa di PIN</span>
+        
+
+<style id="suite-executive-command-header-style">
+  /* EXECUTIVE COMMAND HEADER STYLES */
+  .top-command-header {
+    width: 100%;
+    max-width: 1360px;
+    margin: 0 auto 1.5rem auto;
+    background: rgba(15, 23, 42, 0.78);
+    border: 1.5px solid rgba(212, 175, 55, 0.28);
+    border-radius: 20px;
+    padding: 12px 14px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    box-sizing: border-box;
+  }
+  .top-command-row-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .top-badge-user {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #f3e5ab;
+    transition: all 0.2s ease;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .top-badge-user:active {
+    transform: scale(0.98);
+  }
+  .top-badge-user .user-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .top-status-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .top-badge-cloud {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #34d399;
+  }
+  .pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: pulseDot 2s infinite;
+  }
+  .top-btn-key {
+    display: none;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #f3e5ab;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .top-btn-logout {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    border: none;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 11.5px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.4);
+    letter-spacing: 0.3px;
+    transition: transform 0.15s;
+    height: 32px;
+  }
+  .top-btn-logout:active {
+    transform: scale(0.96);
+  }
+  .top-command-grid-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+    width: 100%;
+    margin-top: 10px;
+  }
+  @media (max-width: 680px) {
+    .top-command-grid-actions {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 8px !important;
+    }
+  }
+  .top-action-chip {
+    height: 40px;
+    border-radius: 12px;
+    border: none;
+    font-size: 11.5px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 10px;
+    text-decoration: none;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .top-action-chip:active {
+    transform: scale(0.96);
+  }
+  .top-action-chip .chip-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .chip-pazienti {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);
+  }
+  .chip-avvisi {
+    background: rgba(234, 88, 12, 0.18);
+    border: 1.5px solid rgba(249, 115, 22, 0.5) !important;
+    color: #fdba74;
+  }
+  .chip-operatori {
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0b0f19;
+    box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+  }
+  .chip-moduli {
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(14, 165, 233, 0.35);
+  }
+  .chip-vetrina {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(139, 92, 246, 0.35);
+  }
+  .chip-fullscreen {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(212, 175, 55, 0.35) !important;
+    color: #d4af37;
+  }
+  .chip-install {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+    color: #7dd3fc;
+  }
+</style>
+
+        <!-- BARRA STATUS SUPERIORE UNIFICATA PREMIUM (EXECUTIVE DASHBOARD HEADER) -->
+        <div class="top-command-header">
+            <!-- RIGA 1: STATUS, PROFILO & SICUREZZA -->
+            <div class="top-command-row-status">
+                <!-- Sinistra: Badge Utente -->
+                <div id="userBadge" onclick="apriLoginModal()" title="Clicca per accedere con PIN Master/Admin" class="top-badge-user">
+                    <span id="userBadgeIcon" class="user-icon">👷</span>
+                    <span id="userBadgeText" class="user-text">Modalità: In attesa di PIN</span>
+                </div>
+
+                <!-- Centro/Destra: Indicatore Cloud & Bottone Esci -->
+                <div class="top-status-right">
+                    <div id="cloudStatusBadge" class="top-badge-cloud">
+                        <span class="pulse-dot"></span>
+                        <span id="cloudStatusLabel">Cloud Online H24</span>
+                        <span id="cloudPingLabel" class="ping-sub">(Render)</span>
+                    </div>
+
+                    <button id="btnSwitchRole" onclick="apriLoginModal()" class="top-btn-key">
+                        🔑 PIN
+                    </button>
+
+                    <button id="btnLogoutRole" onclick="esciAdmin()" title="Blocca la Suite e richiedi il PIN" class="top-btn-logout">
+                        <span>🔒</span> <span class="logout-label">Esci</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Centro: Stato Cloud e Ping -->
-            <div id="cloudStatusBadge" style="display:flex; align-items:center; gap:8px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); padding:6px 14px; border-radius:18px; font-size:12px; font-weight:700; color:#34d399;">
-                <span style="width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 10px #10b981; animation:pulseDot 2s infinite;"></span>
-                <span id="cloudStatusLabel">Cloud Online H24</span>
-                <span id="cloudPingLabel" style="color:#a7f3d0; font-size:11px; opacity:0.85; margin-left:2px;">(Render)</span>
-            </div>
-
-            <!-- Destra: Azioni e Controlli -->
-            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <button id="btnOpenSmartNotifBar" onclick="apriNotificheSmartBanner()" title="Mostra Smart Hub Promemoria" style="display:none; background:rgba(234,88,12,0.18); border:1.5px solid rgba(249,115,22,0.5); color:#fdba74; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
-                    <span>🔔</span> <span>Avvisi (<b id="topBarNotifCount">0</b>)</span>
-                </button>
-                <button id="btnAnagraficaPazientiSuite" onclick="apriAnagraficaCentraleModal()" style="display:inline-flex; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#ffffff; padding:6px 14px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.35);">
-                    👥 ANAGRAFICA PAZIENTI
-                </button>
-                <button id="btnManageOps" onclick="apriGestioneOperatoriModal()" style="display:none; background:linear-gradient(135deg, #d4af37, #aa7c11); border:none; color:#0b0f19; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s;">
-                    👥 OPERATORI
-                </button>
-                <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" title="Gestisci moduli e personalizza la posizione di ciascuna App" style="display:none; background:linear-gradient(135deg, #38bdf8, #0284c7); border:none; color:#fff; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
-                    ⇅ MODULI & ORDINE APP
-                </button>
-                <button id="btnOpenPresentation" onclick="window.location.href='/presentazione_suite.html'" title="Apri e mostra la Presentazione creata per il cliente" style="display:none; background:linear-gradient(135deg, #a855f7, #7c3aed); border:1px solid #c084fc; color:#fff; padding:6px 14px; border-radius:18px; font-size:12px; font-weight:800; cursor:pointer; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(168,85,247,0.35);">
-                    🎬 VETRINA &amp; PRESENTAZIONI
+            <!-- RIGA 2: GRIGLIA AZIONI RAPIDE ORDINATA (2 COLONNE SU SMARTPHONE, RIGA SU DESKTOP) -->
+            <div class="top-command-grid-actions">
+                <button id="btnAnagraficaPazientiSuite" onclick="apriAnagraficaCentraleModal()" class="top-action-chip chip-pazienti">
+                    <span class="chip-icon">👥</span>
+                    <span class="chip-label">Anagrafica Pazienti</span>
                 </button>
                 
-                <button id="btnInstallApp" onclick="installaPwaApp()" title="Installa Suite su Telefono o Desktop" style="display:none; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#7dd3fc; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; align-items:center; gap:5px; transition:all 0.2s;">
-                    <span>📲</span> <span id="installBtnText">Installa App</span>
+                <button id="btnOpenSmartNotifBar" onclick="apriNotificheSmartBanner()" title="Mostra Smart Hub Promemoria" class="top-action-chip chip-avvisi" style="display:none;">
+                    <span class="chip-icon">🔔</span>
+                    <span class="chip-label">Avvisi (<b id="topBarNotifCount">0</b>)</span>
                 </button>
-  
-                <button id="btnToggleFullscreen" onclick="toggleFullScreen()" title="Schermo Intero (F11)" style="background:rgba(255,255,255,0.06); border:1px solid rgba(212,175,55,0.35); color:#d4af37; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
-                    <span id="fsIcon">⛶</span> <span id="fsText">Schermo Intero</span>
+
+                <button id="btnManageOps" onclick="apriGestioneOperatoriModal()" class="top-action-chip chip-operatori" style="display:none;">
+                    <span class="chip-icon">👥</span>
+                    <span class="chip-label">Operatori</span>
                 </button>
-                <button id="btnSwitchRole" onclick="apriLoginModal()" style="display:none; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#f3e5ab; padding:6px 12px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
-                    🔑 PIN
+
+                <button id="btnManageProjects" onclick="apriGestioneProgettiModal()" title="Gestisci moduli e personalizza la posizione di ciascuna App" class="top-action-chip chip-moduli" style="display:none;">
+                    <span class="chip-icon">⇅</span>
+                    <span class="chip-label">Moduli &amp; Ordine</span>
                 </button>
-                <button id="btnLogoutRole" onclick="esciAdmin()" title="Blocca la Suite e richiedi il PIN" style="display:inline-flex !important; align-items:center; gap:6px; background:linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); border:none; color:#ffffff; padding:7px 15px; border-radius:20px; font-size:12px; font-weight:800; cursor:pointer; box-shadow:0 3px 12px rgba(239,68,68,0.5); letter-spacing:0.3px; transition:transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    🔒 Esci / Blocca
+
+                <button id="btnOpenPresentation" onclick="window.location.href='/presentazione_suite.html'" title="Apri e mostra la Presentazione creata per il cliente" class="top-action-chip chip-vetrina" style="display:none;">
+                    <span class="chip-icon">🎬</span>
+                    <span class="chip-label">Vetrina &amp; Presentazioni</span>
+                </button>
+                
+                <button id="btnToggleFullscreen" onclick="toggleFullScreen()" title="Schermo Intero (F11)" class="top-action-chip chip-fullscreen">
+                    <span id="fsIcon" class="chip-icon">⛶</span>
+                    <span id="fsText" class="chip-label">Schermo Intero</span>
+                </button>
+
+                <button id="btnInstallApp" onclick="installaPwaApp()" title="Installa Suite su Telefono o Desktop" class="top-action-chip chip-install" style="display:none;">
+                    <span class="chip-icon">📲</span>
+                    <span id="installBtnText" class="chip-label">Installa App</span>
                 </button>
             </div>
         </div>
