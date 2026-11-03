@@ -1501,7 +1501,6 @@ app.get('/api/get-db', async (req, res) => {
 
 app.post('/api/save-db', async (req, res) => {
     try {
-        const payload = JSON.stringify(req.body, null, 2);
         // Salva nel percorso primario
         sincronizzaPazientiInCareAssist(req.body);
         const payload = JSON.stringify(req.body, null, 2);
