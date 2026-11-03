@@ -144,7 +144,7 @@
     if (!sel) return;
     sel.innerHTML = '<option value="">-- Seleziona un assistito per autocompilare --</option>' +
       _mednutriSuiteSoggetti.map((s, idx) => {
-        return `<option value="${idx}">✨ ${s.nome} (${s.origini.join(', ')}${s.dataNascita ? ' • ' + s.dataNascita : ''})</option>`;
+        return `<option value="${idx}" style="color:#0f172a; background:#ffffff; font-weight:700; padding:6px;">✨ ${s.nome} (${s.origini.join(', ')}${s.dataNascita ? ' • Nato il ' + s.dataNascita : ''})</option>`;
       }).join('');
   }
 
