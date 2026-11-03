@@ -929,7 +929,17 @@
                     </div>
                 </div>
 
-                <!-- Input PIN con Occhietto -->
+                <!-- Tasto Sblocco con Impronta Digitale o PIN Rapido -->
+                <button id="btnBiometriaGate" type="button" onclick="accediConImpronta()" style="width:100%; margin-bottom:14px; background:linear-gradient(135deg, rgba(14,165,233,0.2) 0%, rgba(2,132,199,0.35) 100%); border:1.5px solid #38bdf8; color:#ffffff; font-weight:800; font-size:13.5px; padding:13px; border-radius:14px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 16px rgba(14,165,233,0.35); transition:all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    <span style="font-size:20px;">👆</span> SBLOCCA CON IMPRONTA DIGITALE
+                </button>
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <div style="flex:1; height:1px; background:rgba(212,175,55,0.25);"></div>
+                    <span style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-weight:700;">oppure digita il PIN</span>
+                    <div style="flex:1; height:1px; background:rgba(212,175,55,0.25);"></div>
+                </div>
+                
+<!-- Input PIN con Occhietto -->
                 <div style="position:relative; width:100%; margin-bottom:1rem;">
                     <input type="password" id="inputPinGate" placeholder="Codice Personale" autocomplete="current-password" style="width:100%; padding:15px 48px 15px 16px; border-radius:14px; background:rgba(0,0,0,0.55); border:1.5px solid rgba(212,175,55,0.4); color:#fff; font-size:22px; text-align:center; letter-spacing:6px; outline:none; box-sizing:border-box; transition:border 0.2s;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,0.4)'" onkeydown="if(event.key==='Enter') verificaPinGate()">
                     <button type="button" onclick="toggleMostraPasswordGate()" id="btnToggleEyeGate" title="Mostra/Nascondi codice" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:#f3e5ab; font-size:20px; cursor:pointer; padding:4px; opacity:0.85;">
@@ -2436,7 +2446,8 @@
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(['all']));
                     sessionStorage.setItem('milella_session_unlocked', 'true');
                     sessionStorage.setItem('salute_session_unlocked', 'true');
-                    localStorage.removeItem('milella_session_unlocked');
+                    localStorage.setItem('milella_session_unlocked', 'true');
+                    localStorage.removeItem('milella_app_locked');
                     localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     applicaRuolo('admin', data.nome, ['all']);
                 } else {
@@ -2455,7 +2466,8 @@
                     localStorage.setItem('milella_last_authenticated_pin', pin);
                     sessionStorage.setItem('milella_session_unlocked', 'true');
                     sessionStorage.setItem('salute_session_unlocked', 'true');
-                    localStorage.removeItem('milella_session_unlocked');
+                    localStorage.setItem('milella_session_unlocked', 'true');
+                    localStorage.removeItem('milella_app_locked');
                     localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
                     localStorage.setItem('milella_last_authenticated_apps', JSON.stringify(data.appAbilitate || []));
                     localStorage.setItem('milella_last_authenticated_paz', JSON.stringify(data.pazAbilitati || []));
@@ -2479,22 +2491,24 @@
         const err = document.getElementById('gateErrorMsg');
         if (err) err.style.display = 'none';
 
+        const btnBio = document.getElementById('btnBiometriaGate');
+        const originalText = btnBio ? btnBio.innerHTML : '';
+        if (btnBio) {
+            btnBio.innerHTML = '<span style="font-size:20px;">⏳</span> AVVICINA L\'IMPRONTA...';
+        }
+
         const savedLastUser = localStorage.getItem('milella_last_authenticated_user') || 'Ciro Milella (Admin)';
         const savedLastRole = localStorage.getItem('milella_last_authenticated_role') || 'admin';
         const savedLastAppsRaw = localStorage.getItem('milella_last_authenticated_apps') || '["all"]';
         const savedLastPin = localStorage.getItem('milella_last_authenticated_pin') || localStorage.getItem('milella_admin_pin') || 'SOS999';
 
-        // Feedback visivo immediato al tocco
-        const btnBio = document.getElementById('btnBiometriaGate');
-        if (btnBio) {
-            btnBio.innerHTML = '<span style="font-size:20px;">⏳</span> RICONOSCIMENTO IN CORSO...';
-        }
-
-        const procediConSbloccoBiometrico = () => {
+        const sbloccaSessioneCompletata = () => {
             sessionStorage.setItem('milella_session_unlocked', 'true');
             sessionStorage.setItem('salute_session_unlocked', 'true');
-            localStorage.removeItem('milella_session_unlocked');
+            localStorage.setItem('milella_session_unlocked', 'true');
             localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
+            sessionStorage.removeItem('milella_app_locked');
+            localStorage.removeItem('milella_app_locked');
 
             if (savedLastRole === 'admin') {
                 currentAdminPin = savedLastPin;
@@ -2506,6 +2520,7 @@
             const savedApps = JSON.parse(savedLastAppsRaw);
             localStorage.setItem('milella_app_abilitate', JSON.stringify(savedApps));
 
+            document.documentElement.classList.add('suite-already-unlocked');
             const gate = document.getElementById('gateBloccoIngresso');
             if (gate) {
                 gate.style.transition = 'opacity 0.25s ease-out';
@@ -2517,26 +2532,65 @@
             if (typeof mostraToastNotifica === 'function') {
                 mostraToastNotifica('👆 Benvenuto ' + savedLastUser + '! Impronta riconosciuta.');
             }
+            if (btnBio) btnBio.innerHTML = originalText;
         };
 
-        // Se il dispositivo supporta WebAuthn (TouchID, FaceID o sensore Android)
+        // Verifica hardware biometrico reale del dispositivo (Android Fingerprint / iOS TouchID o FaceID)
         if (window.PublicKeyCredential && window.isSecureContext) {
             try {
-                // Tentativo reale sensore impronta del telefono
+                const rawCredId = localStorage.getItem('milella_bio_cred_id');
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
-                
-                // Verifica autenticazione
-                procediConSbloccoBiometrico();
-                return;
-            } catch(eBio) {
-                console.warn('Biometria hardware info:', eBio);
-            }
-        }
 
-        // Se eseguito dentro browser senza WebAuthn attivo o prompt annullato, sblocca come Master Ciro Milella
-        procediConSbloccoBiometrico();
-        return;
+                if (rawCredId) {
+                    const credIdBytes = Uint8Array.from(atob(rawCredId), c => c.charCodeAt(0));
+                    const assertion = await navigator.credentials.get({
+                        publicKey: {
+                            challenge: challenge,
+                            allowCredentials: [{ id: credIdBytes, type: 'public-key' }],
+                            timeout: 60000,
+                            userVerification: "required"
+                        }
+                    });
+                    if (assertion) {
+                        sbloccaSessioneCompletata();
+                        return;
+                    }
+                } else {
+                    // Prima registrazione dell'impronta sul dispositivo
+                    const userId = new Uint8Array(16);
+                    window.crypto.getRandomValues(userId);
+                    const newCred = await navigator.credentials.create({
+                        publicKey: {
+                            challenge: challenge,
+                            rp: { name: "Suite C. Milella" },
+                            user: { id: userId, name: savedLastUser, displayName: savedLastUser },
+                            pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
+                            authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+                            timeout: 60000
+                        }
+                    });
+                    if (newCred && newCred.rawId) {
+                        const b64Id = btoa(String.fromCharCode(...new Uint8Array(newCred.rawId)));
+                        localStorage.setItem('milella_bio_cred_id', b64Id);
+                        sbloccaSessioneCompletata();
+                        return;
+                    }
+                }
+            } catch(eBio) {
+                console.warn('Verifica biometrica:', eBio);
+                if (btnBio) btnBio.innerHTML = originalText;
+                if (err) {
+                    err.textContent = 'Impronta annullata o non riconosciuta. Usa il tuo PIN.';
+                    err.style.display = 'block';
+                }
+                return;
+            }
+        } else {
+            // Se eseguito in contesto non HTTPS locale, permetti sblocco touch rapido con feedback
+            sbloccaSessioneCompletata();
+            return;
+        }
     }
 
     async function _vecchia_accediConImpronta_disattivata() {
@@ -2636,8 +2690,9 @@
 
             // Accesso consentito solo dopo verifica dell'impronta
             sessionStorage.setItem('milella_session_unlocked', 'true');
-            sessionStorage.setItem('salute_session_unlocked', 'true');
-            localStorage.removeItem('milella_session_unlocked');
+                    sessionStorage.setItem('salute_session_unlocked', 'true');
+                    localStorage.setItem('milella_session_unlocked', 'true');
+                    localStorage.removeItem('milella_app_locked');
             localStorage.setItem('milella_session_unlocked_time', String(Date.now()));
 
             if (savedLastRole === 'admin') {

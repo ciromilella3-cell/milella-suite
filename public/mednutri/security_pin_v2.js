@@ -70,7 +70,30 @@ async function verifyPin(pin) {
     return false;
 }
 
-// Mostra la schermata di sblocco con PIN (Nessun bypass consentito)
+
+// Controllo federato Suite: se l'utente ha già effettuato l'accesso nella Suite, apri direttamente senza secondo PIN
+function checkSuiteFederatedUnlock() {
+    try {
+        const isLocked = sessionStorage.getItem('milella_app_locked') === 'true' || localStorage.getItem('milella_app_locked') === 'true';
+        const isUnlocked = !isLocked && (sessionStorage.getItem('milella_session_unlocked') === 'true' || localStorage.getItem('milella_session_unlocked') === 'true');
+        if (isUnlocked) {
+            isAppUnlocked = true;
+            const lockOverlay = document.getElementById('pin-lock-modal');
+            const mainApp = document.getElementById('main-app');
+            if (lockOverlay) {
+                lockOverlay.classList.add('unlocked');
+                lockOverlay.style.setProperty('display', 'none', 'important');
+            }
+            if (mainApp) {
+                mainApp.style.setProperty('display', 'flex', 'important');
+            }
+            return true;
+        }
+    } catch(e) {}
+    return false;
+}
+
+// Mostra la schermata di sblocco con PIN
 function showLockscreen() {
     const lockOverlay = document.getElementById('pin-lock-modal');
     const mainApp = document.getElementById('main-app');
@@ -266,6 +289,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Auto-lock obbligatorio all'apertura dell'applicazione
-    showLockscreen();
+    // Auto-lock condizionato: se l'utente ha già fatto accesso alla Suite, entra subito senza blocchi
+    if (!checkSuiteFederatedUnlock()) {
+        showLockscreen();
+    }
 });
