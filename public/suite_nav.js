@@ -16,13 +16,9 @@
     /* Spazio extra in fondo alla pagina per evitare sovrapposizioni */
     body {
       padding-bottom: 84px !important;
-      transition: opacity 0.25s ease, transform 0.25s ease;
     }
 
-    body.page-transitioning {
-      opacity: 0;
-      transform: translateY(6px);
-    }
+    /* page-transitioning rimosso per eliminare farfallio */
 
     /* Nasconde automaticamente la barra inferiore quando un modale è aperto per lasciare pieno spazio ai tasti azione */
     body.modal-open #suite-unified-bottom-nav,
@@ -246,14 +242,9 @@
 
   // 4. NAVIGAZIONE CON TRANSIZIONE FLUIDA E RESILIENTE
   function navigateWithTransition(url) {
-    triggerHaptic(30);
-    document.body.classList.add('page-transitioning');
-    setTimeout(() => {
-      window.location.href = url;
-      // Timeout di sicurezza per pulire la classe se la navigazione viene interrotta
-      setTimeout(() => {
-        document.body.classList.remove('page-transitioning');
-      }, 700);
+    triggerHaptic(20);
+    window.location.href = url;
+  }, 700);
     }, 120);
   }
 
