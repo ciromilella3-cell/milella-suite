@@ -139,15 +139,37 @@
     }
   }
 
+  
+  // Renderizza i pazienti come bottoni chip chiari, ad alto contrasto e immediatamente cliccabili
   function aggiornaTendinaMedNutri() {
-    const sel = document.getElementById('select-import-mednutri-suite');
-    if (!sel) return;
-    sel.innerHTML = '<option value="NUOVO" style="background:#0284c7; color:#ffffff; font-weight:800; padding:10px;">➕ INSERISCI UN PAZIENTE DEL TUTTO NUOVO (Pulisci campi)</option>' +
-      '<option value="" disabled selected style="background:#1e293b; color:#94a3b8;">-- Oppure seleziona un assistito registrato nella Suite --</option>' +
-      _mednutriSuiteSoggetti.map((s, idx) => {
-        const originiStr = (s.origini || []).join(', ');
-        return `<option value="${idx}" style="background:#0f172a; color:#ffffff; font-weight:700; padding:10px; border-bottom:1px solid #1e293b;">👤 ${s.nome} (${originiStr}${s.dataNascita ? ' • Nato il ' + s.dataNascita : ''})</option>`;
-      }).join('');
+    const container = document.getElementById('suite-patients-chips-container');
+    if (!container) return;
+
+    if (!_mednutriSuiteSoggetti || _mednutriSuiteSoggetti.length === 0) {
+      container.innerHTML = '<div style="color:#64748b; font-size:12.5px;">Nessun paziente trovato nella suite.</div>';
+      return;
+    }
+
+    container.innerHTML = _mednutriSuiteSoggetti.map((s, idx) => {
+      const originiStr = (s.origini || []).join(', ');
+      const isFem = (s.sesso && (s.sesso.toUpperCase() === 'F' || s.sesso.toLowerCase() === 'donna'));
+      const emoji = isFem ? '👩' : '👨';
+      const bgHover = isFem ? '#fdf2f8' : '#f0f9ff';
+      const borderCol = isFem ? '#f472b6' : '#38bdf8';
+      
+      return `
+        <button type="button" 
+                onclick="applicaImportMedNutriDaSuite('${idx}')" 
+                title="Clicca per compilare la cartella di ${s.nome}"
+                style="background:#ffffff; color:#0f172a; border:1.5px solid ${borderCol}; padding:8px 14px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(0,0,0,0.06); transition:all 0.2s;"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(2,132,199,0.2)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.06)';">
+          <span>${emoji}</span>
+          <span style="color:#0f172a; font-weight:800;">${s.nome}</span>
+          <span style="font-size:11px; color:#64748b; font-weight:600; background:#f1f5f9; padding:2px 6px; border-radius:6px;">${s.dataNascita ? s.dataNascita.split('-')[0] : ''}</span>
+        </button>
+      `;
+    }).join('');
   }
 
   window.applicaImportMedNutriDaSuite = function(idxStr) {
