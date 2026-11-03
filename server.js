@@ -1631,6 +1631,130 @@ app.post(['/api/salute/data', '/salute/api/data'], (req, res) => {
     }
 });
 
+// ============================================================================
+// SUITE MILELLA - ANAGRAFE SANITARIA FEDERATA (MASTER PATIENT REGISTRY)
+// Restituisce tutti i soggetti censiti in CareAssist, Progetto Salute e Ambulatorio Medico
+// ============================================================================
+app.get(['/api/suite/anagrafe-condivisa', '/careassist/api/suite/anagrafe-condivisa'], async (req, res) => {
+    try {
+        const soggettiMap = new Map();
+
+        // 1. Leggi CareAssist Pro
+        try {
+            let caData = await cloudGet('careassist', null);
+            if (!caData && fs.existsSync(careAssistDbFile)) {
+                caData = JSON.parse(fs.readFileSync(careAssistDbFile, 'utf8') || '{}');
+            }
+            if (caData && Array.isArray(caData.pazienti)) {
+                caData.pazienti.forEach(p => {
+                    if (p && p.nome) {
+                        const k = p.nome.trim().toLowerCase();
+                        soggettiMap.set(k, {
+                            id: p.id || 'paz_' + Date.now(),
+                            nome: p.nome.trim(),
+                            dataNascita: p.dataNascita || '',
+                            sesso: p.sesso || 'M',
+                            indirizzo: p.indirizzo || '',
+                            telefono: p.telefono || p.cellulare || '',
+                            patologie: p.patologie || [],
+                            origini: ['CareAssist Pro']
+                        });
+                    }
+                });
+            }
+        } catch(eCa) { console.error('Errore lettura CA per anagrafe:', eCa.message); }
+
+        // 2. Leggi Progetto Salute
+        try {
+            let salData = {};
+            if (fs.existsSync(saluteDbPath)) {
+                salData = JSON.parse(fs.readFileSync(saluteDbPath, 'utf8') || '{}');
+            }
+            // Mappatura profili noti o dinamici in Salute
+            const profiliSalute = [
+                {
+                    key: 'marito',
+                    defaultName: 'Ciro Milella',
+                    defaultDob: '1967-12-16',
+                    defaultGender: 'M'
+                },
+                {
+                    key: 'moglie',
+                    defaultName: 'Maria Carmela',
+                    defaultDob: '1969-03-20',
+                    defaultGender: 'F'
+                }
+            ];
+
+            profiliSalute.forEach(prof => {
+                const nome = salData['profileName_' + prof.key] || prof.defaultName;
+                const stats = (typeof salData['profileStats_' + prof.key] === 'object' && salData['profileStats_' + prof.key])
+                    ? salData['profileStats_' + prof.key]
+                    : { dob: prof.defaultDob };
+                const dob = (stats && stats.dob) ? stats.dob : prof.defaultDob;
+                const k = nome.trim().toLowerCase();
+
+                if (soggettiMap.has(k)) {
+                    const existing = soggettiMap.get(k);
+                    if (!existing.dataNascita && dob) existing.dataNascita = dob;
+                    if (!existing.origini.includes('Progetto Salute')) existing.origini.push('Progetto Salute');
+                } else {
+                    soggettiMap.set(k, {
+                        id: 'salute_' + prof.key,
+                        nome: nome.trim(),
+                        dataNascita: dob,
+                        sesso: prof.defaultGender,
+                        indirizzo: (prof.key === 'moglie' || prof.key === 'marito') ? 'Via Giulio Petroni, 69 - BARI (BA)' : '',
+                        telefono: '',
+                        patologie: [],
+                        origini: ['Progetto Salute']
+                    });
+                }
+            });
+        } catch(eSal) { console.error('Errore lettura Salute per anagrafe:', eSal.message); }
+
+        // 3. Leggi Ambulatorio Medico (MedNutri Pro)
+        try {
+            const vaultPath = path.join(__dirname, 'public', 'mednutri', 'mednutri_cloud_vault_STUDIO-AA-890.json');
+            if (fs.existsSync(vaultPath)) {
+                const vault = JSON.parse(fs.readFileSync(vaultPath, 'utf8') || '{}');
+                const store = vault.data || vault;
+                Object.keys(store).forEach(vk => {
+                    if (vk.startsWith('mednutri_pat_')) {
+                        try {
+                            const p = typeof store[vk] === 'string' ? JSON.parse(store[vk]) : store[vk];
+                            if (p && p.name) {
+                                const k = p.name.trim().toLowerCase();
+                                if (soggettiMap.has(k)) {
+                                    const ex = soggettiMap.get(k);
+                                    if (!ex.origini.includes('Ambulatorio Medico')) ex.origini.push('Ambulatorio Medico');
+                                } else {
+                                    soggettiMap.set(k, {
+                                        id: 'mednutri_' + Date.now(),
+                                        nome: p.name.trim(),
+                                        dataNascita: p.dob || '',
+                                        sesso: p.gender || 'M',
+                                        indirizzo: '',
+                                        telefono: '',
+                                        patologie: p.mainPathology ? [p.mainPathology] : [],
+                                        origini: ['Ambulatorio Medico']
+                                    });
+                                }
+                            }
+                        } catch(eP) {}
+                    }
+                });
+            }
+        } catch(eMed) { console.error('Errore lettura MedNutri per anagrafe:', eMed.message); }
+
+        const lista = Array.from(soggettiMap.values());
+        res.json({ success: true, count: lista.length, soggetti: lista });
+    } catch(err) {
+        console.error('Errore anagrafe condivisa:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.get('/presentazione', (req, res) => {
     res.sendFile(path.resolve(__dirname, '..', '0_PRESENTAZIONE_E_ARCHITETTURA.html'));
 });

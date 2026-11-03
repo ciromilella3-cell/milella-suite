@@ -118,3 +118,67 @@
   }
 })();
 
+
+  // ==============================================================
+  // ANAGRAFE FEDERATA 1-CLICK IMPORT IN MEDNUTRI
+  // ==============================================================
+  let _mednutriSuiteSoggetti = [];
+
+  async function popolaSelectImportMedNutri() {
+    try {
+      const res = await fetch('/api/suite/anagrafe-condivisa');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.soggetti)) {
+          _mednutriSuiteSoggetti = data.soggetti;
+          aggiornaTendinaMedNutri();
+        }
+      }
+    } catch(e) {
+      console.warn('Fallback anagrafe in MedNutri:', e.message);
+    }
+  }
+
+  function aggiornaTendinaMedNutri() {
+    const sel = document.getElementById('select-import-mednutri-suite');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- Seleziona un assistito per autocompilare --</option>' +
+      _mednutriSuiteSoggetti.map((s, idx) => {
+        return `<option value="${idx}">✨ ${s.nome} (${s.origini.join(', ')}${s.dataNascita ? ' • ' + s.dataNascita : ''})</option>`;
+      }).join('');
+  }
+
+  window.applicaImportMedNutriDaSuite = function(idxStr) {
+    if (idxStr === '' || idxStr === null) return;
+    const idx = parseInt(idxStr, 10);
+    const s = _mednutriSuiteSoggetti[idx];
+    if (!s) return;
+
+    // Compila nome
+    const nameEl = document.getElementById('patient-name');
+    if (nameEl) nameEl.value = s.nome;
+
+    // Compila genere
+    const genderEl = document.getElementById('patient-gender');
+    if (genderEl && s.sesso) {
+      genderEl.value = (s.sesso.toUpperCase().startsWith('F') || s.sesso.toLowerCase() === 'donna') ? 'F' : 'M';
+    }
+
+    // Compila data di nascita
+    const dobEl = document.getElementById('patient-dob');
+    if (dobEl && s.dataNascita) {
+      dobEl.value = s.dataNascita;
+    }
+
+    if (typeof calculateBMI === 'function') calculateBMI();
+    if (typeof mostraBannerPazienteSincronizzato === 'function') {
+      mostraBannerPazienteSincronizzato(s.nome);
+    }
+  };
+
+  // Esegui caricamento della tendina
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(popolaSelectImportMedNutri, 300));
+  } else {
+    setTimeout(popolaSelectImportMedNutri, 300);
+  }

@@ -216,3 +216,4 @@ window.impostaFiltroAsl = impostaFiltroAsl;
 window.filtraPazientiAsl = filtraPazientiAsl;
 window.resetFiltriAsl = resetFiltriAsl;
 window.selezionaAssistitoDaAsl = selezionaAssistitoDaAsl;
+

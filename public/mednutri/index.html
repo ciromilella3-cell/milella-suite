@@ -339,6 +339,17 @@
                 <section class="glass-card patient-card">
                     <h3>Anagrafica Paziente</h3>
                     <div class="input-grid">
+                        <!-- BOX 1-CLICK IMPORT SUITE IN MEDNUTRI -->
+                        <div class="input-group" style="grid-column: span 2; background:rgba(14,165,233,0.12); border:1.5px solid rgba(56,189,248,0.4); padding:10px 14px; border-radius:12px; margin-bottom:6px;">
+                            <label style="color:#38bdf8; font-weight:800; display:flex; justify-content:space-between; align-items:center;">
+                                <span>✨ Importa Assistito dalla Suite (CareAssist / Progetto Salute)</span>
+                                <span style="font-size:10px; background:#0284c7; color:#fff; padding:2px 8px; border-radius:8px;">1-Click</span>
+                            </label>
+                            <select id="select-import-mednutri-suite" onchange="applicaImportMedNutriDaSuite(this.value)" style="background:#0f172a; color:#f8fafc; border:1px solid rgba(255,255,255,0.2); font-weight:700; width:100%; padding:8px 12px; border-radius:8px; cursor:pointer;">
+                                <option value="">-- Seleziona un assistito per autocompilare --</option>
+                            </select>
+                        </div>
+
                         <div class="input-group" style="grid-column: span 2;">
                             <label>Nome e Cognome</label>
                             <input type="text" id="patient-name" placeholder="Es. Mario Rossi">
