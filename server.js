@@ -1063,7 +1063,16 @@ function loadProgetti() {
             ];
             try { fs.writeFileSync(progettiConfigPath, JSON.stringify(projs, null, 2), 'utf8'); } catch(e) {}
         }
-        projs = projs.filter(p => p && p.id !== 'app_logistica');
+        projs = projs.filter(p => {
+            if (!p) return false;
+            const id = (p.id || '').toLowerCase();
+            const tit = (p.titolo || '').toLowerCase();
+            const url = (p.url || '').toLowerCase();
+            if (id.includes('logistica') || tit.includes('logistica') || url.includes('logistica') || id.startsWith('proj_1793083570202')) {
+                return false;
+            }
+            return true;
+        });
         memoryCache.set("progetti", projs);
         try { fs.writeFileSync(progettiConfigPath, JSON.stringify(projs, null, 2), 'utf8'); } catch(e) {}
         try { cloudSet("progetti", projs, progettiConfigPath); } catch(e) {}

@@ -3321,7 +3321,13 @@
             const res = await fetch('/api/progetti/lista');
             const data = await res.json();
             if (Array.isArray(data) && data.length > 0) {
-                listaProgettiAttuali = data.filter(p => p && p.id !== "app_logistica");
+                listaProgettiAttuali = data.filter(p => {
+                    if (!p) return false;
+                    const id = (p.id || '').toLowerCase();
+                    const tit = (p.titolo || '').toLowerCase();
+                    const url = (p.url || '').toLowerCase();
+                    return !id.includes('logistica') && !tit.includes('logistica') && !url.includes('logistica');
+                });
             }
             renderCardProgetti();
         } catch(e) {
@@ -3410,7 +3416,11 @@
 
         wrapper.innerHTML = '';
         progetti.forEach(p => {
-            if (!p.attivo || p.id === "app_logistica") return;
+            if (!p.attivo) return;
+            const _id = (p.id || '').toLowerCase();
+            const _tit = (p.titolo || '').toLowerCase();
+            const _url = (p.url || '').toLowerCase();
+            if (_id.includes('logistica') || _tit.includes('logistica') || _url.includes('logistica')) return;
             const isAdminProj = p.visibilita === 'admin';
 
             // Regola di visibilità universale (MAI SCHERMO VUOTO O BLOCCATO SENZA CARD):
@@ -4350,7 +4360,7 @@
     // ==============================================================================
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js?v=142').then(reg => {
+            navigator.serviceWorker.register('/sw.js?v=205').then(reg => {
                 if (reg) reg.update();
                 console.log('[PWA] Service Worker attivo:', reg.scope);
             }).catch(err => console.warn('[PWA] SW register notice:', err));
@@ -4513,6 +4523,16 @@
         if (clearBtn) clearBtn.style.display = query ? 'block' : 'none';
         const cards = document.querySelectorAll('.cards-wrapper .card');
         let visibleCount = 0;
+        
+        // Purge istantaneo di sicurezza: elimina qualsiasi card residua contenente 'logistica'
+        try {
+            document.querySelectorAll('.cards-wrapper .card').forEach(card => {
+                if ((card.textContent || '').toLowerCase().includes('logistica')) {
+                    card.remove();
+                }
+            });
+        } catch(e) {}
+  
         cards.forEach(c => {
             const title = (c.querySelector('.card-title')?.textContent || '').toLowerCase();
             const desc = (c.querySelector('.card-desc')?.textContent || '').toLowerCase();
