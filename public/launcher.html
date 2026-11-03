@@ -836,7 +836,7 @@
   }
 
   .card.segugio-card {
-    opacity: 0;
+    opacity: 1;
     animation: cardCascadeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
   }
 
@@ -1029,7 +1029,7 @@
         <!-- BARRA STATUS SUPERIORE UNIFICATA PREMIUM -->
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:1360px; margin-bottom:1.5rem; flex-wrap:wrap; gap:12px; background:rgba(15,23,42,0.6); border:1px solid rgba(212,175,55,0.25); border-radius:24px; padding:10px 18px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:0 8px 30px rgba(0,0,0,0.4);">
             <!-- Sinistra: Badge Utente -->
-            <div id="userBadge" style="display:flex; align-items:center; gap:8px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.3); padding:6px 14px; border-radius:18px; font-size:13px; font-weight:700; color:#f3e5ab;">
+            <div id="userBadge" onclick="apriLoginModal()" title="Clicca per accedere con PIN Master/Admin" style="cursor:pointer; display:flex; align-items:center; gap:8px; background:rgba(212,175,55,0.15); border:1px solid rgba(212,175,55,0.3); padding:6px 14px; border-radius:18px; font-size:13px; font-weight:700; color:#f3e5ab;">
                 <span id="userBadgeIcon">👷</span>
                 <span id="userBadgeText">Modalità: In attesa di PIN</span>
             </div>
@@ -1063,7 +1063,7 @@
                 <button id="btnToggleFullscreen" onclick="toggleFullScreen()" title="Schermo Intero (F11)" style="background:rgba(255,255,255,0.06); border:1px solid rgba(212,175,55,0.35); color:#d4af37; padding:6px 12px; border-radius:18px; font-weight:700; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
                     <span id="fsIcon">⛶</span> <span id="fsText">Schermo Intero</span>
                 </button>
-                <button id="btnSwitchRole" onclick="apriAdminLoginModal()" style="display:none; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#f3e5ab; padding:6px 12px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
+                <button id="btnSwitchRole" onclick="apriLoginModal()" style="display:none; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#f3e5ab; padding:6px 12px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
                     🔑 PIN
                 </button>
                 <button id="btnLogoutRole" onclick="esciAdmin()" style="display:none; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; padding:6px 13px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer;">
@@ -2156,7 +2156,7 @@
             adminBtns.forEach(b => b.style.display = 'inline-flex');
         } else {
             badgeIcon.textContent = '👷';
-            badgeText.textContent = nome ? ('Operatore: ' + nome) : 'Modalità: Operatore Ordinario';
+            badgeText.textContent = (role === 'bloccato') ? '🔑 Clicca per accedere con PIN' : (nome ? ('Operatore: ' + nome) : 'Modalità: Operatore Ordinario (Clicca per PIN)');
             badgeText.parentElement.style.background = 'rgba(212,175,55,0.1)';
             badgeText.parentElement.style.borderColor = 'rgba(212,175,55,0.25)';
             btnSwitch.style.display = 'inline-flex';
@@ -2175,6 +2175,7 @@
         }
     }
 
+    function apriAdminLoginModal() { apriLoginModal(); }
     function apriLoginModal() {
         const m = document.getElementById('modalAdminLogin');
         const input = document.getElementById('inputPinLogin');
@@ -2518,7 +2519,8 @@
             if (err) err.style.display = 'none';
             aggiornaVisibilitaBiometriaGate();
         }
-        applicaRuolo('bloccato', null, []);
+        applicaRuolo('operatore', null, ['all']);
+        apriLoginModal();
 
         // Protezione contro lo swipe/gesto "Indietro" su mobile
         try {
@@ -3170,22 +3172,22 @@
             if (!p.attivo) return;
             const isAdminProj = p.visibilita === 'admin';
 
-            // Regola di visibilità:
-            // 1. Se Admin (Ciro Milella) -> vede sempre tutte le app
-            // 2. Se Operatore con app specifica (es. Chiara -> ["app_careassist"]) -> vede SOLO le sue app
-            // 3. Se Operatore con 'all' -> vede tutte le app pubbliche ('tutti')
-            // 4. Se Bloccato -> non vede nulla o attende sblocco
+            // Regola di visibilità universale (MAI SCHERMO VUOTO O BLOCCATO SENZA CARD):
+            // 1. Se Admin (Ciro Milella) -> accesso diretto completo a tutto
+            // 2. Se Operatore con app specifica -> vede le sue app
+            // 3. Se Operatore generico o appena avviato -> mostra tutte le app del catalogo!
+            //    Le app riservate admin mostrano l'icona lucchetto 🔒 e aprono il PIN al tocco.
             let visibile = true;
+            let richiedePin = false;
             if (currentRole === 'admin') {
                 visibile = true;
-            } else if (currentRole === 'bloccato') {
-                visibile = false;
             } else if (currentAppAbilitate && currentAppAbilitate.length > 0 && !currentAppAbilitate.includes('all')) {
-                // Ha app dedicate assegnate: mostra SOLO ed ESCLUSIVAMENTE quelle
                 visibile = currentAppAbilitate.includes(p.id);
             } else {
-                // Operatore generico senza restrizioni speciali: solo app comuni
-                visibile = !isAdminProj;
+                visibile = true;
+                if (isAdminProj) {
+                    richiedePin = true;
+                }
             }
 
             let extraBadgeHtml = '';
@@ -3205,7 +3207,13 @@
                 const card = document.createElement('div');
                 card.className = 'card segugio-card ' + (isAdminProj ? 'admin-only-card' : '');
                 card.style.cursor = 'pointer';
-                card.onclick = () => navigaVersoApp(p.url);
+                if (richiedePin) {
+                    card.onclick = () => {
+                        if (typeof apriLoginModal === 'function') apriLoginModal();
+                    };
+                } else {
+                    card.onclick = () => navigaVersoApp(p.url);
+                }
 
                 // Genera Quick Actions rapide per modulo alla Segugio
                 let quickActionsHtml = '';
@@ -3220,7 +3228,7 @@
                     <div class="segugio-icon-badge">${p.icona || '📁'}</div>
                     <div class="segugio-content">
                         <div class="segugio-title-row">
-                            <div class="segugio-title card-title">${p.titolo}</div>
+                            <div class="segugio-title card-title">${p.titolo} ${richiedePin ? '<span style="font-size:12px; vertical-align:middle; opacity:0.85;" title="Richiede PIN Master/Admin">🔒</span>' : ''}</div>
                         </div>
                         <div class="segugio-desc card-desc">${p.descrizione || ''}</div>
                         ${extraBadgeHtml}
@@ -4019,7 +4027,7 @@
         const gate = document.getElementById('gateBloccoIngresso');
         if (gate) gate.style.display = 'flex';
         aggiornaVisibilitaBiometriaGate();
-        applicaRuolo('bloccato', null, []);
+        applicaRuolo('operatore', null, ['all']);
     }
     caricaProgettiDinamici();
     caricaKpiStats();
