@@ -1,10 +1,19 @@
 [
   {
-    "id": "app_logistica",
-    "titolo": "Logistica Consegne",
-    "icona": "📦",
-    "url": "/veicoli/dashboard.html",
-    "descrizione": "Gestione completa spedizioni, tracciamento consegne e magazzino principale.",
+    "id": "app_careassist",
+    "titolo": "CareAssist Pro",
+    "icona": "🩺",
+    "url": "/careassist/",
+    "descrizione": "Diario socio-sanitario, terapie farmacologiche e gestione assistenza domiciliare.",
+    "visibilita": "admin",
+    "attivo": true
+  },
+  {
+    "id": "app_salute",
+    "titolo": "Progetto Salute",
+    "icona": "❤️",
+    "url": "/salute/",
+    "descrizione": "Monitoraggio parametri vitali, fitness e benessere personale quotidiano.",
     "visibilita": "admin",
     "attivo": true
   },
@@ -14,15 +23,6 @@
     "icona": "🚗",
     "url": "/veicoli_mobile/",
     "descrizione": "Controllo scadenze revisioni, bolli, manutenzioni e rimborsi chilometrici aziendali.",
-    "visibilita": "tutti",
-    "attivo": true
-  },
-  {
-    "id": "app_inventario",
-    "titolo": "Inventario Attrezzi",
-    "icona": "🛠️",
-    "url": "/inventario.html",
-    "descrizione": "Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.",
     "visibilita": "tutti",
     "attivo": true
   },
@@ -45,15 +45,6 @@
     "attivo": true
   },
   {
-    "id": "app_salute",
-    "titolo": "Progetto Salute",
-    "icona": "❤️",
-    "url": "/salute/",
-    "descrizione": "Monitoraggio parametri vitali, fitness e benessere personale quotidiano.",
-    "visibilita": "admin",
-    "attivo": true
-  },
-  {
     "id": "app_gioco",
     "titolo": "Progetto Gioco",
     "icona": "🎰",
@@ -63,12 +54,12 @@
     "attivo": true
   },
   {
-    "id": "app_careassist",
-    "titolo": "CareAssist Pro",
-    "icona": "🩺",
-    "url": "/careassist/",
-    "descrizione": "Diario socio-sanitario, terapie farmacologiche e gestione assistenza domiciliare.",
-    "visibilita": "admin",
+    "id": "app_inventario",
+    "titolo": "Inventario Attrezzi",
+    "icona": "🛠️",
+    "url": "/inventario.html",
+    "descrizione": "Catalogo fotografico intelligente e ricerca rapida degli attrezzi tra garage, casa e furgone.",
+    "visibilita": "tutti",
     "attivo": true
   }
 ]
