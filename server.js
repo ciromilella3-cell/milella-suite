@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
@@ -265,7 +265,7 @@ async function startServer() {
 
 // Configurazione base
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '100mb' }));
 
 // Endpoint leggero di Healthcheck e Keep-Alive H24 (risposta immediata)
 app.get('/ping', (req, res) => res.status(200).send('PONG'));
@@ -2174,136 +2174,24 @@ app.post('/api/shutdown', requireAuth({ admin: true }), (req, res) => {
 // ==============================================================================
 
 // Esporta tutti i dati in formato JSON unico (per sincronizzazione con PC o backup)
-app.get('/api/sicurezza/export-data-bundle', (req, res) => {
-    const auth = authFromRequest(req, true);
-    const pin = (req.query && req.query.pin) || '';
-    const isAdmin = (auth && auth.ruolo === 'admin') || (pin.trim().toUpperCase() === PIN_MASTER.toUpperCase());
-    if (!isAdmin) {
-        return res.status(403).json({ success: false, message: "Accesso non autorizzato: operazione riservata all'amministratore." });
-    }
-
-    try {
-        const bundle = {
-            version: '1.0',
-            exportedAt: new Date().toISOString(),
-            source: process.env.RENDER ? 'Render-Cloud' : 'PC-Locale',
-            data: {}
-        };
-
-        const invFile = path.join(__dirname, 'data', 'inventario.json');
-        const posFile = path.join(__dirname, 'data', 'posizioni.json');
-        if (fs.existsSync(invFile)) {
-            try { bundle.data.inventario = JSON.parse(fs.readFileSync(invFile, 'utf8')); } catch(e){}
-        }
-        if (fs.existsSync(posFile)) {
-            try { bundle.data.posizioni = JSON.parse(fs.readFileSync(posFile, 'utf8')); } catch(e){}
-        }
-
-        const ricFile = fs.existsSync(ricettarioJsonPath) ? ricettarioJsonPath : path.join(__dirname, 'data', 'ricette.json');
-        if (fs.existsSync(ricFile)) {
-            try { bundle.data.ricette = JSON.parse(fs.readFileSync(ricFile, 'utf8')); } catch(e){}
-        }
-
-        if (fs.existsSync(operatoriPath)) {
-            try { bundle.data.operatori = JSON.parse(fs.readFileSync(operatoriPath, 'utf8')); } catch(e){}
-        }
-
-        if (fs.existsSync(progettiConfigPath)) {
-            try { bundle.data.progetti = JSON.parse(fs.readFileSync(progettiConfigPath, 'utf8')); } catch(e){}
-        }
-
-        const saluteFile = path.join(__dirname, 'data', 'salute_db.json');
-        if (fs.existsSync(saluteFile)) {
-            try { bundle.data.salute = JSON.parse(fs.readFileSync(saluteFile, 'utf8')); } catch(e){}
-        }
-
-        if (fs.existsSync(medNutriDbFile)) {
-            try { bundle.data.mednutri = JSON.parse(fs.readFileSync(medNutriDbFile, 'utf8')); } catch(e){}
-        }
-
-        if (fs.existsSync(careAssistDbFile)) {
-            try { bundle.data.careassist = JSON.parse(fs.readFileSync(careAssistDbFile, 'utf8')); } catch(e){}
-        }
-
-        const giocoFile = path.join(__dirname, 'data', 'gioco_records.json');
-        if (fs.existsSync(giocoFile)) {
-            try { bundle.data.gioco = JSON.parse(fs.readFileSync(giocoFile, 'utf8')); } catch(e){}
-        }
-
-        res.json({ success: true, bundle });
-    } catch(err) {
-        console.error('[ERRORE EXPORT DATA BUNDLE]', err);
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// Importa tutti i dati dal bundle JSON (dal PC al Cloud o viceversa)
-app.post('/api/sicurezza/import-data-bundle', (req, res) => {
-    const auth = authFromRequest(req, true);
-    const { pinAdmin, bundle } = req.body || {};
-    const isAdmin = (auth && auth.ruolo === 'admin') || ((pinAdmin || '').trim().toUpperCase() === PIN_MASTER.toUpperCase());
-    if (!isAdmin) {
-        return res.status(403).json({ success: false, message: "Accesso non autorizzato: operazione riservata all'amministratore." });
-    }
-    if (!bundle || !bundle.data) {
-        return res.status(400).json({ success: false, message: 'Bundle dati non valido.' });
-    }
-
-    try {
-        const b = bundle.data;
-        const updated = [];
-
-        const dDir = path.join(__dirname, 'data');
-        if (!fs.existsSync(dDir)) fs.mkdirSync(dDir, { recursive: true });
-
-        if (Array.isArray(b.inventario)) {
-            safeWriteAtomic(path.join(dDir, 'inventario.json'), JSON.stringify(b.inventario, null, 4));
-            updated.push('inventario');
-        }
-        if (Array.isArray(b.posizioni)) {
-            safeWriteAtomic(path.join(dDir, 'posizioni.json'), JSON.stringify(b.posizioni, null, 4));
-            updated.push('posizioni');
-        }
-        if (Array.isArray(b.ricette)) {
-            const ricFile = fs.existsSync(ricettarioJsonPath) ? ricettarioJsonPath : path.join(dDir, 'ricette.json');
-            safeWriteAtomic(ricFile, JSON.stringify(b.ricette, null, 4));
-            updated.push('ricette');
-        }
-        if (Array.isArray(b.operatori)) {
-            safeWriteAtomic(operatoriPath, JSON.stringify(b.operatori, null, 2));
-            updated.push('operatori');
-        }
-        if (Array.isArray(b.progetti)) {
-            safeWriteAtomic(progettiConfigPath, JSON.stringify(b.progetti, null, 2));
-            updated.push('progetti');
-        }
-        if (b.salute && typeof b.salute === 'object') {
-            safeWriteAtomic(path.join(dDir, 'salute_db.json'), JSON.stringify(b.salute, null, 2));
-            updated.push('salute');
-        }
-        if (b.mednutri && typeof b.mednutri === 'object') {
-            safeWriteAtomic(medNutriDbFile, JSON.stringify(b.mednutri, null, 2));
-            updated.push('mednutri');
-        }
-        if (b.careassist && typeof b.careassist === 'object') {
-            safeWriteAtomic(careAssistDbFile, JSON.stringify(b.careassist, null, 2));
-            updated.push('careassist');
-        }
-        if (b.gioco && typeof b.gioco === 'object') {
-            safeWriteAtomic(path.join(dDir, 'gioco_records.json'), JSON.stringify(b.gioco, null, 2));
-            updated.push('gioco');
-        }
-
-        res.json({
-            success: true,
-            message: 'Sincronizzazione completata con successo! Aggiornati: ' + updated.join(', '),
-            updated,
-            timestamp: Date.now()
-        });
-    } catch(err) {
-        console.error('[ERRORE IMPORT DATA BUNDLE]', err);
-        res.status(500).json({ success: false, error: err.message });
-    }
+// Sincronizzazione reale Cloud / Chiavetta / Desktop (vedi server_sync.js)
+if (fs.existsSync(path.join(__dirname, 'server_sync.js'))) require('./server_sync.js')(app, {
+    baseDir: __dirname,
+    cloudGet, cloudSet, safeWriteAtomic, authFromRequest,
+    getPinMaster: () => PIN_MASTER,
+    archivi: [
+        { id: 'inventario',  key: 'inventario',         file: jsonPath,                cloud: true  },
+        { id: 'posizioni',   key: 'posizioni',          file: posizioniPath,           cloud: true  },
+        { id: 'ricette',     key: 'ricette',            file: ricettarioJsonPath,      cloud: false },
+        { id: 'operatori',   key: 'operatori',          file: operatoriPath,           cloud: false },
+        { id: 'progetti',    key: 'progetti',           file: progettiConfigPath,      cloud: true  },
+        { id: 'salute',      key: 'salute',             file: path.join(__dirname, 'data', 'salute_db.json'), cloud: false },
+        { id: 'mednutri',    key: 'mednutri',           file: medNutriDbFile,          cloud: true  },
+        { id: 'careassist',  key: 'careassist',         file: careAssistDbFile,        cloud: true  },
+        { id: 'gioco',       key: 'gioco',              file: path.join(__dirname, 'data', 'gioco_records.json'), cloud: false },
+        { id: 'logistica',   key: 'logistica_consegne', file: consegneDbPath,          cloud: true  },
+        { id: 'veicoli',     key: 'veicoli',            file: veicoliCloudDbPath,      cloud: true  }
+    ]
 });
 
 // ==============================================================================
@@ -2795,6 +2683,225 @@ app.post('/api/open-exported-folder', (req, res) => {
 });
 
 // 4. API Avanzata Generatore Versioni Personalizzate & Antigravity Orchestrator
+// ==============================================================================
+// 4-BIS. API DI SINCRONIZZAZIONE MULTI-DIREZIONALE REALE (USB, Desktop, Cloud)
+// ==============================================================================
+app.post('/api/sync/execute', async (req, res) => {
+    const { direction, driveLetter, desktopFolder, antiFreeze, incremental, multiThread } = req.body || {};
+    const { exec } = require('child_process');
+    const logs = [];
+    const log = (msg) => {
+        const line = `[${new Date().toLocaleTimeString('it-IT')}] ${msg}`;
+        logs.push(line);
+        console.log('[SYNC-API]', msg);
+    };
+
+    try {
+        log(`Avvio sincronizzazione: direzione="${direction || 'usb_desktop'}"`);
+
+        // Riconoscimento dinamico dell'unita USB reale
+        const detectedRoot = path.parse(__dirname).root.replace(/\\$/, '');
+        const targetDrive = (driveLetter && driveLetter.trim()) ? driveLetter.trim().replace(/\\$/, '') : detectedRoot;
+        const usbQuestaDir = path.resolve(targetDrive + '\\questa');
+        const deskQuestaDir = (desktopFolder && desktopFolder.trim()) ? desktopFolder.trim() : path.join(process.env.USERPROFILE || 'C:\\Users\\Utente', 'Desktop', 'questa');
+
+        // URL del Cloud Master
+        const CLOUD_MASTER_URL = process.env.RENDER_EXTERNAL_URL || 'https://milella-suite.onrender.com';
+
+        // ----------------------------------------------------
+        // CASO 1: USB <-> DESKTOP (Robocopy Reale Bidirezionale/Incrementale)
+        // ----------------------------------------------------
+        if (direction === 'usb_desktop') {
+            if (!fs.existsSync(usbQuestaDir)) {
+                return res.status(400).json({ success: false, logs, error: `Cartella USB non trovata: ${usbQuestaDir}` });
+            }
+            if (!fs.existsSync(deskQuestaDir)) {
+                fs.mkdirSync(deskQuestaDir, { recursive: true });
+                log(`Creata cartella Desktop: ${deskQuestaDir}`);
+            }
+
+            // Parametri robocopy dinamici
+            let flags = '/E /R:1 /W:1 /NP /NFL /NDL';
+            if (incremental !== false) flags += ' /XO';
+            if (multiThread !== false) flags += ' /MT:16';
+            if (antiFreeze !== false) {
+                flags += ' /XD "node_modules" ".git" "scratch" "Cache" "Code Cache" "GPUCache" /XF "*.tmp" "*.bak" "*.pma" "*lock*"';
+            }
+
+                        // Per massima velocita ed evitare timeout su memorie USB lente (es. oltre 6 GB di file),
+            // allineiamo il core dell'applicazione (AGGIORNAMENTO_RENDER, data, CareAssist, lanciatori)
+            const srcRender = path.join(usbQuestaDir, 'AGGIORNAMENTO_RENDER');
+            const dstRender = path.join(deskQuestaDir, 'AGGIORNAMENTO_RENDER');
+            if (!fs.existsSync(dstRender)) fs.mkdirSync(dstRender, { recursive: true });
+
+            const robocopyCmd = `robocopy "${srcRender}" "${dstRender}" ${flags} & robocopy "${usbQuestaDir}" "${deskQuestaDir}" *.bat *.html *.json ${flags}`;
+            log(`Esecuzione Robocopy: USB (${usbQuestaDir}) -> Desktop (${deskQuestaDir})`);
+
+            await new Promise((resolve) => {
+                exec(robocopyCmd, { maxBuffer: 1024 * 1024 * 10 }, (err, stdout, stderr) => {
+                    // Robocopy codici uscita < 8 indicano successo (0=nessun cambio, 1=file copiati, 2=extra, 3=copiati+extra)
+                    const exitCode = err ? (err.code || 0) : 0;
+                    if (exitCode <= 7) {
+                        log(`Robocopy completato con successo (Codice: ${exitCode}). File allineati perfettamente.`);
+                    } else {
+                        log(`Robocopy warning/error (Codice: ${exitCode}): ${stderr || err.message}`);
+                    }
+                    resolve();
+                });
+            });
+
+            return res.json({
+                success: true,
+                direction,
+                message: `Allineamento USB (${targetDrive}) e Desktop completato con successo!`,
+                logs
+            });
+        }
+
+        // ----------------------------------------------------
+        // CASO 2: CLOUD -> USB (Scarica dati da Render su Chiavetta)
+        // ----------------------------------------------------
+        if (direction === 'cloud_usb') {
+            log(`Download bundle dati in tempo reale da Cloud: ${CLOUD_MASTER_URL}/api/suite/backup-completo`);
+            const fetchMod = globalThis.fetch || (await import('node-fetch')).default;
+            const resp = await fetchMod(`${CLOUD_MASTER_URL}/api/suite/backup-completo`, { headers: { 'User-Agent': 'SuiteMilella-LocalSync' } });
+
+            if (!resp.ok) {
+                throw new Error(`Risposta Cloud non valida: ${resp.status} ${resp.statusText}`);
+            }
+
+            const backupData = await resp.json();
+            if (!backupData || !backupData.dati) {
+                throw new Error('Dati di backup non validi o vuoti dal server Cloud.');
+            }
+
+            const dati = backupData.dati;
+            let counter = 0;
+
+const rootDataDir = path.resolve(__dirname, '..', 'data');
+            if (!fs.existsSync(rootDataDir)) try { fs.mkdirSync(rootDataDir, { recursive: true }); } catch(e){}
+
+            if (dati.turnario) {
+                await cloudSet("turnario_settimanale", dati.turnario, turnarioPath);
+                try { fs.writeFileSync(path.join(rootDataDir, 'turnario_settimanale.json'), JSON.stringify(dati.turnario, null, 2), 'utf8'); } catch(e){}
+                counter++;
+            }
+            if (dati.careassist && fs.existsSync(path.dirname(careAssistDbFile))) {
+                await cloudSet("careassist", dati.careassist, careAssistDbFile);
+                const rootCare = path.resolve(__dirname, '..', 'CareAssist_Pro', 'careassist_database.json');
+                try { if (fs.existsSync(path.dirname(rootCare))) fs.writeFileSync(rootCare, JSON.stringify(dati.careassist, null, 2), 'utf8'); } catch(e){}
+                counter++;
+            }
+            if (dati.inventario) {
+                await cloudSet("inventario", dati.inventario, path.join(__dirname, 'data', 'inventario.json'));
+                try { fs.writeFileSync(path.join(rootDataDir, 'inventario.json'), JSON.stringify(dati.inventario, null, 2), 'utf8'); } catch(e){}
+                counter++;
+            }
+            if (dati.salute) {
+                await cloudSet("salute", dati.salute, path.join(__dirname, 'data', 'salute_db.json'));
+                try { fs.writeFileSync(path.join(rootDataDir, 'salute_db.json'), JSON.stringify(dati.salute, null, 2), 'utf8'); } catch(e){}
+                counter++;
+            }
+            if (dati.veicoli) {
+                await cloudSet("veicoli", dati.veicoli, path.join(__dirname, 'data', 'veicoli_db.json'));
+                try { fs.writeFileSync(path.join(rootDataDir, 'veicoli_db.json'), JSON.stringify(dati.veicoli, null, 2), 'utf8'); } catch(e){}
+                counter++;
+            }
+            if (dati.progetti) {
+                await cloudSet("progetti", dati.progetti, progettiConfigPath);
+                try { fs.writeFileSync(path.join(rootDataDir, 'progetti_config.json'), JSON.stringify(dati.progetti, null, 2), 'utf8'); } catch(e){}
+                counter++;
+            }
+
+            log(`Salvati localmente sulla chiavetta ${counter} moduli sincronizzati dal Cloud!`);
+            return res.json({
+                success: true,
+                direction,
+                message: `Aggiornamento da Cloud completato! ${counter} database aggiornati sulla chiavetta.`,
+                logs
+            });
+        }
+
+        // ----------------------------------------------------
+        // CASO 3: CLOUD -> DESKTOP (Scarica dati dal Cloud sulla cartella Desktop)
+        // ----------------------------------------------------
+        if (direction === 'cloud_desktop') {
+            log(`Download bundle dati dal Cloud per la cartella Desktop...`);
+            const fetchMod = globalThis.fetch || (await import('node-fetch')).default;
+            const resp = await fetchMod(`${CLOUD_MASTER_URL}/api/suite/backup-completo`);
+            if (!resp.ok) throw new Error(`Errore Cloud: ${resp.status} ${resp.statusText}`);
+
+            const backupData = await resp.json();
+            const deskDataDir = path.join(deskQuestaDir, 'AGGIORNAMENTO_RENDER', 'data');
+            fs.mkdirSync(deskDataDir, { recursive: true });
+
+            const dati = backupData.dati || {};
+            if (dati.inventario) fs.writeFileSync(path.join(deskDataDir, 'inventario.json'), JSON.stringify(dati.inventario, null, 2), 'utf8');
+            if (dati.salute) fs.writeFileSync(path.join(deskDataDir, 'salute_db.json'), JSON.stringify(dati.salute, null, 2), 'utf8');
+            if (dati.veicoli) fs.writeFileSync(path.join(deskDataDir, 'veicoli_db.json'), JSON.stringify(dati.veicoli, null, 2), 'utf8');
+            if (dati.careassist) {
+                const deskCareDir = path.join(deskQuestaDir, 'AGGIORNAMENTO_RENDER', 'CareAssist_Pro');
+                fs.mkdirSync(deskCareDir, { recursive: true });
+                fs.writeFileSync(path.join(deskCareDir, 'careassist_database.json'), JSON.stringify(dati.careassist, null, 2), 'utf8');
+            }
+
+            log(`Database Cloud salvati con successo nella cartella Desktop!`);
+            return res.json({
+                success: true,
+                direction,
+                message: `Cartella Desktop aggiornata con i dati Cloud in tempo reale!`,
+                logs
+            });
+        }
+
+        // ----------------------------------------------------
+        // CASO 4: DESKTOP/USB -> CLOUD BACKUP (Invia al Cloud Render)
+        // ----------------------------------------------------
+        if (direction === 'desktop_cloud') {
+            log(`Preparazione backup locale per invio al Cloud Render...`);
+            const payload = {
+                suite: "Suite Milella Aziendale",
+                versione: "2.5.0",
+                timestamp: new Date().toISOString(),
+                autore: "Ciro Milella (Admin)",
+                dati: {
+                    turnario: memoryCache.get("turnario_settimanale") || (fs.existsSync(turnarioPath) ? JSON.parse(fs.readFileSync(turnarioPath, 'utf8') || '{}') : {}),
+                    operatori: (fs.existsSync(path.join(__dirname, 'operatori.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'operatori.json'), 'utf8') || '[]') : []),
+                    progetti: (fs.existsSync(progettiConfigPath) ? JSON.parse(fs.readFileSync(progettiConfigPath, 'utf8') || '[]') : []),
+                    inventario: (fs.existsSync(path.join(__dirname, 'data', 'inventario.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'inventario.json'), 'utf8') || '[]') : []),
+                    careassist: (fs.existsSync(careAssistDbFile) ? JSON.parse(fs.readFileSync(careAssistDbFile, 'utf8') || '{}') : {}),
+                    salute: (fs.existsSync(path.join(__dirname, 'data', 'salute_db.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'salute_db.json'), 'utf8') || '{}') : {}),
+                    veicoli: (fs.existsSync(path.join(__dirname, 'data', 'veicoli_db.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'veicoli_db.json'), 'utf8') || '{}') : {})
+                }
+            };
+
+            const fetchMod = globalThis.fetch || (await import('node-fetch')).default;
+            const resp = await fetchMod(`${CLOUD_MASTER_URL}/api/suite/ripristina-backup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resp.ok) throw new Error(`Caricamento fallito: ${resp.status} ${resp.statusText}`);
+            const resJson = await resp.json();
+
+            log(`Backup inviato e salvato con successo nel Cloud MongoDB Atlas!`);
+            return res.json({
+                success: true,
+                direction,
+                message: `Dati locali salvati nel Cloud protetto con successo!`,
+                logs
+            });
+        }
+
+        return res.status(400).json({ success: false, error: 'Direzione sincronizzazione non valida: ' + direction });
+    } catch(err) {
+        log(`[ERRORE CRITICO] ${err.message}`);
+        console.error('[SYNC ERROR]', err);
+        return res.status(500).json({ success: false, logs, error: err.message });
+    }
+});
+
 app.post('/api/generate-custom-version', (req, res) => {
     const { destName, destCompany, isDemo, modules, destinationType, targetDrive, scadenza } = req.body || {};
     if (!destName || !destName.trim()) {

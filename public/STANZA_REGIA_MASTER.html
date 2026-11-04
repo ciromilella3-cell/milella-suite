@@ -2118,41 +2118,84 @@
         } catch(e) {}
     }
 
-    // Esegui Sincronizzazione Master
+    // Esegui Sincronizzazione Master REALE tramite API del server
     async function avviaSincronizzazioneMaster() {
         playAudio('chime');
-        apriProgressoModal('SINCRONIZZAZIONE INTELLIGENTE IN CORSO', 'Allineamento file differenziale ad altissima velocità...', '⚡');
-        
-        aggiornaStepProgresso(15, 1);
-        appendLog('[START] Avvio algoritmo Robocopy differenziale multi-thread (16 flussi)...');
+        const dir = typeof currentSyncDirection !== 'undefined' ? currentSyncDirection : 'usb_desktop';
+        const driveLetter = (typeof _activeDriveLetter !== 'undefined' && _activeDriveLetter) ? _activeDriveLetter : (document.getElementById('selectPathUsbDrive')?.value || 'E:');
+        const desktopFolder = document.getElementById('textPathDesktop')?.innerText?.trim() || '';
+        const antiFreeze = document.getElementById('chkAntiFreeze')?.checked !== false;
+        const incremental = document.getElementById('chkIncremental')?.checked !== false;
+        const multiThread = document.getElementById('chkMultiThread')?.checked !== false;
 
-        setTimeout(() => {
-            aggiornaStepProgresso(40, 2);
-            appendLog('[PROGRESS] Controllo 125.794 elementi: 109.941 file già verificati e protetti.');
-            appendLog('[TURBO] BrowserMetrics-spare.pma e file cache IGNORATI con successo (Zero Blocchi!).');
-        }, 1100);
+        let titleMap = {
+            'usb_desktop': 'SINCRONIZZAZIONE USB ⇄ DESKTOP IN CORSO',
+            'cloud_usb': 'SINCRONIZZAZIONE CLOUD ➔ USB IN CORSO',
+            'cloud_desktop': 'SINCRONIZZAZIONE CLOUD ➔ DESKTOP IN CORSO',
+            'desktop_cloud': 'BACKUP LOCALE ➔ CLOUD IN CORSO'
+        };
 
-        setTimeout(() => {
-            aggiornaStepProgresso(75, 3);
-            appendLog('[SPEED] Velocità rilevata: 85.5 MB/s. Scrittura tabelle metadati completata.');
-        }, 2400);
+        apriProgressoModal(titleMap[dir] || 'SINCRONIZZAZIONE IN CORSO', 'Elaborazione dati e allineamento reale...', '⚡');
+        aggiornaStepProgresso(20, 1);
+        appendLog(`[SYNC] Avvio operazione reale: direzione=${dir}, unita=${driveLetter}`);
 
-        setTimeout(() => {
+        try {
+            const isRemoteCloud = window.location.hostname.includes('onrender.com');
+        const apiTarget = isRemoteCloud ? 'http://localhost:3000/api/sync/execute' : '/api/sync/execute';
+        if (isRemoteCloud) {
+            appendLog('[INFO] Stanza di Regia aperta da Cloud: invio comando al Server Locale (porta 3000)...');
+        }
+        const resp = await fetch(apiTarget, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    direction: dir,
+                    driveLetter: driveLetter,
+                    desktopFolder: desktopFolder,
+                    antiFreeze: antiFreeze,
+                    incremental: incremental,
+                    multiThread: multiThread
+                })
+            });
+
+            aggiornaStepProgresso(60, 3);
+            const data = await resp.json();
+
+            if (data && data.logs && Array.isArray(data.logs)) {
+                data.logs.forEach(l => appendLog(l));
+            }
+
+            if (!resp.ok || !data.success) {
+                throw new Error(data.error || 'Errore durante la sincronizzazione');
+            }
+
             aggiornaStepProgresso(100, 5);
             playAudio('chime');
             lanciaCoriandoli();
-            appendLog('[SUCCESS] Sincronizzazione completata con successo!');
+            appendLog(`[SUCCESS] ${data.message || 'Operazione completata con successo!'}`);
 
             document.getElementById('modalIcon').innerText = '🎉';
             document.getElementById('modalTitle').innerText = 'SINCRONIZZAZIONE RIUSCITA!';
-            document.getElementById('modalSub').innerHTML = `Tutti i file sono perfettamente allineati tra <strong>USB</strong> e <strong>Desktop</strong> a 85.5 MB/s senza alcun freeze.`;
+            document.getElementById('modalSub').innerHTML = `<strong>${data.message || 'Dati sincronizzati con successo!'}</strong>`;
             document.getElementById('modalActionButtons').innerHTML = `
                 <button class="btn-modal-primary" onclick="chiudiModalExtra()">
                     <span>✔ Completa &amp; Chiudi</span>
                 </button>
             `;
-            showToast('Sincronizzazione Riuscita', '109.941 file allineati in 36 secondi!', '⚡');
-        }, 3800);
+            showToast('Sincronizzazione Riuscita', data.message || 'Tutti i dati sono allineati!', '⚡');
+        } catch(err) {
+            console.error('[SYNC ERROR]', err);
+            appendLog(`[ERRORE] ${err.message}`);
+            document.getElementById('modalIcon').innerText = '❌';
+            document.getElementById('modalTitle').innerText = 'ERRORE SINCRONIZZAZIONE';
+            document.getElementById('modalSub').innerHTML = `<span style="color:#f87171;">${err.message}</span>`;
+            document.getElementById('modalActionButtons').innerHTML = `
+                <button class="btn-modal-primary" style="background:#ef4444;" onclick="chiudiModalExtra()">
+                    <span>Chiudi</span>
+                </button>
+            `;
+            showToast('Errore Sincronizzazione', err.message, '❌');
+        }
     }
 
     // Genera Pacchetto Copia Utente (CON CONTROLLI ELEGANTI, MAI PIÙ ALERT!)
