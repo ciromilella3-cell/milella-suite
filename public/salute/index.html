@@ -958,7 +958,7 @@
 
         <main class="dashboard">
 
-            <!-- TABS INJECTED (STICKY IN ALTO: CON SELETTORE COMPATTO AD ALTA SCALABILITÀ) -->
+            <!-- TABS INJECTED (STICKY IN ALTO: CON SELETTORE COMPATTO AD ALTA SCALABILITÀ E RICERCA DIRETTA) -->
             <div class="sticky-profile-header no-print"
                 style="position:-webkit-sticky; position:sticky; top:10px; z-index:9999; background:linear-gradient(135deg, #0b1120 0%, #1e293b 100%); border-radius:18px; padding:10px 16px; margin-bottom:18px; box-shadow:0 8px 25px rgba(0,0,0,0.55); border:1.5px solid #38bdf8; backdrop-filter:blur(10px);">
                 <div
@@ -967,6 +967,23 @@
                     <div style="display:flex; align-items:center; gap:8px;">
                         <span style="font-size:1.15rem;">🎯</span>
                         <span style="font-size:0.85rem; text-transform:uppercase; font-weight:800; color:#94a3b8; letter-spacing:0.5px;">Scegli la Persona:</span>
+                    </div>
+
+                    <!-- BARRA DI RICERCA LIVE PAZIENTE (CON FILTRO DIGITATO E SELEZIONE IMMEDIATA) -->
+                    <div style="position:relative; min-width:220px; max-width:300px; flex:1;">
+                        <div style="display:flex; align-items:center; background:rgba(15, 23, 42, 0.85); border:1.5px solid #0284c7; border-radius:20px; padding:3px 12px; box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+                            <span style="font-size:14px; margin-right:6px; color:#38bdf8;">🔍</span>
+                            <input type="text" id="cerca-paziente-salute-input" 
+                                   placeholder="Cerca paziente..." 
+                                   autocomplete="off"
+                                   onfocus="apriDropdownRicercaSalute(true)"
+                                   oninput="filtraPazientiSaluteLive(this.value)"
+                                   style="border:none !important; outline:none !important; width:100%; padding:5px 0; font-size:13px; font-weight:600; color:#f8fafc; background:transparent !important; box-shadow:none !important;">
+                            <button type="button" id="cerca-paziente-salute-clear" onclick="pulisciRicercaPazienteSalute()" style="display:none; background:none; border:none; color:#94a3b8; font-size:14px; cursor:pointer; padding:0 2px;" title="Cancella">✕</button>
+                        </div>
+                        <!-- RISULTATI DI RICERCA FLOTTANTI -->
+                        <div id="dropdown-ricerca-salute" style="display:none; position:absolute; top:calc(100% + 6px); left:0; right:0; background:#0f172a; border:1.5px solid #38bdf8; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,0.65); max-height:260px; overflow-y:auto; z-index:10000; padding:6px 0;">
+                        </div>
                     </div>
 
                     <!-- CONTENITORE SELEZIONE: CHIPS RAPIDI O DROPDOWN ARCHIVIO SE I PROFILI CRESCONO -->
@@ -1158,6 +1175,99 @@
                         setTimeout(() => initFamilySyncControls(), 20);
                     }
                 }
+
+                // ========================================================
+                // RICERCA LIVE PAZIENTE (FILTRO ISTANTANEO CON AUTOCOMPLETAMENTO)
+                // ========================================================
+                function apriDropdownRicercaSalute(forzaApertura) {
+                    const input = document.getElementById('cerca-paziente-salute-input');
+                    const q = input ? input.value.trim().toLowerCase() : '';
+                    filtraPazientiSaluteLive(q, forzaApertura);
+                }
+
+                function pulisciRicercaPazienteSalute() {
+                    const input = document.getElementById('cerca-paziente-salute-input');
+                    const clr = document.getElementById('cerca-paziente-salute-clear');
+                    const dd = document.getElementById('dropdown-ricerca-salute');
+                    if (input) input.value = '';
+                    if (clr) clr.style.display = 'none';
+                    if (dd) dd.style.display = 'none';
+                }
+
+                function filtraPazientiSaluteLive(query, mostraTuttiSeVuoto = false) {
+                    const dd = document.getElementById('dropdown-ricerca-salute');
+                    const clr = document.getElementById('cerca-paziente-salute-clear');
+                    if (!dd) return;
+
+                    const q = (query || '').trim().toLowerCase();
+                    if (clr) clr.style.display = q ? 'inline-block' : 'none';
+
+                    // Trova corrispondenze tra i profili registrati in Progetto Salute
+                    let matches = visibleProfiles.map(p => ({
+                        id: p,
+                        nome: getProfileDisplayName(p),
+                        sesso: localStorage.getItem('profileGender_' + p) || (p === 'moglie' ? 'Donna' : 'Uomo'),
+                        nato: localStorage.getItem('profileDob_' + p) || (p === 'marito' ? '16/12/1967' : (p === 'moglie' ? '29/03/1969' : ''))
+                    }));
+
+                    if (q) {
+                        matches = matches.filter(m => 
+                            m.nome.toLowerCase().includes(q) || 
+                            m.id.toLowerCase().includes(q) || 
+                            m.nato.includes(q)
+                        );
+                    } else if (!mostraTuttiSeVuoto) {
+                        dd.style.display = 'none';
+                        return;
+                    }
+
+                    if (matches.length === 0) {
+                        dd.innerHTML = `
+                            <div style="padding:12px; text-align:center; color:#94a3b8; font-size:12.5px;">
+                                Nessun paziente trovato per "<strong>${query}</strong>"
+                            </div>
+                        `;
+                        dd.style.display = 'block';
+                        return;
+                    }
+
+                    dd.innerHTML = matches.map(m => {
+                        const isAttivo = m.id === activeProfile;
+                        const icona = m.sesso.toLowerCase().includes('donna') ? '👩' : '👨';
+                        const activeBadge = isAttivo ? '<span style="font-size:10px; background:#0284c7; color:#fff; padding:2px 6px; border-radius:6px; font-weight:800;">ATTIVO</span>' : '';
+                        return `
+                            <div onclick="selezionaPazienteDaRicercaSalute('${m.id}')" 
+                                 style="padding:9px 14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.15s ease;"
+                                 onmouseover="this.style.background='rgba(56, 189, 248, 0.15)'" 
+                                 onmouseout="this.style.background='transparent'">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="font-size:16px;">${icona}</span>
+                                    <div>
+                                        <div style="font-size:13px; font-weight:700; color:#f8fafc;">${m.nome}</div>
+                                        <div style="font-size:11px; color:#94a3b8;">${m.sesso}${m.nato ? ' • ' + m.nato : ''}</div>
+                                    </div>
+                                </div>
+                                ${activeBadge}
+                            </div>
+                        `;
+                    }).join('');
+
+                    dd.style.display = 'block';
+                }
+
+                function selezionaPazienteDaRicercaSalute(profId) {
+                    selezionaProfiloSalute(profId);
+                    pulisciRicercaPazienteSalute();
+                }
+
+                // Chiudi dropdown al click fuori
+                document.addEventListener('click', function(e) {
+                    const wrap = document.getElementById('cerca-paziente-salute-input')?.closest('div')?.parentElement;
+                    const dd = document.getElementById('dropdown-ricerca-salute');
+                    if (dd && wrap && !wrap.contains(e.target)) {
+                        dd.style.display = 'none';
+                    }
+                });
 
                 function aggiornaIndicatoreProfiloAttivo() {
                     const isMarito = activeProfile === 'marito';
@@ -4193,5 +4303,3 @@
 </body>
 
 </html>
-
-ess
