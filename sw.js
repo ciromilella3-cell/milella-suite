@@ -1,5 +1,5 @@
 // Service Worker - Suite Gestionale C. Milella (PWA & Offline Support)
-const CACHE_NAME = 'milella-suite-v210';
+const CACHE_NAME = 'milella-suite-v211';
 const CORE_ASSETS = [
   '/',
   '/launcher.html',
