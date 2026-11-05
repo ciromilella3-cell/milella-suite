@@ -10,6 +10,15 @@
     } catch(e) { return null; }
   }
 
+  function formatDataItalianaVisuale(dateStr) {
+    if (!dateStr) return 'Data n.d.';
+    if (dateStr.includes('-')) {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dateStr;
+  }
+
   function formatItalianDateToInput(dateStr) {
     if (!dateStr) return '';
     if (dateStr.includes('-')) return dateStr;
@@ -226,6 +235,7 @@
       const emoji = isFem ? '👩' : '👨';
       const year = s.dataNascita ? s.dataNascita.split('-')[0] : '';
       const originiStr = (s.origini || []).join(' • ');
+      const dataFmt = formatDataItalianaVisuale(s.dataNascita);
 
       return `
         <div onclick="selezionaPazienteDaRicerca('${s.originalIdx}')" 
@@ -236,7 +246,7 @@
             <span style="font-size:17px;">${emoji}</span>
             <div>
               <div style="font-weight:800; font-size:13px; color:#0f172a;">${s.nome}</div>
-              <div style="font-size:11px; color:#64748b;">${originiStr ? originiStr + ' • ' : ''}${s.dataNascita || 'Data n.d.'}</div>
+              <div style="font-size:11px; color:#64748b;">${originiStr ? originiStr + ' • ' : ''}Nato/a il: <strong style="color:#0369a1;">${dataFmt}</strong></div>
             </div>
           </div>
           <span style="font-size:11px; font-weight:700; color:#0284c7; background:#e0f2fe; padding:2px 8px; border-radius:6px;">

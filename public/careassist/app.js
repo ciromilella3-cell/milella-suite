@@ -1041,8 +1041,8 @@ function getPazienteMariaCarmelaInit() {
 }
 
 function getPazienteCiroInit() {
-  const ciro = createPazienteTemplate('paz_1793216119572', 'Ciro Milella', '1967-12-15', 'Paziente assistito a domicilio.');
-  ciro.eta = calcolaAnniDaData('1967-12-15');
+  const ciro = createPazienteTemplate('paz_1793216119572', 'Ciro Milella', '1967-12-16', 'Paziente assistito a domicilio.');
+  ciro.eta = calcolaAnniDaData('1967-12-16');
   ciro.indirizzo = 'Via Giulio Petroni, 69';
   ciro.telefonoFisso = '366 460 73 96';
   ciro.cellulare = '366 460 73 96';
