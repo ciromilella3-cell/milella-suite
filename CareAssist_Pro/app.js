@@ -1,4 +1,4 @@
-
+﻿
 // ==============================================================
 // MOTORE CLINICO AUTOMATICO FARMACO MULTI-TEMPO & SCORTA CONDIVISA
 // ==============================================================
@@ -548,11 +548,11 @@ function getDettagliAvatarPaziente(p) {
 // Inizializzazione dati per ALDO con anagrafica reale e farmaci
 function getPazienteAldoInit() {
   const aldo = createPazienteTemplate('paz_aldo', 'Aldo Zamparino', '1935-04-18', 'Paziente allettato 91 anni. Terapia cardiologica, neurologica e urologica con scarico pressorio q2h.');
-  aldo.indirizzo = 'Via Giovanni Modugno, 25 - Bari';
+  aldo.indirizzo = 'Via Roma, 10 - Bari';
   aldo.telefonoFisso = '080 561 57 14';
-  aldo.cellulare = '338 306 69 05';
+  aldo.cellulare = '338 000 00 01';
   aldo.moglieNome = 'Mazzicone Angela';
-  aldo.moglieCellulare = '338 944 96 10';
+  aldo.moglieCellulare = '338 000 00 02';
   aldo.medico = 'Dott. Roberto Scarcia';
   aldo.medicoNome = 'Dott. Roberto Scarcia';
   aldo.medicoIndirizzo = 'Via Muciaccia, 11 - 70121 Bari';
@@ -687,11 +687,11 @@ function getPazienteAldoInit() {
 function getPazienteAngelaInit() {
   const angela = createPazienteTemplate('paz_angela', 'Angela Mazzicone', '1938-05-29', 'Coniuge di Aldo. Terapia cardiologica, ipertensiva, dislipidemica, uricosurica, gastroprotettiva e integrazione vit. D3.');
   angela.nome = 'Angela Mazzicone';
-  angela.indirizzo = 'Via Giovanni Modugno, 25 - BARI (BA)';
+  angela.indirizzo = 'Via Roma, 10 - Bari (BA)';
   angela.telefonoFisso = '080 561 57 14';
-  angela.cellulare = '338 944 96 10';
+  angela.cellulare = '338 000 00 02';
   angela.maritoNome = 'Aldo Zamparino';
-  angela.maritoCellulare = '338 306 69 05';
+  angela.maritoCellulare = '338 000 00 01';
   angela.farmaciaDiRiferimento = 'Farmacia Dott. MACARIO';
   angela.farmaciaIndirizzo = 'Via G. Petroni, 69/b - Bari';
   angela.farmaciaTelefono = '080 542 8061';
@@ -852,10 +852,10 @@ function getPazienteRosaInit() {
   rosa.nome = 'Rosa Annunziata Cavalcante';
   rosa.indirizzo = 'Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)';
   rosa.telefonoFisso = '097 169 32 21';
-  rosa.cellulare = '338 379 76 71';
+  rosa.cellulare = '338 000 00 03';
   rosa.moglieNome = 'Maria Carmela (Figlia / Caregiver)';
   rosa.moglieCellulare = '338 739 76 71';
-  rosa.farmaciaDiRiferimento = 'Farmacia Girasole Picconi';
+  rosa.farmaciaDiRiferimento = 'Farmacia Comunale Centrale';
   rosa.farmaciaIndirizzo = 'Via Ariosto, 4 / 16 - 85012 Corleto Perticara (PZ)';
   rosa.farmaciaTelefono = '0971 963055';
   rosa.medicoNome = 'Dr.ssa Carolina Potenza';
@@ -870,7 +870,7 @@ function getPazienteRosaInit() {
   rosa.ausili = [
     { tipo: 'Deambulatore rollator con freno per interni/esterni', stato: 'In uso regolare', utilizzo: 'Uso quotidiano per deambulazione interna ed esterna in sicurezza' },
     { tipo: 'Calze elastiche antitrombo a compressione graduata', stato: 'In uso', utilizzo: 'In uso diurno per favorire il ritorno venoso e prevenzione edemi' },
-    { tipo: 'Mutandina Assorbente PANTS (Pull-Up monouso)', taglia: 'L (Extra) - Girovita 110-150 cm', cartoni: '10 confezioni (140 pz)', scortaPacchi: 10, pezziTotali: 140, pezziPerPacco: 14, utilizzo: 'PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021) - 10 conf. x 14 pz = 140 pz. DDT Serenity N. 2286626418 del 21/08/2026. Ord. ASP 0060448686 - Distretto Villa D\'Agri 02 02. Codice Utente: 002713. Prossima consegna indicativa: 24/11/2026 con preavviso telefonico (3383797671). Scadenza Piano: 18/02/2027.', fabbisogno: 'Fornitura periodica ASP Potenza (consegne ogni ~90 giorni)', fornitore: 'Serenity S.p.A. / ASP Potenza (Distretto Villa D\'Agri)', ddtNumero: '2286626418', ddtData: '2026-08-21', codiceUtente: '002713', codiceArticolo: '00037212200021', numConfezioni: 10, pezziConsegnati: 140, prossimaConsegnaIndicativa: '2026-11-24', scadenzaPiano: '2027-02-18', stato: 'In uso attivo regolare', dataRifornimento: '2026-08-21', dataScadenza: '2027-02-18', prossimaRichiesta: '2026-11-24', giorniAlert: 15 }
+    { tipo: 'Mutandina Assorbente PANTS (Pull-Up monouso)', taglia: 'L (Extra) - Girovita 110-150 cm', cartoni: '10 confezioni (140 pz)', scortaPacchi: 10, pezziTotali: 140, pezziPerPacco: 14, utilizzo: 'PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021) - 10 conf. x 14 pz = 140 pz. DDT Serenity N. 2286626418 del 21/08/2026. Ord. ASP 0060448686 - Distretto Villa D\'Agri 02 02. Codice Utente: 002713. Prossima consegna indicativa: 24/11/2026 con preavviso telefonico (3380000003). Scadenza Piano: 18/02/2027.', fabbisogno: 'Fornitura periodica ASP Potenza (consegne ogni ~90 giorni)', fornitore: 'Serenity S.p.A. / ASP Potenza (Distretto Villa D\'Agri)', ddtNumero: '2286626418', ddtData: '2026-08-21', codiceUtente: '002713', codiceArticolo: '00037212200021', numConfezioni: 10, pezziConsegnati: 140, prossimaConsegnaIndicativa: '2026-11-24', scadenzaPiano: '2027-02-18', stato: 'In uso attivo regolare', dataRifornimento: '2026-08-21', dataScadenza: '2027-02-18', prossimaRichiesta: '2026-11-24', giorniAlert: 15 }
   ];
   rosa.terapie = getTerapieRosaFoto();
   rosa.visite = [
@@ -896,7 +896,7 @@ function getPatologieRosaFoto() {
 // Terapia di Rosa dai farmaci in foto (17/10/2026).
 // ATTENZIONE: orari e dosi sono STANDARD PROVVISORI, da verificare col piano terapeutico del medico.
 function getTerapieRosaFoto() {
-  const F = 'Farmacia Girasole Picconi';
+  const F = 'Farmacia Comunale Centrale';
   const V = ' ⚠️ Orario/dose da confermare col medico';
   const mk = (id, ora, fascia, farmaco, principio, dosaggio, modo, cpr) => ({
     id, ora, fascia, farmaco, principio, dosaggio, modo: modo + V,
@@ -1037,11 +1037,11 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
   }
   if (aldoEx) {
     aldoEx.nome = aldoEx.nome || 'Aldo Zamparino';
-    aldoEx.indirizzo = aldoEx.indirizzo || 'Via Giovanni Modugno, 25 - BARI (BA)';
+    aldoEx.indirizzo = aldoEx.indirizzo || 'Via Roma, 10 - Bari (BA)';
     aldoEx.telefonoFisso = aldoEx.telefonoFisso || '080 561 57 14';
-    aldoEx.cellulare = aldoEx.cellulare || '338 306 69 05';
+    aldoEx.cellulare = aldoEx.cellulare || '338 000 00 01';
     aldoEx.moglieNome = aldoEx.moglieNome || 'Mazzicone Angela';
-    aldoEx.moglieCellulare = aldoEx.moglieCellulare || '338 944 96 10';
+    aldoEx.moglieCellulare = aldoEx.moglieCellulare || '338 000 00 02';
     aldoEx.farmaciaDiRiferimento = aldoEx.farmaciaDiRiferimento || 'Farmacia Dott. MACARIO';
     aldoEx.farmaciaIndirizzo = aldoEx.farmaciaIndirizzo || 'Via G. Petroni, 69/b - Bari';
     aldoEx.farmaciaTelefono = aldoEx.farmaciaTelefono || '080 542 8061';
@@ -1111,11 +1111,11 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     angelaEx.id = 'paz_angela';
     angelaEx.nome = 'Angela Mazzicone';
     angelaEx.dataNascita = '1938-05-29';
-    angelaEx.indirizzo = 'Via Giovanni Modugno, 25 - BARI (BA)';
+    angelaEx.indirizzo = 'Via Roma, 10 - Bari (BA)';
     angelaEx.telefonoFisso = '080 561 57 14';
-    angelaEx.cellulare = '338 944 96 10';
+    angelaEx.cellulare = '338 000 00 02';
     angelaEx.maritoNome = 'Aldo Zamparino';
-    angelaEx.maritoCellulare = '338 306 69 05';
+    angelaEx.maritoCellulare = '338 000 00 01';
     angelaEx.farmaciaDiRiferimento = 'Farmacia Dott. MACARIO';
     angelaEx.farmaciaIndirizzo = 'Via G. Petroni, 69/b - Bari';
     angelaEx.farmaciaTelefono = '080 542 8061';
@@ -1165,7 +1165,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     if (rosaEx.telefonoFisso === '080 561 57 14' || rosaEx.telefonoFisso === '080 5615714') {
       rosaEx.telefonoFisso = '097 169 32 21';
     }
-    if (rosaEx.cellulare === '338 306 69 05' || rosaEx.cellulare === '338 3066905') {
+    if (rosaEx.cellulare === '338 000 00 01' || rosaEx.cellulare === '338 3066905') {
       rosaEx.cellulare = '';
     }
     if (!rosaEx.moglieNome || rosaEx.moglieNome.includes('Mazzicone') || rosaEx.moglieNome.trim() === '') {
@@ -1179,7 +1179,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     if (!rosaEx.note || rosaEx.note.includes('91 anni') || rosaEx.note.includes('urologica')) {
       rosaEx.note = 'Paziente di 88 anni. Cardiopatia ipertensiva in buon compenso, osteoartrosi diffusa e insufficienza venosa periferica.';
     }
-    rosaEx.farmaciaDiRiferimento = rosaEx.farmaciaDiRiferimento || 'Farmacia Girasole Picconi';
+    rosaEx.farmaciaDiRiferimento = rosaEx.farmaciaDiRiferimento || 'Farmacia Comunale Centrale';
     rosaEx.farmaciaIndirizzo = rosaEx.farmaciaIndirizzo || 'Via Ariosto, 4 / 16 - 85012 Corleto Perticara (PZ)';
     rosaEx.farmaciaTelefono = rosaEx.farmaciaTelefono || '0971 963055';
     rosaEx.medicoNome = rosaEx.medicoNome || 'Dr.ssa Carolina Potenza';
@@ -1251,7 +1251,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       "dataScadenza": "2026-11-24",
       "giorniAlert": 7,
       "stato": "In uso attivo regolare",
-      "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
+      "fornitore": "Farmacia Comunale Centrale / Distretto Sanitario ASP",
       "fabbisogno": "Autocontrollo glicemico domiciliare pre-colazione e monitoraggio terapia insulinica"
     });
     rosaFoto.ausili.push({
@@ -1267,7 +1267,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       "dataScadenza": "2026-11-24",
       "giorniAlert": 7,
       "stato": "In uso attivo regolare",
-      "fornitore": "Farmacia Girasole Picconi / Distretto Sanitario ASP",
+      "fornitore": "Farmacia Comunale Centrale / Distretto Sanitario ASP",
       "fabbisogno": "1 lancetta monouso per ciascun controllo glicemico"
     });
 
@@ -1311,7 +1311,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       cprPerScatola: 50,
       scorta: scortaSinemet,
       giorniAlert: 7,
-      farmacia: 'Farmacia Girasole Picconi',
+      farmacia: 'Farmacia Comunale Centrale',
       fattoOggi: false,
       ultimaDoseSomministrata: 2,
       ultimaModificaClinica: {
@@ -1335,7 +1335,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       cprPerScatola: 50,
       scorta: scortaSinemet,
       giorniAlert: 7,
-      farmacia: 'Farmacia Girasole Picconi',
+      farmacia: 'Farmacia Comunale Centrale',
       fattoOggi: false,
       ultimaDoseSomministrata: 2,
       ultimaModificaClinica: {
@@ -1461,7 +1461,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
   if (rosaFoto && !AppData.rosaSerenityDDT20260821) {
     AppData.rosaSerenityDDT20260821 = true;
     rosaFoto.indirizzo = 'Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)';
-    rosaFoto.cellulare = '338 379 76 71';
+    rosaFoto.cellulare = '338 000 00 03';
     rosaFoto.ausili = rosaFoto.ausili || [];
     let pants = rosaFoto.ausili.find(a => (a.tipo || '').toUpperCase().includes('PANTS'));
     if (!pants) {
@@ -1484,7 +1484,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     pants.pezziTotali = 140;
     pants.fornitore = 'Serenity S.p.A. / ASP Potenza (Distretto Villa D\'Agri)';
     pants.fabbisogno = 'Fornitura programmata ogni 90 giorni (ASP Potenza)';
-    pants.utilizzo = 'PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021) - 10 conf. x 14 pz = 140 pz. DDT Serenity N. 2286626418 del 21/08/2026. Ord. ASP 0060448686 - Distretto Villa D\'Agri 02 02. Codice Utente: 002713. Prossima consegna indicativa: 24/11/2026 con preavviso telefonico (3383797671). Scadenza Piano: 18/02/2027.';
+    pants.utilizzo = 'PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021) - 10 conf. x 14 pz = 140 pz. DDT Serenity N. 2286626418 del 21/08/2026. Ord. ASP 0060448686 - Distretto Villa D\'Agri 02 02. Codice Utente: 002713. Prossima consegna indicativa: 24/11/2026 con preavviso telefonico (3380000003). Scadenza Piano: 18/02/2027.';
     pants.dataRifornimento = '2026-08-21';
     pants.prossimaRichiesta = '2026-11-24';
     pants.prossimaConsegnaIndicativa = '2026-11-24';
@@ -1501,7 +1501,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
         data: '2026-11-24',
         ora: '10:00',
         medico: 'Serenity S.p.A. / ASP Villa D\'Agri',
-        motivo: 'Prossima consegna indicativa fornitura PANTS Serenity (previo appuntamento telefonico al 3383797671)',
+        motivo: 'Prossima consegna indicativa fornitura PANTS Serenity (previo appuntamento telefonico al 3380000003)',
         fatto: false
       });
     }
@@ -3390,7 +3390,7 @@ function formattaNumeroTelefonico(inputStr) {
     clean = clean.slice(2);
   }
 
-  // 1. Cellulari (iniziano con 3, solitamente 10 cifre: 338 306 69 05 oppure 347 126 59 71)
+  // 1. Cellulari (iniziano con 3, solitamente 10 cifre: 338 000 00 01 oppure 347 126 59 71)
   if (clean.startsWith('3')) {
     if (clean.length === 10) {
       return prefix + `${clean.slice(0, 3)} ${clean.slice(3, 6)} ${clean.slice(6, 8)} ${clean.slice(8, 10)}`;
@@ -6162,7 +6162,7 @@ function generaTestoRichiesta() {
   const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
   const dataNascitaFmt = (typeof formattaDataNascitaItaliana === 'function') ? formattaDataNascitaItaliana(p.dataNascita, false) : (p.dataNascita || '--');
   const caregiverInfo = p.caregiverNome || p.caregiver || p.moglieNome || (p.nome && p.nome.includes('Rosa') ? 'Maria Carmela (Figlia / Caregiver)' : 'Mazzicone Angela (Caregiver)');
-  const caregiverTel = p.caregiverCellulare || p.caregiverTel || p.moglieCellulare || (p.nome && p.nome.includes('Rosa') ? '338 739 76 71' : '338 944 96 10');
+  const caregiverTel = p.caregiverCellulare || p.caregiverTel || p.moglieCellulare || (p.nome && p.nome.includes('Rosa') ? '338 739 76 71' : '338 000 00 02');
 
   let testo = 'Gentile ' + medicoNome + ',\n\n';
   testo += 'Le invio la presente richiesta di rinnovo prescrizioni / ricette dematerializzate per:\n';
@@ -11788,7 +11788,7 @@ function apriStampaScheda(tipoScheda) {
   const farmTel = p.farmaciaTelefono || '080 542 8061';
   const farmInd = p.farmaciaIndirizzo || 'Via G. Petroni, 69/b - Bari';
   const coniugeNome = p.moglieNome || 'Mazzicone Angela';
-  const coniugeCell = p.moglieCellulare || '338 944 96 10';
+  const coniugeCell = p.moglieCellulare || '338 000 00 02';
 
   let htmlContent = '';
 
@@ -11929,7 +11929,7 @@ function apriStampaScheda(tipoScheda) {
             <span style="font-size:28px;">📞</span>
             <div>
               <div style="font-size:14pt; font-weight:900; color:#991b1b; letter-spacing:0.5px;">IN CASO DI EMERGENZA GRAVE O ARRESTO: CHIAMARE 112 / 118</div>
-              <div style="font-size:9pt; color:#b91c1c; font-weight:600;">Comunicare all'operatore l'indirizzo esatto: <b>${p.indirizzo || 'Via Giovanni Modugno, 25 - BARI'}</b></div>
+              <div style="font-size:9pt; color:#b91c1c; font-weight:600;">Comunicare all'operatore l'indirizzo esatto: <b>${p.indirizzo || 'Via Roma, 10 - Bari'}</b></div>
             </div>
           </div>
 
@@ -11938,7 +11938,7 @@ function apriStampaScheda(tipoScheda) {
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:9.5pt;">
               <div>Assistito: <b style="font-size:11.5pt; color:#0f172a;">${p.nome}</b></div>
               <div>Data di Nascita: <b>${dataNascitaFmt} (${eta} anni)</b></div>
-              <div>Indirizzo Residenza: <b>${p.indirizzo || 'Via Giovanni Modugno, 25 - BARI (BA)'}</b></div>
+              <div>Indirizzo Residenza: <b>${p.indirizzo || 'Via Roma, 10 - Bari (BA)'}</b></div>
               <div>Telefono Fisso Casa: <b style="font-size:11pt; color:#0284c7;">${p.telefonoFisso || '080 561 57 14'}</b></div>
             </div>
             <div style="margin-top:10px; padding-top:8px; border-top:1px dashed #e2e8f0; font-size:9pt; color:#475569;">
@@ -12246,7 +12246,7 @@ const DB_PRESET_MEDICI_FARMACIE = {
     medicoEmail: 'carolina.potenza@aspbasilicata.it',
     medicoPec: 'carolina.potenza@pec.it',
     medicoOrari: 'Sarconi: Lun-Mer-Ven 9:30-13:00, Mar-Gio 15:00-18:30. Moliterno: Lun 15:00-18:00, Gio 9:00-13:00 (su appuntamento)',
-    farmaciaNome: 'Farmacia Girasole Picconi',
+    farmaciaNome: 'Farmacia Comunale Centrale',
     farmaciaIndirizzo: 'Via Ariosto, 4 / 16 - 85012 Corleto Perticara (PZ)',
     farmaciaTel: '0971 963055'
   },
@@ -17836,11 +17836,11 @@ function getPianoTerapeuticoAttivo(paziente) {
         prossimaVisitaAmbulatoriale: "2027-04-05",
         scatoleRitirateTotali: 8,
         scatoleResidueDaRitirare: 4,
-        puntoRitiro: "Farmacia Girasole Picconi / ASL Territoriale",
+        puntoRitiro: "Farmacia Comunale Centrale / ASL Territoriale",
         storicoRitiri: [
-          { data: "2026-04-10", scatole: 3, puntoRitiro: "Farmacia Girasole Picconi", note: "1° Ritiro Penne" },
-          { data: "2026-07-08", scatole: 3, puntoRitiro: "Farmacia Girasole Picconi", note: "2° Ritiro Penne" },
-          { data: "2026-10-02", scatole: 2, puntoRitiro: "Farmacia Girasole Picconi", note: "3° Ritiro Penne" }
+          { data: "2026-04-10", scatole: 3, puntoRitiro: "Farmacia Comunale Centrale", note: "1° Ritiro Penne" },
+          { data: "2026-07-08", scatole: 3, puntoRitiro: "Farmacia Comunale Centrale", note: "2° Ritiro Penne" },
+          { data: "2026-10-02", scatole: 2, puntoRitiro: "Farmacia Comunale Centrale", note: "3° Ritiro Penne" }
         ]
       };
       saveDb();

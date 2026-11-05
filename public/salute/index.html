@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
 <link rel="manifest" href="manifest.json">
@@ -1952,7 +1952,7 @@ window.onerror = function(msg, url, line) {
         
         <!-- INPUT NOME CON SUGGERIMENTI DATALIST -->
         <div style="position:relative; width:100%; margin-bottom:12px;">
-            <input type="text" id="new-profile-name" list="suite-patients-datalist" placeholder="Digita Nome (es. Aldo Zamparino, Rosa...)" style="width:100%; padding:10px 12px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:14.5px; font-weight:600; box-sizing:border-box; outline:none;" oninput="cercaAutocompilazionePaziente(this.value)">
+            <input type="text" id="new-profile-name" list="suite-patients-datalist" placeholder="Digita Nome (es. Aldo Z., Rosa...)" style="width:100%; padding:10px 12px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:14.5px; font-weight:600; box-sizing:border-box; outline:none;" oninput="cercaAutocompilazionePaziente(this.value)">
             <datalist id="suite-patients-datalist">
                 <!-- Popolato via JS con tutti gli assistiti della Suite -->
             </datalist>
@@ -2000,9 +2000,9 @@ async function caricaAssistitiSuitePerModale() {
 
     if (!_suitePazientiDisponibili || _suitePazientiDisponibili.length === 0) {
         _suitePazientiDisponibili = [
-            { nome: 'Aldo Zamparino', dataNascita: '1935-04-18', sesso: 'M', altezza: '172', peso: '68.5' },
-            { nome: 'Angela Mazzicone', dataNascita: '1938-05-29', sesso: 'F', altezza: '158', peso: '62.0' },
-            { nome: 'Rosa Annunziata Cavalcante', dataNascita: '1938-06-16', sesso: 'F', altezza: '155', peso: '59.0' },
+            { nome: 'Aldo Z.', dataNascita: '1935-04-18', sesso: 'M', altezza: '172', peso: '68.5' },
+            { nome: 'Angela M.', dataNascita: '1938-05-29', sesso: 'F', altezza: '158', peso: '62.0' },
+            { nome: 'Rosa C.', dataNascita: '1938-06-16', sesso: 'F', altezza: '155', peso: '59.0' },
             { nome: 'Ciro Milella', dataNascita: '1967-12-16', sesso: 'M', altezza: '160', peso: '79.3' },
             { nome: 'Maria Carmela', dataNascita: '1969-03-20', sesso: 'F', altezza: '165', peso: '65.0' }
         ];

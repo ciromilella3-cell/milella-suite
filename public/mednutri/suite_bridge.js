@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // SUITE MILELLA - MEDNUTRI PRO (AMBULATORIO MEDICO) ECOSYSTEM BRIDGE
 // Riceve e sincronizza in tempo reale il paziente attivo dalla Suite
 // ============================================================================
@@ -135,9 +135,9 @@
 
   // LISTA FALLBACK ISTANTANEA IMMEDIATA (ZERO ATTESE - CARICAMENTO IN 0 MILLISECONDI)
   const _soggettiDefault = [
-    { nome: 'Aldo Zamparino', dataNascita: '1935-04-18', sesso: 'M', origini: ['CareAssist Pro'] },
-    { nome: 'Angela Mazzicone', dataNascita: '1938-05-29', sesso: 'F', origini: ['CareAssist Pro'] },
-    { nome: 'Rosa Annunziata Cavalcante', dataNascita: '1938-06-16', sesso: 'F', origini: ['CareAssist Pro'] },
+    { nome: 'Aldo Z.', dataNascita: '1935-04-18', sesso: 'M', origini: ['CareAssist Pro'] },
+    { nome: 'Angela M.', dataNascita: '1938-05-29', sesso: 'F', origini: ['CareAssist Pro'] },
+    { nome: 'Rosa C.', dataNascita: '1938-06-16', sesso: 'F', origini: ['CareAssist Pro'] },
     { nome: 'Ciro Milella', dataNascita: '1967-12-16', sesso: 'M', origini: ['Progetto Salute', 'CareAssist Pro'] },
     { nome: 'Maria Carmela Stoppelli', dataNascita: '1969-03-20', sesso: 'F', origini: ['Progetto Salute', 'CareAssist Pro'] }
   ];
@@ -367,19 +367,19 @@
     // CARICAMENTO PARAMETRI ANTROPOMETRICI SPECIFICI DEL PAZIENTE
     const hEl = document.getElementById('patient-height');
     if (hEl) {
-      hEl.value = s.altezza || (s.nome === 'Aldo Zamparino' ? '172' : (s.nome === 'Angela Mazzicone' ? '158' : (s.nome.includes('Rosa') ? '155' : '160')));
+      hEl.value = s.altezza || (s.nome === 'Aldo Z.' ? '172' : (s.nome === 'Angela M.' ? '158' : (s.nome.includes('Rosa') ? '155' : '160')));
       try { hEl.dispatchEvent(new Event('input')); } catch(e){}
     }
 
     const wEl = document.getElementById('patient-weight');
     if (wEl) {
-      wEl.value = s.peso || (s.nome === 'Aldo Zamparino' ? '68.5' : (s.nome === 'Angela Mazzicone' ? '62.0' : (s.nome.includes('Rosa') ? '59.0' : '79.3')));
+      wEl.value = s.peso || (s.nome === 'Aldo Z.' ? '68.5' : (s.nome === 'Angela M.' ? '62.0' : (s.nome.includes('Rosa') ? '59.0' : '79.3')));
       try { wEl.dispatchEvent(new Event('input')); } catch(e){}
     }
 
     const wristEl = document.getElementById('patient-wrist');
     if (wristEl) {
-      wristEl.value = s.polso || (s.nome === 'Aldo Zamparino' ? '18' : (s.nome.includes('Ciro') ? '25' : '16'));
+      wristEl.value = s.polso || (s.nome === 'Aldo Z.' ? '18' : (s.nome.includes('Ciro') ? '25' : '16'));
       try { wristEl.dispatchEvent(new Event('change')); } catch(e){}
     }
 

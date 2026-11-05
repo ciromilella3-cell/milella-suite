@@ -1,13 +1,13 @@
-{
+﻿{
   "activePazienteId": "paz_1793216119572",
   "pazienti": [
     {
       "id": "paz_aldo",
-      "nome": "Aldo Zamparino",
+      "nome": "Aldo Z.",
       "dataNascita": "1935-04-18",
       "sesso": "M",
-      "indirizzo": "Via Giovanni Modugno, 25 - Bari",
-      "telefono": "338 306 69 05",
+      "indirizzo": "Via Roma, 10 - Bari",
+      "telefono": "338 000 00 01",
       "allettato": true,
       "patologie": [
         "Paziente geriatrico allettato ad alto rischio di lesioni da decubito (Scala Braden: Rischio Elevato)",
@@ -124,11 +124,11 @@
     },
     {
       "id": "paz_angela",
-      "nome": "Angela Mazzicone",
+      "nome": "Angela M.",
       "dataNascita": "1938-05-29",
       "sesso": "F",
-      "indirizzo": "Via Giovanni Modugno, 25 - BARI (BA)",
-      "telefono": "338 944 96 10",
+      "indirizzo": "Via Roma, 10 - Bari (BA)",
+      "telefono": "338 000 00 02",
       "allettato": false,
       "patologie": [
         "Ipertensione arteriosa sistemica in polichemioterapia",
@@ -255,7 +255,7 @@
           "data": "2026-10-16",
           "ora": "09:00",
           "medico": "Dott. Roberto Scarcia",
-          "motivo": "Rinnovo ricette e piano terapeutico per Angela Mazzicone",
+          "motivo": "Rinnovo ricette e piano terapeutico per Angela M.",
           "fatto": false
         },
         {
@@ -275,11 +275,11 @@
     },
     {
       "id": "paz_rosa",
-      "nome": "Rosa Annunziata Cavalcante",
+      "nome": "Rosa C.",
       "dataNascita": "1938-06-16",
       "sesso": "F",
       "indirizzo": "Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)",
-      "telefono": "338 379 76 71",
+      "telefono": "338 000 00 03",
       "allettato": false,
       "patologie": [
         "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga)",
@@ -302,7 +302,7 @@
           "modo": "A colazione (Beta-bloccante: frequenza cardiaca) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
           "scorta": 27,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
         },
@@ -316,7 +316,7 @@
           "modo": "A colazione, non masticare (Diabete) - rischio ipoglicemia con insulina ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 30,
           "scorta": 29,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
         },
@@ -330,7 +330,7 @@
           "modo": "Al mattino con acqua (Diabete / cuore / reni) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
           "scorta": 27,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
         },
@@ -347,7 +347,7 @@
           "cprPerScatola": 50,
           "scorta": 80,
           "giorniAlert": 7,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 2,
           "ultimaModificaClinica": {
@@ -367,7 +367,7 @@
           "modo": "A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno successivo (Pressione arteriosa)",
           "cprPerScatola": 14,
           "scorta": 13,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "cadenzaTipo": "alternata_mezza_intera",
           "quantitaQuota": 0.5,
@@ -390,7 +390,7 @@
           "modo": "Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 15,
           "scorta": 1.94,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "tipoFormulazione": "penna",
           "unitaDoseDie": 16,
@@ -410,7 +410,7 @@
           "modo": "Al mattino (Diuretico: edemi / scompenso) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 30,
           "scorta": 29,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
         },
@@ -424,7 +424,7 @@
           "modo": "A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
           "scorta": 28,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": false
         },
         {
@@ -437,7 +437,7 @@
           "modo": "A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
           "scorta": 28,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": false,
           "cadenzaTipo": "alterni",
           "dataInizioAlterni": "2026-10-18"
@@ -452,7 +452,7 @@
           "modo": "A stomaco pieno (Antinfiammatorio: dolore artrosi) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
           "scorta": 28,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": false
         },
         {
@@ -468,7 +468,7 @@
           "cprPerScatola": 50,
           "scorta": 80,
           "giorniAlert": 7,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": false,
           "ultimaDoseSomministrata": 2,
           "ultimaModificaClinica": {
@@ -488,7 +488,7 @@
           "modo": "A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
           "scorta": 28,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": false,
           "cadenzaTipo": "alterni",
           "dataInizioAlterni": "2026-10-17"
@@ -503,7 +503,7 @@
           "modo": "Dose periodica (di solito settimanale): registrare il giorno di assunzione (Vitamina D) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 10,
           "scorta": 10,
-          "farmacia": "Farmacia Girasole Picconi",
+          "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": false
         }
       ],
@@ -521,7 +521,7 @@
           "data": "2026-11-24",
           "ora": "10:00",
           "medico": "Serenity S.p.A. / ASP Villa D'Agri",
-          "motivo": "Prossima consegna indicativa fornitura PANTS Serenity (previo appuntamento telefonico al 3383797671)",
+          "motivo": "Prossima consegna indicativa fornitura PANTS Serenity (previo appuntamento telefonico al 3380000003)",
           "fatto": false
         }
       ],
