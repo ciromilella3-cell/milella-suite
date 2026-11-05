@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // SUITE MILELLA - MEDNUTRI PRO (AMBULATORIO MEDICO) ECOSYSTEM BRIDGE
 // Riceve e sincronizza in tempo reale il paziente attivo dalla Suite
 // ============================================================================
@@ -407,24 +407,32 @@
     }
 
     // SELEZIONE AUTOMATICA DELLA PATOLOGIA NUTRIZIONALE IN BASE ALLE DIAGNOSI CAREASSIST
-    const patSelect = document.getElementById('patologia');
+    const patSelect = document.getElementById('patient-pathology') || document.getElementById('patologia');
     if (patSelect && s.patologie) {
       const patStr = JSON.stringify(s.patologie).toLowerCase();
       if (patStr.includes('diabete') || patStr.includes('glicem')) {
         patSelect.value = 'diabete';
       } else if (patStr.includes('pressione') || patStr.includes('ipertens') || patStr.includes('cardiopatia') || patStr.includes('bisoprololo')) {
         patSelect.value = 'ipertensione';
-      } else if (patStr.includes('fegato') || patStr.includes('steatosi') || patStr.includes('epat')) {
+      } else if (patStr.includes('fegato') || patStr.includes('steatosi') || patStr.includes('epat') || patStr.includes('hbv') || patStr.includes('entecavir')) {
         patSelect.value = 'steatosi';
       } else if (patStr.includes('reflusso') || patStr.includes('gastrite') || patStr.includes('pantoprazolo')) {
         patSelect.value = 'reflusso';
       } else if (patStr.includes('gotta') || patStr.includes('acido urico')) {
-        patSelect.value = 'iperuricemia';
+        patSelect.value = 'gotta';
+      } else if (patStr.includes('celiach')) {
+        patSelect.value = 'celiachia';
+      } else if (patStr.includes('renale') || patStr.includes('creatinina')) {
+        patSelect.value = 'renale';
       }
-      try { patSelect.dispatchEvent(new Event('change')); } catch(e){}
+      try { 
+        patSelect.dispatchEvent(new Event('change')); 
+        if (typeof updateAnalysis === 'function') updateAnalysis();
+      } catch(e){}
     }
 
     if (typeof calculateBMI === 'function') calculateBMI();
+    if (typeof updateAnalysis === 'function') updateAnalysis();
     if (typeof mostraBannerPazienteSincronizzato === 'function') {
       mostraBannerPazienteSincronizzato(s.nome);
     }

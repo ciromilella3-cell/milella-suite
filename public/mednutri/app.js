@@ -1,94 +1,169 @@
-﻿// Database Medico delle Patologie
+// Database Medico delle Patologie con Linee Guida Cliniche Ufficiali, Interazioni Farmaco-Cibo e Stile di Vita
 const pathologyDB = {
     'nessuna': { 
-        name: "Nessuna / Prevenzione Base", desc: "Regime bilanciato standard mediterraneo.", 
-        goldenRule: "Bevi almeno 2 litri d'acqua al giorno e mangia 5 porzioni di frutta e verdura.",
-        avoid: ["Eccesso di sale", "Zuccheri aggiunti", "Bevande gassate", "Superalcolici", "Grassi idrogenati (Margarina)", "Carni processate (Wurstel)"], 
-        promote: ["Frutta fresca", "Verdura di stagione", "Cereali Integrali", "Pesce azzurro", "Legumi", "Olio EVO a crudo"] 
+        name: "Nessuna / Prevenzione Base", 
+        desc: "Regime bilanciato standard mediterraneo ad elevata densità nutrizionale (Linee Guida CREA / SINU).", 
+        guidelineRef: "Linee Guida CREA 2018 - Dieta Mediterranea Cardioprotettiva",
+        goldenRule: "Bevi almeno 2 litri d'acqua al giorno e assumi 5 porzioni tra frutta fresca e verdura di stagione.",
+        lifestyle: "Attività fisica moderata aerobica per almeno 150 minuti alla settimana (30 min di camminata a passo svelto al giorno). Idratazione continua distribuita nell'arco della giornata.",
+        drugInteractions: "Nessuna interazione farmacologica segnalata in regime preventivo.",
+        labMonitoring: "Check-up ematochimico annuale: Emocromo, Glicemia, Profilo Lipidico completo (Colesterolo Tot, HDL, LDL, Trigliceridi), Transaminasi (ALT/AST), Creatinina ed esame urine.",
+        avoid: ["Eccesso di sale da cucina (>5g/die)", "Zuccheri semplici aggiunti e bevande dolci", "Bevande gassate e zuccherate", "Superalcolici", "Grassi idrogenati e acidi grassi trans", "Carni ultra-processate (Wurstel, insaccati ricchi di nitriti)"], 
+        promote: ["Frutta fresca di stagione a basso indice glicemico", "Verdura cruda e cotta variopinta", "Cereali integrali in chicco (Farro, Orzo, Avena)", "Pesce azzurro ricco di Omega-3 (Sgombro, Sardine)", "Legumi cotti al naturale", "Olio Extravergine d'Oliva a crudo come condimento principe"] 
     },
     'diabete': { 
-        name: "Diabete di Tipo 2", desc: "Controllo rigoroso del carico glicemico.", 
-        goldenRule: "Regola delle 4 P: Non abbinare MAI nello stesso pasto Pane, Pasta, Patate o Pizza.",
-        avoid: ["Zucchero aggiunto", "Miele e Sciroppi", "Dolci e Pasticceria", "Pane bianco", "Succhi di frutta", "Bevande zuccherate", "Frutta sciroppata", "Caramelle e Cioccolato al latte"], 
-        promote: ["Cereali integrali (Avena, Orzo)", "Legumi", "Verdure fibrose", "Noci e Mandorle", "Pesce ricco di Omega-3", "Carni bianche magre"] 
+        name: "Diabete di Tipo 2 & Insulino-Resistenza", 
+        desc: "Controllo rigoroso del carico glicemico e prevenzione complicanze micro/macrovascolari (Standard AMD-SID / ADA).", 
+        guidelineRef: "Standard Italiani per la Cura del Diabete Mellito (AMD-SID 2023) / ADA Guidelines",
+        goldenRule: "Regola del Piatto Sano & 4P: Non abbinare mai nello stesso pasto Pane, Pasta, Patate e Pizza. Precedi sempre il pasto con verdura cruda per smussare il picco insulinico post-prandiale.",
+        lifestyle: "Camminata di 15-20 minuti immediatamente dopo i pasti principali per aumentare l'uptake muscolare di glucosio insulino-indipendente. Esercizi contro resistenza 2-3 volte/settimana.",
+        drugInteractions: "⚠️ Con Metformina: monitorare assorbimento Vitamina B12. Con Sulfoniluree o Insuline: rischio ipoglicemie se si saltano pasti o con alcol a digiuno. Con SGLT2i (Gliflozine): idratazione abbondante per prevenire disidratazione e infezioni genitourinarie.",
+        labMonitoring: "Emoglobina Glicata (HbA1c) ogni 3-6 mesi (target < 7.0% o personalizzato), Microalbuminuria annuale, Creatinina/eGFR, Fondo oculare biennale, Controllo piedi.",
+        avoid: ["Zucchero raffinato e di canna", "Miele, sciroppi e melassa", "Dolci, merendine e pasticceria", "Pane bianco e farine raffinate 00", "Succhi di frutta e bibite zuccherate", "Frutta sciroppata, canditi e datteri", "Alcolici a digiuno (rischio ipoglicemia severa)", "Caramelle e snack dolci"], 
+        promote: ["Cereali a chicco intero (Avena, Orzo, Farro integrale)", "Legumi ricchi di fibre solubili (Lenticchie, Ceci)", "Verdure fibrose a foglia amara", "Frutta secca a guscio (Mandorle, Noci: 30g/die)", "Pesce azzurro e pesce magro", "Carni bianche magre ai ferri"] 
     },
     'ipertensione': { 
-        name: "Ipertensione Arteriosa", desc: "Dieta DASH. Controllo rigoroso del sodio (< 2g/die).", 
-        goldenRule: "Usa le spezie, il limone e le erbe aromatiche per insaporire al posto del sale.",
-        avoid: ["Sale aggiunto da cucina", "Dadi da brodo", "Salumi e Insaccati", "Cibi in scatola e Salamoie", "Formaggi stagionati (Pecorino, Grana)", "Salse pronte (Ketchup, Soia)", "Snack salati (Patatine)", "Liquirizia"], 
-        promote: ["Verdure fresche", "Banane (Ricche di Potassio)", "Latticini magri", "Pesce fresco", "Spezie ed erbe aromatiche", "Aglio e Cipolla"] 
+        name: "Ipertensione Arteriosa", 
+        desc: "Protocollo dietetico DASH (Dietary Approaches to Stop Hypertension) e restrizione sodio (ESC/ESH).", 
+        guidelineRef: "Linee Guida Europee ESC/ESH 2023 per la Gestione dell'Ipertensione Arteriosa",
+        goldenRule: "Sostituisci il sale con spezie, erbe aromatiche, aglio, cipolla e succo di limone. Riduci il sodio a meno di 2g al giorno (corrispondenti a max 5g di sale da cucina).",
+        lifestyle: "Attività aerobica continuativa (camminata, nuoto, cyclette) 40-50 min per 4-5 giorni alla settimana. Tecniche di respirazione diaframmatica e gestione dello stress. Misurazione pressoria domiciliare mattino/sera.",
+        drugInteractions: "⚠️ Con ACE-inibitori o Sartani: attenzione all'eccesso di sostituti del sale a base di cloruro di potassio (rischio iperkaliemia). Con Calcio-antagonisti (es. Amlodipina): EVITARE IL POMPELMO. Evitare la Liquirizia (aumenta la pressione). Con Diuretici dell'ansa: monitorare potassio ed elettroliti.",
+        labMonitoring: "Elettroliti sierici (Sodio, Potassio, Cloro), Creatinina ed eGFR, Azotemia, Esame urine (Rapporto Albumina/Creatinina), Monitoraggio Holter pressorio 24h se indicato.",
+        avoid: ["Sale da cucina aggiunto a tavola", "Dadi da brodo, estratti di carne e glutammato", "Salumi, insaccati e carni conservate", "Cibi in salamoia e sottaceti industriali", "Formaggi stagionati e salati (Pecorino, Grana, Feta)", "Salse commerciali (Salsa di soia, ketchup, maionese)", "Snack salati, patatine e arachidi salate", "Liquirizia pura e dolciumi alla liquirizia"], 
+        promote: ["Verdure a foglia verde scuro (ricche di Magnesio)", "Banane, albicocche e patate lesse (apporto naturale di Potassio)", "Latticini freschi a ridotto tenore di grassi e sale", "Pesce fresco al vapore o al forno", "Erbe aromatiche (Origano, Basilico, Rosmarino, Timo)", "Acqua minimamente mineralizzata iposodica (Sodio < 10 mg/L)"] 
     },
     'ipercolesterolemia': { 
-        name: "Ipercolesterolemia", desc: "Riduzione colesterolo LDL e grassi saturi.", 
-        goldenRule: "Aumenta la fibra solubile: i beta-glucani dell'avena intrappolano il colesterolo.",
-        avoid: ["Burro e Panna", "Formaggi stagionati e fusi", "Insaccati e Salumi", "Frattaglie (Fegato, Cervello)", "Carni rosse grasse", "Prodotti da forno industriali", "Olio di palma e cocco", "Maionese"], 
-        promote: ["Avena (Beta-glucani)", "Pesce Azzurro (Salmone, Sgombro)", "Legumi (Soia, Ceci)", "Frutta secca", "Olio EVO", "Fibre solubili (Mele con buccia)"] 
+        name: "Ipercolesterolemia & Dislipidemia", 
+        desc: "Riduzione colesterolo LDL e acidi grassi saturi, potenziamento fitosteroli e omega-3 (EAS/ESC).", 
+        guidelineRef: "Linee Guida ESC/EAS 2019 per la Gestione delle Dislipidemie",
+        goldenRule: "Massimizza l'apporto di fibre solubili (beta-glucani dell'avena e pectina) e sostituisci interamente i grassi saturi animali con monoinsaturi da olio extravergine d'oliva.",
+        lifestyle: "Esercizio aerobico di resistenza (cardio) a intensità moderata per favorire l'innalzamento della frazione HDL e la clearance dei trigliceridi. Riduzione ponderale mirata se BMI > 25.",
+        drugInteractions: "⚠️ Con Statine (Atorvastatina, Simvastatina): DIVIETO ASSOLUTO DI POMPELMO (inibisce il CYP3A4 aumentando la concentrazione ematica e il rischio di miopatie/rabdomiolisi). Moderare alcolici.",
+        labMonitoring: "Profilo lipidico completo dopo 8-12 settimane dall'avvio della dietoterapia: Colesterolo Totale, HDL, LDL calcolato o diretto, Trigliceridi, Apolipoproteina B, CPK e Transaminasi se in terapia con statine.",
+        avoid: ["Burro, panna, strutto e lardo", "Formaggi fusi, stagionati e mascarpone", "Insaccati grassi e carni rosse marmorizzate", "Frattaglie (Fegato, cervello, rognone)", "Olio di palma, olio di cocco e grassi vegetali idrogenati", "Prodotti da forno industriali e croissant", "Maionese e salse a base di uova e panna"], 
+        promote: ["Avena in fiocchi e crusca d'avena (fonte eccellente di Beta-glucani)", "Pesce azzurro (Sgombro, Salmone selvaggio, Alacce) 3 volte/settimana", "Legumi secchi cotti (Ceci, Soia, Lenticchie)", "Frutta secca a guscio (30g di noci o mandorle al giorno)", "Olio Extravergine d'Oliva crudo spremuto a freddo", "Mele con buccia ben lavata (ricche di pectina)"] 
     },
     'steatosi': { 
-        name: "Steatosi Epatica (Fegato Grasso)", desc: "Protocollo per ripristino epatico. Azzeramento alcol e grassi saturi.", 
-        goldenRule: "Evita tassativamente il consumo di alcol: il fegato ha bisogno di disintossicarsi completamente.",
-        avoid: ["Alcolici e Superalcolici", "Burro, Panna e Lardo", "Insaccati e Carni lavorate", "Fritti e Soffritti", "Zuccheri semplici e Bevande dolci", "Salse elaborate (Maionese, Ketchup)", "Carni rosse grasse", "Cibi da fast-food"], 
-        promote: ["Carciofi e Cardo (Epatoprotettori)", "Verdure a foglia amara (Cicoria, Rucola)", "Pesce magro", "Olio EVO", "Limone a digiuno", "Tè verde (Antiossidante)"] 
+        name: "Steatosi Epatica (NAFLD / MASLD)", 
+        desc: "Rigenerazione epatocitaria, abbattimento del grasso viscerale ed epatico, azzeramento alcol e fruttosio aggiunto (EASL).", 
+        guidelineRef: "Linee Guida EASL-EASD-EASO per la Gestione della MASLD / NAFLD",
+        goldenRule: "Azzeramento totale di alcolici e superalcolici. Elimina categoricamente il fruttosio industriale (sciroppo di mais, bibite) che sovraccarica la lipogenesi de novo epatica.",
+        lifestyle: "Puntare a una riduzione graduale del 7-10% del peso corporeo se sovrappeso per ridurre drasticamente il contenuto lipidico intraepatico. Attività fisica combinata aerobica + pesi 3 volte a settimana.",
+        drugInteractions: "⚠️ In caso di epatite concomitante o terapie antivirali (es. Entecavir, Sofosbuvir): assumere rigorosamente i farmaci con la cadenza stabilita (es. a digiuno o lontano dai pasti come prescritto). Evitare integratori fitoterapici epatotossici non validati.",
+        labMonitoring: "Transaminasi ALT/AST, Gamma-GT, Fosfatasi Alcalina, Bilirubina frazionata, Ecografia addome superiore per stadiazione steatosi, FIB-4 index per rischio fibrosi.",
+        avoid: ["Alcol, vino, birra e superalcolici (tolleranza zero)", "Fritti, soffritti e cotture a temperatura elevata con oli ossidati", "Bevande gassate, tè freddi zuccherati e succhi di frutta commerciali", "Carni rosse grasse e carni lavorate conservate", "Burro, lardo, panna e salse industriali ricche di grassi saturi", "Fast-food e snack iper-calorici industriali"], 
+        promote: ["Carciofi, cardi e cicoria amara (ricchi di cinarina ed epatoprotettori)", "Rucola e verdure a foglia verde scuro", "Pesce bianco e pesce azzurro cotti al vapore o al cartoccio", "Olio EVO a crudo (antiossidanti polifenolici)", "Limone spremuto in acqua tiepida a digiuno", "Tè verde e caffè amaro (protettivo documentato contro la progressione fibrotica)", "Cereali integrali in chicco"] 
     },
     'reflusso': { 
-        name: "Reflusso Gastroesofageo (MRGE)", desc: "Controllo dell'acidità gastrica e svuotamento rapido.", 
-        goldenRule: "Evita di sdraiarti subito dopo i pasti. Attendi almeno 2 o 3 ore prima di andare a letto.",
-        avoid: ["Pomodoro crudo e passata", "Agrumi (Arance, Limoni)", "Caffè e Tè forte", "Cioccolato e Cacao", "Menta", "Cibi fritti e molto grassi", "Spezie piccanti (Peperoncino, Pepe nero)", "Bevande gassate", "Alcolici", "Aglio e Cipolla crudi"], 
-        promote: ["Verdure cotte (Zucchine, Carote)", "Carni bianche ai ferri", "Pesce al vapore", "Cereali ben cotti", "Patate lesse", "Banane mature", "Finocchio (Digestivo)"] 
+        name: "Reflusso Gastroesofageo (MRGE) & Esofagite", 
+        desc: "Protezione mucosa esofagea, accelerazione svuotamento gastrico e riduzione pressione intragastrica.", 
+        guidelineRef: "Linee Guida Nazionali SGG per la Malattia da Reflusso Gastroesofageo",
+        goldenRule: "Non coricarsi mai prima di 2.5 - 3 ore dalla fine del pasto. Fai pasti piccoli, frequenti e mastica lentamente. Solleva la testiera del letto di 15-20 cm.",
+        lifestyle: "Evitare cinture o indumenti stretti all'addome che aumentano la pressione intra-addominale. Camminare dolcemente dopo i pasti (evitare di piegarsi a 90° o sdraiarsi sul divano). Abolizione del fumo.",
+        drugInteractions: "⚠️ Con Inibitori di Pompa Protonica (IPP: Pantoprazolo, Omeprazolo, Esomeprazolo): assumere 30-45 minuti PRIMA della colazione a stomaco vuoto con acqua per massimizzare l'efficacia antisecretiva. Con antiacidi/alginati: assumere 1-2 ore dopo i pasti e prima di dormire.",
+        labMonitoring: "Valutazione clinica sintomi (Reflux Symptom Index). EGDS (Gastroscopia) se compaiono segnali d'allarme (disfagia, calo ponderale, anemia) o mancata risposta a terapia.",
+        avoid: ["Pomodoro crudo, concentrato e passata di pomodoro", "Agrumi e succhi d'arancia/pompelmo", "Caffè (anche decaffeinato) e tè concentrato", "Cioccolato e cacao", "Menta e caramelle alla menta (rilasciano lo sfintere esofageo inferiore)", "Cibi molto grassi, fritture e intingoli", "Spezie piccanti (Pepe, peperoncino, curry)", "Bevande gassate e bevande alcoliche"], 
+        promote: ["Verdure dolci cotte a vapore (Zucchine, carote, zucca)", "Carni bianche magre ai ferri o lessate (Pollo, tacchino)", "Pesce bianco magro (Merluzzo, sogliola, spigola)", "Cereali ben cotti e digeribili (Riso basmati, farro)", "Patate lesse o al vapore", "Finocchi crudi o cotti (azione carminativa e digestiva)", "Banane mature e mele cotte"] 
     },
     'gastrite': { 
-        name: "Gastrite Acuta / Cronica", desc: "Regime non irritante per la mucosa gastrica.", 
-        goldenRule: "Mastica molto lentamente e fai piccoli pasti frequenti per tamponare l'acidità.",
-        avoid: ["Pepe, Peperoncino e Spezie forti", "Brodo di carne o dadi", "Caffè (anche decaffeinato)", "Alcolici e Superalcolici", "Agrumi e Succhi acidi", "Pomodoro", "Fritti", "Cibi troppo caldi o troppo freddi", "Gomme da masticare"], 
-        promote: ["Riso bianco o Pasta ben cotta", "Zucchine e Carote lesse", "Pollo o Tacchino al vapore", "Olio EVO a crudo", "Patate", "Mele cotte"] 
+        name: "Gastrite Acuta / Cronica & Dispepsia", 
+        desc: "Dieta di risparmio gastrico per riepitelizzazione mucosa ed eubiosi gastrica.", 
+        guidelineRef: "Linee Guida di Gastroenterologia Clinica SIGE",
+        goldenRule: "Fraziona l'alimentazione in 5 piccoli pasti quotidiani evitando digiuni prolungati e abbuffate che causano picchi di secrezione acida cloridrica.",
+        lifestyle: "Mangiare con calma in ambiente rilassato, dedicando almeno 20 minuti al pasto e masticando a lungo ogni boccone. Evitare l'uso improprio di FANS (antinfiammatori) a stomaco vuoto.",
+        drugInteractions: "⚠️ Con Gastroprotettori (IPP o Antiacidi): non assumere contemporaneamente a integratori di ferro o calcio (ne riducono l'assorbimento). Distanziare le dosi.",
+        labMonitoring: "Ricerca Helicobacter Pylori (Urea Breath Test o Antigene fecale), Emocromo per escludere sanguinamenti occulti, Sideremia e Ferritina.",
+        avoid: ["Pepe nero, peperoncino, noce moscata e spezie forti", "Brodo concentrato di carne o dadi industriali", "Caffè, tè nero e bevande contenenti xantine", "Alcolici e vino bianco acido", "Fritti e soffritti", "Cibi a temperature estreme (troppo caldi o ghiacciati)", "Gomme da masticare (stimolano vuota acidità gastrica)"], 
+        promote: ["Riso bianco o pasta corta ben cotta e condita solo con un filo d'olio a crudo", "Zucchine e carote bollite", "Pollo, tacchino e coniglio lessati o al vapore", "Olio Extravergine d'Oliva crudo in quantità dosata", "Patate cotte al vapore", "Mele sbucciate cotte al forno"] 
     },
     'colon': { 
-        name: "Sindrome Intestino Irritabile (IBS)", desc: "Protocollo Low-FODMAP per riduzione del gonfiore.", 
-        goldenRule: "Riduci temporaneamente gli alimenti fermentescibili (FODMAP) e reintroducili gradualmente.",
-        avoid: ["Legumi (Ceci, Fagioli, Lenticchie)", "Latticini con Lattosio", "Cipolla e Aglio", "Mele, Pere, Pesche, Susine", "Cavoli, Broccoli e Cavolfiori", "Gomme da masticare (Xilitolo, Sorbitolo)", "Frumento e Segale in grandi quantità", "Funghi", "Cibi molto elaborati"], 
-        promote: ["Latte delattosato o vegetale", "Kiwi, Banane, Mirtilli, Arance", "Zucchine, Melanzane, Carote", "Riso, Quinoa, Avena", "Carni magre", "Pesce", "Patate"] 
+        name: "Sindrome Intestino Irritabile (IBS)", 
+        desc: "Protocollo Low-FODMAP per riduzione della fermentazione batterica colica e del meteorismo.", 
+        guidelineRef: "Linee Guida Monash University & Società Italiana di Nutrizione Umana (SINU) per IBS",
+        goldenRule: "Fase di eliminazione transitoria (4-6 settimane) dei cibi ad alto contenuto di FODMAP, seguita da reintroduzione controllata per target personalizzato.",
+        lifestyle: "Attività fisica dolce (Yoga, camminata rilassante) per favorire la motilità intestinale fisiologica e ridurre la reattività dell'asse intestino-cervello. Regolarità negli orari dei pasti.",
+        drugInteractions: "⚠️ Con Fermenti lattici/Probiotici: assumere a stomaco vuoto o lontano dai pasti secondo ceppo specifico. Con antispastici: assumere 20 minuti prima del pasto principale.",
+        labMonitoring: "Calprotectina fecale (per escludere malattie infiammatorie IBD), Esami celiachia (IgA anti-tTG), Sangue occulto nelle feci, Coprocoltura ed esame parassitologico.",
+        avoid: ["Legumi tradizionali con buccia spessa (Fagioli, ceci secchi)", "Latticini contenenti lattosio (latte vaccino, formaggi freschi non stagionati)", "Aglio e cipolla (anche soffritti o in polvere)", "Mele, pere, pesche, anguria e susine (ricche di fruttosio/polioli)", "Cavoli, verza, cavolfiori e broccoli", "Dolcificanti artificiali (Xilitolo, sorbitolo, mannitolo)", "Funghi e carciofi in fase acuta"], 
+        promote: ["Latte e yogurt delattosati o bevande vegetali (Riso, avena gluten free)", "Kiwi maturi, mirtilli, arance e fragole", "Zucchine, carote, fagiolini fini e spinaci novelli", "Riso basmati, quinoa, miglio e avena", "Pesce fresco e carni magre", "Uova biologiche", "Olio aromatizzato all'aglio fatto in casa (senza fibra solida)"] 
     },
     'gotta': { 
-        name: "Iperuricemia / Gotta", desc: "Controllo rigoroso delle purine.", 
-        goldenRule: "Evita alimenti ad alta densità cellulare (come le frattaglie) per limitare la produzione di acido urico.",
-        avoid: ["Frattaglie (Fegato, Rognone)", "Carni rosse (Manzo, Castrato)", "Molluschi e Crostacei", "Acciughe, Sardine e Sgombro", "Estratti di carne e Dadi", "Alcolici (specialmente Birra)", "Selvaggina", "Cibi ricchi di fruttosio industriale"], 
-        promote: ["Ciliegie e Frutti di bosco (Uricosurici)", "Latticini magri", "Uova", "Pasta e Riso", "Verdure (eccetto Spinaci e Asparagi in eccesso)", "Acqua abbondante (>2.5 litri/die)"] 
+        name: "Iperuricemia / Gotta Clinica", 
+        desc: "Restrizione purinica per prevenzione artropatia uratica e nefrolitiasi (EULAR).", 
+        guidelineRef: "Linee Guida EULAR 2020 per la Gestione della Gotta e dell'Iperuricemia",
+        goldenRule: "Idratazione abbondante (>2.5 - 3 litri di liquidi al giorno) con acque alcaline o bicarbonato-calciche per favorire la solubilità e l'escrezione renale di acido urico.",
+        lifestyle: "Calo ponderale graduale se sovrappeso (evitare digiuni prolungati o diete chetogeniche che scatenano attacchi gottosi acuti per competizione tra chetoni e acido urico nei tubuli renali).",
+        drugInteractions: "⚠️ Con Allopurinolo o Febuxostat (es. Adenuric): assumere quotidianamente dopo i pasti con un bicchiere pieno d'acqua. Non sospendere autonomamente durante un attacco acuto.",
+        labMonitoring: "Uricemia sierica ogni 1-3 mesi (target terapeutico < 6.0 mg/dL, o < 5.0 mg/dL nei casi tofacei), Creatinina ed eGFR, Ecografia articolare o renale per calcoli.",
+        avoid: ["Frattaglie (Fegato, rognone, animelle, cuore)", "Carni rosse grasse e carni di animali giovani (Vitello, agnello)", "Molluschi, crostacei, acciughe, sardine, aringhe e sgombro", "Estratti di carne concentrati, sughi di carne e dadi da brodo", "Birra (anche analcolica: ricca di guanosina) e superalcolici", "Selvaggina e cacciagione", "Bevande dolcificate con sciroppo di mais ad alto contenuto di fruttosio"], 
+        promote: ["Ciliegie e frutti di bosco freschi (azione uricosurica scientificamente validata)", "Latticini magri (Yogurt magro, latte scremato: azione ipouricemizzante)", "Uova come fonte nobile priva di purine", "Pasta, riso e cereali raffinati", "Verdure di stagione a basso tenore purinico", "Acqua alcalina o bicarbonata (> 2.5 litri/die)"] 
     },
     'celiachia': { 
-        name: "Celiachia (Gluten-Free)", desc: "Esclusione totale e a vita del glutine.", 
-        goldenRule: "Attenzione alle contaminazioni incrociate: usa taglieri e pentole separate per cucinare il senza glutine.",
-        avoid: ["Frumento (Grano)", "Farro, Orzo e Segale", "Kamut e Spelta", "Pangrattato e Farine normali", "Lievito madre tradizionale", "Seitan", "Birra tradizionale", "Cibi industriali non certificati 'Senza Glutine'"], 
-        promote: ["Riso, Mais e Grano Saraceno", "Quinoa, Amaranto e Miglio", "Tuberi (Patate, Tapioca)", "Carni fresche e Pesce", "Uova", "Legumi", "Frutta e Verdura fresca"] 
+        name: "Celiachia (Enteropatia da Glutine)", 
+        desc: "Esclusione rigorosa, totale e a vita del glutine (Linee Guida AIC / ESPGHAN).", 
+        guidelineRef: "Linee Guida Nazionali AIC (Associazione Italiana Celiachia) & ESPGHAN",
+        goldenRule: "Tolleranza zero al glutine: attenzione maniacale alle contaminazioni crociate in cucina (taglieri, tostapane, posate in legno, olio di frittura riutilizzato).",
+        lifestyle: "Educazione del paziente e dei conviventi alla manipolazione sicura degli alimenti. Lettura accurata dell'etichettatura alimentare (presenza del marchio Spiga Barrata o dicitura 'Senza Glutine').",
+        drugInteractions: "⚠️ Verificare sempre che sciroppi, farmaci e integratori non contengano amido di frumento o derivati del glutine tra gli eccipienti non certificati.",
+        labMonitoring: "Anticorpi anti-transglutaminasi IgA (anti-tTG) e dosaggio IgA totali a 6 e 12 mesi dalla diagnosi per valutare l'aderenza alla dieta. Ferritina, Folati, Vitamina D e B12.",
+        avoid: ["Frumento (Grano tenero e duro)", "Farro, orzo, segale, kamut e spelta", "Pangrattato, farina 00, semola e couscous convenzionale", "Lievito madre tradizionale", "Seitan e alimenti a base di glutine vitale", "Birra convenzionale d'orzo o frumento", "Prodotti industriali non provvisti della certificazione 'Senza Glutine'"], 
+        promote: ["Riso in tutte le varietà (Basmati, Carnaroli, Venere, Rosso)", "Mais, polenta e grano saraceno (naturalmente privo di glutine)", "Quinoa, amaranto, miglio e teff", "Tuberi freschi (Patate, patate dolci, tapioca)", "Carni fresche, uova, pesci freschi al naturale", "Legumi secchi lavati e cotti", "Frutta fresca e verdure integre"] 
     },
     'renale': { 
-        name: "Insufficienza Renale (Stadio 1-3)", desc: "Controllo di proteine, potassio e fosforo.", 
-        goldenRule: "Per ridurre il potassio, taglia le verdure a pezzetti e lasciale a bagno nell'acqua per alcune ore prima di cuocerle.",
-        avoid: ["Eccesso di Proteine (Carni rosse grandi porzioni)", "Sale aggiunto", "Cibi in scatola", "Formaggi fusi e Sottilette (Ricchi di Fosforo)", "Frutta secca e Cacao", "Brodo di carne", "Banane e Kiwi (Se il potassio è alto)", "Salumi"], 
-        promote: ["Cereali aproteici (se prescritti)", "Pasta e Riso bianco", "Verdure bollite (scartando l'acqua)", "Olio EVO", "Burro (con moderazione per calorie)", "Mela, Pera"] 
+        name: "Insufficienza Renale Cronica (IRC Stadio 1-3)", 
+        desc: "Controllo rigoroso del carico proteico, del fosforo, del sodio e modulazione del potassio (KDIGO / SIN).", 
+        guidelineRef: "Linee Guida Internazionali KDIGO 2023 & Società Italiana di Nefrologia (SIN)",
+        goldenRule: "Limitare l'apporto proteico a 0.6 - 0.8 g/kg di peso ideale. Per abbattere il potassio, tagliare le verdure a piccoli pezzi e lessarle cambiando l'acqua a metà cottura.",
+        lifestyle: "Mantenimento di un rigoroso controllo pressorio (< 130/80 mmHg). Monitoraggio quotidiano del peso per cogliere precocemente segni di ritenzione idrica o edemi declivi.",
+        drugInteractions: "⚠️ Monitorare attentamente diuretici, chelanti del fosforo (da assumere RIGOROSAMENTE durante i pasti per sequestrare il fosforo alimentare) e integratori vitaminici.",
+        labMonitoring: "Creatinina sierica ed eGFR (formula CKD-EPI), Azotemia, Elettroliti (Sodio, Potassio, Cloro, Calcio, Fosforo), PTH intatto, Bicarbonati, Proteinuria 24h.",
+        avoid: ["Eccesso di proteine animali (Carni rosse, porzioni abbondanti di formaggi)", "Sale aggiunto e dadi da brodo", "Formaggi fusi, sottilette e cibi addizionati con polifosfati industriali", "Frutta secca a guscio, cacao e cioccolato (molto ricchi di potassio e fosforo)", "Brodi di carne e verdura concentrati", "Banane, kiwi, fichi e albicocche se il potassio sierico è elevato (> 5.0 mEq/L)", "Salumi e insaccati"], 
+        promote: ["Cereali aproteici speciali (se prescritti dal nefrologo)", "Pasta e riso raffinati cotti in abbondante acqua", "Verdure a basso tenore di potassio lessate e scolate", "Olio Extravergine d'Oliva crudo come fonte calorica pulita", "Piccole porzioni pesate di carne bianca o albume d'uovo", "Mele e pere sbucciate"] 
     },
     'tiroide': { 
-        name: "Ipotiroidismo", desc: "Supporto metabolico e modulazione iodio/gozzigeni.", 
-        goldenRule: "Non esagerare con cavoli e broccoli crudi, poiché contengono sostanze 'gozzigene' che ostacolano l'assorbimento dello iodio.",
-        avoid: ["Verdure crucifere crude (Cavoli, Broccoli, Rapanelli)", "Eccesso di Soia (Ostacola l'assorbimento degli ormoni tiroidei)", "Zuccheri raffinati (A causa del metabolismo rallentato)", "Grassi idrogenati", "Alghe in eccesso (Senza consulto medico)", "Alimenti ultra-processati"], 
-        promote: ["Pesce di mare (Ricco di Iodio)", "Uova", "Carni magre", "Noci del Brasile (Ricche di Selenio)", "Cereali integrali (Per la stipsi)", "Sale iodato (Con moderazione)"] 
+        name: "Ipotiroidismo & Tiroidite Cronica", 
+        desc: "Supporto della sintesi ormonale tiroidea, apporto ottimale di iodio e selenio, modulazione cibi gozzigeni.", 
+        guidelineRef: "Linee Guida AIT (Associazione Italiana della Tiroide) & ETA",
+        goldenRule: "Assumi la Levo-tiroxina al mattino rigorosamente a digiuno con solo acqua e attendi almeno 30-45 minuti prima di fare colazione per garantirne il completo assorbimento.",
+        lifestyle: "Attività fisica aerobica regolare per contrastare il rallentamento metabolico basale e favorire la motilità intestinale. Buona igiene del sonno.",
+        drugInteractions: "⚠️ Con Levotiroxina (Eutirox, Tirosint): NON assumere insieme a caffè, soia, integratori di ferro, calcio o antiacidi (riducono drasticamente la biodisponibilità). Distanziare di almeno 4 ore.",
+        labMonitoring: "TSH reflex ogni 6-12 mesi (o a 6-8 settimane da variazioni di dosaggio terapeutico), FT3, FT4, Anticorpi anti-TPO e anti-TG se eziologia autoimmune.",
+        avoid: ["Verdure crucifere CRUDE in grandi quantità (Cavolo, cavolfiore, broccoli, verza: rilasciano tiocianati gozzigeni)", "Eccesso di derivati della soia in prossimità del farmaco", "Zuccheri raffinati e dolciumi che aggravano l'aumento ponderale", "Grassi idrogenati", "Alghe essiccate e integratori iodati non prescritti (rischio sbalzi funzionali)"], 
+        promote: ["Pesce di mare fresco (fonte primaria di Iodio naturale)", "Uova biologiche intere", "Noci del Brasile (1-2 al giorno garantiscono l'intero fabbisogno di Selenio)", "Cereali integrali per prevenire la stipsi", "Carni bianche magre", "Sale iodato (utilizzato con moderazione a crudo)"] 
     },
     'pcos': { 
-        name: "Sindrome Ovaio Policistico (PCOS)", desc: "Controllo dell'insulino-resistenza associata.", 
-        goldenRule: "Prediligi sempre carboidrati a basso indice glicemico per tenere a bada i picchi di insulina.",
-        avoid: ["Farine raffinate (Pane bianco, Pizza normale)", "Zuccheri semplici e Dolci", "Bevande zuccherate", "Latte vaccino in eccesso (Stimola l'IGF-1)", "Cibi confezionati", "Grassi saturi (Burro, Insaccati)"], 
-        promote: ["Cereali integrali (Avena, Quinoa, Farro)", "Legumi", "Semi di Lino e Zucca", "Pesce azzurro (Omega-3)", "Verdure a foglia verde", "Carboidrati abbinati a proteine o grassi buoni"] 
+        name: "Sindrome dell'Ovaio Policistico (PCOS)", 
+        desc: "Modulazione dell'insulino-resistenza associata, riduzione dell'iperandrogenismo e controllo ponderale.", 
+        guidelineRef: "International Evidence-based Guideline for PCOS 2023",
+        goldenRule: "Punta su pasti a basso e medio carico glicemico: associa sempre una fonte proteica e grassi monoinsaturi ai carboidrati complessi per evitare picchi insulinici stimolatori degli androgeni.",
+        lifestyle: "Attività fisica combinata (allenamenti di forza/pesi associati a sessioni HIIT o aerobiche) per migliorare la sensibilità periferica all'insulina e la composizione corporea.",
+        drugInteractions: "⚠️ Con Inositolo (Myo-inositolo + D-chiro-inositolo): assumere con costanza due volte al giorno lontano dai pasti. Con eventuale Metformina: assumere a stomaco pieno per ridurre effetti gastrointestinali.",
+        labMonitoring: "Glicemia e Insulina basali (indice HOMA-IR), Curva da carico orale di glucosio con insulinemia, Profilo ormonale (LH, FSH, Testosterone libero, DHEA-S, 17-OHP), Profilo lipidico.",
+        avoid: ["Farine raffinate e pane bianco classico", "Zuccheri semplici, merendine, snack dolci", "Bevande zuccherate, succhi e soft-drink", "Latte vaccino in eccesso (stimola la secrezione di IGF-1)", "Grassi idrogenati industriali e cibi fritti", "Alimenti ad altissimo indice glicemico"], 
+        promote: ["Cereali integrali in chicco (Farro, orzo, quinoa, riso integrale)", "Semi di lino macinati e semi di zucca (ricchi di lignani e zinco)", "Pesce azzurro e salmone ricchi di Omega-3 anti-infiammatori", "Legumi cotti al naturale", "Verdure a foglia verde scuro", "Avocado e Olio EVO"] 
     },
     'stipsi': { 
-        name: "Stipsi Cronica", desc: "Aumento dell'apporto di fibre insolubili e acqua.", 
-        goldenRule: "Non basta mangiare fibre: senza un adeguato apporto d'acqua (almeno 2L), le fibre induriscono ulteriormente le feci.",
-        avoid: ["Pane bianco e Riso brillato", "Patate", "Banane poco mature", "Mele senza buccia", "Formaggi stagionati", "Tè molto concentrato", "Eccesso di Cioccolato fondente", "Cibi astringenti (Limone in eccesso)"], 
-        promote: ["Prugne e Kiwi maturi", "Crusca d'avena o frumento", "Cereali 100% integrali", "Legumi", "Verdura cotta (Spinaci, Bietole)", "Zuppe e Minestroni", "Acqua ricca di magnesio"] 
+        name: "Stipsi Cronica & Rallentato Transito", 
+        desc: "Ottimizzazione del transito colico, combinazione di fibre solubili/insolubili e idratazione mirata.", 
+        guidelineRef: "Linee Guida Nazionali AIGO per la Gestione della Stipsi Funzionale",
+        goldenRule: "Le fibre alimentari funzionano SOLO se accompagnate da un abbondante introito idrico (>2 - 2.5 litri d'acqua al giorno); in caso contrario, rischiano di formare feci dure e ostruenti.",
+        lifestyle: "Stabilire un orario fisso per l'evacuazione senza reprimere lo stimolo (preferibilmente 20-30 min dopo la colazione per sfruttare il riflesso gastro-colico). Posizione accovacciata con sgabellino sotto i piedi.",
+        drugInteractions: "⚠️ Con lassativi osmotici (Macrogol, Lattulosio): bere abbondante acqua. Non abusare di lassativi antrachinonici da erboristeria (Senna, Frangula: causano assuefazione e melanosi del colon).",
+        labMonitoring: "Emocromo (escludere anemia), Elettroliti sierici, Funzionalità tiroidea (TSH: escludere ipotiroidismo secondario), Colonscopia se età > 50 anni o sintomi d'allarme.",
+        avoid: ["Riso bianco brillato e crema di riso", "Pane bianco raffinato e fette biscottate non integrali", "Banane acerbe e cachi non maturi", "Mele sbucciate", "Tè nero fortemente concentrato e ricco di tannini astringenti", "Formaggi stagionati a pasta dura", "Eccesso di cioccolato e cacao"], 
+        promote: ["Kiwi maturi (2 al mattino a stomaco vuoto)", "Prugne secche reidratate in acqua per una notte", "Cereali 100% integrali e crusca d'avena", "Legumi con buccia ben cotti (Lenticchie, fagioli borlotti)", "Verdure cotte ad azione lassativa (Spinaci, bietole, zucchine)", "Acque minerali ricche di Magnesio e Solfati"] 
     },
     'osteoporosi': { 
-        name: "Osteoporosi / Osteopenia", desc: "Ottimizzazione di Calcio e Vitamina D.", 
-        goldenRule: "L'eccesso di sale e di caffeina aumenta la perdita di calcio attraverso le urine. Moderazione!",
-        avoid: ["Sale aggiunto (Aumenta l'escrezione di calcio)", "Caffè in eccesso (>3 tazzine/die)", "Superalcolici", "Bevande tipo Cola (Ricche di fosfati)", "Crusca in eccesso (Ostacola l'assorbimento del calcio)", "Eccesso di proteine animali"], 
-        promote: ["Latticini magri (Yogurt, Ricotta)", "Grana padano o Parmigiano (30g)", "Mandorle", "Acqua calcica (>200 mg/L di Calcio)", "Verdure a foglia verde scura", "Pesce azzurro (Per Vitamina D)"] 
+        name: "Osteoporosi & Osteopenia", 
+        desc: "Massimizzazione del picco di massa ossea, ottimizzazione del bilancio di Calcio, Vitamina D e Magnesio (SIOMMMS).", 
+        guidelineRef: "Linee Guida SIOMMMS 2021 per la Diagnosi e Terapia dell'Osteoporosi",
+        goldenRule: "Combina l'apporto di calcio biodisponibile (acque calciche e alimenti ricchi) con una corretta sintesi o supplementazione di Vitamina D e regolare attività contro gravità.",
+        lifestyle: "Attività fisica a carico gravitazionale (camminata sostenuta, salita scale, ballo, ginnastica con piccoli pesi) che stimola meccanicamente gli osteoblasti. Esposizione solare protetta per almeno 20 minuti al giorno.",
+        drugInteractions: "⚠️ Con Bifosfonati orali (Alendronato, Risedronato): assumere al risveglio a digiuno con SOLO ACQUA di rubinetto (un bicchiere pieno), rimanendo in posizione rigorosamente eretta/seduta per almeno 30 minuti senza mangiare né bere.",
+        labMonitoring: "Densitometria Ossea MOC DEXA femorale e lombare ogni 18-24 mesi, 25-OH Vitamina D sierica, Calcemia, Fosforemia, Calciuria 24 ore, Creatinina e Paratormone (PTH).",
+        avoid: ["Sale da cucina in eccesso (aumenta l'escrezione renale di calcio urinario)", "Caffè in dosi elevate (> 3 tazzine al giorno)", "Bevande a base di cola industriali (ricche di acido fosforico sequestrante il calcio)", "Superalcolici e alcolici", "Diete iperproteiche sbilanciate", "Eccesso di fitati crudi non cotti che chelano il calcio intestinale"], 
+        promote: ["Acque minerali calciche ad alto tenore di calcio (> 250-300 mg/L)", "Latticini magri (Yogurt greco, ricotta fresca, kefir)", "Grana Padano o Parmigiano Reggiano (scaglie da 25-30g ricchissime di calcio assorbibile)", "Pesce azzurro consumato anche con le lische morbide (Sardine)", "Semi di sesamo e mandorle sgusciate", "Verdure a foglia verde scuro (Cicoria, rucola, agretti)"] 
     }
 };
     
@@ -102,24 +177,29 @@ function updateAnalysis() {
         const cAvoid = document.getElementById('custom-pat-avoid').value;
         const cPromote = document.getElementById('custom-pat-promote').value;
         
-        let avoidHtml = cAvoid ? cAvoid.split(',').map(i => `<li>❌ ${i.trim()}</li>`).join('') : "<li>❌ (Nessun dato)</li>";
-        let promoteHtml = cPromote ? cPromote.split(',').map(i => `<li>✅ ${i.trim()}</li>`).join('') : "<li>✅ (Nessun dato)</li>";
+        let avoidHtml = cAvoid ? cAvoid.split(',').map(i => `<li>❌ ${i.trim()}</li>`).join('') : "<li>❌ (Nessun dato inserito)</li>";
+        let promoteHtml = cPromote ? cPromote.split(',').map(i => `<li>✅ ${i.trim()}</li>`).join('') : "<li>✅ (Nessun dato inserito)</li>";
         
         panel.innerHTML = `
-            <p style="margin-bottom:15px; font-weight:600; color:#1e293b;">${cName} (Personalizzata)</p>
-            <div class="rule-item danger">
-                <strong>Da Evitare Tassativamente:</strong>
-                <ul style="list-style:none; margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:0.9rem;">${avoidHtml}</ul>
-            </div>
-            <div class="rule-item success">
-                <strong>Da Promuovere Fortemente:</strong>
-                <ul style="list-style:none; margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:0.9rem;">${promoteHtml}</ul>
+            <div style="background:#ffffff; border-radius:14px; padding:16px; border:1px solid #cbd5e1; box-shadow:0 4px 12px rgba(0,0,0,0.03);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <p style="margin:0; font-weight:800; color:#0f172a; font-size:1.05rem;">🩺 ${cName} (Personalizzata dal Medico)</p>
+                    <button type="button" class="btn-primary" onclick="applicaLineeGuidaSuNote()" style="padding:6px 12px; font-size:12px; background:#0284c7; border:none; border-radius:8px; color:#fff; cursor:pointer; font-weight:700;">✍️ Applica a Cartella & Note</button>
+                </div>
+                <div class="rule-item danger" style="margin-bottom:10px; background:#fef2f2; border-left:4px solid #ef4444; padding:10px; border-radius:8px;">
+                    <strong style="color:#b91c1c;">Da Evitare Tassativamente:</strong>
+                    <ul style="list-style:none; margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:0.88rem; color:#7f1d1d;">${avoidHtml}</ul>
+                </div>
+                <div class="rule-item success" style="background:#f0fdf4; border-left:4px solid #22c55e; padding:10px; border-radius:8px;">
+                    <strong style="color:#15803d;">Da Promuovere Fortemente:</strong>
+                    <ul style="list-style:none; margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:0.88rem; color:#14532d;">${promoteHtml}</ul>
+                </div>
             </div>
         `;
         return;
     }
     
-    const mainPat = pathologyDB[pat];
+    const mainPat = pathologyDB[pat] || pathologyDB['nessuna'];
     
     // Raccogli comorbidità selezionate
     let selectedComorbidities = [];
@@ -134,6 +214,10 @@ function updateAnalysis() {
     if(mainPat.goldenRule) mergedGoldenRules.push(`<strong>⭐ ${mainPat.name}:</strong> ${mainPat.goldenRule}`);
     
     let titleNames = [mainPat.name];
+    let lifestyleList = [mainPat.lifestyle || 'Attività fisica moderata costante'];
+    let drugAlerts = [mainPat.drugInteractions || 'Nessuna specifica interazione registrata'];
+    let labChecks = [mainPat.labMonitoring || 'Check-up generale'];
+    let guidelinesRefs = [mainPat.guidelineRef || 'Standard Clinico Internazionale'];
 
     selectedComorbidities.forEach(p => {
         titleNames.push(p.name);
@@ -142,28 +226,121 @@ function updateAnalysis() {
         if (p.goldenRule) {
             mergedGoldenRules.push(`<strong>⭐ ${p.name}:</strong> ${p.goldenRule}`);
         }
+        if (p.lifestyle) lifestyleList.push(`• <b>${p.name}</b>: ${p.lifestyle}`);
+        if (p.drugInteractions) drugAlerts.push(`• <b>${p.name}</b>: ${p.drugInteractions}`);
+        if (p.labMonitoring) labChecks.push(`• <b>${p.name}</b>: ${p.labMonitoring}`);
+        if (p.guidelineRef) guidelinesRefs.push(`• ${p.guidelineRef}`);
     });
 
     let avoidHtml = Array.from(mergedAvoid).map(i => `<li>❌ ${i}</li>`).join('');
     let promoteHtml = Array.from(mergedPromote).map(i => `<li>✅ ${i}</li>`).join('');
-    let rulesHtml = mergedGoldenRules.map(r => `<div style="margin-bottom:5px;">${r}</div>`).join('');
+    let rulesHtml = mergedGoldenRules.map(r => `<div style="margin-bottom:6px; line-height:1.45;">${r}</div>`).join('');
 
     let combinedTitle = titleNames.length > 1 
-        ? `Protocollo Unificato: ${titleNames.join(' + ')}` 
+        ? `Protocollo Integrato Multipatologia: ${titleNames.join(' + ')}` 
         : mainPat.desc;
 
     panel.innerHTML = `
-        <p style="margin-bottom:15px; font-weight:600; color:#1e293b;">${combinedTitle}</p>
-        ${mergedGoldenRules.length > 0 ? `<div class="golden-rule">${rulesHtml}</div>` : ''}
-        <div class="rule-item danger">
-            <strong>Da Evitare Tassativamente:</strong>
-            <ul style="list-style:none; margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:0.9rem;">${avoidHtml}</ul>
-        </div>
-        <div class="rule-item success">
-            <strong>Da Promuovere Fortemente:</strong>
-            <ul style="list-style:none; margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:0.9rem;">${promoteHtml}</ul>
+        <div style="background:#ffffff; border-radius:14px; padding:18px 20px; border:1.5px solid #cbd5e1; box-shadow:0 6px 18px rgba(0,0,0,0.04);">
+            
+            <!-- HEADER GUIDELINES -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; border-bottom:1px solid #f1f5f9; padding-bottom:12px; flex-wrap:wrap; gap:8px;">
+                <div>
+                    <span style="font-size:11px; font-weight:800; background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px;">Supporto Decisionale Clinico</span>
+                    <h4 style="margin:4px 0 2px 0; font-size:1.15rem; color:#0f172a; font-weight:800;">${mainPat.name}</h4>
+                    <p style="margin:0; font-size:0.83rem; color:#64748b; font-style:italic;">${combinedTitle}</p>
+                    <p style="margin:3px 0 0 0; font-size:0.75rem; color:#0284c7; font-weight:600;">📚 Fonte: ${guidelinesRefs.join(' | ')}</p>
+                </div>
+                <button type="button" onclick="applicaLineeGuidaSuNote()" style="background:linear-gradient(135deg, #0284c7, #0369a1); color:#ffffff; border:none; padding:8px 14px; border-radius:10px; font-weight:700; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 8px rgba(2,132,199,0.3); transition:all 0.15s;" title="Inserisce queste direttive nelle Note Cliniche del referto per la tua firma">
+                    <span>✍️</span> Inserisci in Diagnosi & Note
+                </button>
+            </div>
+
+            <!-- REGOLA D'ORO CLINICA -->
+            ${mergedGoldenRules.length > 0 ? `
+            <div style="background:#fffbeb; border-left:4px solid #f59e0b; padding:10px 14px; border-radius:8px; margin-bottom:14px; color:#92400e; font-size:0.88rem;">
+                ${rulesHtml}
+            </div>` : ''}
+
+            <!-- SEZIONE INTERAZIONI FARMACO-CIBO (ALERT) -->
+            <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:6px; color:#b91c1c; font-weight:800; font-size:0.85rem; margin-bottom:4px;">
+                    <span>⚠️</span> ALERT CLINICO INTERAZIONI FARMACO-CIBO & PRECAUZIONI:
+                </div>
+                <div style="font-size:0.83rem; color:#991b1b; line-height:1.45;">
+                    ${drugAlerts.join('<br>')}
+                </div>
+            </div>
+
+            <!-- SEZIONE STILE DI VITA & ATTIVITÀ MOTORIA -->
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:6px; color:#15803d; font-weight:800; font-size:0.85rem; margin-bottom:4px;">
+                    <span>🏃</span> PRESCRIZIONE ATTIVITÀ FISICA & STILE DI VITA:
+                </div>
+                <div style="font-size:0.83rem; color:#166534; line-height:1.45;">
+                    ${lifestyleList.join('<br>')}
+                </div>
+            </div>
+
+            <!-- SEZIONE MONITORAGGIO BIOCHIMICO -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px 14px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:6px; color:#475569; font-weight:800; font-size:0.82rem; margin-bottom:4px;">
+                    <span>🧪</span> MONITORAGGIO DI LABORATORIO SUGGERITO:
+                </div>
+                <div style="font-size:0.8rem; color:#334155; line-height:1.4;">
+                    ${labChecks.join('<br>')}
+                </div>
+            </div>
+
+            <!-- DUE COLONNE: EVITARE / PROMUOVERE -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="rule-item danger" style="background:#fff1f2; border:1px solid #fecdd3; border-radius:10px; padding:12px;">
+                    <strong style="color:#be123c; font-size:0.86rem; display:block; margin-bottom:6px;">🚫 Da Evitare Tassativamente:</strong>
+                    <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:4px; font-size:0.82rem; color:#9f1239;">${avoidHtml}</ul>
+                </div>
+                <div class="rule-item success" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px;">
+                    <strong style="color:#15803d; font-size:0.86rem; display:block; margin-bottom:6px;">✅ Da Promuovere Fortemente:</strong>
+                    <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:4px; font-size:0.82rem; color:#14532d;">${promoteHtml}</ul>
+                </div>
+            </div>
         </div>
     `;
+}
+
+// Funzione che copia la prescrizione e le linee guida direttamente nel campo note del medico
+function applicaLineeGuidaSuNote() {
+    const pat = document.getElementById('patient-pathology').value;
+    const notesEl = document.getElementById('patient-notes');
+    if (!notesEl) return;
+
+    let prescrizione = "";
+    if (pat === 'altro') {
+        const cName = document.getElementById('custom-pat-name').value || "Patologia Personalizzata";
+        prescrizione = `\n\n📌 LINEE GUIDA CLINICHE APPLICATE (${cName}):\n• Cibi da promuovere: ${document.getElementById('custom-pat-promote').value || 'n.d.'}\n• Cibi da limitare/evitare: ${document.getElementById('custom-pat-avoid').value || 'n.d.'}`;
+    } else {
+        const p = pathologyDB[pat] || pathologyDB['nessuna'];
+        prescrizione = `\n\n📌 LINEE GUIDA & INDICAZIONI NUTRIZIONALI SPECIALISTICHE (${p.name}):\n` +
+                       `• Fonte Clinica: ${p.guidelineRef || 'Standard Internazionale'}\n` +
+                       `• Regola d'Oro: ${p.goldenRule || ''}\n` +
+                       `• Prescrizione Attività Motoria: ${p.lifestyle || ''}\n` +
+                       `• Alert Interazioni Farmacologiche: ${p.drugInteractions || 'Nessuna specifica'}\n` +
+                       `• Controlli di Laboratorio: ${p.labMonitoring || 'Check-up di routine'}\n` +
+                       `• Valutazione Medico Curante: Quadri clinico-nutrizionale compatibile con il piano assegnato. Si raccomanda aderenza terapeutica.`;
+    }
+
+    if (!notesEl.value.includes("LINEE GUIDA")) {
+        notesEl.value = (notesEl.value ? notesEl.value.trim() : '') + prescrizione;
+    } else {
+        notesEl.value = notesEl.value.replace(/\n\n📌 LINEE GUIDA[\s\S]*$/, prescrizione);
+    }
+
+    notesEl.scrollTop = notesEl.scrollHeight;
+    try { notesEl.dispatchEvent(new Event('input')); } catch(e){}
+    if (typeof showToast !== 'undefined') {
+        showToast("Linee guida applicate alle note della cartella clinica!", "success");
+    } else {
+        alert("Linee guida cliniche inserite nelle Note del Medico!");
+    }
 }
 
 function generateDiet() {

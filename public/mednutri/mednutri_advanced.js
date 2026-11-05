@@ -1,4 +1,4 @@
-﻿// ==============================================================================
+// ==============================================================================
 // MEDNUTRI PRO - MOTORE CLINICO AVANZATO v2.0 (QR TASCABILE + GRAFICI + AI)
 // Autore: Dott. Ciro Milella - Suite Sanitaria Aziendale
 // ==============================================================================
@@ -54,11 +54,11 @@
 
     // 2. CALCOLO METABOLICO SCIENTIFICO (TDEE, BMR, BMI, MACRONUTRIENTI)
     window.calcolaMetabolismoClinico = function() {
-        const peso = parseFloat(document.getElementById('peso')?.value) || 75;
-        const altezza = parseFloat(document.getElementById('altezza')?.value) || 170;
-        const sesso = document.getElementById('sesso')?.value || 'M';
-        const dob = document.getElementById('dob')?.value || '1970-01-01';
-        const lifestyle = parseFloat(document.getElementById('lifestyle')?.value) || 1.375;
+        const peso = parseFloat(document.getElementById('patient-weight')?.value || document.getElementById('peso')?.value) || 75;
+        const altezza = parseFloat(document.getElementById('patient-height')?.value || document.getElementById('altezza')?.value) || 170;
+        const sesso = document.getElementById('patient-gender')?.value || document.getElementById('sesso')?.value || 'M';
+        const dob = document.getElementById('patient-dob')?.value || document.getElementById('dob')?.value || '1970-01-01';
+        const lifestyle = parseFloat(document.getElementById('patient-lifestyle')?.value || document.getElementById('lifestyle')?.value) || 1.375;
 
         // Calcolo età esatta
         const birthDate = new Date(dob);
@@ -151,8 +151,8 @@
 
     // 4. INVIO WHATSAPP
     window.inviaPianoViaWhatsApp = function() {
-        const nomePaziente = document.getElementById('nome')?.value || 'Paziente';
-        const patologia = document.getElementById('patologia')?.value || 'Trattamento Nutrizionale';
+        const nomePaziente = document.getElementById('patient-name')?.value || document.getElementById('nome')?.value || 'Paziente';
+        const patologia = document.getElementById('patient-pathology')?.value || document.getElementById('patologia')?.value || 'Trattamento Nutrizionale';
         const meta = window.calcolaMetabolismoClinico();
 
         let testo = `*AMBULATORIO MEDICO NUTRIZIONALE*\n`;
@@ -177,8 +177,8 @@
 
     // 5. MOTORE AI VARIAZIONE DIETA INTELLIGENTE (NutriAI Copilot)
     window.apriAssistenteNutriAI = function() {
-        const nome = document.getElementById('nome')?.value || 'Ciro Milella';
-        const patKey = document.getElementById('patologia')?.value || 'steatosi';
+        const nome = document.getElementById('patient-name')?.value || document.getElementById('nome')?.value || 'Ciro Milella';
+        const patKey = document.getElementById('patient-pathology')?.value || document.getElementById('patologia')?.value || 'steatosi';
         const meta = window.calcolaMetabolismoClinico();
 
         const promptText = prompt(
@@ -195,12 +195,12 @@
     // 6. GENERAZIONE REFERTO CLINICO A4 COMPLETO CON QR CODE & GRAFICI INTERATTIVI
     window.apriRefertoClinicoCompleto = function() {
         const meta = window.calcolaMetabolismoClinico();
-        const nome = document.getElementById('nome')?.value || 'Ciro Milella';
-        const sesso = document.getElementById('sesso')?.value || 'Uomo';
-        const dob = document.getElementById('dob')?.value || '1967-12-16';
-        const peso = document.getElementById('peso')?.value || '79.3';
-        const altezza = document.getElementById('altezza')?.value || '160';
-        const patKey = document.getElementById('patologia')?.value || 'steatosi';
+        const nome = document.getElementById('patient-name')?.value || document.getElementById('nome')?.value || 'Ciro Milella';
+        const sesso = document.getElementById('patient-gender')?.value || document.getElementById('sesso')?.value || 'Uomo';
+        const dob = document.getElementById('patient-dob')?.value || document.getElementById('dob')?.value || '1967-12-16';
+        const peso = document.getElementById('patient-weight')?.value || document.getElementById('peso')?.value || '79.3';
+        const altezza = document.getElementById('patient-height')?.value || document.getElementById('altezza')?.value || '160';
+        const patKey = document.getElementById('patient-pathology')?.value || document.getElementById('patologia')?.value || 'steatosi';
         const patInfo = window.MEDNUTRI_PATOLOGIE_ADV[patKey] || window.MEDNUTRI_PATOLOGIE_ADV['steatosi'];
         const spesa = window.generaListaSpesaSettimanale();
 
