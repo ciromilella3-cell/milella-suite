@@ -1,9 +1,17 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Piano Nutrizionale Tascabile - MedNutri Pro</title>
+<!-- PWA & Mobile Web App Manifest Support -->
+<link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0284c7">
+<link rel="icon" type="image/png" href="/icon-512.png">
+<link rel="apple-touch-icon" href="/icon-512.png">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -183,6 +191,13 @@
 
 <div class="content-pad">
 
+  <!-- BOTTONE INSTALLAZIONE APP SMARTPHONE (PWA) -->
+  <div id="pwa-install-wrapper" style="margin-bottom:14px;">
+    <button id="btn-install-pwa" onclick="richiediInstallazionePWA()" style="width:100%; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:1px solid rgba(255,255,255,0.2); padding:12px 16px; border-radius:14px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 6px 18px rgba(2,132,199,0.35);">
+      <span>📲 Salva App Personale sullo Schermo dello Smartphone</span>
+    </button>
+  </div>
+
   <!-- IDRATAZIONE GIORNALIERA -->
   <div class="card-box">
     <div class="card-title">💧 Diario Idratazione Giornaliera</div>
@@ -280,6 +295,29 @@
     console.error(e);
   }
   updateWaterUI();
+
+  // Gestione PWA BeforeInstallPrompt
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const btn = document.getElementById('btn-install-pwa');
+    if (btn) btn.style.display = 'flex';
+  });
+
+  function richiediInstallazionePWA() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choice) => {
+        if (choice.outcome === 'accepted') {
+          console.log('PWA MedNutri installata');
+        }
+        deferredPrompt = null;
+      });
+    } else {
+      alert("📲 Per salvare l'App sullo Smartphone:\n\n• Su Android/Chrome: tocca i 3 puntini in alto a destra e seleziona 'Aggiungi a schermata Home'\n• Su iPhone/Safari: tocca il tasto Condividi (quadrato con freccia) e scegli 'Aggiungi alla schermata Home'");
+    }
+  }
 </script>
 
 </body>

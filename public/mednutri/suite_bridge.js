@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // SUITE MILELLA - MEDNUTRI PRO (AMBULATORIO MEDICO) ECOSYSTEM BRIDGE
 // Riceve e sincronizza in tempo reale il paziente attivo dalla Suite
 // ============================================================================
@@ -441,12 +441,71 @@
       } catch(e){}
     }
 
+    // ANALISI CLINICA INCROCIATA FARMACO-NUTRIENTE REAL-TIME (CDSS ADVANCED)
+    analizzaInterazioniFarmacoCiboPaziente(s);
+
     if (typeof calculateBMI === 'function') calculateBMI();
     if (typeof updateAnalysis === 'function') updateAnalysis();
     if (typeof mostraBannerPazienteSincronizzato === 'function') {
       mostraBannerPazienteSincronizzato(s.nome);
     }
   };
+
+  // Funzione motore CDSS: analizza le terapie farmacologiche reali di CareAssist e segnala interazioni alimentari
+  function analizzaInterazioniFarmacoCiboPaziente(paziente) {
+    if (!paziente || !paziente.terapie || !Array.isArray(paziente.terapie) || paziente.terapie.length === 0) return;
+    
+    const alerts = [];
+    const tStr = JSON.stringify(paziente.terapie).toLowerCase();
+
+    if (tStr.includes('entecavir')) {
+      alerts.push("⚠️ <b>Entecavir (Antivirale HBV):</b> Deve essere assunto rigorosamente a stomaco vuoto (almeno 2 ore prima o 2 ore dopo un pasto completo) per evitare una drastica riduzione della biodisponibilità plasmatica.");
+    }
+    if (tStr.includes('bisoprololo') || tStr.includes('metoprololo') || tStr.includes('atenololo')) {
+      alerts.push("⚠️ <b>Beta-Bloccante (Bisoprololo):</b> Evitare integratori di liquirizia pura (acido glicirrizico aumenta la PA) e monitorare la frequenza cardiaca a riposo. Mantenere idratazione idonea.");
+    }
+    if (tStr.includes('pantoprazolo') || tStr.includes('omeprazolo') || tStr.includes('lansoprazolo')) {
+      alerts.push("⚠️ <b>Inibitore di Pompa (Pantoprazolo):</b> Assunzione mattutina 30-45 min prima di colazione con acqua. L'uso cronico può ridurre l'assorbimento intestinale di Vitamina B12, Magnesio e Ferro.");
+    }
+    if (tStr.includes('lacosamide') || tStr.includes('vimpat')) {
+      alerts.push("⚠️ <b>VIMPAT (Lacosamide):</b> Tolleranza zero ad alcolici e sedativi naturali a base di iperico o valeriana per potenziale sinergia depressiva sul SNC.");
+    }
+    if (tStr.includes('febuxostat') || tStr.includes('adenuric') || tStr.includes('allopurinolo')) {
+      alerts.push("⚠️ <b>Ipourecemizzante (Adenuric):</b> Assumere dopo il pranzo con abbondante acqua (>250ml). Evitare digiuni improvvisi che innalzano l'acido urico.");
+    }
+    if (tStr.includes('clopidogrel') || tStr.includes('averelix') || tStr.includes('cardioaspirina')) {
+      alerts.push("⚠️ <b>Antiaggregante (Clopidogrel):</b> Moderare grandi quantitativi concomitanti di aglio concentrato, zenzero e ginkgo biloba ad alte dosi (potenziamento effetto emorragico).");
+    }
+
+    let alertBox = document.getElementById('cdss-live-drug-interactions-box');
+    if (!alertBox) {
+      alertBox = document.createElement('div');
+      alertBox.id = 'cdss-live-drug-interactions-box';
+      alertBox.style.cssText = 'background:#fef2f2; border:1.5px solid #f87171; border-radius:14px; padding:16px 20px; margin-top:16px; margin-bottom:16px; box-shadow:0 6px 18px rgba(239,68,68,0.15); animation:fadeIn 0.3s ease;';
+      const notesSection = document.getElementById('patient-notes')?.closest('.glass-card') || document.querySelector('.patient-card');
+      if (notesSection && notesSection.parentNode) {
+        notesSection.parentNode.insertBefore(alertBox, notesSection.nextSibling);
+      }
+    }
+
+    if (alerts.length > 0) {
+      alertBox.style.display = 'block';
+      alertBox.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:20px;">🚨</span>
+            <span style="font-size:13.5px; font-weight:800; color:#991b1b; text-transform:uppercase; letter-spacing:0.5px;">CDSS • Alert Clinico Terapie CareAssist vs Dieta</span>
+          </div>
+          <span style="font-size:11px; background:#fee2e2; color:#b91c1c; padding:3px 8px; border-radius:6px; font-weight:800;">Real-Time</span>
+        </div>
+        <div style="font-size:12.5px; color:#7f1d1d; line-height:1.5; display:flex; flex-direction:column; gap:6px;">
+          ${alerts.join('<br>')}
+        </div>
+      `;
+    } else {
+      alertBox.style.display = 'none';
+    }
+  }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => setTimeout(popolaSelectImportMedNutri, 300));

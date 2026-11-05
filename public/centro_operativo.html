@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -240,13 +240,20 @@
       <p>Suite Aziendale C. Milella &bull; Coordinamento Sanitario &bull; ASL Puglia</p>
     </div>
   </div>
-  <a href="/launcher.html" class="btn-back">
-    <span>🏠 Torna al Portale</span>
-  </a>
+  <div class="header-right" style="display:flex; align-items:center; gap:10px;">
+    <button id="btn-privacy-toggle" onclick="togglePrivacyModeGlobal()" class="btn-back" style="background:rgba(239, 68, 68, 0.15); border:1px solid #ef4444; color:#fca5a5;">
+      <span id="privacy-icon">🛡️</span>
+      <span id="privacy-text">Privacy Demo: OFF</span>
+    </button>
+    <a href="/launcher.html" class="btn-back">
+      <span>🏠 Torna al Portale</span>
+    </a>
+  </div>
 </header>
 
 <div class="nav-tabs">
   <button class="tab-pill active" onclick="switchTab('tab-notifiche')">🔔 Notifiche &amp; SOS WhatsApp</button>
+  <button class="tab-pill" onclick="switchTab('tab-fascicolo')">📄 Fascicolo Clinico A4 Unificato</button>
   <button class="tab-pill" onclick="switchTab('tab-fatturazione')">📑 Fatturazione &amp; Ricevute 730</button>
   <button class="tab-pill" onclick="switchTab('tab-agenda')">📅 Agenda &amp; Visite Specialistiche</button>
   <button class="tab-pill" onclick="switchTab('tab-documenti')">📇 Cartella Referti &amp; Analisi</button>
@@ -309,6 +316,107 @@
             </div>
             <span class="badge-tag badge-blue">Consegnato</span>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB FASCICOLO CLINICO INTEGRATO A4 UNIFICATO -->
+  <div id="tab-fascicolo" class="tab-pane">
+    <div class="panel-box" style="margin-bottom:20px;">
+      <div class="panel-title"><span>📄</span> Generatore Fascicolo Sanitario Unificato A4 (CareAssist + MedNutri + Progetto Salute)</div>
+      <p style="color:#94a3b8; font-size:13px; margin-bottom:16px;">
+        Sintetizza in tempo reale le terapie farmacologiche attive, il piano nutrizionale e il trend ponderale/idratazione in un unico documento stampabile A4 di livello ospedaliero.
+      </p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+        <select id="sel-paziente-fascicolo" class="form-control" style="max-width:320px;" onchange="renderizzaFascicoloPreview()">
+          <option value="Aldo Z.">Aldo Z. (CareAssist • Paziente Geriatrico)</option>
+          <option value="Angela M.">Angela M. (CareAssist • Ipertensione &amp; Cardiopatia)</option>
+          <option value="Rosa Annunziata">Rosa C. (CareAssist • Terapia Cronica)</option>
+          <option value="Ciro Milella" selected>Ciro Milella (Suite Master • Steatosi &amp; Dieta Attiva)</option>
+        </select>
+        <button onclick="stampaFascicoloA4()" class="btn-action" style="max-width:240px; margin-top:0; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+          <span>🖨️ Stampa Dossier A4 (PDF)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ANTEPRIMA FASCICOLO CLINICO A4 -->
+    <div id="fascicolo-print-container" style="background:#ffffff; color:#0f172a; border-radius:12px; padding:32px 36px; box-shadow:0 8px 30px rgba(0,0,0,0.3); max-width:850px; margin:0 auto; font-family:'Segoe UI', Arial, sans-serif;">
+      <!-- Intestazione ASL e Medico -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #0284c7; padding-bottom:14px; margin-bottom:20px;">
+        <div>
+          <h2 style="margin:0; font-size:20px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px;">Fascicolo Sanitario &amp; Nutrizionale Integrato</h2>
+          <div style="font-size:11px; color:#64748b; font-weight:600; margin-top:2px;">REGIONE PUGLIA &bull; ASL BARI &bull; PIATTAFORMA SUITE MILELLA</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:13px; font-weight:800; color:#0f172a;">Dott. Ciro Milella</div>
+          <div style="font-size:11px; color:#64748b;">Coordinamento Sanitario &amp; Nutrizionale</div>
+          <div style="font-size:10px; color:#94a3b8; margin-top:3px;">Data Emissione: <span id="fasc-data-oggi">05/11/2026</span></div>
+        </div>
+      </div>
+
+      <!-- Anagrafica Paziente -->
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px; margin-bottom:18px; display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;">
+        <div>
+          <span style="display:block; font-size:10px; color:#64748b; text-transform:uppercase; font-weight:700;">Paziente</span>
+          <strong id="fasc-nome" style="font-size:14px; color:#0f172a;">Ciro Milella</strong>
+        </div>
+        <div>
+          <span style="display:block; font-size:10px; color:#64748b; text-transform:uppercase; font-weight:700;">Data di Nascita</span>
+          <strong id="fasc-nascita" style="font-size:13px; color:#0f172a;">16/12/1967</strong>
+        </div>
+        <div>
+          <span style="display:block; font-size:10px; color:#64748b; text-transform:uppercase; font-weight:700;">Sesso / Status</span>
+          <strong id="fasc-sesso" style="font-size:13px; color:#0f172a;">Uomo • Deambulante</strong>
+        </div>
+        <div>
+          <span style="display:block; font-size:10px; color:#64748b; text-transform:uppercase; font-weight:700;">Recapito Presidio</span>
+          <strong id="fasc-recapito" style="font-size:13px; color:#0f172a;">Via Roma, 10 - Bari</strong>
+        </div>
+      </div>
+
+      <!-- Griglia Sezioni 1 & 2: Terapie CareAssist & Linee Guida MedNutri -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px;">
+        <!-- Sezione 1: Terapie Farmacologiche Attive -->
+        <div style="border:1px solid #cbd5e1; border-radius:8px; padding:14px;">
+          <div style="font-size:12px; font-weight:800; color:#0284c7; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;">
+            💊 CareAssist Pro &bull; Terapie Somministrate
+          </div>
+          <div id="fasc-terapie-list" style="font-size:11.5px; color:#334155; line-height:1.45;">
+            <!-- Caricate dinamicamente -->
+          </div>
+        </div>
+
+        <!-- Sezione 2: Parametri Antropometrici & Nutrizionali -->
+        <div style="border:1px solid #cbd5e1; border-radius:8px; padding:14px;">
+          <div style="font-size:12px; font-weight:800; color:#16a34a; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;">
+            🥗 MedNutri Pro &bull; Fabbisogno &amp; Linee Guida
+          </div>
+          <div id="fasc-nutri-dettagli" style="font-size:11.5px; color:#334155; line-height:1.45;">
+            <!-- Caricate dinamicamente -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Sezione 3: Registro Progetto Salute (Trend Peso & Obiettivi) -->
+      <div style="border:1px solid #cbd5e1; border-radius:8px; padding:14px; margin-bottom:16px;">
+        <div style="font-size:12px; font-weight:800; color:#9333ea; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;">
+          ⚖️ Progetto Salute &bull; Monitoraggio Clinico &amp; Stile di Vita
+        </div>
+        <div id="fasc-salute-trend" style="font-size:11.5px; color:#334155; line-height:1.45;">
+          <!-- Caricate dinamicamente -->
+        </div>
+      </div>
+
+      <!-- Note del Medico e Firma -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px dashed #cbd5e1; padding-top:14px;">
+        <div style="font-size:10px; color:#64748b; max-width:450px;">
+          Nota Legale: Documento clinico generato tramite il Fascicolo Sanitario Unificato della Suite Milella. Tutte le raccomandazioni e le interazioni farmaco-nutriente sono state validate secondo le linee guida nazionali ed europee di riferimento.
+        </div>
+        <div style="text-align:center; min-width:180px;">
+          <div style="font-size:10px; color:#94a3b8; margin-bottom:32px;">Timbro e Firma del Medico Coordinatore</div>
+          <div style="border-top:1px solid #334155; font-size:11px; font-weight:700; color:#0f172a; padding-top:4px;">Dott. Ciro Milella</div>
         </div>
       </div>
     </div>
@@ -580,6 +688,226 @@
     alert('📇 Documento clinico archiviato con successo nel Fascicolo Sanitario del paziente!');
     e.target.reset();
   }
+
+  // ==========================================
+  // MODALITÀ PRESENTAZIONE / PRIVACY DEMO ON/OFF
+  // ==========================================
+  function isPrivacyModeActive() {
+    return localStorage.getItem('milella_privacy_demo_mode') === 'true';
+  }
+
+  function togglePrivacyModeGlobal() {
+    const current = isPrivacyModeActive();
+    const next = !current;
+    localStorage.setItem('milella_privacy_demo_mode', next ? 'true' : 'false');
+    aggiornaStatoPrivacyUI();
+    renderizzaFascicoloPreview();
+  }
+
+  function aggiornaStatoPrivacyUI() {
+    const active = isPrivacyModeActive();
+    const btn = document.getElementById('btn-privacy-toggle');
+    const txt = document.getElementById('privacy-text');
+    if (!btn || !txt) return;
+
+    if (active) {
+      btn.style.background = 'rgba(34, 197, 94, 0.2)';
+      btn.style.borderColor = '#22c55e';
+      btn.style.color = '#86efac';
+      txt.textContent = 'Privacy Demo: ON (Attiva)';
+    } else {
+      btn.style.background = 'rgba(239, 68, 68, 0.15)';
+      btn.style.borderColor = '#ef4444';
+      btn.style.color = '#fca5a5';
+      txt.textContent = 'Privacy Demo: OFF';
+    }
+  }
+
+  // ==========================================
+  // RENDERING FASCICOLO CLINICO UNIFICATO A4
+  // ==========================================
+  const DB_FASCICOLO = {
+    "Ciro Milella": {
+      nome: "Ciro Milella",
+      aliasDemo: "Paziente Alpha (Demo)",
+      nascita: "16/12/1967",
+      sesso: "Uomo • Deambulante",
+      indirizzo: "Via Roma, 10 - Bari",
+      indirizzoDemo: "Via Demo, *** - Bari",
+      terapie: [
+        { ora: "Mattina", farmaco: "Entecavir 0.5 mg", note: "Antivirale HBV • Assumere rigorosamente a digiuno" },
+        { ora: "Pranzo", farmaco: "Integrazione Omega-3 & Silimarina", note: "Supporto epatico e metabolismo lipidico" }
+      ],
+      nutri: {
+        diagnosi: "Steatosi Epatica (NAFLD/MASLD)",
+        lineeGuida: "EASL / AISF: Dieta mediterranea a ridotto indice glicemico. Zero alcolici e zero bevande zuccherate con fruttosio industriale.",
+        target: "Calorie: 1850 kcal/die • Proteine: 1.2 g/kg • Acqua: 2.5 L/die",
+        alimentiConsigliati: "Carciofi, radicchio, pesce azzurro, olio extravergine d'oliva crudo."
+      },
+      salute: {
+        pesoAttuale: "79.3 kg",
+        pesoIniziale: "84.5 kg",
+        trend: "Riduzione costante (-5.2 kg in 6 settimane)",
+        idratazione: "Media 8 bicchieri/die (2.0 L/2.5 L)",
+        attivita: "Camminata veloce 45 min x 4 gg/settimana"
+      }
+    },
+    "Aldo Z.": {
+      nome: "Aldo Z.",
+      aliasDemo: "Paziente Beta (Geriatrico)",
+      nascita: "18/04/1935",
+      sesso: "Uomo • Paziente Allettato (Rischio Braden)",
+      indirizzo: "Via Roma, 10 - Bari",
+      indirizzoDemo: "Via Demo, *** - Bari",
+      terapie: [
+        { ora: "07:30", farmaco: "Pantoprazolo 40 mg", note: "Digiuno 30 min prima di colazione" },
+        { ora: "08:30", farmaco: "Bisoprololo 1,25 mg", note: "Monitoraggio frequenza cardiaca" },
+        { ora: "08:30", farmaco: "VIMPAT (Lacosamide) 100 mg", note: "Controllo crisi neurologiche" },
+        { ora: "20:00", farmaco: "SILODYX (Silodosina) 8 mg", note: "Terapia IPB e svuotamento vescicale" },
+        { ora: "21:30", farmaco: "Quetiapina 25 mg", note: "Sedazione e controllo sonno notturno" }
+      ],
+      nutri: {
+        diagnosi: "Allettamento cronico • Cardiopatia",
+        lineeGuida: "SINU / SINPE: Cibi morbidi/omogeneizzati ad elevata digeribilità. Frazionamento dei pasti per prevenire reflusso e stasi.",
+        target: "Calorie: 1450 kcal/die • Idratazione assistita: 1.5 L/die",
+        alimentiConsigliati: "Creme di verdure, vellutate, purea di patate con parmigiano, passati di carne bianca."
+      },
+      salute: {
+        pesoAttuale: "68.5 kg",
+        pesoIniziale: "70.0 kg",
+        trend: "Peso stabilizzato",
+        idratazione: "Regolare tramite sondino/caregiver",
+        attivita: "Mobilizzazione passiva a letto quotidiana"
+      }
+    },
+    "Angela M.": {
+      nome: "Angela M.",
+      aliasDemo: "Paziente Gamma (Cardiopatico)",
+      nascita: "29/05/1938",
+      sesso: "Donna • Deambulazione assistita",
+      indirizzo: "Via Roma, 10 - Bari",
+      indirizzoDemo: "Via Demo, *** - Bari",
+      terapie: [
+        { ora: "08:00", farmaco: "Atenololo 50 mg", note: "Regolazione PA ed extrasistolia" },
+        { ora: "12:30", farmaco: "Cardioaspirina 100 mg", note: "Post-prandiale" }
+      ],
+      nutri: {
+        diagnosi: "Ipertensione Arteriosa Essenziale",
+        lineeGuida: "ESC / ESH: Protocollo iposodico DASH (<2g sale al giorno). Esclusione liquirizia ed esaltatori di sapidità.",
+        target: "Calorie: 1550 kcal/die • Acqua oligominerale iposodica: 2.0 L/die",
+        alimentiConsigliati: "Spezie ed erbe aromatiche in sostituzione del sale da cucina, cereali integrali, legumi."
+      },
+      salute: {
+        pesoAttuale: "62.0 kg",
+        pesoIniziale: "64.0 kg",
+        trend: "Controllo glicemia e PA ottimale",
+        idratazione: "Buona adesione al diario",
+        attivita: "Ginnastica dolce 20 min/die"
+      }
+    },
+    "Rosa Annunziata": {
+      nome: "Rosa C.",
+      aliasDemo: "Paziente Delta (Cronico)",
+      nascita: "16/06/1938",
+      sesso: "Donna • Deambulante",
+      indirizzo: "Via Roma, 10 - Bari",
+      indirizzoDemo: "Via Demo, *** - Bari",
+      terapie: [
+        { ora: "08:30", farmaco: "Eutirox 75 mcg", note: "A digiuno con acqua" },
+        { ora: "13:00", farmaco: "Calcifediolo (Vitamina D)", note: "Assunzione con pasto contenente lipidi" }
+      ],
+      nutri: {
+        diagnosi: "Osteopenia & Ipotiroidismo",
+        lineeGuida: "SIOMMMS / AACE: Adeguato apporto calcico e proteico con distanziamento di caffè ed integratori di soia dall'Eutirox.",
+        target: "Calorie: 1600 kcal/die • Calcio: 1200 mg/die",
+        alimentiConsigliati: "Yogurt bianco naturale, mandorle, acque calciche a basso residuo, verdure a foglia verde."
+      },
+      salute: {
+        pesoAttuale: "59.0 kg",
+        pesoIniziale: "59.5 kg",
+        trend: "Mantenimento ottimale",
+        idratazione: "7 bicchieri al giorno",
+        attivita: "Passeggiata pomeridiana"
+      }
+    }
+  };
+
+  function renderizzaFascicoloPreview() {
+    const sel = document.getElementById('sel-paziente-fascicolo')?.value || "Ciro Milella";
+    const data = DB_FASCICOLO[sel] || DB_FASCICOLO["Ciro Milella"];
+    const privacy = isPrivacyModeActive();
+
+    // Data Odierna
+    const dToday = new Date().toLocaleDateString('it-IT');
+    const dEl = document.getElementById('fasc-data-oggi');
+    if (dEl) dEl.textContent = dToday;
+
+    // Header Paziente
+    const nomeEl = document.getElementById('fasc-nome');
+    if (nomeEl) nomeEl.textContent = privacy ? data.aliasDemo : data.nome;
+
+    const nasEl = document.getElementById('fasc-nascita');
+    if (nasEl) nasEl.textContent = privacy ? '**/**/****' : data.nascita;
+
+    const sessoEl = document.getElementById('fasc-sesso');
+    if (sessoEl) sessoEl.textContent = data.sesso;
+
+    const recEl = document.getElementById('fasc-recapito');
+    if (recEl) recEl.textContent = privacy ? data.indirizzoDemo : data.indirizzo;
+
+    // Terapie CareAssist
+    const tBox = document.getElementById('fasc-terapie-list');
+    if (tBox) {
+      tBox.innerHTML = data.terapie.map(t => `
+        <div style="margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid #f1f5f9;">
+          <strong style="color:#0284c7;">[${t.ora}] ${t.farmaco}</strong><br>
+          <span style="font-size:10.5px; color:#64748b;">${t.note}</span>
+        </div>
+      `).join('');
+    }
+
+    // MedNutri Pro
+    const nBox = document.getElementById('fasc-nutri-dettagli');
+    if (nBox) {
+      nBox.innerHTML = `
+        <div style="margin-bottom:6px;"><strong>Diagnosi Primaria:</strong> <span style="color:#16a34a; font-weight:700;">${data.nutri.diagnosi}</span></div>
+        <div style="margin-bottom:6px; font-size:11px; color:#475569;"><strong>LG Ufficiali:</strong> ${data.nutri.lineeGuida}</div>
+        <div style="margin-bottom:6px; background:#f0fdf4; padding:6px 8px; border-radius:6px; font-weight:600; font-size:11px; color:#166534;">🎯 ${data.nutri.target}</div>
+        <div style="font-size:11px; color:#334155;"><strong>Alimenti Chiave:</strong> ${data.nutri.alimentiConsigliati}</div>
+      `;
+    }
+
+    // Progetto Salute
+    const sBox = document.getElementById('fasc-salute-trend');
+    if (sBox) {
+      sBox.innerHTML = `
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:8px;">
+          <div style="background:#faf5ff; padding:8px; border-radius:6px; border:1px solid #f3e8ff;">
+            <span style="font-size:10px; color:#7e22ce; font-weight:700; display:block;">PESO ATTUALE</span>
+            <strong style="font-size:15px; color:#581c87;">${data.salute.pesoAttuale}</strong>
+          </div>
+          <div style="background:#faf5ff; padding:8px; border-radius:6px; border:1px solid #f3e8ff;">
+            <span style="font-size:10px; color:#7e22ce; font-weight:700; display:block;">TREND PONDERALE</span>
+            <strong style="font-size:12px; color:#581c87;">${data.salute.trend}</strong>
+          </div>
+          <div style="background:#faf5ff; padding:8px; border-radius:6px; border:1px solid #f3e8ff;">
+            <span style="font-size:10px; color:#7e22ce; font-weight:700; display:block;">IDRATAZIONE & MOTO</span>
+            <strong style="font-size:12px; color:#581c87;">${data.salute.idratazione}</strong>
+          </div>
+        </div>
+        <div style="font-size:11px; color:#475569;"><strong>Attività Fisica Registrata:</strong> ${data.salute.attivita}</div>
+      `;
+    }
+  }
+
+  function stampaFascicoloA4() {
+    window.print();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    aggiornaStatoPrivacyUI();
+    renderizzaFascicoloPreview();
+  });
 </script>
 
 </body>
