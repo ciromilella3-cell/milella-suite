@@ -2030,6 +2030,28 @@ async function confirmNewProfileModal() {
                 }
             } catch(eSync) {}
 
+            // TRASMISSIONE AUTOMATICA DEL NUOVO PROFILO AL FASCICOLO SANITARIO SUITE (CAREASSIST & MEDNUTRI)
+            try {
+                await fetch('/api/suite/pazienti', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: 'paz_' + Date.now(),
+                        nome: name.trim(),
+                        dataNascita: d || '',
+                        sesso: genderVal || 'M',
+                        altezza: (h && h !== '---') ? h : '',
+                        peso: (w && w !== '---') ? w : '',
+                        targetPeso: (g && g !== '---') ? g : '',
+                        kcalTarget: (calcKcal && calcKcal !== '---') ? calcKcal : '',
+                        origini: ['Progetto Salute', 'CareAssist Pro', 'MedNutri Pro'],
+                        creatoIl: new Date().toISOString()
+                    })
+                });
+            } catch(eFederata) {
+                console.warn('Errore notifica anagrafe federata da Salute:', eFederata);
+            }
+
             setTimeout(() => {
                 window.location.reload(); // reload for chart.js binds
             }, 300);

@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // SUITE MILELLA - PROGETTO SALUTE ECOSYSTEM BRIDGE
 // Riceve e sincronizza in tempo reale il paziente/profilo attivo dalla Suite
 // ============================================================================
@@ -10,11 +10,93 @@
     } catch(e) { return null; }
   }
 
+  // ============================================================================
+  // IMPORTAZIONE BIDIREZIONALE REAL-TIME DA ANAGRAFE SUITE (CAREASSIST & MEDNUTRI)
+  // ============================================================================
+  async function sincronizzaPazientiDellaSuiteInSalute() {
+    try {
+      const res = await fetch('/api/suite/anagrafe-condivisa');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data || !Array.isArray(data.soggetti) || data.soggetti.length === 0) return;
+
+      let hp = [];
+      try { hp = JSON.parse(localStorage.getItem('health_profiles') || '["marito","moglie"]'); } catch(e){ hp = ['marito','moglie']; }
+      let cambiato = false;
+
+      data.soggetti.forEach(s => {
+        if (!s || !s.nome) return;
+        const nLower = s.nome.trim().toLowerCase();
+        
+        // Se è Ciro o Maria Carmela, aggiorno solo eventuali dati mancanti
+        if (nLower.includes('ciro') && nLower.includes('milella')) {
+          if (!localStorage.getItem('profileName_marito')) localStorage.setItem('profileName_marito', s.nome);
+          return;
+        }
+        if (nLower.includes('maria') && nLower.includes('carmela')) {
+          if (!localStorage.getItem('profileName_moglie')) localStorage.setItem('profileName_moglie', s.nome);
+          return;
+        }
+
+        // Genera ID profilo univoco e pulito per Progetto Salute
+        const pid = nLower.replace(/[^a-z0-9]/g, '');
+        if (!pid) return;
+
+        if (!hp.includes(pid)) {
+          hp.push(pid);
+          cambiato = true;
+          console.log('🌿 Progetto Salute: Aggancio automatico assistito dalla Suite ->', s.nome);
+        }
+
+        // Memorizza dettagli profilo se mancanti
+        if (!localStorage.getItem('profileName_' + pid)) {
+          localStorage.setItem('profileName_' + pid, s.nome.trim());
+          cambiato = true;
+        }
+
+        if (!localStorage.getItem('profileStats_' + pid)) {
+          const stats = {
+            dob: s.dataNascita || '',
+            gender: (s.sesso && s.sesso.toUpperCase().startsWith('F')) ? 'F' : 'M',
+            start: s.peso || '---',
+            height: s.altezza || '---',
+            goal: s.targetPeso || '---',
+            kcal: s.kcalTarget || '---'
+          };
+          localStorage.setItem('profileStats_' + pid, JSON.stringify(stats));
+          cambiato = true;
+        }
+      });
+
+      if (cambiato) {
+        localStorage.setItem('health_profiles', JSON.stringify(hp));
+        if (typeof window.globalProfiles !== 'undefined') window.globalProfiles = hp;
+        if (typeof window.visibleProfiles !== 'undefined') window.visibleProfiles = hp;
+        if (typeof renderTabs === 'function') renderTabs();
+        if (typeof renderProfiles === 'function') renderProfiles();
+      }
+    } catch(err) {
+      console.warn('Sync federata Progetto Salute:', err.message);
+    }
+  }
+
   function mappaPazienteAProfiloSalute(nome) {
     if (!nome) return null;
     const n = nome.toLowerCase().trim();
     if (n.includes('ciro') || n.includes('milella') || n.includes('marito')) return 'marito';
     if (n.includes('maria') || n.includes('carmela') || n.includes('stoppelli') || n.includes('moglie')) return 'moglie';
+    
+    // Controlla se corrisponde a un altro profilo dinamico esistente
+    const pid = n.replace(/[^a-z0-9]/g, '');
+    let hp = [];
+    try { hp = JSON.parse(localStorage.getItem('health_profiles') || '[]'); } catch(e){}
+    if (hp.includes(pid)) return pid;
+
+    // Ricerca per nome salvato
+    for (let p of hp) {
+      const pName = (localStorage.getItem('profileName_' + p) || '').toLowerCase();
+      if (pName && (pName.includes(n) || n.includes(pName))) return p;
+    }
     return null;
   }
 
@@ -80,10 +162,12 @@
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(sincronizzaProfiloSaluteDaSuite, 250);
+      setTimeout(sincronizzaPazientiDellaSuiteInSalute, 150);
+      setTimeout(sincronizzaProfiloSaluteDaSuite, 350);
     });
   } else {
-    setTimeout(sincronizzaProfiloSaluteDaSuite, 250);
+    setTimeout(sincronizzaPazientiDellaSuiteInSalute, 150);
+    setTimeout(sincronizzaProfiloSaluteDaSuite, 350);
   }
 })();
 
