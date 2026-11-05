@@ -2458,27 +2458,27 @@
     </div>
 
 
-    <!-- MODALE NUOVO PROFILO -->
+    <!-- MODALE NUOVO PROFILO (SCHEDA COMPLETA & UNIFORMATA MEDNUTRI / CAREASSIST) -->
     <div id="new-profile-modal" class="modal-overlay"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(6px);">
         <div
-            style="background:#fff; padding:28px 24px; border-radius:18px; width:92%; max-width:440px; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.45); font-family:'Inter', sans-serif;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            style="background:#ffffff; padding:26px 28px; border-radius:20px; width:94%; max-width:540px; max-height:90vh; overflow-y:auto; text-align:left; box-shadow:0 20px 50px rgba(0,0,0,0.5); font-family:'Inter', sans-serif; border:1.5px solid #0284c7;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
                 <h3
                     style="color:#0284c7; margin:0; font-size:1.25rem; font-weight:800; display:flex; align-items:center; gap:8px;">
-                    <span>👥</span> Seleziona da Suite o Crea
+                    <span>👥</span> Cartella Clinica &amp; Nuovo Assistito
                 </h3>
                 <span onclick="document.getElementById('new-profile-modal').style.display='none'"
-                    style="cursor:pointer; font-size:20px; color:#94a3b8; font-weight:bold;">✕</span>
+                    style="cursor:pointer; font-size:22px; color:#94a3b8; font-weight:bold; line-height:1;">✕</span>
             </div>
-            <p style="color:#64748b; font-size:0.85rem; margin-bottom:14px; line-height:1.4;">
-                Scegli un assistito già registrato nella Suite oppure digita per completare automaticamente:
+            <p style="color:#64748b; font-size:0.84rem; margin-bottom:14px; line-height:1.4;">
+                Seleziona un assistito federato della Suite oppure compila la scheda anagrafica e clinica completa:
             </p>
 
             <!-- SELETTORE RAPIDO ASSISTITI CONDIVISI DALLA SUITE -->
-            <div style="margin-bottom:14px; text-align:left;">
+            <div style="margin-bottom:14px;">
                 <label
-                    style="font-size:11.5px; font-weight:700; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:5px;">
+                    style="font-size:11px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:5px;">
                     ⚡ Assistiti Disponibili (1-Click da CareAssist &amp; MedNutri)
                 </label>
                 <select id="suite-shared-patient-select" onchange="applicaPazienteSuiteSuModale(this.value)"
@@ -2487,43 +2487,104 @@
                 </select>
             </div>
 
-            <!-- INPUT NOME CON SUGGERIMENTI DATALIST -->
-            <div style="position:relative; width:100%; margin-bottom:12px;">
+            <!-- FEEDBACK SE IL CLIENTE È GIÀ INSERITO / ESISTENTE -->
+            <div id="new-profile-duplicate-alert" style="display:none; background:#fef2f2; border:1.5px solid #f87171; color:#991b1b; padding:10px 14px; border-radius:10px; font-size:12.5px; font-weight:700; margin-bottom:14px;">
+                ⚠️ Attenzione: Un assistito con questo nominativo è già presente nell'archivio di Progetto Salute!
+            </div>
+
+            <!-- NOME E COGNOME -->
+            <div style="margin-bottom:12px;">
+                <label style="font-size:11.5px; font-weight:700; color:#475569; display:block; margin-bottom:4px; text-transform:uppercase;">Nome e Cognome *</label>
                 <input type="text" id="new-profile-name" list="suite-patients-datalist" placeholder="es. Mario Rossi"
-                    style="width:100%; padding:10px 12px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:14.5px; font-weight:600; box-sizing:border-box; outline:none; color:#0f172a;"
-                    oninput="cercaAutocompilazionePaziente(this.value)">
-                <datalist id="suite-patients-datalist">
-                    <!-- Popolato via JS con gli assistiti della Suite -->
-                </datalist>
+                    style="width:100%; padding:10px 12px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:14px; font-weight:600; box-sizing:border-box; outline:none; color:#0f172a;"
+                    oninput="verificaDuplicatoInTempoReale(this.value); cercaAutocompilazionePaziente(this.value);">
+                <datalist id="suite-patients-datalist"></datalist>
             </div>
 
-            <select id="new-profile-gender"
-                style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; font-size:14px; font-weight:600; margin-bottom:12px; box-sizing:border-box;">
-                <option value="U">Seleziona Sesso...</option>
-                <option value="M">Uomo 👨</option>
-                <option value="F">Donna 👩</option>
-            </select>
-
-            <div style="display:flex; gap:10px; margin-bottom:12px;">
-                <input type="number" id="new-profile-height" placeholder="Altezza (cm)"
-                    style="width:50%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13.5px; box-sizing:border-box;">
-                <input type="date" id="new-profile-dob" title="Data di Nascita"
-                    style="width:50%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13.5px; box-sizing:border-box;">
+            <!-- SESSO E DATA DI NASCITA -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div>
+                    <label style="font-size:11.5px; font-weight:700; color:#475569; display:block; margin-bottom:4px; text-transform:uppercase;">Sesso *</label>
+                    <select id="new-profile-gender"
+                        style="width:100%; padding:10px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:13.5px; font-weight:600; box-sizing:border-box; outline:none;">
+                        <option value="U">Seleziona Sesso...</option>
+                        <option value="M">Uomo 👨</option>
+                        <option value="F">Donna 👩</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:11.5px; font-weight:700; color:#475569; display:block; margin-bottom:4px; text-transform:uppercase;">Data di Nascita</label>
+                    <input type="date" id="new-profile-dob"
+                        style="width:100%; padding:9px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:13.5px; font-weight:600; box-sizing:border-box; outline:none;">
+                </div>
             </div>
 
-            <div style="display:flex; gap:10px; margin-bottom:18px;">
-                <input type="number" id="new-profile-weight" placeholder="Peso Attuale (kg)" step="0.1"
-                    style="width:50%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13.5px; box-sizing:border-box;">
-                <input type="number" id="new-profile-goal" placeholder="Obiettivo (kg)" step="0.1"
-                    style="width:50%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13.5px; box-sizing:border-box;">
+            <!-- ALTEZZA, PESO ATTUALE, PESO OBIETTIVO E CIRCONFERENZA POLSO -->
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:12px;">
+                <div>
+                    <label style="font-size:10.5px; font-weight:700; color:#475569; display:block; margin-bottom:4px; text-transform:uppercase;">Altezza (cm)</label>
+                    <input type="number" id="new-profile-height" placeholder="cm"
+                        style="width:100%; padding:9px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:13px; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:10.5px; font-weight:700; color:#475569; display:block; margin-bottom:4px; text-transform:uppercase;">Peso Att. (kg)</label>
+                    <input type="number" id="new-profile-weight" placeholder="kg" step="0.1"
+                        style="width:100%; padding:9px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:13px; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:10.5px; font-weight:700; color:#475569; display:block; margin-bottom:4px; text-transform:uppercase;">Target (kg)</label>
+                    <input type="number" id="new-profile-goal" placeholder="kg" step="0.1"
+                        style="width:100%; padding:9px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:13px; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:10.5px; font-weight:700; color:#475569; display:block; margin-bottom:4px; text-transform:uppercase;">Polso (cm)</label>
+                    <input type="number" id="new-profile-wrist" placeholder="cm"
+                        style="width:100%; padding:9px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:13px; box-sizing:border-box;">
+                </div>
+            </div>
+
+            <!-- STILE DI VITA E PATOLOGIA PRINCIPALE -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div>
+                    <label style="font-size:11.5px; font-weight:700; color:#475569; display:block; margin-bottom:4px; text-transform:uppercase;">Attività Motoria</label>
+                    <select id="new-profile-lifestyle"
+                        style="width:100%; padding:9px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:12.5px; font-weight:600; box-sizing:border-box; outline:none;">
+                        <option value="1.2">Sedentario (Poco o zero sport)</option>
+                        <option value="1.375" selected>Leggermente Attivo (1-3 gg/sett)</option>
+                        <option value="1.55">Moderatamente Attivo (3-5 gg/sett)</option>
+                        <option value="1.725">Molto Attivo (6-7 gg/sett)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:11.5px; font-weight:700; color:#475569; display:block; margin-bottom:4px; text-transform:uppercase;">Diagnosi Primaria</label>
+                    <select id="new-profile-pathology"
+                        style="width:100%; padding:9px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:12.5px; font-weight:600; box-sizing:border-box; outline:none;">
+                        <option value="nessuna">Nessuna (Prevenzione / Forma)</option>
+                        <option value="steatosi">Steatosi Epatica (Fegato Grasso)</option>
+                        <option value="ipertensione">Ipertensione Arteriosa</option>
+                        <option value="diabete">Diabete Tipo 2 / Insulinores.</option>
+                        <option value="reflusso">Reflusso Gastroesofageo (MRGE)</option>
+                        <option value="gotta">Iperuricemia / Gotta</option>
+                        <option value="celiachia">Celiachia (Gluten-Free)</option>
+                        <option value="tiroide">Ipotiroidismo</option>
+                        <option value="colon">Colon Irritabile (IBS)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- NOTE CLINICHE / TERAPIE / ALLERGIE -->
+            <div style="margin-bottom:18px;">
+                <label style="font-size:11.5px; font-weight:700; color:#475569; display:block; margin-bottom:4px; text-transform:uppercase;">Note Cliniche, Farmaci &amp; Allergie</label>
+                <textarea id="new-profile-notes" rows="2" placeholder="Es. Terapia farmacologica concomitante, intolleranze o raccomandazioni..."
+                    style="width:100%; padding:9px 12px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:12.5px; font-weight:600; color:#1e293b; box-sizing:border-box; outline:none; resize:vertical;"></textarea>
             </div>
 
             <div style="display:flex; gap:10px;">
                 <button onclick="document.getElementById('new-profile-modal').style.display='none'"
                     style="flex:1; padding:12px; border:1px solid #cbd5e1; background:#f8fafc; color:#475569; font-weight:700; border-radius:10px; cursor:pointer;">Annulla</button>
-                <button onclick="confirmNewProfileModal()"
-                    style="flex:1.2; padding:12px; border:none; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border-radius:10px; cursor:pointer; font-weight:800; box-shadow:0 4px 12px rgba(16,185,129,0.35);">Crea
-                    &amp; Collega</button>
+                <button id="btn-submit-new-profile" onclick="confirmNewProfileModal()"
+                    style="flex:1.4; padding:12px; border:none; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border-radius:10px; cursor:pointer; font-weight:800; box-shadow:0 4px 12px rgba(16,185,129,0.35);">Crea
+                    &amp; Registra Cartella</button>
             </div>
         </div>
     </div>
@@ -2573,6 +2634,45 @@
             }
         }
 
+        // Verifica in tempo reale se il paziente esiste già (per ID normalizzato o per Nome visualizzato)
+        window.verificaDuplicatoInTempoReale = function (val) {
+            const alertBox = document.getElementById('new-profile-duplicate-alert');
+            const btnSubmit = document.getElementById('btn-submit-new-profile');
+            if (!val || val.trim().length === 0) {
+                if (alertBox) alertBox.style.display = 'none';
+                if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.style.opacity = '1'; }
+                return false;
+            }
+
+            const inputNorm = val.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            const esiste = visibleProfiles.some(p => {
+                const idNorm = p.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const nomeNorm = getProfileDisplayName(p).toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+                return idNorm === inputNorm || nomeNorm === inputNorm;
+            });
+
+            if (esiste) {
+                if (alertBox) {
+                    alertBox.style.display = 'block';
+                    alertBox.innerHTML = `⚠️ <b>Assistito già presente:</b> "<b>${val.trim()}</b>" è già registrato nel sistema! Non è possibile inserire duplicati.`;
+                }
+                if (btnSubmit) {
+                    btnSubmit.disabled = true;
+                    btnSubmit.style.opacity = '0.5';
+                    btnSubmit.style.cursor = 'not-allowed';
+                }
+                return true;
+            } else {
+                if (alertBox) alertBox.style.display = 'none';
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.style.opacity = '1';
+                    btnSubmit.style.cursor = 'pointer';
+                }
+                return false;
+            }
+        };
+
         // Quando l'utente seleziona dalla tendina, auto-compila tutti i campi
         window.applicaPazienteSuiteSuModale = function (idxStr) {
             if (idxStr === '' || idxStr === null || idxStr === undefined) return;
@@ -2580,7 +2680,10 @@
             if (!p) return;
 
             const nameInp = document.getElementById('new-profile-name');
-            if (nameInp) nameInp.value = p.nome;
+            if (nameInp) {
+                nameInp.value = p.nome;
+                verificaDuplicatoInTempoReale(p.nome);
+            }
 
             const gSelect = document.getElementById('new-profile-gender');
             if (gSelect) {
@@ -2595,6 +2698,20 @@
 
             const wInp = document.getElementById('new-profile-weight');
             if (wInp && p.peso) wInp.value = p.peso;
+
+            const wristInp = document.getElementById('new-profile-wrist');
+            if (wristInp && p.polso) wristInp.value = p.polso;
+
+            const lifeInp = document.getElementById('new-profile-lifestyle');
+            if (lifeInp && p.lifestyle) lifeInp.value = p.lifestyle;
+
+            const patInp = document.getElementById('new-profile-pathology');
+            if (patInp && p.patologia) patInp.value = p.patologia;
+
+            const notesInp = document.getElementById('new-profile-notes');
+            if (notesInp && p.terapie) {
+                notesInp.value = (Array.isArray(p.terapie) ? p.terapie.map(t => (t.farmaco || t.principio || '')).join(', ') : p.terapie);
+            }
         };
 
         // Autocompilazione istantanea se l'utente digita a mano il nome
@@ -2623,103 +2740,137 @@
         async function confirmNewProfileModal() {
             let nameInput = document.getElementById('new-profile-name');
             let name = nameInput.value;
-            if (name && name.trim()) {
-                let id = name.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (id && !globalProfiles.includes(id)) {
-                    globalProfiles.push(id);
-                    localStorage.setItem('health_profiles', JSON.stringify(globalProfiles));
-                    localStorage.setItem('profileName_' + id, name.trim());
-                    activeProfile = id;
-                    window.activeProfile = id;
-                    localStorage.setItem('activeProfile', id);
+            if (!name || !name.trim()) {
+                alert("Inserisci un Nome e Cognome valido per l'assistito!");
+                return;
+            }
 
-                    // Inizializza statistiche base
-                    let genderVal = document.getElementById('new-profile-gender').value;
-                    let h = document.getElementById('new-profile-height').value || "---";
-                    let w = document.getElementById('new-profile-weight').value || "---";
-                    let g = document.getElementById('new-profile-goal').value || "---";
-                    let d = document.getElementById('new-profile-dob').value || "";
+            // CONTROLLO RIGOROSO ANTI-DUPLICATO
+            if (verificaDuplicatoInTempoReale(name)) {
+                alert("⚠️ Impossibile procedere: Un assistito con il nominativo '" + name.trim() + "' è già presente nell'archivio!");
+                return;
+            }
 
-                    // Calcolo scientifico istantaneo del fabbisogno per dimagrire (Mifflin-St Jeor)
-                    let calcKcal = "---";
-                    let numW = parseFloat(w);
-                    let numH = parseFloat(h);
-                    if (!isNaN(numW) && numW > 0) {
-                        let effH = (!isNaN(numH) && numH > 0) ? numH : 165;
-                        let age = 45;
-                        if (d) {
-                            let dob = new Date(d);
-                            let today = new Date();
-                            age = today.getFullYear() - dob.getFullYear();
-                            let m = today.getMonth() - dob.getMonth();
-                            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
-                            if (isNaN(age) || age <= 0) age = 45;
-                        }
-                        let isMale = (genderVal === 'M' || genderVal === 'Uomo' || name.toLowerCase().includes('salvatore') || name.toLowerCase().includes('ciro') || name.toLowerCase().includes('aldo') || name.toLowerCase().includes('luigi'));
-                        let bmr = isMale ? ((10 * numW) + (6.25 * effH) - (5 * age) + 5) : ((10 * numW) + (6.25 * effH) - (5 * age) - 161);
-                        let tdee = bmr * 1.35;
-                        let def = Math.round(tdee - 500);
-                        let minSafe = isMale ? 1400 : 1200;
-                        if (def < minSafe) def = minSafe;
-                        calcKcal = (Math.round(def / 50) * 50).toString();
+            let id = name.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (id && !globalProfiles.includes(id)) {
+                globalProfiles.push(id);
+                localStorage.setItem('health_profiles', JSON.stringify(globalProfiles));
+                localStorage.setItem('profileName_' + id, name.trim());
+                activeProfile = id;
+                window.activeProfile = id;
+                localStorage.setItem('activeProfile', id);
+
+                // Inizializza statistiche e parametri clinici
+                let genderVal = document.getElementById('new-profile-gender').value;
+                let h = document.getElementById('new-profile-height').value || "---";
+                let w = document.getElementById('new-profile-weight').value || "---";
+                let g = document.getElementById('new-profile-goal').value || "---";
+                let d = document.getElementById('new-profile-dob').value || "";
+                let wristVal = document.getElementById('new-profile-wrist')?.value || "16";
+                let lifeVal = document.getElementById('new-profile-lifestyle')?.value || "1.375";
+                let patVal = document.getElementById('new-profile-pathology')?.value || "nessuna";
+                let notesVal = document.getElementById('new-profile-notes')?.value || "";
+
+                // Calcolo scientifico istantaneo del fabbisogno per dimagrire (Mifflin-St Jeor)
+                let calcKcal = "---";
+                let numW = parseFloat(w);
+                let numH = parseFloat(h);
+                if (!isNaN(numW) && numW > 0) {
+                    let effH = (!isNaN(numH) && numH > 0) ? numH : 165;
+                    let age = 45;
+                    if (d) {
+                        let dob = new Date(d);
+                        let today = new Date();
+                        age = today.getFullYear() - dob.getFullYear();
+                        let m = today.getMonth() - dob.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+                        if (isNaN(age) || age <= 0) age = 45;
                     }
-
-                    let stats = { dob: d, start: w, goal: g, kcal: calcKcal, gender: genderVal, height: h };
-                    localStorage.setItem('profileStats_' + id, JSON.stringify(stats));
-
-                    // Se l'utente ha inserito il peso attuale, lo registriamo anche nel grafico e bilancia
-                    if (w !== "---") {
-                        let log = [{ date: new Date().toISOString().split('T')[0], weight: parseFloat(w) }];
-                        localStorage.setItem('weightLog_' + id, JSON.stringify(log));
-                    }
-
-                    renderTabs();
-                    renderProfiles();
-
-                    // Sincronizza immediatamente il nuovo profilo con il Cloud
-                    try {
-                        if (typeof window.syncSaluteToCloud === 'function') {
-                            const syncPayload = {
-                                health_profiles: JSON.stringify(globalProfiles),
-                                activeProfile: id
-                            };
-                            syncPayload['profileName_' + id] = name.trim();
-                            syncPayload['profileStats_' + id] = JSON.stringify(stats);
-                            if (w !== "---") {
-                                syncPayload['weightLog_' + id] = JSON.stringify([{ date: new Date().toISOString().split('T')[0], weight: parseFloat(w) }]);
-                            }
-                            await window.syncSaluteToCloud(syncPayload);
-                        }
-                    } catch (eSync) { }
-
-                    // TRASMISSIONE AUTOMATICA DEL NUOVO PROFILO AL FASCICOLO SANITARIO SUITE (CAREASSIST & MEDNUTRI)
-                    try {
-                        await fetch('/api/suite/pazienti', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                id: 'paz_' + Date.now(),
-                                nome: name.trim(),
-                                dataNascita: d || '',
-                                sesso: genderVal || 'M',
-                                altezza: (h && h !== '---') ? h : '',
-                                peso: (w && w !== '---') ? w : '',
-                                targetPeso: (g && g !== '---') ? g : '',
-                                kcalTarget: (calcKcal && calcKcal !== '---') ? calcKcal : '',
-                                origini: ['Progetto Salute', 'CareAssist Pro', 'MedNutri Pro'],
-                                creatoIl: new Date().toISOString()
-                            })
-                        });
-                    } catch (eFederata) {
-                        console.warn('Errore notifica anagrafe federata da Salute:', eFederata);
-                    }
-
-                    setTimeout(() => {
-                        window.location.reload(); // reload for chart.js binds
-                    }, 300);
-                } else if (globalProfiles.includes(id)) {
-                    alert("Profilo già esistente!");
+                    let isMale = (genderVal === 'M' || genderVal === 'Uomo' || name.toLowerCase().includes('salvatore') || name.toLowerCase().includes('ciro') || name.toLowerCase().includes('aldo') || name.toLowerCase().includes('luigi'));
+                    let bmr = isMale ? ((10 * numW) + (6.25 * effH) - (5 * age) + 5) : ((10 * numW) + (6.25 * effH) - (5 * age) - 161);
+                    let tdee = bmr * parseFloat(lifeVal);
+                    let def = Math.round(tdee - 500);
+                    let minSafe = isMale ? 1400 : 1200;
+                    if (def < minSafe) def = minSafe;
+                    calcKcal = (Math.round(def / 50) * 50).toString();
                 }
+
+                let stats = { 
+                    dob: d, 
+                    start: w, 
+                    goal: g, 
+                    kcal: calcKcal, 
+                    gender: genderVal, 
+                    height: h,
+                    wrist: wristVal,
+                    lifestyle: lifeVal,
+                    pathology: patVal,
+                    notes: notesVal
+                };
+                localStorage.setItem('profileStats_' + id, JSON.stringify(stats));
+                if (patVal && patVal !== 'nessuna') {
+                    localStorage.setItem('profilePathology_' + id, patVal);
+                }
+                if (notesVal) {
+                    localStorage.setItem('anamnesi_' + id, notesVal);
+                }
+
+                // Se l'utente ha inserito il peso attuale, lo registriamo anche nel grafico e bilancia
+                if (w !== "---") {
+                    let log = [{ date: new Date().toISOString().split('T')[0], weight: parseFloat(w) }];
+                    localStorage.setItem('weightLog_' + id, JSON.stringify(log));
+                }
+
+                renderTabs();
+                renderProfiles();
+
+                // Sincronizza immediatamente il nuovo profilo con il Cloud
+                try {
+                    if (typeof window.syncSaluteToCloud === 'function') {
+                        const syncPayload = {
+                            health_profiles: JSON.stringify(globalProfiles),
+                            activeProfile: id
+                        };
+                        syncPayload['profileName_' + id] = name.trim();
+                        syncPayload['profileStats_' + id] = JSON.stringify(stats);
+                        if (w !== "---") {
+                            syncPayload['weightLog_' + id] = JSON.stringify([{ date: new Date().toISOString().split('T')[0], weight: parseFloat(w) }]);
+                        }
+                        await window.syncSaluteToCloud(syncPayload);
+                    }
+                } catch (eSync) { }
+
+                // TRASMISSIONE AUTOMATICA DEL NUOVO PROFILO AL FASCICOLO SANITARIO SUITE (CAREASSIST & MEDNUTRI)
+                try {
+                    await fetch('/api/suite/pazienti', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id: 'paz_' + Date.now(),
+                            nome: name.trim(),
+                            dataNascita: d || '',
+                            sesso: genderVal || 'M',
+                            altezza: (h && h !== '---') ? h : '',
+                            peso: (w && w !== '---') ? w : '',
+                            targetPeso: (g && g !== '---') ? g : '',
+                            kcalTarget: (calcKcal && calcKcal !== '---') ? calcKcal : '',
+                            polso: wristVal,
+                            lifestyle: lifeVal,
+                            patologie: (patVal && patVal !== 'nessuna') ? [patVal] : [],
+                            note: notesVal,
+                            origini: ['Progetto Salute', 'CareAssist Pro', 'MedNutri Pro'],
+                            creatoIl: new Date().toISOString()
+                        })
+                    });
+                } catch (eFederata) {
+                    console.warn('Errore notifica anagrafe federata da Salute:', eFederata);
+                }
+
+                setTimeout(() => {
+                    window.location.reload(); // reload for chart.js binds
+                }, 300);
+            } else {
+                alert("⚠️ Assistito già esistente in archivio!");
             }
             document.getElementById('new-profile-modal').style.display = 'none';
             nameInput.value = '';
