@@ -1,0 +1,586 @@
+﻿<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Centro Operativo Suite - Notifiche, Fatturazione, Agenda & Documenti</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0284c7;
+    --primary-dark: #0369a1;
+    --bg-dark: #0f172a;
+    --card-dark: #1e293b;
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg-dark);
+    color: #f8fafc;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-bottom: 1.5px solid var(--border-color);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .header-icon {
+    font-size: 28px;
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+  }
+  .header-title h1 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+  }
+  .header-title p {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+  .btn-back {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-back:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 10px;
+    padding: 20px 24px 0 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow-x: auto;
+  }
+  .tab-pill {
+    background: #1e293b;
+    border: 1px solid var(--border-color);
+    color: #94a3b8;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .tab-pill.active {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #38bdf8;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  }
+  .main-content {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 24px;
+  }
+  .tab-pane {
+    display: none;
+  }
+  .tab-pane.active {
+    display: block;
+    animation: fadeIn 0.25s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .panel-box {
+    background: var(--card-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 22px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  .panel-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .form-group {
+    margin-bottom: 14px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .form-control {
+    width: 100%;
+    background: #0f172a;
+    border: 1.5px solid #334155;
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
+    font-family: inherit;
+    transition: border 0.2s;
+  }
+  .form-control:focus {
+    border-color: #38bdf8;
+  }
+  .btn-action {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+    transition: all 0.2s;
+  }
+  .btn-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
+  }
+  .btn-whatsapp {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+  }
+  .btn-whatsapp:hover {
+    box-shadow: 0 6px 18px rgba(34, 197, 94, 0.45);
+  }
+  .item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+    max-height: 380px;
+    overflow-y: auto;
+  }
+  .list-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .badge-tag {
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+  .badge-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+  .badge-green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+  .badge-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+  .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="header-icon">🏛️</div>
+    <div class="header-title">
+      <h1>Centro Operativo &amp; Servizi Avanzati</h1>
+      <p>Suite Aziendale C. Milella &bull; Coordinamento Sanitario &bull; ASL Puglia</p>
+    </div>
+  </div>
+  <a href="/launcher.html" class="btn-back">
+    <span>🏠 Torna al Portale</span>
+  </a>
+</header>
+
+<div class="nav-tabs">
+  <button class="tab-pill active" onclick="switchTab('tab-notifiche')">🔔 Notifiche &amp; SOS WhatsApp</button>
+  <button class="tab-pill" onclick="switchTab('tab-fatturazione')">📑 Fatturazione &amp; Ricevute 730</button>
+  <button class="tab-pill" onclick="switchTab('tab-agenda')">📅 Agenda &amp; Visite Specialistiche</button>
+  <button class="tab-pill" onclick="switchTab('tab-documenti')">📇 Cartella Referti &amp; Analisi</button>
+</div>
+
+<main class="main-content">
+
+  <!-- TAB 1: NOTIFICHE E SOS CAREGIVER -->
+  <div id="tab-notifiche" class="tab-pane active">
+    <div class="card-grid">
+      <div class="panel-box">
+        <div class="panel-title"><span>🔔</span> Invia Notifica / Bollettino Familiare</div>
+        <form onsubmit="inviaNotificaFamiliare(event)">
+          <div class="form-group">
+            <label>Seleziona Assistito / Paziente</label>
+            <select id="notif-paziente" class="form-control" onchange="aggiornaCaregiverDaPaziente(this.value)">
+              <option value="Aldo Zamparino">Aldo Zamparino (Via Modugno, 25)</option>
+              <option value="Rosa Annunziata">Rosa Annunziata Cavalcante</option>
+              <option value="Angela Mazzicone">Angela Mazzicone</option>
+              <option value="Ciro Milella">Ciro Milella</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Caregiver / Familiare Referente</label>
+            <input type="text" id="notif-contatto" class="form-control" value="Famigliare Referente (+39 366 460 7396)">
+          </div>
+          <div class="form-group">
+            <label>Tipologia Comunicazione</label>
+            <select id="notif-tipo" class="form-control">
+              <option value="terapia">✅ Conferma Terapia Somministrata Regolarmente</option>
+              <option value="parametri">🩺 Rilevazione Parametri Vitali (Pressione &amp; Glicemia)</option>
+              <option value="visita">👨‍⚕️ Report Visita Specialistica / Controllo</option>
+              <option value="sos">⚠️ Alert Prioritario / Comunicazione Urgente</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Messaggio Clinico / Note</label>
+            <textarea id="notif-testo" class="form-control" rows="3">Terapia mattutina somministrata con successo dall'operatore. Il paziente è tranquillo, collaborativo e ha assunto regolarmente la colazione.</textarea>
+          </div>
+          <button type="submit" class="btn-action btn-whatsapp">
+            <span>📱 Invia Notifica Istantanea via WhatsApp</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-title"><span>📡</span> Registro Notifiche Inviate Oggi</div>
+        <div class="item-list" id="registro-notifiche">
+          <div class="list-card">
+            <div>
+              <div style="font-weight:700;">Aldo Zamparino &bull; Terapia Ore 08:30</div>
+              <div style="font-size:12px; color:#94a3b8;">Bisoprololo 1.25mg &bull; Pantoprazolo 40mg confermati</div>
+            </div>
+            <span class="badge-tag badge-green">Inviato WhatsApp</span>
+          </div>
+          <div class="list-card">
+            <div>
+              <div style="font-weight:700;">Ciro Milella &bull; Aggiornamento Piano Dieta</div>
+              <div style="font-size:12px; color:#94a3b8;">Nuovo target calorico ~1850 kcal/die registrato</div>
+            </div>
+            <span class="badge-tag badge-blue">Consegnato</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: FATTURAZIONE E RICEVUTE FISCALI 730 -->
+  <div id="tab-fatturazione" class="tab-pane">
+    <div class="card-grid">
+      <div class="panel-box">
+        <div class="panel-title"><span>📑</span> Generatore Ricevuta Sanitaria / 730</div>
+        <form onsubmit="generaRicevutaFiscale(event)">
+          <div class="form-group">
+            <label>Intestatario Fattura / Paziente</label>
+            <input type="text" id="fat-paziente" class="form-control" value="Aldo Zamparino" required>
+          </div>
+          <div class="form-group">
+            <label>Codice Fiscale Intestatario</label>
+            <input type="text" id="fat-cf" class="form-control" value="ZMPLDA35D18A662X" required>
+          </div>
+          <div class="form-group">
+            <label>Tipo Prestazione Sanitaria</label>
+            <select id="fat-prestazione" class="form-control">
+              <option value="assistenza">Assistenza Socio-Sanitaria Domiciliare (Detraibile 730)</option>
+              <option value="nutrizione">Consulenza e Piano Nutrizionale Clinico Specialistico</option>
+              <option value="infermieristica">Prestazione Sanitaria Infermieristica &bull; Medicazione</option>
+            </select>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Ore / Sedute</label>
+              <input type="number" id="fat-ore" class="form-control" value="20" min="1">
+            </div>
+            <div class="form-group">
+              <label>Importo Totale (€)</label>
+              <input type="number" id="fat-totale" class="form-control" value="350.00" step="0.50">
+            </div>
+          </div>
+          <button type="submit" class="btn-action">
+            <span>🖨️ Genera Ricevuta Ufficiale PDF A4</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-title"><span>💶</span> Riepilogo Prestazioni &amp; Fatturato</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+          <div style="background:#0f172a; padding:12px; border-radius:12px; text-align:center;">
+            <div style="font-size:11px; color:#94a3b8; font-weight:700;">PRESTAZIONI MESE</div>
+            <div style="font-size:22px; font-weight:800; color:#38bdf8;">38 Ore</div>
+          </div>
+          <div style="background:#0f172a; padding:12px; border-radius:12px; text-align:center;">
+            <div style="font-size:11px; color:#94a3b8; font-weight:700;">TOTALE FATTURATO</div>
+            <div style="font-size:22px; font-weight:800; color:#4ade80;">€ 680,00</div>
+          </div>
+        </div>
+        <div class="item-list">
+          <div class="list-card">
+            <div>
+              <div style="font-weight:700;">Ricevuta N° 12/2026 &bull; Aldo Zamparino</div>
+              <div style="font-size:12px; color:#94a3b8;">Assistenza Domiciliare &bull; 20 ore</div>
+            </div>
+            <span style="font-weight:800; color:#4ade80;">€ 350,00</span>
+          </div>
+          <div class="list-card">
+            <div>
+              <div style="font-weight:700;">Ricevuta N° 11/2026 &bull; Ciro Milella</div>
+              <div style="font-size:12px; color:#94a3b8;">Piano Dietoterapico Completo</div>
+            </div>
+            <span style="font-weight:800; color:#4ade80;">€ 120,00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: AGENDA E VISITE SPECIALISTICHE -->
+  <div id="tab-agenda" class="tab-pane">
+    <div class="card-grid">
+      <div class="panel-box">
+        <div class="panel-title"><span>📅</span> Pianifica Visita o Appuntamento</div>
+        <form onsubmit="aggiungiAppuntamento(event)">
+          <div class="form-group">
+            <label>Titolo / Tipo Evento</label>
+            <input type="text" id="age-titolo" class="form-control" placeholder="Es. Controllo Nutrizionale / Medicazione" required>
+          </div>
+          <div class="form-group">
+            <label>Paziente / Assistito</label>
+            <input type="text" id="age-paziente" class="form-control" placeholder="Es. Aldo Zamparino" required>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Data</label>
+              <input type="date" id="age-data" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Ora</label>
+              <input type="time" id="age-ora" class="form-control" value="10:00" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Medico / Operatore Assegnato</label>
+            <input type="text" id="age-operatore" class="form-control" value="Dott. Ciro Milella">
+          </div>
+          <button type="submit" class="btn-action">
+            <span>💾 Registra in Agenda Sanitaria</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-title"><span>⏰</span> Prossimi Appuntamenti in Calendario</div>
+        <div class="item-list" id="lista-appuntamenti">
+          <div class="list-card">
+            <div>
+              <div style="font-weight:700;">Controllo Nutrizionale Iniziale</div>
+              <div style="font-size:12px; color:#94a3b8;">Ciro Milella &bull; 06/11/2026 ore 10:30</div>
+            </div>
+            <span class="badge-tag badge-purple">Nutrizione</span>
+          </div>
+          <div class="list-card">
+            <div>
+              <div style="font-weight:700;">Visita Cardiologica &bull; ECG Domiciliare</div>
+              <div style="font-size:12px; color:#94a3b8;">Aldo Zamparino &bull; 08/11/2026 ore 16:00</div>
+            </div>
+            <span class="badge-tag badge-blue">Specialistica</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: CARTELLA DOCUMENTALE E REFERTI ALLEGATI -->
+  <div id="tab-documenti" class="tab-pane">
+    <div class="card-grid">
+      <div class="panel-box">
+        <div class="panel-title"><span>📎</span> Allega Referto o Esami del Sangue</div>
+        <form onsubmit="allegaDocumentoReferto(event)">
+          <div class="form-group">
+            <label>Paziente di Riferimento</label>
+            <select id="doc-paziente" class="form-control">
+              <option value="Aldo Zamparino">Aldo Zamparino</option>
+              <option value="Rosa Annunziata">Rosa Annunziata Cavalcante</option>
+              <option value="Ciro Milella">Ciro Milella</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Titolo Documento</label>
+            <input type="text" id="doc-titolo" class="form-control" placeholder="Es. Analisi del sangue - Emocromo e Quadro Epatocitario" required>
+          </div>
+          <div class="form-group">
+            <label>Categoria Clinica</label>
+            <select id="doc-cat" class="form-control">
+              <option value="Laboratorio">🩸 Esami di Laboratorio / Sangue</option>
+              <option value="Specialistica">🩺 Referto Medico Specialistico</option>
+              <option value="Ospedaliero">🏥 Lettera di Dimissione Ospedaliera</option>
+              <option value="Prescrizione">💊 Piano Terapeutico Farmaceutico</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Carica File (Foto / PDF)</label>
+            <input type="file" id="doc-file" class="form-control" accept="image/*,application/pdf">
+          </div>
+          <button type="submit" class="btn-action">
+            <span>📇 Archivia Documento nel Fascicolo Paziente</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-title"><span>🗂️</span> Archivio Documenti Digitali</div>
+        <div class="item-list" id="lista-documenti">
+          <div class="list-card">
+            <div>
+              <div style="font-weight:700;">Esami Ematochimici &bull; Quadro Epatocitario</div>
+              <div style="font-size:12px; color:#94a3b8;">Ciro Milella &bull; 04/11/2026 &bull; PDF 1.2 MB</div>
+            </div>
+            <button onclick="alert('Apertura visualizzatore referto...')" style="background:#0284c7; border:none; color:#fff; padding:6px 12px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">Visualizza</button>
+          </div>
+          <div class="list-card">
+            <div>
+              <div style="font-weight:700;">Dimissione Reparto &bull; Ospedale San Paolo</div>
+              <div style="font-size:12px; color:#94a3b8;">Aldo Zamparino &bull; 28/10/2026 &bull; Scansione</div>
+            </div>
+            <button onclick="alert('Apertura visualizzatore referto...')" style="background:#0284c7; border:none; color:#fff; padding:6px 12px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">Visualizza</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-pill').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    
+    event.currentTarget.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  function inviaNotificaFamiliare(e) {
+    e.preventDefault();
+    const paz = document.getElementById('notif-paziente').value;
+    const tipo = document.getElementById('notif-tipo').value;
+    const txt = document.getElementById('notif-testo').value;
+
+    let msg = `*COMUNICAZIONE SANITARIA SUITE MILELLA*\n`;
+    msg += `*Assistito:* ${paz}\n`;
+    msg += `*Coordinamento Sanitario:* Dott. Ciro Milella\n`;
+    msg += `------------------------------------\n`;
+    msg += `${txt}\n\n`;
+    msg += `_Messaggio generato automaticamente dal Fascicolo Sanitario Elettronico._`;
+
+    const encoded = encodeURI(msg);
+    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+  }
+
+  function generaRicevutaFiscale(e) {
+    e.preventDefault();
+    const paz = document.getElementById('fat-paziente').value;
+    const cf = document.getElementById('fat-cf').value;
+    const tot = document.getElementById('fat-totale').value;
+    const ore = document.getElementById('fat-ore').value;
+    
+    alert(`📑 Ricevuta Sanitaria N° ${Math.floor(100+Math.random()*900)}/2026 Generata con successo!\n\nIntestatario: ${paz} (CF: ${cf})\nOre Prestate: ${ore}\nImporto Totale: € ${tot}\n\nDocumento valido ai fini della detrazione fiscale 730.`);
+    window.print();
+  }
+
+  function aggiungiAppuntamento(e) {
+    e.preventDefault();
+    const tit = document.getElementById('age-titolo').value;
+    const paz = document.getElementById('age-paziente').value;
+    const data = document.getElementById('age-data').value;
+    const ora = document.getElementById('age-ora').value;
+
+    const list = document.getElementById('lista-appuntamenti');
+    const item = document.createElement('div');
+    item.className = 'list-card';
+    item.innerHTML = `
+      <div>
+        <div style="font-weight:700;">${tit}</div>
+        <div style="font-size:12px; color:#94a3b8;">${paz} &bull; ${data} ore ${ora}</div>
+      </div>
+      <span class="badge-tag badge-green">Pianificato</span>
+    `;
+    list.prepend(item);
+    alert('✅ Appuntamento aggiunto con successo al calendario condiviso!');
+    e.target.reset();
+  }
+
+  function allegaDocumentoReferto(e) {
+    e.preventDefault();
+    const paz = document.getElementById('doc-paziente').value;
+    const tit = document.getElementById('doc-titolo').value;
+    const cat = document.getElementById('doc-cat').value;
+
+    const list = document.getElementById('lista-documenti');
+    const item = document.createElement('div');
+    item.className = 'list-card';
+    item.innerHTML = `
+      <div>
+        <div style="font-weight:700;">${tit}</div>
+        <div style="font-size:12px; color:#94a3b8;">${paz} &bull; Oggi &bull; ${cat}</div>
+      </div>
+      <button onclick="alert('Documento aperto correttamente nel lettore protetto!')" style="background:#0284c7; border:none; color:#fff; padding:6px 12px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">Visualizza</button>
+    `;
+    list.prepend(item);
+    alert('📇 Documento clinico archiviato con successo nel Fascicolo Sanitario del paziente!');
+    e.target.reset();
+  }
+</script>
+
+</body>
+</html>
