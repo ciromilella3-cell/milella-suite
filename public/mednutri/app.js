@@ -1,4 +1,4 @@
-// Database Medico delle Patologie
+﻿// Database Medico delle Patologie
 const pathologyDB = {
     'nessuna': { 
         name: "Nessuna / Prevenzione Base", desc: "Regime bilanciato standard mediterraneo.", 
@@ -722,7 +722,16 @@ function savePatient() {
                 nome: name,
                 dataNascita: document.getElementById('patient-dob').value,
                 sesso: document.getElementById('patient-gender').value,
+                altezza: document.getElementById('patient-height')?.value || '',
+                peso: document.getElementById('patient-weight')?.value || '',
+                polso: document.getElementById('patient-wrist')?.value || '',
+                bmi: (typeof calculateBMI === 'function' ? (document.getElementById('calculated-bmi')?.textContent || '') : ''),
+                noteCliniche: document.getElementById('patient-notes')?.value || '',
                 patologie: pathologies,
+                nutrizione: {
+                    patologiaTarget: document.getElementById('patologia')?.value || '',
+                    ultimoAggiornamento: new Date().toISOString()
+                },
                 origini: ['Ambulatorio Medico', 'CareAssist Pro', 'Progetto Salute']
             })
         }).then(r => r.json()).then(res => {

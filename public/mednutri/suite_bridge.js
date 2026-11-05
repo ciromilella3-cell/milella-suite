@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // SUITE MILELLA - MEDNUTRI PRO (AMBULATORIO MEDICO) ECOSYSTEM BRIDGE
 // Riceve e sincronizza in tempo reale il paziente attivo dalla Suite
 // ============================================================================
@@ -352,6 +352,46 @@
     const dobEl = document.getElementById('patient-dob');
     if (dobEl && s.dataNascita) {
       dobEl.value = s.dataNascita;
+    }
+
+    // INTEGRAZIONE CLINICA INTELLIGENTE DA CAREASSIST / SUITE
+    const notesEl = document.getElementById('patient-notes');
+    let cartellaClinica = [];
+
+    if (s.allettato) {
+      cartellaClinica.push("⚠️ PAZIENTE ALLETTATO / MOBILITÀ RIDOTTA (Rischio decubito / Necessità cibi ad alta digeribilità)");
+    }
+    if (s.patologie && Array.isArray(s.patologie) && s.patologie.length > 0) {
+      cartellaClinica.push("📋 DIAGNOSI & PATOLOGIE REGISTRATE (CareAssist):\n" + s.patologie.map(p => " • " + p).join("\n"));
+    }
+    if (s.terapie && Array.isArray(s.terapie) && s.terapie.length > 0) {
+      cartellaClinica.push("💊 TERAPIE FARMACOLOGICHE ATTIVE:\n" + s.terapie.map(t => ` • [${t.ora || t.fascia || 'Orario'}] ${t.farmaco || t.principio || ''} (${t.modo || ''})`).join("\n"));
+    }
+    if (s.allergie) {
+      cartellaClinica.push("🚨 ALLERGIE / INTOLLERANZE: " + (Array.isArray(s.allergie) ? s.allergie.join(', ') : s.allergie));
+    }
+
+    if (notesEl && cartellaClinica.length > 0) {
+      notesEl.value = cartellaClinica.join("\n\n");
+      try { notesEl.dispatchEvent(new Event('input')); } catch(e){}
+    }
+
+    // SELEZIONE AUTOMATICA DELLA PATOLOGIA NUTRIZIONALE IN BASE ALLE DIAGNOSI CAREASSIST
+    const patSelect = document.getElementById('patologia');
+    if (patSelect && s.patologie) {
+      const patStr = JSON.stringify(s.patologie).toLowerCase();
+      if (patStr.includes('diabete') || patStr.includes('glicem')) {
+        patSelect.value = 'diabete';
+      } else if (patStr.includes('pressione') || patStr.includes('ipertens') || patStr.includes('cardiopatia') || patStr.includes('bisoprololo')) {
+        patSelect.value = 'ipertensione';
+      } else if (patStr.includes('fegato') || patStr.includes('steatosi') || patStr.includes('epat')) {
+        patSelect.value = 'steatosi';
+      } else if (patStr.includes('reflusso') || patStr.includes('gastrite') || patStr.includes('pantoprazolo')) {
+        patSelect.value = 'reflusso';
+      } else if (patStr.includes('gotta') || patStr.includes('acido urico')) {
+        patSelect.value = 'iperuricemia';
+      }
+      try { patSelect.dispatchEvent(new Event('change')); } catch(e){}
     }
 
     if (typeof calculateBMI === 'function') calculateBMI();
