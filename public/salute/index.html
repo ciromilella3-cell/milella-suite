@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
 <link rel="manifest" href="manifest.json">
@@ -163,6 +163,33 @@ window.onerror = function(msg, url, line) {
     } catch(e) {}
 })();
 </script>
+<style>
+/* Placeholder sbiadito ed elegante per esempi e input */
+::placeholder {
+    color: #94a3b8 !important;
+    opacity: 0.65 !important;
+    font-weight: 400 !important;
+    font-style: italic !important;
+}
+::-webkit-input-placeholder {
+    color: #94a3b8 !important;
+    opacity: 0.65 !important;
+    font-weight: 400 !important;
+    font-style: italic !important;
+}
+::-moz-placeholder {
+    color: #94a3b8 !important;
+    opacity: 0.65 !important;
+    font-weight: 400 !important;
+    font-style: italic !important;
+}
+:-ms-input-placeholder {
+    color: #94a3b8 !important;
+    opacity: 0.65 !important;
+    font-weight: 400 !important;
+    font-style: italic !important;
+}
+</style>
 </head>
 <body>
     <!-- ═══════════════════════════════════════════════════════════════════
@@ -1952,9 +1979,9 @@ window.onerror = function(msg, url, line) {
         
         <!-- INPUT NOME CON SUGGERIMENTI DATALIST -->
         <div style="position:relative; width:100%; margin-bottom:12px;">
-            <input type="text" id="new-profile-name" list="suite-patients-datalist" placeholder="Digita Nome (es. Aldo Z., Rosa...)" style="width:100%; padding:10px 12px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:14.5px; font-weight:600; box-sizing:border-box; outline:none;" oninput="cercaAutocompilazionePaziente(this.value)">
+            <input type="text" id="new-profile-name" list="suite-patients-datalist" placeholder="es. Mario Rossi" style="width:100%; padding:10px 12px; border-radius:8px; border:1.5px solid #cbd5e1; font-size:14.5px; font-weight:600; box-sizing:border-box; outline:none; color:#0f172a;" oninput="cercaAutocompilazionePaziente(this.value)">
             <datalist id="suite-patients-datalist">
-                <!-- Popolato via JS con tutti gli assistiti della Suite -->
+                <!-- Popolato via JS con gli assistiti della Suite -->
             </datalist>
         </div>
         

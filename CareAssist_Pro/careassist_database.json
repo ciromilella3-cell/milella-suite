@@ -3,7 +3,7 @@
   "pazienti": [
     {
       "id": "paz_aldo",
-      "nome": "Aldo Zamparino",
+      "nome": "Aldo Z.",
       "dataNascita": "1935-04-18",
       "sesso": "M",
       "indirizzo": "Via Roma, 10 - Bari",
@@ -124,7 +124,7 @@
     },
     {
       "id": "paz_angela",
-      "nome": "Angela Mazzicone",
+      "nome": "Angela M.",
       "dataNascita": "1938-05-29",
       "sesso": "F",
       "indirizzo": "Via Roma, 10 - Bari (BA)",
@@ -255,7 +255,7 @@
           "data": "2026-10-16",
           "ora": "09:00",
           "medico": "Dott. Roberto Scarcia",
-          "motivo": "Rinnovo ricette e piano terapeutico per Angela Mazzicone",
+          "motivo": "Rinnovo ricette e piano terapeutico per Angela M.",
           "fatto": false
         },
         {
@@ -275,7 +275,7 @@
     },
     {
       "id": "paz_rosa",
-      "nome": "Rosa Annunziata Cavalcante",
+      "nome": "Rosa C.",
       "dataNascita": "1938-06-16",
       "sesso": "F",
       "indirizzo": "Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)",
