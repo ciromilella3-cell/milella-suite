@@ -2705,12 +2705,44 @@
             const lifeInp = document.getElementById('new-profile-lifestyle');
             if (lifeInp && p.lifestyle) lifeInp.value = p.lifestyle;
 
+            // DEDUZIONE E ASSEGNAZIONE PATOLOGIA CLINICA EFFETTIVA
             const patInp = document.getElementById('new-profile-pathology');
-            if (patInp && p.patologia) patInp.value = p.patologia;
+            if (patInp) {
+                let patKey = 'nessuna';
+                const patStr = JSON.stringify(p.patologie || p.patologia || '').toLowerCase();
+                const terapieStr = JSON.stringify(p.terapie || '').toLowerCase();
+                const allStr = patStr + ' ' + terapieStr;
+
+                if (allStr.includes('diabete') || allStr.includes('glicem') || allStr.includes('diamicron') || allStr.includes('forxiga') || allStr.includes('xultophy')) {
+                    patKey = 'diabete';
+                } else if (allStr.includes('pressione') || allStr.includes('ipertens') || allStr.includes('cardiopatia') || allStr.includes('congescor') || allStr.includes('bisoprololo')) {
+                    patKey = 'ipertensione';
+                } else if (allStr.includes('gotta') || allStr.includes('acido urico') || allStr.includes('adenuric')) {
+                    patKey = 'gotta';
+                } else if (allStr.includes('reflusso') || allStr.includes('mrge') || allStr.includes('gastrite') || allStr.includes('pantoprazolo')) {
+                    patKey = 'reflusso';
+                } else if (allStr.includes('tiroide') || allStr.includes('ipotiroidismo') || allStr.includes('eutirox')) {
+                    patKey = 'tiroide';
+                } else if (allStr.includes('celiach')) {
+                    patKey = 'celiachia';
+                } else if (allStr.includes('osteopor') || allStr.includes('osteoartrosi') || allStr.includes('arcoxia')) {
+                    patKey = 'osteoporosi';
+                } else if (allStr.includes('steatosi') || allStr.includes('fegato') || allStr.includes('epat') || allStr.includes('entecavir')) {
+                    patKey = 'steatosi';
+                }
+                patInp.value = patKey;
+            }
 
             const notesInp = document.getElementById('new-profile-notes');
-            if (notesInp && p.terapie) {
-                notesInp.value = (Array.isArray(p.terapie) ? p.terapie.map(t => (t.farmaco || t.principio || '')).join(', ') : p.terapie);
+            if (notesInp) {
+                let noteList = [];
+                if (p.patologie && Array.isArray(p.patologie) && p.patologie.length > 0) {
+                    noteList.push("Diagnosi: " + p.patologie.join('; '));
+                }
+                if (p.terapie && Array.isArray(p.terapie) && p.terapie.length > 0) {
+                    noteList.push("Terapie: " + p.terapie.map(t => (t.farmaco || t.principio || '')).filter(Boolean).join(', '));
+                }
+                notesInp.value = noteList.join('\n');
             }
         };
 
@@ -2731,6 +2763,14 @@
 
                 const wInp = document.getElementById('new-profile-weight');
                 if (wInp && !wInp.value && match.peso) wInp.value = match.peso;
+
+                const patInp = document.getElementById('new-profile-pathology');
+                if (patInp && match.patologie) {
+                    const allStr = JSON.stringify(match.patologie).toLowerCase();
+                    if (allStr.includes('diabete')) patInp.value = 'diabete';
+                    else if (allStr.includes('ipertens') || allStr.includes('cardiopatia')) patInp.value = 'ipertensione';
+                    else if (allStr.includes('gotta')) patInp.value = 'gotta';
+                }
             }
         };
 
@@ -2809,10 +2849,15 @@
                 };
                 localStorage.setItem('profileStats_' + id, JSON.stringify(stats));
                 if (patVal && patVal !== 'nessuna') {
+                    localStorage.setItem('pathology_' + id, patVal);
                     localStorage.setItem('profilePathology_' + id, patVal);
                 }
                 if (notesVal) {
-                    localStorage.setItem('anamnesi_' + id, notesVal);
+                    localStorage.setItem('anamnesi_' + id, JSON.stringify({
+                        nome: name.trim(),
+                        patologie: notesVal,
+                        selectedPathology: patVal
+                    }));
                 }
 
                 // Se l'utente ha inserito il peso attuale, lo registriamo anche nel grafico e bilancia

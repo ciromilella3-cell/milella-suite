@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
@@ -1803,7 +1803,7 @@ app.get(['/api/suite/anagrafe-condivisa', '/careassist/api/suite/anagrafe-condiv
     try {
         const soggettiMap = new Map();
 
-        // 1. Leggi CareAssist Pro
+        // 1. Leggi CareAssist Pro & Database Unificato Suite (suite_pazienti.json)
         try {
             let caData = await cloudGet('careassist', null);
             if (!caData && fs.existsSync(careAssistDbFile)) {
@@ -1821,12 +1821,53 @@ app.get(['/api/suite/anagrafe-condivisa', '/careassist/api/suite/anagrafe-condiv
                             indirizzo: p.indirizzo || '',
                             telefono: p.telefono || p.cellulare || '',
                             patologie: p.patologie || [],
+                            terapie: p.terapie || [],
+                            altezza: p.altezza || '',
+                            peso: p.peso || '',
+                            polso: p.polso || '',
                             origini: ['CareAssist Pro']
                         });
                     }
                 });
             }
-        } catch(eCa) { console.error('Errore lettura CA per anagrafe:', eCa.message); }
+
+            // Unisci con suite_pazienti.json (Master Suite)
+            if (fs.existsSync(suitePazientiDbFile)) {
+                const sDb = JSON.parse(fs.readFileSync(suitePazientiDbFile, 'utf8') || '{"pazienti":[]}');
+                if (Array.isArray(sDb.pazienti)) {
+                    sDb.pazienti.forEach(p => {
+                        if (p && p.nome) {
+                            const k = p.nome.trim().toLowerCase();
+                            if (soggettiMap.has(k)) {
+                                const ex = soggettiMap.get(k);
+                                if (!ex.dataNascita && p.dataNascita) ex.dataNascita = p.dataNascita;
+                                if ((!ex.patologie || ex.patologie.length === 0) && p.patologie) ex.patologie = p.patologie;
+                                if ((!ex.terapie || ex.terapie.length === 0) && p.terapie) ex.terapie = p.terapie;
+                                if (!ex.altezza && p.altezza) ex.altezza = p.altezza;
+                                if (!ex.peso && p.peso) ex.peso = p.peso;
+                                if (!ex.polso && p.polso) ex.polso = p.polso;
+                                if (!ex.origini.includes('Suite Master')) ex.origini.push('Suite Master');
+                            } else {
+                                soggettiMap.set(k, {
+                                    id: p.id || 'paz_' + Date.now(),
+                                    nome: p.nome.trim(),
+                                    dataNascita: p.dataNascita || '',
+                                    sesso: p.sesso || 'M',
+                                    indirizzo: p.indirizzo || '',
+                                    telefono: p.telefono || '',
+                                    patologie: p.patologie || [],
+                                    terapie: p.terapie || [],
+                                    altezza: p.altezza || '',
+                                    peso: p.peso || '',
+                                    polso: p.polso || '',
+                                    origini: ['Suite Master']
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        } catch(eCa) { console.error('Errore lettura CA/Suite per anagrafe:', eCa.message); }
 
         // 2. Leggi Progetto Salute
         try {

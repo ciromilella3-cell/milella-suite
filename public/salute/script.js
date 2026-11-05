@@ -831,11 +831,50 @@ function getProfileForElement(el) {
 
 function getProfilePathology(profId) {
     if (!profId) profId = window.activeProfile || 'marito';
-    let pat = localStorage.getItem('pathology_' + profId);
+    let pat = localStorage.getItem('pathology_' + profId) || localStorage.getItem('profilePathology_' + profId);
     if (!pat) {
-        if (profId === 'marito') pat = localStorage.getItem('pathology_1');
-        else if (profId === 'moglie') pat = localStorage.getItem('pathology_0');
+        if (profId === 'marito') pat = localStorage.getItem('pathology_1') || localStorage.getItem('profilePathology_marito');
+        else if (profId === 'moglie') pat = localStorage.getItem('pathology_0') || localStorage.getItem('profilePathology_moglie');
     }
+    
+    // Se non ancora salvata esplicitamente, controlliamo l'anamnesi o le patologie cliniche collegate dalla Suite
+    if (!pat) {
+        try {
+            let rawAna = localStorage.getItem('anamnesi_' + profId);
+            let pStr = '';
+            if (rawAna) {
+                try {
+                    let ana = JSON.parse(rawAna);
+                    pStr = (ana.patologie || JSON.stringify(ana)).toLowerCase();
+                } catch(eJson) {
+                    pStr = String(rawAna).toLowerCase();
+                }
+            }
+            if (!pStr) {
+                let rawStats = localStorage.getItem('profileStats_' + profId);
+                if (rawStats) {
+                    let st = JSON.parse(rawStats);
+                    if (st && st.pathology) pStr = String(st.pathology).toLowerCase();
+                    if (st && st.notes) pStr += ' ' + String(st.notes).toLowerCase();
+                }
+            }
+            if (!pStr) {
+                let pName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(profId).toLowerCase() : '';
+                if (pName.includes('rosa')) pStr = 'diabete ipertensione gotta osteoartrosi';
+                else if (pName.includes('aldo')) pStr = 'cardiopatia reflusso allettato';
+                else if (pName.includes('angela')) pStr = 'ipertensione cardiopatia';
+            }
+
+            if (pStr.includes('diabete') || pStr.includes('glicem') || pStr.includes('diamicron') || pStr.includes('forxiga') || pStr.includes('xultophy')) pat = 'diabete';
+            else if (pStr.includes('pressione') || pStr.includes('ipertens') || pStr.includes('cardiopatia') || pStr.includes('congescor') || pStr.includes('bisoprololo')) pat = 'ipertensione';
+            else if (pStr.includes('gotta') || pStr.includes('acido urico') || pStr.includes('adenuric')) pat = 'gotta';
+            else if (pStr.includes('reflusso') || pStr.includes('mrge') || pStr.includes('gastrite')) pat = 'reflusso';
+            else if (pStr.includes('tiroide') || pStr.includes('eutirox')) pat = 'tiroide';
+            else if (pStr.includes('osteopor') || pStr.includes('osteoartrosi') || pStr.includes('arcoxia')) pat = 'osteoporosi';
+            else if (pStr.includes('steatosi') || pStr.includes('fegato') || pStr.includes('hbv') || pStr.includes('entecavir')) pat = 'steatosi';
+        } catch(e) {}
+    }
+
     if (!pat) {
         if (profId === 'marito') pat = 'steatosi';
         else pat = 'nessuna';
