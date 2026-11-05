@@ -348,39 +348,46 @@ window.onerror = function(msg, url, line) {
             <div class="sugg-btn" onclick="closeSuggestions()" style="background:#ffebee; border-color:#ffcdd2; color:#c62828;">❌ Scrivi a mano...</div>
         </div>
         
-        <!-- BARRA SUPERIORE MODERNA (MINIMAL & ELEGANTE) -->
-        <div class="action-bar no-print" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 6px 0; margin-bottom: 20px;">
-            <!-- RICERCA RICETTE (Stile Apple Spotlight / Windows Search) -->
-            <div class="spotlight-search-box">
-                <span class="spotlight-search-icon">🔍</span>
-                <input type="text" id="recipe-search" placeholder="Cerca ricetta o ingrediente light..." onkeypress="if(event.key === 'Enter') searchRecipe()">
-                <button onclick="searchRecipe()" class="btn-spotlight-search">Cerca</button>
+        <!-- BARRA SUPERIORE MODERNA PROFESSIONALE (HEALTH EXECUTIVE SUITE) -->
+        <div class="action-bar no-print" style="display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; padding:12px 18px; margin-bottom:22px; background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius:18px; box-shadow:0 10px 25px rgba(15,23,42,0.45); border:1.5px solid #334155;">
+            
+            <!-- RICERCA RICETTE CLINICHE & LIGHT -->
+            <div class="spotlight-search-box" style="flex:1; min-width:260px; max-width:420px; background:rgba(255,255,255,0.08); border:1.5px solid #475569; border-radius:12px; padding:3px 8px; display:flex; align-items:center;">
+                <span class="spotlight-search-icon" style="color:#94a3b8; font-size:15px; margin-right:6px;">🔍</span>
+                <input type="text" id="recipe-search" placeholder="Cerca ricetta o ingrediente light..." onkeypress="if(event.key === 'Enter') searchRecipe()" style="background:transparent; border:none; outline:none; color:#f8fafc; font-size:13.5px; font-weight:600; width:100%;">
+                <button onclick="searchRecipe()" class="btn-spotlight-search" style="background:#0284c7; color:#fff; border:none; border-radius:8px; padding:6px 14px; font-weight:700; font-size:12px; cursor:pointer;">Cerca</button>
             </div>
 
-            <!-- CONTROLLI RAPIDI & CENTRO DI CONTROLLO -->
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <!-- CONTROLLI CLINICI & STRUMENTI PROFESSIONALI -->
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                 <button id="quickUndoTopBtn" onclick="undoLastSync()" class="btn-top-undo" style="display:none;" title="Annulla l'ultima sincronizzazione">
                     <span>↩️</span> Annulla
                 </button>
-                <button onclick="openMealPrepModal()" class="btn-top-quick" style="background:#7c3aed; color:white; border:none; border-radius:20px; padding:6px 14px;" title="Guida Meal Prep & Batch Cooking per cucinare in anticipo nel weekend">
-                    <span>🍲</span> Meal Prep
-                </button>
-                <button onclick="openFridgeFinderModal()" class="btn-top-quick" style="background:#0284c7; color:white; border:none; border-radius:20px; padding:6px 14px;" title="Svuota-Frigo Clinico: ricette sane con quel che hai già in casa">
-                    <span>🧊</span> Svuota-Frigo
-                </button>
-                <button onclick="openWeightTrendModal()" class="btn-top-quick" style="background:#059669; color:white; border:none; border-radius:20px; padding:6px 14px;" title="Grafico interattivo trend peso, vita e previsione data obiettivo">
+                
+                <button onclick="openWeightTrendModal()" style="background:rgba(16,185,129,0.15); color:#34d399; border:1px solid #059669; border-radius:12px; padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s;" onmouseover="this.style.background='#059669'; this.style.color='#ffffff';" onmouseout="this.style.background='rgba(16,185,129,0.15)'; this.style.color='#34d399';" title="Monitoraggio e curva del peso corporeo">
                     <span>📈</span> Trend Peso
                 </button>
-                <button onclick="openSosHungerModal()" class="btn-top-quick sos-btn" title="SOS Attacco di fame: rilassa la mente e ferma la fame nervosa">
+
+                <button onclick="openFridgeFinderModal()" style="background:rgba(2,132,199,0.15); color:#38bdf8; border:1px solid #0284c7; border-radius:12px; padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s;" onmouseover="this.style.background='#0284c7'; this.style.color='#ffffff';" onmouseout="this.style.background='rgba(2,132,199,0.15)'; this.style.color='#38bdf8';" title="Svuota-Frigo Clinico: ricette bilanciate">
+                    <span>🧊</span> Svuota-Frigo
+                </button>
+
+                <button onclick="openMealPrepModal()" style="background:rgba(139,92,246,0.15); color:#c084fc; border:1px solid #7c3aed; border-radius:12px; padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s;" onmouseover="this.style.background='#7c3aed'; this.style.color='#ffffff';" onmouseout="this.style.background='rgba(139,92,246,0.15)'; this.style.color='#c084fc';" title="Guida Meal Prep: cucina in anticipo">
+                    <span>🍲</span> Meal Prep
+                </button>
+
+                <button onclick="openSosHungerModal()" style="background:rgba(239,68,68,0.15); color:#f87171; border:1px solid #dc2626; border-radius:12px; padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s;" onmouseover="this.style.background='#dc2626'; this.style.color='#ffffff';" onmouseout="this.style.background='rgba(239,68,68,0.15)'; this.style.color='#f87171';" title="SOS Fame Nervosa: relax e respirazione 4-7-8">
                     <span>🧘</span> SOS Fame
                 </button>
-                <button onclick="openWeeklyReportModal()" class="btn-top-quick report-btn" title="Visualizza la Pagella Settimanale e i progressi di coppia">
-                    <span>🏆</span> Pagella
+
+                <button onclick="openWeeklyReportModal()" style="background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid #d97706; border-radius:12px; padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s;" onmouseover="this.style.background='#d97706'; this.style.color='#ffffff';" onmouseout="this.style.background='rgba(245,158,11,0.15)'; this.style.color='#fbbf24';" title="Pagella e aderenza nutrizionale settimanale">
+                    <span>🏆</span> Report
                 </button>
-                <button onclick="openControlCenter()" class="btn-top-control-center" id="openControlCenterBtn" title="Apri Impostazioni e Centro di Controllo">
-                    <span class="gear-icon">⚙️</span>
+
+                <button onclick="openControlCenter()" style="background:#0284c7; color:#ffffff; border:none; border-radius:12px; padding:8px 16px; font-size:13px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:7px; box-shadow:0 4px 14px rgba(2,132,199,0.4); transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 18px rgba(2,132,199,0.5)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 14px rgba(2,132,199,0.4)';" id="openControlCenterBtn" title="Apri Impostazioni e Centro di Controllo">
+                    <span>⚙️</span>
                     <span>Centro di Controllo</span>
-                    <span class="badge-status-dot" id="controlStatusDot" title="Sincronizzazione attiva"></span>
+                    <span class="badge-status-dot" id="controlStatusDot" style="width:7px; height:7px; border-radius:50%; background:#22c55e; display:inline-block;"></span>
                 </button>
             </div>
 
@@ -758,30 +765,39 @@ window.onerror = function(msg, url, line) {
             </div>
         </div>
 
-        <header class="main-header">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-                <h1 style="margin: 0;">🌿 Progetto Salute <span style="font-size:0.75rem; color:#f59e0b; font-weight:800; margin-left:8px; vertical-align:middle;">👑 CIRO MILELLA</span></h1>
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <button onclick="lockSaluteApp()" style="background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.25); padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size:13px; cursor: pointer; display:flex; align-items:center; gap:5px; transition: all 0.2s;" title="Blocca schermata con PIN">
-                        🔒 Blocca
+        <header class="main-header" style="background:linear-gradient(135deg, #166534 0%, #15803d 50%, #14532d 100%); border-radius:22px; padding:24px 28px; box-shadow:0 12px 30px rgba(22,101,52,0.25); border:1.5px solid rgba(255,255,255,0.2); margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; border-bottom:1px solid rgba(255,255,255,0.18); padding-bottom:16px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:48px; height:48px; border-radius:14px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 4px 10px rgba(0,0,0,0.15);">
+                        🌿
+                    </div>
+                    <div>
+                        <h1 style="margin:0; font-size:1.6rem; font-weight:800; color:#ffffff; letter-spacing:-0.3px;">Progetto Salute</h1>
+                        <p style="margin:2px 0 0 0; font-size:0.85rem; color:#bbf7d0; font-weight:500;">Piattaforma Clinica di Nutrizione, Metabolismo &amp; Benessere</p>
+                    </div>
+                </div>
+
+                <!-- PULSANTI DI NAVIGAZIONE E GESTIONE SUITE -->
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <button onclick="navigaDaSaluteACareAssist()" style="background:rgba(255,255,255,0.15); color:#ffffff; border:1px solid rgba(255,255,255,0.3); padding:8px 14px; border-radius:12px; font-weight:700; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; backdrop-filter:blur(6px); transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.25)';" onmouseout="this.style.background='rgba(255,255,255,0.15)';" title="Apri Cartella Clinica CareAssist Pro">
+                        <span>🏥</span> CareAssist
                     </button>
-                    <button onclick="forceUpdateSaluteApp()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size:13px; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); display:flex; align-items:center; gap:6px; transition: all 0.2s;" title="Ricarica l'app e pulisci la cache offline">
-                        🔄 Aggiorna App
+                    <button onclick="navigaDaSaluteAAmbulatorio()" style="background:rgba(255,255,255,0.15); color:#ffffff; border:1px solid rgba(255,255,255,0.3); padding:8px 14px; border-radius:12px; font-weight:700; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; backdrop-filter:blur(6px); transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.25)';" onmouseout="this.style.background='rgba(255,255,255,0.15)';" title="Apri Ambulatorio Medico Nutrizionale">
+                        <span>🩺</span> Ambulatorio
                     </button>
-                    <!-- TRIADE SANITARIA BRIDGES -->
-                    <button onclick="navigaDaSaluteACareAssist()" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size:13px; cursor: pointer; box-shadow: 0 4px 12px rgba(2,132,199,0.35); display:flex; align-items:center; gap:5px; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="Apri CareAssist Pro per questo profilo">
-                        🏥 CareAssist
+                    <button onclick="forceUpdateSaluteApp()" style="background:rgba(245,158,11,0.25); color:#fef3c7; border:1px solid rgba(245,158,11,0.5); padding:8px 14px; border-radius:12px; font-weight:700; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.15s;" title="Aggiorna Dati e Cache">
+                        <span>🔄</span> Aggiorna
                     </button>
-                    <button onclick="navigaDaSaluteAAmbulatorio()" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size:13px; cursor: pointer; box-shadow: 0 4px 12px rgba(14,165,233,0.35); display:flex; align-items:center; gap:5px; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="Apri Ambulatorio Medico per questo profilo">
-                        🩺 Ambulatorio
+                    <button onclick="lockSaluteApp()" style="background:rgba(255,255,255,0.1); color:#e2e8f0; border:1px solid rgba(255,255,255,0.25); padding:8px 12px; border-radius:12px; font-weight:700; font-size:12.5px; cursor:pointer;" title="Blocca con PIN">
+                        <span>🔒</span>
                     </button>
-                    <button onclick="window.location.href='/launcher.html'" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 18px; border-radius: 20px; font-weight: 700; font-size:13px; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.3); transition: all 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="Torna al Portale Aziendale">
-                        🏠 Torna al Menu
+                    <button onclick="window.location.href='/launcher.html'" style="background:#ffffff; color:#14532d; border:none; padding:8px 16px; border-radius:12px; font-weight:800; font-size:12.5px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.15); transition:all 0.15s;" onmouseover="this.style.background='#f0fdf4';" onmouseout="this.style.background='#ffffff';" title="Torna alla Home Suite">
+                        <span>🏠</span> Home Suite
                     </button>
                 </div>
             </div>
-            <p>Il vostro piano in comune per il benessere e la forma fisica.</p>
-            <img src="foto/banner.jpg" alt="Healthy Lifestyle" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            
+            <img src="foto/banner.jpg" alt="Healthy Lifestyle" style="width: 100%; max-height: 280px; object-fit: cover; border-radius: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.18); border:1px solid rgba(255,255,255,0.15);">
         </header>
 
         <!-- PILLOLA DI SAGGEZZA DEL GIORNO (365 CONSIGLI DINAMICI) -->
