@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // SUITE MILELLA - PROGETTO SALUTE ECOSYSTEM BRIDGE
 // Riceve e sincronizza in tempo reale il paziente/profilo attivo dalla Suite
 // ============================================================================
@@ -87,3 +87,38 @@
   }
 })();
 
+  // SINCRONIZZAZIONE AUTOMATICA DEL PESO E PARAMETRI CON IL FASCICOLO SANITARIO SUITE
+  window.trasmettiParametriSaluteASuite = function(nomePaziente, peso, altezza, pressione, note) {
+    if (!nomePaziente) return;
+    try {
+      fetch('/api/suite/pazienti', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome: nomePaziente,
+          peso: peso || '',
+          altezza: altezza || '',
+          pressione: pressione || '',
+          ultimoRilevamentoSalute: new Date().toISOString(),
+          noteSalute: note || 'Parametri aggiornati da Progetto Salute'
+        })
+      }).then(r => r.json()).then(res => {
+        console.log('🌿 Parametri Salute sincronizzati nel Fascicolo Sanitario Centrale:', res);
+      }).catch(() => {});
+    } catch(e) {}
+  };
+
+  // Monitora salvataggi del peso e parametri in Progetto Salute per allineamento istantaneo
+  window.addEventListener('storage', function(e) {
+    if (e.key && e.key.startsWith('weightLog_')) {
+      const prof = e.key.replace('weightLog_', '');
+      const nomePaz = (prof === 'marito') ? 'Ciro Milella' : (prof === 'moglie' ? 'Maria Carmela' : prof);
+      try {
+        const logs = JSON.parse(e.newValue || '[]');
+        if (logs.length > 0) {
+          const ultimoPeso = logs[logs.length - 1].weight;
+          trasmettiParametriSaluteASuite(nomePaz, ultimoPeso, null, null, 'Nuova pesata registrata');
+        }
+      } catch(err) {}
+    }
+  });
