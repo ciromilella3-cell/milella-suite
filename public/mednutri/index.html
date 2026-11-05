@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -478,9 +478,16 @@
                             <label>al (Fine)</label>
                             <input type="date" id="period-end">
                         </div>
-                        <div class="input-group full-width" style="margin-top:5px;">
-                            <label>📝 Note Cliniche & Raccomandazioni (stampate sul referto)</label>
-                            <textarea id="patient-notes" rows="2" placeholder="Es. Bere almeno 2 litri d'acqua al giorno; camminata veloce 30 min/die; assumere integratore multivitaminico a colazione..." style="padding:10px 12px; border-radius:10px; border:1px solid var(--border); font-family:inherit; font-size:0.95rem; resize:vertical; background:white;"></textarea>
+                        <div class="input-group full-width" style="margin-top:10px; margin-bottom:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <label style="font-weight:800; color:#0f172a; font-size:13px; display:flex; align-items:center; gap:6px;">
+                                    <span>📋</span> Note Cliniche, Diagnosi &amp; Terapie (Sincronizzate da CareAssist)
+                                </label>
+                                <span style="font-size:11px; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:12px; font-weight:700;">
+                                    Fascicolo Elettronico
+                                </span>
+                            </div>
+                            <textarea id="patient-notes" rows="6" placeholder="Es. Diagnosi, terapie in corso, allergie o raccomandazioni dietetiche..." style="width:100%; min-height:130px; line-height:1.6; padding:12px 14px; border-radius:12px; border:1.5px solid #cbd5e1; font-family:'Outfit', sans-serif; font-size:13px; font-weight:600; color:#1e293b; resize:vertical; background:#f8fafc; box-shadow:inset 0 1px 3px rgba(0,0,0,0.04); transition:all 0.2s;" onfocus="this.style.background='#ffffff'; this.style.borderColor='#0284c7'; this.style.boxShadow='0 0 0 3px rgba(2,132,199,0.15)';" onblur="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';"></textarea>
                         </div>
                         <div class="input-group full-width">
                             <label>Diagnosi / Patologia Principale</label>
