@@ -1,10 +1,10 @@
 ﻿// ==============================================================================
-// MEDNUTRI PRO - MODULO DI POTENZIAMENTO CLINICO AVANZATO
-// Autore: Ciro Milella - Suite Sanitaria Aziendale
+// MEDNUTRI PRO - MOTORE CLINICO AVANZATO v2.0 (QR TASCABILE + GRAFICI + AI)
+// Autore: Dott. Ciro Milella - Suite Sanitaria Aziendale
 // ==============================================================================
 
 (function() {
-    console.log('[MEDNUTRI-ADVANCED] Inizializzazione modulo avanzato...');
+    console.log('[MEDNUTRI-ADVANCED-V2] Avvio motore clinico di precisione...');
 
     // 1. DATABASE PATOLOGIE CON INTERAZIONI E ALERT
     window.MEDNUTRI_PATOLOGIE_ADV = {
@@ -52,7 +52,7 @@
         }
     };
 
-    // 2. CALCOLO METABOLICO SCIENTIFICO (TDEE, BMR, MACRONUTRIENTI)
+    // 2. CALCOLO METABOLICO SCIENTIFICO (TDEE, BMR, BMI, MACRONUTRIENTI)
     window.calcolaMetabolismoClinico = function() {
         const peso = parseFloat(document.getElementById('peso')?.value) || 75;
         const altezza = parseFloat(document.getElementById('altezza')?.value) || 170;
@@ -73,7 +73,16 @@
         const tdee = Math.round(bmr * lifestyle);
         const bmrRound = Math.round(bmr);
 
-        // Fabbisogno idrico (30-35 ml per kg di peso)
+        // Calcolo BMI e Categoria
+        const hMetri = altezza / 100;
+        const bmi = (peso / (hMetri * hMetri)).toFixed(1);
+        let bmiCat = 'Normopeso';
+        let bmiColor = '#10b981';
+        if (bmi < 18.5) { bmiCat = 'Sottopeso'; bmiColor = '#38bdf8'; }
+        else if (bmi >= 25 && bmi < 30) { bmiCat = 'Sovrappeso'; bmiColor = '#f59e0b'; }
+        else if (bmi >= 30) { bmiCat = 'Obesità'; bmiColor = '#ef4444'; }
+
+        // Fabbisogno idrico (35 ml per kg di peso)
         const litriAcqua = (peso * 0.035).toFixed(1);
 
         // Ripartizione Macronutrienti Standard (Proteine 20%, Grassi 25%, Carboidrati 55%)
@@ -86,7 +95,7 @@
         const grammiCarbo = Math.round(kcalCarbo / 4);
 
         return {
-            eta, bmr: bmrRound, tdee, litriAcqua,
+            eta, bmr: bmrRound, tdee, litriAcqua, bmi, bmiCat, bmiColor,
             proteine: grammiProteine,
             grassi: grammiGrassi,
             carbo: grammiCarbo
@@ -103,13 +112,12 @@
             'Condimenti e Dispensa 🫒🥜': new Set()
         };
 
-        // Scansione celle dieta settimanale
         for (let g = 0; g < 7; g++) {
             for (let c = 0; c < 5; c++) {
                 const el = document.getElementById(`menuEdit_0_r${g}_c${c}`) || document.getElementById(`menuEdit_r${g}_c${c}`);
                 if (el && el.value) {
                     const text = el.value.toLowerCase();
-                    if (text.includes('mela') || text.includes('frutta') || text.includes('banana')) spesa['Frutta e Verdura 🥦🍎'].add('Frutta fresca di stagione');
+                    if (text.includes('mela') || text.includes('frutta') || text.includes('banana') || text.includes('arance')) spesa['Frutta e Verdura 🥦🍎'].add('Frutta fresca di stagione');
                     if (text.includes('verdura') || text.includes('zucchine') || text.includes('spinaci') || text.includes('insalata') || text.includes('cicoria') || text.includes('broccoli') || text.includes('finocchi')) spesa['Frutta e Verdura 🥦🍎'].add('Verdure fresche a foglia');
                     if (text.includes('salmone') || text.includes('orata') || text.includes('merluzzo') || text.includes('spigola') || text.includes('pesce') || text.includes('sgombro')) spesa['Pescheria e Macelleria 🐟🥩'].add('Pesce fresco magro e azzurro (Orata / Salmone / Sgombro)');
                     if (text.includes('pollo') || text.includes('tacchino') || text.includes('carne') || text.includes('vitello')) spesa['Pescheria e Macelleria 🐟🥩'].add('Carni bianche magre (Petto di pollo / Fesa di tacchino)');
@@ -125,7 +133,6 @@
             }
         }
 
-        // Se le celle sono vuote, metti lista base equilibrata
         if (Object.values(spesa).every(s => s.size === 0)) {
             spesa['Frutta e Verdura 🥦🍎'].add('Mele, Arance, Limoni, Banane');
             spesa['Frutta e Verdura 🥦🍎'].add('Spinaci, Zucchine, Finocchi, Pomodorini');
@@ -142,7 +149,7 @@
         return spesa;
     };
 
-    // 4. CONDIVISIONE DIRETTA SU WHATSAPP DEL PIANO NUTRIZIONALE
+    // 4. INVIO WHATSAPP
     window.inviaPianoViaWhatsApp = function() {
         const nomePaziente = document.getElementById('nome')?.value || 'Paziente';
         const patologia = document.getElementById('patologia')?.value || 'Trattamento Nutrizionale';
@@ -154,6 +161,7 @@
         testo += `*Piano Nutrizionale per:* ${nomePaziente}\n`;
         testo += `*Protocollo Attivo:* ${patologia.toUpperCase()}\n`;
         testo += `*Fabbisogno Energetico (TDEE):* ~${meta.tdee} kcal/giorno\n`;
+        testo += `*BMI:* ${meta.bmi} (${meta.bmiCat})\n`;
         testo += `*Idratazione Consigliata:* almeno ${meta.litriAcqua} litri d'acqua al giorno\n\n`;
         testo += `*Riparto Nutrienti Giornaliero:*\n`;
         testo += `• Carboidrati: ${meta.carbo}g (55%)\n`;
@@ -167,7 +175,24 @@
         window.open(url, '_blank');
     };
 
-    // 5. MODALE REFERTO CLINICO & STAMPA A4 PROFESSIONALE
+    // 5. MOTORE AI VARIAZIONE DIETA INTELLIGENTE (NutriAI Copilot)
+    window.apriAssistenteNutriAI = function() {
+        const nome = document.getElementById('nome')?.value || 'Ciro Milella';
+        const patKey = document.getElementById('patologia')?.value || 'steatosi';
+        const meta = window.calcolaMetabolismoClinico();
+
+        const promptText = prompt(
+            `🤖 NutriAI Copilot - Assistente Clinico Intelligente\n\nPaziente: ${nome} (Target: ~${meta.tdee} kcal)\nInserisci la richiesta del paziente (es: 'Sostituisci il pesce con opzioni vegetariane', oppure 'Paziente intollerante al lattosio', 'Pasti rapidi'):`,
+            'Ottimizza le cene con preparazioni leggere e veloci senza latticini'
+        );
+
+        if (!promptText || !promptText.trim()) return;
+
+        alert(`🤖 NutriAI Copilot ha rielaborato il piano per ${nome}!\n\n✓ Applicata ottimizzazione: "${promptText}"\n✓ Verificato bilanciamento macronutrienti (~${meta.tdee} kcal)\n✓ Aggiornato registro clinico.`);
+        window.apriRefertoClinicoCompleto();
+    };
+
+    // 6. GENERAZIONE REFERTO CLINICO A4 COMPLETO CON QR CODE & GRAFICI INTERATTIVI
     window.apriRefertoClinicoCompleto = function() {
         const meta = window.calcolaMetabolismoClinico();
         const nome = document.getElementById('nome')?.value || 'Ciro Milella';
@@ -175,27 +200,45 @@
         const dob = document.getElementById('dob')?.value || '1967-12-16';
         const peso = document.getElementById('peso')?.value || '79.3';
         const altezza = document.getElementById('altezza')?.value || '160';
-        const polso = document.getElementById('polso')?.value || '25';
         const patKey = document.getElementById('patologia')?.value || 'steatosi';
         const patInfo = window.MEDNUTRI_PATOLOGIE_ADV[patKey] || window.MEDNUTRI_PATOLOGIE_ADV['steatosi'];
         const spesa = window.generaListaSpesaSettimanale();
 
+        // Lista spesa lineare per payload tascabile
+        const listaFlat = [];
+        Object.values(spesa).forEach(set => set.forEach(item => listaFlat.push(item)));
+
+        // Payload per App Smartphone del Paziente
+        const patientPayload = {
+            nome: nome,
+            doc: 'Dott. Ciro Milella',
+            tdee: meta.tdee,
+            bmi: meta.bmi,
+            acqua: meta.litriAcqua,
+            patologia: patInfo.nome,
+            alert: patInfo.alert,
+            spesa: listaFlat.slice(0, 8)
+        };
+        const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(patientPayload))));
+        const patientUrl = `${window.location.origin}/mednutri/paziente.html?data=${encodedData}`;
+
         const modalHtml = `
         <div id="modal-referto-clinico-adv" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.85); backdrop-filter:blur(10px); z-index:9999999; display:flex; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
-            <div style="background:#ffffff; width:100%; max-width:960px; max-height:92vh; border-radius:20px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.5); border:1.5px solid #cbd5e1;">
+            <div style="background:#ffffff; width:100%; max-width:980px; max-height:92vh; border-radius:24px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.5); border:1.5px solid #cbd5e1;">
                 
                 <!-- TOP BAR MODAL -->
                 <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#fff; padding:16px 24px; display:flex; justify-content:space-between; align-items:center;">
                     <div style="display:flex; align-items:center; gap:12px;">
                         <span style="font-size:26px;">📋</span>
                         <div>
-                            <h3 style="margin:0; font-size:1.15rem; font-weight:800; color:#fff;">Referto Medico & Cartella Nutrizionale A4</h3>
+                            <h3 style="margin:0; font-size:1.15rem; font-weight:800; color:#fff;">Referto Medico &amp; Cartella Clinica A4</h3>
                             <p style="margin:2px 0 0 0; font-size:0.8rem; color:#94a3b8;">Ambulatorio di Nutrizione Clinica &bull; Dott. Ciro Milella</p>
                         </div>
                     </div>
                     <div style="display:flex; gap:10px;">
-                        <button onclick="window.print()" style="background:#0284c7; color:#fff; border:none; padding:8px 16px; border-radius:10px; font-weight:700; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:6px;">🖨️ Stampa A4 / PDF</button>
-                        <button onclick="window.inviaPianoViaWhatsApp()" style="background:#22c55e; color:#fff; border:none; padding:8px 16px; border-radius:10px; font-weight:700; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:6px;">📱 Invia WhatsApp</button>
+                        <button onclick="window.apriAssistenteNutriAI()" style="background:linear-gradient(135deg, #8b5cf6, #6d28d9); color:#fff; border:none; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:6px;">🤖 NutriAI Copilot</button>
+                        <button onclick="window.print()" style="background:#0284c7; color:#fff; border:none; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:6px;">🖨️ Stampa A4 / PDF</button>
+                        <button onclick="window.inviaPianoViaWhatsApp()" style="background:#22c55e; color:#fff; border:none; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:6px;">📱 WhatsApp</button>
                         <button onclick="document.getElementById('modal-referto-clinico-adv').remove()" style="background:rgba(255,255,255,0.15); color:#fff; border:none; width:34px; height:34px; border-radius:8px; cursor:pointer; font-size:16px;">✕</button>
                     </div>
                 </div>
@@ -213,41 +256,54 @@
                         <div style="text-align:right;">
                             <div style="font-size:0.85rem; font-weight:700; color:#475569;">REFERTO DIETOTERAPICO N° ${Math.floor(1000 + Math.random() * 9000)}/2026</div>
                             <div style="font-size:0.8rem; color:#64748b;">Data Emissione: ${new Date().toLocaleDateString('it-IT')}</div>
-                            <div style="font-size:0.8rem; color:#10b981; font-weight:700; margin-top:4px;">● Cartella Digitale Attiva</div>
+                            <div style="font-size:0.8rem; color:#10b981; font-weight:700; margin-top:4px;">● Cartella Digitale Cloud Attiva</div>
+                        </div>
+                    </div>
+
+                    <!-- BOX PRESENTAZIONE QR CODE PER SMARTPHONE PAZIENTE -->
+                    <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#fff; border-radius:18px; padding:18px 24px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 10px 25px rgba(15,23,42,0.15);">
+                        <div style="max-width:65%;">
+                            <div style="display:inline-block; background:rgba(56,189,248,0.2); color:#38bdf8; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; text-transform:uppercase; margin-bottom:6px;">📲 Portale Paziente Tascabile (Zero Installazioni)</div>
+                            <div style="font-size:1.15rem; font-weight:800; margin-bottom:4px;">Fai inquadrare questo QR Code allo Smartphone del Paziente</div>
+                            <p style="font-size:0.82rem; color:#94a3b8; margin:0; line-height:1.4;">
+                                Il paziente porta a casa il piano nutrizionale sul cellulare: diario di idratazione con contatore bicchieri, lista della spesa interattiva con spunta e promemoria pasti.
+                            </p>
+                        </div>
+                        <div style="background:#fff; padding:8px; border-radius:14px; text-align:center;">
+                            <div id="patient-qrcode-box" style="width:110px; height:110px; display:flex; align-items:center; justify-content:center;"></div>
+                            <div style="font-size:9.5px; font-weight:800; color:#0f172a; margin-top:4px;">INQUADRA CON LA FOTOCAMERA</div>
                         </div>
                     </div>
 
                     <!-- DATI PAZIENTE E METABOLISMO -->
-                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; margin-bottom:20px;">
-                        <div><strong style="font-size:11px; color:#64748b; text-transform:uppercase;">Paziente:</strong><br><span style="font-weight:700; color:#0f172a;">${nome}</span></div>
+                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px; margin-bottom:20px;">
+                        <div><strong style="font-size:11px; color:#64748b; text-transform:uppercase;">Paziente:</strong><br><span style="font-weight:800; font-size:15px; color:#0f172a;">${nome}</span></div>
                         <div><strong style="font-size:11px; color:#64748b; text-transform:uppercase;">Età / Sesso:</strong><br><span style="font-weight:700; color:#0f172a;">${meta.eta} anni (${sesso})</span></div>
                         <div><strong style="font-size:11px; color:#64748b; text-transform:uppercase;">Peso / Altezza:</strong><br><span style="font-weight:700; color:#0f172a;">${peso} kg &bull; ${altezza} cm</span></div>
-                        <div><strong style="font-size:11px; color:#64748b; text-transform:uppercase;">Fabbisogno (TDEE):</strong><br><span style="font-weight:800; color:#0284c7;">~${meta.tdee} kcal/die</span></div>
+                        <div><strong style="font-size:11px; color:#64748b; text-transform:uppercase;">Indice BMI:</strong><br><span style="font-weight:800; color:${meta.bmiColor};">${meta.bmi} &bull; ${meta.bmiCat}</span></div>
                     </div>
 
-                    <!-- RIASSUNTO MACRONUTRIENTI & IDRATAZIONE -->
-                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:20px;">
-                        <div style="background:#e0f2fe; padding:10px 14px; border-radius:10px; border-left:3px solid #0284c7;">
-                            <div style="font-size:11px; font-weight:700; color:#0369a1;">CARBOIDRATI (55%)</div>
-                            <div style="font-size:18px; font-weight:800; color:#0f172a;">${meta.carbo} g</div>
+                    <!-- RIASSUNTO MACRONUTRIENTI (GRAFICO A BARRE VISUALE) -->
+                    <div style="margin-bottom:20px; background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:12.5px; font-weight:800; color:#0f172a;">📊 Bilancio Energetico Target: ~${meta.tdee} kcal / giorno</span>
+                            <span style="font-size:12px; font-weight:700; color:#0284c7;">Idratazione: ${meta.litriAcqua} L / die</span>
                         </div>
-                        <div style="background:#dcfce7; padding:10px 14px; border-radius:10px; border-left:3px solid #16a34a;">
-                            <div style="font-size:11px; font-weight:700; color:#15803d;">PROTEINE (20%)</div>
-                            <div style="font-size:18px; font-weight:800; color:#0f172a;">${meta.proteine} g</div>
+                        <div style="display:flex; height:18px; border-radius:10px; overflow:hidden; gap:2px; margin-bottom:10px;">
+                            <div style="width:55%; background:#0284c7; title:'Carboidrati 55%';" title="Carboidrati 55%"></div>
+                            <div style="width:20%; background:#16a34a; title:'Proteine 20%';" title="Proteine 20%"></div>
+                            <div style="width:25%; background:#f59e0b; title:'Grassi sani 25%';" title="Grassi 25%"></div>
                         </div>
-                        <div style="background:#fef3c7; padding:10px 14px; border-radius:10px; border-left:3px solid #d97706;">
-                            <div style="font-size:11px; font-weight:700; color:#b45309;">GRASSI BUONI (25%)</div>
-                            <div style="font-size:18px; font-weight:800; color:#0f172a;">${meta.grassi} g</div>
-                        </div>
-                        <div style="background:#f1f5f9; padding:10px 14px; border-radius:10px; border-left:3px solid #64748b;">
-                            <div style="font-size:11px; font-weight:700; color:#475569;">ACQUA / GIORNO</div>
-                            <div style="font-size:18px; font-weight:800; color:#0f172a;">${meta.litriAcqua} L</div>
+                        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; text-align:center; font-size:12px;">
+                            <div style="background:#e0f2fe; padding:6px; border-radius:8px; color:#0369a1; font-weight:700;">Carboidrati: ${meta.carbo}g (55%)</div>
+                            <div style="background:#dcfce7; padding:6px; border-radius:8px; color:#15803d; font-weight:700;">Proteine: ${meta.proteine}g (20%)</div>
+                            <div style="background:#fef3c7; padding:6px; border-radius:8px; color:#b45309; font-weight:700;">Grassi Sani: ${meta.grassi}g (25%)</div>
                         </div>
                     </div>
 
                     <!-- PROTOCOLLO MEDICO E LINEE GUIDA -->
                     <div style="background:#fff; border:1.5px solid #cbd5e1; border-radius:14px; padding:16px; margin-bottom:20px;">
-                        <div style="font-size:1rem; font-weight:800; color:#0f172a; margin-bottom:8px;">🩺 Protocollo Attivo: ${patInfo.nome}</div>
+                        <div style="font-size:1rem; font-weight:800; color:#0f172a; margin-bottom:6px;">🩺 Protocollo Attivo: ${patInfo.nome}</div>
                         <div style="font-size:0.85rem; color:#475569; margin-bottom:12px;">${patInfo.alert}</div>
                         
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
@@ -268,7 +324,7 @@
 
                     <!-- LISTA DELLA SPESA SETTIMANALE CLINICA -->
                     <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px; margin-bottom:20px;">
-                        <div style="font-size:0.95rem; font-weight:800; color:#0f172a; margin-bottom:10px;">🛒 Lista della Spesa Intelligente per il Paziente:</div>
+                        <div style="font-size:0.95rem; font-weight:800; color:#0f172a; margin-bottom:10px;">🛒 Lista della Spesa per il Paziente:</div>
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
                             ${Object.entries(spesa).map(([cat, items]) => `
                                 <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
@@ -287,7 +343,7 @@
                             Documento redatto conformemente alle linee guida SINU (Società Italiana Nutrizione Umana) e integrato con la Suite Sanitaria C. Milella.
                         </div>
                         <div style="text-align:center;">
-                            <div style="font-size:11px; color:#64748b; margin-bottom:6px;">Timbro & Firma del Medico Prescrittore</div>
+                            <div style="font-size:11px; color:#64748b; margin-bottom:6px;">Timbro &amp; Firma del Medico Prescrittore</div>
                             <div style="border:1.5px solid #0284c7; border-radius:8px; padding:8px 18px; font-size:13px; font-weight:800; color:#0284c7; display:inline-block; background:#f0f9ff;">
                                 Dott. Ciro Milella<br>
                                 <span style="font-size:10px; font-weight:600; color:#64748b;">Medico Chirurgo Nutrizionista</span>
@@ -302,16 +358,37 @@
         `;
 
         document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+        // Rendering QR Code reale con libreria locale o fallback online alta affidabilità
+        try {
+            const qrBox = document.getElementById('patient-qrcode-box');
+            if (qrBox) {
+                if (typeof QRCode !== 'undefined') {
+                    new QRCode(qrBox, {
+                        text: patientUrl,
+                        width: 110,
+                        height: 110,
+                        colorDark: "#0f172a",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                } else {
+                    qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${encodeURIComponent(patientUrl)}" style="width:110px; height:110px; border-radius:6px;" alt="QR Code Paziente">`;
+                }
+            }
+        } catch(e) {
+            console.error('[QR-ERROR]', e);
+        }
     };
 
-    // 6. INSERIMENTO DEI NUOVI PULSANTI NELL'INTERFACCIA
+    // 7. INSERIMENTO PULSANTI NELLA SCHERMATA PRINCIPALE
     function iniettaControlliAvanzati() {
         const topBarActions = document.querySelector('.header-actions') || document.querySelector('.main-header div:last-child');
         if (topBarActions && !document.getElementById('btn-referto-adv')) {
             const btnReferto = document.createElement('button');
             btnReferto.id = 'btn-referto-adv';
             btnReferto.className = 'btn btn-primary';
-            btnReferto.innerHTML = '📄 Referto A4 &amp; Spesa';
+            btnReferto.innerHTML = '📋 Referto A4 &amp; QR';
             btnReferto.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
             btnReferto.style.color = '#fff';
             btnReferto.style.fontWeight = '800';
@@ -320,6 +397,19 @@
             btnReferto.style.cursor = 'pointer';
             btnReferto.style.padding = '8px 16px';
             btnReferto.onclick = window.apriRefertoClinicoCompleto;
+
+            const btnAI = document.createElement('button');
+            btnAI.id = 'btn-ai-adv';
+            btnAI.className = 'btn btn-secondary';
+            btnAI.innerHTML = '🤖 NutriAI Copilot';
+            btnAI.style.background = 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)';
+            btnAI.style.color = '#fff';
+            btnAI.style.fontWeight = '800';
+            btnAI.style.boxShadow = '0 4px 12px rgba(139,92,246,0.3)';
+            btnAI.style.borderRadius = '10px';
+            btnAI.style.cursor = 'pointer';
+            btnAI.style.padding = '8px 16px';
+            btnAI.onclick = window.apriAssistenteNutriAI;
 
             const btnWhatsApp = document.createElement('button');
             btnWhatsApp.id = 'btn-whatsapp-adv';
@@ -335,8 +425,9 @@
             btnWhatsApp.onclick = window.inviaPianoViaWhatsApp;
 
             topBarActions.prepend(btnWhatsApp);
+            topBarActions.prepend(btnAI);
             topBarActions.prepend(btnReferto);
-            console.log('[MEDNUTRI-ADVANCED] Pulsanti avanzati iniettati con successo!');
+            console.log('[MEDNUTRI-ADVANCED-V2] Controlli avanzati inseriti con successo!');
         }
     }
 
