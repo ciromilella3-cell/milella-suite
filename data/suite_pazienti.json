@@ -1,607 +1,648 @@
-{
-  "versione": "2.0.0",
-  "ultimoAggiornamento": "2026-11-03T10:05:10.547Z",
-  "pazienti": [
-    {
-      "id": "paz_aldo",
-      "nome": "Aldo Zamparino",
-      "dataNascita": "1935-04-18",
-      "sesso": "M",
-      "indirizzo": "Via Giovanni Modugno, 25 - Bari",
-      "telefono": "338 306 69 05",
-      "allettato": true,
-      "patologie": [
-        "Paziente geriatrico allettato ad alto rischio di lesioni da decubito (Scala Braden: Rischio Elevato)",
-        "Cardiopatia / Aritmia (in terapia con Bisoprololo 1,25 mg)",
-        "Epilessia / Disturbo neurologico focale (in terapia con VIMPAT Lacosamide 100 mg b.i.d.)",
-        "Ipertrofia Prostatica Benigna (IPB) con difficoltà minzionali (in terapia con SILODYX 8 mg)",
-        "Disturbo comportamentale del sonno / Agitazione notturna (in terapia con Quetiapina 25 mg)",
-        "Gastroprotezione per terapia cronica (in terapia con Pantoprazolo 40 mg)"
-      ],
-      "terapie": [
-        {
-          "id": 101,
-          "ora": "07:30",
-          "fascia": "Mattina (Digiuno)",
-          "farmaco": "Pantoprazolo 40 mg",
-          "principio": "Pantoprazolo",
-          "dosaggio": "40 mg (1 cpr gastroresistente)",
-          "modo": "A DIGIUNO, 30 min prima di colazione (Protezione gastrica)",
-          "cprPerScatola": 28,
-          "scorta": 27,
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 102,
-          "ora": "08:30",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
-          "principio": "Bisoprololo fumarato",
-          "dosaggio": "1,25 mg (1 cpr rivestita)",
-          "modo": "A colazione (Controllo frequenza cardiaca e pressione)",
-          "cprPerScatola": 28,
-          "scorta": 27,
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 103,
-          "ora": "08:30",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "VIMPAT 100 mg (1ª dose)",
-          "principio": "Lacosamide",
-          "dosaggio": "100 mg (1 capsula)",
-          "modo": "A colazione con acqua (Controllo neurologico)",
-          "cprPerScatola": 56,
-          "scorta": 55,
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 1032,
-          "ora": "13:30",
-          "fascia": "Pranzo",
-          "farmaco": "VIMPAT 100 mg (2ª dose)",
-          "principio": "Lacosamide",
-          "dosaggio": "100 mg (1 capsula)",
-          "modo": "A pranzo con acqua (Controllo neurologico)",
-          "cprPerScatola": 56,
-          "scorta": 55,
-          "fattoOggi": false
-        },
-        {
-          "id": 104,
-          "ora": "20:00",
-          "fascia": "Sera (Cena)",
-          "farmaco": "SILODYX 8 mg (Silodosina)",
-          "principio": "Silodosina",
-          "dosaggio": "8 mg (1 capsula)",
-          "modo": "A CENA, a stomaco pieno con acqua (Ipertrofia prostatica / diuresi)",
-          "cprPerScatola": 30,
-          "scorta": 30,
-          "fattoOggi": false
-        },
-        {
-          "id": 105,
-          "ora": "20:30",
-          "fascia": "Sera (Cena)",
-          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
-          "principio": "Lacosamide",
-          "dosaggio": "200 mg (2 capsule insieme)",
-          "modo": "Dopo cena (Dose serale cumulativa di 2 capsule = 200 mg)",
-          "cprPerScatola": 56,
-          "scorta": 55,
-          "fattoOggi": false
-        },
-        {
-          "id": 106,
-          "ora": "21:30",
-          "fascia": "Notte (Prima di dormire)",
-          "farmaco": "Quetiapina Teva 25 mg",
-          "principio": "Quetiapina",
-          "dosaggio": "25 mg (1 cpr rivestita)",
-          "modo": "Prima di coricarsi con acqua (Modulatore umore e sonno)",
-          "cprPerScatola": 30,
-          "scorta": 30,
-          "fattoOggi": false
-        }
-      ],
-      "visite": [
-        {
-          "id": 1,
-          "data": "2026-10-16",
-          "ora": "09:00",
-          "medico": "Medico di Famiglia (MMG)",
-          "motivo": "Prescrizione e rinnovo ricette farmaci per Aldo",
-          "fatto": false
-        }
-      ],
-      "diario": [],
-      "origini": [
-        "CareAssist Pro"
-      ],
-      "creatoIl": "2026-11-03T10:05:10.534Z"
-    },
-    {
-      "id": "paz_angela",
-      "nome": "Angela Mazzicone",
-      "dataNascita": "1938-05-29",
-      "sesso": "F",
-      "indirizzo": "Via Giovanni Modugno, 25 - BARI (BA)",
-      "telefono": "338 944 96 10",
-      "allettato": false,
-      "patologie": [
-        "Ipertensione arteriosa sistemica in polichemioterapia",
-        "Sindrome delle Apnee Ostruttive nel Sonno (OSAS) con indicazione ausilio CPAP notturna",
-        "Dislipidemia / Ipercolesterolemia",
-        "Iperuricemia con rischio gotta",
-        "Ipovitaminosi D3 (in integrazione ciclica con DIBASE)",
-        "Reflusso gastroesofageo / gastrite"
-      ],
-      "terapie": [
-        {
-          "id": 201,
-          "ora": "08:00",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "Bisoprololo Sandoz 1,25 mg",
-          "principio": "Bisoprololo fumarato",
-          "dosaggio": "1,25 mg (1 cpr rivestita con film)",
-          "modo": "Al mattino a colazione (Beta-bloccante: controllo frequenza e battito cardiaco)",
-          "cprPerScatola": 28,
-          "scorta": 27,
-          "farmacia": "Farmacia MACARIO",
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 202,
-          "ora": "08:30",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "Irbesartan/Idroclorotiazide Teva 300 mg/12,5 mg",
-          "principio": "Irbesartan + Idroclorotiazide",
-          "dosaggio": "300 mg / 12,5 mg (1 cpr rivestita)",
-          "modo": "Al mattino dopo colazione con acqua (Antipertensivo combinato per la pressione arteriosa)",
-          "cprPerScatola": 28,
-          "scorta": 27,
-          "farmacia": "Farmacia MACARIO",
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 203,
-          "ora": "09:00",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "Lasix 25 mg (Furosemide)",
-          "principio": "Furosemide",
-          "dosaggio": "25 mg (1 compressa)",
-          "modo": "Al mattino (Diuretico dell'ansa per eliminazione liquidi in eccesso ed edemi)",
-          "cprPerScatola": 30,
-          "scorta": 29,
-          "farmacia": "Farmacia MACARIO",
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 208,
-          "ora": "10:00",
-          "fascia": "Mattina (Dose Periodica)",
-          "farmaco": "DIBASE 50.000 U.I. / 2,5 ml (Colecalciferolo)",
-          "principio": "Colecalciferolo (Vitamina D3)",
-          "dosaggio": "50.000 U.I. in 2,5 ml flaconcino monodose",
-          "modo": "Assunzione orale periodica con un po' di cibo grasso [Ogni 15 giorni: il 15 e il 30 del mese]",
-          "cprPerScatola": 1,
-          "scorta": 0.93,
-          "farmacia": "Farmacia MACARIO",
-          "fattoOggi": true,
-          "cadenzaTipo": "quindicinale_15_30",
-          "ultimaDoseSomministrata": 0.06666666666666667
-        },
-        {
-          "id": 204,
-          "ora": "13:00",
-          "fascia": "Pranzo",
-          "farmaco": "Cardioaspirin 100 mg (Acido Acetilsalicilico)",
-          "principio": "Acido acetilsalicilico",
-          "dosaggio": "100 mg (1 cpr gastroresistente)",
-          "modo": "A metà o fine pranzo con abbondante acqua (Antiaggregante piastrinico salvacuore)",
-          "cprPerScatola": 30,
-          "scorta": 30,
-          "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false
-        },
-        {
-          "id": 205,
-          "ora": "13:30",
-          "fascia": "Pranzo",
-          "farmaco": "Allopurinolo Teva Italia 300 mg",
-          "principio": "Allopurinolo",
-          "dosaggio": "300 mg (1 compressa)",
-          "modo": "Dopo pranzo (Uricosurico: riduzione e controllo dell'acido urico e prevenzione gotta)",
-          "cprPerScatola": 30,
-          "scorta": 30,
-          "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false
-        },
-        {
-          "id": 206,
-          "ora": "15:30",
-          "fascia": "Pomeriggio (Al bisogno / Dopo i pasti)",
-          "farmaco": "Riopan 80 mg/ml (Magaldrato)",
-          "principio": "Magaldrato anidro",
-          "dosaggio": "80 mg/ml (Gel orale / Bustina)",
-          "modo": "1 ora dopo i pasti o al bisogno (Antiacido gastroprotettore contro bruciore e reflusso)",
-          "cprPerScatola": 20,
-          "scorta": 20,
-          "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false
-        },
-        {
-          "id": 207,
-          "ora": "20:30",
-          "fascia": "Sera (Cena)",
-          "farmaco": "Aplactin 40 mg (Pravastatina)",
-          "principio": "Pravastatina sale sodico",
-          "dosaggio": "40 mg (1 compressa)",
-          "modo": "La sera dopo cena o prima di dormire (Statina: controllo del colesterolo e lipidi)",
-          "cprPerScatola": 28,
-          "scorta": 28,
-          "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false
-        }
-      ],
-      "visite": [
-        {
-          "id": 201,
-          "data": "2026-10-16",
-          "ora": "09:00",
-          "medico": "Dott. Roberto Scarcia",
-          "motivo": "Rinnovo ricette e piano terapeutico per Angela Mazzicone",
-          "fatto": false
-        },
-        {
-          "id": 202,
-          "data": "2026-10-19",
-          "ora": "10:30",
-          "medico": "ASL / Servizio Ossigenoterapia Domiciliare",
-          "motivo": "Richiesta e fornitura bombola ossigeno terapeutico per Angela",
-          "fatto": false
-        }
-      ],
-      "diario": [],
-      "origini": [
-        "CareAssist Pro"
-      ],
-      "creatoIl": "2026-11-03T10:05:10.542Z"
-    },
-    {
-      "id": "paz_rosa",
-      "nome": "Rosa Annunziata Cavalcante",
-      "dataNascita": "1938-06-16",
-      "sesso": "F",
-      "indirizzo": "Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)",
-      "telefono": "338 379 76 71",
-      "allettato": false,
-      "patologie": [
-        "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga)",
-        "Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga)",
-        "Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel)",
-        "Morbo di Parkinson / parkinsonismo (Sinemet)",
-        "Iperuricemia / gotta (Adenuric)",
-        "Osteoartrosi con dolore cronico (Arcoxia)",
-        "Ipovitaminosi D (Fedivelle)",
-        "Dislipidemia / Ipercolesterolemia (Sivastin)"
-      ],
-      "terapie": [
-        {
-          "id": 305,
-          "ora": "08:00",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "CONGESCOR 2,5 mg",
-          "principio": "Bisoprololo",
-          "dosaggio": "2,5 mg (1 cpr)",
-          "modo": "A colazione (Beta-bloccante: frequenza cardiaca) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 28,
-          "scorta": 27,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 303,
-          "ora": "08:00",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "DIAMICRON 60 mg RM",
-          "principio": "Gliclazide",
-          "dosaggio": "60 mg (1 cpr rilascio modificato)",
-          "modo": "A colazione, non masticare (Diabete) - rischio ipoglicemia con insulina ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 30,
-          "scorta": 29,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 304,
-          "ora": "08:00",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "FORXIGA 10 mg",
-          "principio": "Dapagliflozin",
-          "dosaggio": "10 mg (1 cpr)",
-          "modo": "Al mattino con acqua (Diabete / cuore / reni) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 28,
-          "scorta": 27,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 301,
-          "gruppoFarmacoId": "grp_sinemet_100_25_mg",
-          "ora": "08:00",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "SINEMET 100+25 mg (1ª dose: 2 cpr - ore 08:00)",
-          "principio": "Levodopa + Carbidopa",
-          "dosaggio": "100/25 mg (2 cpr)",
-          "quantitaQuota": 2,
-          "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 50,
-          "scorta": 80,
-          "giorniAlert": 7,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 2,
-          "ultimaModificaClinica": {
-            "data": "30/10/2026",
-            "fonte": "Visita Specialistica",
-            "medico": "Neurologo",
-            "motivo": "Schema 2 somministrazioni al die (ore 08:00 e 20:00 da 2 cpr - Scorta Condivisa 82 cpr)"
-          }
-        },
-        {
-          "id": 306,
-          "ora": "08:00",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "TRIATEC 5 mg",
-          "principio": "Ramipril",
-          "dosaggio": "5 mg (Dose alternata: ½ cpr e 1 cpr)",
-          "modo": "A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno successivo (Pressione arteriosa)",
-          "cprPerScatola": 14,
-          "scorta": 13,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": true,
-          "cadenzaTipo": "alternata_mezza_intera",
-          "quantitaQuota": 0.5,
-          "dataInizioAlterni": "2026-10-18",
-          "ultimaModificaClinica": {
-            "data": "22/10/2026",
-            "fonte": "Visita Specialistica",
-            "medico": "Cardiologo",
-            "motivo": "Alternanza ½ cpr e 1 cpr a giorni alterni per controllo pressione"
-          },
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 302,
-          "ora": "08:00",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "XULTOPHY penna",
-          "principio": "Insulina degludec + Liraglutide",
-          "dosaggio": "16 Unità (sottocute)",
-          "modo": "Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 15,
-          "scorta": 1.94,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": true,
-          "tipoFormulazione": "penna",
-          "unitaDoseDie": 16,
-          "unitaPerPenna": 300,
-          "penneScorta": 1.94,
-          "pennePerScatola": 3,
-          "giorniAlert": 15,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 307,
-          "ora": "08:30",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "LASIX 25 mg",
-          "principio": "Furosemide",
-          "dosaggio": "25 mg (1 cpr)",
-          "modo": "Al mattino (Diuretico: edemi / scompenso) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 30,
-          "scorta": 29,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
-        },
-        {
-          "id": 314,
-          "ora": "13:00",
-          "fascia": "Pranzo",
-          "farmaco": "AVERELIX 75 mg",
-          "principio": "Clopidogrel",
-          "dosaggio": "75 mg (1 cpr rivestita)",
-          "modo": "A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 28,
-          "scorta": 28,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false
-        },
-        {
-          "id": 309,
-          "ora": "13:30",
-          "fascia": "Pranzo",
-          "farmaco": "ADENURIC 80 mg",
-          "principio": "Febuxostat",
-          "dosaggio": "80 mg (1 cpr)",
-          "modo": "A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 28,
-          "scorta": 28,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false,
-          "cadenzaTipo": "alterni",
-          "dataInizioAlterni": "2026-10-18"
-        },
-        {
-          "id": 310,
-          "ora": "13:30",
-          "fascia": "Pranzo",
-          "farmaco": "ARCOXIA 90 mg",
-          "principio": "Etoricoxib",
-          "dosaggio": "90 mg (1 cpr)",
-          "modo": "A stomaco pieno (Antinfiammatorio: dolore artrosi) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 28,
-          "scorta": 28,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false
-        },
-        {
-          "id": 311,
-          "gruppoFarmacoId": "grp_sinemet_100_25_mg",
-          "ora": "20:00",
-          "fascia": "Sera (Cena)",
-          "farmaco": "SINEMET 100+25 mg (2ª dose: 2 cpr - ore 20:00)",
-          "principio": "Levodopa + Carbidopa",
-          "dosaggio": "100/25 mg (2 cpr)",
-          "quantitaQuota": 2,
-          "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 50,
-          "scorta": 80,
-          "giorniAlert": 7,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false,
-          "ultimaDoseSomministrata": 2,
-          "ultimaModificaClinica": {
-            "data": "30/10/2026",
-            "fonte": "Visita Specialistica",
-            "medico": "Neurologo",
-            "motivo": "Schema 2 somministrazioni al die (ore 08:00 e 20:00 da 2 cpr - Scorta Condivisa 82 cpr)"
-          }
-        },
-        {
-          "id": 313,
-          "ora": "21:00",
-          "fascia": "Notte (Prima di dormire)",
-          "farmaco": "SIVASTIN 20 mg",
-          "principio": "Simvastatina",
-          "dosaggio": "20 mg (1 cpr)",
-          "modo": "A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 28,
-          "scorta": 28,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false,
-          "cadenzaTipo": "alterni",
-          "dataInizioAlterni": "2026-10-17"
-        },
-        {
-          "id": 312,
-          "ora": "Al Bisogno",
-          "fascia": "Al Bisogno (SOS)",
-          "farmaco": "FEDIVELLE 20.000 U.I.",
-          "principio": "Colecalciferolo (Vitamina D3)",
-          "dosaggio": "20.000 U.I. (1 capsula molle)",
-          "modo": "Dose periodica (di solito settimanale): registrare il giorno di assunzione (Vitamina D) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 10,
-          "scorta": 10,
-          "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false
-        }
-      ],
-      "visite": [
-        {
-          "id": 401,
-          "data": "2026-10-22",
-          "ora": "10:00",
-          "medico": "Dr.ssa Carolina Potenza",
-          "motivo": "Visita periodica di controllo e rinnovo piano terapeutico",
-          "fatto": false
-        },
-        {
-          "id": 1793430172446,
-          "data": "2026-11-24",
-          "ora": "10:00",
-          "medico": "Serenity S.p.A. / ASP Villa D'Agri",
-          "motivo": "Prossima consegna indicativa fornitura PANTS Serenity (previo appuntamento telefonico al 3383797671)",
-          "fatto": false
-        }
-      ],
-      "diario": [],
-      "origini": [
-        "CareAssist Pro"
-      ],
-      "creatoIl": "2026-11-03T10:05:10.542Z"
-    },
-    {
-      "id": "paz_1793216119572",
-      "nome": "Ciro Milella",
-      "dataNascita": "1967-12-15",
-      "sesso": "M",
-      "indirizzo": "Via Giulio Petroni, 69",
-      "telefono": "366 460 73 96",
-      "allettato": false,
-      "patologie": [
-        "Epatite B cronica (HBV) in trattamento antivirale con Entecavir 0,5 mg",
-        "Follow-up periodico semestrale presso U.O. Malattie Infettive ed Epatologia - Policlinico di Bari"
-      ],
-      "terapie": [
-        {
-          "id": 1793444784904,
-          "ora": "12:15",
-          "fascia": "Pranzo",
-          "farmaco": "Entecavir Sandoz 0,5 mg",
-          "principio": "Entecavir",
-          "dosaggio": "0,5 mg (1 cpr)",
-          "quantitaQuota": 1,
-          "modo": "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell'infezione cronica da virus dell'epatite B (HBV).",
-          "cprPerScatola": 30,
-          "scorta": 39,
-          "giorniAlert": 10,
-          "cadenzaTipo": "giornaliera",
-          "fattoOggi": false,
-          "tipoFormulazione": "compressa",
-          "penneScorta": 40,
-          "unitaDoseDie": 1,
-          "unitaPerPenna": 300,
-          "pennePerScatola": 30,
-          "kitGlicemiaAssociato": null,
-          "ultimaModificaClinica": {
-            "data": "01/11/2026",
-            "fonte": "Visita Specialistica",
-            "medico": "Prof.ssa Saracino",
-            "motivo": "Ripristino terapia antivirale Entecavir Sandoz"
-          },
-          "ultimaDoseSomministrata": 1
-        }
-      ],
-      "visite": [],
-      "diario": [],
-      "origini": [
-        "CareAssist Pro",
-        "Progetto Salute",
-        "MedNutri Pro"
-      ],
-      "creatoIl": "2026-11-03T10:05:10.542Z"
-    },
-    {
-      "id": "paz_mariacarmela",
-      "nome": "Maria Carmela",
-      "dataNascita": "1969-03-20",
-      "sesso": "F",
-      "indirizzo": "Via Giulio Petroni, 69 - BARI (BA)",
-      "telefono": "347 123 4567",
-      "allettato": false,
-      "patologie": [
-        "Nutrizione & Benessere"
-      ],
-      "terapie": [],
-      "visite": [],
-      "diario": [],
-      "origini": [
-        "Progetto Salute",
-        "CareAssist Pro"
-      ],
-      "creatoIl": "2026-11-03T10:05:10.542Z"
-    }
-  ]
+﻿{
+    "versione":  "2.0.0",
+    "ultimoAggiornamento":  "2026-11-03T10:05:10.547Z",
+    "pazienti":  [
+                     {
+                         "id":  "paz_aldo",
+                         "nome":  "Aldo Zamparino",
+                         "dataNascita":  "1935-04-18",
+                         "sesso":  "M",
+                         "indirizzo":  "Via Giovanni Modugno, 25 - Bari",
+                         "telefono":  "338 306 69 05",
+                         "allettato":  true,
+                         "patologie":  [
+                                           "Paziente geriatrico allettato ad alto rischio di lesioni da decubito (Scala Braden: Rischio Elevato)",
+                                           "Cardiopatia / Aritmia (in terapia con Bisoprololo 1,25 mg)",
+                                           "Epilessia / Disturbo neurologico focale (in terapia con VIMPAT Lacosamide 100 mg b.i.d.)",
+                                           "Ipertrofia Prostatica Benigna (IPB) con difficoltà minzionali (in terapia con SILODYX 8 mg)",
+                                           "Disturbo comportamentale del sonno / Agitazione notturna (in terapia con Quetiapina 25 mg)",
+                                           "Gastroprotezione per terapia cronica (in terapia con Pantoprazolo 40 mg)"
+                                       ],
+                         "terapie":  [
+                                         {
+                                             "id":  101,
+                                             "ora":  "07:30",
+                                             "fascia":  "Mattina (Digiuno)",
+                                             "farmaco":  "Pantoprazolo 40 mg",
+                                             "principio":  "Pantoprazolo",
+                                             "dosaggio":  "40 mg (1 cpr gastroresistente)",
+                                             "modo":  "A DIGIUNO, 30 min prima di colazione (Protezione gastrica)",
+                                             "cprPerScatola":  28,
+                                             "scorta":  27,
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  102,
+                                             "ora":  "08:30",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "Bisoprololo Teva/Sandoz 1,25 mg",
+                                             "principio":  "Bisoprololo fumarato",
+                                             "dosaggio":  "1,25 mg (1 cpr rivestita)",
+                                             "modo":  "A colazione (Controllo frequenza cardiaca e pressione)",
+                                             "cprPerScatola":  28,
+                                             "scorta":  27,
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  103,
+                                             "ora":  "08:30",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "VIMPAT 100 mg (1ª dose)",
+                                             "principio":  "Lacosamide",
+                                             "dosaggio":  "100 mg (1 capsula)",
+                                             "modo":  "A colazione con acqua (Controllo neurologico)",
+                                             "cprPerScatola":  56,
+                                             "scorta":  55,
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  1032,
+                                             "ora":  "13:30",
+                                             "fascia":  "Pranzo",
+                                             "farmaco":  "VIMPAT 100 mg (2ª dose)",
+                                             "principio":  "Lacosamide",
+                                             "dosaggio":  "100 mg (1 capsula)",
+                                             "modo":  "A pranzo con acqua (Controllo neurologico)",
+                                             "cprPerScatola":  56,
+                                             "scorta":  55,
+                                             "fattoOggi":  false
+                                         },
+                                         {
+                                             "id":  104,
+                                             "ora":  "20:00",
+                                             "fascia":  "Sera (Cena)",
+                                             "farmaco":  "SILODYX 8 mg (Silodosina)",
+                                             "principio":  "Silodosina",
+                                             "dosaggio":  "8 mg (1 capsula)",
+                                             "modo":  "A CENA, a stomaco pieno con acqua (Ipertrofia prostatica / diuresi)",
+                                             "cprPerScatola":  30,
+                                             "scorta":  30,
+                                             "fattoOggi":  false
+                                         },
+                                         {
+                                             "id":  105,
+                                             "ora":  "20:30",
+                                             "fascia":  "Sera (Cena)",
+                                             "farmaco":  "VIMPAT 100 mg (3ª dose serale)",
+                                             "principio":  "Lacosamide",
+                                             "dosaggio":  "200 mg (2 capsule insieme)",
+                                             "modo":  "Dopo cena (Dose serale cumulativa di 2 capsule = 200 mg)",
+                                             "cprPerScatola":  56,
+                                             "scorta":  55,
+                                             "fattoOggi":  false
+                                         },
+                                         {
+                                             "id":  106,
+                                             "ora":  "21:30",
+                                             "fascia":  "Notte (Prima di dormire)",
+                                             "farmaco":  "Quetiapina Teva 25 mg",
+                                             "principio":  "Quetiapina",
+                                             "dosaggio":  "25 mg (1 cpr rivestita)",
+                                             "modo":  "Prima di coricarsi con acqua (Modulatore umore e sonno)",
+                                             "cprPerScatola":  30,
+                                             "scorta":  30,
+                                             "fattoOggi":  false
+                                         }
+                                     ],
+                         "visite":  [
+                                        {
+                                            "id":  1,
+                                            "data":  "2026-10-16",
+                                            "ora":  "09:00",
+                                            "medico":  "Medico di Famiglia (MMG)",
+                                            "motivo":  "Prescrizione e rinnovo ricette farmaci per Aldo",
+                                            "fatto":  false
+                                        }
+                                    ],
+                         "diario":  [
+
+                                    ],
+                         "origini":  [
+                                         "CareAssist Pro"
+                                     ],
+                         "creatoIl":  "2026-11-03T10:05:10.534Z",
+                         "altezza":  "172",
+                         "peso":  "68.5",
+                         "polso":  "18",
+                         "lifestyle":  "1.2",
+                         "goal":  "mantenimento"
+                     },
+                     {
+                         "id":  "paz_angela",
+                         "nome":  "Angela Mazzicone",
+                         "dataNascita":  "1938-05-29",
+                         "sesso":  "F",
+                         "indirizzo":  "Via Giovanni Modugno, 25 - BARI (BA)",
+                         "telefono":  "338 944 96 10",
+                         "allettato":  false,
+                         "patologie":  [
+                                           "Ipertensione arteriosa sistemica in polichemioterapia",
+                                           "Sindrome delle Apnee Ostruttive nel Sonno (OSAS) con indicazione ausilio CPAP notturna",
+                                           "Dislipidemia / Ipercolesterolemia",
+                                           "Iperuricemia con rischio gotta",
+                                           "Ipovitaminosi D3 (in integrazione ciclica con DIBASE)",
+                                           "Reflusso gastroesofageo / gastrite"
+                                       ],
+                         "terapie":  [
+                                         {
+                                             "id":  201,
+                                             "ora":  "08:00",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "Bisoprololo Sandoz 1,25 mg",
+                                             "principio":  "Bisoprololo fumarato",
+                                             "dosaggio":  "1,25 mg (1 cpr rivestita con film)",
+                                             "modo":  "Al mattino a colazione (Beta-bloccante: controllo frequenza e battito cardiaco)",
+                                             "cprPerScatola":  28,
+                                             "scorta":  27,
+                                             "farmacia":  "Farmacia MACARIO",
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  202,
+                                             "ora":  "08:30",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "Irbesartan/Idroclorotiazide Teva 300 mg/12,5 mg",
+                                             "principio":  "Irbesartan + Idroclorotiazide",
+                                             "dosaggio":  "300 mg / 12,5 mg (1 cpr rivestita)",
+                                             "modo":  "Al mattino dopo colazione con acqua (Antipertensivo combinato per la pressione arteriosa)",
+                                             "cprPerScatola":  28,
+                                             "scorta":  27,
+                                             "farmacia":  "Farmacia MACARIO",
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  203,
+                                             "ora":  "09:00",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "Lasix 25 mg (Furosemide)",
+                                             "principio":  "Furosemide",
+                                             "dosaggio":  "25 mg (1 compressa)",
+                                             "modo":  "Al mattino (Diuretico dell\u0027ansa per eliminazione liquidi in eccesso ed edemi)",
+                                             "cprPerScatola":  30,
+                                             "scorta":  29,
+                                             "farmacia":  "Farmacia MACARIO",
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  208,
+                                             "ora":  "10:00",
+                                             "fascia":  "Mattina (Dose Periodica)",
+                                             "farmaco":  "DIBASE 50.000 U.I. / 2,5 ml (Colecalciferolo)",
+                                             "principio":  "Colecalciferolo (Vitamina D3)",
+                                             "dosaggio":  "50.000 U.I. in 2,5 ml flaconcino monodose",
+                                             "modo":  "Assunzione orale periodica con un po\u0027 di cibo grasso [Ogni 15 giorni: il 15 e il 30 del mese]",
+                                             "cprPerScatola":  1,
+                                             "scorta":  0.93,
+                                             "farmacia":  "Farmacia MACARIO",
+                                             "fattoOggi":  true,
+                                             "cadenzaTipo":  "quindicinale_15_30",
+                                             "ultimaDoseSomministrata":  0.06666666666666667
+                                         },
+                                         {
+                                             "id":  204,
+                                             "ora":  "13:00",
+                                             "fascia":  "Pranzo",
+                                             "farmaco":  "Cardioaspirin 100 mg (Acido Acetilsalicilico)",
+                                             "principio":  "Acido acetilsalicilico",
+                                             "dosaggio":  "100 mg (1 cpr gastroresistente)",
+                                             "modo":  "A metà o fine pranzo con abbondante acqua (Antiaggregante piastrinico salvacuore)",
+                                             "cprPerScatola":  30,
+                                             "scorta":  30,
+                                             "farmacia":  "Farmacia MACARIO",
+                                             "fattoOggi":  false
+                                         },
+                                         {
+                                             "id":  205,
+                                             "ora":  "13:30",
+                                             "fascia":  "Pranzo",
+                                             "farmaco":  "Allopurinolo Teva Italia 300 mg",
+                                             "principio":  "Allopurinolo",
+                                             "dosaggio":  "300 mg (1 compressa)",
+                                             "modo":  "Dopo pranzo (Uricosurico: riduzione e controllo dell\u0027acido urico e prevenzione gotta)",
+                                             "cprPerScatola":  30,
+                                             "scorta":  30,
+                                             "farmacia":  "Farmacia MACARIO",
+                                             "fattoOggi":  false
+                                         },
+                                         {
+                                             "id":  206,
+                                             "ora":  "15:30",
+                                             "fascia":  "Pomeriggio (Al bisogno / Dopo i pasti)",
+                                             "farmaco":  "Riopan 80 mg/ml (Magaldrato)",
+                                             "principio":  "Magaldrato anidro",
+                                             "dosaggio":  "80 mg/ml (Gel orale / Bustina)",
+                                             "modo":  "1 ora dopo i pasti o al bisogno (Antiacido gastroprotettore contro bruciore e reflusso)",
+                                             "cprPerScatola":  20,
+                                             "scorta":  20,
+                                             "farmacia":  "Farmacia MACARIO",
+                                             "fattoOggi":  false
+                                         },
+                                         {
+                                             "id":  207,
+                                             "ora":  "20:30",
+                                             "fascia":  "Sera (Cena)",
+                                             "farmaco":  "Aplactin 40 mg (Pravastatina)",
+                                             "principio":  "Pravastatina sale sodico",
+                                             "dosaggio":  "40 mg (1 compressa)",
+                                             "modo":  "La sera dopo cena o prima di dormire (Statina: controllo del colesterolo e lipidi)",
+                                             "cprPerScatola":  28,
+                                             "scorta":  28,
+                                             "farmacia":  "Farmacia MACARIO",
+                                             "fattoOggi":  false
+                                         }
+                                     ],
+                         "visite":  [
+                                        {
+                                            "id":  201,
+                                            "data":  "2026-10-16",
+                                            "ora":  "09:00",
+                                            "medico":  "Dott. Roberto Scarcia",
+                                            "motivo":  "Rinnovo ricette e piano terapeutico per Angela Mazzicone",
+                                            "fatto":  false
+                                        },
+                                        {
+                                            "id":  202,
+                                            "data":  "2026-10-19",
+                                            "ora":  "10:30",
+                                            "medico":  "ASL / Servizio Ossigenoterapia Domiciliare",
+                                            "motivo":  "Richiesta e fornitura bombola ossigeno terapeutico per Angela",
+                                            "fatto":  false
+                                        }
+                                    ],
+                         "diario":  [
+
+                                    ],
+                         "origini":  [
+                                         "CareAssist Pro"
+                                     ],
+                         "creatoIl":  "2026-11-03T10:05:10.542Z",
+                         "altezza":  "158",
+                         "peso":  "62.0",
+                         "polso":  "16",
+                         "lifestyle":  "1.2",
+                         "goal":  "mantenimento"
+                     },
+                     {
+                         "id":  "paz_rosa",
+                         "nome":  "Rosa Annunziata Cavalcante",
+                         "dataNascita":  "1938-06-16",
+                         "sesso":  "F",
+                         "indirizzo":  "Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)",
+                         "telefono":  "338 379 76 71",
+                         "allettato":  false,
+                         "patologie":  [
+                                           "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga)",
+                                           "Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga)",
+                                           "Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel)",
+                                           "Morbo di Parkinson / parkinsonismo (Sinemet)",
+                                           "Iperuricemia / gotta (Adenuric)",
+                                           "Osteoartrosi con dolore cronico (Arcoxia)",
+                                           "Ipovitaminosi D (Fedivelle)",
+                                           "Dislipidemia / Ipercolesterolemia (Sivastin)"
+                                       ],
+                         "terapie":  [
+                                         {
+                                             "id":  305,
+                                             "ora":  "08:00",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "CONGESCOR 2,5 mg",
+                                             "principio":  "Bisoprololo",
+                                             "dosaggio":  "2,5 mg (1 cpr)",
+                                             "modo":  "A colazione (Beta-bloccante: frequenza cardiaca) ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  28,
+                                             "scorta":  27,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  303,
+                                             "ora":  "08:00",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "DIAMICRON 60 mg RM",
+                                             "principio":  "Gliclazide",
+                                             "dosaggio":  "60 mg (1 cpr rilascio modificato)",
+                                             "modo":  "A colazione, non masticare (Diabete) - rischio ipoglicemia con insulina ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  30,
+                                             "scorta":  29,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  304,
+                                             "ora":  "08:00",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "FORXIGA 10 mg",
+                                             "principio":  "Dapagliflozin",
+                                             "dosaggio":  "10 mg (1 cpr)",
+                                             "modo":  "Al mattino con acqua (Diabete / cuore / reni) ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  28,
+                                             "scorta":  27,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  301,
+                                             "gruppoFarmacoId":  "grp_sinemet_100_25_mg",
+                                             "ora":  "08:00",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "SINEMET 100+25 mg (1ª dose: 2 cpr - ore 08:00)",
+                                             "principio":  "Levodopa + Carbidopa",
+                                             "dosaggio":  "100/25 mg (2 cpr)",
+                                             "quantitaQuota":  2,
+                                             "modo":  "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  50,
+                                             "scorta":  80,
+                                             "giorniAlert":  7,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  2,
+                                             "ultimaModificaClinica":  {
+                                                                           "data":  "30/10/2026",
+                                                                           "fonte":  "Visita Specialistica",
+                                                                           "medico":  "Neurologo",
+                                                                           "motivo":  "Schema 2 somministrazioni al die (ore 08:00 e 20:00 da 2 cpr - Scorta Condivisa 82 cpr)"
+                                                                       }
+                                         },
+                                         {
+                                             "id":  306,
+                                             "ora":  "08:00",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "TRIATEC 5 mg",
+                                             "principio":  "Ramipril",
+                                             "dosaggio":  "5 mg (Dose alternata: ½ cpr e 1 cpr)",
+                                             "modo":  "A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno successivo (Pressione arteriosa)",
+                                             "cprPerScatola":  14,
+                                             "scorta":  13,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  true,
+                                             "cadenzaTipo":  "alternata_mezza_intera",
+                                             "quantitaQuota":  0.5,
+                                             "dataInizioAlterni":  "2026-10-18",
+                                             "ultimaModificaClinica":  {
+                                                                           "data":  "22/10/2026",
+                                                                           "fonte":  "Visita Specialistica",
+                                                                           "medico":  "Cardiologo",
+                                                                           "motivo":  "Alternanza ½ cpr e 1 cpr a giorni alterni per controllo pressione"
+                                                                       },
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  302,
+                                             "ora":  "08:00",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "XULTOPHY penna",
+                                             "principio":  "Insulina degludec + Liraglutide",
+                                             "dosaggio":  "16 Unità (sottocute)",
+                                             "modo":  "Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete) ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  15,
+                                             "scorta":  1.94,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  true,
+                                             "tipoFormulazione":  "penna",
+                                             "unitaDoseDie":  16,
+                                             "unitaPerPenna":  300,
+                                             "penneScorta":  1.94,
+                                             "pennePerScatola":  3,
+                                             "giorniAlert":  15,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  307,
+                                             "ora":  "08:30",
+                                             "fascia":  "Mattina (Colazione)",
+                                             "farmaco":  "LASIX 25 mg",
+                                             "principio":  "Furosemide",
+                                             "dosaggio":  "25 mg (1 cpr)",
+                                             "modo":  "Al mattino (Diuretico: edemi / scompenso) ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  30,
+                                             "scorta":  29,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  true,
+                                             "ultimaDoseSomministrata":  1
+                                         },
+                                         {
+                                             "id":  314,
+                                             "ora":  "13:00",
+                                             "fascia":  "Pranzo",
+                                             "farmaco":  "AVERELIX 75 mg",
+                                             "principio":  "Clopidogrel",
+                                             "dosaggio":  "75 mg (1 cpr rivestita)",
+                                             "modo":  "A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare) ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  28,
+                                             "scorta":  28,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  false
+                                         },
+                                         {
+                                             "id":  309,
+                                             "ora":  "13:30",
+                                             "fascia":  "Pranzo",
+                                             "farmaco":  "ADENURIC 80 mg",
+                                             "principio":  "Febuxostat",
+                                             "dosaggio":  "80 mg (1 cpr)",
+                                             "modo":  "A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta) ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  28,
+                                             "scorta":  28,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  false,
+                                             "cadenzaTipo":  "alterni",
+                                             "dataInizioAlterni":  "2026-10-18"
+                                         },
+                                         {
+                                             "id":  310,
+                                             "ora":  "13:30",
+                                             "fascia":  "Pranzo",
+                                             "farmaco":  "ARCOXIA 90 mg",
+                                             "principio":  "Etoricoxib",
+                                             "dosaggio":  "90 mg (1 cpr)",
+                                             "modo":  "A stomaco pieno (Antinfiammatorio: dolore artrosi) ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  28,
+                                             "scorta":  28,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  false
+                                         },
+                                         {
+                                             "id":  311,
+                                             "gruppoFarmacoId":  "grp_sinemet_100_25_mg",
+                                             "ora":  "20:00",
+                                             "fascia":  "Sera (Cena)",
+                                             "farmaco":  "SINEMET 100+25 mg (2ª dose: 2 cpr - ore 20:00)",
+                                             "principio":  "Levodopa + Carbidopa",
+                                             "dosaggio":  "100/25 mg (2 cpr)",
+                                             "quantitaQuota":  2,
+                                             "modo":  "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  50,
+                                             "scorta":  80,
+                                             "giorniAlert":  7,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  false,
+                                             "ultimaDoseSomministrata":  2,
+                                             "ultimaModificaClinica":  {
+                                                                           "data":  "30/10/2026",
+                                                                           "fonte":  "Visita Specialistica",
+                                                                           "medico":  "Neurologo",
+                                                                           "motivo":  "Schema 2 somministrazioni al die (ore 08:00 e 20:00 da 2 cpr - Scorta Condivisa 82 cpr)"
+                                                                       }
+                                         },
+                                         {
+                                             "id":  313,
+                                             "ora":  "21:00",
+                                             "fascia":  "Notte (Prima di dormire)",
+                                             "farmaco":  "SIVASTIN 20 mg",
+                                             "principio":  "Simvastatina",
+                                             "dosaggio":  "20 mg (1 cpr)",
+                                             "modo":  "A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo) ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  28,
+                                             "scorta":  28,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  false,
+                                             "cadenzaTipo":  "alterni",
+                                             "dataInizioAlterni":  "2026-10-17"
+                                         },
+                                         {
+                                             "id":  312,
+                                             "ora":  "Al Bisogno",
+                                             "fascia":  "Al Bisogno (SOS)",
+                                             "farmaco":  "FEDIVELLE 20.000 U.I.",
+                                             "principio":  "Colecalciferolo (Vitamina D3)",
+                                             "dosaggio":  "20.000 U.I. (1 capsula molle)",
+                                             "modo":  "Dose periodica (di solito settimanale): registrare il giorno di assunzione (Vitamina D) ⚠️ Orario/dose da confermare col medico",
+                                             "cprPerScatola":  10,
+                                             "scorta":  10,
+                                             "farmacia":  "Farmacia Girasole Picconi",
+                                             "fattoOggi":  false
+                                         }
+                                     ],
+                         "visite":  [
+                                        {
+                                            "id":  401,
+                                            "data":  "2026-10-22",
+                                            "ora":  "10:00",
+                                            "medico":  "Dr.ssa Carolina Potenza",
+                                            "motivo":  "Visita periodica di controllo e rinnovo piano terapeutico",
+                                            "fatto":  false
+                                        },
+                                        {
+                                            "id":  1793430172446,
+                                            "data":  "2026-11-24",
+                                            "ora":  "10:00",
+                                            "medico":  "Serenity S.p.A. / ASP Villa D\u0027Agri",
+                                            "motivo":  "Prossima consegna indicativa fornitura PANTS Serenity (previo appuntamento telefonico al 3383797671)",
+                                            "fatto":  false
+                                        }
+                                    ],
+                         "diario":  [
+
+                                    ],
+                         "origini":  [
+                                         "CareAssist Pro"
+                                     ],
+                         "creatoIl":  "2026-11-03T10:05:10.542Z",
+                         "altezza":  "155",
+                         "peso":  "59.0",
+                         "polso":  "16",
+                         "lifestyle":  "1.2",
+                         "goal":  "mantenimento"
+                     },
+                     {
+                         "id":  "paz_1793216119572",
+                         "nome":  "Ciro Milella",
+                         "dataNascita":  "1967-12-15",
+                         "sesso":  "M",
+                         "indirizzo":  "Via Giulio Petroni, 69",
+                         "telefono":  "366 460 73 96",
+                         "allettato":  false,
+                         "patologie":  [
+                                           "Epatite B cronica (HBV) in trattamento antivirale con Entecavir 0,5 mg",
+                                           "Follow-up periodico semestrale presso U.O. Malattie Infettive ed Epatologia - Policlinico di Bari"
+                                       ],
+                         "terapie":  [
+                                         {
+                                             "id":  1793444784904,
+                                             "ora":  "12:15",
+                                             "fascia":  "Pranzo",
+                                             "farmaco":  "Entecavir Sandoz 0,5 mg",
+                                             "principio":  "Entecavir",
+                                             "dosaggio":  "0,5 mg (1 cpr)",
+                                             "quantitaQuota":  1,
+                                             "modo":  "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell\u0027infezione cronica da virus dell\u0027epatite B (HBV).",
+                                             "cprPerScatola":  30,
+                                             "scorta":  39,
+                                             "giorniAlert":  10,
+                                             "cadenzaTipo":  "giornaliera",
+                                             "fattoOggi":  false,
+                                             "tipoFormulazione":  "compressa",
+                                             "penneScorta":  40,
+                                             "unitaDoseDie":  1,
+                                             "unitaPerPenna":  300,
+                                             "pennePerScatola":  30,
+                                             "kitGlicemiaAssociato":  null,
+                                             "ultimaModificaClinica":  {
+                                                                           "data":  "01/11/2026",
+                                                                           "fonte":  "Visita Specialistica",
+                                                                           "medico":  "Prof.ssa Saracino",
+                                                                           "motivo":  "Ripristino terapia antivirale Entecavir Sandoz"
+                                                                       },
+                                             "ultimaDoseSomministrata":  1
+                                         }
+                                     ],
+                         "visite":  [
+
+                                    ],
+                         "diario":  [
+
+                                    ],
+                         "origini":  [
+                                         "CareAssist Pro",
+                                         "Progetto Salute",
+                                         "MedNutri Pro"
+                                     ],
+                         "creatoIl":  "2026-11-03T10:05:10.542Z",
+                         "altezza":  "160",
+                         "peso":  "79.3",
+                         "polso":  "25",
+                         "lifestyle":  "1.375",
+                         "goal":  "mantenimento"
+                     },
+                     {
+                         "id":  "paz_mariacarmela",
+                         "nome":  "Maria Carmela",
+                         "dataNascita":  "1969-03-20",
+                         "sesso":  "F",
+                         "indirizzo":  "Via Giulio Petroni, 69 - BARI (BA)",
+                         "telefono":  "347 123 4567",
+                         "allettato":  false,
+                         "patologie":  [
+                                           "Nutrizione \u0026 Benessere"
+                                       ],
+                         "terapie":  [
+
+                                     ],
+                         "visite":  [
+
+                                    ],
+                         "diario":  [
+
+                                    ],
+                         "origini":  [
+                                         "Progetto Salute",
+                                         "CareAssist Pro"
+                                     ],
+                         "creatoIl":  "2026-11-03T10:05:10.542Z",
+                         "altezza":  "165",
+                         "peso":  "65.0",
+                         "polso":  "16",
+                         "lifestyle":  "1.375",
+                         "goal":  "mantenimento"
+                     }
+                 ]
 }

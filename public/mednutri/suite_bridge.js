@@ -354,6 +354,36 @@
       dobEl.value = s.dataNascita;
     }
 
+    // CARICAMENTO PARAMETRI ANTROPOMETRICI SPECIFICI DEL PAZIENTE
+    const hEl = document.getElementById('patient-height');
+    if (hEl) {
+      hEl.value = s.altezza || (s.nome === 'Aldo Zamparino' ? '172' : (s.nome === 'Angela Mazzicone' ? '158' : (s.nome.includes('Rosa') ? '155' : '160')));
+      try { hEl.dispatchEvent(new Event('input')); } catch(e){}
+    }
+
+    const wEl = document.getElementById('patient-weight');
+    if (wEl) {
+      wEl.value = s.peso || (s.nome === 'Aldo Zamparino' ? '68.5' : (s.nome === 'Angela Mazzicone' ? '62.0' : (s.nome.includes('Rosa') ? '59.0' : '79.3')));
+      try { wEl.dispatchEvent(new Event('input')); } catch(e){}
+    }
+
+    const wristEl = document.getElementById('patient-wrist');
+    if (wristEl) {
+      wristEl.value = s.polso || (s.nome === 'Aldo Zamparino' ? '18' : (s.nome.includes('Ciro') ? '25' : '16'));
+      try { wristEl.dispatchEvent(new Event('change')); } catch(e){}
+    }
+
+    const lifeEl = document.getElementById('patient-lifestyle');
+    if (lifeEl) {
+      lifeEl.value = s.lifestyle || (s.allettato ? '1.2' : '1.375');
+      try { lifeEl.dispatchEvent(new Event('change')); } catch(e){}
+    }
+
+    const startEl = document.getElementById('period-start');
+    if (startEl && !startEl.value) {
+      startEl.value = new Date().toISOString().split('T')[0];
+    }
+
     // INTEGRAZIONE CLINICA INTELLIGENTE DA CAREASSIST / SUITE
     const notesEl = document.getElementById('patient-notes');
     let cartellaClinica = [];
