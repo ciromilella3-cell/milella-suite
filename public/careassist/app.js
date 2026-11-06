@@ -21445,6 +21445,196 @@ window.toggleFiltroSoloDaPrendere = function() {
   if (typeof renderTerapie === 'function') renderTerapie();
 };
 
+
+// ==========================================
+// SCHEDA TERAPEUTICA CLINICO-SANITARIA UFFICIALE (PDF A4 EXECUTIVE)
+// ==========================================
+window.stampaCartellaClinicaCompletaPDF = function() {
+  const p = getActivePaziente();
+  if (!p) {
+    alert('Nessun assistito selezionato.');
+    return;
+  }
+  const terapie = (p.terapie || []).slice().sort((a,b) => (a.ora || '').localeCompare(b.ora || ''));
+  const scorteCritiche = terapie.filter(t => (t.scorta !== undefined && t.scorta <= 5));
+  const operatoreNome = localStorage.getItem('milella_user_nome') || 'Dott. Ciro Milella';
+  const operatoreRuolo = localStorage.getItem('milella_role') || 'Coordinatore Sanitario';
+
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('Consenti i popup per stampare o salvare in PDF la Scheda Ufficiale!');
+    return;
+  }
+
+  const html = `<!DOCTYPE html>
+  <html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <title>Scheda Terapeutica Ufficiale - ${p.nome}</title>
+    <style>
+      @page { size: A4 portrait; margin: 12mm 15mm; }
+      body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 0; font-size: 11pt; line-height: 1.4; }
+      .header-table { width: 100%; border-bottom: 2.5px solid #0284c7; padding-bottom: 10px; margin-bottom: 12px; }
+      .brand-title { font-size: 17pt; font-weight: 800; color: #0369a1; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+      .brand-sub { font-size: 9pt; color: #64748b; font-weight: 600; }
+      .badge-doc { background: #e0f2fe; color: #0369a1; font-weight: 800; font-size: 8.5pt; padding: 4px 8px; border-radius: 6px; border: 1px solid #7dd3fc; }
+      
+      .box-paziente { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: table; width: 100%; box-sizing: border-box; }
+      .box-col { display: table-cell; vertical-align: top; width: 33.3%; font-size: 9.5pt; }
+      .box-col strong { color: #1e293b; }
+      
+      .table-farmaci { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 14px; font-size: 9pt; }
+      .table-farmaci th { background: #0f172a; color: #ffffff; text-align: left; padding: 7px 8px; font-weight: 700; border: 1px solid #0f172a; font-size: 8.5pt; text-transform: uppercase; }
+      .table-farmaci td { padding: 6px 8px; border: 1px solid #cbd5e1; vertical-align: middle; }
+      .table-farmaci tr:nth-child(even) { background: #f8fafc; }
+      
+      .tag-fascia { display: inline-block; font-weight: 800; font-size: 8pt; padding: 2px 6px; border-radius: 4px; }
+      .tag-mattina { background: #fef08a; color: #854d0e; }
+      .tag-pranzo { background: #bbf7d0; color: #166534; }
+      .tag-pomeriggio { background: #fbcfe8; color: #9d174d; }
+      .tag-sera { background: #bae6fd; color: #075985; }
+      .tag-notte { background: #ddd6fe; color: #5b21b6; }
+      .tag-sos { background: #fee2e2; color: #991b1b; }
+
+      .box-alert { background: #fffbeb; border: 1.5px solid #f59e0b; border-left: 5px solid #d97706; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 8.5pt; }
+      .firma-section { margin-top: 24px; display: table; width: 100%; font-size: 9pt; }
+      .firma-col { display: table-cell; width: 50%; vertical-align: top; }
+      .linea-firma { margin-top: 35px; width: 85%; border-top: 1px solid #475569; text-align: center; font-size: 8pt; color: #64748b; padding-top: 4px; }
+      
+      @media print {
+        .no-print { display: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="no-print" style="background:#0f172a; color:#fff; padding:12px 18px; margin:-12mm -15mm 15mm -15mm; display:flex; justify-content:space-between; align-items:center;">
+      <div style="font-weight:700; font-size:13px;">📄 Anteprima Ufficiale Scheda Terapeutica Farmaci (A4)</div>
+      <div>
+        <button onclick="window.print()" style="padding:8px 18px; font-weight:800; background:#0284c7; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:12px; margin-right:8px;">🖨️ Stampa / Salva in PDF</button>
+        <button onclick="window.close()" style="padding:8px 14px; background:#475569; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:12px;">Chiudi</button>
+      </div>
+    </div>
+
+    <table class="header-table">
+      <tr>
+        <td style="vertical-align:top;">
+          <h1 class="brand-title">🩺 CareAssist &bull; Fascicolo Terapeutico</h1>
+          <div class="brand-sub">Sistema Territoriale Integrato di Assistenza e Riconciliazione Farmacologica</div>
+        </td>
+        <td style="text-align:right; vertical-align:top;">
+          <span class="badge-doc">DOC. ADI-FAR-01</span>
+          <div style="font-size:8pt; color:#64748b; margin-top:4px;">
+            Data Emissione: <b>${new Date().toLocaleDateString('it-IT')} ${new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}</b>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="box-paziente">
+      <div class="box-col">
+        <strong>Paziente / Assistito:</strong><br>
+        <span style="font-size:12pt; font-weight:800; color:#0369a1;">${p.nome}</span><br>
+        <span>CF: ${p.codiceFiscale || 'N.D.'}</span><br>
+        <span>Nascita: ${p.dataNascita || 'N.D.'} (${p.eta || '--'} anni)</span>
+      </div>
+      <div class="box-col">
+        <strong>Riferimenti Medici & Cura:</strong><br>
+        <span>Medico Curante: <b>${p.medicoCurante || 'Dott. Roberto Scarcia'}</b></span><br>
+        <span>Farmacia Territoriale: <b>${p.farmaciaDiRiferimento || 'Farmacia Macario'}</b></span><br>
+        <span>Caregiver / Famiglia: ${p.caregiver || 'Mazzicone Angela'}</span>
+      </div>
+      <div class="box-col">
+        <strong>Quadro Sintetico:</strong><br>
+        <span>Diagnosi / Focus: <b>${p.diagnosiPrincipale || (p.patologie && p.patologie[0]) || 'Ipertensione, Diabete tipo 2'}</b></span><br>
+        <span>Allergie: <b style="color:#b91c1c;">${p.allergie || 'Nessuna nota'}</b></span><br>
+        <span>Totale Farmaci Attivi: <b>${terapie.length} molecole</b></span>
+      </div>
+    </div>
+
+    ${scorteCritiche.length > 0 ? `
+      <div class="box-alert">
+        ⚠️ <b>ALERT SCORTE IN ESAURIMENTO:</b> Si segnalano <b>${scorteCritiche.length} farmaci</b> con scorta residua critica (&le; 5 compresse). Richiedere ricetta al MMG: ${scorteCritiche.map(s => s.farmaco + ' (' + s.scorta + ' cpr)').join(', ')}.
+      </div>
+    ` : ''}
+
+    <div style="font-size:10pt; font-weight:800; color:#0f172a; margin-top:6px; text-transform:uppercase; border-bottom:1px solid #cbd5e1; padding-bottom:3px;">
+      💊 Elenco Molecole, Orari & Schemi di Somministrazione
+    </div>
+
+    <table class="table-farmaci">
+      <thead>
+        <tr>
+          <th style="width: 14%;">Fascia / Orario</th>
+          <th style="width: 28%;">Farmaco & Principio Attivo</th>
+          <th style="width: 14%;">Dosaggio</th>
+          <th style="width: 22%;">Indicazioni & Modalità</th>
+          <th style="width: 11%; text-align:center;">Giacenza</th>
+          <th style="width: 11%; text-align:center;">Stato</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${terapie.map(t => {
+          const f = (t.fascia || '').toLowerCase();
+          let cls = 'tag-mattina';
+          if (f.includes('pranzo')) cls = 'tag-pranzo';
+          else if (f.includes('pomeriggio')) cls = 'tag-pomeriggio';
+          else if (f.includes('sera')) cls = 'tag-sera';
+          else if (f.includes('notte')) cls = 'tag-notte';
+          else if (f.includes('bisogno') || f.includes('sos')) cls = 'tag-sos';
+
+          const isSos = (t.alBisogno || f.includes('bisogno'));
+          const scortaNum = (t.scorta !== undefined) ? t.scorta : '--';
+          const scortaColor = (scortaNum <= 3) ? '#dc2626' : ((scortaNum <= 7) ? '#d97706' : '#16a34a');
+
+          return `
+            <tr>
+              <td>
+                <span class="tag-fascia ${cls}">${t.fascia || 'Generale'}</span><br>
+                <b style="color:#0369a1; font-size:8.5pt;">⏰ ${t.ora || '--:--'}</b>
+              </td>
+              <td>
+                <strong style="font-size:9.5pt; color:#0f172a;">${t.farmaco}</strong>
+                ${t.principioAttivo ? '<br><span style="color:#64748b; font-size:8pt;">' + t.principioAttivo + '</span>' : ''}
+              </td>
+              <td><b>${t.dosaggio || '1 cpr'}</b></td>
+              <td>
+                <span style="color:#334155;">${t.note || t.istruzioni || 'Assumere regolarmente con acqua'}</span>
+                ${isSos ? '<br><b style="color:#b91c1c; font-size:7.5pt;">[AL BISOGNO / SOS]</b>' : ''}
+              </td>
+              <td style="text-align:center; font-weight:800; color:${scortaColor};">
+                ${scortaNum} ${scortaNum !== '--' ? 'cpr' : ''}
+              </td>
+              <td style="text-align:center;">
+                <span style="font-size:7.5pt; font-weight:700; color:#15803d; background:#dcfce7; padding:2px 6px; border-radius:4px; border:1px solid #86efac;">ATTIVO</span>
+              </td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+
+    <div class="firma-section">
+      <div class="firma-col">
+        <div>Operatore Responsabile della Compilazione:</div>
+        <div style="font-weight:700; color:#0369a1; margin-top:2px;">${operatoreNome}</div>
+        <div style="font-size:8pt; color:#64748b;">${operatoreRuolo} &bull; Suite Sanitaria</div>
+        <div class="linea-firma">Firma Operatore Territoriale</div>
+      </div>
+      <div class="firma-col">
+        <div>Validazione Medica / Coordinamento:</div>
+        <div style="font-weight:700; color:#0369a1; margin-top:2px;">${p.medicoCurante || 'Dott. Roberto Scarcia'}</div>
+        <div style="font-size:8pt; color:#64748b;">Medico di Medicina Generale / Prescrittore</div>
+        <div class="linea-firma">Firma & Timbro del Medico</div>
+      </div>
+    </div>
+  </body>
+  </html>`;
+
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+};
+
 window.stampaFoglioFrigo = function() {
   const p = getActivePaziente();
   if (!p) return;

@@ -408,6 +408,7 @@
     <button class="nav-tab" data-target="tab-diario">📋 Storico Completo (Diario)</button>
     <button class="nav-tab" data-target="tab-epatologia" style="display:none; background:linear-gradient(135deg, rgba(2,132,199,0.12) 0%, rgba(14,165,233,0.2) 100%); border:1.5px solid #38bdf8; color:#0284c7; font-weight:800;" title="Cartella Ambulatoriale Follow-up Malattie Infettive & Epatologia - Policlinico di Bari">🩺 Malattie Infettive (Policlinico)</button>
     <a href="/careassist/turni.html" class="nav-tab" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; color:inherit; font-weight:700;">🗓️ Turnario Operatori</a>
+    <button type="button" class="nav-tab" onclick="stampaCartellaClinicaCompletaPDF()" style="background:linear-gradient(135deg, rgba(5,150,105,0.12) 0%, rgba(16,185,129,0.2) 100%); border:1.5px solid #10b981; color:#047857; font-weight:800; cursor:pointer;" title="Stampa o esporta in PDF A4 la Scheda Terapeutica Ufficiale con timbro e firma">📄 Stampa Scheda Terapeutica</button>
     <button type="button" class="nav-tab" onclick="apriModalRiconciliazione(1, null)" style="background:rgba(2,132,199,0.12); border:1.5px solid #0284c7; color:#0284c7; font-weight:800; cursor:pointer;" title="Riapri e verifica l'allineamento scorte dei giorni di assenza">🔄 Allinea Terapie</button>
   </nav>
 
@@ -784,6 +785,9 @@
             <!-- PULSANTE DIARIO GLICEMICO INTELLIGENTE: Visibile in automatico per pazienti con terapia diabetica/insulina -->
             <button id="btn-quick-diario-glicemico" class="btn" style="display:none; background:linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); color:#fff; font-weight:800; font-size:12.5px; padding:7px 12px; border-radius:8px; border:1.5px solid #bfdbfe; box-shadow:0 2px 8px rgba(29,78,216,0.25);" onclick="apriDiarioGlicemicoAssistitoAttivo()" title="Visualizza e stampa il Diario Glicemico & Insulina dell'assistito">
               🩸 Diario Glicemico (<span id="btn-quick-glicemia-nome">Assistito</span>)
+            </button>
+            <button class="btn" style="background:linear-gradient(135deg, #047857 0%, #065f46 100%); color:#ffffff; font-weight:800; border-radius:8px; border:1px solid #34d399; box-shadow:0 2px 8px rgba(4,120,87,0.3);" onclick="stampaCartellaClinicaCompletaPDF()" title="Genera Scheda Ufficiale A4 con firma medico e operatore per fascicolo sanitario">
+              📄 Scheda Terapeutica Ufficiale (PDF)
             </button>
             <button class="btn btn-primary" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-weight:800;" onclick="apriRichiestaRicetteMedico()">
               📲 Richiedi Ricette al Medico
