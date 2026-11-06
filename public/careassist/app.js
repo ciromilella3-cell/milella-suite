@@ -6020,6 +6020,19 @@ async function impostaScortaManuale(farmacoId) {
 }
 
 // CARICO NUOVE SCATOLE RITIRATE DALLA FARMACIA
+
+function aggiornaCampoEsattoCarico() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const select = document.getElementById('ricarica-farmaco-select');
+  if (!select) return;
+  const farmId = parseInt(select.value);
+  const t = (p.terapie || []).find(item => item.id === farmId);
+  const inputEsatto = document.getElementById('ricarica-num-esatto');
+  if (inputEsatto && t && typeof t.scorta !== 'undefined') {
+    inputEsatto.value = t.scorta;
+  }
+}
 function popolaSelectRicarica() {
   const select = document.getElementById('ricarica-farmaco-select');
   if (!select) return;
@@ -6036,7 +6049,7 @@ function apriRicaricaScorta(farmacoId) {
   if (farmacoId) {
     document.getElementById('ricarica-farmaco-select').value = farmacoId;
   }
-  openModal('modal-ricarica-scorta');
+  openModal('modal-ricarica-scorta'); if (typeof aggiornaCampoEsattoCarico === 'function') aggiornaCampoEsattoCarico();
 }
 
 // CARICO AUTOMATICO ISTANTANEO DI 1 SCATOLA INTERA (1-CLICK)
@@ -6153,7 +6166,17 @@ function salvaRicaricaScorta(e) {
   let cprAggiunte = 0;
   let descEvento = '';
 
-  if (modalita === 'scatole') {
+  if (modalita === 'esatto') {
+    const valoreEsatto = parseInt(document.getElementById('ricarica-num-esatto').value);
+    if (isNaN(valoreEsatto) || valoreEsatto < 0) {
+      showToast('Inserisci un conteggio valido di capsule.', 'warning');
+      return;
+    }
+    const diff = valoreEsatto - (t.scorta || 0);
+    t.scorta = valoreEsatto;
+    cprAggiunte = diff;
+    descEvento = `Inventario Esatto: Scorta allineata a ${valoreEsatto} compresse conteggiate dal paziente/operatore (variazione: ${diff >= 0 ? '+' : ''}${diff}).`;
+  } else if (modalita === 'scatole') {
     const numScatole = parseInt(document.getElementById('ricarica-num-scatole').value) || 1;
     cprAggiunte = (t.cprPerScatola || 28) * numScatole;
     descEvento = `Carico Farmacia: Ritiro di ${numScatole} scatola/e di ${t.farmaco} (+${cprAggiunte} compresse).`;

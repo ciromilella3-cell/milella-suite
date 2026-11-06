@@ -2587,7 +2587,7 @@
               <label class="form-label" style="margin-bottom:0;">Seleziona Farmaco</label>
               <button type="button" onclick="closeModal('modal-ricarica-scorta'); apriMascheraNuovoFarmaco();" style="background:none; border:none; color:#0284c7; font-size:11px; font-weight:700; cursor:pointer; text-decoration:underline;">+ Non è in elenco? Aggiungilo con Foto</button>
             </div>
-            <select class="form-control" id="ricarica-farmaco-select" onchange="aggiornaInfoModalCarico()" required>
+            <select class="form-control" id="ricarica-farmaco-select" onchange="aggiornaInfoModalCarico(); if (typeof aggiornaCampoEsattoCarico === 'function') aggiornaCampoEsattoCarico();" required>
               <!-- popolato da app.js -->
             </select>
           </div>
