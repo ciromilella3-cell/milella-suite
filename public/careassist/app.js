@@ -6503,11 +6503,11 @@ function toggleSelectAllDiarioBtn(scope) {
 }
 
 async function eliminaAnnotazioniSelezionate(scope) {
-  const normScope = (scope === 'recent') ? 'diario' : (scope || 'diario');
   const p = getActivePaziente();
   if (!p) return;
 
-  const cbs = getDiarioCheckboxes(normScope).filter(cb => cb.checked);
+  // Raccogli tutte le checkbox spuntate sia in diario che in full
+  const cbs = Array.from(document.querySelectorAll('.diario-cb-diario:checked, .diario-cb-recent:checked, .diario-cb-full:checked'));
   const count = cbs.length;
   if (!count) {
     showToast('Nessuna annotazione selezionata.', 'warning');
@@ -6516,17 +6516,24 @@ async function eliminaAnnotazioniSelezionate(scope) {
 
   const idsToDelete = new Set(cbs.map(cb => String(cb.dataset.id)));
 
-  const ok = await customConfirm(
-    'Elimina Annotazioni Selezionate',
-    `Stai per eliminare ${count} annotazion${count === 1 ? 'e' : 'i'} dal registro di ${p.nome}.` + CESTINO_AVVISO,
-    '🗑️',
-    'Sposta nel Cestino'
-  );
+  let ok = false;
+  try {
+    ok = await customConfirm(
+      'Elimina Annotazioni Selezionate',
+      `Stai per eliminare ${count} annotazion${count === 1 ? 'e' : 'i'} dal registro di ${p.nome}.` + CESTINO_AVVISO,
+      '🗑️',
+      'Sposta nel Cestino'
+    );
+  } catch (e) {
+    ok = window.confirm(`Vuoi eliminare ${count} annotazioni selezionate dal diario?`);
+  }
 
   if (ok) {
     const daArchiviare = (p.registrazioni || []).filter(r => idsToDelete.has(String(r.id)));
     if (daArchiviare.length && typeof cestinoAggiungi === 'function') {
-      cestinoAggiungi('annotazione', daArchiviare.length + ' annotazion' + (daArchiviare.length === 1 ? 'e' : 'i') + ' del diario', (daArchiviare[0].desc || daArchiviare[0].tipo || '').toString().slice(0, 110), daArchiviare, p);
+      try {
+        cestinoAggiungi('annotazione', daArchiviare.length + ' annotazioni del diario', (daArchiviare[0].desc || daArchiviare[0].tipo || '').toString().slice(0, 110), daArchiviare, p);
+      } catch (err) {}
     }
     p.registrazioni = (p.registrazioni || []).filter(r => !idsToDelete.has(String(r.id)));
     saveDb();
