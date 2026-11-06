@@ -22469,3 +22469,48 @@ async function gestisciAnnullaSomministrazione(id) {
   }
 }
 window.gestisciAnnullaSomministrazione = gestisciAnnullaSomministrazione;
+
+
+// ==============================================================================
+// GESTIONE MENU STRUMENTI A TENDINA STILE WHATSAPP (3 PUNTINI ⋮ CON EFFETTO WOW)
+// ==============================================================================
+function toggleMenuStrumentiTerapie(event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  const dropdown = document.getElementById('careassist-toolbar-dropdown');
+  const btn = document.getElementById('btn-toolbar-tre-puntini');
+  if (!dropdown) return;
+
+  const isVisible = dropdown.style.display === 'block';
+  if (isVisible) {
+    chiudiMenuStrumenti();
+  } else {
+    dropdown.style.display = 'block';
+    if (btn) {
+      btn.style.background = '#e2e8f0';
+      btn.style.borderColor = '#0284c7';
+    }
+  }
+}
+window.toggleMenuStrumentiTerapie = toggleMenuStrumentiTerapie;
+
+function chiudiMenuStrumenti() {
+  const dropdown = document.getElementById('careassist-toolbar-dropdown');
+  const btn = document.getElementById('btn-toolbar-tre-puntini');
+  if (dropdown) dropdown.style.display = 'none';
+  if (btn) {
+    btn.style.background = '#ffffff';
+    btn.style.borderColor = '#cbd5e1';
+  }
+}
+window.chiudiMenuStrumenti = chiudiMenuStrumenti;
+
+// Chiudi la tendina automaticamente cliccando in qualsiasi altro punto della schermata
+document.addEventListener('click', function(e) {
+  const container = document.getElementById('careassist-toolbar-menu-container');
+  if (container && !container.contains(e.target)) {
+    chiudiMenuStrumenti();
+  }
+});
