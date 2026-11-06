@@ -22005,13 +22005,20 @@ function apriModalInventarioRapido() {
         return `
           <div class="inv-rapido-row" data-id="${t.id}" style="background:#ffffff; border:2px solid #e2e8f0; border-radius:16px; padding:12px 18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; box-shadow:0 2px 6px rgba(0,0,0,0.03); transition:all 0.15s ease;">
             
-            <!-- COLONNA 1: FARMACO E DOSAGGIO -->
-            <div style="flex:1; min-width:240px;">
-              <div style="display:flex; align-items:center; gap:12px;">
-                <span style="font-size:24px; background:#f1f5f9; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid #cbd5e1;">${isPen ? '💉' : '💊'}</span>
+            <!-- COLONNA 1: SEMAFORO A FARO + FARMACO E DOSAGGIO -->
+            <div style="flex:1; min-width:240px; display:flex; align-items:center; gap:12px;">
+              
+              <!-- SEMAFORO ROTONDO VISTOSO (30px) -->
+              <div class="inv-semaforo-faro" style="width:34px; height:34px; min-width:34px; border-radius:50%; background:${sem.colore}; border:3px solid #ffffff; box-shadow:0 0 10px ${sem.colore}88, inset 0 2px 4px rgba(255,255,255,0.4); display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:15px; font-weight:900;" title="${sem.testo}">
+                ${sem.stato === 'ottimo' ? '✓' : (sem.stato === 'allerta' ? '!' : '⚠')}
+              </div>
+
+              <!-- ICONA FARMACO E DETTAGLI -->
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:22px; background:#f1f5f9; width:42px; height:42px; min-width:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid #cbd5e1;">${isPen ? '💉' : '💊'}</span>
                 <div>
-                  <div style="font-size:16px; font-weight:900; color:#0f172a; line-height:1.2;">${t.farmaco}</div>
-                  <div style="font-size:12px; color:#475569; font-weight:700; margin-top:2px;">
+                  <div style="font-size:16.5px; font-weight:900; color:#0f172a; line-height:1.2;">${t.farmaco}</div>
+                  <div style="font-size:12.5px; color:#475569; font-weight:700; margin-top:2px;">
                     ${t.principio ? '<span style="color:#0284c7;">' + t.principio + '</span> • ' : ''}${t.dosaggio || ''}
                   </div>
                 </div>
@@ -22024,21 +22031,21 @@ function apriModalInventarioRapido() {
               <input type="time" class="inv-rapido-ora" value="${t.ora || '08:00'}" style="padding:5px 8px; border:2px solid #0284c7; border-radius:8px; font-weight:900; font-size:15px; color:#0f172a; width:100px; text-align:center; background:#ffffff;">
             </div>
 
-            <!-- COLONNA 3: CONTATORE + SEMAFORO AUTONOMIA -->
-            <div style="display:flex; flex-direction:column; align-items:center; gap:4px; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:6px 12px; min-width:260px;">
+            <!-- COLONNA 3: CONTATORE + BADGE GRANDE SEMAFORO AUTONOMIA -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:5px; background:#ffffff; border:2px solid ${sem.border}; border-radius:14px; padding:6px 14px; min-width:270px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
               <div style="display:flex; align-items:center; gap:8px;">
                 <button type="button" onclick="modificaContatoreInvRapido(this, -1)" style="width:36px; height:36px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff; font-size:20px; font-weight:900; color:#dc2626; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Togli 1">-</button>
                 
-                <input type="number" class="inv-rapido-scorta" value="${scortaVal}" min="0" oninput="aggiornaSemaforoRigaLive(this)" style="width:60px; text-align:center; font-size:18px; font-weight:900; color:#0f172a; border:2px solid #86efac; border-radius:8px; background:#f0fdf4; padding:3px 0;">
+                <input type="number" class="inv-rapido-scorta" value="${scortaVal}" min="0" oninput="aggiornaSemaforoRigaLive(this)" style="width:65px; text-align:center; font-size:18px; font-weight:900; color:#0f172a; border:2px solid #86efac; border-radius:8px; background:#f0fdf4; padding:3px 0;">
                 
-                <span style="font-size:12px; font-weight:800; color:#334155; width:45px;">${unitaTxt}</span>
+                <span style="font-size:12.5px; font-weight:800; color:#334155; width:45px;">${unitaTxt}</span>
                 
                 <button type="button" onclick="modificaContatoreInvRapido(this, 1)" style="width:36px; height:36px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff; font-size:20px; font-weight:900; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Aggiungi 1">+</button>
               </div>
 
-              <!-- BADGE SEMAFORO REAL-TIME -->
-              <div class="inv-semaforo-badge" style="font-size:11px; font-weight:900; color:${sem.colore}; background:${sem.bg}; border:1px solid ${sem.border}; padding:2px 8px; border-radius:10px; display:inline-flex; align-items:center; gap:4px;">
-                <span>●</span> ${sem.testo}
+              <!-- BADGE SEMAFORO REAL-TIME AD ALTA VISIBILITÀ -->
+              <div class="inv-semaforo-badge" style="font-size:12px; font-weight:900; color:${sem.colore}; background:${sem.bg}; border:1.5px solid ${sem.border}; padding:4px 12px; border-radius:12px; display:inline-flex; align-items:center; gap:6px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                <span style="font-size:14px;">●</span> <span>${sem.testo}</span>
               </div>
             </div>
 
@@ -22070,12 +22077,23 @@ function aggiornaSemaforoRigaLive(input) {
 
   const val = parseInt(input.value) || 0;
   const sem = calcolaSemaforoAutonomia(t, val);
+  
+  // 1. Aggiorna il Faro Circolare a sinistra del nome farmaco
+  const faro = row.querySelector('.inv-semaforo-faro');
+  if (faro) {
+    faro.style.background = sem.colore;
+    faro.style.boxShadow = '0 0 10px ' + sem.colore + '88, inset 0 2px 4px rgba(255,255,255,0.4)';
+    faro.title = sem.testo;
+    faro.innerHTML = (sem.stato === 'ottimo' ? '✓' : (sem.stato === 'allerta' ? '!' : '⚠'));
+  }
+
+  // 2. Aggiorna il Badge sotto il contatore
   const badge = row.querySelector('.inv-semaforo-badge');
   if (badge) {
     badge.style.color = sem.colore;
     badge.style.background = sem.bg;
     badge.style.borderColor = sem.border;
-    badge.innerHTML = '<span>●</span> ' + sem.testo;
+    badge.innerHTML = '<span style="font-size:14px;">●</span> <span>' + sem.testo + '</span>';
   }
 }
 
