@@ -5064,19 +5064,16 @@ function renderTerapie() {
             // PROTEZIONE CLINICA ANTIDOPPIA DOSE:
             // Se l'orario della terapia è già passato ed è un farmaco continuativo (non SOS),
             // il pulsante si congela con lucchetto di protezione per impedire tocchi accidentali e scalature errate.
-            const checkFascia = (typeof verificaStatoOrarioFarmaco === 'function') ? verificaStatoOrarioFarmaco(t.ora) : { orarioPassato: true };
-            const oraPassata = checkFascia.orarioPassato || true;
-
-            if (!isBisogno && oraPassata) {
-              return `
-                <div style="display:inline-flex; flex-direction:column; align-items:center;">
-                  <div class="badge-assunto-protetto" style="background:linear-gradient(135deg, #15803d 0%, #166534 100%); color:#ffffff; font-weight:800; font-size:12px; padding:8px 14px; border-radius:10px; border:1.5px solid #86efac; box-shadow:0 2px 8px rgba(22,101,52,0.25); display:inline-flex; align-items:center; gap:6px; cursor:default;" title="Dose giornaliera già assunta e registrata. Protetta da modifiche accidentali per sicurezza clinica.">
+            return `
+                <div style="display:inline-flex; flex-direction:column; align-items:center; gap:3px;">
+                  <button class="btn btn-azione-luxury done" onclick="gestisciAnnullaSomministrazione(${t.id})" style="background:linear-gradient(135deg, #15803d 0%, #166534 100%); color:#ffffff; font-weight:800; font-size:12px; padding:7px 14px; border-radius:10px; border:1.5px solid #86efac; box-shadow:0 2px 8px rgba(22,101,52,0.25); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Clicca per correggere o annullare la somministrazione se non ancora effettuata">
                     <span>🔒✓</span> <span>${isPen ? 'Iniettato Oggi' : 'Assunto Oggi'}</span>
-                  </div>
-                  <span style="font-size:9.5px; color:#166534; font-weight:700; margin-top:3px;">Confermato &bull; Dose Protetta</span>
+                  </button>
+                  <button type="button" onclick="gestisciAnnullaSomministrazione(${t.id})" style="background:transparent; border:none; color:#64748b; font-size:10px; font-weight:700; cursor:pointer; text-decoration:underline;">
+                    Annulla o Correggi
+                  </button>
                 </div>
               `;
-            }
 
             return `
                 <button class="btn btn-azione-luxury done" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per gestire o annullare la spunta">
@@ -22404,3 +22401,37 @@ async function eseguiConfermaSafetyCheckOspedaliero() {
   chiudiModalSafetyCheckOspedaliero();
   await applicaSomministrazioneClinicaEffettiva(t.id, _sitoIniezioneScelto);
 }
+
+
+async function gestisciAnnullaSomministrazione(id) {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+  const t = p.terapie.find(item => item.id === id);
+  if (!t) return;
+
+  const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+  const msg = 'Vuoi annullare la somministrazione registrata per "' + t.farmaco + '" e ripristinare la dose come DA SOMMINISTRARE?';
+  
+  if (confirm(msg)) {
+    t.fattoOggi = false;
+    delete t.dataUltimaSomministrazione;
+    delete t.orarioSomministrazione;
+    delete t.ultimoOperatore;
+
+    // Ripristina quota scorta se necessario
+    if (isPen) {
+      var dPen = (typeof calcolaDatiPennaIniettabile === 'function') ? calcolaDatiPennaIniettabile(t) : { giorniPerPenna: 18.75 };
+      var frazPenna = 1 / dPen.giorniPerPenna;
+      t.penneScorta = Math.round(((t.penneScorta || 1) + frazPenna) * 100) / 100;
+      t.scorta = t.penneScorta;
+    } else {
+      var q = parseFloat(t.quantitaQuota) || (typeof calcolaConsumoGiornalieroFarmaco === 'function' ? calcolaConsumoGiornalieroFarmaco(t) : 1) || 1;
+      t.scorta = Math.round(((t.scorta || 0) + q) * 100) / 100;
+    }
+
+    if (typeof saveDb === 'function') saveDb();
+    if (typeof renderAll === 'function') renderAll();
+    if (typeof showToast === 'function') showToast('↩️ Somministrazione di ' + t.farmaco + ' ripristinata come DA PRENDERE.');
+  }
+}
+window.gestisciAnnullaSomministrazione = gestisciAnnullaSomministrazione;
