@@ -11433,9 +11433,46 @@ function apriModalRiconciliazione(giorni, ultimaData) {
   var inputGg = document.getElementById('riconciliazione-giorni-input');
   if (!modal) return;
 
-  var ultimaDataStr = ultimaData ? new Date(ultimaData).toLocaleDateString('it-IT') : 'data precedente';
+  // Calcolo saluto orario personalizzato (Buongiorno / Buon pomeriggio / Buonasera)
+  var oraAttuale = new Date().getHours();
+  var saluto = "Buongiorno";
+  if (oraAttuale >= 13 && oraAttuale < 18) saluto = "Buon pomeriggio";
+  else if (oraAttuale >= 18 || oraAttuale < 6) saluto = "Buonasera";
+
+  var salutoEl = document.getElementById('riconciliazione-saluto-orario');
+  if (salutoEl) salutoEl.textContent = saluto + ' Operatore';
+
+  // Recupera profilo operatore attivo
+  var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Dott. Ciro Milella';
+  var opRuolo = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
+  var ruoloBadgeText = (opRuolo === 'admin') ? 'Coordinatore Sanitario' : 'Operatore Socio-Sanitario (OSS)';
+
+  var opNomeEl = document.getElementById('riconciliazione-operatore-nome');
+  if (opNomeEl) opNomeEl.textContent = opNome;
+
+  var opBadgeEl = document.getElementById('riconciliazione-ruolo-badge');
+  if (opBadgeEl) opBadgeEl.textContent = ruoloBadgeText;
+
+  // Assistito attualmente selezionato
+  var pAttivo = (typeof getPazienteAttivo === 'function') ? getPazienteAttivo() : null;
+  var assEl = document.getElementById('riconciliazione-assistito-attivo');
+  if (assEl && pAttivo) {
+    assEl.textContent = 'Assistito in Carico: ' + (pAttivo.nome || 'Paziente');
+  }
+
+  // Correzione data ultimo accesso effettiva (precedente a oggi)
+  var dPrec = new Date();
+  dPrec.setDate(dPrec.getDate() - Math.max(1, giorni));
+  var ultimaDataStr = dPrec.toLocaleDateString('it-IT');
+  if (ultimaData && !isNaN(new Date(ultimaData).getTime())) {
+    var checkD = new Date(ultimaData);
+    if (checkD.toDateString() !== new Date().toDateString()) {
+      ultimaDataStr = checkD.toLocaleDateString('it-IT');
+    }
+  }
+
   if (msgIntro) {
-    msgIntro.innerHTML = 'Bentornato! L\'ultimo accesso al software risale a <b>' + ultimaDataStr + '</b> (' + giorni + ' ' + (giorni === 1 ? 'giorno fa' : 'giorni fa') + ').';
+    msgIntro.innerHTML = 'Bentornato! L\'ultimo accesso registrato al software risale a <b>' + ultimaDataStr + '</b> (' + giorni + ' ' + (giorni === 1 ? 'giorno fa' : 'giorni fa') + ').';
   }
   if (inputGg) {
     inputGg.value = Math.max(1, giorni);
