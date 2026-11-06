@@ -10096,8 +10096,15 @@ function salvaModificaFarmaco(e) {
     motivo: motivoMod
   };
 
-  // 1. Rimuovi tutte le dosi preesistenti dello stesso farmaco per ricrearle coerentemente
+  // 1. Salva lo stato delle dosi preesistenti prima di rimuoverle
   var nomeBase = cleanNome.toLowerCase();
+  var vecchieDosiFarmaco = (p.terapie || []).filter(function (item) {
+    var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
+    return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
+  });
+  var eraStatoAssuntoOggi = vecchieDosiFarmaco.some(function(item) { return item.fattoOggi === true; });
+
+  // Rimuovi le vecchie dosi per rigenerarle con la nuova scorta
   p.terapie = p.terapie.filter(function (item) {
     var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
     var isColl = n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
@@ -10118,6 +10125,13 @@ function salvaModificaFarmaco(e) {
       var quotaLabel = (quotaVal === 0.5) ? '½ cpr' : (quotaVal === 1 ? '1 cpr' : (quotaVal === 1.5 ? '1½ cpr' : quotaVal + ' cpr'));
       var farmacoNomeFinal = (totalDosi > 1) ? (cleanNome + ' (' + (idx + 1) + 'ª dose: ' + quotaLabel + ' - ore ' + oraVal + ')') : cleanNome;
 
+      // Preservazione assunzione nel ramo fallback
+      var fallbackFattoOggi = eraStatoAssuntoOggi;
+      if (!fallbackFattoOggi && typeof verificaStatoOrarioFarmaco === 'function') {
+        var chkF = verificaStatoOrarioFarmaco(oraVal);
+        if (chkF && chkF.orarioPassato) fallbackFattoOggi = true;
+      }
+
       p.terapie.push({
         id: Date.now() + idx * 311,
         ora: oraVal,
@@ -10131,7 +10145,7 @@ function salvaModificaFarmaco(e) {
         scorta: scorta,
         giorniAlert: giorniAlert,
         cadenzaTipo: cadenza,
-        fattoOggi: false,
+        fattoOggi: fallbackFattoOggi,
         tipoFormulazione: (window._currentFormatoModal === 'penna') ? 'penna' : 'compressa',
         ultimaModificaClinica: ultimaMod
       });
@@ -10156,15 +10170,9 @@ function salvaModificaFarmaco(e) {
     var pScatola = isFormatoPenna ? (parseInt(document.getElementById('edit-penna-per-scatola') ? document.getElementById('edit-penna-per-scatola').value : 3) || 3) : cprPerScatola;
 
     // PRESERVAZIONE INTELLIGENTE STATO ASSUNZIONE OGGI:
-    // Se la terapia era già stata assunta oggi, oppure se l'orario di assunzione è già trascorso
-    // nella giornata odierna, NON resettare a false e NON far scattare allarmi inutili!
-    var eraGiaFattoOggi = false;
+    var eraGiaFattoOggi = eraStatoAssuntoOggi;
     try {
-      if (typeof oldDoseMatch !== 'undefined' && oldDoseMatch && oldDoseMatch.fattoOggi) {
-        eraGiaFattoOggi = true;
-      } else if (typeof oldDosi !== 'undefined' && Array.isArray(oldDosi) && oldDosi.some(function(od) { return od.fattoOggi; })) {
-        eraGiaFattoOggi = true;
-      } else if (typeof verificaStatoOrarioFarmaco === 'function') {
+      if (!eraGiaFattoOggi && typeof verificaStatoOrarioFarmaco === 'function') {
         var chkO = verificaStatoOrarioFarmaco(oraVal);
         if (chkO && chkO.orarioPassato) {
           eraGiaFattoOggi = true; // L'orario (es. 07:00) è già passato oggi: la dose si considera già assunta!
