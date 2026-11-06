@@ -1,3 +1,75 @@
+
+// ==============================================================================
+// MOTORE VOCALE NATURALE HD CAREASSIST (Azure Neural HD + Pause Naturali)
+// ==============================================================================
+let _audioElementCareAssistAttivo = null;
+
+function fermaVoceHDGlobale() {
+  if (_audioElementCareAssistAttivo) {
+    try {
+      _audioElementCareAssistAttivo.pause();
+      _audioElementCareAssistAttivo.currentTime = 0;
+    } catch(e) {}
+    _audioElementCareAssistAttivo = null;
+  }
+  if ('speechSynthesis' in window) {
+    try { window.speechSynthesis.cancel(); } catch(e) {}
+  }
+}
+window.fermaVoceHDGlobale = fermaVoceHDGlobale;
+window.fermaVoceSintesiInApp = fermaVoceHDGlobale;
+
+function riproduciVoceNaturaleHD(testo, onEndCallback) {
+  fermaVoceHDGlobale();
+  if (!testo || typeof testo !== 'string') return;
+
+  // Formatta testo con pause naturali, espansioni fonetiche e punteggiatura morbida
+  let t = testo
+    .replace(/\bmg\b/gi, 'milligrammi')
+    .replace(/\bmcg\b/gi, 'microgrammi')
+    .replace(/\bcpr\b/gi, 'compresse')
+    .replace(/\bml\b/gi, 'millilitri')
+    .replace(/\bgg\b/gi, 'giorni')
+    .replace(/\bSGLT2\b/gi, 'S G L T 2')
+    .replace(/\bHbA1c\b/gi, 'emoglobina glicata')
+    .replace(/\bUI\b/gi, 'unità internazionali')
+    .replace(/•/g, ', ')
+    .replace(/\s*\/\s*/g, ' oppure ')
+    .replace(/\s*-\s*/g, ' - ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Inserisci pause espressive dopo due punti o punti fermi per ritmo cadenzato e naturale
+  t = t.replace(/:\s*/g, ': ... ').replace(/\.\s*/g, '. ... ');
+
+  // Usa l'endpoint Azure Neural HD con voce Isabella (italiano naturale alta definizione)
+  const apiUrl = '/api/tts-umano?voice=isabella&text=' + encodeURIComponent(t);
+  const audio = new Audio(apiUrl);
+  _audioElementCareAssistAttivo = audio;
+
+  audio.onended = function() {
+    _audioElementCareAssistAttivo = null;
+    if (typeof onEndCallback === 'function') onEndCallback();
+  };
+
+  audio.onerror = function() {
+    console.warn('Fallback a sintesi locale browser per voce');
+    _audioElementCareAssistAttivo = null;
+    if (typeof parlaFallbackBrowserCareAssist === 'function') {
+      parlaFallbackBrowserCareAssist(t);
+    }
+    if (typeof onEndCallback === 'function') onEndCallback();
+  };
+
+  audio.play().catch(function(err) {
+    console.warn('Riproduzione audio bloccata o fallita, uso WebSpeech:', err);
+    if (typeof parlaFallbackBrowserCareAssist === 'function') {
+      parlaFallbackBrowserCareAssist(t);
+    }
+  });
+}
+window.riproduciVoceNaturaleHD = riproduciVoceNaturaleHD;
+
 ﻿
 // ==============================================================
 // MOTORE CLINICO AUTOMATICO FARMACO MULTI-TEMPO & SCORTA CONDIVISA
@@ -7161,21 +7233,9 @@ let _ultimaSintesiVocaleInApp = '';
 
 function recitaTestoSintesiInApp(testo) {
   const t = (testo || _ultimaSintesiVocaleInApp || '').trim();
-  if (!t || !('speechSynthesis' in window)) return;
+  if (!t) return;
   _ultimaSintesiVocaleInApp = t;
-  try {
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(
-      t.replace(/\bmg\b/gi, 'milligrammi')
-        .replace(/\bmcg\b/gi, 'microgrammi')
-        .replace(/\bcpr\b/gi, 'compresse')
-        .replace(/\bml\b/gi, 'millilitri')
-    );
-    utter.lang = 'it-IT';
-    utter.rate = 0.98;
-    utter.pitch = 1.0;
-    window.speechSynthesis.speak(utter);
-  } catch (e) { }
+  riproduciVoceNaturaleHD(t);
 }
 window.recitaTestoSintesiInApp = recitaTestoSintesiInApp;
 
@@ -7608,29 +7668,24 @@ window.apriBugiardinoAIFADaScanner = apriBugiardinoAIFADaScanner;
 
 function pronunciaCaratteristicheFarmaco(farmaco) {
   const f = farmaco || _ultimoFarmacoRiconosciutoScanner;
-  if (!f || !('speechSynthesis' in window)) return;
+  if (!f) return;
   try {
-    window.speechSynthesis.cancel();
     let testoVoce = '';
     if (f.isNonFarmaco && f.messaggioVocaleNonFarmaco) {
       testoVoce = f.messaggioVocaleNonFarmaco;
     } else {
       const nome = (f.nomePersonalizzato || f.nome || '').replace(/\bmg\b/gi, 'milligrammi').replace(/\bmcg\b/gi, 'microgrammi').replace(/\bcpr\b/gi, 'compresse');
       const principio = (f.principio || '').replace(/\bmg\b/gi, 'milligrammi');
-      const cprStr = f.cprRilevate || f.cpr ? `Confezione da ${f.cprRilevate || f.cpr} unità. ` : '';
+      const cprStr = (f.cprRilevate || f.cpr) ? ('Confezione da ' + (f.cprRilevate || f.cpr) + ' unità. ') : '';
       const indicazione = f.indicazione || f.modo || '';
-      const orarioStr = f.ora ? `Orario consigliato: ${f.ora}, ${f.fascia || ''}.` : '';
-      const scudo = analizzaSicurezzaClinicaFarmaco(f);
-      const extraScudo = (scudo && scudo.vocale) ? ` ${scudo.vocale}` : '';
-      testoVoce = `Farmaco riconosciuto: ${nome}. Principio attivo: ${principio}. ${cprStr}A cosa serve: ${indicazione} ${orarioStr}${extraScudo}`;
+      const orarioStr = f.ora ? ('Orario raccomandato: ' + f.ora + ', ' + (f.fascia || '') + '.') : '';
+      const scudo = typeof analizzaSicurezzaClinicaFarmaco === 'function' ? analizzaSicurezzaClinicaFarmaco(f) : null;
+      const extraScudo = (scudo && scudo.vocale) ? (' ' + scudo.vocale) : '';
+      testoVoce = 'Farmaco identificato: ' + nome + '... Principio attivo: ' + principio + '... ' + cprStr + 'A cosa serve: ' + indicazione + '... ' + orarioStr + extraScudo;
     }
-    const utter = new SpeechSynthesisUtterance(testoVoce);
-    utter.lang = 'it-IT';
-    utter.rate = 0.98;
-    utter.pitch = 1.0;
-    window.speechSynthesis.speak(utter);
+    riproduciVoceNaturaleHD(testoVoce);
   } catch (e) {
-    console.warn('Avviso sintesi vocale farmaco:', e);
+    console.warn('Avviso sintesi vocale farmaco HD:', e);
   }
 }
 window.pronunciaCaratteristicheFarmaco = pronunciaCaratteristicheFarmaco;
