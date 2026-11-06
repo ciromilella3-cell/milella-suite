@@ -1128,7 +1128,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     aldoEx.medicoOrari = 'Lunedì: 10:00-13:00. Martedì: 10:00-13:00 e 16:00-19:00. Mercoledì: 10:00-13:00. Giovedì: 16:00-19:00. Venerdì: 10:00-13:00 (Bari - Via Muciaccia 11)';
   }
   if (aldoEx) {
-    aldoEx.nome = aldoEx.nome || 'Aldo Zamparino';
+    aldoEx.nome = 'Aldo Zamparino';
     aldoEx.indirizzo = aldoEx.indirizzo || 'Via Roma, 10 - Bari (BA)';
     aldoEx.telefonoFisso = aldoEx.telefonoFisso || '080 561 57 14';
     aldoEx.cellulare = aldoEx.cellulare || '338 000 00 01';
@@ -1796,6 +1796,13 @@ function sincronizzaDbDalServer(callback) {
     var getUrl = (primaryBase ? primaryBase : '') + '/api/get-db?_t=' + Date.now();
 
     var reconcileData = function (serverData) {
+      if (serverData && serverData.pazienti) {
+        serverData.pazienti.forEach(function(sp) {
+          if (sp.id === 'paz_aldo' || (sp.nome && (sp.nome === 'Aldo Z.' || sp.nome.startsWith('Aldo Z')))) sp.nome = 'Aldo Zamparino';
+          if (sp.id === 'paz_angela' || (sp.nome && (sp.nome === 'Angela M.' || sp.nome.startsWith('Angela M')))) sp.nome = 'Angela Mazzicone';
+          if (sp.id === 'paz_rosa' || (sp.nome && (sp.nome === 'Rosa C.' || sp.nome.startsWith('Rosa C')))) sp.nome = 'Rosa Annunziata Cavalcante';
+        });
+      }
       if (serverData && serverData.pazienti && serverData.pazienti.length > 0) {
         var localTime = Number(AppData.lastModified) || 0;
         var serverTime = Number(serverData.lastModified) || 0;
@@ -11932,6 +11939,13 @@ function filtraFasciaTerapia(fascia) {
 
 
 function renderAll() {
+  if (AppData && Array.isArray(AppData.pazienti)) {
+    AppData.pazienti.forEach(function(p) {
+      if (p.id === 'paz_aldo' || (p.nome && (p.nome === 'Aldo Z.' || p.nome.startsWith('Aldo Z')))) p.nome = 'Aldo Zamparino';
+      if (p.id === 'paz_angela' || (p.nome && (p.nome === 'Angela M.' || p.nome.startsWith('Angela M')))) p.nome = 'Angela Mazzicone';
+      if (p.id === 'paz_rosa' || (p.nome && (p.nome === 'Rosa C.' || p.nome.startsWith('Rosa C')))) p.nome = 'Rosa Annunziata Cavalcante';
+    });
+  }
   verificaCambioDataAutomatico();
   aggiornaCardBuongiornoMattino();
   renderPazientiSelector();
