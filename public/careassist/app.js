@@ -580,7 +580,7 @@ function getDettagliAvatarPaziente(p) {
 
 // Inizializzazione dati per ALDO con anagrafica reale e farmaci
 function getPazienteAldoInit() {
-  const aldo = createPazienteTemplate('paz_aldo', 'Aldo Z.', '1935-04-18', 'Paziente allettato 91 anni. Terapia cardiologica, neurologica e urologica con scarico pressorio q2h.');
+  const aldo = createPazienteTemplate('paz_aldo', 'Aldo Zamparino', '1935-04-18', 'Paziente allettato 91 anni. Terapia cardiologica, neurologica e urologica con scarico pressorio q2h.');
   aldo.indirizzo = 'Via Roma, 10 - Bari';
   aldo.telefonoFisso = '080 561 57 14';
   aldo.cellulare = '338 000 00 01';
@@ -716,14 +716,14 @@ function getPazienteAldoInit() {
   return aldo;
 }
 
-// Inizializzazione dati per Angela M. con anagrafica e farmaci
+// Inizializzazione dati per Angela Mazzicone con anagrafica e farmaci
 function getPazienteAngelaInit() {
-  const angela = createPazienteTemplate('paz_angela', 'Angela M.', '1938-05-29', 'Coniuge di Aldo. Terapia cardiologica, ipertensiva, dislipidemica, uricosurica, gastroprotettiva e integrazione vit. D3.');
-  angela.nome = 'Angela M.';
+  const angela = createPazienteTemplate('paz_angela', 'Angela Mazzicone', '1938-05-29', 'Coniuge di Aldo. Terapia cardiologica, ipertensiva, dislipidemica, uricosurica, gastroprotettiva e integrazione vit. D3.');
+  angela.nome = 'Angela Mazzicone';
   angela.indirizzo = 'Via Roma, 10 - Bari (BA)';
   angela.telefonoFisso = '080 561 57 14';
   angela.cellulare = '338 000 00 02';
-  angela.maritoNome = 'Aldo Z.';
+  angela.maritoNome = 'Aldo Zamparino';
   angela.maritoCellulare = '338 000 00 01';
   angela.farmaciaDiRiferimento = 'Farmacia Dott. MACARIO';
   angela.farmaciaIndirizzo = 'Via G. Petroni, 69/b - Bari';
@@ -871,7 +871,7 @@ function getPazienteAngelaInit() {
   ];
 
   angela.visite = [
-    { id: 201, data: '2026-10-16', ora: '09:00', medico: 'Dott. Roberto Scarcia', motivo: 'Rinnovo ricette e piano terapeutico per Angela M.', fatto: false },
+    { id: 201, data: '2026-10-16', ora: '09:00', medico: 'Dott. Roberto Scarcia', motivo: 'Rinnovo ricette e piano terapeutico per Angela Mazzicone', fatto: false },
     { id: 202, data: '2026-10-19', ora: '10:30', medico: 'ASL / Servizio Ossigenoterapia Domiciliare', motivo: 'Richiesta e fornitura bombola ossigeno terapeutico per Angela', fatto: false }
   ];
 
@@ -1106,7 +1106,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
   AppData = defaultState;
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
 } else {
-  // Sincronizza i dati di Aldo Z. se già presenti
+  // Sincronizza i dati di Aldo Zamparino se già presenti
   // PULIZIA CLINICA: Rimuove eventuali cartelle epatologiche/infettive accidentalmente assegnate ad assistiti non infettivi
   if (Array.isArray(AppData.pazienti)) {
     AppData.pazienti.forEach(function (pt) {
@@ -1128,7 +1128,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     aldoEx.medicoOrari = 'Lunedì: 10:00-13:00. Martedì: 10:00-13:00 e 16:00-19:00. Mercoledì: 10:00-13:00. Giovedì: 16:00-19:00. Venerdì: 10:00-13:00 (Bari - Via Muciaccia 11)';
   }
   if (aldoEx) {
-    aldoEx.nome = aldoEx.nome || 'Aldo Z.';
+    aldoEx.nome = aldoEx.nome || 'Aldo Zamparino';
     aldoEx.indirizzo = aldoEx.indirizzo || 'Via Roma, 10 - Bari (BA)';
     aldoEx.telefonoFisso = aldoEx.telefonoFisso || '080 561 57 14';
     aldoEx.cellulare = aldoEx.cellulare || '338 000 00 01';
@@ -1194,19 +1194,19 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     }
   }
 
-  // Verifica o sincronizza Angela M. nella lista pazienti
+  // Verifica o sincronizza Angela Mazzicone nella lista pazienti
   let angelaEx = AppData.pazienti.find(p => p.id === 'paz_angela' || p.nome.toLowerCase().includes('angela'));
   if (!angelaEx) {
     angelaEx = getPazienteAngelaInit();
     AppData.pazienti.push(angelaEx);
   } else {
     angelaEx.id = 'paz_angela';
-    angelaEx.nome = 'Angela M.';
+    angelaEx.nome = 'Angela Mazzicone';
     angelaEx.dataNascita = '1938-05-29';
     angelaEx.indirizzo = 'Via Roma, 10 - Bari (BA)';
     angelaEx.telefonoFisso = '080 561 57 14';
     angelaEx.cellulare = '338 000 00 02';
-    angelaEx.maritoNome = 'Aldo Z.';
+    angelaEx.maritoNome = 'Aldo Zamparino';
     angelaEx.maritoCellulare = '338 000 00 01';
     angelaEx.farmaciaDiRiferimento = 'Farmacia Dott. MACARIO';
     angelaEx.farmaciaIndirizzo = 'Via G. Petroni, 69/b - Bari';
@@ -17017,7 +17017,7 @@ function pazHaDiagnosiMalattieInfettive(paziente) {
   var id = p.id || '';
   var pNome = (p.nome || '').toLowerCase();
 
-  // ESCLUSIONE CATEGORICA: Aldo Z. e Angela M. non sono pazienti di malattie infettive/epatologia!
+  // ESCLUSIONE CATEGORICA: Aldo Zamparino e Angela Mazzicone non sono pazienti di malattie infettive/epatologia!
   if (id === 'paz_aldo' || id === 'paz_angela' || pNome.includes('aldo') || pNome.includes('Z.') || pNome.includes('angela') || pNome.includes('M.')) {
     return false;
   }
@@ -17077,10 +17077,10 @@ function aggiornaVisibilitaTabEpatologia() {
     tabBtn.title = 'Cartella Ambulatoriale Follow-up Malattie Infettive & Epatologia - Policlinico di Bari (Ciro Milella)';
   } else if (pId === 'paz_aldo' || pNome.includes('aldo')) {
     tabBtn.innerHTML = '🧠 Neurologia & Cuore';
-    tabBtn.title = 'Cartella Monitoraggio Specialistico Geriatrico & Decubito (Aldo Z.)';
+    tabBtn.title = 'Cartella Monitoraggio Specialistico Geriatrico & Decubito (Aldo Zamparino)';
   } else if (pId === 'paz_angela' || pNome.includes('angela')) {
     tabBtn.innerHTML = '❤️ Cardiologia & PA';
-    tabBtn.title = 'Cartella Monitoraggio Cardiometabolico & Ipertensione (Angela M.)';
+    tabBtn.title = 'Cartella Monitoraggio Cardiometabolico & Ipertensione (Angela Mazzicone)';
   } else if (pId === 'paz_rosa' || pNome.includes('rosa') || pNome.includes('C.')) {
     tabBtn.innerHTML = '🩸 Diabete & Terapie';
     tabBtn.title = 'Cartella Diabetologia, Piani Terapeutici & Cardiovascolare (Rosa C.)';
@@ -18131,7 +18131,7 @@ function getPianoTerapeuticoAttivo(paziente) {
     return p.pianoTerapeuticoDpc;
   }
 
-  // 3. PROFILO Angela M. (Cardiopatia Ipertensiva / Scompenso - Irbesartan/Idroclorotiazide & Lasix)
+  // 3. PROFILO Angela Mazzicone (Cardiopatia Ipertensiva / Scompenso - Irbesartan/Idroclorotiazide & Lasix)
   if (pNome.includes('angela')) {
     if (!p.pianoTerapeuticoDpc) {
       p.pianoTerapeuticoDpc = {
@@ -18164,7 +18164,7 @@ function getPianoTerapeuticoAttivo(paziente) {
     return p.pianoTerapeuticoDpc;
   }
 
-  // 4. PROFILO Aldo Z. (Neurologico / Epilessia & Ipertrofia Prostatica - Vimpat & Silodyx)
+  // 4. PROFILO Aldo Zamparino (Neurologico / Epilessia & Ipertrofia Prostatica - Vimpat & Silodyx)
   if (pNome.includes('aldo')) {
     if (!p.pianoTerapeuticoDpc) {
       p.pianoTerapeuticoDpc = {
@@ -18331,7 +18331,7 @@ window.apriDocumentiPianoVisitaOriginali = apriDocumentiPianoVisitaOriginali;
 
 // ==============================================================================
 // MODULO CLINICO AVANZATO: MONITORAGGIO NRE 180GG, STAMPA MMG, ALLEGATI REFERTI
-// & SCHEDE SPECIALISTICHE DEDICATE (Aldo Z. & Angela M.)
+// & SCHEDE SPECIALISTICHE DEDICATE (Aldo Zamparino & Angela Mazzicone)
 // ==============================================================================
 
 // 1. MONITORAGGIO SCADENZA RICETTE ELETTRONICHE NRE (180 GIORNI)
@@ -18732,7 +18732,7 @@ window.scaricaRefertoZoomCorrente = scaricaRefertoZoomCorrente;
 
 
 // ==============================================================================
-// SCHEDE SPECIALISTICHE DEDICATE: Aldo Z. & Angela M.
+// SCHEDE SPECIALISTICHE DEDICATE: Aldo Zamparino & Angela Mazzicone
 // ==============================================================================
 
 const ESAMI_ALDO_DEFAULT = [
@@ -18851,7 +18851,7 @@ function renderTabellaEsamiSpecialisticiGenerica(esami, isAldo) {
   }).join('');
 }
 
-// RENDER SCHEDA Aldo Z. (NEUROLOGIA & CARDIOLOGIA GERIATRICA)
+// RENDER SCHEDA Aldo Zamparino (NEUROLOGIA & CARDIOLOGIA GERIATRICA)
 function renderSchedaSpecialisticaAldo(container, p) {
   var scheda = getSchedaSpecialisticaAldo(p);
   var esami = scheda.esami || [];
@@ -18860,7 +18860,7 @@ function renderSchedaSpecialisticaAldo(container, p) {
   var perc = esami.length > 0 ? Math.round((completati / esami.length) * 100) : 0;
 
   var html = `
-    <!-- BANNER CLINICO GERIATRICO DEDICATO AD Aldo Z. -->
+    <!-- BANNER CLINICO GERIATRICO DEDICATO AD Aldo Zamparino -->
     <div style="background:linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(30,27,75,0.35); border:2px solid #818cf8; position:relative; overflow:hidden;">
       <div style="position:absolute; right:-20px; top:-20px; font-size:120px; opacity:0.07; pointer-events:none;">🧠</div>
       
@@ -18878,7 +18878,7 @@ function renderSchedaSpecialisticaAldo(container, p) {
               Protocollo Neurologia, Cardiologia & Prevenzione Decubito
             </h2>
             <div style="font-size:13px; color:#c7d2fe; font-weight:500;">
-              Assistito: <b>Aldo Z.</b> &bull; MMG Curante: <b>Dott. Roberto Scarcia</b> &bull; Servizio ADI Territoriale
+              Assistito: <b>Aldo Zamparino</b> &bull; MMG Curante: <b>Dott. Roberto Scarcia</b> &bull; Servizio ADI Territoriale
             </div>
           </div>
         </div>
@@ -18958,7 +18958,7 @@ function renderSchedaSpecialisticaAldo(container, p) {
     <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
       <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Monitoraggio Clinico Specialistico - Aldo Z.</div>
+          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Monitoraggio Clinico Specialistico - Aldo Zamparino</div>
           <div style="font-size:12px; color:#64748b;">Tracciamento integrato: Richieste al Curante &bull; Visite Domiciliari &bull; Referti</div>
         </div>
       </div>
@@ -18987,7 +18987,7 @@ function renderSchedaSpecialisticaAldo(container, p) {
   container.innerHTML = html;
 }
 
-// RENDER SCHEDA Angela M. (CARDIOLOGIA, IPERTENSIONE & METABOLICA)
+// RENDER SCHEDA Angela Mazzicone (CARDIOLOGIA, IPERTENSIONE & METABOLICA)
 function renderSchedaSpecialisticaAngela(container, p) {
   var scheda = getSchedaSpecialisticaAngela(p);
   var esami = scheda.esami || [];
@@ -18996,7 +18996,7 @@ function renderSchedaSpecialisticaAngela(container, p) {
   var perc = esami.length > 0 ? Math.round((completati / esami.length) * 100) : 0;
 
   var html = `
-    <!-- BANNER CLINICO CARDIOLOGICO DEDICATO AD Angela M. -->
+    <!-- BANNER CLINICO CARDIOLOGICO DEDICATO AD Angela Mazzicone -->
     <div style="background:linear-gradient(135deg, #831843 0%, #9d174d 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(131,24,67,0.35); border:2px solid #f472b6; position:relative; overflow:hidden;">
       <div style="position:absolute; right:-20px; top:-20px; font-size:120px; opacity:0.07; pointer-events:none;">❤️</div>
       
@@ -19014,7 +19014,7 @@ function renderSchedaSpecialisticaAngela(container, p) {
               Protocollo Cardiologia, Ipertensione & Metabolica
             </h2>
             <div style="font-size:13px; color:#fce7f3; font-weight:500;">
-              Assistita: <b>Angela M.</b> &bull; MMG Curante: <b>Dott. Roberto Scarcia</b> &bull; Cardiologia Territoriale ASL Bari
+              Assistita: <b>Angela Mazzicone</b> &bull; MMG Curante: <b>Dott. Roberto Scarcia</b> &bull; Cardiologia Territoriale ASL Bari
             </div>
           </div>
         </div>
@@ -19094,7 +19094,7 @@ function renderSchedaSpecialisticaAngela(container, p) {
     <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
       <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Sorveglianza Cardiometabolica - Angela M.</div>
+          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Sorveglianza Cardiometabolica - Angela Mazzicone</div>
           <div style="font-size:12px; color:#64748b;">Monitoraggio: Ipertensione &bull; Assetto Lipidico &bull; Acido Urico &bull; Vitamina D3</div>
         </div>
       </div>
