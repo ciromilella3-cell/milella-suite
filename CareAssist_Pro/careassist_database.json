@@ -1,22 +1,18 @@
-﻿{
-  "activePazienteId": "paz_1793216119572",
+{
+  "activePazienteId": "paz_aldo",
   "pazienti": [
     {
       "id": "paz_aldo",
-      "nome": "Aldo Z.",
+      "nome": "Aldo Zamparino",
       "dataNascita": "1935-04-18",
+      "eta": 91,
       "sesso": "M",
-      "indirizzo": "Via Roma, 10 - Bari",
-      "telefono": "338 000 00 01",
+      "medico": "Dott. Roberto Scarcia",
+      "telMedico": "",
+      "allergie": "Nessuna nota",
+      "catetere": false,
       "allettato": true,
-      "patologie": [
-        "Paziente geriatrico allettato ad alto rischio di lesioni da decubito (Scala Braden: Rischio Elevato)",
-        "Cardiopatia / Aritmia (in terapia con Bisoprololo 1,25 mg)",
-        "Epilessia / Disturbo neurologico focale (in terapia con VIMPAT Lacosamide 100 mg b.i.d.)",
-        "Ipertrofia Prostatica Benigna (IPB) con difficoltà minzionali (in terapia con SILODYX 8 mg)",
-        "Disturbo comportamentale del sonno / Agitazione notturna (in terapia con Quetiapina 25 mg)",
-        "Gastroprotezione per terapia cronica (in terapia con Pantoprazolo 40 mg)"
-      ],
+      "note": "Paziente allettato 91 anni. Terapia cardiologica, neurologica e urologica con scarico pressorio q2h.",
       "terapie": [
         {
           "id": 101,
@@ -27,7 +23,7 @@
           "dosaggio": "40 mg (1 cpr gastroresistente)",
           "modo": "A DIGIUNO, 30 min prima di colazione (Protezione gastrica)",
           "cprPerScatola": 28,
-          "scorta": 27,
+          "scorta": 26,
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
         },
@@ -40,7 +36,7 @@
           "dosaggio": "1,25 mg (1 cpr rivestita)",
           "modo": "A colazione (Controllo frequenza cardiaca e pressione)",
           "cprPerScatola": 28,
-          "scorta": 27,
+          "scorta": 26,
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
         },
@@ -53,7 +49,7 @@
           "dosaggio": "100 mg (1 capsula)",
           "modo": "A colazione con acqua (Controllo neurologico)",
           "cprPerScatola": 56,
-          "scorta": 55,
+          "scorta": 53,
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
         },
@@ -66,8 +62,9 @@
           "dosaggio": "100 mg (1 capsula)",
           "modo": "A pranzo con acqua (Controllo neurologico)",
           "cprPerScatola": 56,
-          "scorta": 55,
-          "fattoOggi": false
+          "scorta": 53,
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 104,
@@ -78,7 +75,7 @@
           "dosaggio": "8 mg (1 capsula)",
           "modo": "A CENA, a stomaco pieno con acqua (Ipertrofia prostatica / diuresi)",
           "cprPerScatola": 30,
-          "scorta": 30,
+          "scorta": 29,
           "fattoOggi": false
         },
         {
@@ -90,7 +87,7 @@
           "dosaggio": "200 mg (2 capsule insieme)",
           "modo": "Dopo cena (Dose serale cumulativa di 2 capsule = 200 mg)",
           "cprPerScatola": 56,
-          "scorta": 55,
+          "scorta": 53,
           "fattoOggi": false
         },
         {
@@ -102,8 +99,18 @@
           "dosaggio": "25 mg (1 cpr rivestita)",
           "modo": "Prima di coricarsi con acqua (Modulatore umore e sonno)",
           "cprPerScatola": 30,
-          "scorta": 30,
+          "scorta": 29,
           "fattoOggi": false
+        }
+      ],
+      "registrazioni": [
+        {
+          "id": "log_1793977960328",
+          "tipo": "postura",
+          "timestamp": "2026-11-06T15:12:40.328Z",
+          "posizione": "Supino (Schiena a letto)",
+          "cute": "Integra e rosea (Iniziale)",
+          "operatore": "Sistema Automatico CareAssist"
         }
       ],
       "visite": [
@@ -116,28 +123,56 @@
           "fatto": false
         }
       ],
-      "diario": [],
-      "origini": [
-        "CareAssist Pro"
+      "indirizzo": "Via Roma, 10 - Bari",
+      "telefonoFisso": "080 561 57 14",
+      "cellulare": "338 000 00 01",
+      "moglieNome": "Mazzicone Angela",
+      "moglieCellulare": "338 000 00 02",
+      "medicoNome": "Dott. Roberto Scarcia",
+      "medicoIndirizzo": "Via Muciaccia 11, 70121 Bari",
+      "medicoStudio": "Via Muciaccia 11, 70121 Bari",
+      "medicoTelStudio": "080 557 44 90",
+      "medicoTel": "347 126 59 71",
+      "medicoOrari": "Lunedì: 10:00-13:00. Martedì: 10:00-13:00 e 16:00-19:00. Mercoledì: 10:00-13:00. Giovedì: 16:00-19:00. Venerdì: 10:00-13:00 (Bari - Via Muciaccia 11)",
+      "medicoEmail": "scarcia.roberto@alice.it",
+      "patologie": [
+        "Paziente geriatrico allettato ad alto rischio di lesioni da decubito (Scala Braden: Rischio Elevato)",
+        "Cardiopatia / Aritmia (in terapia con Bisoprololo 1,25 mg)",
+        "Epilessia / Disturbo neurologico focale (in terapia con VIMPAT Lacosamide 100 mg b.i.d.)",
+        "Ipertrofia Prostatica Benigna (IPB) con difficoltà minzionali (in terapia con SILODYX 8 mg)",
+        "Disturbo comportamentale del sonno / Agitazione notturna (in terapia con Quetiapina 25 mg)",
+        "Gastroprotezione per terapia cronica (in terapia con Pantoprazolo 40 mg)"
       ],
-      "creatoIl": "2026-11-03T10:05:10.534Z"
+      "ausili": [
+        {
+          "tipo": "Materasso Antidecubito a Pressione Alternata",
+          "utilizzo": "Gonfiaggio continuo a ciclo alternato per prevenzione piaghe da decubito",
+          "accessori": "Compressore elettrico con regolazione del peso paziente",
+          "stato": "In uso attivo h24"
+        },
+        {
+          "tipo": "Protocollo Posturale Rotatorio (q2h)",
+          "utilizzo": "Rotazione obbligatoria ogni 2 ore: Supino, Fianco Dx, Fianco Sx, Semiseduto",
+          "accessori": "Cuscini di posizionamento a 30° e crema barriera protettiva cutanea",
+          "stato": "Monitoraggio attivo con segnale sonoro e timer"
+        }
+      ],
+      "farmaciaDiRiferimento": "Farmacia Dott. MACARIO",
+      "farmaciaIndirizzo": "Via G. Petroni, 69/b - Bari",
+      "farmaciaTelefono": "080 542 8061"
     },
     {
       "id": "paz_angela",
-      "nome": "Angela M.",
+      "nome": "Angela Mazzicone",
       "dataNascita": "1938-05-29",
+      "eta": 88,
       "sesso": "F",
-      "indirizzo": "Via Roma, 10 - Bari (BA)",
-      "telefono": "338 000 00 02",
+      "medico": "Dott. Curante",
+      "telMedico": "",
+      "allergie": "Nessuna nota",
+      "catetere": false,
       "allettato": false,
-      "patologie": [
-        "Ipertensione arteriosa sistemica in polichemioterapia",
-        "Sindrome delle Apnee Ostruttive nel Sonno (OSAS) con indicazione ausilio CPAP notturna",
-        "Dislipidemia / Ipercolesterolemia",
-        "Iperuricemia con rischio gotta",
-        "Ipovitaminosi D3 (in integrazione ciclica con DIBASE)",
-        "Reflusso gastroesofageo / gastrite"
-      ],
+      "note": "Coniuge di Aldo. Terapia cardiologica, ipertensiva, dislipidemica, uricosurica, gastroprotettiva e integrazione vit. D3.",
       "terapie": [
         {
           "id": 201,
@@ -148,7 +183,7 @@
           "dosaggio": "1,25 mg (1 cpr rivestita con film)",
           "modo": "Al mattino a colazione (Beta-bloccante: controllo frequenza e battito cardiaco)",
           "cprPerScatola": 28,
-          "scorta": 27,
+          "scorta": 26,
           "farmacia": "Farmacia MACARIO",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
@@ -162,7 +197,7 @@
           "dosaggio": "300 mg / 12,5 mg (1 cpr rivestita)",
           "modo": "Al mattino dopo colazione con acqua (Antipertensivo combinato per la pressione arteriosa)",
           "cprPerScatola": 28,
-          "scorta": 27,
+          "scorta": 26,
           "farmacia": "Farmacia MACARIO",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
@@ -176,7 +211,7 @@
           "dosaggio": "25 mg (1 compressa)",
           "modo": "Al mattino (Diuretico dell'ansa per eliminazione liquidi in eccesso ed edemi)",
           "cprPerScatola": 30,
-          "scorta": 29,
+          "scorta": 28,
           "farmacia": "Farmacia MACARIO",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
@@ -205,9 +240,10 @@
           "dosaggio": "100 mg (1 cpr gastroresistente)",
           "modo": "A metà o fine pranzo con abbondante acqua (Antiaggregante piastrinico salvacuore)",
           "cprPerScatola": 30,
-          "scorta": 30,
+          "scorta": 28,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 205,
@@ -218,9 +254,10 @@
           "dosaggio": "300 mg (1 compressa)",
           "modo": "Dopo pranzo (Uricosurico: riduzione e controllo dell'acido urico e prevenzione gotta)",
           "cprPerScatola": 30,
-          "scorta": 30,
+          "scorta": 28,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 206,
@@ -231,9 +268,10 @@
           "dosaggio": "80 mg/ml (Gel orale / Bustina)",
           "modo": "1 ora dopo i pasti o al bisogno (Antiacido gastroprotettore contro bruciore e reflusso)",
           "cprPerScatola": 20,
-          "scorta": 20,
+          "scorta": 18,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 207,
@@ -244,11 +282,12 @@
           "dosaggio": "40 mg (1 compressa)",
           "modo": "La sera dopo cena o prima di dormire (Statina: controllo del colesterolo e lipidi)",
           "cprPerScatola": 28,
-          "scorta": 28,
+          "scorta": 27,
           "farmacia": "Farmacia MACARIO",
           "fattoOggi": false
         }
       ],
+      "registrazioni": [],
       "visite": [
         {
           "id": 201,
@@ -267,30 +306,56 @@
           "fatto": false
         }
       ],
-      "diario": [],
-      "origini": [
-        "CareAssist Pro"
+      "indirizzo": "Via Roma, 10 - Bari (BA)",
+      "telefonoFisso": "080 561 57 14",
+      "cellulare": "338 000 00 02",
+      "maritoNome": "Aldo Zamparino",
+      "maritoCellulare": "338 000 00 01",
+      "farmaciaDiRiferimento": "Farmacia Dott. MACARIO",
+      "farmaciaIndirizzo": "Via G. Petroni, 69/b - Bari",
+      "farmaciaTelefono": "080 542 8061",
+      "medicoNome": "Dott. Roberto Scarcia",
+      "medicoIndirizzo": "Via Muciaccia, 11 - 70121 Bari",
+      "medicoStudio": "Via Muciaccia, 11 - 70121 Bari",
+      "medicoTelStudio": "080 557 44 90",
+      "medicoTel": "347 126 59 71",
+      "medicoOrari": "Lunedì: 10:00-13:00. Martedì: 10:00-13:00 e 16:00-19:00. Mercoledì: 10:00-13:00. Giovedì: 16:00-19:00. Venerdì: 10:00-13:00 (Bari - Via Muciaccia 11)",
+      "medicoEmail": "scarcia.roberto@alice.it",
+      "patologie": [
+        "Ipertensione arteriosa sistemica in polichemioterapia",
+        "Sindrome delle Apnee Ostruttive nel Sonno (OSAS) con indicazione ausilio CPAP notturna",
+        "Dislipidemia / Ipercolesterolemia",
+        "Iperuricemia con rischio gotta",
+        "Ipovitaminosi D3 (in integrazione ciclica con DIBASE)",
+        "Reflusso gastroesofageo / gastrite"
       ],
-      "creatoIl": "2026-11-03T10:05:10.542Z"
+      "ausili": [
+        {
+          "tipo": "CPAP Notturna (Ventilazione a Pressione Positiva Continua)",
+          "utilizzo": "Tutte le notti durante il riposo per prevenire le apnee notturne e desaturazione",
+          "accessori": "Maschera nasale/oro-facciale, circuito, umidificatore con acqua distillata",
+          "stato": "In uso attivo"
+        },
+        {
+          "tipo": "Bombola di Ossigeno Terapeutico / Concentratore O2",
+          "utilizzo": "Ossigenoterapia domiciliare / Scorta di emergenza",
+          "prossimaRichiesta": "2026-10-19",
+          "stato": "Da ordinare / Rinnovo ricetta con il Dott. Scarcia"
+        }
+      ]
     },
     {
       "id": "paz_rosa",
-      "nome": "Rosa C.",
+      "nome": "Rosa Annunziata Cavalcante",
       "dataNascita": "1938-06-16",
+      "eta": 88,
       "sesso": "F",
-      "indirizzo": "Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)",
-      "telefono": "338 000 00 03",
+      "medico": "Dr.ssa Carolina Potenza",
+      "telMedico": "338 379 05 64",
+      "allergie": "Nessuna nota",
+      "catetere": false,
       "allettato": false,
-      "patologie": [
-        "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga)",
-        "Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga)",
-        "Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel)",
-        "Morbo di Parkinson / parkinsonismo (Sinemet)",
-        "Iperuricemia / gotta (Adenuric)",
-        "Osteoartrosi con dolore cronico (Arcoxia)",
-        "Ipovitaminosi D (Fedivelle)",
-        "Dislipidemia / Ipercolesterolemia (Sivastin)"
-      ],
+      "note": "Paziente di 88 anni. Cardiopatia ipertensiva in buon compenso, osteoartrosi diffusa e insufficienza venosa periferica.",
       "terapie": [
         {
           "id": 305,
@@ -301,7 +366,7 @@
           "dosaggio": "2,5 mg (1 cpr)",
           "modo": "A colazione (Beta-bloccante: frequenza cardiaca) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 27,
+          "scorta": 26,
           "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
@@ -315,7 +380,7 @@
           "dosaggio": "60 mg (1 cpr rilascio modificato)",
           "modo": "A colazione, non masticare (Diabete) - rischio ipoglicemia con insulina ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 30,
-          "scorta": 29,
+          "scorta": 28,
           "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
@@ -329,7 +394,7 @@
           "dosaggio": "10 mg (1 cpr)",
           "modo": "Al mattino con acqua (Diabete / cuore / reni) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 27,
+          "scorta": 26,
           "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
@@ -345,7 +410,7 @@
           "quantitaQuota": 2,
           "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 50,
-          "scorta": 80,
+          "scorta": 79,
           "giorniAlert": 7,
           "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
@@ -366,7 +431,7 @@
           "dosaggio": "5 mg (Dose alternata: ½ cpr e 1 cpr)",
           "modo": "A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno successivo (Pressione arteriosa)",
           "cprPerScatola": 14,
-          "scorta": 13,
+          "scorta": 12,
           "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "cadenzaTipo": "alternata_mezza_intera",
@@ -381,26 +446,6 @@
           "ultimaDoseSomministrata": 1
         },
         {
-          "id": 302,
-          "ora": "08:00",
-          "fascia": "Mattina (Colazione)",
-          "farmaco": "XULTOPHY penna",
-          "principio": "Insulina degludec + Liraglutide",
-          "dosaggio": "16 Unità (sottocute)",
-          "modo": "Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 15,
-          "scorta": 1.94,
-          "farmacia": "Farmacia Comunale Centrale",
-          "fattoOggi": true,
-          "tipoFormulazione": "penna",
-          "unitaDoseDie": 16,
-          "unitaPerPenna": 300,
-          "penneScorta": 1.94,
-          "pennePerScatola": 3,
-          "giorniAlert": 15,
-          "ultimaDoseSomministrata": 1
-        },
-        {
           "id": 307,
           "ora": "08:30",
           "fascia": "Mattina (Colazione)",
@@ -409,7 +454,7 @@
           "dosaggio": "25 mg (1 cpr)",
           "modo": "Al mattino (Diuretico: edemi / scompenso) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 30,
-          "scorta": 29,
+          "scorta": 28,
           "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
@@ -423,9 +468,10 @@
           "dosaggio": "75 mg (1 cpr rivestita)",
           "modo": "A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 28,
+          "scorta": 26,
           "farmacia": "Farmacia Comunale Centrale",
-          "fattoOggi": false
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 309,
@@ -436,11 +482,12 @@
           "dosaggio": "80 mg (1 cpr)",
           "modo": "A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 28,
+          "scorta": 26.5,
           "farmacia": "Farmacia Comunale Centrale",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "cadenzaTipo": "alterni",
-          "dataInizioAlterni": "2026-10-18"
+          "dataInizioAlterni": "2026-10-18",
+          "ultimaDoseSomministrata": 0.5
         },
         {
           "id": 310,
@@ -451,9 +498,30 @@
           "dosaggio": "90 mg (1 cpr)",
           "modo": "A stomaco pieno (Antinfiammatorio: dolore artrosi) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 28,
+          "scorta": 26,
           "farmacia": "Farmacia Comunale Centrale",
-          "fattoOggi": false
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1
+        },
+        {
+          "id": 302,
+          "ora": "17:30",
+          "fascia": "Pomeriggio",
+          "farmaco": "XULTOPHY penna",
+          "principio": "Insulina degludec + Liraglutide",
+          "dosaggio": "16 Unità (sottocute)",
+          "tipoFormulazione": "penna",
+          "unitaDoseDie": 16,
+          "unitaPerPenna": 300,
+          "penneScorta": 1.94,
+          "pennePerScatola": 3,
+          "scorta": 1.94,
+          "giorniAlert": 15,
+          "farmacia": "Farmacia Comunale Centrale",
+          "fattoOggi": true,
+          "modo": "Iniezione sottocute 1 volta al giorno alle 17:30 (Pomeriggio prima di cena - Diabete)",
+          "ultimaDoseSomministrata": 1,
+          "ultimoSitoIniezione": "Addome Destro"
         },
         {
           "id": 311,
@@ -466,7 +534,7 @@
           "quantitaQuota": 2,
           "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 50,
-          "scorta": 80,
+          "scorta": 79,
           "giorniAlert": 7,
           "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": false,
@@ -487,7 +555,7 @@
           "dosaggio": "20 mg (1 cpr)",
           "modo": "A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 28,
+          "scorta": 27,
           "farmacia": "Farmacia Comunale Centrale",
           "fattoOggi": false,
           "cadenzaTipo": "alterni",
@@ -507,6 +575,7 @@
           "fattoOggi": false
         }
       ],
+      "registrazioni": [],
       "visite": [
         {
           "id": 401,
@@ -517,102 +586,252 @@
           "fatto": false
         },
         {
-          "id": 1793430172446,
+          "id": 1793963360551,
           "data": "2026-11-24",
           "ora": "10:00",
           "medico": "Serenity S.p.A. / ASP Villa D'Agri",
           "motivo": "Prossima consegna indicativa fornitura PANTS Serenity (previo appuntamento telefonico al 3380000003)",
           "fatto": false
+        },
+        {
+          "id": 1793980612524,
+          "data": "2026-11-24",
+          "ora": "10:00",
+          "medico": "Dr.ssa Carolina Potenza",
+          "motivo": "Rinnovo ricetta / Rifornimento ASL per Mutandina Assorbente PANTS (Pull-Up monouso)",
+          "fatto": false
+        },
+        {
+          "id": 1793980612485,
+          "data": "2026-11-24",
+          "ora": "10:00",
+          "medico": "Dr.ssa Carolina Potenza",
+          "motivo": "Rinnovo ricetta / Rifornimento ASL per Sensori Glicemia - GlucoMen areo Sensor",
+          "fatto": false
+        },
+        {
+          "id": 1793980612248,
+          "data": "2026-11-24",
+          "ora": "10:00",
+          "medico": "Dr.ssa Carolina Potenza",
+          "motivo": "Rinnovo ricetta / Rifornimento ASL per Lancette Pungidito - Glucoject Lancets Extra 33G",
+          "fatto": false
         }
       ],
-      "diario": [],
-      "origini": [
-        "CareAssist Pro"
+      "indirizzo": "Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)",
+      "telefonoFisso": "0971 693 221",
+      "cellulare": "392 266 09 30",
+      "moglieNome": "Maria Carmela (Figlia / Caregiver)",
+      "moglieCellulare": "338 739 76 71",
+      "farmaciaDiRiferimento": "Farmacia Comunale Centrale",
+      "farmaciaIndirizzo": "Via Ariosto, 4 / 16 - 85012 Corleto Perticara (PZ)",
+      "farmaciaTelefono": "0971 963 055",
+      "medicoNome": "Dr.ssa Carolina Potenza",
+      "medicoStudio": "Sarconi: Via Provinciale 1 / Moliterno: Via Parco del Seggio 1",
+      "medicoTel": "338 379 05 64",
+      "medicoEmail": "carolina.potenza@aspbasilicata.it",
+      "medicoOrari": "Moliterno: Lun 15:00-18:00, Gio 9:00-13:00. Sarconi: Lun-Mer-Ven 9:30-13:00, Mar-Gio 15:00-18:30 (su appuntamento)",
+      "patologie": [
+        "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga)",
+        "Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga)",
+        "Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel)",
+        "Morbo di Parkinson / parkinsonismo (Sinemet)",
+        "Iperuricemia / gotta (Adenuric)",
+        "Osteoartrosi con dolore cronico (Arcoxia)",
+        "Ipovitaminosi D (Fedivelle)",
+        "Dislipidemia / Ipercolesterolemia (Sivastin)"
       ],
-      "creatoIl": "2026-11-03T10:05:10.542Z"
+      "ausili": [
+        {
+          "tipo": "Deambulatore Rollator con freno per interni/esterni",
+          "stato": "In uso regolare",
+          "utilizzo": "Uso quotidiano per deambulazione interna ed esterna in sicurezza",
+          "cartoni": "",
+          "dataRifornimento": "",
+          "prossimaRichiesta": "",
+          "dataScadenza": "",
+          "giorniAlert": 15
+        },
+        {
+          "tipo": "Calze elastiche antitrombo a compressione graduata",
+          "stato": "In uso",
+          "utilizzo": "In uso diurno per favorire il ritorno venoso e prevenzione edemi",
+          "cartoni": "",
+          "dataRifornimento": "",
+          "prossimaRichiesta": "",
+          "dataScadenza": "",
+          "giorniAlert": 15
+        },
+        {
+          "tipo": "Mutandina Assorbente PANTS (Pull-Up monouso)",
+          "taglia": "L (Extra) - Girovita 110-150 cm",
+          "cartoni": "10 confezioni (140 pezzi)",
+          "scortaPacchi": 10,
+          "pezziTotali": 140,
+          "pezziPerPacco": 14,
+          "utilizzo": "PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021) - 10 conf. x 14 pz = 140 pz. DDT Serenity N. 2286626418 del 21/08/2026. Ord. ASP 0060448686 - Distretto Villa D'Agri 02 02. Codice Utente: 002713. Prossima consegna indicativa: 24/11/2026 con preavviso telefonico (3380000003). Scadenza Piano: 18/02/2027.",
+          "fabbisogno": "Fornitura programmata ogni 90 giorni (ASP Potenza)",
+          "fornitore": "Serenity S.p.A. / ASP Potenza (Distretto Villa D'Agri)",
+          "ddtNumero": "2286626418",
+          "ddtData": "2026-08-21",
+          "codiceUtente": "002713",
+          "codiceArticolo": "00037212200021",
+          "numConfezioni": 10,
+          "pezziConsegnati": 140,
+          "prossimaConsegnaIndicativa": "2026-11-24",
+          "scadenzaPiano": "2027-02-18",
+          "stato": "In uso attivo regolare",
+          "dataRifornimento": "2026-08-21",
+          "dataScadenza": "2026-11-24",
+          "prossimaRichiesta": "2026-11-24",
+          "giorniAlert": 15,
+          "marca": "Serenity S.p.A. - PANTS SD SENSITIVE BE FREE EXTRA L 8",
+          "ordineAsp": "0060448686 del 03.08.2026",
+          "codiceDistretto": "02 02 - DISTRETTO VILLA D'AGRI"
+        },
+        {
+          "tipo": "Sensori Glicemia - GlucoMen areo Sensor",
+          "utilizzo": "Sensori reattivi per l'autocontrollo della glicemia con glucometro linea GlucoMen areo (Diabete mellito in terapia con Xultophy)",
+          "prossimaRichiesta": "2026-11-24",
+          "dataScadenza": "2026-11-24",
+          "giorniAlert": 15,
+          "stato": "In uso"
+        },
+        {
+          "tipo": "Lancette Pungidito - Glucoject Lancets Extra 33G",
+          "utilizzo": "Lancette sterili monouso calibro 33G (extra-sottili) per dispositivo pungidito per prelievo capillare glicemia",
+          "prossimaRichiesta": "2026-11-24",
+          "dataScadenza": "2026-11-24",
+          "giorniAlert": 15,
+          "stato": "In uso"
+        }
+      ],
+      "medicoIndirizzo": "Sarconi: Via Provinciale 1 / Moliterno: Via Parco del Seggio 1",
+      "medicoTelStudio": ""
     },
     {
       "id": "paz_1793216119572",
       "nome": "Ciro Milella",
       "dataNascita": "1967-12-15",
+      "eta": 58,
       "sesso": "M",
-      "indirizzo": "Via Giulio Petroni, 69",
-      "telefono": "366 460 73 96",
+      "medico": "Dott. Curante",
+      "telMedico": "",
+      "allergie": "Nessuna nota",
+      "catetere": false,
       "allettato": false,
-      "patologie": [
-        "Epatite B cronica (HBV) in trattamento antivirale con Entecavir 0,5 mg",
-        "Follow-up periodico semestrale presso U.O. Malattie Infettive ed Epatologia - Policlinico di Bari"
-      ],
+      "note": "Paziente in follow-up specialistico per epatopatia HBV correlata presso Clinica Malattie Infettive Policlinico Bari (Prof.ssa Saracino).",
       "terapie": [
         {
-          "id": 1793444784904,
-          "ora": "12:15",
-          "fascia": "Pranzo",
+          "id": 1793963552261,
+          "ora": "07:00",
+          "fascia": "Mattina (Digiuno)",
           "farmaco": "Entecavir Sandoz 0,5 mg",
           "principio": "Entecavir",
           "dosaggio": "0,5 mg (1 cpr)",
           "quantitaQuota": 1,
           "modo": "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell'infezione cronica da virus dell'epatite B (HBV).",
           "cprPerScatola": 30,
-          "scorta": 39,
+          "scorta": 32,
           "giorniAlert": 10,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
-          "penneScorta": 40,
+          "penneScorta": 33,
           "unitaDoseDie": 1,
           "unitaPerPenna": 300,
           "pennePerScatola": 30,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "01/11/2026",
+            "data": "06/11/2026",
             "fonte": "Visita Specialistica",
-            "medico": "Prof.ssa Saracino",
-            "motivo": "Ripristino terapia antivirale Entecavir Sandoz"
-          },
-          "ultimaDoseSomministrata": 1
+            "medico": "",
+            "motivo": ""
+          }
+        }
+      ],
+      "registrazioni": [
+        {
+          "id": "log_1793963464529",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:04.529Z",
+          "farmacoId": 1793218169955,
+          "farmaco": "Entecavir Sandoz 0,5 mg",
+          "dosaggio": "0,5 mg (1 cpr)",
+          "orarioPrevisto": "07:00",
+          "orarioReale": "12:11",
+          "minutiRitardo": 311,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 5 ore e 11 min! Orario previsto: 07:00 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 40 cpr.",
+          "operatore": "Ciro Milella (Admin)"
         }
       ],
       "visite": [],
-      "diario": [],
-      "origini": [
-        "CareAssist Pro",
-        "Progetto Salute",
-        "MedNutri Pro"
-      ],
-      "creatoIl": "2026-11-03T10:05:10.542Z"
+      "indirizzo": "Via Giulio Petroni, 69",
+      "telefonoFisso": "366 460 73 96",
+      "cellulare": "366 460 73 96",
+      "moglieNome": "Maria Carmela Stoppelli",
+      "moglieCellulare": "338 739 76 71",
+      "medicoNome": "Dott. Curante",
+      "medicoEmail": "scarcia.roberto@alice.it",
+      "farmaciaDiRiferimento": "Farmacia di Riferimento",
+      "patologie": [
+        "Epatite B cronica (HBV) in trattamento antivirale con Entecavir 0,5 mg",
+        "Follow-up periodico semestrale presso U.O. Malattie Infettive ed Epatologia - Policlinico di Bari"
+      ]
     },
     {
       "id": "paz_mariacarmela",
-      "nome": "Maria Carmela",
+      "nome": "Maria Carmela Stoppelli",
       "dataNascita": "1969-03-20",
+      "eta": 57,
       "sesso": "F",
-      "indirizzo": "Via Giulio Petroni, 69 - BARI (BA)",
-      "telefono": "347 123 4567",
+      "medico": "Dott. Curante",
+      "telMedico": "",
+      "allergie": "Nessuna nota",
+      "catetere": false,
       "allettato": false,
-      "patologie": [
-        "Nutrizione & Benessere"
-      ],
+      "note": "Paziente assistita a domicilio • Follow-up Benessere & Nutrizione.",
       "terapie": [],
+      "registrazioni": [],
       "visite": [],
+      "indirizzo": "Via Giulio Petroni, 69 - BARI (BA)",
+      "telefonoFisso": "080 542 80 61",
+      "cellulare": "338 739 76 71",
+      "maritoNome": "Ciro Milella",
+      "maritoCellulare": "366 460 73 96",
+      "medicoNome": "Dott. Curante",
+      "farmaciaDiRiferimento": "Farmacia Dott. MACARIO",
+      "farmaciaIndirizzo": "Via G. Petroni, 69/b - Bari",
+      "patologie": [
+        "Piano Nutrizionale & Benessere Domiciliare (Progetto Salute)",
+        "Monitoraggio Pressione Arteriosa & Peso Corporeo"
+      ],
+      "ausili": [],
       "diario": [],
       "origini": [
         "Progetto Salute",
         "CareAssist Pro"
-      ],
-      "creatoIl": "2026-11-03T10:05:10.542Z"
+      ]
     }
   ],
-  "lastModified": 1793527494292,
-  "lastModifiedDevice": "smartphone",
+  "lastModified": 1793985173888,
+  "lastModifiedDevice": "pc",
   "lastModifiedBy": {
-    "nome": "Ciro Milella",
+    "nome": "Ciro Milella (Admin)",
     "ruolo": "admin",
-    "paziente": "Ciro Milella",
-    "ora": "12:28",
-    "timestamp": 1793446129673
+    "paziente": "Aldo Zamparino",
+    "ora": "18:12",
+    "timestamp": 1793985173889
   },
-  "ultimoGiornoOperativo": "2026-10-31",
+  "ultimoGiornoOperativo": "2026-11-06",
+  "_statoAntiFurbiVolume": {
+    "attivo": true,
+    "livelloMinimo": "75%",
+    "dispositivo": "PC Postazione",
+    "ora": "17:35:27",
+    "motivo": "Allarme Terapia in Corso / Scaduta"
+  },
   "aldoVimpatInizializzato2026": true,
   "rosaInitializedOnce": true,
   "rosaTerapiaFoto20261017": true,
@@ -626,13 +845,502 @@
   "rosaAverelix20261017": true,
   "rosaSerenityPantsRinnovo20270218": true,
   "rosaSerenityDDT20260821": true,
-  "ciroTerapiaRecuperata20261031": true,
-  "_cestino": [],
-  "_liveAlertTest": {
-    "ts": 1793444498151,
-    "da": "Smartphone (a Display Spento)",
-    "ora": "12:01:38",
-    "paziente": "Ciro Milella",
-    "msg": "Allarme a Display Spento verificato con successo alle 12:01:38"
-  }
+  "_cestino": [
+    {
+      "id": "cst_1793983051482_142",
+      "tipo": "annotazione",
+      "etichetta": "Annotazione del diario",
+      "dettaglio": "farmaco_ritardo",
+      "pazienteId": "paz_rosa",
+      "pazienteNome": "Rosa Annunziata Cavalcante",
+      "ts": 1793983051482,
+      "eliminatoDa": "Ciro Milella (Admin)",
+      "item": [
+        {
+          "id": "log_1793982928534",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T16:35:28.534Z",
+          "farmacoId": 302,
+          "farmaco": "XULTOPHY penna",
+          "dosaggio": "16 Unità (sottocute)",
+          "orarioPrevisto": "17:30",
+          "orarioReale": "17:35",
+          "minutiRitardo": 5,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 5 minuti! Orario previsto: 17:30 - Orario effettivo assunzione: 17:35. Rimanenza scorta: 1.94 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        }
+      ]
+    },
+    {
+      "id": "cst_1793977972908_925",
+      "tipo": "annotazione",
+      "etichetta": "10 avvisi di ritardo farmaci",
+      "dettaglio": "Registro ritardi di Rosa Annunziata Cavalcante",
+      "pazienteId": "paz_rosa",
+      "pazienteNome": "Rosa Annunziata Cavalcante",
+      "ts": 1793977972908,
+      "eliminatoDa": "Ciro Milella (Admin)",
+      "item": [
+        {
+          "id": "log_1793963488601",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:28.600Z",
+          "farmacoId": 305,
+          "farmaco": "CONGESCOR 2,5 mg",
+          "dosaggio": "2,5 mg (1 cpr)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "12:11",
+          "minutiRitardo": 251,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 11 min! Orario previsto: 08:00 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 27 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963489595",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:29.595Z",
+          "farmacoId": 303,
+          "farmaco": "DIAMICRON 60 mg RM",
+          "dosaggio": "60 mg (1 cpr rilascio modificato)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "12:11",
+          "minutiRitardo": 251,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 11 min! Orario previsto: 08:00 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 29 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963490905",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:30.904Z",
+          "farmacoId": 304,
+          "farmaco": "FORXIGA 10 mg",
+          "dosaggio": "10 mg (1 cpr)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "12:11",
+          "minutiRitardo": 251,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 11 min! Orario previsto: 08:00 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 27 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963493410",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:33.410Z",
+          "farmacoId": 301,
+          "farmaco": "SINEMET 100+25 mg (1ª dose: 2 cpr - ore 08:00)",
+          "dosaggio": "100/25 mg (2 cpr)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "12:11",
+          "minutiRitardo": 251,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 11 min! Orario previsto: 08:00 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 80 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963496737",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:36.736Z",
+          "farmacoId": 302,
+          "farmaco": "XULTOPHY penna",
+          "dosaggio": "16 Unità (sottocute)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "12:11",
+          "minutiRitardo": 251,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 11 min! Orario previsto: 08:00 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 1.94 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963497443",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:37.442Z",
+          "farmacoId": 306,
+          "farmaco": "TRIATEC 5 mg",
+          "dosaggio": "5 mg (Dose alternata: ½ cpr e 1 cpr)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "12:11",
+          "minutiRitardo": 251,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 11 min! Orario previsto: 08:00 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 13 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963507664",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:47.664Z",
+          "farmacoId": 307,
+          "farmaco": "LASIX 25 mg",
+          "dosaggio": "25 mg (1 cpr)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "12:11",
+          "minutiRitardo": 221,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 ore e 41 min! Orario previsto: 08:30 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 29 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793966455184",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T12:00:55.184Z",
+          "farmacoId": 314,
+          "farmaco": "AVERELIX 75 mg",
+          "dosaggio": "75 mg (1 cpr rivestita)",
+          "orarioPrevisto": "13:00",
+          "orarioReale": "13:00",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 13:00 - Orario effettivo assunzione: 13:00. Rimanenza scorta: 26 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793968430935",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T12:33:50.935Z",
+          "farmacoId": 310,
+          "farmaco": "ARCOXIA 90 mg",
+          "dosaggio": "90 mg (1 cpr)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "13:33",
+          "minutiRitardo": 3,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 minuti! Orario previsto: 13:30 - Orario effettivo assunzione: 13:33. Rimanenza scorta: 26 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793968432127",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T12:33:52.127Z",
+          "farmacoId": 309,
+          "farmaco": "ADENURIC 80 mg",
+          "dosaggio": "80 mg (1 cpr)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "13:33",
+          "minutiRitardo": 3,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 minuti! Orario previsto: 13:30 - Orario effettivo assunzione: 13:33. Rimanenza scorta: 26.5 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        }
+      ]
+    },
+    {
+      "id": "cst_1793977960324_475",
+      "tipo": "annotazione",
+      "etichetta": "1 annotazioni del diario",
+      "dettaglio": "postura",
+      "pazienteId": "paz_aldo",
+      "pazienteNome": "Aldo Zamparino",
+      "ts": 1793977960324,
+      "eliminatoDa": "Ciro Milella (Admin)",
+      "item": [
+        {
+          "id": "log_1793977956144",
+          "tipo": "postura",
+          "timestamp": "2026-11-06T15:12:36.144Z",
+          "posizione": "Supino (Schiena a letto)",
+          "cute": "Integra e rosea (Iniziale)",
+          "operatore": "Sistema Automatico CareAssist"
+        }
+      ]
+    },
+    {
+      "id": "cst_1793977956141_810",
+      "tipo": "annotazione",
+      "etichetta": "Annotazione del diario",
+      "dettaglio": "postura",
+      "pazienteId": "paz_aldo",
+      "pazienteNome": "Aldo Zamparino",
+      "ts": 1793977956141,
+      "eliminatoDa": "Ciro Milella (Admin)",
+      "item": [
+        {
+          "id": "log_1793977951001",
+          "tipo": "postura",
+          "timestamp": "2026-11-06T15:12:31.001Z",
+          "posizione": "Supino (Schiena a letto)",
+          "cute": "Integra e rosea (Iniziale)",
+          "operatore": "Sistema Automatico CareAssist"
+        }
+      ]
+    },
+    {
+      "id": "cst_1793977950997_240",
+      "tipo": "annotazione",
+      "etichetta": "1 annotazioni del diario",
+      "dettaglio": "postura",
+      "pazienteId": "paz_aldo",
+      "pazienteNome": "Aldo Zamparino",
+      "ts": 1793977950997,
+      "eliminatoDa": "Ciro Milella (Admin)",
+      "item": [
+        {
+          "id": "log_1793977942551",
+          "tipo": "postura",
+          "timestamp": "2026-11-06T15:12:22.551Z",
+          "posizione": "Supino (Schiena a letto)",
+          "cute": "Integra e rosea (Iniziale)",
+          "operatore": "Sistema Automatico CareAssist"
+        }
+      ]
+    },
+    {
+      "id": "cst_1793977942548_664",
+      "tipo": "annotazione",
+      "etichetta": "1 annotazioni del diario",
+      "dettaglio": "postura",
+      "pazienteId": "paz_aldo",
+      "pazienteNome": "Aldo Zamparino",
+      "ts": 1793977942548,
+      "eliminatoDa": "Ciro Milella (Admin)",
+      "item": [
+        {
+          "id": "log_1793977932047",
+          "tipo": "postura",
+          "timestamp": "2026-11-06T15:12:12.047Z",
+          "posizione": "Supino (Schiena a letto)",
+          "cute": "Integra e rosea (Iniziale)",
+          "operatore": "Sistema Automatico CareAssist"
+        }
+      ]
+    },
+    {
+      "id": "cst_1793977932043_148",
+      "tipo": "annotazione",
+      "etichetta": "1 annotazioni del diario",
+      "dettaglio": "postura",
+      "pazienteId": "paz_aldo",
+      "pazienteNome": "Aldo Zamparino",
+      "ts": 1793977932043,
+      "eliminatoDa": "Ciro Milella (Admin)",
+      "item": [
+        {
+          "id": "log_1793963121377",
+          "tipo": "postura",
+          "timestamp": "2026-11-06T11:05:21.377Z",
+          "posizione": "Supino (Schiena a letto)",
+          "cute": "Integra e rosea (Iniziale)",
+          "operatore": "Sistema Automatico CareAssist"
+        }
+      ]
+    },
+    {
+      "id": "cst_1793977926643_222",
+      "tipo": "annotazione",
+      "etichetta": "4 avvisi di ritardo farmaci",
+      "dettaglio": "Registro ritardi di Aldo Zamparino",
+      "pazienteId": "paz_aldo",
+      "pazienteNome": "Aldo Zamparino",
+      "ts": 1793977926643,
+      "eliminatoDa": "Ciro Milella (Admin)",
+      "item": [
+        {
+          "id": "log_1793963456260",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:10:56.259Z",
+          "farmacoId": 101,
+          "farmaco": "Pantoprazolo 40 mg",
+          "dosaggio": "40 mg (1 cpr gastroresistente)",
+          "orarioPrevisto": "07:30",
+          "orarioReale": "12:10",
+          "minutiRitardo": 280,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 40 min! Orario previsto: 07:30 - Orario effettivo assunzione: 12:10. Rimanenza scorta: 27 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963457200",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:10:57.200Z",
+          "farmacoId": 102,
+          "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
+          "dosaggio": "1,25 mg (1 cpr rivestita)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "12:10",
+          "minutiRitardo": 220,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 ore e 40 min! Orario previsto: 08:30 - Orario effettivo assunzione: 12:10. Rimanenza scorta: 27 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963458649",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:10:58.648Z",
+          "farmacoId": 103,
+          "farmaco": "VIMPAT 100 mg (1ª dose)",
+          "dosaggio": "100 mg (1 capsula)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "12:10",
+          "minutiRitardo": 220,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 ore e 40 min! Orario previsto: 08:30 - Orario effettivo assunzione: 12:10. Rimanenza scorta: 55 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793968386120",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T12:33:06.120Z",
+          "farmacoId": 1032,
+          "farmaco": "VIMPAT 100 mg (2ª dose)",
+          "dosaggio": "100 mg (1 capsula)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "13:33",
+          "minutiRitardo": 3,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 minuti! Orario previsto: 13:30 - Orario effettivo assunzione: 13:33. Rimanenza scorta: 53 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        }
+      ]
+    },
+    {
+      "id": "cst_1793977917011_619",
+      "tipo": "annotazione",
+      "etichetta": "4 annotazioni del diario",
+      "dettaglio": "nota_turno",
+      "pazienteId": "paz_angela",
+      "pazienteNome": "Angela Mazzicone",
+      "ts": 1793977917011,
+      "eliminatoDa": "Ciro Milella (Admin)",
+      "item": [
+        {
+          "id": "esc_1793977765074",
+          "timestamp": "2026-11-06T15:09:25.074Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 16:09 il farmaco \"Riopan 80 mg/ml (Magaldrato)\" delle ore 15:30 risulta non ancora spuntato (+39 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1793977740755",
+          "timestamp": "2026-11-06T15:09:00.754Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 16:09 il farmaco \"Riopan 80 mg/ml (Magaldrato)\" delle ore 15:30 risulta non ancora spuntato (+39 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1793963312067",
+          "timestamp": "2026-11-06T11:08:32.064Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 12:08 il farmaco \"DIBASE 50.000 U.I. / 2,5 ml (Colecalciferolo)\" delle ore 10:00 risulta non ancora spuntato (+128 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1793963217902",
+          "timestamp": "2026-11-06T11:06:57.901Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 12:06 il farmaco \"DIBASE 50.000 U.I. / 2,5 ml (Colecalciferolo)\" delle ore 10:00 risulta non ancora spuntato (+126 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        }
+      ]
+    },
+    {
+      "id": "cst_1793977912427_549",
+      "tipo": "annotazione",
+      "etichetta": "7 avvisi di ritardo farmaci",
+      "dettaglio": "Registro ritardi di Angela Mazzicone",
+      "pazienteId": "paz_angela",
+      "pazienteNome": "Angela Mazzicone",
+      "ts": 1793977912427,
+      "eliminatoDa": "Ciro Milella (Admin)",
+      "item": [
+        {
+          "id": "log_1793963470521",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:10.521Z",
+          "farmacoId": 201,
+          "farmaco": "Bisoprololo Sandoz 1,25 mg",
+          "dosaggio": "1,25 mg (1 cpr rivestita con film)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "12:11",
+          "minutiRitardo": 251,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 11 min! Orario previsto: 08:00 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 27 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963471504",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:11.504Z",
+          "farmacoId": 202,
+          "farmaco": "Irbesartan/Idroclorotiazide Teva 300 mg/12,5 mg",
+          "dosaggio": "300 mg / 12,5 mg (1 cpr rivestita)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "12:11",
+          "minutiRitardo": 221,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 ore e 41 min! Orario previsto: 08:30 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 27 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963472505",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:12.504Z",
+          "farmacoId": 203,
+          "farmaco": "Lasix 25 mg (Furosemide)",
+          "dosaggio": "25 mg (1 compressa)",
+          "orarioPrevisto": "09:00",
+          "orarioReale": "12:11",
+          "minutiRitardo": 191,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 ore e 11 min! Orario previsto: 09:00 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 29 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793963474233",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T11:11:14.233Z",
+          "farmacoId": 208,
+          "farmaco": "DIBASE 50.000 U.I. / 2,5 ml (Colecalciferolo)",
+          "dosaggio": "50.000 U.I. in 2,5 ml flaconcino monodose",
+          "orarioPrevisto": "10:00",
+          "orarioReale": "12:11",
+          "minutiRitardo": 131,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 11 min! Orario previsto: 10:00 - Orario effettivo assunzione: 12:11. Rimanenza scorta: 0.93 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793966437080",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T12:00:37.080Z",
+          "farmacoId": 204,
+          "farmaco": "Cardioaspirin 100 mg (Acido Acetilsalicilico)",
+          "dosaggio": "100 mg (1 cpr gastroresistente)",
+          "orarioPrevisto": "13:00",
+          "orarioReale": "13:00",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 13:00 - Orario effettivo assunzione: 13:00. Rimanenza scorta: 28 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793968406719",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T12:33:26.719Z",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "dosaggio": "300 mg (1 compressa)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "13:33",
+          "minutiRitardo": 3,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 minuti! Orario previsto: 13:30 - Orario effettivo assunzione: 13:33. Rimanenza scorta: 28 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1793977818974",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-06T15:10:18.973Z",
+          "farmacoId": 206,
+          "farmaco": "Riopan 80 mg/ml (Magaldrato)",
+          "dosaggio": "80 mg/ml (Gel orale / Bustina)",
+          "orarioPrevisto": "15:30",
+          "orarioReale": "16:10",
+          "minutiRitardo": 40,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 40 minuti! Orario previsto: 15:30 - Orario effettivo assunzione: 16:10. Rimanenza scorta: 18 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        }
+      ]
+    }
+  ]
 }
