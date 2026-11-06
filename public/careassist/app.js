@@ -4976,8 +4976,25 @@ function renderTerapie() {
               `;
           }
           if (t.fattoOggi) {
+            // PROTEZIONE CLINICA ANTIDOPPIA DOSE:
+            // Se l'orario della terapia è già passato ed è un farmaco continuativo (non SOS),
+            // il pulsante si congela con lucchetto di protezione per impedire tocchi accidentali e scalature errate.
+            const checkFascia = (typeof verificaStatoOrarioFarmaco === 'function') ? verificaStatoOrarioFarmaco(t.ora) : { orarioPassato: true };
+            const oraPassata = checkFascia.orarioPassato || true;
+
+            if (!isBisogno && oraPassata) {
+              return `
+                <div style="display:inline-flex; flex-direction:column; align-items:center;">
+                  <div class="badge-assunto-protetto" style="background:linear-gradient(135deg, #15803d 0%, #166534 100%); color:#ffffff; font-weight:800; font-size:12px; padding:8px 14px; border-radius:10px; border:1.5px solid #86efac; box-shadow:0 2px 8px rgba(22,101,52,0.25); display:inline-flex; align-items:center; gap:6px; cursor:default;" title="Dose giornaliera già assunta e registrata. Protetta da modifiche accidentali per sicurezza clinica.">
+                    <span>🔒✓</span> <span>${isPen ? 'Iniettato Oggi' : 'Assunto Oggi'}</span>
+                  </div>
+                  <span style="font-size:9.5px; color:#166534; font-weight:700; margin-top:3px;">Confermato &bull; Dose Protetta</span>
+                </div>
+              `;
+            }
+
             return `
-                <button class="btn btn-azione-luxury done" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per annullare la spunta se hai sbagliato">
+                <button class="btn btn-azione-luxury done" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per gestire o annullare la spunta">
                   ✓ ${isPen ? 'Iniettato Oggi' : 'Assunto Oggi'}
                 </button>
                 ${isBisogno ? `<div style="font-size:10px; color:#15803d; font-weight:700; margin-top:3px;">⚡ Assunto al bisogno</div>` : ''}
