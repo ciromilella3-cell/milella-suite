@@ -7072,6 +7072,16 @@ main, .main-content, .dashboard-container {
     font-size: 11px !important;
     padding: 6px 10px !important;
   }
+
+  /* 5. MENU TENDINA 3 PUNTINI (⋮) HEADER SU SMARTPHONE (ANCORAGGIO A SINISTRA / MOBILE FIT) */
+  #dropdown-menu-oss-top,
+  .dropdown-menu-oss-top-box {
+    left: 0 !important;
+    right: auto !important;
+    min-width: 280px !important;
+    max-width: calc(100vw - 24px) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45) !important;
+  }
 }
 
 @keyframes slideUpMobile {

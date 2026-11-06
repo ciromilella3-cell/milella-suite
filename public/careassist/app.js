@@ -22812,7 +22812,18 @@ document.addEventListener('click', function(e) {
 function toggleMenuOSSTop(event) {
   if (event) { event.stopPropagation(); event.preventDefault(); }
   const d = document.getElementById('dropdown-menu-oss-top');
-  if (d) d.style.display = (d.style.display === 'block' ? 'none' : 'block');
+  if (!d) return;
+  const isOpening = d.style.display !== 'block';
+  d.style.display = isOpening ? 'block' : 'none';
+  if (isOpening) {
+    if (window.innerWidth <= 768) {
+      d.style.left = '0px';
+      d.style.right = 'auto';
+    } else {
+      d.style.left = 'auto';
+      d.style.right = '0px';
+    }
+  }
 }
 window.toggleMenuOSSTop = toggleMenuOSSTop;
 
