@@ -964,8 +964,8 @@ function getTerapieRosaFoto() {
     }),
     {
       id: 302,
-      ora: '08:00',
-      fascia: 'Mattina (Colazione)',
+      ora: '17:30',
+      fascia: 'Pomeriggio',
       farmaco: 'XULTOPHY penna',
       principio: 'Insulina degludec + Liraglutide',
       dosaggio: '16 Unità (sottocute)',
@@ -11943,7 +11943,15 @@ function renderAll() {
     AppData.pazienti.forEach(function(p) {
       if (p.id === 'paz_aldo' || (p.nome && (p.nome === 'Aldo Z.' || p.nome.startsWith('Aldo Z')))) p.nome = 'Aldo Zamparino';
       if (p.id === 'paz_angela' || (p.nome && (p.nome === 'Angela M.' || p.nome.startsWith('Angela M')))) p.nome = 'Angela Mazzicone';
-      if (p.id === 'paz_rosa' || (p.nome && (p.nome === 'Rosa C.' || p.nome.startsWith('Rosa C')))) p.nome = 'Rosa Annunziata Cavalcante';
+      if (p.id === 'paz_rosa' || (p.nome && (p.nome === 'Rosa C.' || p.nome.startsWith('Rosa C')))) {
+        p.nome = 'Rosa Annunziata Cavalcante';
+        (p.terapie || []).forEach(function(t) {
+          if ((t.farmaco || '').toUpperCase().indexOf('XULTOPHY') >= 0) {
+            t.ora = '17:30';
+            t.fascia = 'Pomeriggio';
+          }
+        });
+      }
     });
   }
   verificaCambioDataAutomatico();
