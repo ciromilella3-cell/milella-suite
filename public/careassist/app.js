@@ -22385,8 +22385,33 @@ async function eseguiConfermaSafetyCheckOspedaliero() {
   const chkDose = document.getElementById('safety-check-chk-dosaggio');
   
   if (chkDose && !chkDose.checked) {
-    alert('Per la massima sicurezza del paziente, spunta la casella di verifica del dosaggio prima di confermare.');
+    // EFFETTO WOW CLINICO: evidenzia la casella con effetto rimbalzo, luce pulsante e suono morbido
+    const sez = document.getElementById('safety-check-sezione-dosaggio');
+    if (sez) {
+      sez.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      sez.style.transition = 'all 0.3s ease';
+      sez.style.borderColor = '#dc2626';
+      sez.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.45)';
+      sez.style.background = '#fef2f2';
+      
+      // Crea o aggiorna avviso interno elegante
+      let avv = document.getElementById('safety-check-warning-spunta');
+      if (!avv) {
+        avv = document.createElement('div');
+        avv.id = 'safety-check-warning-spunta';
+        avv.style.cssText = 'margin-top:10px; font-size:13px; font-weight:900; color:#b91c1c; display:flex; align-items:center; gap:6px; animation:shakeX 0.4s ease-in-out;';
+        sez.appendChild(avv);
+      }
+      avv.innerHTML = '<span>⚠️</span> Spunta questa casella per confermare il dosaggio e procedere in sicurezza!';
+      
+      setTimeout(() => {
+        sez.style.boxShadow = '0 0 10px rgba(249, 115, 22, 0.3)';
+      }, 1500);
+    }
     chkDose.focus();
+    if (typeof showToast === 'function') {
+      showToast('⚠️ Spunta la casella di verifica per convalidare la dose!', 'warning');
+    }
     return;
   }
 
