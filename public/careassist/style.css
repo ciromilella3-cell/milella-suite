@@ -1646,23 +1646,95 @@ body {
   background: #0369a1;
 }
 
-/* Tabella Terapie Pulita, Fluida e Professionale per Schermi PC Desktop */
+/* Tabella Terapie Panoramica Full-View (TUTTO A VISTA SENZA SCROLL ORIZZONTALE) */
 .table-responsive {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: hidden; /* Niente barre o spostamenti sinistra-destra su schermi PC */
   border-radius: 14px;
-  border: 1px solid #e2e8f0;
+  border: 1.5px solid #cbd5e1;
   background: #ffffff;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
 }
 
 .custom-table {
   width: 100%;
-  min-width: 1000px;
+  table-layout: auto;
   border-collapse: separate;
   border-spacing: 0;
   text-align: left;
-  font-size: 13px;
+  font-size: 12px;
+}
+
+.custom-table th {
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 800;
+  padding: 10px 8px;
+  border-bottom: 2px solid #cbd5e1;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.custom-table td {
+  padding: 8px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+/* Card Scorta Compatta & Fluida */
+.scorta-card-executive {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 6px 8px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 170px;
+  margin: 0 auto;
+}
+.scorta-exec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.scorta-exec-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.scorta-exec-autonomia {
+  font-size: 10px;
+  font-weight: 800;
+  color: #0369a1;
+}
+.scorta-exec-quantita {
+  font-size: 12.5px;
+  font-weight: 800;
+}
+.scorta-exec-milestones {
+  display: flex;
+  gap: 4px;
+  font-size: 9px;
+}
+.milestone-pill {
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+/* Allargamento del container principale su Desktop per sfruttare al 100% lo schermo */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 98% !important;
+    padding: 0 16px !important;
+  }
 }
 
 .custom-table th {
