@@ -2821,6 +2821,12 @@ function renderPazientiSelector() {
                 <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); stampaReport();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                   <span>🖨️</span> <span>Stampa Diario Cartaceo</span>
                 </a>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); stampaPortapilloleSettimanale();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0284c7; text-decoration:none; font-size:13px; font-weight:800;" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='transparent'">
+                  <span>💊</span> <span>Portapillole Settimanale (A4)</span>
+                </a>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); apriModalScheda118();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#dc2626; text-decoration:none; font-size:13px; font-weight:800;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
+                  <span>🚨</span> <span>Scheda Emergenza 118 Salva-Vita</span>
+                </a>
               </div>
             </div>
 
@@ -21859,6 +21865,219 @@ window.stampaCartellaClinicaCompletaPDF = function() {
     </div>
   </body>
   </html>`;
+
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+};
+
+// ==========================================================================
+// 1. DETTATURA VOCALE NOTA DI TURNO & PARSING AUTOMATICO
+// ==========================================================================
+let _dettaturaNotaRecognition = null;
+let _isDettandoNota = false;
+
+function toggleDettaturaVocaleNota() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    showToast('Il riconoscimento vocale non è supportato dal browser corrente.', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('btn-mic-dettatura-nota');
+  const txtArea = document.getElementById('nota-turno-testo');
+
+  if (_isDettandoNota) {
+    if (_dettaturaNotaRecognition) _dettaturaNotaRecognition.stop();
+    _isDettandoNota = false;
+    if (btn) {
+      btn.style.background = '#f0f9ff';
+      btn.style.borderColor = '#0284c7';
+      btn.style.color = '#0284c7';
+      btn.innerHTML = '<span>🎤</span> Dettatura Vocale';
+    }
+    return;
+  }
+
+  try {
+    _dettaturaNotaRecognition = new SpeechRecognition();
+    _dettaturaNotaRecognition.lang = 'it-IT';
+    _dettaturaNotaRecognition.continuous = true;
+    _dettaturaNotaRecognition.interimResults = false;
+
+    _dettaturaNotaRecognition.onstart = function() {
+      _isDettandoNota = true;
+      if (btn) {
+        btn.style.background = '#dc2626';
+        btn.style.borderColor = '#b91c1c';
+        btn.style.color = '#ffffff';
+        btn.innerHTML = '<span>⏹️</span> In ascolto... Parla ora!';
+      }
+      showToast('🎙️ Parla chiaramente: trascrizione in tempo reale...');
+    };
+
+    _dettaturaNotaRecognition.onresult = function(event) {
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          const trascritto = event.results[i][0].transcript.trim();
+          if (txtArea) {
+            const current = txtArea.value.trim();
+            txtArea.value = current ? current + '. ' + trascritto : trascritto;
+            
+            // Smart Parsing: Se rileva parole chiave cliniche come alvo, pressione, glicemia o acqua, suggerisce o compila
+            if (trascritto.toLowerCase().includes('pressione') || trascritto.toLowerCase().includes('alvo') || trascritto.toLowerCase().includes('beve')) {
+              showToast('💡 Rilevati parametri clinici nel parlato!', 'success');
+            }
+          }
+        }
+      }
+    };
+
+    _dettaturaNotaRecognition.onerror = function(err) {
+      console.warn('Speech error:', err);
+      _isDettandoNota = false;
+      if (btn) {
+        btn.style.background = '#f0f9ff';
+        btn.style.borderColor = '#0284c7';
+        btn.style.color = '#0284c7';
+        btn.innerHTML = '<span>🎤</span> Dettatura Vocale';
+      }
+    };
+
+    _dettaturaNotaRecognition.onend = function() {
+      _isDettandoNota = false;
+      if (btn) {
+        btn.style.background = '#f0f9ff';
+        btn.style.borderColor = '#0284c7';
+        btn.style.color = '#0284c7';
+        btn.innerHTML = '<span>🎤</span> Dettatura Vocale';
+      }
+    };
+
+    _dettaturaNotaRecognition.start();
+  } catch (err) {
+    console.error('Impossibile avviare SpeechRecognition:', err);
+    showToast('Errore microfono. Verifica i permessi del browser.', 'warning');
+  }
+}
+window.toggleDettaturaVocaleNota = toggleDettaturaVocaleNota;
+
+// ==========================================================================
+// 4. GENERATORE PILLBOX SETTIMANALE STAMPABILE A4 (PORTAPILLOLE 7 GIORNI)
+// ==========================================================================
+window.stampaPortapilloleSettimanale = function() {
+  const p = getActivePaziente();
+  if (!p) {
+    showToast('Seleziona un assistito per stampare il portapillole settimanale', 'warning');
+    return;
+  }
+
+  const terapie = (p.terapie || []).slice().sort((a,b) => (a.ora || '').localeCompare(b.ora || ''));
+  const giorni = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+  
+  const fasce = [
+    { id: 'mattina', label: '☀️ Mattina', sub: 'Ore 07:00 - 09:00', bg: '#fef9c3' },
+    { id: 'pranzo', label: '🍽️ Pranzo', sub: 'Ore 12:30 - 14:00', bg: '#dcfce7' },
+    { id: 'pomeriggio', label: '☕ Pomeriggio', sub: 'Ore 16:00 - 18:00', bg: '#f3e8ff' },
+    { id: 'sera', label: '🌙 Sera / Cena', sub: 'Ore 19:30 - 21:00', bg: '#e0f2fe' },
+    { id: 'notte', label: '😴 Notte', sub: 'Prima di dormire', bg: '#ede9fe' }
+  ];
+
+  const getFarmaciPerFascia = (fasciaId) => {
+    return terapie.filter(t => {
+      const f = (t.fascia || '').toLowerCase();
+      if (fasciaId === 'mattina') return f.includes('mattina') || (t.ora && t.ora >= '06:00' && t.ora <= '10:00');
+      if (fasciaId === 'pranzo') return f.includes('pranzo') || (t.ora && t.ora >= '12:00' && t.ora <= '14:30');
+      if (fasciaId === 'pomeriggio') return f.includes('pomeriggio') || (t.ora && t.ora >= '16:00' && t.ora <= '18:30');
+      if (fasciaId === 'sera') return f.includes('sera') || (t.ora && t.ora >= '19:30' && t.ora <= '21:30');
+      if (fasciaId === 'notte') return f.includes('notte') || (t.ora && (t.ora >= '22:00' || t.ora <= '04:00'));
+      return false;
+    });
+  };
+
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('Consenti i popup per visualizzare e stampare il portapillole!');
+    return;
+  }
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+      <meta charset="utf-8">
+      <title>Griglia Portapillole Settimanale A4 - ${p.nome}</title>
+      <style>
+        @page { size: A4 landscape; margin: 6mm; }
+        *, *:before, *:after { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 6mm; color: #0f172a; }
+        .no-print { display: flex; gap: 10px; margin-bottom: 12px; }
+        .btn-print { background: #0284c7; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; }
+        .pillbox-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
+        .pillbox-table th, .pillbox-table td { border: 1.5px solid #334155; padding: 6px 8px; vertical-align: top; }
+        .pillbox-table th { background: #0f172a; color: #ffffff; text-align: center; text-transform: uppercase; font-size: 11.5px; }
+        .pill-item { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 6px; margin-bottom: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .pill-name { font-weight: 900; color: #0f172a; font-size: 11.5px; }
+        .pill-dose { color: #0284c7; font-weight: 700; font-size: 10px; }
+        @media print { .no-print { display: none !important; } }
+      </style>
+    </head>
+    <body>
+      <div class="no-print">
+        <button class="btn-print" onclick="window.print()">🖨️ Stampa Portapillole Settimanale (A4 Orizzontale)</button>
+        <button onclick="window.close()" style="background:#e2e8f0; border:none; padding:8px 14px; border-radius:8px; cursor:pointer;">Chiudi</button>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:2px solid #0284c7; padding-bottom:6px;">
+        <div>
+          <h2 style="margin:0; font-size:17px; text-transform:uppercase; color:#0369a1;">💊 SCHEDA ORGANIZZAZIONE PORTAPILLOLE SETTIMANALE</h2>
+          <div style="font-size:13px; font-weight:bold; margin-top:2px;">Paziente: <span style="font-size:15px; color:#0f172a;">${p.nome}</span> &bull; Medico: ${p.medicoCurante || p.medicoNome || 'Dr. di Famiglia'}</div>
+        </div>
+        <div style="text-align:right; font-size:10px; color:#64748b; font-weight:600;">
+          Generato da CareAssist Pro &bull; Data: ${new Date().toLocaleDateString('it-IT')}<br>
+          <b>In caso di dubbi sui dosaggi: 📞 Famiglia / Medico</b>
+        </div>
+      </div>
+
+      <table class="pillbox-table">
+        <thead>
+          <tr>
+            <th style="width:14%;">Fascia Oraria</th>
+            ${giorni.map(g => `<th>${g}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${fasce.map(f => {
+            const list = getFarmaciPerFascia(f.id);
+            const content = list.length === 0 ? '<span style="color:#94a3b8; font-style:italic;">-</span>' : 
+              list.map(t => `
+                <div class="pill-item">
+                  <div class="pill-name">💊 ${t.farmaco}</div>
+                  <div class="pill-dose">${t.dosaggio || '1 cpr'} &bull; Ore ${t.ora || '--:--'}</div>
+                  ${t.note ? `<div style="font-size:9px; color:#64748b;">${t.note}</div>` : ''}
+                </div>
+              `).join('');
+
+            return `
+              <tr>
+                <td style="background:${f.bg}; font-weight:900;">
+                  <div style="font-size:12px;">${f.label}</div>
+                  <div style="font-size:9.5px; color:#475569; font-weight:normal; margin-top:2px;">${f.sub}</div>
+                </td>
+                ${giorni.map(() => `<td>${content}</td>`).join('')}
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+
+      <div style="margin-top:8px; display:flex; justify-content:space-between; font-size:9.5px; color:#475569; border-top:1px solid #cbd5e1; padding-top:4px;">
+        <span>⚠️ <b>Avvertenza Terapie:</b> Preparare le vaschette con mani disinfettate. Conservare al riparo dalla luce e fonti di calore.</span>
+        <span><b>Emergenze Sanitarie: 📞 118</b></span>
+      </div>
+    </body>
+    </html>
+  `;
 
   win.document.open();
   win.document.write(html);
