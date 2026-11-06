@@ -24,31 +24,22 @@
       -webkit-text-size-adjust: 100%;
     }
 
-    /* PANNELLO DI COMANDO MEDICO (NON STAMPABILE) */
+    /* BARRA SUPERIORE MINIMAL PULITA (NON STAMPABILE) */
     .doctor-panel {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #ffffff;
-      padding: 12px 18px;
+      padding: 12px 20px;
       margin: 0;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
       border-bottom: 3px solid #0284c7;
       position: sticky;
       top: 0;
       z-index: 99999;
-    }
-    .doctor-panel-inner {
-      max-width: 1200px;
-      margin: 0 auto;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    @media (min-width: 900px) {
-      .doctor-panel-inner {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
     }
     .panel-title {
       display: flex;
@@ -62,61 +53,23 @@
       font-weight: 900;
     }
     .panel-title span {
-      font-size: 11px;
+      font-size: 11.5px;
       color: #94a3b8;
-    }
-
-    .panel-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .control-group label {
-      font-size: 9.5px;
-      font-weight: 800;
-      color: #cbd5e1;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .control-group select,
-    .control-group input {
-      background: #0f172a;
-      border: 1.5px solid #38bdf8;
-      color: #ffffff;
-      padding: 5px 8px;
-      border-radius: 7px;
-      font-size: 12px;
-      font-weight: bold;
-      outline: none;
-      height: 32px;
-    }
-    .control-group input[type="number"] {
-      width: 75px;
-      text-align: center;
     }
 
     .btn-print-action {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: #ffffff;
       border: none;
-      padding: 0 16px;
-      height: 34px;
+      padding: 8px 20px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 900;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
       gap: 6px;
       box-shadow: 0 3px 10px rgba(16,185,129,0.35);
-      margin-top: auto;
     }
 
     /* PREVIEW SCHERMO PC E CELLULARE */
@@ -142,11 +95,6 @@
       justify-content: space-between;
       overflow: hidden;
       page-break-inside: avoid;
-    }
-
-    .page-break {
-      page-break-after: always;
-      break-after: page;
     }
 
     /* INTESTAZIONE MINIMAL COMPATTA (14mm) */
@@ -183,7 +131,7 @@
       text-align: right;
     }
 
-    /* TABELLA REGISTRO ADATTIVA: 16 RIGHE ESATTE DA 10.4mm = 166.4mm + 12mm TH = 178.4mm */
+    /* TABELLA REGISTRO: 16 RIGHE ESATTE */
     table.registro-vaccini {
       width: 100%;
       border-collapse: collapse;
@@ -208,46 +156,31 @@
       line-height: 1.15;
     }
 
-    /* ALTEZZA RIGHE BLOCCATA: 10.4mm PERFETTA PER LA FUSTELLA DEL VACCINO E PER NON SFORARE MAI */
+    /* ALTEZZA RIGHE BLOCCATA: 10.4mm PERFETTA PER LA FUSTELLA DEL VACCINO */
     table.registro-vaccini tbody tr {
       height: 10.4mm;
       max-height: 10.4mm;
     }
 
     /* LARGHEZZA COLONNE */
-    .col-n { width: 26px; font-weight: bold; font-size: 10px; }
-    .col-data { width: 62px; }
+    .col-n { width: 28px; }
+    .col-data { width: 64px; }
     .col-cognome { width: 110px; }
     .col-nome { width: 110px; }
     .col-nascita { width: 72px; }
     .col-residenza { width: 105px; }
 
-    /* COLONNA TALLONCINO VACCINO: CALIBRATA RIGIDAMENTE A 52mm */
+    /* COLONNA TALLONCINO VACCINO: CALIBRATA RIGIDAMENTE A 52mm COMPLETAMENTE BIANCA E PULITA */
     .col-talloncino { 
       width: 52mm; 
       min-width: 52mm;
       max-width: 52mm;
-      background-color: #fafafa;
+      background-color: #ffffff;
     }
 
     .col-eta { width: 38px; }
     .col-patologia { width: 105px; }
     .col-firma { width: 125px; }
-
-    .talloncino-placeholder {
-      font-size: 7px;
-      color: #94a3b8;
-      font-style: italic;
-      text-transform: uppercase;
-      border: 1px dashed #cbd5e1;
-      border-radius: 2px;
-      height: 8.8mm;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto;
-      width: 48mm;
-    }
 
     /* PIE DI PAGINA (6mm) */
     .footer-page {
@@ -260,7 +193,7 @@
       padding-right: 10px;
     }
 
-    /* REGOLE DI STAMPA ESTREME: 1 PAGINA = 1 FOGLIO A4 GARANTITO AL 100% */
+    /* REGOLE DI STAMPA: 1 FOGLIO A4 ESATTO */
     @media print {
       html, body {
         background: #ffffff !important;
@@ -289,189 +222,92 @@
         overflow: hidden !important;
         page-break-inside: avoid !important;
       }
-      .page-break {
-        page-break-after: always !important;
-        break-after: page !important;
-      }
-      .talloncino-placeholder {
-        border: none !important;
-        color: transparent !important;
-      }
     }
   </style>
 </head>
 <body>
 
-  <!-- PANNELLO DI CONTROLLO INTERATTIVO PER IL MEDICO -->
+  <!-- BARRA SUPERIORE (NON STAMPABILE) -->
   <div class="doctor-panel">
-    <div class="doctor-panel-inner">
-      <div class="panel-title">
-        <span style="font-size:22px;">💉</span>
-        <div>
-          <h1>Registro Vaccinazioni Medico</h1>
-          <span>1 Foglio A4 Orizzontale Esatto per pagina</span>
-        </div>
+    <div class="panel-title">
+      <span style="font-size:22px;">💉</span>
+      <div>
+        <h1>Registro Ufficiale Vaccinazioni (Modulo Neutro per Copie Multiple)</h1>
+        <span>Caselle N. vuote &bull; Spazio fustelle bianco da 52mm &bull; Stampa in 1 Foglio A4</span>
       </div>
+    </div>
 
-      <div class="panel-controls">
-        
-        <div class="control-group">
-          <label>Numerazione</label>
-          <select id="sel-tipo-numerazione" onchange="rigeneraPagineRegistro()">
-            <option value="continua">Personalizzata (1, 17, 33...)</option>
-            <option value="bianca">Casella N. Vuota (A mano)</option>
-          </select>
-        </div>
-
-        <div class="control-group" id="group-partenza">
-          <label>Inizia da N.</label>
-          <input type="number" id="inp-numero-inizio" value="1" min="1" max="999" oninput="rigeneraPagineRegistro()">
-        </div>
-
-        <div class="control-group">
-          <label>Fogli A4</label>
-          <select id="sel-num-pagine" onchange="rigeneraPagineRegistro()">
-            <option value="1" selected>1 Foglio (16 pazienti)</option>
-            <option value="2">2 Fogli (32 pazienti)</option>
-            <option value="3">3 Fogli (48 pazienti)</option>
-            <option value="4">4 Fogli (64 pazienti)</option>
-            <option value="5">5 Fogli (80 pazienti)</option>
-          </select>
-        </div>
-
-        <div class="control-group" id="group-pag-inizio">
-          <label>Pag. N.</label>
-          <input type="number" id="inp-pag-inizio" value="1" min="1" max="99" oninput="rigeneraPagineRegistro()">
-        </div>
-
-        <div class="control-group">
-          <label>Dott.ssa / Medico</label>
-          <input type="text" id="inp-nome-medico" placeholder="Dott.ssa ..." value="" oninput="aggiornaDicituraMedico()">
-        </div>
-
-        <button type="button" class="btn-print-action" onclick="window.print()">
-          <span>🖨️</span> Stampa 1 Pagina / PDF
-        </button>
-
-      </div>
+    <div>
+      <button type="button" class="btn-print-action" onclick="window.print()">
+        <span>🖨️</span> Stampa Foglio A4 / Salva PDF
+      </button>
     </div>
   </div>
 
-  <!-- ANTEPRIMA FOGLI -->
+  <!-- ANTEPRIMA DEL FOGLIO A4 -->
   <div class="preview-scroll-wrapper">
-    <div id="sheets-render-root">
-      <!-- Generato dinamicamente via JS -->
+    <div class="printable-sheet-container">
+      
+      <!-- INTESTAZIONE -->
+      <div class="header-container">
+        <div class="asl-logo-area">
+          <span style="border: 1.5px solid #000; padding: 2px 5px; border-radius: 4px; font-size: 10px;">REGIONE / ASL</span>
+        </div>
+        <div class="titolo-campagna">
+          CAMPAGNA VACCINAZIONE ANTINFLUENZALE STAGIONE <span class="stagione-box">2025/2026</span>
+        </div>
+        <div class="dott-box">
+          MOD. VACC. ADI / MMG
+        </div>
+      </div>
+
+      <!-- TABELLA COMPILABILE -->
+      <table class="registro-vaccini">
+        <thead>
+          <tr>
+            <th class="col-n">N.</th>
+            <th class="col-data">DATA</th>
+            <th class="col-cognome">COGNOME</th>
+            <th class="col-nome">NOME</th>
+            <th class="col-nascita">DATA<br>DI NASCITA</th>
+            <th class="col-residenza">RESIDENZA</th>
+            <th class="col-talloncino">
+              FLUAD / EFLUELDA /<br>VAXIGRIP TETRA<br>
+              <span style="font-size: 6.5px; font-weight: normal; color: #555;">(Spazio Fustella Adesiva)</span>
+            </th>
+            <th class="col-eta">ETA'<br>(SI/NO)</th>
+            <th class="col-patologia">PATOLOGIA</th>
+            <th class="col-firma">FIRMA DOPO LETTURA<br>CONSENSO INFORMATO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 16 RIGHE BIANCHE: N. VUOTO E SPAZIO FUSTELLA BIANCO CANDIDO -->
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+          <tr><td class="col-n"></td><td class="col-data"></td><td class="col-cognome"></td><td class="col-nome"></td><td class="col-nascita"></td><td class="col-residenza"></td><td class="col-talloncino"></td><td class="col-eta"></td><td class="col-patologia"></td><td class="col-firma"></td></tr>
+        </tbody>
+      </table>
+
+      <!-- PIÈ DI PAGINA VUOTO -->
+      <div class="footer-page">
+        PAG. &nbsp; <u>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</u> &nbsp; / &nbsp; <u>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</u>
+      </div>
+
     </div>
   </div>
-
-  <script>
-    function generaSingolaPaginaHTML(numeroIniziale, tipoNumerazione, paginaCorrente, pagineTotali, nomeMedico) {
-      let righeHTML = '';
-      const righePerFoglio = 16;
-
-      for (let i = 0; i < righePerFoglio; i++) {
-        let numeroCella = (tipoNumerazione === 'continua') ? (numeroIniziale + i) : '';
-
-        righeHTML += `
-          <tr>
-            <td class="col-n">${numeroCella}</td>
-            <td class="col-data"></td>
-            <td class="col-cognome"></td>
-            <td class="col-nome"></td>
-            <td class="col-nascita"></td>
-            <td class="col-residenza"></td>
-            <td class="col-talloncino">
-              <div class="talloncino-placeholder">Fustella Vaccino (52mm)</div>
-            </td>
-            <td class="col-eta"></td>
-            <td class="col-patologia"></td>
-            <td class="col-firma"></td>
-          </tr>
-        `;
-      }
-
-      const medicoTxt = nomeMedico ? `Medico: <b>${nomeMedico}</b>` : `MOD. VACC. ADI / MMG`;
-
-      return `
-        <div class="printable-sheet-container ${paginaCorrente < pagineTotali ? 'page-break' : ''}">
-          <!-- INTESTAZIONE -->
-          <div class="header-container">
-            <div class="asl-logo-area">
-              <span style="border: 1.5px solid #000; padding: 2px 5px; border-radius: 4px; font-size: 10px;">REGIONE / ASL</span>
-            </div>
-            <div class="titolo-campagna">
-              CAMPAGNA VACCINAZIONE ANTINFLUENZALE STAGIONE <span class="stagione-box">2025/2026</span>
-            </div>
-            <div class="dott-box">
-              ${medicoTxt}
-            </div>
-          </div>
-
-          <!-- TABELLA -->
-          <table class="registro-vaccini">
-            <thead>
-              <tr>
-                <th class="col-n">N.</th>
-                <th class="col-data">DATA</th>
-                <th class="col-cognome">COGNOME</th>
-                <th class="col-nome">NOME</th>
-                <th class="col-nascita">DATA<br>DI NASCITA</th>
-                <th class="col-residenza">RESIDENZA</th>
-                <th class="col-talloncino">
-                  FLUAD / EFLUELDA /<br>VAXIGRIP TETRA<br>
-                  <span style="font-size: 6.5px; font-weight: normal; color: #555;">(Spazio Fustella Adesiva)</span>
-                </th>
-                <th class="col-eta">ETA'<br>(SI/NO)</th>
-                <th class="col-patologia">PATOLOGIA</th>
-                <th class="col-firma">FIRMA DOPO LETTURA<br>CONSENSO INFORMATO</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${righeHTML}
-            </tbody>
-          </table>
-
-          <!-- FOOTER -->
-          <div class="footer-page">
-            PAG. &nbsp; <u>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</u> &nbsp; / &nbsp; <u>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</u>
-          </div>
-        </div>
-      `;
-    }
-
-    function rigeneraPagineRegistro() {
-      const tipo = document.getElementById('sel-tipo-numerazione').value;
-      const numInizio = parseInt(document.getElementById('inp-numero-inizio').value, 10) || 1;
-      const numPagine = parseInt(document.getElementById('sel-num-pagine').value, 10) || 1;
-      const pagInizio = parseInt(document.getElementById('inp-pag-inizio').value, 10) || 1;
-      const nomeMedico = (document.getElementById('inp-nome-medico').value || '').trim();
-
-      const groupPartenza = document.getElementById('group-partenza');
-      if (groupPartenza) {
-        groupPartenza.style.display = (tipo === 'continua') ? 'flex' : 'none';
-      }
-
-      const container = document.getElementById('sheets-render-root');
-      let fullHtml = '';
-      const totalePagine = pagInizio + numPagine - 1;
-
-      for (let p = 0; p < numPagine; p++) {
-        const curPagNum = pagInizio + p;
-        const curStartProg = numInizio + (p * 16);
-        fullHtml += generaSingolaPaginaHTML(curStartProg, tipo, curPagNum, totalePagine, nomeMedico);
-      }
-
-      container.innerHTML = fullHtml;
-    }
-
-    function aggiornaDicituraMedico() {
-      rigeneraPagineRegistro();
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      rigeneraPagineRegistro();
-    });
-  </script>
 
 </body>
 </html>
