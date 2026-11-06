@@ -5663,6 +5663,23 @@ async function toggleFarmacoConScarico(id) {
   const t = p.terapie.find(item => item.id === id);
   if (!t) return;
 
+  // SE IL FARMACO NON È STATO ASSUNTO: ATTIVA IL SAFETY CHECK OSPEDALIERO (BEDSIDE VERIFY)
+  if (!t.fattoOggi) {
+    const checkOrario = (typeof verificaStatoOrarioFarmaco === 'function') ? verificaStatoOrarioFarmaco(t.ora) : { consentito: true };
+    apriModalSafetyCheckOspedaliero(t, p, checkOrario);
+    return;
+  }
+  
+  // Se era già fatto e si vuole togliere la spunta, prosegue normalmente
+  return applicaSomministrazioneClinicaEffettiva(id);
+}
+
+async function applicaSomministrazioneClinicaEffettiva(id, sitoIniezione) {
+  const p = getActivePaziente();
+  if (!p) return;
+  const t = p.terapie.find(item => item.id === id);
+  if (!t) return;
+
   const now = new Date();
   const oraFormattata = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
   const dataFormattata = now.toLocaleDateString('it-IT');
@@ -22210,4 +22227,180 @@ function evidenziaAncoraVisivaFarmaco(nomeLow) {
       }
     }
   } catch(e) {}
+}
+
+
+// ==============================================================================
+// MOTORE CLINICO OSPEDALIERO BEDSIDE: 5 REGOLE D'ORO & SAFETY CHECK DOPPIO CONTROLLO
+// ==============================================================================
+let _farmacoInAttesaSafetyCheck = null;
+let _sitoIniezioneScelto = null;
+
+const _SITI_ROTAZIONE_INIEZIONE = [
+  'Addome Sinistro',
+  'Addome Destro',
+  'Coscia Sinistra',
+  'Coscia Destra'
+];
+
+function isFarmacoHighAlertOspedaliero(terapia) {
+  if (!terapia) return false;
+  const f = (terapia.farmaco || '').toLowerCase();
+  const d = (terapia.dosaggio || '').toLowerCase();
+  const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(terapia);
+  
+  // Insuline, anticoagulanti, digitatici, antiaritmici forti
+  if (isPen || f.includes('xultophy') || f.includes('insulina') || f.includes('lantus') || f.includes('novorapid') || f.includes('tresiba')) return true;
+  if (f.includes('coumadin') || f.includes('sintrom') || f.includes('eliquis') || f.includes('xarelto') || f.includes('pradaxa') || f.includes('clexane')) return true;
+  if (f.includes('digossina') || f.includes('congescor') || f.includes('cordarone') || f.includes('amiodarone')) return true;
+  return false;
+}
+
+function suggerisciProssimoSitoIniezione(pazienteId) {
+  const k = 'careassist_ultimo_sito_iniezione_' + pazienteId;
+  const lastIndex = parseInt(localStorage.getItem(k) || '0', 10);
+  const nextIndex = (lastIndex + 1) % _SITI_ROTAZIONE_INIEZIONE.length;
+  return {
+    sitoConsigliato: _SITI_ROTAZIONE_INIEZIONE[nextIndex],
+    sitoPrecedente: _SITI_ROTAZIONE_INIEZIONE[lastIndex],
+    nextIndex: nextIndex
+  };
+}
+
+function selezionaSitoIniezione(sito, btn) {
+  _sitoIniezioneScelto = sito;
+  const btns = document.querySelectorAll('#safety-check-quadranti-grid .safety-sito-btn');
+  btns.forEach(b => {
+    b.style.borderColor = '#cbd5e1';
+    b.style.background = '#ffffff';
+  });
+  if (btn) {
+    btn.style.borderColor = '#0284c7';
+    btn.style.background = '#e0f2fe';
+  }
+}
+
+function apriModalSafetyCheckOspedaliero(terapia, paziente, checkOrario) {
+  _farmacoInAttesaSafetyCheck = terapia;
+  _sitoIniezioneScelto = null;
+
+  const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(terapia);
+  const isHighAlert = isFarmacoHighAlertOspedaliero(terapia);
+
+  // Popola campi
+  const catEl = document.getElementById('safety-check-categoria');
+  const oraEl = document.getElementById('safety-check-orario');
+  const nomeEl = document.getElementById('safety-check-farmaco-nome');
+  const doseEl = document.getElementById('safety-check-dosaggio');
+  const pazEl = document.getElementById('safety-check-paziente-nome');
+  
+  if (catEl) catEl.textContent = isPen ? 'INIEZIONE SOTTOCUTE CRITICA' : (isHighAlert ? 'FARMACO HIGH-ALERT OSPEDALIERO' : 'TERAPIA PROGRAMMATA');
+  if (oraEl) oraEl.textContent = 'Orario: ' + (terapia.ora || 'Orario standard');
+  if (nomeEl) nomeEl.textContent = terapia.farmaco;
+  if (doseEl) doseEl.textContent = (terapia.dosaggio || '1 dose standard') + (terapia.modo ? ' • ' + terapia.modo : '');
+  if (pazEl) pazEl.textContent = paziente ? paziente.nome : 'Rosa Annunziata Cavalcante';
+
+  // Finestra Oraria: avviso se anticipo o ritardo
+  const alertOrarioEl = document.getElementById('safety-check-alert-orario');
+  const alertOrarioTxt = document.getElementById('safety-check-alert-orario-testo');
+  if (alertOrarioEl && alertOrarioTxt) {
+    if (checkOrario && !checkOrario.consentito) {
+      alertOrarioEl.style.display = 'flex';
+      alertOrarioTxt.innerHTML = '<b>Somministrazione Anticipata:</b> Il farmaco è pianificato per le <b>' + terapia.ora + '</b>. Conferma se la situazione clinica richiede l\'anticipo.';
+    } else if (checkOrario && checkOrario.inRitardo) {
+      alertOrarioEl.style.display = 'flex';
+      alertOrarioTxt.innerHTML = '<b>Somministrazione Oltre Finestra:</b> Previsto per le <b>' + terapia.ora + '</b> (in ritardo di circa ' + checkOrario.minutiRitardo + ' min). Verifica se il paziente ha già mangiato.';
+    } else {
+      alertOrarioEl.style.display = 'none';
+    }
+  }
+
+  // Sezione Doppio Controllo Dosaggio
+  const sezDose = document.getElementById('safety-check-sezione-dosaggio');
+  const chkDose = document.getElementById('safety-check-chk-dosaggio');
+  const lblDose = document.getElementById('safety-check-label-dosaggio');
+  if (chkDose) chkDose.checked = false;
+  if (lblDose) {
+    if (isPen) {
+      lblDose.textContent = 'Confermo di aver impostato esattamente ' + (terapia.dosaggio || '16 Unità') + ' sulla ghiera della penna';
+    } else {
+      lblDose.textContent = 'Confermo corrispondenza visiva blister: ' + (terapia.dosaggio || '1 compressa intera');
+    }
+  }
+
+  // Sezione Rotazione Siti (attiva solo per iniezioni / penne)
+  const sezSiti = document.getElementById('safety-check-sezione-siti');
+  const avvisoSito = document.getElementById('safety-check-sito-raccomandato-avviso');
+  if (sezSiti) {
+    if (isPen) {
+      sezSiti.style.display = 'block';
+      const rotaz = suggerisciProssimoSitoIniezione(paziente ? paziente.id : 1);
+      _sitoIniezioneScelto = rotaz.sitoConsigliato;
+      if (avvisoSito) {
+        avvisoSito.innerHTML = '🌟 <b>Sito consigliato oggi per rotazione:</b> ' + rotaz.sitoConsigliato + ' (ultimo registrato: ' + rotaz.sitoPrecedente + ')';
+      }
+      // Evidenzia pulsante sito consigliato
+      setTimeout(() => {
+        const btns = document.querySelectorAll('#safety-check-quadranti-grid .safety-sito-btn');
+        btns.forEach(b => {
+          if (b.getAttribute('data-sito') === rotaz.sitoConsigliato) {
+            b.style.borderColor = '#16a34a';
+            b.style.background = '#f0fdf4';
+          } else {
+            b.style.borderColor = '#cbd5e1';
+            b.style.background = '#ffffff';
+          }
+        });
+      }, 50);
+    } else {
+      sezSiti.style.display = 'none';
+    }
+  }
+
+  const modal = document.getElementById('modal-safety-check-ospedaliero');
+  if (modal) modal.style.display = 'flex';
+}
+
+function chiudiModalSafetyCheckOspedaliero() {
+  const modal = document.getElementById('modal-safety-check-ospedaliero');
+  if (modal) modal.style.display = 'none';
+  _farmacoInAttesaSafetyCheck = null;
+  _sitoIniezioneScelto = null;
+}
+
+function avviaScannerFotoVerificaPillola() {
+  if (_farmacoInAttesaSafetyCheck) {
+    const nome = _farmacoInAttesaSafetyCheck.farmaco;
+    chiudiModalSafetyCheckOspedaliero();
+    if (typeof apriScannerFotoFarmaco === 'function') {
+      apriScannerFotoFarmaco('camera', 'modale');
+      showToast('Inquadra la pillola o la scatola per verifica visiva AI');
+    }
+  }
+}
+
+async function eseguiConfermaSafetyCheckOspedaliero() {
+  if (!_farmacoInAttesaSafetyCheck) return;
+  const t = _farmacoInAttesaSafetyCheck;
+  const p = getActivePaziente();
+
+  const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+  const chkDose = document.getElementById('safety-check-chk-dosaggio');
+  
+  if (chkDose && !chkDose.checked) {
+    alert('Per la massima sicurezza del paziente, spunta la casella di verifica del dosaggio prima di confermare.');
+    chkDose.focus();
+    return;
+  }
+
+  // Salva l'avvenuto sito di rotazione se penna
+  if (isPen && _sitoIniezioneScelto && p) {
+    const rot = suggerisciProssimoSitoIniezione(p.id);
+    localStorage.setItem('careassist_ultimo_sito_iniezione_' + p.id, rot.nextIndex);
+    t.ultimoSitoIniezione = _sitoIniezioneScelto;
+  }
+
+  // Esegui la registrazione vera e propria
+  chiudiModalSafetyCheckOspedaliero();
+  await applicaSomministrazioneClinicaEffettiva(t.id, _sitoIniezioneScelto);
 }
