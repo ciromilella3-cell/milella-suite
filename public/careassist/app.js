@@ -21931,43 +21931,59 @@ function apriModalInventarioRapido() {
   if (nomeEl) nomeEl.textContent = p.nome;
   if (countEl) countEl.textContent = (p.terapie || []).length;
 
+  // Ordina RIGOROSAMENTE in ordine alfabetico per non far slittare mai le righe sotto gli occhi
+  const terapieOrdinate = [...p.terapie].sort((a, b) => (a.farmaco || '').localeCompare(b.farmaco || ''));
+
   if (listEl) {
-    listEl.innerHTML = p.terapie.map((t, idx) => {
-      const isPen = (t.tipoFormulazione === 'penna' || (t.dosaggio || '').toLowerCase().includes('unit'));
+    listEl.innerHTML = terapieOrdinate.map((t, idx) => {
+      const isPen = (t.tipoFormulazione === 'penna' || (t.dosaggio || '').toLowerCase().includes('unit') || (t.farmaco || '').toLowerCase().includes('penna') || (t.farmaco || '').toLowerCase().includes('xultophy'));
       const scortaVal = isPen ? (t.penneScorta || t.scorta || 1) : (t.scorta || 0);
-      const unitaTxt = isPen ? 'penne' : 'cpr';
+      const unitaTxt = isPen ? 'penne' : 'pillole';
+      const cprPerPacco = t.cprPerScatola || (isPen ? 5 : 28);
 
       return `
-        <div class="inv-rapido-row" data-id="${t.id}" style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:12px; padding:12px 16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; box-shadow:0 2px 6px rgba(0,0,0,0.02); transition:all 0.15s ease;">
-          <div style="flex:1; min-width:220px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:18px;">${isPen ? '💉' : '💊'}</span>
+        <div class="inv-rapido-row" data-id="${t.id}" style="background:#ffffff; border:2px solid #e2e8f0; border-radius:16px; padding:14px 18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; box-shadow:0 3px 8px rgba(0,0,0,0.03); transition:all 0.2s ease;">
+          
+          <!-- COLONNA 1: FARMACO E DOSAGGIO AD ALTA LEGGIBILITÀ -->
+          <div style="flex:1; min-width:240px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="font-size:24px; background:#f1f5f9; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid #cbd5e1;">${isPen ? '💉' : '💊'}</span>
               <div>
-                <strong style="font-size:15px; color:#0f172a;">${t.farmaco}</strong>
-                <div style="font-size:12px; color:#64748b;">${t.principio ? t.principio + ' • ' : ''}${t.dosaggio}</div>
+                <div style="font-size:16.5px; font-weight:900; color:#0f172a; line-height:1.2;">${t.farmaco}</div>
+                <div style="font-size:12.5px; color:#475569; font-weight:700; margin-top:3px;">
+                  ${t.principio ? '<span style="color:#0284c7;">' + t.principio + '</span> • ' : ''}${t.dosaggio || ''}
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- ORARIO SOMMINISTRAZIONE -->
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-size:12px; font-weight:800; color:#475569;">⏰ Ora:</span>
-            <input type="time" class="inv-rapido-ora" value="${t.ora || '08:00'}" style="padding:6px 8px; border:1.5px solid #cbd5e1; border-radius:8px; font-weight:800; font-size:13px; color:#0f172a; width:100px;">
+          <!-- COLONNA 2: SELETTORE ORA SEMPLICE E PROTETTO -->
+          <div style="display:flex; flex-direction:column; align-items:center; gap:3px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:6px 12px; min-width:140px;">
+            <span style="font-size:11px; font-weight:900; color:#64748b; text-transform:uppercase;">⏰ Orario Assunzione</span>
+            <input type="time" class="inv-rapido-ora" value="${t.ora || '08:00'}" style="padding:6px 10px; border:2px solid #0284c7; border-radius:8px; font-weight:900; font-size:16px; color:#0f172a; width:110px; text-align:center; background:#ffffff;">
           </div>
 
-          <!-- CONTATORE SCORTA CAPSULE CON TASTI GRANDI + E - -->
-          <div style="display:flex; align-items:center; gap:6px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:4px 8px;">
-            <span style="font-size:11.5px; font-weight:800; color:#0369a1;">📦 Scorta:</span>
-            <button type="button" onclick="modificaContatoreInvRapido(this, -1)" style="width:28px; height:28px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; font-size:16px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center;">-</button>
-            <input type="number" class="inv-rapido-scorta" value="${scortaVal}" min="0" style="width:55px; text-align:center; font-size:15px; font-weight:900; color:#0f172a; border:none; background:transparent;">
-            <span style="font-size:11px; font-weight:700; color:#64748b;">${unitaTxt}</span>
-            <button type="button" onclick="modificaContatoreInvRapido(this, 1)" style="width:28px; height:28px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; font-size:16px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center;">+</button>
+          <!-- COLONNA 3: CONTATORE TOUCH CON TASTONI PILLOLE -->
+          <div style="display:flex; flex-direction:column; align-items:center; gap:3px; background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:6px 12px;">
+            <span style="font-size:11px; font-weight:900; color:#15803d; text-transform:uppercase;">📦 Scorta Rimasta</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" onclick="modificaContatoreInvRapido(this, -1)" style="width:38px; height:38px; border-radius:10px; border:2px solid #bbf7d0; background:#ffffff; font-size:22px; font-weight:900; color:#dc2626; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.06); transition:transform 0.1s active;" title="Togli 1 pillola">-</button>
+              
+              <input type="number" class="inv-rapido-scorta" value="${scortaVal}" min="0" style="width:65px; text-align:center; font-size:18px; font-weight:900; color:#0f172a; border:2px solid #86efac; border-radius:8px; background:#ffffff; padding:4px 0;">
+              
+              <span style="font-size:12px; font-weight:800; color:#166534; width:45px; text-align:left;">${unitaTxt}</span>
+              
+              <button type="button" onclick="modificaContatoreInvRapido(this, 1)" style="width:38px; height:38px; border-radius:10px; border:2px solid #bbf7d0; background:#ffffff; font-size:22px; font-weight:900; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.06); transition:transform 0.1s active;" title="Aggiungi 1 pillola">+</button>
+            </div>
           </div>
 
-          <!-- PULSANTE RAPIDO +1 SCATOLA INTERA -->
-          <button type="button" onclick="aggiungiScatolaInteraInvRapido(this, ${t.cprPerScatola || 30})" style="background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; font-weight:800; font-size:11.5px; padding:6px 10px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Aggiungi una scatola intera">
-            <span>📦</span> +${t.cprPerScatola || 30}
-          </button>
+          <!-- COLONNA 4: PULSANTE RAPIDO +1 SCATOLA INTERA -->
+          <div style="display:flex; align-items:center;">
+            <button type="button" onclick="aggiungiScatolaInteraInvRapido(this, ${cprPerPacco})" style="background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:2px solid #3b82f6; color:#1d4ed8; font-weight:900; font-size:13px; padding:10px 14px; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(59,130,246,0.15);" title="Ho comprato una scatola nuova: aggiungi ${cprPerPacco} unità">
+              <span style="font-size:16px;">📦</span> +${cprPerPacco}
+            </button>
+          </div>
+
         </div>
       `;
     }).join('');
@@ -21976,7 +21992,6 @@ function apriModalInventarioRapido() {
   const modal = document.getElementById('modal-inventario-rapido');
   if (modal) modal.style.display = 'flex';
 }
-
 function modificaContatoreInvRapido(btn, delta) {
   const row = btn.closest('.inv-rapido-row');
   if (!row) return;
