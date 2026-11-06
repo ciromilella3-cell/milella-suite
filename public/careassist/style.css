@@ -1617,12 +1617,39 @@ body {
 /* ==========================================================================
    TABLES (CLEAN MEDICAL STYLE)
    ========================================================================== */
+/* TABELLE RESPONSIVE CON SCROLLBAR VISIBILE & DESIGN FLUIDO */
 .table-responsive {
-  overflow-x: auto;
+  width: 100%;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 16px;
+  border-radius: 14px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
+/* Scrollbar orizzontale sempre visibile, ergonomica ed elegante */
+.table-responsive::-webkit-scrollbar {
+  height: 10px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 8px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #0284c7;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #0369a1;
+}
+
+/* Tabella Terapie Ottimizzata per Schermi PC Desktop & Portatili */
 .custom-table {
   width: 100%;
+  min-width: 1100px; /* Assicura che tutte le colonne, pulsanti e dettagli entrino con respiro e chiarezza */
   border-collapse: separate;
   border-spacing: 0;
   text-align: left;
@@ -6712,4 +6739,41 @@ main, .main-content, .dashboard-container {
   background: #e11d48;
   color: #fff;
   border-color: #be123c;
+}
+
+/* ==========================================================================
+   COLONNA AZIONE OGGI & DETTAGLI STICKY (SEMPRE A PORTATA DI MANO)
+   ========================================================================== */
+.custom-table th:nth-last-child(2),
+.custom-table td:nth-last-child(2) {
+  position: sticky;
+  right: 110px;
+  background-color: #ffffff;
+  z-index: 2;
+  box-shadow: -3px 0 6px rgba(0, 0, 0, 0.04);
+}
+
+.custom-table tbody tr:nth-child(even) td:nth-last-child(2) {
+  background-color: #f1f8fe;
+}
+
+.custom-table tbody tr:hover td:nth-last-child(2) {
+  background-color: #dbeafe;
+}
+
+.custom-table th:last-child,
+.custom-table td:last-child {
+  position: sticky;
+  right: 0;
+  background-color: #ffffff;
+  z-index: 2;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.03);
+}
+
+.custom-table tbody tr:nth-child(even) td:last-child {
+  background-color: #f1f8fe;
+}
+
+.custom-table tbody tr:hover td:last-child {
+  background-color: #dbeafe;
 }
