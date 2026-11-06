@@ -2946,9 +2946,46 @@ function mostraLenteClinica(titolo, testo, icona = '🩺', actionFn = null, acti
       txtCorpo.style.fontSize = '15.5px';
       txtCorpo.style.fontWeight = '500';
     } else {
-      txtCorpo.textContent = testo || '';
-      txtCorpo.style.fontSize = (testo && testo.length > 80) ? '17px' : '20px';
-      txtCorpo.style.fontWeight = '600';
+      const cleanNum = (n) => (n || '').replace(/[^0-9+]/g, '');
+      const waNum = (n) => {
+        const c = cleanNum(n);
+        if (!c) return '';
+        return c.startsWith('39') || c.startsWith('+39') ? c.replace('+', '') : '39' + c;
+      };
+
+      // Riconoscimento intelligente di numeri di telefono (fissi o cellulari)
+      const isTelefono = testo && /^[0-9\s\+\-\.\/]{6,20}$/.test(testo.trim());
+
+      if (isTelefono) {
+        const numPuro = cleanNum(testo);
+        const isCellulare = numPuro.startsWith('3') || numPuro.startsWith('+393') || numPuro.startsWith('00393') || numPuro.length >= 10;
+        txtCorpo.innerHTML = `
+          <div style="font-size:24px; font-weight:900; letter-spacing:0.8px; color:#ffffff; margin-bottom:14px; font-family:'Outfit',monospace;">
+            ${testo}
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
+            <a href="tel:${numPuro}" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(16,185,129,0.4); flex:1; justify-content:center;">
+              <span style="font-size:18px;">📞</span> Chiama Ora
+            </a>
+            ${isCellulare ? `
+              <a href="sms:${numPuro}" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(2,132,199,0.4); flex:1; justify-content:center;">
+                <span style="font-size:18px;">✉️</span> Invia SMS
+              </a>
+              <a href="https://api.whatsapp.com/send?phone=${waNum(testo)}" target="_blank" style="background:linear-gradient(135deg, #25d366 0%, #128c7e 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(37,211,102,0.4); flex:1; justify-content:center;">
+                <span style="font-size:18px;">💬</span> WhatsApp
+              </a>
+            ` : `
+              <a href="https://api.whatsapp.com/send?phone=${waNum(testo)}" target="_blank" style="background:linear-gradient(135deg, #25d366 0%, #128c7e 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(37,211,102,0.4); flex:1; justify-content:center;">
+                <span style="font-size:18px;">💬</span> WhatsApp
+              </a>
+            `}
+          </div>
+        `;
+      } else {
+        txtCorpo.textContent = testo || '';
+        txtCorpo.style.fontSize = (testo && testo.length > 80) ? '17px' : '20px';
+        txtCorpo.style.fontWeight = '600';
+      }
     }
   }
   if (txtIcona) txtIcona.textContent = icona;
