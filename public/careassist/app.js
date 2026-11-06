@@ -10155,6 +10155,23 @@ function salvaModificaFarmaco(e) {
     var pUnitaTot = isFormatoPenna ? (parseInt(document.getElementById('edit-penna-unita-totali') ? document.getElementById('edit-penna-unita-totali').value : 300) || 300) : 300;
     var pScatola = isFormatoPenna ? (parseInt(document.getElementById('edit-penna-per-scatola') ? document.getElementById('edit-penna-per-scatola').value : 3) || 3) : cprPerScatola;
 
+    // PRESERVAZIONE INTELLIGENTE STATO ASSUNZIONE OGGI:
+    // Se la terapia era già stata assunta oggi, oppure se l'orario di assunzione è già trascorso
+    // nella giornata odierna, NON resettare a false e NON far scattare allarmi inutili!
+    var eraGiaFattoOggi = false;
+    try {
+      if (typeof oldDoseMatch !== 'undefined' && oldDoseMatch && oldDoseMatch.fattoOggi) {
+        eraGiaFattoOggi = true;
+      } else if (typeof oldDosi !== 'undefined' && Array.isArray(oldDosi) && oldDosi.some(function(od) { return od.fattoOggi; })) {
+        eraGiaFattoOggi = true;
+      } else if (typeof verificaStatoOrarioFarmaco === 'function') {
+        var chkO = verificaStatoOrarioFarmaco(oraVal);
+        if (chkO && chkO.orarioPassato) {
+          eraGiaFattoOggi = true; // L'orario (es. 07:00) è già passato oggi: la dose si considera già assunta!
+        }
+      }
+    } catch(e) {}
+
     p.terapie.push({
       id: Date.now() + idx * 311,
       ora: oraVal,
@@ -10168,7 +10185,7 @@ function salvaModificaFarmaco(e) {
       scorta: pScorta,
       giorniAlert: giorniAlert,
       cadenzaTipo: cadenza,
-      fattoOggi: false,
+      fattoOggi: eraGiaFattoOggi,
       tipoFormulazione: isFormatoPenna ? 'penna' : 'compressa',
       penneScorta: pScorta,
       unitaDoseDie: pDoseDie,
