@@ -2750,6 +2750,9 @@ function renderPazientiSelector() {
                 <span class="badge badge-warning clinica-zoom-item" style="font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px; padding:3px 9px; border-radius:8px;" onclick="apriModificaAnagrafica()" title="Tocca per aprire e modificare cartella anagrafica e data di nascita" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${dataNascitaFmt} (Anno ${annoNascita || '--'}, ${eta} anni)', '🎂')" onmouseleave="nascondiLenteClinica()">
                   🎂 ${eta} anni • ${annoNascita || '--'} (${dataNascitaFmt || '--'})
                 </span>
+                <span class="badge clinica-zoom-item" style="background:#e0f2fe; color:#0369a1; border:1.5px solid #7dd3fc; font-size:11.5px; font-weight:800; padding:3px 9px; border-radius:8px; cursor:pointer;" onclick="apriModificaAnagrafica()" title="Tocca per visualizzare o modificare le patologie cliniche dell'assistito" onmouseenter="mostraLenteClinica('Patologie & Diagnosi Assistito', '${(activeP.patologie || []).join(' • ') || 'Nessuna patologia inserita'}', '🩺')" onmouseleave="nascondiLenteClinica()">
+                  🩺 Patologie (${(activeP.patologie || []).length})
+                </span>
                 ${allergieBadge}
                 ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; font-size:11px; padding:3px 9px; border-radius:8px; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe</span>' : ''}
                 ${activeP.id === 'paz_angela' ? '<span class="badge badge-danger" style="background:#dc2626; font-size:11px; padding:3px 9px; border-radius:8px;">🫁 CPAP (OSAS)</span>' : ''}
@@ -3996,6 +3999,11 @@ function apriModificaAnagrafica() {
   }
   document.getElementById('edit-paz-note').value = p.note || '';
 
+  const elEditPatologie = document.getElementById('edit-paz-patologie');
+  if (elEditPatologie) {
+    elEditPatologie.value = Array.isArray(p.patologie) ? p.patologie.join('\n') : (p.patologie || '');
+  }
+
   const elEditAllergie = document.getElementById('edit-paz-allergie');
   if (elEditAllergie) {
     elEditAllergie.value = p.allergie || 'Nessuna nota';
@@ -4006,6 +4014,11 @@ function apriModificaAnagrafica() {
     elAllettatoChk.onchange = sincronizzaNoteAllettatoDinamico;
   }
   document.getElementById('edit-paz-note').value = p.note || '';
+
+  const elEditPatologie = document.getElementById('edit-paz-patologie');
+  if (elEditPatologie) {
+    elEditPatologie.value = Array.isArray(p.patologie) ? p.patologie.join('\n') : (p.patologie || '');
+  }
 
   // Caricamento e rendering interattivo del Catalogo Ausili Sanitari con scadenze
   renderCatalogoAusiliForm('container-catalogo-ausili-edit', p.ausili || []);
@@ -4092,6 +4105,12 @@ function salvaModificaAnagrafica(e) {
     ultimoSuonoScadutoTimestamp = 0;
   }
   p.note = document.getElementById('edit-paz-note').value.trim();
+
+  const elEditPatologieVal = document.getElementById('edit-paz-patologie');
+  if (elEditPatologieVal) {
+    const rawLines = elEditPatologieVal.value.split(/[\n,;•]+/).map(s => s.trim()).filter(s => s.length > 0);
+    p.patologie = rawLines;
+  }
 
   const elEditAllergieVal = document.getElementById('edit-paz-allergie');
   if (elEditAllergieVal) {

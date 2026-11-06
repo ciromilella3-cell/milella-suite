@@ -1964,8 +1964,18 @@
                 Lattice</button>
             </div>
 
+            <div class="form-group" style="margin-bottom:12px;">
+              <label class="form-label" style="color:#0369a1; font-weight:800; display:flex; align-items:center; justify-content:space-between;">
+                <span>🩺 Patologie & Diagnosi Attive (una per riga o separate da virgola)</span>
+                <span style="font-size:10px; font-weight:normal; color:#64748b;">Visibili nei badge e Scheda 118</span>
+              </label>
+              <textarea class="form-control" id="edit-paz-patologie" rows="3"
+                placeholder="Es: Ipertensione arteriosa sistemica&#10;Diabete Mellito Tipo 2&#10;Cardiopatia ischemica cronica"
+                style="font-size:13px; font-weight:600; line-height:1.4; border:1.5px solid #7dd3fc; border-radius:8px;"></textarea>
+            </div>
+
             <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label" style="color:#7f1d1d;">Note Cliniche / Diagnosi</label>
+              <label class="form-label" style="color:#7f1d1d;">Note Cliniche / Sintesi</label>
               <textarea class="form-control" id="edit-paz-note" rows="2"
                 placeholder="Diagnosi principali, patologie concomitanti o annotazioni mediche..."></textarea>
             </div>
@@ -6366,7 +6376,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=639295985163243682"></script>
+  <script src="app.js?v=639295989483499955"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -6377,7 +6387,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=110', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=111', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
