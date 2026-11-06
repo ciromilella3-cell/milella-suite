@@ -2,31 +2,33 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro Ufficiale Vaccinazioni Antinfluenzali A4</title>
   <style>
+    /* FORZATURA ASSOLUTA A4 ORIZZONTALE (297mm x 210mm) SENZA SBORDAMENTI */
     @page {
       size: A4 landscape;
-      margin: 8mm 10mm 10mm 10mm;
+      margin: 5mm 6mm 4mm 6mm;
     }
-    * {
+    *, *:before, *:after {
       box-sizing: border-box;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    html, body {
       margin: 0;
       padding: 0;
-      color: #000000;
       background: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: #000000;
+      -webkit-text-size-adjust: 100%;
     }
 
-    /* PANNELLO MOBILE & DESKTOP OTTIMIZZATO PER SMARTPHONE */
+    /* PANNELLO DI COMANDO MEDICO (NON STAMPABILE) */
     .doctor-panel {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #ffffff;
-      padding: 14px 18px;
+      padding: 12px 18px;
       margin: 0;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
       border-bottom: 3px solid #0284c7;
@@ -39,7 +41,7 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
     @media (min-width: 900px) {
       .doctor-panel-inner {
@@ -51,17 +53,16 @@
     .panel-title {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .panel-title h1 {
       margin: 0;
-      font-size: 16px;
+      font-size: 15px;
       color: #38bdf8;
       font-weight: 900;
-      letter-spacing: -0.2px;
     }
     .panel-title span {
-      font-size: 11.5px;
+      font-size: 11px;
       color: #94a3b8;
     }
 
@@ -74,10 +75,10 @@
     .control-group {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
     }
     .control-group label {
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 800;
       color: #cbd5e1;
       text-transform: uppercase;
@@ -88,15 +89,15 @@
       background: #0f172a;
       border: 1.5px solid #38bdf8;
       color: #ffffff;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 13px;
+      padding: 5px 8px;
+      border-radius: 7px;
+      font-size: 12px;
       font-weight: bold;
       outline: none;
-      height: 36px;
+      height: 32px;
     }
     .control-group input[type="number"] {
-      width: 80px;
+      width: 75px;
       text-align: center;
     }
 
@@ -104,10 +105,10 @@
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: #ffffff;
       border: none;
-      padding: 0 18px;
-      height: 36px;
+      padding: 0 16px;
+      height: 34px;
       border-radius: 8px;
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 900;
       cursor: pointer;
       display: inline-flex;
@@ -118,72 +119,82 @@
       margin-top: auto;
     }
 
-    /* CONTENITORE FOGLI CON SCROLL ORIZZONTALE FLUIDO SU SMARTPHONE */
+    /* PREVIEW SCHERMO PC E CELLULARE */
     .preview-scroll-wrapper {
       width: 100%;
       overflow-x: auto;
       padding: 15px 10px 40px 10px;
-      -webkit-overflow-scrolling: touch;
     }
 
+    /* STRUTTURA FOGLIO A4 RIGIDAMENTE BLOCCATA IN ALTEZZA A 198mm (NETTO MARGINI) */
     .printable-sheet-container {
-      width: 297mm;
-      min-width: 297mm;
+      width: 285mm;
+      max-width: 285mm;
+      height: 198mm;
+      max-height: 198mm;
       margin: 0 auto 20px auto;
       background: #ffffff;
-      padding: 8mm 10mm;
+      padding: 0;
       box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-      border-radius: 4px;
+      border-radius: 2px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      page-break-inside: avoid;
     }
 
     .page-break {
       page-break-after: always;
       break-after: page;
-      margin-bottom: 25px;
     }
 
+    /* INTESTAZIONE MINIMAL COMPATTA (14mm) */
     .header-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
-      padding-bottom: 3px;
+      height: 14mm;
+      margin-bottom: 2mm;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 1mm;
     }
     .asl-logo-area {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
     }
     .titolo-campagna {
       text-align: center;
-      font-size: 14.5px;
+      font-size: 13.5px;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
       flex: 1;
     }
     .stagione-box {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: bold;
       text-decoration: underline;
     }
     .dott-box {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: bold;
       color: #1e293b;
       text-align: right;
     }
-    
-    /* TABELLA REGISTRO CON MISURE PRECISE MILLIMETRICHE */
+
+    /* TABELLA REGISTRO ADATTIVA: 16 RIGHE ESATTE DA 10.4mm = 166.4mm + 12mm TH = 178.4mm */
     table.registro-vaccini {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
+      margin: 0;
     }
     table.registro-vaccini th,
     table.registro-vaccini td {
       border: 1px solid #000000;
-      padding: 0 4px;
-      font-size: 10px;
+      padding: 0 3px;
+      font-size: 9.5px;
       vertical-align: middle;
       text-align: center;
     }
@@ -191,23 +202,25 @@
       background-color: #f1f5f9;
       font-weight: bold;
       text-transform: uppercase;
-      font-size: 9px;
-      padding: 5px 2px;
-      line-height: 1.2;
+      font-size: 8.5px;
+      height: 11mm;
+      padding: 1px;
+      line-height: 1.15;
     }
 
-    /* ALTEZZA RIGHE: 14.2 mm PER FETTA ADESIVA VACCINO */
+    /* ALTEZZA RIGHE BLOCCATA: 10.4mm PERFETTA PER LA FUSTELLA DEL VACCINO E PER NON SFORARE MAI */
     table.registro-vaccini tbody tr {
-      height: 14.2mm;
+      height: 10.4mm;
+      max-height: 10.4mm;
     }
 
     /* LARGHEZZA COLONNE */
-    .col-n { width: 32px; font-weight: bold; font-size: 11px; }
-    .col-data { width: 66px; }
-    .col-cognome { width: 115px; }
-    .col-nome { width: 115px; }
-    .col-nascita { width: 75px; }
-    .col-residenza { width: 110px; }
+    .col-n { width: 26px; font-weight: bold; font-size: 10px; }
+    .col-data { width: 62px; }
+    .col-cognome { width: 110px; }
+    .col-nome { width: 110px; }
+    .col-nascita { width: 72px; }
+    .col-residenza { width: 105px; }
 
     /* COLONNA TALLONCINO VACCINO: CALIBRATA RIGIDAMENTE A 52mm */
     .col-talloncino { 
@@ -217,54 +230,68 @@
       background-color: #fafafa;
     }
 
-    .col-eta { width: 42px; }
-    .col-patologia { width: 110px; }
-    .col-firma { width: 130px; }
+    .col-eta { width: 38px; }
+    .col-patologia { width: 105px; }
+    .col-firma { width: 125px; }
 
     .talloncino-placeholder {
-      font-size: 7.5px;
+      font-size: 7px;
       color: #94a3b8;
       font-style: italic;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
       border: 1px dashed #cbd5e1;
-      border-radius: 3px;
-      height: 10.5mm;
+      border-radius: 2px;
+      height: 8.8mm;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 1px auto;
+      margin: 0 auto;
       width: 48mm;
     }
 
+    /* PIE DI PAGINA (6mm) */
     .footer-page {
-      margin-top: 8px;
+      height: 6mm;
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      font-size: 11.5px;
+      font-size: 10.5px;
       font-weight: bold;
-      padding-right: 15px;
+      padding-right: 10px;
     }
 
+    /* REGOLE DI STAMPA ESTREME: 1 PAGINA = 1 FOGLIO A4 GARANTITO AL 100% */
     @media print {
-      body {
-        background: #ffffff;
-        padding: 0;
+      html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
       }
       .doctor-panel {
         display: none !important;
       }
       .preview-scroll-wrapper {
-        padding: 0;
-        overflow: visible;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
       }
       .printable-sheet-container {
-        padding: 0;
-        box-shadow: none;
-        margin: 0;
-        width: 100%;
-        min-width: 100%;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 198mm !important;
+        max-height: 198mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        overflow: hidden !important;
+        page-break-inside: avoid !important;
+      }
+      .page-break {
+        page-break-after: always !important;
+        break-after: page !important;
       }
       .talloncino-placeholder {
         border: none !important;
@@ -275,20 +302,19 @@
 </head>
 <body>
 
-  <!-- PANNELLO DI CONTROLLO INTERATTIVO PER IL MEDICO (ADATTABILE SMARTPHONE) -->
+  <!-- PANNELLO DI CONTROLLO INTERATTIVO PER IL MEDICO -->
   <div class="doctor-panel">
     <div class="doctor-panel-inner">
       <div class="panel-title">
-        <span style="font-size:24px;">💉</span>
+        <span style="font-size:22px;">💉</span>
         <div>
           <h1>Registro Vaccinazioni Medico</h1>
-          <span>Imposta numeri e stampa in A4</span>
+          <span>1 Foglio A4 Orizzontale Esatto per pagina</span>
         </div>
       </div>
 
       <div class="panel-controls">
         
-        <!-- OPZIONE 1: TIPO DI NUMERAZIONE -->
         <div class="control-group">
           <label>Numerazione</label>
           <select id="sel-tipo-numerazione" onchange="rigeneraPagineRegistro()">
@@ -297,49 +323,44 @@
           </select>
         </div>
 
-        <!-- OPZIONE 2: NUMERO DI PARTENZA -->
         <div class="control-group" id="group-partenza">
           <label>Inizia da N.</label>
           <input type="number" id="inp-numero-inizio" value="1" min="1" max="999" oninput="rigeneraPagineRegistro()">
         </div>
 
-        <!-- OPZIONE 3: QUANTE PAGINE STAMPARE -->
         <div class="control-group">
-          <label>Pagine</label>
+          <label>Fogli A4</label>
           <select id="sel-num-pagine" onchange="rigeneraPagineRegistro()">
-            <option value="1">1 Pag (16)</option>
-            <option value="2">2 Pag (32)</option>
-            <option value="3">3 Pag (48)</option>
-            <option value="4">4 Pag (64)</option>
-            <option value="5">5 Pag (80)</option>
+            <option value="1" selected>1 Foglio (16 pazienti)</option>
+            <option value="2">2 Fogli (32 pazienti)</option>
+            <option value="3">3 Fogli (48 pazienti)</option>
+            <option value="4">4 Fogli (64 pazienti)</option>
+            <option value="5">5 Fogli (80 pazienti)</option>
           </select>
         </div>
 
-        <!-- OPZIONE 4: NUMERO PAGINA IN BASSO -->
         <div class="control-group" id="group-pag-inizio">
-          <label>Inizia da Pag.</label>
+          <label>Pag. N.</label>
           <input type="number" id="inp-pag-inizio" value="1" min="1" max="99" oninput="rigeneraPagineRegistro()">
         </div>
 
-        <!-- OPZIONE 5: NOME DOTTORESSA -->
         <div class="control-group">
           <label>Dott.ssa / Medico</label>
           <input type="text" id="inp-nome-medico" placeholder="Dott.ssa ..." value="" oninput="aggiornaDicituraMedico()">
         </div>
 
-        <!-- BOTTONE DI STAMPA A4 -->
         <button type="button" class="btn-print-action" onclick="window.print()">
-          <span>🖨️</span> Stampa A4 / PDF
+          <span>🖨️</span> Stampa 1 Pagina / PDF
         </button>
 
       </div>
     </div>
   </div>
 
-  <!-- CONTENITORE DOVE VENGONO GENERATE LE PAGINE A4 -->
+  <!-- ANTEPRIMA FOGLI -->
   <div class="preview-scroll-wrapper">
     <div id="sheets-render-root">
-      <!-- Generato dinamicamente via JavaScript -->
+      <!-- Generato dinamicamente via JS -->
     </div>
   </div>
 
@@ -349,12 +370,7 @@
       const righePerFoglio = 16;
 
       for (let i = 0; i < righePerFoglio; i++) {
-        let numeroCella = '';
-        if (tipoNumerazione === 'continua') {
-          numeroCella = numeroIniziale + i;
-        } else {
-          numeroCella = '';
-        }
+        let numeroCella = (tipoNumerazione === 'continua') ? (numeroIniziale + i) : '';
 
         righeHTML += `
           <tr>
@@ -381,7 +397,7 @@
           <!-- INTESTAZIONE -->
           <div class="header-container">
             <div class="asl-logo-area">
-              <span style="border: 1.5px solid #000; padding: 2px 6px; border-radius: 4px; font-size: 11px;">REGIONE / ASL</span>
+              <span style="border: 1.5px solid #000; padding: 2px 5px; border-radius: 4px; font-size: 10px;">REGIONE / ASL</span>
             </div>
             <div class="titolo-campagna">
               CAMPAGNA VACCINAZIONE ANTINFLUENZALE STAGIONE <span class="stagione-box">2025/2026</span>
@@ -403,7 +419,7 @@
                 <th class="col-residenza">RESIDENZA</th>
                 <th class="col-talloncino">
                   FLUAD / EFLUELDA /<br>VAXIGRIP TETRA<br>
-                  <span style="font-size: 7px; font-weight: normal; color: #555;">(Spazio Fustella Adesiva)</span>
+                  <span style="font-size: 6.5px; font-weight: normal; color: #555;">(Spazio Fustella Adesiva)</span>
                 </th>
                 <th class="col-eta">ETA'<br>(SI/NO)</th>
                 <th class="col-patologia">PATOLOGIA</th>
@@ -437,7 +453,6 @@
 
       const container = document.getElementById('sheets-render-root');
       let fullHtml = '';
-
       const totalePagine = pagInizio + numPagine - 1;
 
       for (let p = 0; p < numPagine; p++) {
