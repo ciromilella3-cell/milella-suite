@@ -22410,15 +22410,24 @@ async function gestisciAnnullaSomministrazione(id) {
   if (!t) return;
 
   const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
-  const msg = 'Vuoi annullare la somministrazione registrata per "' + t.farmaco + '" e ripristinare la dose come DA SOMMINISTRARE?';
-  
-  if (confirm(msg)) {
+  const icona = isPen ? '💉' : '💊';
+  const titolo = 'Ripristina Terapia: ' + t.farmaco;
+  const spiegazione = 'Vuoi annullare la registrazione di avvenuta somministrazione per "' + t.farmaco + '" e riportare la dose allo stato DA ASSUMERE?\n\nLa quota verrà automaticamente riaccreditata nella scorta disponibile.';
+
+  let confermato = false;
+  if (typeof customConfirm === 'function') {
+    confermato = await customConfirm(titolo, spiegazione, icona, '↩️ Ripristina come Da Prendere');
+  } else {
+    confermato = confirm('Vuoi annullare la somministrazione di ' + t.farmaco + '?');
+  }
+
+  if (confermato) {
     t.fattoOggi = false;
     delete t.dataUltimaSomministrazione;
     delete t.orarioSomministrazione;
     delete t.ultimoOperatore;
 
-    // Ripristina quota scorta se necessario
+    // Ripristina quota scorta
     if (isPen) {
       var dPen = (typeof calcolaDatiPennaIniettabile === 'function') ? calcolaDatiPennaIniettabile(t) : { giorniPerPenna: 18.75 };
       var frazPenna = 1 / dPen.giorniPerPenna;
@@ -22431,7 +22440,7 @@ async function gestisciAnnullaSomministrazione(id) {
 
     if (typeof saveDb === 'function') saveDb();
     if (typeof renderAll === 'function') renderAll();
-    if (typeof showToast === 'function') showToast('↩️ Somministrazione di ' + t.farmaco + ' ripristinata come DA PRENDERE.');
+    if (typeof showToast === 'function') showToast('↩️ Terapia ripristinata con successo: ' + t.farmaco, 'success');
   }
 }
 window.gestisciAnnullaSomministrazione = gestisciAnnullaSomministrazione;
