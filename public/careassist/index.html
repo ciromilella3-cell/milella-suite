@@ -5874,11 +5874,11 @@ function azzeraFormNuovoPaziente() {
 </nav>
 
 <!-- MODALE SPECIALE: INVENTARIO RAPIDO BLISTER & CASA (ULTRA-LEGGIBILE PER FAMILIARI ED OSS) -->
-<div id="modal-inventario-rapido" class="modal-overlay" style="display:none; z-index:999999; background:rgba(15,23,42,0.75); backdrop-filter:blur(4px); align-items:center; justify-content:center; position:fixed; inset:0; padding:12px;">
-  <div class="modal-content" style="max-width:980px; width:100%; border-radius:24px; box-shadow:0 25px 60px rgba(0,0,0,0.45); border:3px solid #0284c7; background:#f8fafc; max-height:92vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
+<div id="modal-inventario-rapido" class="modal-overlay" style="display:none; z-index:999999; background:rgba(15,23,42,0.8); backdrop-filter:blur(5px); align-items:center; justify-content:center; position:fixed; inset:0; padding:12px;">
+  <div class="modal-content" style="max-width:1040px; width:100%; border-radius:24px; box-shadow:0 25px 60px rgba(0,0,0,0.5); border:3px solid #0284c7; background:#f8fafc; max-height:94vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
     
     <!-- HEADER MODALE -->
-    <div style="background:linear-gradient(135deg, #0284c7 0%, #0f172a 100%); color:#ffffff; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #38bdf8;">
+    <div style="background:linear-gradient(135deg, #0284c7 0%, #0f172a 100%); color:#ffffff; padding:16px 24px; display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #38bdf8;">
       <div style="display:flex; align-items:center; gap:14px;">
         <div style="width:48px; height:48px; border-radius:14px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:26px; border:1px solid rgba(255,255,255,0.3);">
           📋
@@ -5887,32 +5887,60 @@ function azzeraFormNuovoPaziente() {
           <div style="font-size:20px; font-weight:900; color:#ffffff; letter-spacing:-0.3px;">
             Controlla e Aggiorna Farmaci a Tavola
           </div>
-          <div style="font-size:13.5px; color:#e0f2fe; font-weight:600; margin-top:2px;">
+          <div style="font-size:13px; color:#e0f2fe; font-weight:600; margin-top:2px;">
             Assistito: <b id="inv-rapido-paziente-nome" style="color:#fde047; font-weight:900;">Rosa Annunziata Cavalcante</b> • <span style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:6px; color:#ffffff;">🔒 Ordine Fisso Bloccato (Nessun Salto)</span>
           </div>
         </div>
       </div>
-      <button type="button" onclick="chiudiModalInventarioRapido()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); color:#ffffff; font-size:22px; width:42px; height:42px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s ease;" title="Chiudi senza salvare">
-        ✕
-      </button>
+      
+      <div style="display:flex; align-items:center; gap:10px;">
+        <!-- Tasto Stampa Foglio Frigo Rapido -->
+        <button type="button" onclick="stampaFoglioFrigo()" style="background:#fff7ed; border:1.5px solid #fdba74; color:#c2410c; padding:8px 14px; border-radius:10px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 5px rgba(0,0,0,0.1);" title="Stampa la scheda chiara per il frigorifero o il comodino">
+          <span>🖨️</span> Stampa Foglio Frigo
+        </button>
+
+        <button type="button" onclick="chiudiModalInventarioRapido()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); color:#ffffff; font-size:22px; width:40px; height:40px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s ease;" title="Chiudi">
+          ✕
+        </button>
+      </div>
     </div>
 
-    <!-- GUIDA VISIVA SEMPLICE PER IL FAMILIARE O L'OSS -->
-    <div style="background:#e0f2fe; border-bottom:2px solid #bae6fd; padding:12px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-      <div style="font-size:13.5px; color:#0369a1; font-weight:700; display:flex; align-items:center; gap:8px;">
-        <span style="font-size:18px;">💡</span>
-        <span><b>Guida pratica:</b> I farmaci restano <u>sempre fermi nello stesso ordine</u>. Tocca i pulsanti grandi <b>−</b> o <b>+</b> per contare le pillole, oppure cambia l'orario. Quando hai finito, tocca il tastone verde in basso.</span>
+    <!-- BARRA FILTRI FASCE ORARIE + AUTONOMIA SCORTE -->
+    <div style="background:#f1f5f9; border-bottom:2px solid #cbd5e1; padding:10px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      
+      <!-- FILTRI FASCE PER OSS / FAMIGLIA -->
+      <div style="display:inline-flex; align-items:center; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:3px; gap:4px;" id="inv-rapido-filtri-fasce">
+        <button type="button" class="inv-filtro-btn active" onclick="filtraInventarioFascia('tutti', this)" style="border:none; background:#0284c7; color:#ffffff; font-size:12px; font-weight:800; padding:5px 12px; border-radius:8px; cursor:pointer;">
+          Tutti i Farmaci (<span id="inv-rapido-count-tutti">0</span>)
+        </button>
+        <button type="button" class="inv-filtro-btn" onclick="filtraInventarioFascia('mattina', this)" style="border:none; background:transparent; color:#475569; font-size:12px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;">
+          🌅 Mattina
+        </button>
+        <button type="button" class="inv-filtro-btn" onclick="filtraInventarioFascia('pranzo', this)" style="border:none; background:transparent; color:#475569; font-size:12px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;">
+          ☀️ Pranzo
+        </button>
+        <button type="button" class="inv-filtro-btn" onclick="filtraInventarioFascia('pomeriggio', this)" style="border:none; background:transparent; color:#475569; font-size:12px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;">
+          ☕ Pomeriggio
+        </button>
+        <button type="button" class="inv-filtro-btn" onclick="filtraInventarioFascia('sera', this)" style="border:none; background:transparent; color:#475569; font-size:12px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;">
+          🌙 Sera / Notte
+        </button>
       </div>
-      <div style="background:#ffffff; border:1.5px solid #0284c7; padding:4px 12px; border-radius:20px; font-size:13px; color:#0284c7; font-weight:900;">
-        Totale: <span id="inv-rapido-count" style="font-size:15px; color:#0369a1;">0</span> rimedi
+
+      <!-- LEGENDA SEMAFORO AUTONOMIA -->
+      <div style="display:flex; align-items:center; gap:8px; font-size:11.5px; font-weight:700; color:#475569;">
+        <span style="display:inline-flex; align-items:center; gap:3px;"><span style="width:10px; height:10px; border-radius:50%; background:#22c55e;"></span> Ottima scorta</span>
+        <span style="display:inline-flex; align-items:center; gap:3px;"><span style="width:10px; height:10px; border-radius:50%; background:#eab308;"></span> In esaurimento (&le;7 gg)</span>
+        <span style="display:inline-flex; align-items:center; gap:3px;"><span style="width:10px; height:10px; border-radius:50%; background:#ef4444;"></span> Scorta critica (&le;3 gg)</span>
       </div>
+
     </div>
 
     <!-- INTESTAZIONE COLONNE CHIARA -->
-    <div style="background:#f1f5f9; padding:8px 24px; border-bottom:1px solid #cbd5e1; display:flex; align-items:center; justify-content:space-between; font-size:11.5px; font-weight:900; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">
+    <div style="background:#e2e8f0; padding:8px 24px; border-bottom:1px solid #cbd5e1; display:flex; align-items:center; justify-content:space-between; font-size:11.5px; font-weight:900; color:#334155; text-transform:uppercase; letter-spacing:0.5px;">
       <div style="flex:1; min-width:240px;">💊 NOME FARMACO &amp; FORMA</div>
-      <div style="width:160px; text-align:center;">⏰ ORARIO DI ASSUNZIONE</div>
-      <div style="width:230px; text-align:center;">📦 PILLOLE DISPONIBILI (SCORTA)</div>
+      <div style="width:150px; text-align:center;">⏰ ORARIO</div>
+      <div style="width:260px; text-align:center;">📦 SCORTA &amp; SEMAFORO AUTONOMIA</div>
       <div style="width:120px; text-align:right;">➕ SCATOLA NUOVA</div>
     </div>
 
@@ -5921,14 +5949,24 @@ function azzeraFormNuovoPaziente() {
       <!-- Generato dinamicamente via JS -->
     </div>
 
-    <!-- FOOTER SALVATAGGIO GLOBALE CON PULSANTI GIGANTI E RASSICURANTI -->
-    <div style="background:#ffffff; border-top:2px solid #cbd5e1; padding:16px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; box-shadow:0 -4px 15px rgba(0,0,0,0.05);">
-      <button type="button" onclick="chiudiModalInventarioRapido()" style="background:#f1f5f9; color:#475569; border:1.5px solid #cbd5e1; padding:12px 22px; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer; transition:all 0.15s ease;">
-        Annulla ed Esci
+    <!-- FOOTER SALVATAGGIO GLOBALE CON WHATSAPP MEDICO E SALVATAGGIO -->
+    <div style="background:#ffffff; border-top:2px solid #cbd5e1; padding:14px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; box-shadow:0 -4px 15px rgba(0,0,0,0.05);">
+      
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button type="button" onclick="chiudiModalInventarioRapido()" style="background:#f1f5f9; color:#475569; border:1.5px solid #cbd5e1; padding:11px 18px; border-radius:12px; font-weight:800; font-size:13.5px; cursor:pointer;">
+          Esci
+        </button>
+
+        <!-- PULSANTE WHATSAPP PER IL MEDICO / FARMACIA -->
+        <button type="button" onclick="inviaRichiestaRicetteWhatsApp()" style="background:linear-gradient(135deg, #25D366 0%, #128C7E 100%); color:#ffffff; border:none; padding:11px 18px; border-radius:12px; font-weight:900; font-size:13.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(37,211,102,0.3);" title="Genera il messaggio WhatsApp già pronto con i farmaci che stanno finendo">
+          <span>📲</span> Invia Ricette da Richiedere su WhatsApp
+        </button>
+      </div>
+
+      <button type="button" onclick="salvaTuttoInventarioRapido()" style="background:linear-gradient(135deg, #16a34a 0%, #15803d 100%); color:#ffffff; border:none; padding:13px 30px; border-radius:14px; font-weight:900; font-size:15.5px; cursor:pointer; box-shadow:0 5px 16px rgba(22,163,74,0.35); display:inline-flex; align-items:center; gap:8px;">
+        <span style="font-size:19px;">💾</span> Salva Tutto l'Inventario Ora
       </button>
-      <button type="button" onclick="salvaTuttoInventarioRapido()" style="background:linear-gradient(135deg, #16a34a 0%, #15803d 100%); color:#ffffff; border:none; padding:14px 32px; border-radius:14px; font-weight:900; font-size:16px; cursor:pointer; box-shadow:0 6px 18px rgba(22,163,74,0.35); display:inline-flex; align-items:center; gap:10px; transition:all 0.15s ease;">
-        <span style="font-size:20px;">💾</span> Salva Tutto l'Inventario Ora
-      </button>
+
     </div>
 
   </div>

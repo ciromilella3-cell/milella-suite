@@ -21921,77 +21921,193 @@ function impostaOrdinamentoTerapie(tipo) {
   renderTerapie();
 }
 
+function calcolaSemaforoAutonomia(terapia, scortaVal) {
+  const isPen = (terapia.tipoFormulazione === 'penna' || (terapia.dosaggio || '').toLowerCase().includes('unit') || (terapia.farmaco || '').toLowerCase().includes('penna') || (terapia.farmaco || '').toLowerCase().includes('xultophy'));
+  let giorniAutonomia = 99;
+  
+  if (isPen) {
+    // 1 penna di insulina (es. Xultophy 300 unità) a 16 unità/giorno dura circa 18 giorni
+    const unitaTotali = scortaVal * 300;
+    const doseGiornaliera = 16;
+    giorniAutonomia = Math.floor(unitaTotali / doseGiornaliera);
+  } else {
+    // Calcola consumo compresse/die
+    const dose = (terapia.dosaggio || '').toLowerCase();
+    let cprDie = 1;
+    if (dose.includes('2 cpr') || dose.includes('2 compresse') || dose.includes('due')) cprDie = 2;
+    else if (dose.includes('3 cpr') || dose.includes('3 compresse')) cprDie = 3;
+    else if (dose.includes('½') || dose.includes('1/2') || dose.includes('mezza')) cprDie = 0.5;
+    giorniAutonomia = Math.floor(scortaVal / cprDie);
+  }
+
+  if (giorniAutonomia <= 3) {
+    return { colore: '#ef4444', bg: '#fef2f2', border: '#fca5a5', testo: 'Mancano ' + giorniAutonomia + ' gg (Critico)', giorni: giorniAutonomia, stato: 'critico' };
+  } else if (giorniAutonomia <= 7) {
+    return { colore: '#d97706', bg: '#fffbeb', border: '#fde68a', testo: 'Mancano ' + giorniAutonomia + ' gg (Da ordinare)', giorni: giorniAutonomia, stato: 'allerta' };
+  } else {
+    return { colore: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', testo: giorniAutonomia + ' gg di autonomia', giorni: giorniAutonomia, stato: 'ottimo' };
+  }
+}
+
+window._invRapidoFasciaAttiva = 'tutti';
+
+function filtraInventarioFascia(fascia, btn) {
+  window._invRapidoFasciaAttiva = fascia;
+  const btns = document.querySelectorAll('#inv-rapido-filtri-fasce .inv-filtro-btn');
+  btns.forEach(b => {
+    b.style.background = 'transparent';
+    b.style.color = '#475569';
+  });
+  if (btn) {
+    btn.style.background = '#0284c7';
+    btn.style.color = '#ffffff';
+  }
+  apriModalInventarioRapido();
+}
+
 function apriModalInventarioRapido() {
   const p = getActivePaziente();
   if (!p || !p.terapie) return;
 
   const nomeEl = document.getElementById('inv-rapido-paziente-nome');
-  const countEl = document.getElementById('inv-rapido-count');
+  const countEl = document.getElementById('inv-rapido-count-tutti');
   const listEl = document.getElementById('inv-rapido-body-list');
   if (nomeEl) nomeEl.textContent = p.nome;
   if (countEl) countEl.textContent = (p.terapie || []).length;
 
-  // Ordina RIGOROSAMENTE in ordine alfabetico per non far slittare mai le righe sotto gli occhi
-  const terapieOrdinate = [...p.terapie].sort((a, b) => (a.farmaco || '').localeCompare(b.farmaco || ''));
+  // Ordina RIGOROSAMENTE in ordine alfabetico per non far slittare mai le righe
+  let terapie = [...p.terapie].sort((a, b) => (a.farmaco || '').localeCompare(b.farmaco || ''));
+
+  // Filtro per fascia selezionata
+  if (window._invRapidoFasciaAttiva && window._invRapidoFasciaAttiva !== 'tutti') {
+    terapie = terapie.filter(t => {
+      const f = (t.fascia || '').toLowerCase();
+      const ora = (t.ora || '');
+      if (window._invRapidoFasciaAttiva === 'mattina') return f.includes('mattina') || (ora >= '06:00' && ora < '12:00');
+      if (window._invRapidoFasciaAttiva === 'pranzo') return f.includes('pranzo') || (ora >= '12:00' && ora < '15:00');
+      if (window._invRapidoFasciaAttiva === 'pomeriggio') return f.includes('pomeriggio') || (ora >= '15:00' && ora < '19:00');
+      if (window._invRapidoFasciaAttiva === 'sera') return f.includes('sera') || f.includes('notte') || (ora >= '19:00' || ora < '06:00');
+      return true;
+    });
+  }
 
   if (listEl) {
-    listEl.innerHTML = terapieOrdinate.map((t, idx) => {
-      const isPen = (t.tipoFormulazione === 'penna' || (t.dosaggio || '').toLowerCase().includes('unit') || (t.farmaco || '').toLowerCase().includes('penna') || (t.farmaco || '').toLowerCase().includes('xultophy'));
-      const scortaVal = isPen ? (t.penneScorta || t.scorta || 1) : (t.scorta || 0);
-      const unitaTxt = isPen ? 'penne' : 'pillole';
-      const cprPerPacco = t.cprPerScatola || (isPen ? 5 : 28);
+    if (terapie.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center; padding:30px; color:#64748b; font-weight:700; font-size:15px;">Nessun farmaco programmato per questa fascia oraria.</div>';
+    } else {
+      listEl.innerHTML = terapie.map((t, idx) => {
+        const isPen = (t.tipoFormulazione === 'penna' || (t.dosaggio || '').toLowerCase().includes('unit') || (t.farmaco || '').toLowerCase().includes('penna') || (t.farmaco || '').toLowerCase().includes('xultophy'));
+        const scortaVal = isPen ? (t.penneScorta || t.scorta || 1) : (t.scorta || 0);
+        const unitaTxt = isPen ? 'penne' : 'pillole';
+        const cprPerPacco = t.cprPerScatola || (isPen ? 5 : 28);
+        const sem = calcolaSemaforoAutonomia(t, scortaVal);
 
-      return `
-        <div class="inv-rapido-row" data-id="${t.id}" style="background:#ffffff; border:2px solid #e2e8f0; border-radius:16px; padding:14px 18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; box-shadow:0 3px 8px rgba(0,0,0,0.03); transition:all 0.2s ease;">
-          
-          <!-- COLONNA 1: FARMACO E DOSAGGIO AD ALTA LEGGIBILITÀ -->
-          <div style="flex:1; min-width:240px;">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <span style="font-size:24px; background:#f1f5f9; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid #cbd5e1;">${isPen ? '💉' : '💊'}</span>
-              <div>
-                <div style="font-size:16.5px; font-weight:900; color:#0f172a; line-height:1.2;">${t.farmaco}</div>
-                <div style="font-size:12.5px; color:#475569; font-weight:700; margin-top:3px;">
-                  ${t.principio ? '<span style="color:#0284c7;">' + t.principio + '</span> • ' : ''}${t.dosaggio || ''}
+        return `
+          <div class="inv-rapido-row" data-id="${t.id}" style="background:#ffffff; border:2px solid #e2e8f0; border-radius:16px; padding:12px 18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; box-shadow:0 2px 6px rgba(0,0,0,0.03); transition:all 0.15s ease;">
+            
+            <!-- COLONNA 1: FARMACO E DOSAGGIO -->
+            <div style="flex:1; min-width:240px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:24px; background:#f1f5f9; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid #cbd5e1;">${isPen ? '💉' : '💊'}</span>
+                <div>
+                  <div style="font-size:16px; font-weight:900; color:#0f172a; line-height:1.2;">${t.farmaco}</div>
+                  <div style="font-size:12px; color:#475569; font-weight:700; margin-top:2px;">
+                    ${t.principio ? '<span style="color:#0284c7;">' + t.principio + '</span> • ' : ''}${t.dosaggio || ''}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- COLONNA 2: SELETTORE ORA SEMPLICE E PROTETTO -->
-          <div style="display:flex; flex-direction:column; align-items:center; gap:3px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:6px 12px; min-width:140px;">
-            <span style="font-size:11px; font-weight:900; color:#64748b; text-transform:uppercase;">⏰ Orario Assunzione</span>
-            <input type="time" class="inv-rapido-ora" value="${t.ora || '08:00'}" style="padding:6px 10px; border:2px solid #0284c7; border-radius:8px; font-weight:900; font-size:16px; color:#0f172a; width:110px; text-align:center; background:#ffffff;">
-          </div>
-
-          <!-- COLONNA 3: CONTATORE TOUCH CON TASTONI PILLOLE -->
-          <div style="display:flex; flex-direction:column; align-items:center; gap:3px; background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:6px 12px;">
-            <span style="font-size:11px; font-weight:900; color:#15803d; text-transform:uppercase;">📦 Scorta Rimasta</span>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <button type="button" onclick="modificaContatoreInvRapido(this, -1)" style="width:38px; height:38px; border-radius:10px; border:2px solid #bbf7d0; background:#ffffff; font-size:22px; font-weight:900; color:#dc2626; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.06); transition:transform 0.1s active;" title="Togli 1 pillola">-</button>
-              
-              <input type="number" class="inv-rapido-scorta" value="${scortaVal}" min="0" style="width:65px; text-align:center; font-size:18px; font-weight:900; color:#0f172a; border:2px solid #86efac; border-radius:8px; background:#ffffff; padding:4px 0;">
-              
-              <span style="font-size:12px; font-weight:800; color:#166534; width:45px; text-align:left;">${unitaTxt}</span>
-              
-              <button type="button" onclick="modificaContatoreInvRapido(this, 1)" style="width:38px; height:38px; border-radius:10px; border:2px solid #bbf7d0; background:#ffffff; font-size:22px; font-weight:900; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.06); transition:transform 0.1s active;" title="Aggiungi 1 pillola">+</button>
+            <!-- COLONNA 2: SELETTORE ORA -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:2px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:5px 10px; min-width:130px;">
+              <span style="font-size:10.5px; font-weight:900; color:#64748b; text-transform:uppercase;">⏰ Orario</span>
+              <input type="time" class="inv-rapido-ora" value="${t.ora || '08:00'}" style="padding:5px 8px; border:2px solid #0284c7; border-radius:8px; font-weight:900; font-size:15px; color:#0f172a; width:100px; text-align:center; background:#ffffff;">
             </div>
-          </div>
 
-          <!-- COLONNA 4: PULSANTE RAPIDO +1 SCATOLA INTERA -->
-          <div style="display:flex; align-items:center;">
-            <button type="button" onclick="aggiungiScatolaInteraInvRapido(this, ${cprPerPacco})" style="background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:2px solid #3b82f6; color:#1d4ed8; font-weight:900; font-size:13px; padding:10px 14px; border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(59,130,246,0.15);" title="Ho comprato una scatola nuova: aggiungi ${cprPerPacco} unità">
-              <span style="font-size:16px;">📦</span> +${cprPerPacco}
-            </button>
-          </div>
+            <!-- COLONNA 3: CONTATORE + SEMAFORO AUTONOMIA -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:4px; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:6px 12px; min-width:260px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" onclick="modificaContatoreInvRapido(this, -1)" style="width:36px; height:36px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff; font-size:20px; font-weight:900; color:#dc2626; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Togli 1">-</button>
+                
+                <input type="number" class="inv-rapido-scorta" value="${scortaVal}" min="0" oninput="aggiornaSemaforoRigaLive(this)" style="width:60px; text-align:center; font-size:18px; font-weight:900; color:#0f172a; border:2px solid #86efac; border-radius:8px; background:#f0fdf4; padding:3px 0;">
+                
+                <span style="font-size:12px; font-weight:800; color:#334155; width:45px;">${unitaTxt}</span>
+                
+                <button type="button" onclick="modificaContatoreInvRapido(this, 1)" style="width:36px; height:36px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff; font-size:20px; font-weight:900; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Aggiungi 1">+</button>
+              </div>
 
-        </div>
-      `;
-    }).join('');
+              <!-- BADGE SEMAFORO REAL-TIME -->
+              <div class="inv-semaforo-badge" style="font-size:11px; font-weight:900; color:${sem.colore}; background:${sem.bg}; border:1px solid ${sem.border}; padding:2px 8px; border-radius:10px; display:inline-flex; align-items:center; gap:4px;">
+                <span>●</span> ${sem.testo}
+              </div>
+            </div>
+
+            <!-- COLONNA 4: PULSANTE +1 SCATOLA -->
+            <div style="display:flex; align-items:center;">
+              <button type="button" onclick="aggiungiScatolaInteraInvRapido(this, ${cprPerPacco})" style="background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:1.5px solid #3b82f6; color:#1d4ed8; font-weight:900; font-size:12.5px; padding:9px 12px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Aggiungi una confezione nuova intera">
+                <span>📦</span> +${cprPerPacco}
+              </button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
   }
 
   const modal = document.getElementById('modal-inventario-rapido');
   if (modal) modal.style.display = 'flex';
 }
+
+function aggiornaSemaforoRigaLive(input) {
+  const row = input.closest('.inv-rapido-row');
+  if (!row) return;
+  const tid = Number(row.getAttribute('data-id'));
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+  const t = p.terapie.find(item => item.id === tid);
+  if (!t) return;
+
+  const val = parseInt(input.value) || 0;
+  const sem = calcolaSemaforoAutonomia(t, val);
+  const badge = row.querySelector('.inv-semaforo-badge');
+  if (badge) {
+    badge.style.color = sem.colore;
+    badge.style.background = sem.bg;
+    badge.style.borderColor = sem.border;
+    badge.innerHTML = '<span>●</span> ' + sem.testo;
+  }
+}
+
+function inviaRichiestaRicetteWhatsApp() {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+
+  const inEsaurimento = [];
+  const rows = document.querySelectorAll('#inv-rapido-body-list .inv-rapido-row');
+
+  p.terapie.forEach(t => {
+    // Leggi scorta attuale
+    const scorta = (t.scorta || t.penneScorta || 0);
+    const sem = calcolaSemaforoAutonomia(t, scorta);
+    if (sem.stato === 'critico' || sem.stato === 'allerta') {
+      inEsaurimento.push('- ' + t.farmaco + ' (rimaste ' + scorta + ', ' + sem.testo + ')');
+    }
+  });
+
+  let testoMsg = '';
+  if (inEsaurimento.length === 0) {
+    testoMsg = 'Buongiorno Dottore, per l\'assistito ' + p.nome + ' verifichiamo la situazione farmaci: al momento le scorte a casa sono regolari.';
+  } else {
+    testoMsg = 'Buongiorno Dottore, per l\'assistito ' + p.nome + ' avremmo bisogno delle seguenti ricette per rinnovo scorta a casa:\n\n' +
+      inEsaurimento.join('\n') + '\n\nGrazie mille per la disponibilità!';
+  }
+
+  const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(testoMsg);
+  window.open(url, '_blank');
+  showToast('📲 Apertura WhatsApp con messaggio prescrizioni pronto!', 'success');
+}
+
 function modificaContatoreInvRapido(btn, delta) {
   const row = btn.closest('.inv-rapido-row');
   if (!row) return;
@@ -22000,6 +22116,7 @@ function modificaContatoreInvRapido(btn, delta) {
     let val = parseInt(input.value) || 0;
     val = Math.max(0, val + delta);
     input.value = val;
+    aggiornaSemaforoRigaLive(input);
     row.style.background = '#f0fdf4';
     row.style.borderColor = '#86efac';
   }
@@ -22013,6 +22130,7 @@ function aggiungiScatolaInteraInvRapido(btn, cprPacco) {
     let val = parseInt(input.value) || 0;
     val += (parseInt(cprPacco) || 30);
     input.value = val;
+    aggiornaSemaforoRigaLive(input);
     row.style.background = '#eff6ff';
     row.style.borderColor = '#93c5fd';
   }
