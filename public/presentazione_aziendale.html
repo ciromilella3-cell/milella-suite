@@ -758,7 +758,7 @@
                         <div class="cartoon-progress-wrap">
                             <div class="cartoon-progress-bar" id="cartoonProgressBar"></div>
                         </div>
-                        <span id="cartoonTimeLabel" style="font-size:12px; font-weight:800; color:#cbd5e1;">Atto 1/5</span>
+                        <span id="cartoonTimeLabel" style="font-size:12px; font-weight:800; color:#cbd5e1;">Fase 1/5</span>
                         <button type="button" onclick="condividiCareAssistWhatsApp()" style="background:#25D366; color:#fff; border:none; padding:7px 11px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px;" title="Condividi CareAssist su WhatsApp">
                             <span>💬</span> WhatsApp
                         </button>
@@ -817,7 +817,7 @@
                 <!-- MINI PULSANTI SCENA RAPIDA -->
                 <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px; margin-bottom:14px;">
                     <div style="font-size:12.5px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:8px;">
-                        🎬 Scegli un Atto del Cartone Animato (Voce Umana Multi-Personaggio):
+                        🎬 Scegli una Fase della Presentazione (Voce Umana Multi-Personaggio):
                     </div>
                     <div style="display:flex; flex-wrap:wrap; gap:6px;">
                         <button type="button" onclick="attivaModalitaCartone(0, true)" style="padding:6px 10px; border-radius:8px; border:1px solid #cbd5e1; background:#fff; font-size:12.5px; font-weight:800; cursor:pointer;">1. Il Problema del Capo</button>
@@ -999,7 +999,7 @@
         const CARTOON_SCENES = [
             {
                 id: 0,
-                title: 'Atto 1: Il Problema Quotidiano del Direttore',
+                title: 'Fase 1: Il Problema Quotidiano del Direttore',
                 audioUrl: '/assets/audio_presentazione/scena_1.mp3',
                 speaker: '👨‍💼 Direttore & Voce Guida (Giuseppe + Isabella HD)',
                 subtitle: '«Come Direttore, ogni giorno mi chiedo: l\'operatore avrà dato la compressa delle 08:00? Quante scatole restano? E se qualcuno abbassa il volume o cancella per sbaglio?»',
@@ -1138,7 +1138,7 @@
             },
             {
                 id: 1,
-                title: 'Atto 2: L\'Alleanza Strategica — Ciro Milella + Antigravity AI',
+                title: 'Fase 2: L\'Alleanza Strategica — Ciro Milella + Antigravity AI',
                 audioUrl: '/assets/audio_presentazione/scena_2.mp3',
                 speaker: '👨‍💻 Ciro Milella & 🤖 Antigravity AI (Diego + Isabella HD)',
                 subtitle: '«Ciro ha messo l\'esperienza reale sul campo; io, Antigravity AI, ho trasformato ogni sua intuizione in codice sicuro, maschere leggibili e controlli automatici!»',
@@ -1220,7 +1220,7 @@
             },
             {
                 id: 2,
-                title: 'Atto 3: Alert Cellulare ↔ PC in 2 Secondi + Volume Anti-Furbi ≥ 70%',
+                title: 'Fase 3: Alert Cellulare ↔ PC in 2 Secondi + Volume Anti-Furbi ≥ 70%',
                 audioUrl: '/assets/audio_presentazione/scena_3.mp3',
                 speaker: '👩‍⚕️ Operatrice a Domicilio & 👨‍💻 Ciro (Isabella + Diego HD)',
                 subtitle: '«Tocco "✓ Assunto Oggi" sullo smartphone a casa del paziente: in 2 secondi il PC della Direzione diventa verde, congela la dose con lucchetto di protezione per impedire errori accidentali e sincronizza la scorta reale delle capsule!»',
@@ -1299,7 +1299,7 @@
             },
             {
                 id: 3,
-                title: 'Atto 4: Le Piccole Rifiniture Cliniche che Fanno la Differenza',
+                title: 'Fase 4: Le Piccole Rifiniture Cliniche che Fanno la Differenza',
                 audioUrl: '/assets/audio_presentazione/scena_4.mp3',
                 speaker: '👨‍💻 Ciro Milella & 👩‍⚕️ Assistente Clinica (Diego + Isabella HD)',
                 subtitle: '«Riconciliazione automatica all\'avvio per allineare i blister quando il PC era spento, inventario esatto delle capsule reali, blocco di sicurezza clinica anti-doppio scarico e stampa ufficiale della Scheda Terapeutica A4 con doppia firma medico-operatore!»',
@@ -1362,10 +1362,10 @@
             },
             {
                 id: 4,
-                title: 'Atto 5: Il Direttore Convinto & La Nuova Licenza Aziendale',
+                title: 'Fase 5: Il Direttore Convinto & La Nuova Licenza Aziendale',
                 audioUrl: '/assets/audio_presentazione/scena_5.mp3',
                 speaker: '👨‍💼 Direttore Entusiasta & 👨‍💻 Ciro Milella (Giuseppe + Diego HD)',
-                subtitle: '«Straordinario! È intuitivo, leggibile anche per chi ha 50 anni e tiene tutto sotto controllo. Intestiamolo subito alla nostra Azienda!»',
+                subtitle: '«Straordinario! È intuitivo, immediatamente leggibile per qualsiasi figura dell'équipe e tiene tutto sotto controllo. Intestiamolo subito alla nostra Azienda!»',
                 linkedPhotoIdx: 5,
                 svgRender: () => `
                     <svg viewBox="0 0 760 350" style="width:100%; height:350px; display:block; background:radial-gradient(circle at 50% 35%, #065f46 0%, #09101f 100%);">
@@ -1815,7 +1815,7 @@
             document.getElementById('viewerTopTitle').textContent = `🎬 CORTOMETRAGGIO ANIMATO — ${scene.title.toUpperCase()}`;
             document.getElementById('speakerBadge').textContent = scene.speaker;
             document.getElementById('subtitleText').textContent = scene.subtitle;
-            document.getElementById('cartoonTimeLabel').textContent = `Atto ${currentCartoonIdx + 1}/5`;
+            document.getElementById('cartoonTimeLabel').textContent = `Fase ${currentCartoonIdx + 1}/5`;
 
             const container = document.getElementById('mainStageContainer');
             container.innerHTML = scene.svgRender();
