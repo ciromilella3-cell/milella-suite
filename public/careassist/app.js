@@ -2777,29 +2777,53 @@ function renderPazientiSelector() {
 
         <!-- RIGA 3: PULSANTIERA COMANDI CLINICI SALVAVITA (UNIFICATA & ARMONIOSA) -->
         <div class="hero-command-bar">
-          <div class="hero-quick-actions-bar">
-            <button id="btn-scheda-118" class="btn-hero-action btn-hero-118" onclick="apriModalScheda118()" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
-              <span>🚨</span> <span>Scheda 118</span>
+          <div class="hero-quick-actions-bar" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            
+            <!-- TASTO SALVAVITA 1: SCHEDA 118 (ROSSO CUBITALE) -->
+            <button id="btn-scheda-118" class="btn" onclick="apriModalScheda118()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:#ffffff; font-weight:900; font-size:13px; padding:8px 16px; border-radius:10px; border:none; box-shadow:0 3px 8px rgba(220,38,38,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
+              <span style="font-size:16px;">🚨</span> <span>Scheda 118</span>
             </button>
-            <button class="btn-hero-action btn-hero-sos" onclick="apriModalSOSProntoSoccorso()" title="Pronto Soccorso Domiciliare & Emergenze con Voce Calma">
-              <span>🆘</span> <span>SOS Guida</span>
+
+            <!-- TASTO OSS 2: CONSEGNA VOCALE -->
+            <button class="btn" onclick="apriModalConsegnaVocale()" style="background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color:#ffffff; font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px; border:none; box-shadow:0 3px 8px rgba(79,70,229,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
+              <span style="font-size:16px;">🎙️</span> <span>Consegna Turno</span>
             </button>
-            <button class="btn-hero-action btn-hero-consegna" onclick="apriModalConsegnaVocale()" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
-              <span>🎙️</span> <span>Consegna</span>
+
+            <!-- TASTO OSS 3: REPORT FAMIGLIA WHATSAPP -->
+            <button id="btn-report-whatsapp" class="btn" onclick="apriModalReportWhatsApp()" style="background:linear-gradient(135deg, #25D366 0%, #128C7E 100%); color:#ffffff; font-weight:900; font-size:13px; padding:8px 16px; border-radius:10px; border:none; box-shadow:0 3px 8px rgba(37,211,102,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
+              <span style="font-size:16px;">📲</span> <span>Report Famiglia WA</span>
             </button>
-            <button id="btn-report-whatsapp" class="btn-hero-action btn-hero-wa" onclick="apriModalReportWhatsApp()" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
-              <span>💬</span> <span>Report WA</span>
+
+            <!-- TASTO OSS 4: MODIFICA ANAGRAFICA -->
+            <button class="btn" onclick="apriModificaAnagrafica()" style="background:#f1f5f9; color:#334155; font-weight:800; font-size:12.5px; padding:8px 14px; border-radius:10px; border:1.5px solid #cbd5e1; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Modifica dati anagrafici e clinici">
+              <span style="font-size:15px;">✏️</span> <span>Modifica</span>
             </button>
-            <!-- TRIADE SANITARIA BRIDGES HERO -->
-            <button type="button" class="btn-hero-action btn-hero-med" onclick="navigaAdAmbulatorio()" title="Apri Ambulatorio Medico & Nutrizione Clinica per questo Assistito" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:1px solid rgba(255,255,255,0.4);">
-              <span>🩺</span> <span>Ambulatorio</span>
-            </button>
-            <button type="button" class="btn-hero-action btn-hero-salute" onclick="navigaAProgettoSalute()" title="Apri Progetto Salute & Dieta per questo Assistito" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:1px solid rgba(255,255,255,0.4);">
-              <span>🥗</span> <span>Salute</span>
-            </button>
-            <button class="btn-hero-action btn-hero-edit" onclick="apriModificaAnagrafica()" title="Modifica dati anagrafici e clinici dell'assistito">
-              <span>✏️</span> <span>Modifica</span>
-            </button>
+
+            <!-- MENU TENDINA 3 PUNTINI ⋮ SCHEDA ASSISTITO -->
+            <div style="position:relative; display:inline-block;" id="menu-hero-more-container">
+              <button type="button" onclick="toggleMenuHeroMore(event)" id="btn-menu-hero-more" style="background:#ffffff; border:1.5px solid #cbd5e1; width:38px; height:38px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.06);" title="Altri strumenti dell'assistito">
+                <span style="font-size:20px; font-weight:900; line-height:1; letter-spacing:1px; color:#1e293b;">⋮</span>
+              </button>
+
+              <div id="dropdown-menu-hero-more" style="display:none; position:absolute; left:0; top:46px; z-index:99999; background:#ffffff; min-width:260px; border-radius:16px; box-shadow:0 15px 35px rgba(0,0,0,0.25); border:1.5px solid #cbd5e1; padding:8px 0; animation:menuDropAnim 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+                <div style="padding:6px 16px; font-size:10.5px; font-weight:900; color:#94a3b8; text-transform:uppercase; border-bottom:1px solid #f1f5f9;">
+                  Collegamenti Cartelle
+                </div>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); apriModalSOSProntoSoccorso();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#b91c1c; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
+                  <span>🆘</span> <span>SOS Guida Emergenze</span>
+                </a>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); navigaAdAmbulatorio();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                  <span>🩺</span> <span>Apri Ambulatorio</span>
+                </a>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); navigaAProgettoSalute();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                  <span>🥗</span> <span>Apri Progetto Salute</span>
+                </a>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); stampaReport();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                  <span>🖨️</span> <span>Stampa Diario Cartaceo</span>
+                </a>
+              </div>
+            </div>
+
           </div>
           <div style="font-size:12px; color:#64748b; font-weight:600; display:flex; align-items:center; gap:6px;">
             <span>🛡️</span> <span>Cartella Clinica &bull; CareAssist Pro</span>
@@ -22513,4 +22537,38 @@ document.addEventListener('click', function(e) {
   if (container && !container.contains(e.target)) {
     chiudiMenuStrumenti();
   }
+});
+
+
+function toggleMenuOSSTop(event) {
+  if (event) { event.stopPropagation(); event.preventDefault(); }
+  const d = document.getElementById('dropdown-menu-oss-top');
+  if (d) d.style.display = (d.style.display === 'block' ? 'none' : 'block');
+}
+window.toggleMenuOSSTop = toggleMenuOSSTop;
+
+function chiudiMenuOSSTop() {
+  const d = document.getElementById('dropdown-menu-oss-top');
+  if (d) d.style.display = 'none';
+}
+window.chiudiMenuOSSTop = chiudiMenuOSSTop;
+
+function toggleMenuHeroMore(event) {
+  if (event) { event.stopPropagation(); event.preventDefault(); }
+  const d = document.getElementById('dropdown-menu-hero-more');
+  if (d) d.style.display = (d.style.display === 'block' ? 'none' : 'block');
+}
+window.toggleMenuHeroMore = toggleMenuHeroMore;
+
+function chiudiMenuHeroMore() {
+  const d = document.getElementById('dropdown-menu-hero-more');
+  if (d) d.style.display = 'none';
+}
+window.chiudiMenuHeroMore = chiudiMenuHeroMore;
+
+document.addEventListener('click', function(e) {
+  const c1 = document.getElementById('menu-oss-top-container');
+  if (c1 && !c1.contains(e.target)) chiudiMenuOSSTop();
+  const c2 = document.getElementById('menu-hero-more-container');
+  if (c2 && !c2.contains(e.target)) chiudiMenuHeroMore();
 });

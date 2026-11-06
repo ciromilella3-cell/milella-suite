@@ -344,80 +344,76 @@
       </div>
     </div>
 
-    <!-- LIVELLO 2: TOOLBAR CLINICA OPERATIVA (COMANDI ARMONIOSI & EXECUTIVE) -->
-    <div class="header-toolbar-row">
-      <div class="header-toolbar-inner">
-        <button class="btn btn-clinical-tool btn-tool-asl" onclick="apriRegistroSanitarioAsl()" title="Apri Registro Cartelle Cliniche & Triage ADI (F2)" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#38bdf8; border:1px solid rgba(56,189,248,0.4); box-shadow:0 2px 8px rgba(0,0,0,0.3);">
-          <span class="tool-icon">🏛️</span>
-          <span class="tool-label" style="font-weight:800; color:#ffffff;">Registro ASL</span>
-          <span class="tool-badge-pill" style="background:#0284c7; color:#fff;">F2</span>
-        </button>
-        <!-- TRIADE SANITARIA SUITE BRIDGES (COESI & PERFETTAMENTE ALLINEATI) -->
-        <button class="btn btn-clinical-tool btn-tool-bridge-med" onclick="navigaAdAmbulatorio()" title="Apri Ambulatorio Medico & Nutrizione Clinica per questo Assistito" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:1px solid rgba(255,255,255,0.4); box-shadow:0 2px 8px rgba(2,132,199,0.35);">
-          <span class="tool-icon">🩺</span>
-          <span class="tool-label" style="font-weight:800;">Ambulatorio</span>
-        </button>
+    <!-- LIVELLO 2: BARRA OPERATIVA OSS COMPATTA & MODERNA -->
+    <div class="header-toolbar-row" style="background:#0f172a; padding:6px 16px; border-top:1px solid rgba(255,255,255,0.08);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        
+        <!-- I 4 PULSANTI CHIAVE OSS (GRANDI, TATTILI E IMMEDIATI) -->
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          
+          <button class="btn" onclick="apriModalConsegnaVocale()" style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #818cf8; box-shadow:0 2px 6px rgba(79,70,229,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
+            <span style="font-size:16px;">🗣️</span> <span>Consegna Vocale OSS</span>
+          </button>
 
-        <button class="btn btn-clinical-tool btn-tool-bridge-salute" onclick="navigaAProgettoSalute()" title="Apri Progetto Salute & Piano Alimentare per questo Assistito" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:1px solid rgba(255,255,255,0.4); box-shadow:0 2px 8px rgba(16,185,129,0.35);">
-          <span class="tool-icon">🥗</span>
-          <span class="tool-label" style="font-weight:800;">Salute</span>
-        </button>
+          <button class="btn" onclick="avviaBriefingVocaleAssistitoDemo()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #38bdf8; box-shadow:0 2px 6px rgba(2,132,199,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Ascolta il Briefing Clinico Vocale con Voce Naturale">
+            <span style="font-size:16px;">🎙️</span> <span>Briefing Vocale AI</span>
+          </button>
 
-        <button class="btn btn-clinical-tool btn-tool-dossier" onclick="apriModalDossierClinico()" title="Genera e Stampa il Dossier Ospedaliero Clinico A4 dell'Assistito">
-          <span class="tool-icon">📋</span>
-          <span class="tool-label">Dossier Clinico A4</span>
-        </button>
+          <button class="btn" onclick="window.location.href='/careassist/turni.html'" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #34d399; box-shadow:0 2px 6px rgba(5,150,105,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Apri il Turnario Operatori">
+            <span style="font-size:16px;">👥</span> <span>Turnario</span>
+          </button>
 
-        <button class="btn btn-clinical-tool btn-tool-roadmap" onclick="apriModalRoadmapScadenze()" title="Apri il Cruscotto Unificato Scadenzario & Roadmap Clinica Familiare">
-          <span class="tool-icon">🗓️</span>
-          <span class="tool-label">Roadmap Scadenze</span>
-        </button>
+          <button class="btn" onclick="apriModalSOSProntoSoccorso()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:#ffffff; font-weight:900; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #f87171; box-shadow:0 2px 6px rgba(220,38,38,0.35); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Pronto Soccorso Domiciliare & Chiamata 118 Rapida">
+            <span style="font-size:16px;">🚨</span> <span>SOS 118</span>
+          </button>
 
-        <button class="btn btn-clinical-tool btn-tool-stampa" onclick="stampaReport()" title="Stampa il diario clinico giornaliero dell'assistito">
-          <span class="tool-icon">📄</span>
-          <span class="tool-label">Stampa Diario</span>
-        </button>
+        </div>
 
-        <button class="btn btn-clinical-tool btn-tool-turnario" onclick="window.location.href='/careassist/turni.html'" title="Apri la Maschera Dedicata Turnario & Roster Operatori">
-          <span class="tool-icon">👥</span>
-          <span class="tool-label">Turnario Operatori</span>
-        </button>
+        <!-- MENU TENDINA STILE WHATSAPP (3 PUNTINI ⋮) PER GLI STRUMENTI SECONDARI -->
+        <div style="position:relative; display:inline-block;" id="menu-oss-top-container">
+          <button type="button" onclick="toggleMenuOSSTop(event)" id="btn-menu-oss-top" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#ffffff; width:36px; height:36px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.15s ease;" title="Altri registri e cruscotti">
+            <span style="font-size:20px; font-weight:900; line-height:1; letter-spacing:1px;">⋮</span>
+          </button>
 
-        <button class="btn btn-clinical-tool btn-tool-ai" onclick="avviaBriefingVocaleAssistitoDemo()" title="Ascolta il Briefing Clinico Vocale AI dell'Assistito (Sintesi Vocale Intelligente)">
-          <span class="tool-icon">🎙️</span>
-          <span class="tool-label">Briefing AI</span>
-          <span class="tool-badge-pill">AI</span>
-        </button>
+          <div id="dropdown-menu-oss-top" style="display:none; position:absolute; right:0; top:44px; z-index:999999; background:#ffffff; min-width:270px; border-radius:16px; box-shadow:0 15px 35px rgba(0,0,0,0.3); border:1.5px solid #cbd5e1; padding:8px 0; animation:menuDropAnim 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div style="padding:6px 16px; font-size:10.5px; font-weight:900; color:#94a3b8; text-transform:uppercase; border-bottom:1px solid #f1f5f9;">
+              Registri &amp; Collegamenti Suite
+            </div>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriRegistroSanitarioAsl();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+              <span>🏛️</span> <span>Registro ASL &amp; Triage (F2)</span>
+            </a>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); navigaAdAmbulatorio();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+              <span>🩺</span> <span>Cartella Ambulatorio</span>
+            </a>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); navigaAProgettoSalute();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+              <span>🥗</span> <span>Progetto Salute &amp; Dieta</span>
+            </a>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalDossierClinico();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+              <span>📋</span> <span>Dossier Ospedaliero A4</span>
+            </a>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalRoadmapScadenze();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+              <span>🗓️</span> <span>Roadmap Scadenze Famiglia</span>
+            </a>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); stampaReport();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+              <span>📄</span> <span>Stampa Diario Giornaliero</span>
+            </a>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalSmartphone();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+              <span>📱</span> <span>Connetti Smartphone (QR)</span>
+            </a>
+          </div>
+        </div>
 
-        <button class="btn btn-clinical-tool btn-tool-consegna" onclick="apriModalConsegnaVocale()" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
-          <span class="tool-icon">🗣️</span>
-          <span class="tool-label">Consegna Vocale</span>
-        </button>
-
-        <button class="btn btn-clinical-tool btn-tool-smartphone" onclick="apriModalSmartphone()" title="Connetti Smartphone o Tablet via Wi-Fi tramite QR Code">
-          <span class="tool-icon">📱</span>
-          <span class="tool-label">Smartphone</span>
-        </button>
-
-        <button class="btn btn-clinical-tool btn-tool-sos" onclick="apriModalSOSProntoSoccorso()" title="Guida Rapida alle Emergenze Domiciliari & Chiamata 118">
-          <span class="tool-icon">🚨</span>
-          <span class="tool-label">SOS Guida 118</span>
-        </button>
       </div>
     </div>
   </header>
 
   <!-- NAVIGATION TABS -->
-  <nav class="nav-bar">
-    <button class="nav-tab active" data-target="tab-dashboard">📊 Dashboard OSS & Alvo</button>
-    <button class="nav-tab" data-target="tab-farmaci">💊 Terapie & Farmaci</button>
-    <button class="nav-tab" data-target="tab-visite">📅 Visite & Prestazioni ADI</button>
-    <button class="nav-tab" data-target="tab-glicemia">🩸 Diario Glicemico</button>
-    <button class="nav-tab" data-target="tab-diario">📋 Storico Completo (Diario)</button>
-    <button class="nav-tab" data-target="tab-epatologia" style="display:none; background:linear-gradient(135deg, rgba(2,132,199,0.12) 0%, rgba(14,165,233,0.2) 100%); border:1.5px solid #38bdf8; color:#0284c7; font-weight:800;" title="Cartella Ambulatoriale Follow-up Malattie Infettive & Epatologia - Policlinico di Bari">🩺 Malattie Infettive (Policlinico)</button>
-    <a href="/careassist/turni.html" class="nav-tab" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; color:inherit; font-weight:700;">🗓️ Turnario Operatori</a>
-    <button type="button" class="nav-tab" onclick="stampaCartellaClinicaCompletaPDF()" style="background:linear-gradient(135deg, rgba(5,150,105,0.12) 0%, rgba(16,185,129,0.2) 100%); border:1.5px solid #10b981; color:#047857; font-weight:800; cursor:pointer;" title="Stampa o esporta in PDF A4 la Scheda Terapeutica Ufficiale con timbro e firma">📄 Stampa Scheda Terapeutica</button>
-    <button type="button" class="nav-tab" onclick="apriModalRiconciliazione(1, null)" style="background:rgba(2,132,199,0.12); border:1.5px solid #0284c7; color:#0284c7; font-weight:800; cursor:pointer;" title="Riapri e verifica l'allineamento scorte dei giorni di assenza">🔄 Allinea Terapie</button>
+  <nav class="nav-bar" style="display:flex; align-items:center; gap:6px; overflow-x:auto; padding:6px 14px; background:#ffffff; border-bottom:2px solid #e2e8f0;">
+    <button class="nav-tab active" data-target="tab-dashboard" style="font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px;">📊 Dashboard OSS &amp; Alvo</button>
+    <button class="nav-tab" data-target="tab-farmaci" style="font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px;">💊 Terapie &amp; Farmaci</button>
+    <button class="nav-tab" data-target="tab-glicemia" style="font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px;">🩸 Diario Glicemico</button>
+    <button class="nav-tab" data-target="tab-visite" style="font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px;">📅 Visite &amp; Prestazioni ADI</button>
+    <button class="nav-tab" data-target="tab-diario" style="font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px;">📋 Storico Diario</button>
   </nav>
 
   <!-- BARRA STICKY CONTESTO ASSISTITO (SEMPRE VISIBILE ANCHE DURANTE LO SCROLL) -->
@@ -5121,7 +5117,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=1793980240644"></script>
+  <script src="app.js?v=1793980642939"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
