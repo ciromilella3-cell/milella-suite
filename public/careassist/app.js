@@ -4710,8 +4710,14 @@ function renderTerapie() {
   const container = document.getElementById('terapie-table-body');
   const preview = document.getElementById('terapie-preview-body');
   if (!container || !p) return;
-  if (p.terapie && typeof comparaOrariTerapie === 'function') {
-    p.terapie.sort(comparaOrariTerapie);
+  if (p.terapie) {
+    if (window._ordinamentoTerapieModalita === 'fisso') {
+      p.terapie.sort(function(a, b) {
+        return (a.farmaco || '').localeCompare(b.farmaco || '');
+      });
+    } else if (typeof comparaOrariTerapie === 'function') {
+      p.terapie.sort(comparaOrariTerapie);
+    }
   }
 
   // Riparazione automatica: DIAMICRON (compressa orale) erroneamente trattato come penna insulina
@@ -21831,3 +21837,171 @@ window.apriProspettoFarmaciPazienteAttivo = function() {
 window.apriProspettoFarmaciScelto = function(val) {
   window.stampaFoglioFrigo();
 };
+
+
+// ==========================================================================
+// MODALITÀ "ORDINE FISSO & INVENTARIO RAPIDO CASA" (ANTI-SLITTAMENTO RIGHE)
+// Ideale per fare l'inventario delle scatole a tavolo senza che i farmaci saltino via!
+// ==========================================================================
+window._ordinamentoTerapieModalita = localStorage.getItem('careassist_ordinamento_terapie') || 'orario';
+window._ultimoFarmacoModificatoId = null;
+
+function impostaOrdinamentoTerapie(tipo) {
+  window._ordinamentoTerapieModalita = tipo;
+  localStorage.setItem('careassist_ordinamento_terapie', tipo);
+
+  const bOra = document.getElementById('btn-vista-orario');
+  const bFis = document.getElementById('btn-vista-fisso');
+  if (bOra && bFis) {
+    if (tipo === 'orario') {
+      bOra.style.background = '#0284c7'; bOra.style.color = '#fff';
+      bFis.style.background = 'transparent'; bFis.style.color = '#475569';
+      showToast('🕒 Ordinamento Cronologico (per orario di somministrazione)');
+    } else {
+      bFis.style.background = '#0284c7'; bFis.style.color = '#fff';
+      bOra.style.background = 'transparent'; bOra.style.color = '#475569';
+      showToast('🔒 Vista Fissa Attiva: le righe non slittano mai da sotto gli occhi!');
+    }
+  }
+  renderTerapie();
+}
+
+function apriModalInventarioRapido() {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+
+  const nomeEl = document.getElementById('inv-rapido-paziente-nome');
+  const countEl = document.getElementById('inv-rapido-count');
+  const listEl = document.getElementById('inv-rapido-body-list');
+  if (nomeEl) nomeEl.textContent = p.nome;
+  if (countEl) countEl.textContent = (p.terapie || []).length;
+
+  if (listEl) {
+    listEl.innerHTML = p.terapie.map((t, idx) => {
+      const isPen = (t.tipoFormulazione === 'penna' || (t.dosaggio || '').toLowerCase().includes('unit'));
+      const scortaVal = isPen ? (t.penneScorta || t.scorta || 1) : (t.scorta || 0);
+      const unitaTxt = isPen ? 'penne' : 'cpr';
+
+      return `
+        <div class="inv-rapido-row" data-id="${t.id}" style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:12px; padding:12px 16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; box-shadow:0 2px 6px rgba(0,0,0,0.02); transition:all 0.15s ease;">
+          <div style="flex:1; min-width:220px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">${isPen ? '💉' : '💊'}</span>
+              <div>
+                <strong style="font-size:15px; color:#0f172a;">${t.farmaco}</strong>
+                <div style="font-size:12px; color:#64748b;">${t.principio ? t.principio + ' • ' : ''}${t.dosaggio}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ORARIO SOMMINISTRAZIONE -->
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:12px; font-weight:800; color:#475569;">⏰ Ora:</span>
+            <input type="time" class="inv-rapido-ora" value="${t.ora || '08:00'}" style="padding:6px 8px; border:1.5px solid #cbd5e1; border-radius:8px; font-weight:800; font-size:13px; color:#0f172a; width:100px;">
+          </div>
+
+          <!-- CONTATORE SCORTA CAPSULE CON TASTI GRANDI + E - -->
+          <div style="display:flex; align-items:center; gap:6px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:4px 8px;">
+            <span style="font-size:11.5px; font-weight:800; color:#0369a1;">📦 Scorta:</span>
+            <button type="button" onclick="modificaContatoreInvRapido(this, -1)" style="width:28px; height:28px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; font-size:16px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center;">-</button>
+            <input type="number" class="inv-rapido-scorta" value="${scortaVal}" min="0" style="width:55px; text-align:center; font-size:15px; font-weight:900; color:#0f172a; border:none; background:transparent;">
+            <span style="font-size:11px; font-weight:700; color:#64748b;">${unitaTxt}</span>
+            <button type="button" onclick="modificaContatoreInvRapido(this, 1)" style="width:28px; height:28px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; font-size:16px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center;">+</button>
+          </div>
+
+          <!-- PULSANTE RAPIDO +1 SCATOLA INTERA -->
+          <button type="button" onclick="aggiungiScatolaInteraInvRapido(this, ${t.cprPerScatola || 30})" style="background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; font-weight:800; font-size:11.5px; padding:6px 10px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Aggiungi una scatola intera">
+            <span>📦</span> +${t.cprPerScatola || 30}
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  const modal = document.getElementById('modal-inventario-rapido');
+  if (modal) modal.style.display = 'flex';
+}
+
+function modificaContatoreInvRapido(btn, delta) {
+  const row = btn.closest('.inv-rapido-row');
+  if (!row) return;
+  const input = row.querySelector('.inv-rapido-scorta');
+  if (input) {
+    let val = parseInt(input.value) || 0;
+    val = Math.max(0, val + delta);
+    input.value = val;
+    row.style.background = '#f0fdf4';
+    row.style.borderColor = '#86efac';
+  }
+}
+
+function aggiungiScatolaInteraInvRapido(btn, cprPacco) {
+  const row = btn.closest('.inv-rapido-row');
+  if (!row) return;
+  const input = row.querySelector('.inv-rapido-scorta');
+  if (input) {
+    let val = parseInt(input.value) || 0;
+    val += (parseInt(cprPacco) || 30);
+    input.value = val;
+    row.style.background = '#eff6ff';
+    row.style.borderColor = '#93c5fd';
+  }
+}
+
+function chiudiModalInventarioRapido() {
+  const modal = document.getElementById('modal-inventario-rapido');
+  if (modal) modal.style.display = 'none';
+}
+
+function salvaTuttoInventarioRapido() {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+
+  const rows = document.querySelectorAll('#inv-rapido-body-list .inv-rapido-row');
+  let modificate = 0;
+
+  rows.forEach(row => {
+    const tid = Number(row.getAttribute('data-id'));
+    const t = p.terapie.find(item => item.id === tid);
+    if (t) {
+      const oraInp = row.querySelector('.inv-rapido-ora');
+      const scortaInp = row.querySelector('.inv-rapido-scorta');
+
+      if (oraInp && oraInp.value) {
+        t.ora = oraInp.value;
+        if (typeof deduciFasciaDaOrario === 'function') {
+          t.fascia = deduciFasciaDaOrario(t.ora);
+        }
+      }
+      if (scortaInp) {
+        const nScorta = parseInt(scortaInp.value) || 0;
+        t.scorta = nScorta;
+        if (t.tipoFormulazione === 'penna') t.penneScorta = nScorta;
+      }
+      modificate++;
+    }
+  });
+
+  saveDb();
+  chiudiModalInventarioRapido();
+  showToast(`🎉 Inventario salvato con successo! Aggiornati ${modificate} farmaci.`, 'success');
+}
+
+function evidenziaAncoraVisivaFarmaco(nomeLow) {
+  try {
+    const rows = document.querySelectorAll('#terapie-table-body tr');
+    for (const r of rows) {
+      if ((r.textContent || '').toLowerCase().includes(nomeLow)) {
+        r.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        r.style.transition = 'all 0.4s ease';
+        r.style.background = 'linear-gradient(135deg, #fef9c3 0%, #fef08a 100%)';
+        r.style.boxShadow = '0 0 15px rgba(234,179,8,0.5)';
+        setTimeout(() => {
+          r.style.background = '';
+          r.style.boxShadow = '';
+        }, 2500);
+        break;
+      }
+    }
+  } catch(e) {}
+}
