@@ -22811,18 +22811,20 @@ document.addEventListener('click', function(e) {
 
 function toggleMenuOSSTop(event) {
   if (event) { event.stopPropagation(); event.preventDefault(); }
+  if (window.innerWidth <= 768) {
+    const bs = document.getElementById('modal-menu-oss-bottomsheet');
+    if (bs) {
+      bs.style.display = (bs.style.display === 'flex' ? 'none' : 'flex');
+      return;
+    }
+  }
   const d = document.getElementById('dropdown-menu-oss-top');
   if (!d) return;
   const isOpening = d.style.display !== 'block';
   d.style.display = isOpening ? 'block' : 'none';
   if (isOpening) {
-    if (window.innerWidth <= 768) {
-      d.style.left = '0px';
-      d.style.right = 'auto';
-    } else {
-      d.style.left = 'auto';
-      d.style.right = '0px';
-    }
+    d.style.left = 'auto';
+    d.style.right = '0px';
   }
 }
 window.toggleMenuOSSTop = toggleMenuOSSTop;
@@ -22830,6 +22832,8 @@ window.toggleMenuOSSTop = toggleMenuOSSTop;
 function chiudiMenuOSSTop() {
   const d = document.getElementById('dropdown-menu-oss-top');
   if (d) d.style.display = 'none';
+  const bs = document.getElementById('modal-menu-oss-bottomsheet');
+  if (bs) bs.style.display = 'none';
 }
 window.chiudiMenuOSSTop = chiudiMenuOSSTop;
 

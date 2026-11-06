@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=639295999999999992">
+  <link rel="stylesheet" href="style.css?v=639295999999999995">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -6376,7 +6376,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=639295999999999991"></script>
+  <script src="app.js?v=639295999999999995"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7328,6 +7328,43 @@
       transform: scale(0.92) !important;
     }
   </style>
+
+  <!-- BOTTOM-SHEET MODERNO APP MOBILE PER I 3 PUNTINI (⋮) STRUMENTI SU SMARTPHONE -->
+  <div id="modal-menu-oss-bottomsheet" class="modal-overlay" style="display:none; z-index:999999; position:fixed; inset:0; background:rgba(15,23,42,0.75); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); align-items:flex-end; justify-content:center; padding:0;" onclick="if(event.target === this) chiudiMenuOSSTop();">
+    <div class="bottomsheet-content" style="background:#ffffff; width:100%; max-width:500px; border-radius:24px 24px 0 0; padding:18px 20px 28px 20px; box-shadow:0 -10px 40px rgba(0,0,0,0.35); animation:slideUpMobile 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+      <div style="width:44px; height:5px; background:#cbd5e1; border-radius:10px; margin:0 auto 16px auto;"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:20px;">⚡</span>
+          <span style="font-size:15px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px;">Registri &amp; Strumenti Suite</span>
+        </div>
+        <button type="button" onclick="chiudiMenuOSSTop()" style="background:#f1f5f9; border:none; width:32px; height:32px; border-radius:50%; font-size:16px; font-weight:800; color:#64748b; cursor:pointer;">✕</button>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr; gap:8px; max-height:65vh; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-right:4px;">
+        <button type="button" onclick="chiudiMenuOSSTop(); apriRegistroSanitarioAsl();" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:#f8fafc; border:1px solid #e2e8f0; font-size:14px; font-weight:800; color:#0f172a; text-align:left; cursor:pointer;">
+          <span style="font-size:20px;">🏛️</span> <span>Registro ASL &amp; Triage (F2)</span>
+        </button>
+        <button type="button" onclick="chiudiMenuOSSTop(); navigaAdAmbulatorio();" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:#f0f9ff; border:1px solid #bae6fd; font-size:14px; font-weight:800; color:#0369a1; text-align:left; cursor:pointer;">
+          <span style="font-size:20px;">🩺</span> <span>Cartella Ambulatorio Medico</span>
+        </button>
+        <button type="button" onclick="chiudiMenuOSSTop(); navigaAProgettoSalute();" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:#f0fdf4; border:1px solid #bbf7d0; font-size:14px; font-weight:800; color:#15803d; text-align:left; cursor:pointer;">
+          <span style="font-size:20px;">🥗</span> <span>Progetto Salute &amp; Dieta</span>
+        </button>
+        <button type="button" onclick="chiudiMenuOSSTop(); apriModalDossierClinico();" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:#f8fafc; border:1px solid #e2e8f0; font-size:14px; font-weight:800; color:#0f172a; text-align:left; cursor:pointer;">
+          <span style="font-size:20px;">📋</span> <span>Dossier Ospedaliero A4</span>
+        </button>
+        <button type="button" onclick="chiudiMenuOSSTop(); apriModalRoadmapScadenze();" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:#f8fafc; border:1px solid #e2e8f0; font-size:14px; font-weight:800; color:#0f172a; text-align:left; cursor:pointer;">
+          <span style="font-size:20px;">🗓️</span> <span>Roadmap Scadenze Famiglia</span>
+        </button>
+        <button type="button" onclick="chiudiMenuOSSTop(); stampaReport();" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:#f8fafc; border:1px solid #e2e8f0; font-size:14px; font-weight:800; color:#0f172a; text-align:left; cursor:pointer;">
+          <span style="font-size:20px;">📄</span> <span>Stampa Diario Giornaliero</span>
+        </button>
+        <button type="button" onclick="chiudiMenuOSSTop(); apriModalSmartphone();" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:#eff6ff; border:1px solid #bfdbfe; font-size:14px; font-weight:800; color:#1d4ed8; text-align:left; cursor:pointer;">
+          <span style="font-size:20px;">📱</span> <span>Connetti Smartphone (QR)</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <nav class="mobile-bottom-bar" id="careassist-mobile-bar" aria-label="Navigazione Suite">
     <button type="button" class="bar-item"
