@@ -6841,3 +6841,62 @@ main, .main-content, .dashboard-container {
 }
 
 
+
+/* ==========================================================================
+   TABELLA TERAPIE FULL-VIEW (100% IN PAGINA, NESSUNA BARRA DI SCORRIMENTO)
+   ========================================================================== */
+.table-fullview-container {
+  width: 100% !important;
+  overflow: visible !important;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  margin-top: 10px;
+}
+
+.custom-table-panoramica {
+  width: 100% !important;
+  table-layout: auto !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  text-align: left !important;
+  font-size: 12px !important;
+}
+
+.custom-table-panoramica th {
+  background: #f8fafc !important;
+  color: #1e293b !important;
+  font-weight: 800 !important;
+  padding: 10px 6px !important;
+  border-bottom: 2px solid #cbd5e1 !important;
+  text-transform: uppercase !important;
+  font-size: 10.5px !important;
+  letter-spacing: 0.3px !important;
+  white-space: nowrap !important;
+}
+
+.custom-table-panoramica td {
+  padding: 8px 6px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  vertical-align: middle !important;
+}
+
+.custom-table-panoramica tbody tr:nth-child(odd) td {
+  background-color: #ffffff !important;
+}
+
+.custom-table-panoramica tbody tr:nth-child(even) td {
+  background-color: #f8fafc !important;
+}
+
+.custom-table-panoramica tbody tr:hover td {
+  background-color: #e0f2fe !important;
+}
+
+/* Riduciamo leggermente i margini dei pulsanti laterali */
+.custom-table-panoramica .btn-azione-luxury,
+.custom-table-panoramica .badge-assunto-protetto {
+  padding: 6px 10px !important;
+  font-size: 11px !important;
+  min-width: unset !important;
+}

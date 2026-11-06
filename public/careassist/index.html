@@ -729,8 +729,8 @@
             </button>
           </div>
         </div>
-        <div class="table-responsive">
-          <table class="custom-table">
+        <div class="table-fullview-container">
+          <table class="custom-table-panoramica">
             <thead>
               <tr>
                 <th class="table-checkbox-cell" style="width:44px; text-align:center; cursor:pointer;" onclick="if(event.target.tagName!=='INPUT'){const cb=this.querySelector('input');if(cb){cb.checked=!cb.checked;toggleSelectAllDiario(cb.checked, 'diario');}}" title="Tocca per selezionare o deselezionare tutti">
@@ -756,8 +756,8 @@
     <section id="tab-farmaci" class="tab-content" style="display:none;">
       <!-- BANNER DI ALLERTA SCORTE FARMACI (GIORNI PERSONALIZZABILI 1-30) -->
       <div id="farmaci-alert-scorte-terapie"></div>
-      <div class="card">
-        <div class="card-header">
+      <div class="card" style="padding: 16px; margin: 0 auto 24px auto;">
+        <div class="card-header" style="margin-bottom: 12px;">
           <div>
             <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
               <div class="card-title">💊 Piano Terapeutico Farmacologico & Scorte Farmacia</div>
@@ -803,8 +803,8 @@
         <!-- BARRA FILTRO RAPIDO FASCIA ORARIA TERAPIE -->
         <div id="terapie-filtro-fasce" class="terapie-fasce-filter-bar"></div>
 
-        <div class="table-responsive">
-          <table class="custom-table">
+        <div class="table-fullview-container">
+          <table class="custom-table-panoramica">
             <thead>
               <tr>
                 <th>Fascia / Ora</th>
