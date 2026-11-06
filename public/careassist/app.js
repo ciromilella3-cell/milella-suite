@@ -4013,12 +4013,6 @@ function apriModificaAnagrafica() {
   if (elAllettatoChk) {
     elAllettatoChk.onchange = sincronizzaNoteAllettatoDinamico;
   }
-  document.getElementById('edit-paz-note').value = p.note || '';
-
-  const elEditPatologie = document.getElementById('edit-paz-patologie');
-  if (elEditPatologie) {
-    elEditPatologie.value = Array.isArray(p.patologie) ? p.patologie.join('\n') : (p.patologie || '');
-  }
 
   // Caricamento e rendering interattivo del Catalogo Ausili Sanitari con scadenze
   renderCatalogoAusiliForm('container-catalogo-ausili-edit', p.ausili || []);
