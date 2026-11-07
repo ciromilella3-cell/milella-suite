@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=229">
+  <link rel="stylesheet" href="style.css?v=230">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -6426,7 +6426,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=229"></script>
+  <script src="app.js?v=230"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7426,6 +7426,14 @@
         </svg>
       </span>
       <span>Oggi</span>
+    </button>
+
+    <!-- TAB 1B: PIANO TERAPEUTICO COMPLETO & SCORTE (IL SETTORE DELLA FOTO!) -->
+    <button type="button" class="bar-item" id="mbar-btn-farmaci" onclick="navigaMobileTab('farmaci', this)" title="Piano Terapeutico Completo & Magazzino Scorte">
+      <span class="icon" style="font-size:20px; line-height:1;">
+        💊
+      </span>
+      <span>Terapie</span>
     </button>
 
     <!-- TAB 2: ALLERTA RITARDI MULTI-PAZIENTE (1-TOUCH) -->

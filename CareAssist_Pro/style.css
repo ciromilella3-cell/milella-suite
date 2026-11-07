@@ -8002,3 +8002,27 @@ main, .main-content, .dashboard-container {
     font-weight: 900 !important;
   }
 }
+
+/* REGOLE OTTIMIZZAZIONE TABELLA TERAPIE E SCORTE SU SMARTPHONE (v230) */
+@media (max-width: 900px) {
+  #tab-farmaci {
+    padding: 6px !important;
+  }
+  #tab-farmaci .card {
+    padding: 10px !important;
+    border-radius: 16px !important;
+  }
+  .table-fullview-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    margin: 0 -6px !important;
+    padding: 0 6px !important;
+    border-radius: 12px !important;
+  }
+  .custom-table-panoramica {
+    min-width: 780px !important;
+  }
+  .mobile-bottom-bar .bar-item {
+    font-size: 10px !important;
+  }
+}

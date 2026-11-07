@@ -23294,6 +23294,20 @@ function navigaMobileTab(mode, btn) {
     if (tabDashboard) tabDashboard.style.setProperty('display', 'block', 'important');
     if (tabFarmaci) tabFarmaci.style.setProperty('display', 'none', 'important');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else if (mode === 'farmaci') {
+    document.body.classList.remove('viewing-oggi', 'viewing-clinica');
+    document.body.classList.add('viewing-farmaci');
+
+    if (mobileContainer) mobileContainer.style.setProperty('display', 'none', 'important');
+    if (anagraficaHero) anagraficaHero.style.setProperty('display', 'none', 'important');
+    if (cruscottoSmart) cruscottoSmart.style.setProperty('display', 'none', 'important');
+    if (tabDashboard) tabDashboard.style.setProperty('display', 'none', 'important');
+    if (tabFarmaci) tabFarmaci.style.setProperty('display', 'block', 'important');
+
+    var pAct = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+    if (typeof renderTerapieTable === 'function') renderTerapieTable();
+    if (typeof checkFarmaciScorteAlert === 'function') checkFarmaciScorteAlert();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 window.navigaMobileTab = navigaMobileTab;
