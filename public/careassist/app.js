@@ -305,6 +305,8 @@ function calcolaDatiPennaIniettabile(t) {
 }
 
 window._currentFormatoModal = 'compressa';
+window._capsulaCurrentDosi = window._capsulaCurrentDosi || [];
+var _capsulaCurrentDosi = window._capsulaCurrentDosi;
 
 function impostaFormatoFarmacoModal(formato, skipCalc) {
   window._currentFormatoModal = formato;
@@ -349,6 +351,11 @@ function impostaFormatoFarmacoModal(formato, skipCalc) {
   if (lblOrariIcon) lblOrariIcon.textContent = isPen ? '💉' : '⏰';
   if (lblOrariTitolo) lblOrariTitolo.textContent = isPen ? 'Orario Iniezione Penna Insulina' : 'Orari & Quota Somministrazioni';
   if (badgeOrari) badgeOrari.textContent = isPen ? '1 Iniezione al giorno' : 'Tocca per impostare';
+
+  if (!Array.isArray(_capsulaCurrentDosi)) {
+    _capsulaCurrentDosi = [];
+    window._capsulaCurrentDosi = _capsulaCurrentDosi;
+  }
 
   // Se è penna, adatta la card orario per mostrare l'unità UI al posto di "cpr"
   if (isPen) {
@@ -5318,8 +5325,8 @@ function renderTerapie() {
         </td>
         <td style="text-align: center;">
           ${canEdit ? `
-            <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="apriModificaFarmaco(${t.id})" title="Modifica dati e orario del farmaco">✏️ Modifica</button>
-            <button class="btn btn-outline" style="padding:5px 6px; font-size:11px;" onclick="eliminaTerapia(${t.id})" title="Elimina farmaco">🗑️</button>
+            <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="apriModificaFarmaco('${t.id}')" title="Modifica dati e orario del farmaco">✏️ Modifica</button>
+            <button class="btn btn-outline" style="padding:5px 6px; font-size:11px;" onclick="eliminaTerapia('${t.id}')" title="Elimina farmaco">🗑️</button>
           ` : `
             <span style="font-size:11px; color:#64748b; font-weight:600;" title="Sola somministrazione e spunta (Modifiche riservate all'Amministratore)">🔒 Sola Lettura</span>
           `}
@@ -5377,7 +5384,7 @@ function renderTerapie() {
       return `
       <tr style="${rigaStile}">
         <td>
-          ${canEdit ? `<b style="cursor:pointer; color:#0284c7;" onclick="apriModificaFarmaco(${t.id})" title="Clicca per modificare orario">${t.ora} ✏️</b>` : `<b style="color:#0f172a;">${t.ora}</b>`}
+          ${canEdit ? `<b style="cursor:pointer; color:#0284c7;" onclick="apriModificaFarmaco('${t.id}')" title="Clicca per modificare orario">${t.ora} ✏️</b>` : `<b style="color:#0f172a;">${t.ora}</b>`}
           ${!previstaOggi ? `<div style="font-size:9.5px; color:#64748b; font-weight:600;">Periodico</div>` : ''}
         </td>
         <td>
@@ -6362,10 +6369,26 @@ function apriRicaricaScorta(farmacoId) {
 // CARICO AUTOMATICO ISTANTANEO DI 1 SCATOLA INTERA (1-CLICK & TOUCH OTTIMIZZATO)
 async function caricaScatolaRapida(farmacoId) {
   try {
-    const p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
-    if (!p || !p.terapie) return;
-    const t = p.terapie.find(item => String(item.id) === String(farmacoId) || item.id == farmacoId);
-    if (!t) return;
+    let p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    let t = null;
+    if (p && Array.isArray(p.terapie)) {
+      t = p.terapie.find(item => String(item.id) === String(farmacoId) || item.id == farmacoId);
+    }
+    if (!t && Array.isArray(window.pazienti)) {
+      for (let pi = 0; pi < window.pazienti.length; pi++) {
+        let cand = window.pazienti[pi];
+        if (cand && Array.isArray(cand.terapie)) {
+          let found = cand.terapie.find(item => String(item.id) === String(farmacoId) || item.id == farmacoId);
+          if (found) {
+            p = cand;
+            t = found;
+            if (typeof setActivePaziente === 'function') setActivePaziente(p.id);
+            break;
+          }
+        }
+      }
+    }
+    if (!t || !p) return;
 
     const isPen = typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t);
     const now = new Date();
@@ -10330,29 +10353,107 @@ function ricalcolaDosiMultipleModifica() {
 function apriModificaFarmaco(farmacoId) {
   try {
     var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
-    if (!p || !p.terapie) {
-      console.warn('apriModificaFarmaco: nessun paziente o terapie attive');
-      return;
+    var t = null;
+
+    // 1. Cerca prima nel paziente attualmente attivo
+    if (p && Array.isArray(p.terapie)) {
+      t = p.terapie.find(function (item) {
+        return String(item.id) === String(farmacoId) || item.id == farmacoId;
+      });
     }
-    // Ricerca flessibile: supporta numeri, stringhe e id numerici
-    var t = p.terapie.find(function (item) {
-      return String(item.id) === String(farmacoId) || item.id == farmacoId;
-    });
-    if (!t) {
-      // Fallback: cerca per nome farmaco se id non trovato
+
+    // 2. Se non trovato, cerca in tutti i pazienti (es. apertura da lista multi-paziente o disallineamento)
+    if (!t && Array.isArray(window.pazienti)) {
+      for (var pi = 0; pi < window.pazienti.length; pi++) {
+        var cand = window.pazienti[pi];
+        if (cand && Array.isArray(cand.terapie)) {
+          var found = cand.terapie.find(function (item) {
+            return String(item.id) === String(farmacoId) || item.id == farmacoId;
+          });
+          if (found) {
+            p = cand;
+            t = found;
+            if (typeof setActivePaziente === 'function') setActivePaziente(p.id);
+            break;
+          }
+        }
+      }
+    }
+
+    // 3. Fallback per nome farmaco se id non corrisponde esattamente
+    if (!t && p && Array.isArray(p.terapie)) {
       var idStr = String(farmacoId).toLowerCase();
       t = p.terapie.find(function (item) {
         return (item.farmaco || '').toLowerCase().indexOf(idStr) >= 0;
       });
     }
+
     if (!t) {
       console.warn('apriModificaFarmaco: terapia non trovata per id ' + farmacoId);
+      if (typeof showToast === 'function') {
+        showToast('⚠️ Farmaco non trovato nell\'archivio.', 'warning');
+      }
       return;
     }
 
     var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
 
+    // 1. POPOLA SUBITO L'HEADER CON NOME FARMACO E ASSISTITO
     var titleEl = document.getElementById('edit-farm-modal-title');
+    if (titleEl) {
+      titleEl.innerHTML = '✏️ Scheda Capsula: <span id="edit-farm-header-nome" style="color:#fef08a;">' + (cleanNome || 'Farmaco') + '</span>';
+    }
+
+    var elPaziente = document.getElementById('edit-farm-header-paziente');
+    if (elPaziente) {
+      elPaziente.textContent = (p.nome || 'Paziente').replace(/\s*\(\d+\s*anni\)/gi, '');
+    }
+
+    // 2. POPOLA SUBITO TUTTI I CAMPI INPUT DEL FARMACO
+    if (document.getElementById('edit-farm-id')) document.getElementById('edit-farm-id').value = t.id;
+    if (document.getElementById('edit-farm-nome')) document.getElementById('edit-farm-nome').value = cleanNome;
+    if (document.getElementById('edit-farm-principio')) document.getElementById('edit-farm-principio').value = t.principio || '';
+
+    // Ripulisci il dosaggio base (senza "(½ cpr)" o simili)
+    var cleanDosaggio = (t.dosaggio || '').replace(/\s*\([^)]*\)/gi, '').trim();
+    if (document.getElementById('edit-farm-dosaggio')) document.getElementById('edit-farm-dosaggio').value = cleanDosaggio || t.dosaggio || '1 cpr';
+
+    if (document.getElementById('edit-farm-modo')) document.getElementById('edit-farm-modo').value = t.modo || '';
+    if (document.getElementById('edit-farm-cpr-scatola')) document.getElementById('edit-farm-cpr-scatola').value = t.cprPerScatola || 28;
+    if (document.getElementById('edit-farm-scorta')) document.getElementById('edit-farm-scorta').value = typeof t.scorta !== 'undefined' ? t.scorta : 28;
+    if (document.getElementById('edit-farm-giorni-alert')) document.getElementById('edit-farm-giorni-alert').value = t.giorniAlert || 7;
+
+    var elCad = document.getElementById('edit-farm-cadenza');
+    if (elCad) elCad.value = t.cadenzaTipo || 'giornaliera';
+
+    // 3. PREPARA L'ARRAY DELLE DOSI PRIMA DI QUALSIASI CHIAMATA GRAFICA
+    var nomeBase = cleanNome.toLowerCase();
+    var tutteDosi = (p.terapie || []).filter(function (item) {
+      var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
+      return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
+    });
+
+    if (tutteDosi.length === 0) tutteDosi = [t];
+
+    if (typeof comparaOrariTerapie === 'function') {
+      tutteDosi.sort(comparaOrariTerapie);
+    }
+
+    _capsulaCurrentDosi = tutteDosi.map(function (item) {
+      var q = parseFloat(item.quantitaQuota);
+      if (isNaN(q) || q <= 0) {
+        if ((item.dosaggio || '').indexOf('½') >= 0 || (item.farmaco || '').indexOf('½') >= 0) q = 0.5;
+        else q = 1.0;
+      }
+      return {
+        ora: item.ora || '08:00',
+        fascia: item.fascia || (typeof deduciFasciaDaOrario === 'function' ? deduciFasciaDaOrario(item.ora || '08:00') : 'Mattina'),
+        quota: q
+      };
+    });
+    window._capsulaCurrentDosi = _capsulaCurrentDosi;
+
+    // 4. GESTIONE FORMATO PENNA / COMPRESSA
     var isPenna = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
     if (isPenna) {
       if (typeof impostaFormatoFarmacoModal === 'function') impostaFormatoFarmacoModal('penna', true);
@@ -10383,55 +10484,8 @@ function apriModificaFarmaco(farmacoId) {
       var badgeFormato = document.getElementById('badge-auto-rilevato-formato');
       if (badgeFormato) badgeFormato.style.display = 'none';
     }
-    if (titleEl) titleEl.innerHTML = '✏️ Scheda Capsula: <span id="edit-farm-header-nome" style="color:#fef08a;">' + (cleanNome || 'Farmaco') + '</span>';
 
-    var elPaziente = document.getElementById('edit-farm-header-paziente');
-    if (elPaziente) elPaziente.textContent = (p.nome || 'Paziente').replace(/\s*\(\d+\s*anni\)/gi, '');
-
-    if (document.getElementById('edit-farm-id')) document.getElementById('edit-farm-id').value = t.id;
-    if (document.getElementById('edit-farm-nome')) document.getElementById('edit-farm-nome').value = cleanNome;
-    if (document.getElementById('edit-farm-principio')) document.getElementById('edit-farm-principio').value = t.principio || '';
-
-    // Ripulisci il dosaggio base (senza "(½ cpr)" o simili)
-    var cleanDosaggio = (t.dosaggio || '').replace(/\s*\([^)]*\)/gi, '').trim();
-    if (document.getElementById('edit-farm-dosaggio')) document.getElementById('edit-farm-dosaggio').value = cleanDosaggio || t.dosaggio || '1 cpr';
-
-    if (document.getElementById('edit-farm-modo')) document.getElementById('edit-farm-modo').value = t.modo || '';
-    if (document.getElementById('edit-farm-cpr-scatola')) document.getElementById('edit-farm-cpr-scatola').value = t.cprPerScatola || 28;
-    if (document.getElementById('edit-farm-scorta')) document.getElementById('edit-farm-scorta').value = typeof t.scorta !== 'undefined' ? t.scorta : 28;
-    if (document.getElementById('edit-farm-giorni-alert')) document.getElementById('edit-farm-giorni-alert').value = t.giorniAlert || 7;
-
-    var elCad = document.getElementById('edit-farm-cadenza');
-    if (elCad) elCad.value = t.cadenzaTipo || 'giornaliera';
-
-    // Cerca tutte le dosi esistenti di questo farmaco
-    var nomeBase = cleanNome.toLowerCase();
-    var tutteDosi = p.terapie.filter(function (item) {
-      var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
-      return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
-    });
-
-    if (tutteDosi.length === 0) tutteDosi = [t];
-
-    // Ordina cronologicamente
-    if (typeof comparaOrariTerapie === 'function') {
-      tutteDosi.sort(comparaOrariTerapie);
-    }
-
-    _capsulaCurrentDosi = tutteDosi.map(function (item) {
-      var q = parseFloat(item.quantitaQuota);
-      if (isNaN(q) || q <= 0) {
-        if ((item.dosaggio || '').indexOf('½') >= 0 || (item.farmaco || '').indexOf('½') >= 0) q = 0.5;
-        else q = 1.0;
-      }
-      return {
-        ora: item.ora || '08:00',
-        fascia: item.fascia || (typeof deduciFasciaDaOrario === 'function' ? deduciFasciaDaOrario(item.ora || '08:00') : 'Mattina'),
-        quota: q
-      };
-    });
-
-    // Aggiorna pulsante frequenza
+    // 5. AGGIORNA PULSANTI FREQUENZA E RENDERIZZA LE DOSI
     var freqCount = _capsulaCurrentDosi.length;
     var buttons = document.querySelectorAll('.capsula-freq-selector .btn-freq-pill');
     buttons.forEach(function (b) {
@@ -10449,11 +10503,8 @@ function apriModificaFarmaco(farmacoId) {
     openModal('modal-modifica-farmaco');
   } catch (err) {
     console.error('Errore apriModificaFarmaco:', err);
-    // Apertura di sicurezza garantita
-    var fallbackModal = document.getElementById('modal-modifica-farmaco');
-    if (fallbackModal) {
-      fallbackModal.classList.add('active');
-      fallbackModal.style.display = 'flex';
+    if (typeof showToast === 'function') {
+      showToast('⚠️ Errore durante l\'apertura della scheda farmaco: ' + (err.message || err), 'danger');
     }
   }
 }
@@ -10563,10 +10614,31 @@ var _currentSchedaFarmacoId = null;
 function apriSchedaFarmacoFullscreen(farmacoId) {
   try {
     var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
-    if (!p || !p.terapie) return;
-    var t = p.terapie.find(function (item) {
-      return String(item.id) === String(farmacoId) || item.id == farmacoId;
-    });
+    var t = null;
+
+    if (p && Array.isArray(p.terapie)) {
+      t = p.terapie.find(function (item) {
+        return String(item.id) === String(farmacoId) || item.id == farmacoId;
+      });
+    }
+
+    if (!t && Array.isArray(window.pazienti)) {
+      for (var pi = 0; pi < window.pazienti.length; pi++) {
+        var cand = window.pazienti[pi];
+        if (cand && Array.isArray(cand.terapie)) {
+          var found = cand.terapie.find(function (item) {
+            return String(item.id) === String(farmacoId) || item.id == farmacoId;
+          });
+          if (found) {
+            p = cand;
+            t = found;
+            if (typeof setActivePaziente === 'function') setActivePaziente(p.id);
+            break;
+          }
+        }
+      }
+    }
+
     if (!t) return;
     _currentSchedaFarmacoId = t.id;
 
@@ -14154,6 +14226,10 @@ function selezionaFrequenzaCapsula(freq) {
 function renderDosiCards() {
   var container = document.getElementById('box-dosi-cards-container');
   if (!container) return;
+  if (!Array.isArray(_capsulaCurrentDosi)) {
+    _capsulaCurrentDosi = [];
+    window._capsulaCurrentDosi = _capsulaCurrentDosi;
+  }
 
   var html = '';
   _capsulaCurrentDosi.forEach(function (d, idx) {
