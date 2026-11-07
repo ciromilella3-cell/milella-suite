@@ -6357,26 +6357,24 @@ function apriRicaricaScorta(farmacoId) {
   openModal('modal-ricarica-scorta'); if (typeof aggiornaCampoEsattoCarico === 'function') aggiornaCampoEsattoCarico();
 }
 
-// CARICO AUTOMATICO ISTANTANEO DI 1 SCATOLA INTERA (1-CLICK)
+// CARICO AUTOMATICO ISTANTANEO DI 1 SCATOLA INTERA (1-CLICK & TOUCH OTTIMIZZATO)
 async function caricaScatolaRapida(farmacoId) {
-  const p = getActivePaziente();
-  if (!p) return;
-  const t = p.terapie.find(item => item.id === farmacoId);
-  if (!t) return;
+  try {
+    const p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    if (!p || !p.terapie) return;
+    const t = p.terapie.find(item => String(item.id) === String(farmacoId) || item.id == farmacoId);
+    if (!t) return;
 
-  if (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) {
-    const penneDaAggiungere = t.pennePerScatola || 3;
-    const ok = await customConfirm(
-      'Conferma Ritiro Confezione Penne Farmacia / DPC',
-      'Vuoi caricare 1 nuova confezione di "' + t.farmaco + '" (+' + penneDaAggiungere + ' penne preriempite) ritirata oggi dalla farmacia?',
-      '💉'
-    );
-    if (ok) {
-      t.penneScorta = (parseFloat(t.penneScorta) || 0) + penneDaAggiungere;
+    const isPen = typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t);
+    const now = new Date();
+
+    if (isPen) {
+      const penneDaAggiungere = parseInt(t.pennePerScatola, 10) || 3;
+      t.penneScorta = Math.round(((parseFloat(t.penneScorta) || parseFloat(t.scorta) || 0) + penneDaAggiungere) * 100) / 100;
       t.scorta = t.penneScorta;
-      const now = new Date();
       t.ultimoRitiro = now.toISOString();
 
+      p.registrazioni = p.registrazioni || [];
       p.registrazioni.push({
         id: 'log_' + Date.now(),
         tipo: 'scorta',
@@ -6389,33 +6387,30 @@ async function caricaScatolaRapida(farmacoId) {
         desc: 'Carico DPC Farmacia: Ritiro di 1 confezione di ' + t.farmaco + ' (+' + penneDaAggiungere + ' penne). Nuova scorta: ' + t.penneScorta + ' penne.',
         operatore: 'Operatore OSS / Famiglia'
       });
-      saveDb();
-      renderTerapie();
-      showToast('Caricate +' + penneDaAggiungere + ' penne di ' + t.farmaco + ' con successo! 💉');
+
+      if (typeof saveDb === 'function') saveDb();
+      if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
+      if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
+      if (typeof renderTerapie === 'function') renderTerapie();
+      if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+      if (typeof showToast === 'function') showToast('💉 Caricate +' + penneDaAggiungere + ' penne di "' + t.farmaco + '". Nuova scorta: ' + t.scorta + ' penne!');
+      return;
     }
-    return;
-  }
 
-  const cprDaAggiungere = t.cprPerScatola || 28;
-  const ok = await customConfirm(
-    'Conferma Ritiro Scatola Farmacia',
-    `Vuoi caricare 1 nuova scatola di "${t.farmaco}" (+${cprDaAggiungere} compresse) ritirata oggi dalla farmacia?`,
-    '📦'
-  );
-
-  if (ok) {
-    const now = new Date();
+    // Per compresse / blister
+    const cprDaAggiungere = parseInt(t.cprPerScatola, 10) || 28;
     const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
     if (mt && mt.gemelle && mt.gemelle.length > 1) {
       mt.gemelle.forEach(function (item) {
-        item.scorta = (parseFloat(item.scorta) || 0) + cprDaAggiungere;
+        item.scorta = Math.round(((parseFloat(item.scorta) || 0) + cprDaAggiungere) * 10) / 10;
         item.ultimoRitiro = now.toISOString();
       });
     } else {
-      t.scorta += cprDaAggiungere;
+      t.scorta = Math.round(((parseFloat(t.scorta) || 0) + cprDaAggiungere) * 10) / 10;
       t.ultimoRitiro = now.toISOString();
     }
 
+    p.registrazioni = p.registrazioni || [];
     p.registrazioni.push({
       id: 'log_' + Date.now(),
       tipo: 'scorta',
@@ -6429,10 +6424,17 @@ async function caricaScatolaRapida(farmacoId) {
       operatore: 'Operatore OSS / Famiglia'
     });
 
-    saveDb();
-    showToast(`Caricata 1 scatola di "${t.farmaco}" (+${cprDaAggiungere} cpr). Nuova scorta: ${t.scorta} compresse!`);
+    if (typeof saveDb === 'function') saveDb();
+    if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
+    if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
+    if (typeof renderTerapie === 'function') renderTerapie();
+    if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+    if (typeof showToast === 'function') showToast('📦 Caricata 1 scatola di "' + t.farmaco + '" (+' + cprDaAggiungere + ' cpr). Nuova scorta: ' + t.scorta + ' compresse!');
+  } catch (err) {
+    console.error('Errore caricaScatolaRapida:', err);
   }
 }
+window.caricaScatolaRapida = caricaScatolaRapida;
 
 function cambiaModalitaCarico(modo) {
   const boxScatole = document.getElementById('box-carico-scatole');
@@ -10544,6 +10546,228 @@ async function salvaCambiaOrarioRapido() {
   }
 }
 window.salvaCambiaOrarioRapido = salvaCambiaOrarioRapido;
+
+// ==============================================================================
+// SCHEDA OPERATIVA FARMACO A TUTTO SCHERMO (OSS / 118 SMARTPHONE)
+// ==============================================================================
+var _currentSchedaFarmacoId = null;
+
+function apriSchedaFarmacoFullscreen(farmacoId) {
+  try {
+    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    if (!p || !p.terapie) return;
+    var t = p.terapie.find(function (item) {
+      return String(item.id) === String(farmacoId) || item.id == farmacoId;
+    });
+    if (!t) return;
+    _currentSchedaFarmacoId = t.id;
+
+    var isPen = typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t);
+    var isDone = !!t.fattoOggi;
+
+    // Icona e Nome
+    var iconEl = document.getElementById('sff-icon');
+    if (iconEl) iconEl.textContent = isPen ? '💉' : '💊';
+
+    var nomeEl = document.getElementById('sff-nome');
+    if (nomeEl) nomeEl.textContent = t.farmaco || 'Farmaco';
+
+    var pazEl = document.getElementById('sff-paziente-badge');
+    if (pazEl) {
+      var pNomePulito = (p.nome || 'Assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+      pazEl.textContent = '👤 Assistito: ' + pNomePulito + (p.eta ? ' (' + p.eta + ' anni)' : '');
+    }
+
+    // Orario e Fascia
+    var orarioEl = document.getElementById('sff-orario-fascia');
+    if (orarioEl) orarioEl.textContent = 'Ore ' + (t.ora || '--:--') + ' • ' + (t.fascia || 'Programmata');
+
+    // Badge e Pulsante Stato
+    var badgeStato = document.getElementById('sff-badge-stato');
+    var btnToggle = document.getElementById('sff-btn-toggle-preso');
+    if (badgeStato) {
+      badgeStato.className = 'mobile-card-status-pill ' + (isDone ? 'status-done' : 'status-pending');
+      badgeStato.textContent = isDone ? '✓ GIÀ ASSUNTO OGGI' : 'DA SOMMINISTRARE';
+    }
+    if (btnToggle) {
+      if (isDone) {
+        btnToggle.style.background = '#ffffff';
+        btnToggle.style.color = '#b91c1c';
+        btnToggle.style.border = '2px solid #f87171';
+        btnToggle.style.boxShadow = 'none';
+        btnToggle.innerHTML = '<span>↩️</span> <span>Annulla Assunzione di Oggi</span>';
+      } else {
+        btnToggle.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        btnToggle.style.color = '#ffffff';
+        btnToggle.style.border = 'none';
+        btnToggle.style.boxShadow = '0 4px 14px rgba(16,185,129,0.35)';
+        btnToggle.innerHTML = '<span>✓</span> <span>CONFERMA ASSUNZIONE ADESSO</span>';
+      }
+    }
+
+    // Scorta e Ritiro Scatola
+    var scortaVal = isPen ? (t.penneScorta || t.scorta || 0) : (t.scorta || 0);
+    var scortaEl = document.getElementById('sff-scorta-val');
+    var unitaEl = document.getElementById('sff-scorta-unita');
+    if (scortaEl) scortaEl.textContent = scortaVal;
+    if (unitaEl) unitaEl.textContent = isPen ? 'penne preriempite' : 'compresse / unità';
+
+    var btnCaricaLabel = document.getElementById('sff-btn-carica-label');
+    if (btnCaricaLabel) {
+      var numScatola = isPen ? (t.pennePerScatola || 3) : (t.cprPerScatola || 28);
+      btnCaricaLabel.textContent = isPen
+        ? '+1 Nuova Confezione (+' + numScatola + ' penne)'
+        : '+1 Nuova Scatola (+' + numScatola + ' compresse)';
+    }
+
+    var badgeAuto = document.getElementById('sff-badge-autonomia');
+    if (badgeAuto) {
+      if (scortaVal <= 5) {
+        badgeAuto.style.background = '#fef2f2';
+        badgeAuto.style.color = '#b91c1c';
+        badgeAuto.textContent = '🚨 Scorta Quasi Esaurita';
+      } else {
+        badgeAuto.style.background = '#dcfce7';
+        badgeAuto.style.color = '#15803d';
+        badgeAuto.textContent = '🟢 Scorta Regolare';
+      }
+    }
+
+    // Istruzioni e Principio
+    var princRow = document.getElementById('sff-principio-row');
+    var princEl = document.getElementById('sff-principio');
+    if (t.principio) {
+      if (princRow) princRow.style.display = 'block';
+      if (princEl) princEl.textContent = t.principio;
+    } else {
+      if (princRow) princRow.style.display = 'none';
+    }
+
+    var noteEl = document.getElementById('sff-istruzioni');
+    if (noteEl) {
+      var noteText = (t.dosaggio ? ('<b>Dosaggio:</b> ' + t.dosaggio + '<br>') : '') +
+                     (t.modo ? ('<b>Modalità:</b> ' + t.modo) : 'Nessuna modalità registrata.');
+      noteEl.innerHTML = noteText;
+    }
+
+    // Apri modale
+    var modal = document.getElementById('modal-scheda-farmaco-fullscreen');
+    if (modal) {
+      modal.classList.add('active');
+      modal.style.display = 'flex';
+      modal.style.zIndex = '20000040';
+      document.body.classList.add('modal-open');
+    }
+  } catch (err) {
+    console.error('Errore apriSchedaFarmacoFullscreen:', err);
+  }
+}
+window.apriSchedaFarmacoFullscreen = apriSchedaFarmacoFullscreen;
+
+function chiudiSchedaFarmacoFullscreen() {
+  var modal = document.getElementById('modal-scheda-farmaco-fullscreen');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
+  _currentSchedaFarmacoId = null;
+  setTimeout(function () {
+    var anyActive = document.querySelector('.modal-overlay.active, .modal-overlay[style*="display: flex"]');
+    if (!anyActive) document.body.classList.remove('modal-open');
+  }, 40);
+}
+window.chiudiSchedaFarmacoFullscreen = chiudiSchedaFarmacoFullscreen;
+
+async function sffTogglePreso() {
+  if (!_currentSchedaFarmacoId) return;
+  var fid = _currentSchedaFarmacoId;
+  if (typeof toggleFarmacoConScarico === 'function') {
+    await toggleFarmacoConScarico(fid);
+  }
+  apriSchedaFarmacoFullscreen(fid);
+}
+window.sffTogglePreso = sffTogglePreso;
+
+async function sffCaricaScatolaIntera() {
+  if (!_currentSchedaFarmacoId) return;
+  var fid = _currentSchedaFarmacoId;
+  await caricaScatolaRapida(fid);
+  apriSchedaFarmacoFullscreen(fid);
+}
+window.sffCaricaScatolaIntera = sffCaricaScatolaIntera;
+
+async function sffRegolaScortaManuale(delta) {
+  if (!_currentSchedaFarmacoId) return;
+  var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  if (!p || !p.terapie) return;
+  var t = p.terapie.find(function (item) {
+    return String(item.id) === String(_currentSchedaFarmacoId) || item.id == _currentSchedaFarmacoId;
+  });
+  if (!t) return;
+  var isPen = typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t);
+  if (isPen) {
+    t.penneScorta = Math.max(0, Math.round(((parseFloat(t.penneScorta) || 0) + delta) * 100) / 100);
+    t.scorta = t.penneScorta;
+  } else {
+    t.scorta = Math.max(0, Math.round(((parseFloat(t.scorta) || 0) + delta) * 10) / 10);
+  }
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
+  if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
+  if (typeof renderTerapie === 'function') renderTerapie();
+  if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+  apriSchedaFarmacoFullscreen(_currentSchedaFarmacoId);
+}
+window.sffRegolaScortaManuale = sffRegolaScortaManuale;
+
+async function sffApplicaDeltaOrario(deltaMinuti) {
+  if (!_currentSchedaFarmacoId) return;
+  var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  if (!p || !p.terapie) return;
+  var t = p.terapie.find(function (item) {
+    return String(item.id) === String(_currentSchedaFarmacoId) || item.id == _currentSchedaFarmacoId;
+  });
+  if (!t || !t.ora) return;
+  var parts = t.ora.split(':');
+  var h = parseInt(parts[0], 10);
+  var m = parseInt(parts[1], 10) || 0;
+  if (isNaN(h)) return;
+  var totMin = (h * 60 + m + deltaMinuti) % 1440;
+  if (totMin < 0) totMin += 1440;
+  var newH = Math.floor(totMin / 60);
+  var newM = totMin % 60;
+  var hStr = (newH < 10 ? '0' : '') + newH;
+  var mStr = (newM < 10 ? '0' : '') + newM;
+  t.ora = hStr + ':' + mStr;
+  if (typeof deduciFasciaDaOrario === 'function') {
+    t.fascia = deduciFasciaDaOrario(t.ora);
+  }
+  if (typeof comparaOrariTerapie === 'function') {
+    p.terapie.sort(comparaOrariTerapie);
+  }
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
+  if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+  if (typeof showToast === 'function') showToast('🕒 Orario spostato alle ' + t.ora);
+  apriSchedaFarmacoFullscreen(_currentSchedaFarmacoId);
+}
+window.sffApplicaDeltaOrario = sffApplicaDeltaOrario;
+
+function sffApriCambiaOrarioModal() {
+  if (!_currentSchedaFarmacoId) return;
+  var fid = _currentSchedaFarmacoId;
+  chiudiSchedaFarmacoFullscreen();
+  if (typeof apriCambiaOrarioRapido === 'function') apriCambiaOrarioRapido(fid);
+}
+window.sffApriCambiaOrarioModal = sffApriCambiaOrarioModal;
+
+function sffApriModificaCapsula() {
+  if (!_currentSchedaFarmacoId) return;
+  var fid = _currentSchedaFarmacoId;
+  chiudiSchedaFarmacoFullscreen();
+  if (typeof apriModificaFarmaco === 'function') apriModificaFarmaco(fid);
+}
+window.sffApriModificaCapsula = sffApriModificaCapsula;
 
 function salvaModificaFarmaco(e) {
   if (e && e.preventDefault) e.preventDefault();
@@ -23479,23 +23703,24 @@ function renderMobileNativeView(terapie, p) {
         var principioHtml = principioAttivo ? ('<div class="mobile-card-principio">🔬 Principio: <b>' + principioAttivo + '</b></div>') : '';
         var paletteClass = 'palette-' + (idx % 5);
 
-        return '<div class="mobile-card-item ' + paletteClass + (isDone ? ' is-done' : '') + '" id="mobile-card-farmaco-' + t.id + '">' +
+        return '<div class="mobile-card-item ' + paletteClass + (isDone ? ' is-done' : '') + '" id="mobile-card-farmaco-' + t.id + '" onclick="apriSchedaFarmacoFullscreen(\'' + t.id + '\')" title="Tocca la scheda per aprire a tutta pagina e intervenire" style="cursor:pointer;">' +
           '<div class="mobile-card-header">' +
-            '<div class="mobile-card-time" onclick="apriCambiaOrarioRapido(\'' + t.id + '\')" title="Tocca per cambiare orario di somministrazione" style="cursor:pointer; display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,0.9); padding:3px 9px; border-radius:8px; border:1px solid rgba(0,0,0,0.1);">' +
+            '<div class="mobile-card-time" onclick="event.stopPropagation(); apriCambiaOrarioRapido(\'' + t.id + '\')" title="Tocca per cambiare orario di somministrazione" style="cursor:pointer; display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,0.9); padding:3px 9px; border-radius:8px; border:1px solid rgba(0,0,0,0.1);">' +
               '<span>' + iconaFormato + '</span>' +
               '<span style="font-weight:900; color:#0369a1; font-size:13.5px;">' + (t.ora || '--:--') + '</span>' +
               '<span style="font-size:11px; color:#475569; font-weight:700;">• ' + (t.fascia || '') + '</span>' +
               '<span style="font-size:11px; color:#0284c7;" title="Modifica orario">✏️</span>' +
             '</div>' +
             '<div style="display:flex; align-items:center; gap:6px;">' +
-              '<button type="button" class="btn-card-edit-mini" onclick="apriModificaFarmaco(\'' + t.id + '\')" title="Modifica terapia, dosaggio o note per OSS">✏️ Modifica</button>' +
+              '<button type="button" class="btn-card-edit-mini" onclick="event.stopPropagation(); apriModificaFarmaco(\'' + t.id + '\')" title="Modifica terapia, dosaggio o note per OSS">✏️ Modifica</button>' +
               '<div class="mobile-card-status-pill ' + (isDone ? 'status-done' : 'status-pending') + '">' +
                 (isDone ? '✓ PRESO' : 'DA FARE') +
               '</div>' +
             '</div>' +
           '</div>' +
-          '<div class="mobile-card-name" style="margin-top:6px; font-size:14.5px; font-weight:800; color:#0f172a;">' +
-            t.farmaco + badgeSalvavita +
+          '<div class="mobile-card-name" style="margin-top:6px; font-size:14.5px; font-weight:800; color:#0f172a; display:flex; align-items:center; justify-content:space-between;">' +
+            '<span>' + t.farmaco + badgeSalvavita + '</span>' +
+            '<span style="font-size:11px; color:#0284c7; font-weight:800;" title="Apri scheda intera">📱 Apri ↗</span>' +
           '</div>' +
           principioHtml +
           '<div class="mobile-card-dosaggio" style="margin-top:2px; font-size:12px; color:#334155; font-weight:600;">' +
@@ -23504,13 +23729,13 @@ function renderMobileNativeView(terapie, p) {
           '<div class="mobile-card-footer" style="margin-top:9px; padding-top:8px; border-top:1px dashed rgba(0,0,0,0.12); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">' +
             '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
               '<div class="mobile-card-scorta" style="font-size:12px; color:#334155; font-weight:700;">Scorta: <b style="color:#0f172a;">' + (t.scorta || 0) + '</b></div>' +
-              '<button type="button" class="btn-card-scatola-action" onclick="caricaScatolaRapida(\'' + t.id + '\')" title="Aggiungi 1 scatola arrivata dalla farmacia">📦 +Scatola</button>' +
-              '<button type="button" class="btn-card-time-action" onclick="apriCambiaOrarioRapido(\'' + t.id + '\')" title="Sposta orario di somministrazione">🕒 Orario</button>' +
+              '<button type="button" class="btn-card-scatola-action" onclick="event.stopPropagation(); caricaScatolaRapida(\'' + t.id + '\')" title="Aggiungi 1 scatola ritirata dalla farmacia">📦 +Scatola</button>' +
+              '<button type="button" class="btn-card-time-action" onclick="event.stopPropagation(); apriCambiaOrarioRapido(\'' + t.id + '\')" title="Sposta orario di somministrazione">🕒 Orario</button>' +
             '</div>' +
             '<div style="display:flex; align-items:center; gap:6px;">' +
               (isDone
-                ? '<button type="button" class="btn-mobile-card-undo" onclick="toggleFarmacoConScarico(\'' + t.id + '\')">Annulla</button>'
-                : '<button type="button" class="btn-mobile-card-take" onclick="toggleFarmacoConScarico(\'' + t.id + '\')"><span>✓</span> <span>PRESO</span></button>'
+                ? '<button type="button" class="btn-mobile-card-undo" onclick="event.stopPropagation(); toggleFarmacoConScarico(\'' + t.id + '\')">Annulla</button>'
+                : '<button type="button" class="btn-mobile-card-take" onclick="event.stopPropagation(); toggleFarmacoConScarico(\'' + t.id + '\')"><span>✓</span> <span>PRESO</span></button>'
               ) +
             '</div>' +
           '</div>' +

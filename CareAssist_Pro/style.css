@@ -8756,4 +8756,15 @@ main, .main-content, .dashboard-container {
   pointer-events: auto !important;
 }
 
+#modal-scheda-farmaco-fullscreen {
+  z-index: 20000040 !important;
+}
+#modal-scheda-farmaco-fullscreen.active {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+
 
