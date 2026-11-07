@@ -1,5 +1,66 @@
 
 // ==============================================================================
+// SELETTORE ASSISTITI STILE WHATSAPP CANALI (RICERCA & FILTRI ISTANTANEI)
+// ==============================================================================
+var _filtroCategoriaWhatsAppAttivo = 'tutti';
+var _filtroTestoWhatsAppAttivo = '';
+
+function filtraPazientiWhatsApp(query) {
+  _filtroTestoWhatsAppAttivo = (query || '').trim().toLowerCase();
+  applicaFiltriWhatsAppDOM();
+}
+window.filtraPazientiWhatsApp = filtraPazientiWhatsApp;
+
+function filtraCategoriaWhatsApp(cat, btn) {
+  _filtroCategoriaWhatsAppAttivo = cat;
+  document.querySelectorAll('.wa-filter-pill').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  applicaFiltriWhatsAppDOM();
+}
+window.filtraCategoriaWhatsApp = filtraCategoriaWhatsApp;
+
+function applicaFiltriWhatsAppDOM() {
+  var rows = document.querySelectorAll('#lista-switch-pazienti-rapido .whatsapp-pz-item');
+  var matchCount = 0;
+  rows.forEach(function(row) {
+    var nome = (row.getAttribute('data-nome') || '').toLowerCase();
+    var pat = (row.getAttribute('data-patologia') || '').toLowerCase();
+    var allettato = row.getAttribute('data-allettato') === 'true';
+    var terapieOggi = parseInt(row.getAttribute('data-terapie-oggi') || '0', 10);
+    var ritardi = parseInt(row.getAttribute('data-ritardi') || '0', 10);
+
+    var matchText = !_filtroTestoWhatsAppAttivo || nome.includes(_filtroTestoWhatsAppAttivo) || pat.includes(_filtroTestoWhatsAppAttivo);
+    var matchCat = true;
+    if (_filtroCategoriaWhatsAppAttivo === 'terapie') matchCat = terapieOggi > 0;
+    else if (_filtroCategoriaWhatsAppAttivo === 'ritardi') matchCat = ritardi > 0;
+    else if (_filtroCategoriaWhatsAppAttivo === 'allettati') matchCat = allettato;
+
+    if (matchText && matchCat) {
+      row.style.display = 'flex';
+      matchCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+
+  var noRes = document.getElementById('wa-no-results-msg');
+  if (matchCount === 0) {
+    if (!noRes) {
+      var nr = document.createElement('div');
+      nr.id = 'wa-no-results-msg';
+      nr.style.cssText = 'padding:24px 16px; text-align:center; color:#64748b; font-size:13px; font-weight:700;';
+      nr.innerHTML = 'Nessun assistito corrisponde ai filtri selezionati.';
+      var c = document.getElementById('lista-switch-pazienti-rapido');
+      if (c) c.appendChild(nr);
+    }
+  } else if (noRes) {
+    noRes.remove();
+  }
+}
+window.applicaFiltriWhatsAppDOM = applicaFiltriWhatsAppDOM;
+
+
+// ==============================================================================
 // MOTORE VOCALE NATURALE HD CAREASSIST (Azure Neural HD + Pause Naturali)
 // ==============================================================================
 let _audioElementCareAssistAttivo = null;
@@ -23120,31 +23181,45 @@ function renderMobileNativeView(terapie, p) {
   var container = document.getElementById('careassist-native-mobile-container');
   if (!container || !p) return;
 
-  // 1. Render Carosello Pazienti Touch (Deduplicato rigorosamente per ID univoco)
-  var chipsBar = document.getElementById('mobile-pazienti-chips');
-  if (chipsBar && AppData && Array.isArray(AppData.pazienti)) {
-    var seenIds = new Set();
-    var uniquePaz = [];
-    AppData.pazienti.forEach(function (pt) {
-      if (pt && pt.id && !seenIds.has(pt.id)) {
-        seenIds.add(pt.id);
-        if (pt.id === 'paz_aldo') pt.nome = 'Aldo Zamparino';
-        if (pt.id === 'paz_angela') pt.nome = 'Angela Mazzicone';
-        if (pt.id === 'paz_rosa') pt.nome = 'Rosa Annunziata Cavalcante';
-        uniquePaz.push(pt);
-      }
-    });
+  // 1. Render Card Assistito Attivo (Stile WhatsApp Canali - Elimina carosello orizzontale tagliato!)
+  var activeCard = document.getElementById('mobile-active-patient-card');
+  if (!activeCard) {
+    // Se c'è ancora il vecchio id mobile-pazienti-chips nel DOM, riusalo come contenitore card
+    activeCard = document.getElementById('mobile-pazienti-chips');
+  }
+  if (activeCard && p) {
+    var pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+    var eta = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || 85);
+    var avatarEmoji = p.sesso === 'F' ? '👵' : '👴';
+    var avatarBg = '#e0f2fe';
+    var avatarBorder = '#0284c7';
+    if (p.id === 'paz_aldo' || pulitoNome.toLowerCase().includes('aldo')) { avatarEmoji = '👴'; avatarBg = '#ede9fe'; avatarBorder = '#8b5cf6'; }
+    else if (p.id === 'paz_angela' || pulitoNome.toLowerCase().includes('angela')) { avatarEmoji = '👵'; avatarBg = '#fce7f3'; avatarBorder = '#ec4899'; }
+    else if (p.id === 'paz_rosa' || pulitoNome.toLowerCase().includes('rosa')) { avatarEmoji = '👵'; avatarBg = '#fae8ff'; avatarBorder = '#d946ef'; }
+    else if (p.id === 'paz_1793216119572' || pulitoNome.toLowerCase().includes('ciro')) { avatarEmoji = '👨'; avatarBg = '#dcfce7'; avatarBorder = '#22c55e'; }
 
-    chipsBar.innerHTML = uniquePaz.map(function (pt) {
-      var isActive = pt.id === AppData.activePazienteId;
-      var avatar = pt.sesso === 'F' ? '👵' : '👴';
-      var shortName = pt.nome ? pt.nome.split(' ').slice(0, 2).join(' ') : 'Assistito';
-      return '<div class="mobile-patient-chip' + (isActive ? ' active' : '') + '" onclick="cambiaPaziente(\'' + pt.id + '\')">' +
-        '<span class="chip-avatar">' + avatar + '</span>' +
-        '<span>' + shortName + '</span>' +
-        (isActive ? ' <span style="font-size:11px; margin-left:3px;">✓</span>' : '') +
-        '</div>';
-    }).join('');
+    var nTerapie = (p.terapie || []).length;
+    var nFatti = (p.terapie || []).filter(function(t){ return t.fattoOggi; }).length;
+
+    activeCard.innerHTML = '<div onclick="apriSwitchPazienteRapido()" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:18px; padding:11px 15px; margin:0 0 12px 0; display:flex; align-items:center; justify-content:space-between; box-shadow:0 3px 10px rgba(0,0,0,0.05); cursor:pointer;">' +
+      '<div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">' +
+        '<div style="width:46px; height:46px; border-radius:50%; background:' + avatarBg + '; border:2.5px solid ' + avatarBorder + '; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.08);">' +
+          avatarEmoji +
+        '</div>' +
+        '<div style="flex:1; min-width:0;">' +
+          '<div style="display:flex; align-items:center; gap:6px;">' +
+            '<span style="font-size:16px; font-weight:900; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + pulitoNome + '</span>' +
+            '<span style="color:#059669; font-size:14px; font-weight:900;" title="Verificato">✓</span>' +
+          '</div>' +
+          '<div style="font-size:12px; color:#64748b; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;">' +
+            eta + ' anni • ' + (p.allettato ? 'Allettato' : 'Deambulante') + ' • ' + nFatti + '/' + nTerapie + ' prese' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="background:#f1f5f9; border:1.5px solid #cbd5e1; border-radius:20px; padding:7px 12px; font-size:12px; font-weight:800; color:#0284c7; display:flex; align-items:center; gap:4px; flex-shrink:0; box-shadow:0 1px 3px rgba(0,0,0,0.04);">' +
+        '<span>👥 Cambia</span> <span>▾</span>' +
+      '</div>' +
+    '</div>';
   }
 
   // 2. Calcola la Hero Action Card: "COSA DEVI FARE ADESSO"

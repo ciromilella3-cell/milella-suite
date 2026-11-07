@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=230">
+  <link rel="stylesheet" href="style.css?v=231">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -533,7 +533,8 @@
   <!-- ========================================================================= -->
   <div id="careassist-native-mobile-container" class="mobile-only-app-container">
     <!-- Carosello Orizzontale Assistiti a Portata di Pollice -->
-    <div id="mobile-pazienti-chips" class="mobile-pazienti-chips-bar"></div>
+    <!-- Card Assistito Attivo (Stile WhatsApp Canali) -->
+    <div id="mobile-active-patient-card" class="mobile-active-patient-card"></div>
 
     <!-- Hero Action Card: Cosa devi fare ADESSO (1-Touch) -->
     <div id="mobile-hero-action-card" class="mobile-hero-card"></div>
@@ -6031,28 +6032,53 @@
   </div>
 
   <div id="modal-switch-paziente-rapido" class="modal-overlay">
-    <div class="modal-content"
-      style="max-width:440px; border-radius:18px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.25);">
-      <div
-        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
-        <h3
-          style="margin:0; font-size:17px; font-weight:800; color:#0f2744; display:flex; align-items:center; gap:8px;">
-          <span>👤</span> Seleziona Cartella Assistito
-        </h3>
-        <button type="button" class="btn-close-modal btn-close-dark"
-          onclick="closeModal('modal-switch-paziente-rapido')" title="Chiudi Finestra" aria-label="Chiudi">✕</button>
+    <div class="modal-content whatsapp-canali-modal"
+      style="max-width:480px; width:100%; border-radius:24px; padding:0; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.35); border:none; animation:fadeInScale 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+      
+      <!-- HEADER STILE WHATSAPP CANALI -->
+      <div style="background:#075e54; color:#ffffff; padding:16px 18px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button type="button" onclick="closeModal('modal-switch-paziente-rapido')" style="background:none; border:none; color:#ffffff; font-size:22px; cursor:pointer; padding:0; display:flex; align-items:center;" aria-label="Indietro">
+            ←
+          </button>
+          <div>
+            <div style="font-size:18px; font-weight:800; letter-spacing:-0.2px;">Assistiti</div>
+            <div style="font-size:11.5px; color:#a7f3d0; font-weight:600;">Seleziona cartella clinica domiciliare</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:12px; background:rgba(255,255,255,0.2); padding:3px 10px; border-radius:20px; font-weight:700;">Canali Attivi</span>
+        </div>
       </div>
-      <div style="font-size:12.5px; color:#64748b; margin-bottom:12px;">
-        Tocca un assistito per passare istantaneamente alla sua cartella clinica senza dover scrollare:
+
+      <!-- BARRA DI RICERCA & FILTRI WHATSAPP -->
+      <div style="padding:12px 16px 8px 16px; background:#ffffff; border-bottom:1px solid #f1f5f9;">
+        <!-- Input Cerca -->
+        <div style="display:flex; align-items:center; background:#f1f5f9; border-radius:20px; padding:7px 14px; gap:8px; margin-bottom:10px;">
+          <span style="font-size:14px; color:#64748b;">🔍</span>
+          <input type="text" id="whatsapp-pz-search-input" oninput="filtraPazientiWhatsApp(this.value)" placeholder="Cerca assistito per nome o diagnosi..." style="border:none; background:transparent; font-size:13px; font-weight:600; width:100%; outline:none; color:#0f172a;" />
+          <button type="button" onclick="var inp=document.getElementById('whatsapp-pz-search-input'); if(inp){ inp.value=''; filtraPazientiWhatsApp(''); }" style="background:none; border:none; color:#94a3b8; font-size:14px; cursor:pointer;">✕</button>
+        </div>
+        <!-- Pills Filtro stile WhatsApp -->
+        <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none;">
+          <button type="button" class="wa-filter-pill active" onclick="filtraCategoriaWhatsApp('tutti', this)">Tutti</button>
+          <button type="button" class="wa-filter-pill" onclick="filtraCategoriaWhatsApp('terapie', this)">Con Terapie</button>
+          <button type="button" class="wa-filter-pill" onclick="filtraCategoriaWhatsApp('ritardi', this)">In Ritardo 🚨</button>
+          <button type="button" class="wa-filter-pill" onclick="filtraCategoriaWhatsApp('allettati', this)">Allettati 🛏️</button>
+        </div>
       </div>
-      <div id="lista-switch-pazienti-rapido"
-        style="display:flex; flex-direction:column; gap:8px; max-height:60vh; overflow-y:auto; padding-right:4px;">
-        <!-- Popolato dinamicamente -->
+
+      <!-- LISTA ASSISTITI STILE WHATSAPP CANALI -->
+      <div id="lista-switch-pazienti-rapido" style="display:flex; flex-direction:column; max-height:60vh; overflow-y:auto; background:#ffffff;">
+        <!-- Popolato dinamicamente da apriSwitchPazienteRapido() -->
       </div>
-      <div style="margin-top:14px; text-align:right;">
-        <button type="button" class="btn btn-secondary"
-          onclick="closeModal('modal-switch-paziente-rapido')">Chiudi</button>
+      
+      <!-- FOOTER -->
+      <div style="padding:10px 16px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:11.5px; color:#64748b; font-weight:600;">Tocca un assistito per aprire la sua cartella</span>
+        <button type="button" onclick="closeModal('modal-switch-paziente-rapido')" style="background:#e2e8f0; border:none; color:#334155; font-size:12px; font-weight:800; padding:6px 14px; border-radius:10px; cursor:pointer;">Chiudi</button>
       </div>
+
     </div>
   </div>
 
@@ -6426,7 +6452,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=230"></script>
+  <script src="app.js?v=231"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {

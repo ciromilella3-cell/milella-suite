@@ -8026,3 +8026,26 @@ main, .main-content, .dashboard-container {
     font-size: 10px !important;
   }
 }
+
+/* REGOLE SELETTORE PAZIENTI STILE WHATSAPP CANALI (v231) */
+.wa-filter-pill {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.wa-filter-pill.active {
+  background: #dcf8c6 !important;
+  border-color: #25d366 !important;
+  color: #075e54 !important;
+  font-weight: 800 !important;
+}
+.whatsapp-canali-modal {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+}
