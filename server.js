@@ -1407,26 +1407,41 @@ function sincronizzaPazientiInCareAssist(caData) {
         let suiteDb = safeReadJsonSync(suitePazientiDbFile, { pazienti: [] });
         if (!Array.isArray(suiteDb.pazienti)) suiteDb.pazienti = [];
 
-        // Mappa per unire e arricchire senza duplicati
+        // Mappa deduplicata per ID univoco (non per nome, per evitare doppi Aldo/Angela!)
         const pzMap = new Map();
-        suiteDb.pazienti.forEach(p => { if (p && p.nome) pzMap.set(p.nome.trim().toLowerCase(), p); });
-        caData.pazienti.forEach(p => { if (p && p.nome) pzMap.set(p.nome.trim().toLowerCase(), p); });
 
-        // Assicurati che Maria Carmela sia sempre presente
-        if (!pzMap.has('maria carmela')) {
-            pzMap.set('maria carmela', {
-                id: 'paz_mariacarmela',
-                nome: 'Maria Carmela',
-                dataNascita: '1969-03-20',
-                sesso: 'F',
-                indirizzo: 'Via Giulio Petroni, 69 - BARI (BA)',
-                telefono: '347 123 4567',
-                allettato: false,
-                patologie: ['Nutrizione & Benessere'],
-                terapie: [],
-                origini: ['Progetto Salute', 'CareAssist Pro']
-            });
-        }
+        // 1. Inserisci i pazienti della suite come base
+        suiteDb.pazienti.forEach(p => {
+            if (p && p.id) {
+                if (p.id === 'paz_aldo') p.nome = 'Aldo Zamparino';
+                if (p.id === 'paz_angela') p.nome = 'Angela Mazzicone';
+                if (p.id === 'paz_rosa') p.nome = 'Rosa Annunziata Cavalcante';
+                if (p.id === 'paz_mariacarmela') p.nome = 'Maria Carmela Stoppelli';
+                if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+                pzMap.set(p.id, p);
+            }
+        });
+
+        // 2. Arricchisci e sovrascrivi con i dati completi di CareAssist
+        caData.pazienti.forEach(p => {
+            if (p && p.id) {
+                if (p.id === 'paz_aldo') p.nome = 'Aldo Zamparino';
+                if (p.id === 'paz_angela') p.nome = 'Angela Mazzicone';
+                if (p.id === 'paz_rosa') p.nome = 'Rosa Annunziata Cavalcante';
+                if (p.id === 'paz_mariacarmela') p.nome = 'Maria Carmela Stoppelli';
+                if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+
+                const existing = pzMap.get(p.id);
+                if (existing) {
+                    const merged = { ...existing, ...p };
+                    if (Array.isArray(p.terapie) && p.terapie.length > 0) merged.terapie = p.terapie;
+                    if (Array.isArray(p.registrazioni)) merged.registrazioni = p.registrazioni;
+                    pzMap.set(p.id, merged);
+                } else {
+                    pzMap.set(p.id, p);
+                }
+            }
+        });
 
         const listaAggiornata = Array.from(pzMap.values());
         suiteDb.pazienti = listaAggiornata;

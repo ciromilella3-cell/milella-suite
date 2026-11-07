@@ -2032,43 +2032,26 @@ function forzaSincronizzazioneCloudManuale() {
   });
 }
 
-function getPazientiAccessibili() {
-  try {
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlRole = urlParams.get('auth_role');
-    const urlPin = urlParams.get('pinAdmin');
-    if (urlRole === 'admin' || (urlPin && urlPin.toUpperCase() === 'SOS999')) {
-      localStorage.setItem('milella_role', 'admin');
-      localStorage.setItem('milella_last_authenticated_role', 'admin');
-      localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
+function deduplicatePazientiMaster(list) {
+  if (!Array.isArray(list)) return [];
+  var seen = new Set();
+  var res = [];
+  list.forEach(function (p) {
+    if (p && p.id && !seen.has(p.id)) {
+      seen.add(p.id);
+      if (p.id === 'paz_aldo') p.nome = 'Aldo Zamparino';
+      if (p.id === 'paz_angela') p.nome = 'Angela Mazzicone';
+      if (p.id === 'paz_rosa') p.nome = 'Rosa Annunziata Cavalcante';
+      if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+      res.push(p);
     }
-  } catch (e) { }
+  });
+  return res;
+}
 
-  const adminPin = localStorage.getItem('milella_admin_pin') || sessionStorage.getItem('milella_admin_pin') || '';
-  const lastPin = localStorage.getItem('milella_last_authenticated_pin') || '';
-  if (adminPin.toUpperCase() === 'SOS999' || lastPin.toUpperCase() === 'SOS999') {
-    localStorage.setItem('milella_role', 'admin');
-    localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
-    return AppData.pazienti;
-  }
-
-  const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
-  if (role === 'admin') return AppData.pazienti;
-
-  let pazAbilitati = [];
-  try {
-    pazAbilitati = JSON.parse(localStorage.getItem('milella_paz_abilitati') || '[]');
-  } catch (e) {
-    pazAbilitati = [];
-  }
-
-  // Se è specificato 'all' o la lista è vuota (operatore non ristretto), vede tutti i pazienti
-  if (!pazAbilitati || pazAbilitati.length === 0 || pazAbilitati.includes('all')) {
-    return AppData.pazienti;
-  }
-
-  const filtrati = AppData.pazienti.filter(p => pazAbilitati.includes(p.id));
-  return filtrati.length > 0 ? filtrati : AppData.pazienti;
+function getPazientiAccessibili() {
+  if (!AppData || !Array.isArray(AppData.pazienti)) return [];
+  return deduplicatePazientiMaster(AppData.pazienti); // Tutti i pazienti sempre accessibili senza blocchi
 }
 
 function getActivePaziente() {
@@ -3410,18 +3393,42 @@ function showToast(messaggio, tipo = 'success') {
 }
 
 function cambiaPaziente(pazId) {
+  if (!pazId || !AppData) return;
   AppData.activePazienteId = pazId;
-  saveDb();
-  if (typeof renderAll === 'function') {
-    renderAll();
-  } else {
-    if (typeof aggiornaVisibilitaTabEpatologia === 'function') aggiornaVisibilitaTabEpatologia();
+  try { localStorage.setItem('careassist_active_paziente_id', pazId); } catch(e){}
+
+  // Assicura array registrazioni valido sul paziente
+  var p = (AppData.pazienti || []).find(function (x) { return x.id === pazId; });
+  if (p && !Array.isArray(p.registrazioni)) {
+    p.registrazioni = [];
   }
+
+  try {
+    saveDb();
+  } catch (eSave) {
+    console.warn('saveDb error:', eSave);
+  }
+
+  try {
+    if (typeof renderAll === 'function') renderAll();
+  } catch (eRender) {
+    console.warn('renderAll error:', eRender);
+  }
+
+  // Renderizza subito la vista mobile nativa
+  try {
+    var pAttivo = (typeof getActivePaziente === 'function') ? getActivePaziente() : p;
+    if (pAttivo && typeof renderMobileNativeView === 'function') {
+      renderMobileNativeView(pAttivo.terapie || [], pAttivo);
+    }
+  } catch (eMob) { }
+
   var tabSection = document.getElementById('tab-epatologia');
   if (tabSection && (tabSection.style.display === 'block' || tabSection.style.display === 'flex' || tabSection.classList.contains('active'))) {
     if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
   }
 }
+window.cambiaPaziente = cambiaPaziente;
 
 // Gestione Intelligente Patologie Cliniche (Chip Rapidi & Catalogo Dinamico)
 function togglePatologiaChip(elem, patologiaNome) {
@@ -10925,7 +10932,8 @@ function aggiornaOrologioPosturale() {
     }
   }
 
-  const logsPostura = (p.registrazioni || [])
+  if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+  const logsPostura = p.registrazioni
     .filter(r => r.tipo === 'postura')
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
@@ -10946,6 +10954,9 @@ function aggiornaOrologioPosturale() {
 
   // Se è appena diventato allettato o non ha ancora registrazioni posturali,
   // inizializzalo SUBITO da adesso (ora attuale) in posizione Supino!
+  if (!Array.isArray(p.registrazioni)) {
+    p.registrazioni = [];
+  }
   if (!logsPostura.length) {
     const oraInit = new Date().toISOString();
     p.registrazioni.push({
@@ -10956,9 +10967,7 @@ function aggiornaOrologioPosturale() {
       cute: 'Integra e rosea (Iniziale)',
       operatore: 'Sistema Automatico CareAssist'
     });
-    saveDb();
-    // Richiama l'aggiornamento con la nuova registrazione
-    return aggiornaOrologioPosturale();
+    logsPostura.push(p.registrazioni[p.registrazioni.length - 1]);
   }
 
   const last = logsPostura[0];
@@ -23072,10 +23081,22 @@ function renderMobileNativeView(terapie, p) {
   var container = document.getElementById('careassist-native-mobile-container');
   if (!container || !p) return;
 
-  // 1. Render Carosello Pazienti Touch
+  // 1. Render Carosello Pazienti Touch (Deduplicato rigorosamente per ID univoco)
   var chipsBar = document.getElementById('mobile-pazienti-chips');
   if (chipsBar && AppData && Array.isArray(AppData.pazienti)) {
-    chipsBar.innerHTML = AppData.pazienti.map(function (pt) {
+    var seenIds = new Set();
+    var uniquePaz = [];
+    AppData.pazienti.forEach(function (pt) {
+      if (pt && pt.id && !seenIds.has(pt.id)) {
+        seenIds.add(pt.id);
+        if (pt.id === 'paz_aldo') pt.nome = 'Aldo Zamparino';
+        if (pt.id === 'paz_angela') pt.nome = 'Angela Mazzicone';
+        if (pt.id === 'paz_rosa') pt.nome = 'Rosa Annunziata Cavalcante';
+        uniquePaz.push(pt);
+      }
+    });
+
+    chipsBar.innerHTML = uniquePaz.map(function (pt) {
       var isActive = pt.id === AppData.activePazienteId;
       var avatar = pt.sesso === 'F' ? '👵' : '👴';
       var shortName = pt.nome ? pt.nome.split(' ').slice(0, 2).join(' ') : 'Assistito';
