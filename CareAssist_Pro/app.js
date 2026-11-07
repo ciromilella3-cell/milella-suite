@@ -23181,6 +23181,16 @@ function renderMobileNativeView(terapie, p) {
   var container = document.getElementById('careassist-native-mobile-container');
   if (!container || !p) return;
 
+  // Aggiorna sempre la pillola sticky nell'header in alto (così il nome non si perde MAI durante lo scroll!)
+  var hdrPillName = document.getElementById('mhdr-patient-name');
+  var hdrPillAvatar = document.getElementById('mhdr-patient-avatar');
+  if (hdrPillName && p) {
+    hdrPillName.textContent = p.nome || 'Assistito';
+  }
+  if (hdrPillAvatar && p) {
+    hdrPillAvatar.textContent = p.sesso === 'F' ? '👵' : '👴';
+  }
+
   // 1. Render Card Assistito Attivo (Senza testi troncati, layout moderno!)
   var activeCard = document.getElementById('mobile-active-patient-card');
   if (!activeCard) {

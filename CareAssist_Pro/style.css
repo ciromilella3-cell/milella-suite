@@ -8059,3 +8059,55 @@ main, .main-content, .dashboard-container {
     box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important;
   }
 }
+
+/* REGOLE STICKY ASSISTITO: NOME E COGNOME SEMPRE VISIBILI DURANTE LO SCROLL (v233) */
+.mobile-header-patient-pill {
+  display: none;
+}
+@media (max-width: 768px) {
+  .mobile-header-patient-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+    padding: 5px 11px !important;
+    border-radius: 20px !important;
+    font-size: 12.5px !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    max-width: 175px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+    transition: all 0.2s ease !important;
+  }
+  .mobile-header-patient-pill:active {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(0.97) !important;
+  }
+  .mhdr-patient-name {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+  }
+  .mhdr-patient-arrow {
+    font-size: 10px !important;
+    color: #38bdf8 !important;
+    margin-left: 2px !important;
+  }
+  #mobile-active-patient-card {
+    position: sticky !important;
+    top: 50px !important;
+    z-index: 100 !important;
+    background: rgba(248, 250, 252, 0.96) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    padding-top: 4px !important;
+    padding-bottom: 2px !important;
+  }
+}
