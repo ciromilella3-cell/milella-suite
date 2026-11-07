@@ -6406,25 +6406,29 @@ async function handleTicketImageCapture(event) {
         }
     }
 
-    // LIVELLO 4: OCR di Fallback su Ritaglio / Immagine Ottimizzata se il testo rilevato è insufficiente
-    if (rawCollected.join(' ').trim().length < 6 && typeof Tesseract !== 'undefined') {
+    // LIVELLO 4: OCR Ottico ad Alta Risoluzione su Immagine Intera (Cattura titoli Gratta & Vinci e Scontrini)
+    if (typeof Tesseract !== 'undefined') {
         try {
-            if (percentText) percentText.textContent = 'Analisi ottica ad alta precisione (70%)...';
+            if (percentText) percentText.textContent = 'Analisi ottica caratteri e titolo biglietto (60%)...';
             const worker = await getOcrWorker();
             if (worker) {
-                const cropCanvas = imgObj ? ritagliaRiquadroSerie(imgObj) : null;
-                if (cropCanvas) {
-                    const cropBlob = await new Promise(r => cropCanvas.toBlob(r, 'image/jpeg', 0.95));
-                    const retCrop = await worker.recognize(cropBlob);
-                    if (retCrop && retCrop.data && retCrop.data.text) {
-                        rawCollected.push(retCrop.data.text);
-                    }
+                // Passata 1: Analisi sull'immagine intera ottimizzata (fondamentale per Gratta & Vinci e SuperEnalotto)
+                const processedBlob = await preprocessTicketImage(rawFile);
+                const ret = await worker.recognize(processedBlob);
+                if (ret && ret.data && ret.data.text) {
+                    rawCollected.push(ret.data.text);
                 }
-                if (rawCollected.join(' ').trim().length < 6) {
-                    const processedBlob = await preprocessTicketImage(rawFile);
-                    const ret = await worker.recognize(processedBlob);
-                    if (ret && ret.data && ret.data.text) {
-                        rawCollected.push(ret.data.text);
+                // Passata 2: Ritaglio serie Lotteria in basso a sinistra se non è già stato identificato un Gratta & Vinci
+                const testoParziale = rawCollected.join(' ').toUpperCase();
+                const haGiaGratta = /GRATTA|VINCI|MILIARDAR|TURISTA|100X|50X|20X|10X|DOPPIA SFIDA|TUTTO PER TUTTO/.test(testoParziale);
+                if (!haGiaGratta && imgObj) {
+                    const cropCanvas = ritagliaRiquadroSerie(imgObj);
+                    if (cropCanvas) {
+                        const cropBlob = await new Promise(r => cropCanvas.toBlob(r, 'image/jpeg', 0.95));
+                        const retCrop = await worker.recognize(cropBlob);
+                        if (retCrop && retCrop.data && retCrop.data.text) {
+                            rawCollected.push(retCrop.data.text);
+                        }
                     }
                 }
             }
@@ -6446,25 +6450,17 @@ async function handleTicketImageCapture(event) {
     const estratto = analizzaTestoBigliettoEPopola(testoCompleto, firmaVisiva);
     _ultimoRisultatoEstrazioneOcr = estratto;
 
-    // CASO 1: OGGETTO NON DI GIOCO (Come NON FARMACO di CareAssist)
+    // CASO 1: OGGETTO DUBBIO O NON RICONOSCIUTO AUTOMATICAMENTE -> NON BLOCCA MAI L'UTENTE!
     if (estratto && estratto.isNonGioco) {
-        if (modalIcon) modalIcon.textContent = '⚠️';
-        if (modalTitle) modalTitle.textContent = 'Non è un Biglietto di Gioco';
-        if (statusText) statusText.textContent = 'Rilevato oggetto commerciale o farmaceutico diverso da un biglietto.';
+        if (modalIcon) modalIcon.textContent = '🏷️';
+        if (modalTitle) modalTitle.textContent = 'Foto Acquisita!';
+        if (statusText) statusText.textContent = 'Conferma o seleziona il biglietto per salvarlo subito:';
         
         if (resultBox) {
-            resultBox.innerHTML = `
-                <div style="background:rgba(239,68,68,0.15); border:1.5px solid #ef4444; border-radius:14px; padding:12px 14px; color:#fca5a5; font-size:12.5px; line-height:1.45;">
-                    <div style="font-weight:800; font-size:13.5px; color:#f87171; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
-                        <span>🚫</span> <span>Rilevato: Prodotto Commerciale / Non Gioco</span>
-                    </div>
-                    <div>L'immagine fotografata contiene diciture commerciali o sanitarie (es. crema, farmaco o articolo vario).</div>
-                    <div style="margin-top:6px; font-weight:700; color:#ffffff;">👉 Per registrare la giocata, inquadra la <b>Serie</b> del biglietto (es. <i>Serie F 356983</i>) o lo scontrino di gioco.</div>
-                </div>
-            `;
+            resultBox.innerHTML = renderPannelloCompilazioneRapidaModal('Gratta e Vinci');
             resultBox.style.display = 'block';
         }
-        if (btnRiascolta) btnRiascolta.style.display = 'inline-block';
+        if (btnRiascolta) btnRiascolta.style.display = 'none';
         return;
     }
 
@@ -6511,27 +6507,7 @@ async function handleTicketImageCapture(event) {
         if (statusText) statusText.textContent = 'Seleziona con 1 tocco la scheda del tuo biglietto per compilarlo:';
 
         if (resultBox) {
-            resultBox.innerHTML = `
-                <div style="background:rgba(15,23,42,0.95); border:1.5px solid rgba(56,189,248,0.4); border-radius:14px; padding:12px; text-align:left;">
-                    <div style="font-size:12px; font-weight:800; color:#38bdf8; margin-bottom:8px;">
-                        🎯 Quale biglietto hai fotografato? Tocca per attivare la scheda:
-                    </div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                        <button type="button" onclick="selezionaSchedaManualeDaModal('Lotteria Italia')" style="padding:10px 8px; background:linear-gradient(135deg, #059669, #10b981); color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; text-align:center;">
-                            🎟️ Lotteria Italia (5€)
-                        </button>
-                        <button type="button" onclick="selezionaSchedaManualeDaModal('Gratta e Vinci')" style="padding:10px 8px; background:linear-gradient(135deg, #d97706, #f59e0b); color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; text-align:center;">
-                            🏷️ Gratta & Vinci (5€)
-                        </button>
-                        <button type="button" onclick="selezionaSchedaManualeDaModal('SuperEnalotto')" style="padding:10px 8px; background:linear-gradient(135deg, #7c3aed, #8b5cf6); color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; text-align:center;">
-                            🔢 SuperEnalotto
-                        </button>
-                        <button type="button" onclick="selezionaSchedaManualeDaModal('Lotto')" style="padding:10px 8px; background:linear-gradient(135deg, #2563eb, #3b82f6); color:#fff; border:none; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; text-align:center;">
-                            🎲 Gioco del Lotto
-                        </button>
-                    </div>
-                </div>
-            `;
+            resultBox.innerHTML = renderPannelloCompilazioneRapidaModal('Gratta e Vinci');
             resultBox.style.display = 'block';
         }
 
@@ -6575,6 +6551,122 @@ function confermaESalvaDaOcr() {
     if (typeof launchConfetti === 'function') launchConfetti(2500);
     if (typeof registraGiocataCorrenteDiretta === 'function') {
         registraGiocataCorrenteDiretta();
+    }
+}
+
+
+// ==============================================================================
+// MODALE SCANNER: COMPILAZIONE DIRETTA E SALVATAGGIO RAPIDO A 1 TOCCO
+// ==============================================================================
+function renderPannelloCompilazioneRapidaModal(tipoPredefinito) {
+    const gType = tipoPredefinito || 'Gratta e Vinci';
+    const costDefault = (gType === 'Gratta e Vinci' || gType === 'Lotteria Italia') ? '5.00' : (gType === 'SuperEnalotto' ? '1.50' : '2.00');
+    return `
+        <div style="background:rgba(15,23,42,0.95); border:1.5px solid rgba(56,189,248,0.4); border-radius:16px; padding:14px; text-align:left;">
+            <div style="font-size:12.5px; font-weight:800; color:#38bdf8; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
+                <span>🎯 Scegli il gioco o salva subito:</span>
+                <span style="font-size:10.5px; color:#cbd5e1; background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:10px;">Salvataggio Rapido</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px;">
+                <button type="button" id="btnModalTabGratta" onclick="cambiaTipoInModal('Gratta e Vinci')" style="padding:9px 6px; background:${gType === 'Gratta e Vinci' ? 'linear-gradient(135deg, #d97706, #f59e0b)' : 'rgba(255,255,255,0.06)'}; color:#fff; border:1.5px solid ${gType === 'Gratta e Vinci' ? '#fbbf24' : 'rgba(255,255,255,0.15)'}; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer;">
+                    🏷️ Gratta & Vinci
+                </button>
+                <button type="button" id="btnModalTabLotteria" onclick="cambiaTipoInModal('Lotteria Italia')" style="padding:9px 6px; background:${gType === 'Lotteria Italia' ? 'linear-gradient(135deg, #059669, #10b981)' : 'rgba(255,255,255,0.06)'}; color:#fff; border:1.5px solid ${gType === 'Lotteria Italia' ? '#34d399' : 'rgba(255,255,255,0.15)'}; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer;">
+                    🎟️ Lotteria Italia
+                </button>
+                <button type="button" id="btnModalTabSuper" onclick="cambiaTipoInModal('SuperEnalotto')" style="padding:9px 6px; background:${gType === 'SuperEnalotto' ? 'linear-gradient(135deg, #7c3aed, #8b5cf6)' : 'rgba(255,255,255,0.06)'}; color:#fff; border:1.5px solid ${gType === 'SuperEnalotto' ? '#c084fc' : 'rgba(255,255,255,0.15)'}; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer;">
+                    🔢 SuperEnalotto
+                </button>
+                <button type="button" id="btnModalTabLotto" onclick="cambiaTipoInModal('Lotto')" style="padding:9px 6px; background:${gType === 'Lotto' ? 'linear-gradient(135deg, #2563eb, #3b82f6)' : 'rgba(255,255,255,0.06)'}; color:#fff; border:1.5px solid ${gType === 'Lotto' ? '#60a5fa' : 'rgba(255,255,255,0.15)'}; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer;">
+                    🎲 Gioco del Lotto
+                </button>
+            </div>
+
+            <div style="margin-bottom:10px;">
+                <label style="font-size:11px; font-weight:700; color:#94a3b8; display:block; margin-bottom:4px;">Seleziona Biglietto Gratta & Vinci:</label>
+                <select id="modalQuickSelectGratta" onchange="impostaNomeGrattaDaModal(this.value)" style="width:100%; padding:9px 10px; border-radius:10px; border:1.5px solid #fbbf24; background:#1e293b; color:#fff; font-size:13px; font-weight:700;">
+                    <option value="Il Miliardario|5.00">Il Miliardario (5€)</option>
+                    <option value="Il Miliardario Mega|10.00">Il Miliardario Mega (10€)</option>
+                    <option value="Il Miliardario Maxi|20.00">Il Miliardario Maxi (20€)</option>
+                    <option value="Nuovo 100X|20.00">Nuovo 100X (20€)</option>
+                    <option value="Nuovo 50X|10.00">Nuovo 50X (10€)</option>
+                    <option value="Nuovo 20X|5.00">Nuovo 20X (5€)</option>
+                    <option value="Nuovo 10X|2.00">Nuovo 10X (2€)</option>
+                    <option value="Turista per Sempre|5.00">Turista per Sempre (5€)</option>
+                    <option value="Doppia Sfida|5.00">Doppia Sfida (5€)</option>
+                    <option value="Tutto per Tutto|5.00">Tutto per Tutto (5€)</option>
+                    <option value="7 e Mezzo|1.00">7 e Mezzo (1€)</option>
+                    <option value="Vinci in Grande|25.00">Vinci in Grande (25€)</option>
+                    <option value="Numeri Fortunati|3.00">Numeri Fortunati (3€)</option>
+                    <option value="Altro Gratta e Vinci|5.00">Altro Biglietto Gratta e Vinci...</option>
+                </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                <div>
+                    <label style="font-size:11px; font-weight:700; color:#f87171; display:block; margin-bottom:4px;">Spesa / Costo (€):</label>
+                    <input type="number" id="modalQuickCost" step="0.50" min="0" value="${costDefault}" style="width:100%; padding:8px 10px; border-radius:8px; border:1.5px solid #ef4444; background:#1e293b; color:#fff; font-size:14px; font-weight:800;">
+                </div>
+                <div>
+                    <label style="font-size:11px; font-weight:700; color:#34d399; display:block; margin-bottom:4px;">Vincita Realizzata (€):</label>
+                    <input type="number" id="modalQuickWin" step="0.50" min="0" value="0.00" style="width:100%; padding:8px 10px; border-radius:8px; border:1.5px solid #10b981; background:#1e293b; color:#fff; font-size:14px; font-weight:800;">
+                </div>
+            </div>
+
+            <button type="button" onclick="salvaDirettoDaModalRapido()" style="width:100%; padding:12px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; border:none; border-radius:12px; font-size:14px; font-weight:900; cursor:pointer; box-shadow:0 6px 20px rgba(16,185,129,0.4); margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <span>💾</span> CONFERMA E SALVA GIOCATA SUBITO
+            </button>
+            <button type="button" onclick="selezionaSchedaManualeDaModal(document.getElementById('modalQuickSelectGratta') ? 'Gratta e Vinci' : 'Gratta e Vinci')" style="width:100%; padding:8px; background:rgba(255,255,255,0.06); color:#cbd5e1; border:1px solid rgba(255,255,255,0.15); border-radius:10px; font-size:12px; font-weight:700; cursor:pointer;">
+                ✏️ Modifica nel Modulo Principale
+            </button>
+        </div>
+    `;
+}
+
+function impostaNomeGrattaDaModal(val) {
+    if (!val) return;
+    const parts = val.split('|');
+    const nome = parts[0];
+    const costo = parts[1] || '5.00';
+    const costInp = document.getElementById('modalQuickCost');
+    if (costInp) costInp.value = costo;
+}
+
+function cambiaTipoInModal(tipo) {
+    if (typeof setGameType === 'function') setGameType(tipo);
+    const resultBox = document.getElementById('ocrResultBox');
+    if (resultBox) {
+        resultBox.innerHTML = renderPannelloCompilazioneRapidaModal(tipo);
+        resultBox.style.display = 'block';
+    }
+}
+
+function salvaDirettoDaModalRapido() {
+    const selEl = document.getElementById('modalQuickSelectGratta');
+    let nome = 'Gratta e Vinci';
+    if (selEl) {
+        nome = selEl.value.split('|')[0];
+    }
+    const cost = parseFloat(document.getElementById('modalQuickCost')?.value) || 5.00;
+    const win = parseFloat(document.getElementById('modalQuickWin')?.value) || 0.00;
+
+    const descInp = document.getElementById('inpDesc');
+    const costInp = document.getElementById('inpCost');
+    const winInp = document.getElementById('inpWin');
+    const locInp = document.getElementById('inpLocation');
+
+    if (descInp) descInp.value = nome;
+    if (costInp) costInp.value = cost.toFixed(2);
+    if (winInp) winInp.value = win.toFixed(2);
+    if (locInp && !locInp.value) locInp.value = 'Bar / Ricevitoria';
+
+    chiudiOcrModal();
+    if (typeof registraGiocataCorrenteDiretta === 'function') {
+        registraGiocataCorrenteDiretta(true);
+    }
+    if (typeof showToast === 'function') {
+        showToast('Giocata ' + nome + ' salvata con successo! 💾', 'success');
     }
 }
 
@@ -6818,12 +6910,29 @@ function analizzaTestoBigliettoEPopola(txt, firmaVisiva) {
         { key: '50X', name: 'Nuovo 50X', cost: '10.00' },
         { key: '20X', name: 'Nuovo 20X', cost: '5.00' },
         { key: '10X', name: 'Nuovo 10X', cost: '2.00' },
+        { key: '5X', name: 'Nuovo 5X', cost: '1.00' },
         { key: 'TURISTA PER SEMPRE', name: 'Turista per Sempre', cost: '5.00' },
         { key: 'TURISTA PER 10 ANNI', name: 'Turista per 10 Anni', cost: '2.00' },
+        { key: 'NUOVO TURISTA', name: 'Nuovo Turista per Sempre', cost: '5.00' },
         { key: 'DOPPIA SFIDA', name: 'Doppia Sfida', cost: '5.00' },
+        { key: 'MEGA DOPPIA SFIDA', name: 'Mega Doppia Sfida', cost: '10.00' },
         { key: 'TUTTO PER TUTTO', name: 'Tutto per Tutto', cost: '5.00' },
+        { key: 'BONUS TUTTO', name: 'Bonus Tutto per Tutto', cost: '10.00' },
         { key: '7 E MEZZO', name: '7 e Mezzo', cost: '1.00' },
-        { key: 'SUPER NUMERONE', name: 'Super Numerone', cost: '10.00' }
+        { key: 'SETTE E MEZZO', name: '7 e Mezzo', cost: '1.00' },
+        { key: 'SUPER NUMERONE', name: 'Super Numerone', cost: '10.00' },
+        { key: 'NUMERONE', name: 'Il Numerone', cost: '5.00' },
+        { key: 'NUMERI FORTUNATI', name: 'Numeri Fortunati', cost: '3.00' },
+        { key: 'BATTICUORE', name: 'Nuovo Batticuore', cost: '2.00' },
+        { key: 'VINCI IN GRANDE', name: 'Vinci in Grande', cost: '25.00' },
+        { key: 'IL RE VINCENTE', name: 'Il Re Vincente', cost: '10.00' },
+        { key: 'MONOPOLY', name: 'Monopoly', cost: '5.00' },
+        { key: 'CUCCIOLI', name: 'Cuccioli d\'Oro', cost: '3.00' },
+        { key: 'FAI SCOPA', name: 'Fai Scopa!', cost: '2.00' },
+        { key: 'PORTAFORTUNA', name: 'Portafortuna', cost: '1.00' },
+        { key: 'LINEA PLUS', name: 'Linea Plus', cost: '5.00' },
+        { key: 'RICCA NEVICATA', name: 'Ricca Nevicata', cost: '5.00' },
+        { key: 'SOTTO L ALBERO', name: 'Sotto l\'Albero', cost: '3.00' }
     ];
 
     const grattaTrovato = catalogGratta.find(g => upper.includes(g.key));
@@ -7076,15 +7185,18 @@ function resolveDuplicateModal(confirmed) {
 
 function verificaDuplicatoBiglietto(desc, type) {
     if (!desc || !records || records.length === 0) return null;
+    // IMPORTANTE: Per Gratta e Vinci, SuperEnalotto e Lotto è frequente e normale acquistare più biglietti identici!
+    // Il controllo anti-duplicato si attiva ESCLUSIVAMENTE per i biglietti a serie univoca numerata (Lotteria Italia)!
+    if (type !== 'Lotteria Italia') return null;
+
     const clean = str => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     const targetClean = clean(desc);
     if (!targetClean || targetClean.length < 4) return null;
-    
-    // Cerchiamo se esiste gia un record con stessa serie/numero o descrizione
+
     return records.find(r => {
+        if (r.type !== 'Lotteria Italia') return false;
         const rClean = clean(r.desc);
         if (rClean === targetClean) return true;
-        // Controlla corrispondenza Serie + Numero (es. F 356983)
         const m1 = desc.match(/([A-Z])\s*([0-9]{5,7})/i);
         const m2 = (r.desc || '').match(/([A-Z])\s*([0-9]{5,7})/i);
         if (m1 && m2 && m1[1].toUpperCase() === m2[1].toUpperCase() && m1[2] === m2[2]) {

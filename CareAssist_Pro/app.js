@@ -6929,6 +6929,25 @@ const DB_FARMACI_COMUNI = [
   { nome: 'Jardiance 10 mg', principio: 'Empagliflozin', dosaggio: '10 mg (1 cpr)', modo: 'Al mattino con o senza cibo (Cardioprotettore e glicemia)', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Cardioprotettore ed ipoglicemizzante per scompenso cardiaco, reni e diabete tipo 2.' },
   { nome: 'Januvia 100 mg', principio: 'Sitagliptin', dosaggio: '100 mg (1 cpr)', modo: 'Una volta al giorno con o senza cibo', cpr: 28, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Inibitore DPP-4 incretino-mimetico per la regolazione fisiologica della glicemia.' },
   { nome: 'Diamicron 30 mg', principio: 'Gliclazide', dosaggio: '30 mg (1 cpr RM)', modo: 'Al mattino durante la colazione', cpr: 60, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Ipoglicemizzante orale che stimola la secrezione pancreatica di insulina.' },
+
+  // Farmaci Specifici Assistito Rosa Cavalcante & Terapie Croniche Territoriali
+  { nome: 'Xultophy penna 100 U/mL + 3,6 mg/mL', principio: 'Insulina degludec + Liraglutide', dosaggio: '16 Unità (sottocute)', modo: 'Iniezione sottocute 1 volta al giorno alla stessa ora (Diabete mellito tipo 2)', cpr: 3, ora: '08:00', fascia: 'Mattina (Colazione)', indicazione: 'Associazione antidiabetica iniettabile di insulina basale degludec e agonista recettoriale GLP-1 liraglutide per il compenso glicemico ottimale.', tipoFormulazione: 'penna', penneScorta: 3, unitaDoseDie: 16, unitaPerPenna: 300 },
+  { nome: 'Xultophy penna', principio: 'Insulina degludec + Liraglutide', dosaggio: '16 Unità (sottocute)', modo: 'Iniezione sottocute 1 volta al giorno alla stessa ora (Diabete)', cpr: 3, ora: '08:00', fascia: 'Mattina (Colazione)', indicazione: 'Insulina degludec + Liraglutide: controllo stabile della glicemia senza picchi.', tipoFormulazione: 'penna' },
+  { nome: 'Tresiba 100 U/mL FlexTouch', principio: 'Insulina degludec', dosaggio: 'Dose prescritta (sottocute)', modo: 'Iniezione sottocute 1 volta al giorno alla stessa ora', cpr: 5, ora: '08:00', fascia: 'Mattina (Colazione)', indicazione: 'Insulina basale a durata ultra-lunga per il controllo glicemico nel diabete.', tipoFormulazione: 'penna' },
+  { nome: 'Lantus 100 U/mL SoloStar', principio: 'Insulina glargine', dosaggio: 'Dose prescritta (sottocute)', modo: 'Iniezione sottocute la sera o al mattino', cpr: 5, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Insulina analogo basale ad azione prolungata 24 ore.', tipoFormulazione: 'penna' },
+  { nome: 'Toujeo 300 U/mL SoloStar', principio: 'Insulina glargine', dosaggio: 'Dose prescritta (sottocute)', modo: 'Iniezione sottocute una volta al giorno', cpr: 3, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Insulina glargine ad alta concentrazione (300 U/ml).', tipoFormulazione: 'penna' },
+  { nome: 'Novorapid 100 U/mL FlexPen', principio: 'Insulina aspart', dosaggio: 'Ai pasti secondo glicemia', modo: 'Iniezione sottocute immediatamente prima dei pasti', cpr: 5, ora: '13:00', fascia: 'Pranzo', indicazione: 'Insulina rapida analogo per il controllo glicemico prandiale.', tipoFormulazione: 'penna' },
+  { nome: 'Humalog 100 U/mL KwikPen', principio: 'Insulina lispro', dosaggio: 'Ai pasti secondo schema', modo: 'Iniezione sottocute prima o subito dopo il pasto', cpr: 5, ora: '13:00', fascia: 'Pranzo', indicazione: 'Insulina ad azione rapida prandiale.', tipoFormulazione: 'penna' },
+  { nome: 'Fiasp 100 U/mL FlexTouch', principio: 'Insulina aspart fast-acting', dosaggio: 'Ai pasti', modo: 'Iniezione sottocute ai pasti principali', cpr: 5, ora: '13:00', fascia: 'Pranzo', indicazione: 'Insulina aspart ad assorbimento ultra-rapido.', tipoFormulazione: 'penna' },
+  { nome: 'Ozempic 1 mg', principio: 'Semaglutide', dosaggio: '1 mg (1 penna preriempita)', modo: 'Iniezione sottocute 1 volta alla settimana', cpr: 1, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Agonista recettore GLP-1 per il diabete tipo 2 e cardioprotezione.', tipoFormulazione: 'penna' },
+  { nome: 'Victoza 6 mg/mL', principio: 'Liraglutide', dosaggio: '1,2 - 1,8 mg (sottocute)', modo: 'Iniezione sottocute una volta al giorno', cpr: 2, ora: '08:30', fascia: 'Mattina (Colazione)', indicazione: 'Agonista del recettore GLP-1 per il diabete mellito.', tipoFormulazione: 'penna' },
+  { nome: 'Averelix 75 mg', principio: 'Clopidogrel', dosaggio: '75 mg (1 cpr rivestita)', modo: 'A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare)', cpr: 28, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antiaggregante piastrinico per la prevenzione secondaria di ictus, infarto e trombosi.' },
+  { nome: 'Arcoxia 60 mg', principio: 'Etoricoxib', dosaggio: '60 mg (1 cpr)', modo: 'A stomaco pieno una volta al giorno per dolori artrosici', cpr: 20, ora: '13:30', fascia: 'Pranzo', indicazione: 'Antinfiammatorio selettivo COX-2 per osteoartrosi e dolore cronico articolare.' },
+  { nome: 'Arcoxia 90 mg', principio: 'Etoricoxib', dosaggio: '90 mg (1 cpr)', modo: 'A stomaco pieno una volta al giorno per riacutizzazioni dolorose', cpr: 20, ora: '13:30', fascia: 'Pranzo', indicazione: 'Antinfiammatorio selettivo COX-2 per artrite, spondilite e osteoartrosi severa.' },
+  { nome: 'Fedivelle 25.000 UI', principio: 'Colecalciferolo (Vitamina D3)', dosaggio: '25.000 UI (1 capsula molle)', modo: 'Dose periodica (solitamente mensile o settimanale) durante il pasto', cpr: 4, ora: '13:00', fascia: 'Pranzo', indicazione: 'Trattamento e profilassi dell\'ipovitaminosi D e osteoporosi senile.' },
+  { nome: 'Fedivelle 20.000 UI', principio: 'Colecalciferolo (Vitamina D3)', dosaggio: '20.000 UI (1 capsula molle)', modo: 'Dose periodica a pranzo con acqua', cpr: 4, ora: '13:00', fascia: 'Pranzo', indicazione: 'Integrazione di colecalciferolo per la salute ossea.' },
+  { nome: 'Sivastin 20 mg', principio: 'Simvastatina', dosaggio: '20 mg (1 cpr)', modo: 'La sera dopo cena con acqua', cpr: 28, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina ipocolesterolemizzante per il controllo della dislipidemia.' },
+  { nome: 'Diamicron 60 mg RM', principio: 'Gliclazide', dosaggio: '60 mg (1 cpr rilascio modificato)', modo: 'A colazione, deglutire intera senza masticare', cpr: 30, ora: '08:00', fascia: 'Mattina (Colazione)', indicazione: 'Sulfanilurea a rilascio modificato per il diabete tipo 2.' },
   { nome: 'Torvast 20 mg', principio: 'Atorvastatina', dosaggio: '20 mg (1 cpr)', modo: 'La sera dopo cena (Statina / Controllo Colesterolo e placche aterosclerotiche)', cpr: 30, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina ipolipemizzante: abbassa il colesterolo LDL e stabilizza le placche aterosclerotiche.' },
   { nome: 'Torvast 40 mg', principio: 'Atorvastatina', dosaggio: '40 mg (1 cpr)', modo: 'La sera dopo cena', cpr: 30, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina ad alta intensità per la riduzione intensiva del rischio cardiovascolare e colesterolo.' },
   { nome: 'Atorvastatina 20 mg', principio: 'Atorvastatina', dosaggio: '20 mg (1 cpr)', modo: 'La sera dopo cena', cpr: 30, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina per il controllo dell\'ipercolesterolemia e prevenzione cardiovascolare.' },
@@ -8111,6 +8130,7 @@ function mostraCardRiconoscimentoScanner(farmacoRiconosciuto, targetModal, previ
           ${thumbHtml}
           <div style="flex:1; min-width:0;">
             <div style="font-size:13px; font-weight:800; color:#fef08a; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
+              ${farmacoRiconosciuto.pazienteAssegnato ? '<div style="width:100%; background:linear-gradient(135deg, rgba(16,185,129,0.3) 0%, rgba(5,150,105,0.2) 100%); border:1px solid #10b981; border-radius:6px; padding:3px 8px; margin-bottom:6px; font-size:11px; font-weight:800; color:#6ee7b7; display:flex; align-items:center; gap:5px;"><span>✅</span> <span>TERAPIA ATTIVA NEL PIANO CLINICO DI ' + farmacoRiconosciuto.pazienteAssegnato + '</span></div>' : ''}
               <span>💊 ${nomeVisualizzato}</span>
               <span style="font-size:10.5px; background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:1px 6px; border-radius:6px;">📦 ${cprVisualizzate} unità</span>
             </div>
@@ -8933,6 +8953,54 @@ function rilevaOggettoNonFarmacoDaTesto(testoOriginale) {
 window.rilevaOggettoNonFarmacoDaTesto = rilevaOggettoNonFarmacoDaTesto;
 
 function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename, consentiUniversale) {
+  // 0A. PRIORITÀ ASSOLUTA AL PIANO CLINICO DELL'ASSISTITO ATTIVO!
+  // Se l'operatore inquadra un farmaco già assegnato all'assistito selezionato
+  // (es. Rosa Cavalcante: Xultophy, Averelix, Sinemet, Diamicron, Forxiga, Triatec, Congescor, Lasix, Arcoxia, Fedivelle, Sivastin),
+  // l'app lo riconosce AL VOLO con certezza clinica assoluta, escludendo falsi positivi di non-farmaco!
+  try {
+    const pAttivo = (typeof AppData !== 'undefined' && AppData && Array.isArray(AppData.pazienti))
+      ? (AppData.pazienti.find(p => p.id === AppData.activePazienteId) || AppData.pazienti.find(p => p.id === 'paz_rosa'))
+      : null;
+    if (pAttivo && Array.isArray(pAttivo.terapie) && pAttivo.terapie.length > 0) {
+      const testoPulito = (testoRiconosciuto || '').toLowerCase().replace(/[^a-z0-9àèéìòù]/gi, ' ');
+      for (const t of pAttivo.terapie) {
+        const nomeFar = (t.farmaco || '').toLowerCase().replace(/[^a-z0-9àèéìòù]/gi, ' ');
+        const princFar = (t.principio || '').toLowerCase().replace(/[^a-z0-9àèéìòù]/gi, ' ');
+        const paroleChiave = (nomeFar + ' ' + princFar)
+          .split(/\s+/)
+          .filter(w => w.length >= 4 && !/^(compress|capsul|soluzion|pastigli|orario|colazion|pranzo|cena|terapia|giorno|die|sera|mg|cpr|cps)$/.test(w));
+        
+        // Bonus per Xultophy e i suoi principi attivi Novo Nordisk
+        if (nomeFar.includes('xultophy')) {
+          paroleChiave.push('xultophy', 'degludec', 'liraglutid', 'xultoph', 'ultophy');
+        }
+
+        const trovato = paroleChiave.some(w => testoPulito.includes(w));
+        if (trovato) {
+          console.log(`[AI Drug Scanner] RICONOSCIUTO FARMACO ASSEGNATO A ${pAttivo.nome}:`, t.farmaco);
+          return {
+            nome: t.farmaco,
+            principio: t.principio,
+            dosaggio: t.dosaggio,
+            modo: t.modo,
+            ora: t.ora || '08:00',
+            fascia: t.fascia || 'Mattina (Colazione)',
+            cpr: t.cprPerScatola || 30,
+            tipoFormulazione: t.tipoFormulazione || (/(penna|insulina|sottocute)/i.test(t.farmaco + ' ' + t.principio) ? 'penna' : 'compresse'),
+            indicazione: `Terapia attiva confermata nel fascicolo socio-sanitario di ${pAttivo.nome}.`,
+            pazienteAssegnato: pAttivo.nome,
+            isNonFarmaco: false,
+            isParafarmaco: false,
+            giaInTerapia: true,
+            terapiaId: t.id
+          };
+        }
+      }
+    }
+  } catch (errPaz) {
+    console.warn('[AI Drug Scanner] Errore verifica paziente attivo:', errPaz);
+  }
+
   // 0. Controllo immediato: se il testo appartiene a un NON-FARMACO (es. Pacchetto di Sigarette, Alimento, Oggetto),
   // restituisce subito l'allarme NON FARMACO e blocca la compilazione del piano terapeutico!
   const oggettoNonFarmaco = rilevaOggettoNonFarmacoDaTesto(testoRiconosciuto);
@@ -9173,6 +9241,20 @@ function analizzaTestoConfermaFarmaco(testoRiconosciuto, filename, consentiUnive
       { keys: ['aciclov', 'zovirax'], target: 'Aciclovir 800 mg' },
       { keys: ['metforal', 'glucophag', 'metformin'], target: rawOcr.includes('1000') ? 'Metforal 1000 mg' : 'Metforal 500 mg' },
       { keys: ['forxiga', 'dapaglifl'], target: 'Forxiga 10 mg' },
+      { keys: ['xultophy', 'xultoph', 'ultophy', 'degludec', 'liraglutid', 'novonordisk', 'novo nordisk'], target: 'Xultophy penna 100 U/mL + 3,6 mg/mL' },
+      { keys: ['averelix'], target: 'Averelix 75 mg' },
+      { keys: ['arcoxia', 'etoricoxib'], target: rawOcr.includes('60') ? 'Arcoxia 60 mg' : 'Arcoxia 90 mg' },
+      { keys: ['fedivelle'], target: rawOcr.includes('20') ? 'Fedivelle 20.000 UI' : 'Fedivelle 25.000 UI' },
+      { keys: ['sivastin', 'simvastat'], target: 'Sivastin 20 mg' },
+      { keys: ['tresiba'], target: 'Tresiba 100 U/mL FlexTouch' },
+      { keys: ['lantus'], target: 'Lantus 100 U/mL SoloStar' },
+      { keys: ['toujeo'], target: 'Toujeo 300 U/mL SoloStar' },
+      { keys: ['novorapid'], target: 'Novorapid 100 U/mL FlexPen' },
+      { keys: ['humalog'], target: 'Humalog 100 U/mL KwikPen' },
+      { keys: ['fiasp'], target: 'Fiasp 100 U/mL FlexTouch' },
+      { keys: ['ozempic', 'semaglutid'], target: 'Ozempic 1 mg' },
+      { keys: ['victoza'], target: 'Victoza 6 mg/mL' },
+
       { keys: ['jardiance', 'empaglifl'], target: 'Jardiance 10 mg' },
       { keys: ['januvia', 'sitaglipt'], target: 'Januvia 100 mg' },
       { keys: ['diamicron', 'gliclaz'], target: 'Diamicron 30 mg' },
@@ -9251,8 +9333,8 @@ function estraiFarmacoUniversaleDaTestoOCR(testoOriginale, cprRilevate, brandRil
 
   // Cerca un dosaggio esplicito (es. "20 mg", "400 mg", "50 mcg", "1 g", "25000 UI")
   const matchDose = tuttoTesto.match(/\b(\d{1,5}(?:[\.,]\d{1,2})?\s*(?:mg|mcg|g|ui|ml|miliardi))\b/i);
-  const haDoseSistemica = /\b(\d{1,5}(?:[\.,]\d{1,2})?\s*(?:mg|mcg|ui|miliardi))\b/i.test(tuttoTesto);
-  const haParoleFarmaceutiche = /\b(compresse|capsule|bustine|gocce|sciroppo|fiale|orosolubil|gastroresistent|rivestit|medicinale|equivalente|uso orale|uso cutaneo|pomata|unguento|crema)\b/i.test(tuttoTesto);
+  const haDoseSistemica = /\b(\d{1,5}(?:[\.,]\d{1,2})?\s*(?:mg|mcg|ui|u|unità|miliardi)(?:\s*\/\s*ml)?)\b/i.test(tuttoTesto);
+  const haParoleFarmaceutiche = /\b(compresse|capsule|bustine|gocce|sciroppo|fiale|fiala|iniettabile|iniettabili|sottocutaneo|sottocute|intramuscolo|endovena|infusione|penna|penne|preriempita|preriempite|insulina|antidiabetico|degludec|liraglutide|semaglutide|dulaglutide|glargine|aspart|lispro|orosolubil|gastroresistent|rivestit|medicinale|equivalente|uso orale|uso cutaneo|pomata|unguento|crema|novo\s*nordisk|xultophy)\b/i.test(tuttoTesto);
   const haParoleParafarmaco = /\b(dispositivo medico|parafarmaco|uso esterno|non ingerire|flacone|lozione|emulsione|igiene|benessere|naturale|erborist|estratt)\b/i.test(tuttoTesto) || (/\b\d+\s*ml\b/i.test(tuttoTesto) && !haDoseSistemica && !haParoleFarmaceutiche);
 
   if (!matchDose && !haParoleFarmaceutiche && !haParoleParafarmaco) return null;
