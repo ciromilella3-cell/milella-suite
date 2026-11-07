@@ -5842,29 +5842,22 @@ function simulaAllarmeTerapieTest() {
   showToast('🚨 Simulazione avviata! Popup aperto e suono insistente attivo ogni 3.5s.', 'warning');
 }
 
-// SCARICO AUTOMATICO DELLA COMPRESSA ALLA SOMMINISTRAZIONE CON TRACCIABILITÀ & BLOCCO ORARIO
-async function toggleFarmacoConScarico(id, forzaDiretto) {
+// SCARICO AUTOMATICO DELLA COMPRESSA ALLA SOMMINISTRAZIONE CON TRACCIABILITÀ & SAFETY CHECK OBBLIGATORIO
+async function toggleFarmacoConScarico(id) {
   const p = getActivePaziente();
   if (!p) return;
   const t = p.terapie.find(item => String(item.id) === String(id));
   if (!t) return;
 
-  // Se il farmaco è già stato assunto, applica annullamento (riaccredita scorta)
+  // Se il farmaco è già stato assunto, permette di annullare la somministrazione
   if (t.fattoOggi) {
     return applicaSomministrazioneClinicaEffettiva(t.id);
   }
 
-  // Se è una penna iniettabile (es. Xultophy/Insulina) e non è forzato diretto:
-  // apri il safety check con selezione quadrante per rotazione anti-lipodistrofia
-  const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
-  if (isPen && !forzaDiretto) {
-    const checkOrario = (typeof verificaStatoOrarioFarmaco === 'function') ? verificaStatoOrarioFarmaco(t.ora) : { consentito: true };
-    apriModalSafetyCheckOspedaliero(t, p, checkOrario);
-    return;
-  }
-
-  // Per tutte le compresse orali / terapie ordinarie o clic diretto: registra immediatamente senza bloccare l'operatore!
-  return applicaSomministrazioneClinicaEffettiva(t.id);
+  // APRI SEMPRE LA SCHEDA CLINICA DI SICUREZZA (5 REGOLE SAFETY CHECK BEDSIDE)
+  // Obbliga l'operatore a verificare e spuntare la casella dosaggio prima di procedere!
+  const checkOrario = (typeof verificaStatoOrarioFarmaco === 'function') ? verificaStatoOrarioFarmaco(t.ora) : { consentito: true };
+  apriModalSafetyCheckOspedaliero(t, p, checkOrario);
 }
 
 async function applicaSomministrazioneClinicaEffettiva(id, sitoIniezione) {
@@ -10697,11 +10690,8 @@ async function sffTogglePreso() {
   if (!_currentSchedaFarmacoId) return;
   var fid = _currentSchedaFarmacoId;
   if (typeof toggleFarmacoConScarico === 'function') {
-    await toggleFarmacoConScarico(fid, true);
+    await toggleFarmacoConScarico(fid);
   }
-  if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
-  if (typeof renderTerapie === 'function') renderTerapie();
-  apriSchedaFarmacoFullscreen(fid);
 }
 window.sffTogglePreso = sffTogglePreso;
 
@@ -23287,7 +23277,15 @@ function apriModalSafetyCheckOspedaliero(terapia, paziente, checkOrario) {
   const sezDose = document.getElementById('safety-check-sezione-dosaggio');
   const chkDose = document.getElementById('safety-check-chk-dosaggio');
   const lblDose = document.getElementById('safety-check-label-dosaggio');
-  if (chkDose) chkDose.checked = true; // Pre-convalidato per massima fluidità OSS
+  if (chkDose) chkDose.checked = false; // OBBLIGO: deve essere spuntata dall'operatore per verificare il farmaco!
+  if (sezDose) {
+    sezDose.style.borderColor = '#fed7aa';
+    sezDose.style.background = '#ffffff';
+    sezDose.style.boxShadow = 'none';
+    sezDose.style.animation = 'none';
+    const oldWarn = document.getElementById('safety-check-warning-spunta');
+    if (oldWarn) oldWarn.remove();
+  }
   if (lblDose) {
     if (isPen) {
       lblDose.textContent = 'Confermo di aver impostato esattamente ' + (terapia.dosaggio || '16 Unità') + ' sulla ghiera della penna';
@@ -23326,12 +23324,21 @@ function apriModalSafetyCheckOspedaliero(terapia, paziente, checkOrario) {
   }
 
   const modal = document.getElementById('modal-safety-check-ospedaliero');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.classList.add('active');
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+  }
 }
 
 function chiudiModalSafetyCheckOspedaliero() {
   const modal = document.getElementById('modal-safety-check-ospedaliero');
-  if (modal) modal.style.display = 'none';
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
+  const anyActive = document.querySelector('.modal-overlay.active, .modal-overlay[style*="display: flex"]');
+  if (!anyActive) document.body.classList.remove('modal-open');
   _farmacoInAttesaSafetyCheck = null;
   _sitoIniezioneScelto = null;
 }
@@ -23354,9 +23361,38 @@ async function eseguiConfermaSafetyCheckOspedaliero() {
 
   const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
   const chkDose = document.getElementById('safety-check-chk-dosaggio');
-  if (chkDose) chkDose.checked = true; // Convalida sempre: niente blocchi né lampeggio rosso!
 
-  // Salva l'avvenuto sito di rotazione se penna
+  // CONTROLLO OBBLIGATORIO: Se non è spuntata, la sezione lampeggia di rosso, trema e il tasto NON procede!
+  if (chkDose && !chkDose.checked) {
+    const sez = document.getElementById('safety-check-sezione-dosaggio');
+    if (sez) {
+      sez.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      sez.style.transition = 'all 0.25s ease';
+      sez.style.borderColor = '#dc2626';
+      sez.style.background = '#fef2f2';
+      sez.style.boxShadow = '0 0 25px rgba(220, 38, 38, 0.55)';
+      sez.style.animation = 'none';
+      void sez.offsetWidth; // forza reflow per riavviare l'animazione
+      sez.style.animation = 'shakeX 0.45s ease-in-out, redPulseWarn 1.2s ease-in-out infinite';
+
+      let avv = document.getElementById('safety-check-warning-spunta');
+      if (!avv) {
+        avv = document.createElement('div');
+        avv.id = 'safety-check-warning-spunta';
+        avv.style.cssText = 'margin-top:10px; font-size:13px; font-weight:900; color:#b91c1c; display:flex; align-items:center; gap:6px; animation:shakeX 0.4s ease-in-out; background:#fee2e2; border:1px solid #f87171; padding:8px 12px; border-radius:10px;';
+        sez.appendChild(avv);
+      }
+      avv.innerHTML = '<span>🚫</span> <span><b>Spunta Obbligatoria:</b> Devi spuntare la casella per verificare il dosaggio prima di poter convalidare la somministrazione!</span>';
+    }
+    chkDose.focus();
+    if (typeof playBuzzerSound === 'function') playBuzzerSound();
+    if (typeof showToast === 'function') {
+      showToast('⚠️ Spunta obbligatoria: conferma il dosaggio per procedere!', 'warning');
+    }
+    return; // IL TASTO PRESO NON FUNZIONA FINCHÈ NON VIENE SPUNTATA LA VERIFICA!
+  }
+
+  // Spunta confermata regolarmente:
   if (isPen && _sitoIniezioneScelto && p) {
     const rot = suggerisciProssimoSitoIniezione(p.id);
     localStorage.setItem('careassist_ultimo_sito_iniezione_' + p.id, rot.nextIndex);
@@ -23368,6 +23404,9 @@ async function eseguiConfermaSafetyCheckOspedaliero() {
   await applicaSomministrazioneClinicaEffettiva(t.id, _sitoIniezioneScelto);
   if (typeof renderTerapie === 'function') renderTerapie();
   if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
+  if (_currentSchedaFarmacoId && typeof apriSchedaFarmacoFullscreen === 'function') {
+    apriSchedaFarmacoFullscreen(_currentSchedaFarmacoId);
+  }
 }
 
 
@@ -23641,7 +23680,7 @@ function renderMobileNativeView(terapie, p) {
           '<div class="mobile-hero-badge badge-urgent">⚠️ ATTENZIONE • IN RITARDO DI ' + Math.floor(diffMin / 60) + 'h ' + (diffMin % 60) + 'm</div>' +
           '<div class="mobile-hero-title">' + nextT.farmaco + '</div>' +
           '<div class="mobile-hero-sub">Orario previsto: <b>' + nextT.ora + '</b> (' + (nextT.fascia || 'Oggi') + ') • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b></div>' +
-          '<button type="button" class="btn-mobile-hero-action" style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);" onclick="toggleFarmacoConScarico(' + nextT.id + ', true)">' +
+          '<button type="button" class="btn-mobile-hero-action" style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);" onclick="toggleFarmacoConScarico(' + nextT.id + ')">' +
           '<span>✅</span> <span>HO SOMMINISTRATO ORA</span>' +
           '</button>' +
           '<div class="mobile-hero-secondary-row">' +
@@ -23657,7 +23696,7 @@ function renderMobileNativeView(terapie, p) {
           '<div class="mobile-hero-badge badge-ready">' + labelOrario + '</div>' +
           '<div class="mobile-hero-title">' + nextT.farmaco + '</div>' +
           '<div class="mobile-hero-sub">' + (nextT.fascia || 'Oggi') + ' • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b> • Scorta: <b>' + (nextT.scorta || 0) + '</b></div>' +
-          '<button type="button" class="btn-mobile-hero-action" onclick="toggleFarmacoConScarico(' + nextT.id + ', true)">' +
+          '<button type="button" class="btn-mobile-hero-action" onclick="toggleFarmacoConScarico(' + nextT.id + ')">' +
           '<span>✅</span> <span>REGISTRA ASSUNZIONE ORA</span>' +
           '</button>' +
           '<div class="mobile-hero-secondary-row">' +
@@ -23727,8 +23766,8 @@ function renderMobileNativeView(terapie, p) {
           '</div>' +
           '<div style="display:flex; align-items:center; gap:6px;">' +
           (isDone
-            ? '<button type="button" class="btn-mobile-card-undo" onclick="event.stopPropagation(); toggleFarmacoConScarico(\'' + t.id + '\', true)">Annulla</button>'
-            : '<button type="button" class="btn-mobile-card-take" onclick="event.stopPropagation(); toggleFarmacoConScarico(\'' + t.id + '\', true)"><span>✓</span> <span>PRESO</span></button>'
+            ? '<button type="button" class="btn-mobile-card-undo" onclick="event.stopPropagation(); toggleFarmacoConScarico(\'' + t.id + '\')">Annulla</button>'
+            : '<button type="button" class="btn-mobile-card-take" onclick="event.stopPropagation(); toggleFarmacoConScarico(\'' + t.id + '\')"><span>✓</span> <span>PRESO</span></button>'
           ) +
           '</div>' +
           '</div>' +
