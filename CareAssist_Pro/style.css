@@ -7959,3 +7959,46 @@ main, .main-content, .dashboard-container {
   70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
   100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
+
+/* ==========================================================================
+   /* VISIBILITÀ DIRETTA TERAPIE MOBILE - ZERO SFORZO */
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Di default su smartphone: la vista "Oggi" nasconde l'anagrafica e cruscotto storici
+     per mettere SUBITO in cima i farmaci e il tasto REGISTRA ASSUNZIONE */
+  body:not(.viewing-clinica) .anagrafica-hero,
+  body:not(.viewing-clinica) #cruscotto-smart-oggi {
+    display: none !important;
+  }
+
+  body.viewing-clinica .anagrafica-hero,
+  body.viewing-clinica #cruscotto-smart-oggi {
+    display: block !important;
+  }
+
+  body.viewing-clinica .mobile-only-app-container {
+    display: none !important;
+  }
+
+  body:not(.viewing-clinica) .mobile-only-app-container {
+    display: block !important;
+    margin-top: 6px !important;
+  }
+
+  /* Assicura che i pulsanti PRESO e REGISTRA ASSUNZIONE siano visibilissimi */
+  .btn-mobile-hero-action {
+    width: 100% !important;
+    min-height: 54px !important;
+    font-size: 15.5px !important;
+    font-weight: 900 !important;
+    border-radius: 16px !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  .btn-mobile-card-take {
+    min-height: 44px !important;
+    padding: 8px 18px !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+  }
+}

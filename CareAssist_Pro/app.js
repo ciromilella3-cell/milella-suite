@@ -12234,9 +12234,14 @@ window.addEventListener('DOMContentLoaded', () => {
   // Su smartphone atterra direttamente sulla schermata pulita "Terapie & Farmaci" (Hero Card)
   try {
     if (window.innerWidth <= 768 && !new URLSearchParams(window.location.search).get('tab')) {
+      document.body.classList.add('viewing-oggi');
+      const btnOggi = document.getElementById('mbar-btn-oggi');
+      if (btnOggi) {
+        document.querySelectorAll('.mobile-bottom-bar .bar-item').forEach(b => b.classList.remove('active'));
+        btnOggi.classList.add('active');
+      }
       setTimeout(function () {
-        var btnFarm = document.querySelector('[data-target="tab-farmaci"]');
-        if (btnFarm) btnFarm.click();
+        navigaMobileTab('oggi', btnOggi);
       }, 150);
     }
   } catch (eMobileTab) { }
@@ -23198,13 +23203,36 @@ function navigaMobileTab(mode, btn) {
   document.querySelectorAll('.mobile-bottom-bar .bar-item').forEach(function (b) { b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
 
+  const mobileContainer = document.getElementById('careassist-native-mobile-container');
+  const anagraficaHero = document.querySelector('.anagrafica-hero');
+  const cruscottoSmart = document.getElementById('cruscotto-smart-oggi');
+  const tabDashboard = document.getElementById('tab-dashboard');
+  const tabFarmaci = document.getElementById('tab-farmaci');
+
   if (mode === 'oggi') {
-    var btnFarm = document.querySelector('[data-target="tab-farmaci"]');
-    if (btnFarm) btnFarm.click();
+    document.body.classList.remove('viewing-clinica');
+    document.body.classList.add('viewing-oggi');
+
+    if (mobileContainer) mobileContainer.style.setProperty('display', 'block', 'important');
+    if (anagraficaHero) anagraficaHero.style.setProperty('display', 'none', 'important');
+    if (cruscottoSmart) cruscottoSmart.style.setProperty('display', 'none', 'important');
+    if (tabDashboard) tabDashboard.style.setProperty('display', 'none', 'important');
+    if (tabFarmaci) tabFarmaci.style.setProperty('display', 'none', 'important');
+
+    var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+    if (p && typeof renderMobileNativeView === 'function') {
+      renderMobileNativeView(p.terapie || [], p);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else if (mode === 'clinica') {
-    var btnDash = document.querySelector('[data-target="tab-dashboard"]');
-    if (btnDash) btnDash.click();
+    document.body.classList.remove('viewing-oggi');
+    document.body.classList.add('viewing-clinica');
+
+    if (mobileContainer) mobileContainer.style.setProperty('display', 'none', 'important');
+    if (anagraficaHero) anagraficaHero.style.setProperty('display', 'block', 'important');
+    if (cruscottoSmart) cruscottoSmart.style.setProperty('display', 'block', 'important');
+    if (tabDashboard) tabDashboard.style.setProperty('display', 'block', 'important');
+    if (tabFarmaci) tabFarmaci.style.setProperty('display', 'none', 'important');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
