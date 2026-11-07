@@ -8656,7 +8656,8 @@ main, .main-content, .dashboard-container {
   color: #ffffff !important;
 }
 
-.badge-salvavita-118-mini {
+.badge-salvavita-118-mini,
+.badge-salvavita-112-mini {
   background: #dc2626 !important;
   color: #ffffff !important;
   font-size: 9.5px !important;

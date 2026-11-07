@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=240">
+  <link rel="stylesheet" href="style.css?v=241">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -196,7 +196,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="registro_asl.css?v=240">
+  <link rel="stylesheet" href="registro_asl.css?v=241">
 
   <style>
     @keyframes menuDropAnim {
@@ -303,7 +303,7 @@
               <span>🎬</span> Presentazione Progetto (Slide Lunedì)
             </a>
             <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalPassaporto118()">
-              <span>🚑</span> Passaporto Emergenza 118 (QR da Frigo)
+              <span>🚑</span> Passaporto Emergenza 112 (NUE - QR da Frigo)
             </button>
             <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalLetteraSpecialistica()">
               <span>🩺</span> Lettera per Visita Specialistica (A4)
@@ -328,7 +328,7 @@
             </button>
 
             <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalSOSProntoSoccorso()">
-              <span>🚨</span> SOS Guida Emergenze 118
+              <span>🚨</span> SOS Guida Emergenze 112 (NUE)
             </button>
             <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalConsegnaVocale()">
               <span>🎙️</span> Consegna Vocale Smart (AI)
@@ -406,8 +406,8 @@
 
           <button class="btn" onclick="apriModalSOSProntoSoccorso()"
             style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:#ffffff; font-weight:900; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #f87171; box-shadow:0 2px 6px rgba(220,38,38,0.35); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
-            title="Pronto Soccorso Domiciliare & Chiamata 118 Rapida">
-            <span style="font-size:16px;">🚨</span> <span>SOS 118</span>
+            title="Pronto Soccorso Domiciliare & Chiamata Rapida NUE 112">
+            <span style="font-size:16px;">🚨</span> <span>SOS 112</span>
           </button>
 
         </div>
@@ -575,7 +575,7 @@
         <span style="font-size:15px;">➕</span> <span>Nuova Terapia (OSS)</span>
       </button>
       <button type="button" class="btn-operativo-118" onclick="apriModalScheda118()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:#ffffff; border:none; padding:10px 12px; border-radius:12px; font-weight:900; font-size:12.5px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 3px 10px rgba(220,38,38,0.35); transition:transform 0.1s ease;">
-        <span style="font-size:16px;">🚑</span> <span>Scheda 118 Salvavita</span>
+        <span style="font-size:16px;">🚑</span> <span>Scheda 112 Salvavita</span>
       </button>
     </div>
 
@@ -831,11 +831,11 @@
         </div>
 
         <div class="tile"
-          onmouseenter="mostraLenteClinica('GUIDA SOS PRONTO SOCCORSO DOMICILIARE', 'Pronto soccorso guidato per: Soffocamento/Disfagia, Caduta, Ipoglicemia, Dispnea, Test FAST Ictus e Chiamata 118 diretta con dati clinici a schermo.', '🚨')"
+          onmouseenter="mostraLenteClinica('GUIDA SOS PRONTO SOCCORSO DOMICILIARE', 'Pronto soccorso guidato per: Soffocamento/Disfagia, Caduta, Ipoglicemia, Dispnea, Test FAST Ictus e Chiamata 112 diretta con dati clinici a schermo.', '🚨')"
           onmouseleave="nascondiLenteClinica()" onclick="apriModalSOSProntoSoccorso()"
           style="border-color:#fca5a5; background:#fff1f2;">
           <div class="tile-icon" style="background:#fee2e2; color:#dc2626;">🚨</div>
-          <div class="tile-title" style="color:#b91c1c;">SOS Guida 118</div>
+          <div class="tile-title" style="color:#b91c1c;">SOS Guida 112</div>
           <div class="tile-sub" style="color:#dc2626;">Emergenze & Voce Calma</div>
         </div>
 
@@ -1763,11 +1763,11 @@
             </div>
           </div>
 
-          <!-- SEZIONE 6: ALLERGIE & EMERGENZA 118 -->
+          <!-- SEZIONE 6: ALLERGIE & EMERGENZA 112 -->
           <div class="card-sezione-pro box-allergie-pro">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
               <div class="sezione-titolo-pro" style="margin-bottom:0; border:none; padding:0;">
-                <span>🚫</span> <span>6. Allergie & Note Scheda 118</span>
+                <span>🚫</span> <span>6. Allergie & Note Scheda 112</span>
               </div>
               <span class="badge-salvavita-mini">⚠️ Salvavita</span>
             </div>
@@ -2010,11 +2010,11 @@
             </div>
           </div>
 
-          <!-- SEZIONE 5: ALLERGIE SALVAVITA (118) & NOTE -->
+          <!-- SEZIONE 5: ALLERGIE SALVAVITA (112) & NOTE -->
           <div class="card-sezione-pro box-allergie-pro">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
               <div class="sezione-titolo-pro" style="color:#991b1b; margin-bottom:0;">
-                <span>🚫</span> <span>Allergie & Reazioni Avverse (Scheda 118)</span>
+                <span>🚫</span> <span>Allergie & Reazioni Avverse (Scheda 112)</span>
               </div>
               <span class="badge-salvavita-mini">⚠️ Salvavita</span>
             </div>
@@ -3732,7 +3732,7 @@
   </div>
 
   <!-- MODAL CUSTOM CONFIRM (EFFETTO WAOO AL POSTO DI CONFIRM NATIVO) -->
-  <!-- PASSAPORTO EMERGENZA 118 CON QR DA FRIGO -->
+  <!-- PASSAPORTO EMERGENZA 112 (NUE) CON QR DA FRIGO -->
   <div class="modal-overlay" id="modal-passaporto-118" style="z-index: 1000010;">
     <div class="modal-card"
       style="max-width: 780px; width: 96%; max-height: 92vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; border: 2px solid #ef4444;">
@@ -3741,7 +3741,7 @@
         <div style="display:flex; align-items:center; gap:12px;">
           <span style="font-size:30px;">🚑</span>
           <div>
-            <h3 style="margin:0; font-size:18px; font-weight:800;">Passaporto Emergenza 118 &amp; Guardia Medica</h3>
+            <h3 style="margin:0; font-size:18px; font-weight:800;">Passaporto Emergenza 112 (NUE) &amp; Guardia Medica</h3>
             <p style="margin:2px 0 0; font-size:12px; opacity:.9;">Biglietto clinico con QR Code da appendere al
               frigorifero o tenere nel portafoglio</p>
           </div>
@@ -3753,11 +3753,11 @@
       </div>
       <div class="modal-footer" style="justify-content: space-between; gap: 10px; flex-wrap: wrap; flex-shrink: 0;">
         <span style="font-size: 12px; color: #64748b;">📌 Stampalo e applicalo sul frigorifero per i soccorritori del
-          118</span>
+          112 (NUE)</span>
         <div style="display:flex; gap:8px;">
           <button class="btn btn-outline" onclick="closeModal('modal-passaporto-118')">Chiudi</button>
           <button class="btn btn-primary" style="background:#dc2626; border-color:#b91c1c;"
-            onclick="stampaPassaporto118()">🖨️ Stampa Scheda 118</button>
+            onclick="stampaPassaporto118()">🖨️ Stampa Scheda 112</button>
         </div>
       </div>
     </div>
@@ -4096,7 +4096,7 @@
           <div class="incident-alert-box">
             <span>🛡️</span>
             <div><b>Protocollo Sicurezza RSA:</b> In caso di trauma cranico, perdita di coscienza o dolore acuto,
-              allerta immediatamente il 118 o il Medico Curante.</div>
+              allerta immediatamente il 112 (NUE) o il Medico Curante.</div>
           </div>
 
           <div class="form-row">
@@ -4128,7 +4128,7 @@
                 <option value="Nessuna lesione né trauma visibile">Nessuna lesione né trauma visibile</option>
                 <option value="Ematoma / Escoriazione lieve">Ematoma / Escoriazione lieve</option>
                 <option value="Dolore marcato al carico / arto">Dolore marcato al carico / arto</option>
-                <option value="Sospetta frattura (Allerta 118)">Sospetta frattura (Allerta 118)</option>
+                <option value="Sospetta frattura (Allerta 112)">Sospetta frattura (Allerta 112)</option>
               </select>
             </div>
             <div class="form-group" style="flex:1;">
@@ -6127,22 +6127,22 @@
   </div>
 
 
-  <!-- MODAL: SCHEDA EMERGENZA CLINICA 118 / PRONTO SOCCORSO -->
+  <!-- MODAL: SCHEDA EMERGENZA CLINICA 112 (NUE) / PRONTO SOCCORSO -->
   <div id="modal-scheda-118" class="modal-overlay">
     <div class="scheda-118-card modal-card modal-118-pro">
-      <!-- HEADER UFFICIALE 118 EMERGENZA -->
+      <!-- HEADER UFFICIALE 112 EMERGENZA -->
       <div class="modal-header header-118-pro">
         <div class="header-118-left">
           <div class="badge-118-siren">
             <span>🚨</span>
           </div>
           <div class="header-118-titles">
-            <div class="title-118-main">SCHEDA CLINICA EMERGENZA 118</div>
-            <div class="subtitle-118-sub">Dati salvavita prioritari per Sanitari & Pronto Soccorso</div>
+            <div class="title-118-main">SCHEDA CLINICA EMERGENZA 112 (NUE)</div>
+            <div class="subtitle-118-sub">Dati salvavita prioritari per Pronto Soccorso &amp; NUE 112</div>
           </div>
         </div>
         <button type="button" class="btn-close-118-pro" onclick="closeModal('modal-scheda-118')"
-          title="Chiudi Scheda 118" aria-label="Chiudi">✕</button>
+          title="Chiudi Scheda 112" aria-label="Chiudi">✕</button>
       </div>
 
       <div class="scheda-118-body body-118-pro" id="scheda-118-content-body">
@@ -6228,8 +6228,8 @@
 
       <!-- FOOTER AZIONI: Tasto 118 Salva-Vita in primo piano + Bottoni di supporto -->
       <div class="modal-footer footer-118-pro">
-        <a href="tel:118" class="btn-chiamata-118">
-          <span>🚨</span> CHIAMA IL 118 ORA
+        <a href="tel:112" class="btn-chiamata-118">
+          <span>🚨</span> CHIAMA IL 112 (NUE) ORA
         </a>
         <div class="footer-118-sub-btns">
           <button type="button" class="btn-118-sub btn-118-print" onclick="window.print()">
@@ -6488,21 +6488,21 @@
 
       <div class="modal-body" style="padding:14px; background:#fffafb; max-height:calc(85vh - 130px); overflow-y:auto;">
 
-        <!-- TOP CALL 118 RAPIDA & DATI ASSISTITO -->
+        <!-- TOP CALL 112 RAPIDA & DATI ASSISTITO -->
         <div
           style="background:linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border:2px solid #ef4444; border-radius:14px; padding:12px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div style="flex:1; min-width:240px;">
             <div
               style="font-size:11px; font-weight:900; color:#dc2626; text-transform:uppercase; letter-spacing:0.5px;">
-              DATI DA DETTARE ALL'OPERATORE 118:</div>
+              DATI DA DETTARE ALL'OPERATORE NUE 112:</div>
             <div style="font-size:14px; font-weight:800; color:#991b1b;" id="sos-paziente-dettaglio">Assistito: Ciro
               Milella • Via Giulio Petroni 69</div>
             <div style="font-size:11.5px; color:#7f1d1d; margin-top:2px;" id="sos-paziente-critico">Nessuna allergia
               nota • Terapia attiva monitorata</div>
           </div>
-          <a href="tel:118" class="btn"
+          <a href="tel:112" class="btn"
             style="background:#dc2626; color:#fff; font-weight:900; font-size:14px; padding:10px 18px; border-radius:12px; border:2px solid #fff; box-shadow:0 4px 14px rgba(220,38,38,0.4); text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
-            <span>📞</span> <span>CHIAMA 118</span>
+            <span>📞</span> <span>CHIAMA 112 (NUE)</span>
           </a>
         </div>
 
@@ -6736,7 +6736,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=240"></script>
+  <script src="app.js?v=241"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
