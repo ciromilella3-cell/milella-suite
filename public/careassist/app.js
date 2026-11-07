@@ -1927,17 +1927,39 @@ function sincronizzaDbDalServer(callback) {
           localStorage.setItem(DB_KEY, JSON.stringify(AppData));
           localStorage.removeItem('careassist_pending_sync');
           renderAll();
-          var currRole = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
-          var modBy = serverData.lastModifiedBy;
-          if (currRole === 'admin') {
-            if (modBy && modBy.ruolo !== 'admin') {
-              var chi = modBy.nome || 'M.C. Stoppelli';
-              var paz = modBy.paziente ? ' (' + modBy.paziente + ')' : '';
-              var ora = modBy.ora || new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-              showAdminSyncToast('☁️ Sincronizzazione in tempo reale: ' + chi + ' ha aggiornato i dati' + paz + ' alle ' + ora, true);
-            } else {
-              showSyncToast('Cloud aggiornato all\'ultima versione!', true);
-            }
+          var modBy = serverData.lastModifiedBy || {};
+          var devFrom = serverData.lastModifiedDevice;
+          var chi = modBy.nome || 'Operatore';
+          var pazNome = modBy.paziente || '';
+          var ora = modBy.ora || new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+          var activeId = AppData.activePazienteId;
+          var activePz = (AppData.pazienti || []).find(function(p){ return p.id === activeId; });
+          var activeNome = activePz ? activePz.nome : '';
+
+          // Se l'aggiornamento proviene da smartphone o da un altro dispositivo
+          if (devFrom === 'smartphone' || (pazNome && activeNome && !pazNome.includes(activeNome.split(' ')[0]))) {
+            var bannerId = 'cross-device-sync-banner';
+            var oldB = document.getElementById(bannerId);
+            if (oldB) oldB.remove();
+
+            var b = document.createElement('div');
+            b.id = bannerId;
+            b.style.cssText = 'position:fixed; top:12px; left:50%; transform:translateX(-50%); z-index:9999999; width:calc(100% - 24px); max-width:560px; background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#ffffff; padding:12px 18px; border-radius:16px; border:2px solid #38bdf8; box-shadow:0 12px 35px rgba(0,0,0,0.55); font-family:sans-serif; animation:fadeInScale 0.3s ease; display:flex; align-items:center; justify-content:space-between; gap:10px;';
+            b.innerHTML = '<div style="display:flex; align-items:center; gap:10px;">' +
+              '<span style="font-size:24px;">📱</span>' +
+              '<div>' +
+                '<div style="font-size:13px; font-weight:900; color:#38bdf8;">Aggiornamento Ricevuto da Cellulare (' + ora + ')</div>' +
+                '<div style="font-size:12px; font-weight:700; color:#e2e8f0;">' + (pazNome ? ('Assistito: <b>' + pazNome + '</b>') : 'Dati aggiornati') + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div style="display:flex; gap:6px; align-items:center;">' +
+              (pazNome ? '<button type="button" onclick="var pTarget = (AppData.pazienti||[]).find(function(x){ return x.nome.includes(\'' + pazNome.split(' ')[0] + '\'); }); if (pTarget) { cambiaPaziente(pTarget.id); } this.closest(\x27#cross-device-sync-banner\x27).remove();" style="background:#0284c7; color:#fff; border:none; padding:7px 12px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">Vai alla cartella 👉</button>' : '') +
+              '<button type="button" onclick="this.closest(\x27#cross-device-sync-banner\x27).remove();" style="background:transparent; color:#94a3b8; border:none; font-size:18px; cursor:pointer; padding:2px 6px;">✕</button>' +
+            '</div>';
+            document.body.appendChild(b);
+            setTimeout(function(){ if (b.parentNode) b.remove(); }, 8000);
+          } else {
+            showSyncToast('Cloud aggiornato all\'ultima versione (' + ora + ')', true);
           }
         }
         // Caso 3: Stessa versione o nessuna differenza
@@ -4713,6 +4735,23 @@ function checkFarmaciScorteAlert() {
     if (cDashboard) cDashboard.innerHTML = '';
     if (cTerapie) cTerapie.innerHTML = '';
     return;
+  }
+  // Sticky Patient Header Banner
+  if (cTerapie) {
+    const existingPzHeader = document.getElementById('sticky-pz-header-banner');
+    if (!existingPzHeader) {
+      const bannerDiv = document.createElement('div');
+      bannerDiv.id = 'sticky-pz-header-banner';
+      bannerDiv.style.cssText = 'background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; padding:10px 16px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 8px rgba(2,132,199,0.25); font-weight:800;';
+      bannerDiv.innerHTML = '<div style="display:flex; align-items:center; gap:8px;">' +
+        '<span style="font-size:20px;">👤</span>' +
+        '<span style="font-size:14px;">Stai visualizzando le terapie di: <span style="font-size:15px; color:#fef08a; font-weight:900;">' + p.nome + '</span></span>' +
+      '</div>' +
+      '<div style="font-size:12px; color:#e0f2fe; font-weight:600;">Sincronizzato Cloud in tempo reale ☁️</div>';
+      cTerapie.parentNode.insertBefore(bannerDiv, cTerapie);
+    } else {
+      existingPzHeader.querySelector('span[style*="#fef08a"]').textContent = p.nome;
+    }
   }
 
   const terapie = p.terapie || [];
