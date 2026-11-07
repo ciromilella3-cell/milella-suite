@@ -494,23 +494,168 @@
   background: #0284c7;
 }
 
-/* RESPONSIVE */
+/* RESPONSIVE & MOBILE SMARTPHONE FULL-FIT (v239) */
 @media (max-width: 768px) {
-  .asl-cards-grid {
-    grid-template-columns: 1fr;
+  .asl-modal-overlay {
+    padding: 0 !important;
   }
-  .asl-header-top {
-    padding: 14px 18px;
-  }
-  .asl-controls-section {
-    padding: 12px 18px;
-  }
-  .asl-body-scrollable {
-    padding: 16px 18px;
-  }
+  
   .asl-modal-window {
-    height: 96vh;
-    border-radius: 16px;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Header compatto & anti-collisione con tasto ✕ */
+  .asl-header-top {
+    padding: 10px 14px !important;
+    gap: 8px !important;
+    min-height: auto !important;
+  }
+
+  .asl-header-branding {
+    gap: 10px !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  .asl-brand-badge-icon {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 20px !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .asl-title-box {
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  .asl-title-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .asl-title-box h2, .asl-main-title {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .asl-tag-protocol {
+    font-size: 0.6rem !important;
+    padding: 2px 6px !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    display: inline-block !important;
+    flex-shrink: 0 !important;
+  }
+
+  .asl-sub-desc, .asl-title-box p {
+    font-size: 0.72rem !important;
+    margin: 2px 0 0 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    color: #94a3b8 !important;
+  }
+
+  .asl-close-btn {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+    font-size: 18px !important;
+    flex-shrink: 0 !important;
+    margin-left: 6px !important;
+  }
+
+  /* Barra di Ricerca & Nuovo Assistito */
+  .asl-controls-section {
+    padding: 10px 14px !important;
+    gap: 8px !important;
+    background: #f8fafc !important;
+  }
+
+  .asl-search-bar-row {
+    gap: 8px !important;
+  }
+
+  .asl-input-field {
+    padding: 9px 12px 9px 36px !important;
+    font-size: 0.88rem !important;
+    border-radius: 10px !important;
+  }
+
+  .asl-search-icon-inside {
+    left: 11px !important;
+    font-size: 14px !important;
+  }
+
+  /* Su smartphone nascondi il badge tastiera "F2" per dare respiro al testo di ricerca */
+  .asl-kbd-shortcut {
+    display: none !important;
+  }
+
+  .asl-new-patient-btn {
+    padding: 9px 12px !important;
+    font-size: 0.82rem !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Filtri a scorrimento orizzontale a 1 tocco (Single Row Swipeable Chips) */
+  .asl-filters-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+  }
+
+  .asl-pills-group {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 6px !important;
+    padding-bottom: 3px !important;
+    scrollbar-width: none !important;
+  }
+
+  .asl-pills-group::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .asl-pill-filter {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 6px 12px !important;
+    font-size: 0.78rem !important;
+    border-radius: 14px !important;
+  }
+
+  .asl-stats-counter {
+    font-size: 0.74rem !important;
+    color: #64748b !important;
+    font-weight: 700 !important;
+  }
+
+  .asl-body-scrollable {
+    padding: 12px 14px !important;
+  }
+
+  .asl-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
 }
-

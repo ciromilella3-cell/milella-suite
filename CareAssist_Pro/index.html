@@ -196,7 +196,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="registro_asl.css">
+  <link rel="stylesheet" href="registro_asl.css?v=239">
 
   <style>
     @keyframes menuDropAnim {
@@ -7377,11 +7377,11 @@
         <div class="asl-header-branding">
           <div class="asl-brand-badge-icon">🏛️</div>
           <div class="asl-title-box">
-            <h2>
-              Registro Anagrafico & Triage ADI
-              <span class="asl-tag-protocol">Protocollo ASL Enterprise</span>
-            </h2>
-            <p>Motore Master Patient Index (MPI) • Gestione Cartelle Cliniche ad Alta Densità</p>
+            <div class="asl-title-row">
+              <h2 class="asl-main-title">Registro Assistiti & Triage ADI</h2>
+              <span class="asl-tag-protocol">Protocollo ASL</span>
+            </div>
+            <p class="asl-sub-desc">Master Patient Index • Cartelle Cliniche ad Alta Densità</p>
           </div>
         </div>
         <button type="button" class="asl-close-btn" onclick="chiudiRegistroSanitarioAsl()"
@@ -7394,13 +7394,13 @@
           <div class="asl-search-input-wrapper">
             <span class="asl-search-icon-inside">🔍</span>
             <input type="text" id="asl-search-input" class="asl-input-field"
-              placeholder="Cerca per Nome, Cognome, Indirizzo o Patologia..." oninput="filtraPazientiAsl(this.value)">
+              placeholder="Cerca per Nome, Indirizzo o Patologia..." oninput="filtraPazientiAsl(this.value)">
             <span class="asl-kbd-shortcut">F2</span>
           </div>
           <button type="button" class="asl-new-patient-btn"
             onclick="chiudiRegistroSanitarioAsl(); openModal('modal-nuovo-paziente')"
             title="Aggiungi una nuova cartella clinica">
-            <span>➕</span> Nuovo Assistito
+            <span>➕</span> <span>Nuovo Assistito</span>
           </button>
         </div>
 
@@ -7412,11 +7412,11 @@
             </button>
             <button type="button" class="asl-pill-filter alert" data-filter="ritardi"
               onclick="impostaFiltroAsl('ritardi', this)">
-              🚨 Triage / Con Ritardi Farmaco
+              🚨 Con Ritardi
             </button>
             <button type="button" class="asl-pill-filter" data-filter="allettati"
               onclick="impostaFiltroAsl('allettati', this)">
-              🛏️ Pazienti Allettati (q2h)
+              🛏️ Allettati (q2h)
             </button>
             <button type="button" class="asl-pill-filter" data-filter="deambulanti"
               onclick="impostaFiltroAsl('deambulanti', this)">
