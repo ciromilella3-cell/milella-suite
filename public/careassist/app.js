@@ -23191,6 +23191,21 @@ function renderMobileNativeView(terapie, p) {
     hdrPillAvatar.textContent = p.sesso === 'F' ? '👵' : '👴';
   }
 
+  // Aggiorna nome assistito nella pillola fissa in alto e nel titolo sezione
+  var hdrPillName = document.getElementById('mhdr-patient-name');
+  var hdrPillAvatar = document.getElementById('mhdr-patient-avatar');
+  var pulitoNomeHeader = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+  if (hdrPillName && p) {
+    hdrPillName.textContent = pulitoNomeHeader || 'Assistito';
+  }
+  if (hdrPillAvatar && p) {
+    hdrPillAvatar.textContent = p.sesso === 'F' ? '👵' : '👴';
+  }
+  var secTitle = document.querySelector('.mobile-terapie-title');
+  if (secTitle && p) {
+    secTitle.innerHTML = '📋 Terapie di Oggi • <b style="color:#0284c7;">' + pulitoNomeHeader + '</b>';
+  }
+
   // 1. Render Card Assistito Attivo (Senza testi troncati, layout moderno!)
   var activeCard = document.getElementById('mobile-active-patient-card');
   if (!activeCard) {
