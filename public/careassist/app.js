@@ -23343,27 +23343,47 @@ function renderMobileNativeView(terapie, p) {
       timelineContainer.innerHTML = lista.map(function (t) {
         var isDone = !!t.fattoOggi;
         var iconaFormato = (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) ? '💉' : '💊';
+        var isSalvavita = (t.farmaco || '').match(/cardioaspirin|lasix|bisoprolol|irbesartan|sintrom|coumadin|eliquis|xarelto|pradaxa|cordarone|sinemet|madopar|vimpat|averelix|clopidogrel|diamicron/i);
+        var badgeSalvavita = isSalvavita ? '<span class="badge-salvavita-118-mini" title="Farmaco essenziale / monitorato 118">118 SALVAVITA</span>' : '';
+        var principioAttivo = t.principio || (t.principioAttivo || '');
+        var principioHtml = principioAttivo ? ('<div class="mobile-card-principio">🔬 Principio: <b>' + principioAttivo + '</b></div>') : '';
+
         return '<div class="mobile-card-item' + (isDone ? ' is-done' : '') + '" id="mobile-card-farmaco-' + t.id + '">' +
           '<div class="mobile-card-header">' +
-          '<div class="mobile-card-time">' +
-          '<span>' + iconaFormato + '</span>' +
-          '<span>' + (t.ora || '--:--') + '</span>' +
-          '<span style="font-size:11.5px; color:#64748b; font-weight:600;">• ' + (t.fascia || '') + '</span>' +
+            '<div class="mobile-card-time" onclick="apriCambiaOrarioRapido(' + t.id + ')" title="Tocca per cambiare orario di somministrazione" style="cursor:pointer; display:inline-flex; align-items:center; gap:5px; background:#f0f9ff; padding:3px 9px; border-radius:8px; border:1px solid #bae6fd;">' +
+              '<span>' + iconaFormato + '</span>' +
+              '<span style="font-weight:900; color:#0369a1; font-size:13.5px;">' + (t.ora || '--:--') + '</span>' +
+              '<span style="font-size:11px; color:#64748b; font-weight:600;">• ' + (t.fascia || '') + '</span>' +
+              '<span style="font-size:11px; color:#0284c7;" title="Modifica orario">✏️</span>' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:6px;">' +
+              '<button type="button" class="btn-card-edit-mini" onclick="apriModificaFarmaco(' + t.id + ')" title="Modifica terapia, dosaggio o note per OSS">✏️ Modifica</button>' +
+              '<div class="mobile-card-status-pill ' + (isDone ? 'status-done' : 'status-pending') + '">' +
+                (isDone ? '✓ PRESO' : 'DA FARE') +
+              '</div>' +
+            '</div>' +
           '</div>' +
-          '<div class="mobile-card-status-pill ' + (isDone ? 'status-done' : 'status-pending') + '">' +
-          (isDone ? '✓ PRESO' : 'DA FARE') +
+          '<div class="mobile-card-name" style="margin-top:6px; font-size:14.5px; font-weight:800; color:#0f172a;">' +
+            t.farmaco + badgeSalvavita +
           '</div>' +
+          principioHtml +
+          '<div class="mobile-card-dosaggio" style="margin-top:2px; font-size:12px; color:#475569; font-weight:600;">' +
+            (t.dosaggio || '') + (t.modo ? (' — ' + t.modo) : '') +
           '</div>' +
-          '<div class="mobile-card-name">' + t.farmaco + '</div>' +
-          '<div class="mobile-card-dosaggio">' + (t.dosaggio || '') + (t.modo ? (' — ' + t.modo) : '') + '</div>' +
-          '<div class="mobile-card-footer">' +
-          '<div class="mobile-card-scorta">Scorta: <b>' + (t.scorta || 0) + '</b></div>' +
-          (isDone
-            ? '<button type="button" class="btn-mobile-card-undo" onclick="toggleFarmacoConScarico(' + t.id + ')">Annulla</button>'
-            : '<button type="button" class="btn-mobile-card-take" onclick="toggleFarmacoConScarico(' + t.id + ')"><span>✓</span> <span>PRESO</span></button>'
-          ) +
+          '<div class="mobile-card-footer" style="margin-top:9px; padding-top:8px; border-top:1px dashed #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">' +
+            '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
+              '<div class="mobile-card-scorta" style="font-size:12px; color:#334155; font-weight:700;">Scorta: <b style="color:#0f172a;">' + (t.scorta || 0) + '</b></div>' +
+              '<button type="button" class="btn-card-scatola-action" onclick="caricaScatolaRapida(' + t.id + ')" title="Aggiungi 1 scatola arrivata dalla farmacia">📦 +Scatola</button>' +
+              '<button type="button" class="btn-card-time-action" onclick="apriCambiaOrarioRapido(' + t.id + ')" title="Sposta orario di somministrazione">🕒 Orario</button>' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:6px;">' +
+              (isDone
+                ? '<button type="button" class="btn-mobile-card-undo" onclick="toggleFarmacoConScarico(' + t.id + ')">Annulla</button>'
+                : '<button type="button" class="btn-mobile-card-take" onclick="toggleFarmacoConScarico(' + t.id + ')"><span>✓</span> <span>PRESO</span></button>'
+              ) +
+            '</div>' +
           '</div>' +
-          '</div>';
+        '</div>';
       }).join('');
     }
   }
