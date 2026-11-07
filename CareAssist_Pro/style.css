@@ -8680,3 +8680,80 @@ main, .main-content, .dashboard-container {
   display: inline-block !important;
 }
 
+/* ==========================================================================
+   SCHEDE TERAPIA MOBILE: COLORI ALTERNATI & MODIFICA CLINICA (v239)
+   ========================================================================== */
+
+.mobile-card-item {
+  border-radius: 16px !important;
+  padding: 13px 15px !important;
+  margin-bottom: 12px !important;
+  border-width: 1.5px !important;
+  border-style: solid !important;
+  border-left-width: 6px !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  position: relative !important;
+}
+
+/* Palette 0: Mattina / Sky Azure pastello (es. 1ª dose Vimpat 08:30) */
+.mobile-card-item.palette-0 {
+  background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+  border-color: #bae6fd !important;
+  border-left-color: #0284c7 !important;
+}
+
+/* Palette 1: Pranzo / Verde Menta Smeraldo pastello (es. 2ª dose Vimpat 13:30) */
+.mobile-card-item.palette-1 {
+  background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%) !important;
+  border-color: #bbf7d0 !important;
+  border-left-color: #16a34a !important;
+}
+
+/* Palette 2: Pomeriggio / Oro Ambra pastello (es. 3ª dose Vimpat 20:30) */
+.mobile-card-item.palette-2 {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%) !important;
+  border-color: #fde68a !important;
+  border-left-color: #d97706 !important;
+}
+
+/* Palette 3: Sera / Lavanda Violetto pastello */
+.mobile-card-item.palette-3 {
+  background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%) !important;
+  border-color: #e9d5ff !important;
+  border-left-color: #9333ea !important;
+}
+
+/* Palette 4: Notte / Corallo Rosa tenue */
+.mobile-card-item.palette-4 {
+  background: linear-gradient(180deg, #fff1f2 0%, #ffe4e6 100%) !important;
+  border-color: #fecdd3 !important;
+  border-left-color: #e11d48 !important;
+}
+
+.mobile-card-item.is-done {
+  opacity: 0.88 !important;
+}
+
+/* Forza la visualizzazione corretta dei modali su smartphone */
+#modal-modifica-farmaco {
+  z-index: 20000030 !important;
+}
+#modal-modifica-farmaco.active {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#modal-cambia-orario-rapido {
+  z-index: 20000030 !important;
+}
+#modal-cambia-orario-rapido.active {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+

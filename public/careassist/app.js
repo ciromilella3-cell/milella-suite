@@ -10318,107 +10318,232 @@ function ricalcolaDosiMultipleModifica() {
 }
 
 function apriModificaFarmaco(farmacoId) {
-  var p = getActivePaziente();
-  if (!p || !p.terapie) return;
-  var t = p.terapie.find(function (item) { return item.id === farmacoId; });
-  if (!t) return;
-
-  var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
-
-  var titleEl = document.getElementById('edit-farm-modal-title');
-  var isPenna = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
-  if (isPenna) {
-    if (typeof impostaFormatoFarmacoModal === 'function') impostaFormatoFarmacoModal('penna', true);
-    var dPen = calcolaDatiPennaIniettabile(t);
-    if (document.getElementById('edit-penna-scorta')) document.getElementById('edit-penna-scorta').value = dPen.penne;
-    if (document.getElementById('edit-penna-dose-die')) document.getElementById('edit-penna-dose-die').value = dPen.doseDie;
-    if (document.getElementById('edit-penna-unita-totali')) document.getElementById('edit-penna-unita-totali').value = dPen.unitaTotaliPenna;
-    if (document.getElementById('edit-penna-per-scatola')) document.getElementById('edit-penna-per-scatola').value = t.pennePerScatola || 3;
-    var kitBox = document.getElementById('box-kit-diabete-dettagli');
-    var chkKit = document.getElementById('edit-penna-kit-attivo');
-    if (chkKit) chkKit.checked = true;
-    if (kitBox) kitBox.style.display = 'block';
-    var kSensNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.sensoriNome) ? t.kitGlicemiaAssociato.sensoriNome : 'GlucoMen areo Sensor (25 sensori)';
-    var kSensScorta = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.sensoriScorta !== 'undefined') ? t.kitGlicemiaAssociato.sensoriScorta : 25;
-    var kLancNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.lancetteNome) ? t.kitGlicemiaAssociato.lancetteNome : 'Glucoject Lancets Extra 33G (25 lancette)';
-    var kLancScorta = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.lancetteScorta !== 'undefined') ? t.kitGlicemiaAssociato.lancetteScorta : 25;
-    if (document.getElementById('edit-penna-sensori-nome')) document.getElementById('edit-penna-sensori-nome').value = kSensNome;
-    if (document.getElementById('edit-penna-sensori-scorta')) document.getElementById('edit-penna-sensori-scorta').value = kSensScorta;
-    if (document.getElementById('edit-penna-lancette-nome')) document.getElementById('edit-penna-lancette-nome').value = kLancNome;
-    if (document.getElementById('edit-penna-lancette-scorta')) document.getElementById('edit-penna-lancette-scorta').value = kLancScorta;
-    var badgeFormato = document.getElementById('badge-auto-rilevato-formato');
-    if (badgeFormato) {
-      badgeFormato.style.display = 'inline-block';
-      badgeFormato.textContent = '💉 Penna Auto-Rilevata';
+  try {
+    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    if (!p || !p.terapie) {
+      console.warn('apriModificaFarmaco: nessun paziente o terapie attive');
+      return;
     }
-  } else {
-    if (typeof impostaFormatoFarmacoModal === 'function') impostaFormatoFarmacoModal('compressa', true);
-    var badgeFormato = document.getElementById('badge-auto-rilevato-formato');
-    if (badgeFormato) badgeFormato.style.display = 'none';
-  }
-  if (titleEl) titleEl.innerHTML = '✏️ Scheda Capsula: <span id="edit-farm-header-nome" style="color:#fef08a;">' + (cleanNome || 'Farmaco') + '</span>';
-
-  var elPaziente = document.getElementById('edit-farm-header-paziente');
-  if (elPaziente) elPaziente.textContent = (p.nome || 'Paziente').replace(/\s*\(\d+\s*anni\)/gi, '');
-
-  document.getElementById('edit-farm-id').value = t.id;
-  document.getElementById('edit-farm-nome').value = cleanNome;
-  document.getElementById('edit-farm-principio').value = t.principio || '';
-
-  // Ripulisci il dosaggio base (senza "(½ cpr)" o simili)
-  var cleanDosaggio = (t.dosaggio || '').replace(/\s*\([^)]*\)/gi, '').trim();
-  document.getElementById('edit-farm-dosaggio').value = cleanDosaggio || t.dosaggio || '1 cpr';
-
-  document.getElementById('edit-farm-modo').value = t.modo || '';
-  document.getElementById('edit-farm-cpr-scatola').value = t.cprPerScatola || 28;
-  document.getElementById('edit-farm-scorta').value = typeof t.scorta !== 'undefined' ? t.scorta : 28;
-  document.getElementById('edit-farm-giorni-alert').value = t.giorniAlert || 7;
-
-  var elCad = document.getElementById('edit-farm-cadenza');
-  if (elCad) elCad.value = t.cadenzaTipo || 'giornaliera';
-
-  // Cerca tutte le dosi esistenti di questo farmaco
-  var nomeBase = cleanNome.toLowerCase();
-  var tutteDosi = p.terapie.filter(function (item) {
-    var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
-    return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
-  });
-
-  if (tutteDosi.length === 0) tutteDosi = [t];
-
-  // Ordina cronologicamente
-  tutteDosi.sort(comparaOrariTerapie);
-
-  _capsulaCurrentDosi = tutteDosi.map(function (item) {
-    var q = parseFloat(item.quantitaQuota);
-    if (isNaN(q) || q <= 0) {
-      if ((item.dosaggio || '').indexOf('½') >= 0 || (item.farmaco || '').indexOf('½') >= 0) q = 0.5;
-      else q = 1.0;
+    // Ricerca flessibile: supporta numeri, stringhe e id numerici
+    var t = p.terapie.find(function (item) {
+      return String(item.id) === String(farmacoId) || item.id == farmacoId;
+    });
+    if (!t) {
+      // Fallback: cerca per nome farmaco se id non trovato
+      var idStr = String(farmacoId).toLowerCase();
+      t = p.terapie.find(function (item) {
+        return (item.farmaco || '').toLowerCase().indexOf(idStr) >= 0;
+      });
     }
-    return {
-      ora: item.ora || '08:00',
-      fascia: item.fascia || deduciFasciaDaOrario(item.ora || '08:00'),
-      quota: q
-    };
-  });
+    if (!t) {
+      console.warn('apriModificaFarmaco: terapia non trovata per id ' + farmacoId);
+      return;
+    }
 
-  // Aggiorna pulsante frequenza
-  var freqCount = _capsulaCurrentDosi.length;
-  var buttons = document.querySelectorAll('.capsula-freq-selector .btn-freq-pill');
-  buttons.forEach(function (b) {
-    if (parseInt(b.getAttribute('data-freq')) === freqCount) {
-      b.classList.add('active');
+    var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
+
+    var titleEl = document.getElementById('edit-farm-modal-title');
+    var isPenna = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+    if (isPenna) {
+      if (typeof impostaFormatoFarmacoModal === 'function') impostaFormatoFarmacoModal('penna', true);
+      var dPen = (typeof calcolaDatiPennaIniettabile === 'function') ? calcolaDatiPennaIniettabile(t) : { penne: 2, doseDie: 16, unitaTotaliPenna: 300 };
+      if (document.getElementById('edit-penna-scorta')) document.getElementById('edit-penna-scorta').value = dPen.penne;
+      if (document.getElementById('edit-penna-dose-die')) document.getElementById('edit-penna-dose-die').value = dPen.doseDie;
+      if (document.getElementById('edit-penna-unita-totali')) document.getElementById('edit-penna-unita-totali').value = dPen.unitaTotaliPenna;
+      if (document.getElementById('edit-penna-per-scatola')) document.getElementById('edit-penna-per-scatola').value = t.pennePerScatola || 3;
+      var kitBox = document.getElementById('box-kit-diabete-dettagli');
+      var chkKit = document.getElementById('edit-penna-kit-attivo');
+      if (chkKit) chkKit.checked = true;
+      if (kitBox) kitBox.style.display = 'block';
+      var kSensNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.sensoriNome) ? t.kitGlicemiaAssociato.sensoriNome : 'GlucoMen areo Sensor (25 sensori)';
+      var kSensScorta = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.sensoriScorta !== 'undefined') ? t.kitGlicemiaAssociato.sensoriScorta : 25;
+      var kLancNome = (t.kitGlicemiaAssociato && t.kitGlicemiaAssociato.lancetteNome) ? t.kitGlicemiaAssociato.lancetteNome : 'Glucoject Lancets Extra 33G (25 lancette)';
+      var kLancScorta = (t.kitGlicemiaAssociato && typeof t.kitGlicemiaAssociato.lancetteScorta !== 'undefined') ? t.kitGlicemiaAssociato.lancetteScorta : 25;
+      if (document.getElementById('edit-penna-sensori-nome')) document.getElementById('edit-penna-sensori-nome').value = kSensNome;
+      if (document.getElementById('edit-penna-sensori-scorta')) document.getElementById('edit-penna-sensori-scorta').value = kSensScorta;
+      if (document.getElementById('edit-penna-lancette-nome')) document.getElementById('edit-penna-lancette-nome').value = kLancNome;
+      if (document.getElementById('edit-penna-lancette-scorta')) document.getElementById('edit-penna-lancette-scorta').value = kLancScorta;
+      var badgeFormato = document.getElementById('badge-auto-rilevato-formato');
+      if (badgeFormato) {
+        badgeFormato.style.display = 'inline-block';
+        badgeFormato.textContent = '💉 Penna Auto-Rilevata';
+      }
     } else {
-      b.classList.remove('active');
+      if (typeof impostaFormatoFarmacoModal === 'function') impostaFormatoFarmacoModal('compressa', true);
+      var badgeFormato = document.getElementById('badge-auto-rilevato-formato');
+      if (badgeFormato) badgeFormato.style.display = 'none';
     }
-  });
+    if (titleEl) titleEl.innerHTML = '✏️ Scheda Capsula: <span id="edit-farm-header-nome" style="color:#fef08a;">' + (cleanNome || 'Farmaco') + '</span>';
 
-  renderDosiCards();
-  ricalcolaRiepilogoCapsula();
-  if (typeof resetScannerFarmacoUI === 'function') resetScannerFarmacoUI('capsula');
+    var elPaziente = document.getElementById('edit-farm-header-paziente');
+    if (elPaziente) elPaziente.textContent = (p.nome || 'Paziente').replace(/\s*\(\d+\s*anni\)/gi, '');
 
-  openModal('modal-modifica-farmaco');
+    if (document.getElementById('edit-farm-id')) document.getElementById('edit-farm-id').value = t.id;
+    if (document.getElementById('edit-farm-nome')) document.getElementById('edit-farm-nome').value = cleanNome;
+    if (document.getElementById('edit-farm-principio')) document.getElementById('edit-farm-principio').value = t.principio || '';
+
+    // Ripulisci il dosaggio base (senza "(½ cpr)" o simili)
+    var cleanDosaggio = (t.dosaggio || '').replace(/\s*\([^)]*\)/gi, '').trim();
+    if (document.getElementById('edit-farm-dosaggio')) document.getElementById('edit-farm-dosaggio').value = cleanDosaggio || t.dosaggio || '1 cpr';
+
+    if (document.getElementById('edit-farm-modo')) document.getElementById('edit-farm-modo').value = t.modo || '';
+    if (document.getElementById('edit-farm-cpr-scatola')) document.getElementById('edit-farm-cpr-scatola').value = t.cprPerScatola || 28;
+    if (document.getElementById('edit-farm-scorta')) document.getElementById('edit-farm-scorta').value = typeof t.scorta !== 'undefined' ? t.scorta : 28;
+    if (document.getElementById('edit-farm-giorni-alert')) document.getElementById('edit-farm-giorni-alert').value = t.giorniAlert || 7;
+
+    var elCad = document.getElementById('edit-farm-cadenza');
+    if (elCad) elCad.value = t.cadenzaTipo || 'giornaliera';
+
+    // Cerca tutte le dosi esistenti di questo farmaco
+    var nomeBase = cleanNome.toLowerCase();
+    var tutteDosi = p.terapie.filter(function (item) {
+      var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
+      return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
+    });
+
+    if (tutteDosi.length === 0) tutteDosi = [t];
+
+    // Ordina cronologicamente
+    if (typeof comparaOrariTerapie === 'function') {
+      tutteDosi.sort(comparaOrariTerapie);
+    }
+
+    _capsulaCurrentDosi = tutteDosi.map(function (item) {
+      var q = parseFloat(item.quantitaQuota);
+      if (isNaN(q) || q <= 0) {
+        if ((item.dosaggio || '').indexOf('½') >= 0 || (item.farmaco || '').indexOf('½') >= 0) q = 0.5;
+        else q = 1.0;
+      }
+      return {
+        ora: item.ora || '08:00',
+        fascia: item.fascia || (typeof deduciFasciaDaOrario === 'function' ? deduciFasciaDaOrario(item.ora || '08:00') : 'Mattina'),
+        quota: q
+      };
+    });
+
+    // Aggiorna pulsante frequenza
+    var freqCount = _capsulaCurrentDosi.length;
+    var buttons = document.querySelectorAll('.capsula-freq-selector .btn-freq-pill');
+    buttons.forEach(function (b) {
+      if (parseInt(b.getAttribute('data-freq')) === freqCount) {
+        b.classList.add('active');
+      } else {
+        b.classList.remove('active');
+      }
+    });
+
+    if (typeof renderDosiCards === 'function') renderDosiCards();
+    if (typeof ricalcolaRiepilogoCapsula === 'function') ricalcolaRiepilogoCapsula();
+    if (typeof resetScannerFarmacoUI === 'function') resetScannerFarmacoUI('capsula');
+
+    openModal('modal-modifica-farmaco');
+  } catch (err) {
+    console.error('Errore apriModificaFarmaco:', err);
+    // Apertura di sicurezza garantita
+    var fallbackModal = document.getElementById('modal-modifica-farmaco');
+    if (fallbackModal) {
+      fallbackModal.classList.add('active');
+      fallbackModal.style.display = 'flex';
+    }
+  }
 }
+window.apriModificaFarmaco = apriModificaFarmaco;
+
+// ==============================================================================
+// GESTIONE CAMBIO ORARIO RAPIDO (SMARTPHONE OSS)
+// ==============================================================================
+var _cambiaOrarioCurrentFarmacoId = null;
+
+function apriCambiaOrarioRapido(farmacoId) {
+  try {
+    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    if (!p || !p.terapie) return;
+    var t = p.terapie.find(function (item) {
+      return String(item.id) === String(farmacoId) || item.id == farmacoId;
+    });
+    if (!t) return;
+    _cambiaOrarioCurrentFarmacoId = t.id;
+
+    var nomeEl = document.getElementById('cambia-orario-farm-nome');
+    if (nomeEl) nomeEl.textContent = t.farmaco || 'Farmaco';
+
+    var attEl = document.getElementById('cambia-orario-farm-attuale');
+    if (attEl) attEl.textContent = (t.ora || '--:--') + (t.fascia ? ' (' + t.fascia + ')' : '');
+
+    var inp = document.getElementById('input-cambia-orario-nuovo');
+    if (inp) inp.value = t.ora || '08:00';
+
+    var modal = document.getElementById('modal-cambia-orario-rapido');
+    if (modal) {
+      modal.classList.add('active');
+      modal.style.display = 'flex';
+      modal.style.zIndex = '20000030';
+    }
+  } catch (e) {
+    console.error('Errore apriCambiaOrarioRapido:', e);
+  }
+}
+window.apriCambiaOrarioRapido = apriCambiaOrarioRapido;
+
+function chiudiCambiaOrarioRapido() {
+  var modal = document.getElementById('modal-cambia-orario-rapido');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
+  _cambiaOrarioCurrentFarmacoId = null;
+}
+window.chiudiCambiaOrarioRapido = chiudiCambiaOrarioRapido;
+
+function applicaPresetOrario(deltaMinuti) {
+  var inp = document.getElementById('input-cambia-orario-nuovo');
+  if (!inp || !inp.value) return;
+  var parts = inp.value.split(':');
+  var h = parseInt(parts[0], 10);
+  var m = parseInt(parts[1], 10) || 0;
+  if (isNaN(h)) return;
+  var totMin = (h * 60 + m + deltaMinuti) % 1440;
+  if (totMin < 0) totMin += 1440;
+  var newH = Math.floor(totMin / 60);
+  var newM = totMin % 60;
+  var hStr = (newH < 10 ? '0' : '') + newH;
+  var mStr = (newM < 10 ? '0' : '') + newM;
+  inp.value = hStr + ':' + mStr;
+}
+window.applicaPresetOrario = applicaPresetOrario;
+
+async function salvaCambiaOrarioRapido() {
+  try {
+    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    if (!p || !p.terapie || !_cambiaOrarioCurrentFarmacoId) return;
+    var inp = document.getElementById('input-cambia-orario-nuovo');
+    if (!inp || !inp.value) return;
+    var nuovoOrario = inp.value;
+    var t = p.terapie.find(function (item) {
+      return String(item.id) === String(_cambiaOrarioCurrentFarmacoId) || item.id == _cambiaOrarioCurrentFarmacoId;
+    });
+    if (!t) return;
+    var vecchioOrario = t.ora;
+    t.ora = nuovoOrario;
+    if (typeof deduciFasciaDaOrario === 'function') {
+      t.fascia = deduciFasciaDaOrario(nuovoOrario);
+    }
+    // Ordina terapie
+    if (typeof comparaOrariTerapie === 'function') {
+      p.terapie.sort(comparaOrariTerapie);
+    }
+    chiudiCambiaOrarioRapido();
+    if (typeof salvaStatoCareAssistStorage === 'function') await salvaStatoCareAssistStorage();
+    if (typeof saveDb === 'function') saveDb();
+    if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
+    if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
+    if (typeof renderTerapie === 'function') renderTerapie();
+    if (typeof showToast === 'function') showToast('🕒 Orario aggiornato: ' + t.farmaco + ' spostato alle ' + nuovoOrario);
+  } catch (e) {
+    console.error('Errore salvaCambiaOrarioRapido:', e);
+  }
+}
+window.salvaCambiaOrarioRapido = salvaCambiaOrarioRapido;
 
 function salvaModificaFarmaco(e) {
   if (e && e.preventDefault) e.preventDefault();
@@ -10580,11 +10705,16 @@ function salvaModificaFarmaco(e) {
   ultimoSuonoFarmacoRitardo = 0;
   _ultimoMinutoNotificatoTerapia = '';
   saveDb();
+  if (typeof renderMobileNativeView === 'function') {
+    try { renderMobileNativeView(p.terapie, p); } catch (e) { }
+  }
+  if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
   setTimeout(function () {
     try { controllaTerapieGlobaliTuttiPazienti(); } catch (e) { }
   }, 300);
   showToast('Terapia per "' + cleanNome + '" salvata con successo con ' + totalDosi + ' somministrazioni! 💊');
 }
+window.salvaModificaFarmaco = salvaModificaFarmaco;
 
 
 function salvaNuovoFarmaco(e) {
@@ -23340,24 +23470,25 @@ function renderMobileNativeView(terapie, p) {
     if (lista.length === 0) {
       timelineContainer.innerHTML = '<div style="text-align:center; padding:24px; color:#64748b; font-size:13.5px; font-weight:600;">Nessuna terapia in questa categoria.</div>';
     } else {
-      timelineContainer.innerHTML = lista.map(function (t) {
+      timelineContainer.innerHTML = lista.map(function (t, idx) {
         var isDone = !!t.fattoOggi;
         var iconaFormato = (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) ? '💉' : '💊';
         var isSalvavita = (t.farmaco || '').match(/cardioaspirin|lasix|bisoprolol|irbesartan|sintrom|coumadin|eliquis|xarelto|pradaxa|cordarone|sinemet|madopar|vimpat|averelix|clopidogrel|diamicron/i);
         var badgeSalvavita = isSalvavita ? '<span class="badge-salvavita-118-mini" title="Farmaco essenziale / monitorato 118">118 SALVAVITA</span>' : '';
         var principioAttivo = t.principio || (t.principioAttivo || '');
         var principioHtml = principioAttivo ? ('<div class="mobile-card-principio">🔬 Principio: <b>' + principioAttivo + '</b></div>') : '';
+        var paletteClass = 'palette-' + (idx % 5);
 
-        return '<div class="mobile-card-item' + (isDone ? ' is-done' : '') + '" id="mobile-card-farmaco-' + t.id + '">' +
+        return '<div class="mobile-card-item ' + paletteClass + (isDone ? ' is-done' : '') + '" id="mobile-card-farmaco-' + t.id + '">' +
           '<div class="mobile-card-header">' +
-            '<div class="mobile-card-time" onclick="apriCambiaOrarioRapido(' + t.id + ')" title="Tocca per cambiare orario di somministrazione" style="cursor:pointer; display:inline-flex; align-items:center; gap:5px; background:#f0f9ff; padding:3px 9px; border-radius:8px; border:1px solid #bae6fd;">' +
+            '<div class="mobile-card-time" onclick="apriCambiaOrarioRapido(\'' + t.id + '\')" title="Tocca per cambiare orario di somministrazione" style="cursor:pointer; display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,0.9); padding:3px 9px; border-radius:8px; border:1px solid rgba(0,0,0,0.1);">' +
               '<span>' + iconaFormato + '</span>' +
               '<span style="font-weight:900; color:#0369a1; font-size:13.5px;">' + (t.ora || '--:--') + '</span>' +
-              '<span style="font-size:11px; color:#64748b; font-weight:600;">• ' + (t.fascia || '') + '</span>' +
+              '<span style="font-size:11px; color:#475569; font-weight:700;">• ' + (t.fascia || '') + '</span>' +
               '<span style="font-size:11px; color:#0284c7;" title="Modifica orario">✏️</span>' +
             '</div>' +
             '<div style="display:flex; align-items:center; gap:6px;">' +
-              '<button type="button" class="btn-card-edit-mini" onclick="apriModificaFarmaco(' + t.id + ')" title="Modifica terapia, dosaggio o note per OSS">✏️ Modifica</button>' +
+              '<button type="button" class="btn-card-edit-mini" onclick="apriModificaFarmaco(\'' + t.id + '\')" title="Modifica terapia, dosaggio o note per OSS">✏️ Modifica</button>' +
               '<div class="mobile-card-status-pill ' + (isDone ? 'status-done' : 'status-pending') + '">' +
                 (isDone ? '✓ PRESO' : 'DA FARE') +
               '</div>' +
@@ -23367,19 +23498,19 @@ function renderMobileNativeView(terapie, p) {
             t.farmaco + badgeSalvavita +
           '</div>' +
           principioHtml +
-          '<div class="mobile-card-dosaggio" style="margin-top:2px; font-size:12px; color:#475569; font-weight:600;">' +
+          '<div class="mobile-card-dosaggio" style="margin-top:2px; font-size:12px; color:#334155; font-weight:600;">' +
             (t.dosaggio || '') + (t.modo ? (' — ' + t.modo) : '') +
           '</div>' +
-          '<div class="mobile-card-footer" style="margin-top:9px; padding-top:8px; border-top:1px dashed #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">' +
+          '<div class="mobile-card-footer" style="margin-top:9px; padding-top:8px; border-top:1px dashed rgba(0,0,0,0.12); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">' +
             '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
               '<div class="mobile-card-scorta" style="font-size:12px; color:#334155; font-weight:700;">Scorta: <b style="color:#0f172a;">' + (t.scorta || 0) + '</b></div>' +
-              '<button type="button" class="btn-card-scatola-action" onclick="caricaScatolaRapida(' + t.id + ')" title="Aggiungi 1 scatola arrivata dalla farmacia">📦 +Scatola</button>' +
-              '<button type="button" class="btn-card-time-action" onclick="apriCambiaOrarioRapido(' + t.id + ')" title="Sposta orario di somministrazione">🕒 Orario</button>' +
+              '<button type="button" class="btn-card-scatola-action" onclick="caricaScatolaRapida(\'' + t.id + '\')" title="Aggiungi 1 scatola arrivata dalla farmacia">📦 +Scatola</button>' +
+              '<button type="button" class="btn-card-time-action" onclick="apriCambiaOrarioRapido(\'' + t.id + '\')" title="Sposta orario di somministrazione">🕒 Orario</button>' +
             '</div>' +
             '<div style="display:flex; align-items:center; gap:6px;">' +
               (isDone
-                ? '<button type="button" class="btn-mobile-card-undo" onclick="toggleFarmacoConScarico(' + t.id + ')">Annulla</button>'
-                : '<button type="button" class="btn-mobile-card-take" onclick="toggleFarmacoConScarico(' + t.id + ')"><span>✓</span> <span>PRESO</span></button>'
+                ? '<button type="button" class="btn-mobile-card-undo" onclick="toggleFarmacoConScarico(\'' + t.id + '\')">Annulla</button>'
+                : '<button type="button" class="btn-mobile-card-take" onclick="toggleFarmacoConScarico(\'' + t.id + '\')"><span>✓</span> <span>PRESO</span></button>'
               ) +
             '</div>' +
           '</div>' +
