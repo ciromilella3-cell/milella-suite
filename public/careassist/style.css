@@ -4851,6 +4851,56 @@ textarea.form-control {
   color: #ffffff !important;
 }
 
+/* ==========================================================================
+   HEADER MODALE SCORTA RAPIDA (MASSIMA LEGGIBILITÀ SU QUALSIASI DISPOSITIVO)
+   ========================================================================== */
+#modal-modifica-scorta-rapida .modal-header,
+.header-scorta-rapida {
+  background: linear-gradient(135deg, #091e3a 0%, #1e3a8a 50%, #0284c7 100%) !important;
+  color: #ffffff !important;
+  padding: 14px 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(9, 30, 58, 0.35) !important;
+}
+
+#modal-modifica-scorta-rapida .modal-header h3,
+.header-scorta-rapida h3 {
+  color: #ffffff !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+#modal-modifica-scorta-rapida #msr-farm-nome {
+  color: #fef08a !important;
+  font-weight: 800 !important;
+  font-size: 12.5px !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+}
+
+#modal-modifica-scorta-rapida #msr-paz-nome {
+  color: #e0f2fe !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+}
+
+#modal-modifica-scorta-rapida .modal-header button,
+.header-scorta-rapida button {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  padding: 4px 10px !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+}
+
 .modal-body-pro {
   padding: 12px 14px !important;
   overflow-y: auto !important;
