@@ -6484,7 +6484,10 @@ async function caricaScatolaRapida(farmacoId) {
 }
 window.caricaScatolaRapida = caricaScatolaRapida;
 
-// MODIFICA RAPIDA NUMERO DI CAPSULE / SCORTA (1-CLICK DALLA CARD O DALLA LISTA)
+// MODIFICA RAPIDA NUMERO DI CAPSULE / SCORTA (MODALE MODERNA & ATTRAENTE)
+var _msrCurrentFarmacoId = null;
+var _msrCprPerScatola = 28;
+
 function modificaScortaRapida(farmacoId) {
   try {
     var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
@@ -6503,43 +6506,152 @@ function modificaScortaRapida(farmacoId) {
     }
     if (!t || !p) return;
 
+    _msrCurrentFarmacoId = t.id;
     var isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
-    var attuale = isPen ? (t.penneScorta || t.scorta || 0) : (t.scorta || 0);
-    var unita = isPen ? 'penne' : 'capsule / compresse';
+    var scorta = isPen ? (t.penneScorta || t.scorta || 0) : (t.scorta || 0);
+    _msrCprPerScatola = isPen ? (t.pennePerScatola || 3) : (t.cprPerScatola || 28);
+    var unita = isPen ? 'penne' : 'cpr';
 
-    var valInput = prompt('📦 Modifica Scorta per:\n"' + t.farmaco + '"\n\nScorta attuale: ' + attuale + ' ' + unita + '\n\nInserisci il nuovo numero esatto di ' + unita + ' presenti a casa:', attuale);
-    if (valInput === null) return;
-    var num = parseFloat(String(valInput).replace(',', '.').trim());
-    if (isNaN(num) || num < 0) {
-      if (typeof showToast === 'function') showToast('⚠️ Valore scorta non valido.', 'warning');
-      return;
+    var elNome = document.getElementById('msr-farm-nome');
+    if (elNome) elNome.textContent = (t.farmaco || 'Farmaco').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
+
+    var elPaz = document.getElementById('msr-paz-nome');
+    if (elPaz) elPaz.textContent = (p.nome || 'Assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+
+    var elAttuale = document.getElementById('msr-scorta-attuale-badge');
+    if (elAttuale) elAttuale.textContent = scorta + ' ' + unita;
+
+    var elDesc = document.getElementById('msr-desc-autonomia');
+    if (elDesc) elDesc.textContent = '~' + Math.floor(scorta) + ' giorni di autonomia stimata';
+
+    var elInput = document.getElementById('msr-input-scorta');
+    if (elInput) elInput.value = scorta;
+
+    var btnScatola = document.getElementById('msr-btn-scatola');
+    if (btnScatola) btnScatola.textContent = '+' + _msrCprPerScatola + ' ' + unita;
+
+    if (typeof msrRicalcolaPreview === 'function') msrRicalcolaPreview();
+
+    var modal = document.getElementById('modal-modifica-scorta-rapida');
+    if (modal) {
+      modal.classList.add('active');
+      modal.style.display = 'flex';
+      setTimeout(function () {
+        if (elInput) {
+          elInput.focus();
+          elInput.select();
+        }
+      }, 100);
     }
-
-    var nuovoVal = Math.round(num * 10) / 10;
-    t.scorta = nuovoVal;
-    if (isPen) t.penneScorta = nuovoVal;
-
-    // Allinea le dosi gemelle dello stesso farmaco (es. se prescritto più volte al giorno)
-    var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
-    (p.terapie || []).forEach(function (item) {
-      var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
-      if (n.length > 2 && (n === cleanNome || cleanNome.indexOf(n) >= 0 || n.indexOf(cleanNome) >= 0)) {
-        item.scorta = nuovoVal;
-        if (isPen) item.penneScorta = nuovoVal;
-      }
-    });
-
-    if (typeof saveDb === 'function') saveDb();
-    if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
-    if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
-    if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
-    if (typeof renderTerapie === 'function') renderTerapie();
-    if (typeof showToast === 'function') showToast('✅ Scorta di "' + t.farmaco + '" aggiornata a ' + nuovoVal + ' ' + unita + '!', 'success');
   } catch (e) {
     console.error('Errore modificaScortaRapida:', e);
   }
 }
 window.modificaScortaRapida = modificaScortaRapida;
+
+function chiudiModificaScortaRapida() {
+  var modal = document.getElementById('modal-modifica-scorta-rapida');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
+  _msrCurrentFarmacoId = null;
+}
+window.chiudiModificaScortaRapida = chiudiModificaScortaRapida;
+
+function msrAggiungi(delta) {
+  var elInput = document.getElementById('msr-input-scorta');
+  if (!elInput) return;
+  var curr = parseFloat(elInput.value) || 0;
+  var next = Math.max(0, Math.round((curr + delta) * 10) / 10);
+  elInput.value = next;
+  msrRicalcolaPreview();
+}
+window.msrAggiungi = msrAggiungi;
+
+function msrAggiungiScatola() {
+  msrAggiungi(_msrCprPerScatola || 28);
+}
+window.msrAggiungiScatola = msrAggiungiScatola;
+
+function msrRicalcolaPreview() {
+  var elInput = document.getElementById('msr-input-scorta');
+  var box = document.getElementById('msr-status-box');
+  var txt = document.getElementById('msr-status-text');
+  var icon = document.getElementById('msr-status-icon');
+  if (!elInput || !box) return;
+
+  var val = parseFloat(elInput.value) || 0;
+  if (val <= 0) {
+    box.style.background = '#fef2f2';
+    box.style.borderColor = '#fca5a5';
+    box.style.color = '#991b1b';
+    if (icon) icon.textContent = '🚨';
+    if (txt) txt.textContent = 'Scorta Esaurita! Nessuna compressa/penna a casa';
+  } else if (val <= 7) {
+    box.style.background = '#fffbeb';
+    box.style.borderColor = '#fde68a';
+    box.style.color = '#92400e';
+    if (icon) icon.textContent = '⚠️';
+    if (txt) txt.textContent = 'Scorta in esaurimento (' + val + ' rimaste) - Richiedi ricetta MMG';
+  } else {
+    box.style.background = '#ecfdf5';
+    box.style.borderColor = '#86efac';
+    box.style.color = '#166534';
+    if (icon) icon.textContent = '🟢';
+    if (txt) txt.textContent = 'Scorta sufficiente per circa ' + Math.floor(val) + ' giorni di terapia';
+  }
+}
+window.msrRicalcolaPreview = msrRicalcolaPreview;
+
+function salvaModificaScortaRapida() {
+  if (!_msrCurrentFarmacoId) return;
+  var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  var t = null;
+  if (p && Array.isArray(p.terapie)) {
+    t = p.terapie.find(function (item) { return String(item.id) === String(_msrCurrentFarmacoId) || item.id == _msrCurrentFarmacoId; });
+  }
+  if (!t && Array.isArray(window.pazienti)) {
+    for (var pi = 0; pi < window.pazienti.length; pi++) {
+      var cand = window.pazienti[pi];
+      if (cand && Array.isArray(cand.terapie)) {
+        var found = cand.terapie.find(function (item) { return String(item.id) === String(_msrCurrentFarmacoId) || item.id == _msrCurrentFarmacoId; });
+        if (found) { p = cand; t = found; if (typeof setActivePaziente === 'function') setActivePaziente(p.id); break; }
+      }
+    }
+  }
+  if (!t || !p) return;
+
+  var elInput = document.getElementById('msr-input-scorta');
+  var num = elInput ? parseFloat(elInput.value) : 0;
+  if (isNaN(num) || num < 0) num = 0;
+  var nuovoVal = Math.round(num * 10) / 10;
+
+  var isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+  t.scorta = nuovoVal;
+  if (isPen) t.penneScorta = nuovoVal;
+
+  var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
+  (p.terapie || []).forEach(function (item) {
+    var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
+    if (n.length > 2 && (n === cleanNome || cleanNome.indexOf(n) >= 0 || n.indexOf(cleanNome) >= 0)) {
+      item.scorta = nuovoVal;
+      if (isPen) item.penneScorta = nuovoVal;
+    }
+  });
+
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+  if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
+  if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
+  if (typeof renderTerapie === 'function') renderTerapie();
+
+  chiudiModificaScortaRapida();
+  if (typeof showToast === 'function') {
+    showToast('✅ Scorta di "' + t.farmaco + '" aggiornata a ' + nuovoVal + (isPen ? ' penne' : ' compresse') + '!', 'success');
+  }
+}
+window.salvaModificaScortaRapida = salvaModificaScortaRapida;
 
 function modificaInputScortaModal(delta) {
   var inp = document.getElementById('edit-farm-scorta');

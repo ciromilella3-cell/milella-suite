@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=245">
+  <link rel="stylesheet" href="style.css?v=246">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -196,7 +196,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="registro_asl.css?v=245">
+  <link rel="stylesheet" href="registro_asl.css?v=246">
 
   <style>
     @keyframes menuDropAnim {
@@ -2552,6 +2552,69 @@
         <div style="display:flex; justify-content:space-between; gap:10px;">
           <button type="button" onclick="chiudiCambiaOrarioRapido()" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;">Annulla</button>
           <button type="button" onclick="salvaCambiaOrarioRapido()" style="flex:1; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:none; padding:11px 18px; border-radius:10px; font-weight:900; font-size:14px; cursor:pointer; box-shadow:0 3px 10px rgba(16,185,129,0.35);">✔️ Salva Nuovo Orario</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MODIFICA SCORTA RAPIDA (ATTRAENTE, TOUCH, SMARTPHONE & PC) -->
+  <div class="modal-overlay" id="modal-modifica-scorta-rapida" style="display:none; z-index:20000030;">
+    <div class="modal-card" style="max-width:440px; width:92%; border-radius:20px; overflow:hidden; background:#ffffff; box-shadow:0 25px 60px rgba(0,0,0,0.55); border:1px solid rgba(255,255,255,0.2);">
+      <div class="modal-header" style="background:linear-gradient(135deg, #0f172a 0%, #0369a1 100%); color:#ffffff; padding:15px 18px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+          <span style="font-size:26px; flex-shrink:0;">📦</span>
+          <div style="min-width:0;">
+            <h3 style="margin:0; font-size:16px; font-weight:900; color:#ffffff; line-height:1.2;">Aggiorna Scorta Farmaco</h3>
+            <div style="font-size:12px; color:#e0f2fe; font-weight:700; margin-top:3px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+              <span id="msr-farm-nome" style="color:#fef08a;">Farmaco</span> • <span id="msr-paz-nome">Assistito</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline" onclick="chiudiModificaScortaRapida()" style="color:#ffffff; border-color:rgba(255,255,255,0.4); padding:4px 9px; border-radius:8px; font-weight:800; font-size:14px; background:rgba(255,255,255,0.15); cursor:pointer;">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding:18px;">
+        <!-- Scorta Attuale Rilevata -->
+        <div style="background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border:1.5px solid #e2e8f0; border-radius:14px; padding:12px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Scorta Attuale a Casa:</div>
+            <div id="msr-desc-autonomia" style="font-size:12px; font-weight:700; color:#0369a1; margin-top:2px;">Conteggio compresse registrate</div>
+          </div>
+          <div id="msr-scorta-attuale-badge" style="font-size:18px; font-weight:900; color:#0f172a; background:#ffffff; padding:5px 14px; border-radius:10px; border:1.5px solid #cbd5e1; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
+            -- cpr
+          </div>
+        </div>
+
+        <!-- Selettore Numerico Touch Stepper -->
+        <label style="display:block; font-size:12px; font-weight:900; color:#1e293b; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.4px;">Nuovo Numero Esatto Capsule / Cpr:</label>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <button type="button" onclick="msrAggiungi(-1)" style="width:52px; height:52px; border-radius:14px; background:#f8fafc; border:2px solid #cbd5e1; font-size:24px; font-weight:900; color:#334155; cursor:pointer; display:flex; align-items:center; justify-content:center; touch-action:manipulation; user-select:none; transition:all 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">−</button>
+          <input type="number" id="msr-input-scorta" min="0" step="1" style="flex:1; height:52px; font-size:28px; font-weight:900; text-align:center; color:#0284c7; border:2px solid #0284c7; border-radius:14px; background:#ffffff; box-shadow:inset 0 2px 6px rgba(0,0,0,0.05); outline:none;" oninput="msrRicalcolaPreview()">
+          <button type="button" onclick="msrAggiungi(+1)" style="width:52px; height:52px; border-radius:14px; background:#eff6ff; border:2px solid #38bdf8; font-size:24px; font-weight:900; color:#0284c7; cursor:pointer; display:flex; align-items:center; justify-content:center; touch-action:manipulation; user-select:none; transition:all 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">+</button>
+        </div>
+
+        <!-- Tasti Regolazione Rapida 1-Tap -->
+        <div style="font-size:11px; font-weight:800; color:#64748b; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">Regolazioni Rapide 1-Tap:</div>
+        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:12px;">
+          <button type="button" onclick="msrAggiungi(-10)" style="background:#fef2f2; border:1px solid #fecaca; color:#dc2626; padding:9px 2px; border-radius:10px; font-weight:900; font-size:12px; cursor:pointer; touch-action:manipulation;">-10</button>
+          <button type="button" onclick="msrAggiungi(-5)" style="background:#fff1f2; border:1px solid #fecdd3; color:#e11d48; padding:9px 2px; border-radius:10px; font-weight:900; font-size:12px; cursor:pointer; touch-action:manipulation;">-5</button>
+          <button type="button" onclick="msrAggiungi(+5)" style="background:#eff6ff; border:1px solid #bfdbfe; color:#2563eb; padding:9px 2px; border-radius:10px; font-weight:900; font-size:12px; cursor:pointer; touch-action:manipulation;">+5</button>
+          <button type="button" onclick="msrAggiungi(+10)" style="background:#f0fdf4; border:1px solid #bbf7d0; color:#16a34a; padding:9px 2px; border-radius:10px; font-weight:900; font-size:12px; cursor:pointer; touch-action:manipulation;">+10</button>
+          <button type="button" id="msr-btn-scatola" onclick="msrAggiungiScatola()" style="background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; padding:9px 2px; border-radius:10px; font-weight:900; font-size:11px; cursor:pointer; touch-action:manipulation;">+Scatola</button>
+        </div>
+
+        <!-- Box Indicatore Clinico di Copertura -->
+        <div id="msr-status-box" style="background:#ecfdf5; border:1.5px solid #86efac; border-radius:12px; padding:10px 14px; margin-bottom:16px; font-size:12.5px; color:#166534; font-weight:800; display:flex; align-items:center; gap:8px;">
+          <span id="msr-status-icon" style="font-size:18px;">🟢</span>
+          <span id="msr-status-text">Copertura stimata sufficiente</span>
+        </div>
+
+        <!-- Pulsanti Azione -->
+        <div style="display:flex; justify-content:space-between; gap:10px;">
+          <button type="button" onclick="chiudiModificaScortaRapida()" style="background:#f1f5f9; color:#475569; border:1.5px solid #cbd5e1; padding:12px 18px; border-radius:12px; font-weight:800; font-size:13.5px; cursor:pointer; touch-action:manipulation;">✕ Annulla</button>
+          <button type="button" onclick="salvaModificaScortaRapida()" style="flex:1; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:none; padding:12px 18px; border-radius:12px; font-weight:900; font-size:14.5px; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.35); display:inline-flex; align-items:center; justify-content:center; gap:8px; touch-action:manipulation;">
+            <span>💾</span> <span>Salva Nuova Scorta</span>
+          </button>
         </div>
       </div>
     </div>
@@ -6743,7 +6806,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=245"></script>
+  <script src="app.js?v=246"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
