@@ -12227,6 +12227,16 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   } catch (eParam) { }
   initTabs();
+  // Su smartphone atterra direttamente sulla schermata pulita "Terapie & Farmaci" (Hero Card)
+  try {
+    if (window.innerWidth <= 768 && !new URLSearchParams(window.location.search).get('tab')) {
+      setTimeout(function() {
+        var btnFarm = document.querySelector('[data-target="tab-farmaci"]');
+        if (btnFarm) btnFarm.click();
+      }, 150);
+    }
+  } catch(eMobileTab) {}
+
   renderAll();
 
   // Sincronizza immediatamente il database condiviso dal server (se online)
@@ -13757,6 +13767,7 @@ function renderDosiCards() {
   });
 
   container.innerHTML = html;
+  if (typeof renderMobileNativeView === 'function') renderMobileNativeView(terapieFiltrate, p);
 }
 
 
@@ -22938,3 +22949,172 @@ document.addEventListener('click', function(e) {
   const c2 = document.getElementById('menu-hero-more-container');
   if (c2 && !c2.contains(e.target)) chiudiMenuHeroMore();
 });
+
+
+// ==============================================================================
+// VISTA APP NATIVA MOBILE PER OPERATORI E CAREGIVER (ZERO SFORZO / POLLICE TOUCH)
+// ==============================================================================
+window._mobileFilterMode = 'tutte';
+
+function filtraMobileTerapie(mode, btn) {
+  window._mobileFilterMode = mode;
+  document.querySelectorAll('.mobile-pill-filter').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (p && typeof renderMobileNativeView === 'function') {
+    renderMobileNativeView(p.terapie || [], p);
+  }
+}
+window.filtraMobileTerapie = filtraMobileTerapie;
+
+function renderMobileNativeView(terapie, p) {
+  var container = document.getElementById('careassist-native-mobile-container');
+  if (!container || !p) return;
+
+  // 1. Render Carosello Pazienti Touch
+  var chipsBar = document.getElementById('mobile-pazienti-chips');
+  if (chipsBar && AppData && Array.isArray(AppData.pazienti)) {
+    chipsBar.innerHTML = AppData.pazienti.map(function(pt) {
+      var isActive = pt.id === AppData.activePazienteId;
+      var avatar = pt.sesso === 'F' ? '👵' : '👴';
+      var shortName = pt.nome ? pt.nome.split(' ').slice(0, 2).join(' ') : 'Assistito';
+      return '<div class="mobile-patient-chip' + (isActive ? ' active' : '') + '" onclick="cambiaPaziente(\'' + pt.id + '\')">' +
+        '<span class="chip-avatar">' + avatar + '</span>' +
+        '<span>' + shortName + '</span>' +
+        (isActive ? ' <span style="font-size:11px; margin-left:3px;">✓</span>' : '') +
+      '</div>';
+    }).join('');
+  }
+
+  // 2. Calcola la Hero Action Card: "COSA DEVI FARE ADESSO"
+  var heroContainer = document.getElementById('mobile-hero-action-card');
+  if (heroContainer) {
+    var oraAttuale = new Date();
+    var minAttuali = oraAttuale.getHours() * 60 + oraAttuale.getMinutes();
+
+    // Trova terapie da fare oggi
+    var nonFatti = (p.terapie || []).filter(function(t) { return !t.fattoOggi && t.ora !== 'Al Bisogno'; });
+    
+    // Ordina per orario
+    nonFatti.sort(function(a, b) {
+      var ma = (a.ora && a.ora.includes(':')) ? (parseInt(a.ora.split(':')[0]) * 60 + parseInt(a.ora.split(':')[1])) : 9999;
+      var mb = (b.ora && b.ora.includes(':')) ? (parseInt(b.ora.split(':')[0]) * 60 + parseInt(b.ora.split(':')[1])) : 9999;
+      return ma - mb;
+    });
+
+    if (nonFatti.length === 0) {
+      heroContainer.className = 'mobile-hero-card done-all';
+      heroContainer.innerHTML = 
+        '<div class="mobile-hero-badge badge-done">🎉 TUTTE LE TERAPIE COMPLETATE</div>' +
+        '<div class="mobile-hero-title">Tutto Somministrato!</div>' +
+        '<div class="mobile-hero-sub">Tutte le terapie di oggi per <b>' + (p.nome || 'l\'assistito') + '</b> sono state registrate con successo.</div>' +
+        '<div style="font-size:12.5px; color:#10b981; font-weight:800; margin-top:6px;">✓ Nessun farmaco rimasto indietro per oggi.</div>';
+    } else {
+      var nextT = nonFatti[0];
+      var minNext = (nextT.ora && nextT.ora.includes(':')) ? (parseInt(nextT.ora.split(':')[0]) * 60 + parseInt(nextT.ora.split(':')[1])) : 0;
+      var diffMin = minAttuali - minNext;
+      var isRitardo = diffMin > 30; // Più di 30 minuti di ritardo
+
+      if (isRitardo) {
+        heroContainer.className = 'mobile-hero-card urgent';
+        heroContainer.innerHTML = 
+          '<div class="mobile-hero-badge badge-urgent">⚠️ ATTENZIONE • IN RITARDO DI ' + Math.floor(diffMin / 60) + 'h ' + (diffMin % 60) + 'm</div>' +
+          '<div class="mobile-hero-title">' + nextT.farmaco + '</div>' +
+          '<div class="mobile-hero-sub">Orario previsto: <b>' + nextT.ora + '</b> (' + (nextT.fascia || 'Oggi') + ') • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b></div>' +
+          '<button type="button" class="btn-mobile-hero-action" style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);" onclick="toggleFarmacoConScarico(' + nextT.id + ')">' +
+            '<span>✅</span> <span>HO SOMMINISTRATO ORA</span>' +
+          '</button>' +
+          '<div class="mobile-hero-secondary-row">' +
+            '<button type="button" class="btn-mobile-hero-sub" onclick="apriModalSaltaFarmaco(' + nextT.id + ')">⏭️ Non somministrato / Salta</button>' +
+            '<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>' +
+          '</div>';
+      } else {
+        heroContainer.className = 'mobile-hero-card ready';
+        var labelOrario = diffMin >= 0 
+          ? '⏰ DA SOMMINISTRARE ADESSO • ORE ' + nextT.ora 
+          : '⏰ PROSSIMA SOMMINISTRAZIONE • ORE ' + nextT.ora;
+        heroContainer.innerHTML = 
+          '<div class="mobile-hero-badge badge-ready">' + labelOrario + '</div>' +
+          '<div class="mobile-hero-title">' + nextT.farmaco + '</div>' +
+          '<div class="mobile-hero-sub">' + (nextT.fascia || 'Oggi') + ' • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b> • Scorta: <b>' + (nextT.scorta || 0) + '</b></div>' +
+          '<button type="button" class="btn-mobile-hero-action" onclick="toggleFarmacoConScarico(' + nextT.id + ')">' +
+            '<span>✅</span> <span>REGISTRA ASSUNZIONE ORA</span>' +
+          '</button>' +
+          '<div class="mobile-hero-secondary-row">' +
+            '<button type="button" class="btn-mobile-hero-sub" onclick="apriModalSaltaFarmaco(' + nextT.id + ')">⏭️ Salta</button>' +
+            '<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>' +
+            '<button type="button" class="btn-mobile-hero-sub" onclick="mostraAuditFarmaco(' + nextT.id + ')">ℹ️ Dettagli</button>' +
+          '</div>';
+      }
+    }
+  }
+
+  // 3. Render Timeline Schede Mobile
+  var timelineContainer = document.getElementById('mobile-terapie-timeline');
+  if (timelineContainer) {
+    var filter = window._mobileFilterMode || 'tutte';
+    var lista = (p.terapie || []).filter(function(t) {
+      if (filter === 'da_prendere') return !t.fattoOggi;
+      if (filter === 'fatte') return t.fattoOggi;
+      return true;
+    });
+
+    if (lista.length === 0) {
+      timelineContainer.innerHTML = '<div style="text-align:center; padding:24px; color:#64748b; font-size:13.5px; font-weight:600;">Nessuna terapia in questa categoria.</div>';
+    } else {
+      timelineContainer.innerHTML = lista.map(function(t) {
+        var isDone = !!t.fattoOggi;
+        var iconaFormato = (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) ? '💉' : '💊';
+        return '<div class="mobile-card-item' + (isDone ? ' is-done' : '') + '">' +
+          '<div class="mobile-card-header">' +
+            '<div class="mobile-card-time">' +
+              '<span>' + iconaFormato + '</span>' +
+              '<span>' + (t.ora || '--:--') + '</span>' +
+              '<span style="font-size:11.5px; color:#64748b; font-weight:600;">• ' + (t.fascia || '') + '</span>' +
+            '</div>' +
+            '<div class="mobile-card-status-pill ' + (isDone ? 'status-done' : 'status-pending') + '">' +
+              (isDone ? '✓ PRESO' : 'DA FARE') +
+            '</div>' +
+          '</div>' +
+          '<div class="mobile-card-name">' + t.farmaco + '</div>' +
+          '<div class="mobile-card-dosaggio">' + (t.dosaggio || '') + (t.modo ? (' — ' + t.modo) : '') + '</div>' +
+          '<div class="mobile-card-footer">' +
+            '<div class="mobile-card-scorta">Scorta: <b>' + (t.scorta || 0) + '</b></div>' +
+            (isDone
+              ? '<button type="button" class="btn-mobile-card-undo" onclick="toggleFarmacoConScarico(' + t.id + ')">Annulla</button>'
+              : '<button type="button" class="btn-mobile-card-take" onclick="toggleFarmacoConScarico(' + t.id + ')"><span>✓</span> <span>PRESO</span></button>'
+            ) +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
+}
+window.renderMobileNativeView = renderMobileNativeView;
+
+
+function navigaMobileTab(mode, btn) {
+  document.querySelectorAll('.mobile-bottom-bar .bar-item').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+
+  if (mode === 'oggi') {
+    var btnFarm = document.querySelector('[data-target="tab-farmaci"]');
+    if (btnFarm) btnFarm.click();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else if (mode === 'clinica') {
+    var btnDash = document.querySelector('[data-target="tab-dashboard"]');
+    if (btnDash) btnDash.click();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+window.navigaMobileTab = navigaMobileTab;
+
+function apriScannerMobileUnClick() {
+  var camInput = document.getElementById('scan-carico-camera') || document.getElementById('scan-farm-camera');
+  if (camInput) {
+    camInput.click();
+  } else if (typeof apriMascheraNuovoFarmaco === 'function') {
+    apriMascheraNuovoFarmaco();
+  }
+}
+window.apriScannerMobileUnClick = apriScannerMobileUnClick;

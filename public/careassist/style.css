@@ -7200,3 +7200,297 @@ main, .main-content, .dashboard-container {
   }
 }
 
+
+
+/* ==========================================================================
+   MODALITÀ APP NATIVA MOBILE PER OPERATORI / CAREGIVER (ZERO SFORZO)
+   ========================================================================== */
+@media (min-width: 769px) {
+  .mobile-only-app-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-fullview-container {
+    display: none !important;
+  }
+  
+  .mobile-only-app-container {
+    display: block !important;
+    margin-top: 10px;
+  }
+
+  .mobile-pazienti-chips-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 6px 4px 12px 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .mobile-pazienti-chips-bar::-webkit-scrollbar {
+    display: none;
+  }
+  .mobile-patient-chip {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .mobile-patient-chip.active {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+    border-color: #0284c7 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35) !important;
+  }
+
+  .mobile-hero-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    border: 2px solid #e2e8f0;
+    position: relative;
+    overflow: hidden;
+  }
+  .mobile-hero-card.urgent {
+    border-color: #ef4444 !important;
+    background: linear-gradient(to bottom, #fef2f2, #ffffff) !important;
+  }
+  .mobile-hero-card.ready {
+    border-color: #0284c7 !important;
+    background: linear-gradient(to bottom, #f0f9ff, #ffffff) !important;
+  }
+  .mobile-hero-card.done-all {
+    border-color: #10b981 !important;
+    background: linear-gradient(to bottom, #ecfdf5, #ffffff) !important;
+    text-align: center;
+  }
+
+  .mobile-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+  .mobile-hero-badge.badge-urgent {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+  .mobile-hero-badge.badge-ready {
+    background: #e0f2fe;
+    color: #0284c7;
+  }
+  .mobile-hero-badge.badge-done {
+    background: #d1fae5;
+    color: #059669;
+  }
+
+  .mobile-hero-title {
+    font-size: 19px;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.25;
+    margin-bottom: 4px;
+  }
+  .mobile-hero-sub {
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .btn-mobile-hero-action {
+    width: 100%;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-mobile-hero-action:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  }
+
+  .mobile-hero-secondary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed #e2e8f0;
+  }
+  .btn-mobile-hero-sub {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+  }
+
+  .mobile-terapie-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+  .mobile-terapie-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .mobile-filter-pills {
+    display: flex;
+    gap: 6px;
+  }
+  .mobile-pill-filter {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 4px 10px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+  }
+  .mobile-pill-filter.active {
+    background: #0f172a !important;
+    border-color: #0f172a !important;
+    color: #ffffff !important;
+  }
+
+  .mobile-timeline-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 80px;
+  }
+  .mobile-card-item {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+  }
+  .mobile-card-item.is-done {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    opacity: 0.9;
+  }
+  .mobile-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .mobile-card-time {
+    font-size: 13px;
+    font-weight: 800;
+    color: #0284c7;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mobile-card-status-pill {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+  .mobile-card-status-pill.status-done {
+    background: #dcfce7;
+    color: #15803d;
+  }
+  .mobile-card-status-pill.status-pending {
+    background: #fef3c7;
+    color: #b45309;
+  }
+  .mobile-card-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 2px;
+  }
+  .mobile-card-dosaggio {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 8px;
+  }
+  .mobile-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .mobile-card-scorta {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748b;
+  }
+  .btn-mobile-card-take {
+    min-height: 42px;
+    padding: 6px 16px;
+    background: #10b981;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+  }
+  .btn-mobile-card-take:active {
+    transform: scale(0.97);
+  }
+  .btn-mobile-card-undo {
+    min-height: 36px;
+    padding: 4px 12px;
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+}
