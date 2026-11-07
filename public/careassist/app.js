@@ -23181,10 +23181,9 @@ function renderMobileNativeView(terapie, p) {
   var container = document.getElementById('careassist-native-mobile-container');
   if (!container || !p) return;
 
-  // 1. Render Card Assistito Attivo (Stile WhatsApp Canali - Elimina carosello orizzontale tagliato!)
+  // 1. Render Card Assistito Attivo (Senza testi troncati, layout moderno!)
   var activeCard = document.getElementById('mobile-active-patient-card');
   if (!activeCard) {
-    // Se c'è ancora il vecchio id mobile-pazienti-chips nel DOM, riusalo come contenitore card
     activeCard = document.getElementById('mobile-pazienti-chips');
   }
   if (activeCard && p) {
@@ -23197,28 +23196,41 @@ function renderMobileNativeView(terapie, p) {
     else if (p.id === 'paz_angela' || pulitoNome.toLowerCase().includes('angela')) { avatarEmoji = '👵'; avatarBg = '#fce7f3'; avatarBorder = '#ec4899'; }
     else if (p.id === 'paz_rosa' || pulitoNome.toLowerCase().includes('rosa')) { avatarEmoji = '👵'; avatarBg = '#fae8ff'; avatarBorder = '#d946ef'; }
     else if (p.id === 'paz_1793216119572' || pulitoNome.toLowerCase().includes('ciro')) { avatarEmoji = '👨'; avatarBg = '#dcfce7'; avatarBorder = '#22c55e'; }
+    else if (p.id === 'paz_mariacarmela' || pulitoNome.toLowerCase().includes('stoppelli')) { avatarEmoji = '👩'; avatarBg = '#fef3c7'; avatarBorder = '#f59e0b'; }
 
     var nTerapie = (p.terapie || []).length;
     var nFatti = (p.terapie || []).filter(function(t){ return t.fattoOggi; }).length;
 
-    activeCard.innerHTML = '<div onclick="apriSwitchPazienteRapido()" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:18px; padding:11px 15px; margin:0 0 12px 0; display:flex; align-items:center; justify-content:space-between; box-shadow:0 3px 10px rgba(0,0,0,0.05); cursor:pointer;">' +
+    activeCard.innerHTML = '<div onclick="apriSwitchPazienteRapido()" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:18px; padding:12px 14px; margin:0 0 10px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 3px 10px rgba(0,0,0,0.05); cursor:pointer;">' +
       '<div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">' +
-        '<div style="width:46px; height:46px; border-radius:50%; background:' + avatarBg + '; border:2.5px solid ' + avatarBorder + '; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.08);">' +
+        '<div style="width:48px; height:48px; border-radius:50%; background:' + avatarBg + '; border:2.5px solid ' + avatarBorder + '; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.08);">' +
           avatarEmoji +
         '</div>' +
         '<div style="flex:1; min-width:0;">' +
-          '<div style="display:flex; align-items:center; gap:6px;">' +
-            '<span style="font-size:16px; font-weight:900; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + pulitoNome + '</span>' +
+          '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
+            '<span style="font-size:15.5px; font-weight:900; color:#0f172a; line-height:1.25;">' + pulitoNome + '</span>' +
             '<span style="color:#059669; font-size:14px; font-weight:900;" title="Verificato">✓</span>' +
           '</div>' +
-          '<div style="font-size:12px; color:#64748b; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;">' +
-            eta + ' anni • ' + (p.allettato ? 'Allettato' : 'Deambulante') + ' • ' + nFatti + '/' + nTerapie + ' prese' +
+          '<div style="font-size:12px; color:#64748b; font-weight:600; margin-top:2px; line-height:1.2;">' +
+            eta + ' anni • ' + (p.allettato ? 'Allettato' : 'Deambulante') +
+          '</div>' +
+          '<div style="font-size:11.5px; color:#059669; font-weight:800; margin-top:2px;">' +
+            '✅ ' + nFatti + ' di ' + nTerapie + ' terapie assunte oggi' +
           '</div>' +
         '</div>' +
       '</div>' +
-      '<div style="background:#f1f5f9; border:1.5px solid #cbd5e1; border-radius:20px; padding:7px 12px; font-size:12px; font-weight:800; color:#0284c7; display:flex; align-items:center; gap:4px; flex-shrink:0; box-shadow:0 1px 3px rgba(0,0,0,0.04);">' +
+      '<div style="background:#f1f5f9; border:1.5px solid #cbd5e1; border-radius:16px; padding:8px 12px; font-size:12px; font-weight:800; color:#0284c7; display:flex; align-items:center; gap:4px; flex-shrink:0; box-shadow:0 1px 3px rgba(0,0,0,0.04);">' +
         '<span>👥 Cambia</span> <span>▾</span>' +
       '</div>' +
+    '</div>' +
+    '<!-- Pulsanti Vocali Mobili Simmetrici 50% / 50% (Zero overflow!) -->' +
+    '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 0 12px 0;">' +
+      '<button type="button" onclick="apriModalConsegnaVocale()" style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; font-weight:800; font-size:12px; padding:9px 10px; border-radius:12px; border:none; box-shadow:0 2px 6px rgba(79,70,229,0.25); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">' +
+        '<span style="font-size:15px;">🗣️</span> <span>Consegna OSS</span>' +
+      '</button>' +
+      '<button type="button" onclick="avviaBriefingVocaleAssistitoDemo()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12px; padding:9px 10px; border-radius:12px; border:none; box-shadow:0 2px 6px rgba(2,132,199,0.25); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">' +
+        '<span style="font-size:15px;">🎙️</span> <span>Briefing Vocale</span>' +
+      '</button>' +
     '</div>';
   }
 
