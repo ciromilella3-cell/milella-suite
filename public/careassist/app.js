@@ -23572,3 +23572,387 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+
+
+// ==========================================================================
+// CONDIVISIONE, STAMPA, WHATSAPP ED EMAIL DELLA SCHEDA CLINICA
+// ==========================================================================
+function getDatiSchedaClinicaAttuale() {
+  const p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  if (!p) return null;
+
+  // Se i campi della form sono compilati, prendi i valori attuali della form
+  const inputNome = document.getElementById('edit-paz-nome');
+  const nome = (inputNome && inputNome.value.trim()) ? inputNome.value.trim() : (p.nome || 'Aldo Zamparino');
+
+  const inputNascita = document.getElementById('edit-paz-nascita');
+  const dataNascita = (inputNascita && inputNascita.value) ? inputNascita.value : (p.dataNascita || '1935-01-06');
+
+  const inputEta = document.getElementById('edit-paz-eta');
+  const eta = (inputEta && inputEta.value) ? inputEta.value : (p.eta || 91);
+
+  const inputAllergie = document.getElementById('edit-paz-allergie');
+  const allergie = (inputAllergie && inputAllergie.value.trim()) ? inputAllergie.value.trim() : (p.allergie || 'Nessuna nota');
+
+  const inputPatologie = document.getElementById('edit-paz-patologie');
+  let patologieArr = [];
+  if (inputPatologie && inputPatologie.value.trim()) {
+    patologieArr = inputPatologie.value.split(/[\n,;•]+/).map(s => s.trim()).filter(Boolean);
+  } else if (Array.isArray(p.patologie) && p.patologie.length > 0) {
+    patologieArr = p.patologie;
+  } else if (typeof p.patologie === 'string' && p.patologie.trim()) {
+    patologieArr = p.patologie.split(/[\n,;•]+/).map(s => s.trim()).filter(Boolean);
+  }
+
+  const inputNote = document.getElementById('edit-paz-note');
+  const note = (inputNote && inputNote.value.trim()) ? inputNote.value.trim() : (p.note || '');
+
+  const inputIndirizzo = document.getElementById('edit-paz-indirizzo');
+  const indirizzo = (inputIndirizzo && inputIndirizzo.value.trim()) ? inputIndirizzo.value.trim() : (p.indirizzo || 'Via Giovanni Modugno, 25 - Bari');
+
+  const inputCell = document.getElementById('edit-paz-cellulare');
+  const cellulare = (inputCell && inputCell.value.trim()) ? inputCell.value.trim() : (p.cellulare || '');
+
+  const inputTel = document.getElementById('edit-paz-telefono');
+  const telefono = (inputTel && inputTel.value.trim()) ? inputTel.value.trim() : (p.telefono || '');
+
+  const medicoNome = (document.getElementById('edit-paz-medico-nome') && document.getElementById('edit-paz-medico-nome').value.trim()) || p.medicoNome || 'Dott. Roberto Scarcia';
+  const medicoTel = (document.getElementById('edit-paz-medico-tel') && document.getElementById('edit-paz-medico-tel').value.trim()) || p.medicoTel || p.telMedico || '347 126 59 71';
+  const medicoEmail = (document.getElementById('edit-paz-medico-email') && document.getElementById('edit-paz-medico-email').value.trim()) || p.medicoEmail || 'scarcia.roberto@alice.it';
+  const farmaciaNome = (document.getElementById('edit-paz-farmacia') && document.getElementById('edit-paz-farmacia').value.trim()) || p.farmaciaDiRiferimento || 'Farmacia MACARIO';
+  const farmaciaTel = (document.getElementById('edit-paz-farmacia-tel') && document.getElementById('edit-paz-farmacia-tel').value.trim()) || p.farmaciaTelefono || '080 542 80 61';
+
+  const caregiverNome = (document.getElementById('edit-paz-moglie-nome') && document.getElementById('edit-paz-moglie-nome').value.trim()) || p.moglieNome || p.caregiverNome || 'M. Angela (Familiare)';
+  const caregiverCell = (document.getElementById('edit-paz-moglie-cell') && document.getElementById('edit-paz-moglie-cell').value.trim()) || p.moglieCellulare || p.caregiverCellulare || '338 944 96 10';
+
+  const deambulante = !p.allettato;
+
+  return {
+    id: p.id,
+    nome,
+    dataNascita,
+    eta,
+    deambulante,
+    allergie,
+    patologie: patologieArr,
+    note,
+    indirizzo,
+    cellulare,
+    telefono,
+    medicoNome,
+    medicoTel,
+    medicoEmail,
+    farmaciaNome,
+    farmaciaTel,
+    caregiverNome,
+    caregiverCell
+  };
+}
+
+function formattaDataItalianaNascita(dStr) {
+  if (!dStr) return '';
+  const parts = dStr.split('-');
+  if (parts.length === 3) return parts[2] + '/' + parts[1] + '/' + parts[0];
+  return dStr;
+}
+
+function stampaSchedaClinicaAssistito() {
+  const d = getDatiSchedaClinicaAttuale();
+  if (!d) {
+    alert('Nessun assistito selezionato per la stampa.');
+    return;
+  }
+
+  const dataOggi = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const patListHtml = d.patologie.length > 0
+    ? d.patologie.map(item => '<li style="margin-bottom:6px; font-weight:700; color:#0f172a;">' + item + '</li>').join('')
+    : '<li style="color:#64748b; font-style:italic;">Nessuna patologia segnalata</li>';
+
+  const html = '<!DOCTYPE html>' +
+  '<html lang="it"><head><meta charset="utf-8">' +
+  '<title>Scheda Clinica & Anamnesi - ' + d.nome + '</title>' +
+  '<style>' +
+  '  @page { size: A4 portrait; margin: 12mm 14mm; }' +
+  '  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #0f172a; margin: 0; padding: 12px; background: #fff; font-size: 13.5px; line-height: 1.45; }' +
+  '  .no-print { display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: #fff; padding: 10px 16px; border-radius: 10px; margin-bottom: 18px; }' +
+  '  .btn-print { background: #0284c7; color: #fff; border: none; font-weight: 800; font-size: 13px; padding: 8px 16px; border-radius: 6px; cursor: pointer; }' +
+  '  .btn-close { background: #334155; color: #fff; border: none; font-weight: 700; font-size: 12.5px; padding: 8px 14px; border-radius: 6px; cursor: pointer; }' +
+  '  .header-card { border-bottom: 2.5px solid #0284c7; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start; }' +
+  '  .title-main { font-size: 20px; font-weight: 900; color: #0369a1; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }' +
+  '  .subtitle { font-size: 11.5px; font-weight: 700; color: #64748b; margin-top: 2px; }' +
+  '  .patient-box { background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }' +
+  '  .section-box { border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; }' +
+  '  .section-title { font-size: 12.5px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }' +
+  '  .box-allergie { background: #fef2f2; border-color: #fca5a5; }' +
+  '  .box-patologie { background: #ffffff; border-color: #7dd3fc; }' +
+  '  .box-note { background: #fffbeb; border-color: #fde68a; }' +
+  '  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }' +
+  '  .badge-salvavita { background: #dc2626; color: #fff; font-size: 11px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; }' +
+  '  @media print { .no-print { display: none !important; } body { padding: 0 !important; } }' +
+  '</style>' +
+  '</head><body>' +
+  '  <div class="no-print">' +
+  '    <div><b>📄 Anteprima Stampa Cartella Clinica</b> (Formato A4 Ufficiale)</div>' +
+  '    <div style="display:flex; gap:8px;">' +
+  '      <button class="btn-print" onclick="window.print()">🖨️ Stampa Adesso (o Salva in PDF)</button>' +
+  '      <button class="btn-close" onclick="window.close()">Chiudi</button>' +
+  '    </div>' +
+  '  </div>' +
+  '  <div class="header-card">' +
+  '    <div>' +
+  '      <div class="title-main">CareAssist Pro • Cartella Clinica & Anamnesi</div>' +
+  '      <div class="subtitle">Suite Gestionale Socio-Sanitaria Domiciliare • Stampa Clinica Ufficiale</div>' +
+  '    </div>' +
+  '    <div style="text-align:right; font-size:11.5px; font-weight:700; color:#475569;">' +
+  '      Data Emissione:<br><span style="color:#0f172a; font-size:12.5px;">' + dataOggi + '</span>' +
+  '    </div>' +
+  '  </div>' +
+  '  <div class="patient-box">' +
+  '    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
+  '      <span style="font-size:18px; font-weight:900; color:#0369a1;">👤 ' + d.nome + '</span>' +
+  '      <span style="font-size:13px; font-weight:800; background:#0284c7; color:#fff; padding:3px 10px; border-radius:8px;">' + d.eta + ' anni • Nato il ' + formattaDataItalianaNascita(d.dataNascita) + '</span>' +
+  '    </div>' +
+  '    <div style="font-size:12.5px; font-weight:600; color:#334155; line-height:1.6;">' +
+  '      📍 <b>Residenza:</b> ' + d.indirizzo + ' | 📱 <b>Cellulare:</b> ' + (d.cellulare || '--') + ' | ☎️ <b>Fisso:</b> ' + (d.telefono || '--') + '<br>' +
+  '      👥 <b>Caregiver di Riferimento:</b> ' + d.caregiverNome + ' (Tel: ' + d.caregiverCell + ') | 🚶 <b>Stato:</b> ' + (d.deambulante ? 'Deambulante' : 'Allettato') +
+  '    </div>' +
+  '  </div>' +
+  '  <div class="section-box box-allergie">' +
+  '    <div class="section-title" style="color:#991b1b; justify-content:space-between;">' +
+  '      <span>🚫 Allergie & Reazioni Avverse Note (Scheda 118)</span>' +
+  '      <span class="badge-salvavita">⚠️ Salvavita</span>' +
+  '    </div>' +
+  '    <div style="font-size:14.5px; font-weight:900; color:#b91c1c; margin-top:4px;">' +
+  '      ' + (d.allergie || 'Nessuna nota (NKDA)') +
+  '    </div>' +
+  '  </div>' +
+  '  <div class="section-box box-patologie">' +
+  '    <div class="section-title" style="color:#0369a1;">' +
+  '      <span>🩺 Quadro Clinico, Patologie & Diagnosi Attive</span>' +
+  '    </div>' +
+  '    <ul style="margin:4px 0 0 18px; padding:0; line-height:1.55;">' +
+  '      ' + patListHtml +
+  '    </ul>' +
+  '  </div>' +
+  '  <div class="section-box box-note">' +
+  '    <div class="section-title" style="color:#b45309;">' +
+  '      <span>📋 Note Cliniche / Sintesi Assistenziale</span>' +
+  '    </div>' +
+  '    <div style="font-size:13px; font-weight:600; color:#451a03; white-space:pre-wrap; line-height:1.55;">' +
+  '      ' + (d.note || 'Nessuna annotazione clinica registrata.') +
+  '    </div>' +
+  '  </div>' +
+  '  <div class="grid-2">' +
+  '    <div class="section-box" style="background:#f8fafc;">' +
+  '      <div class="section-title" style="color:#0f172a;">👨‍⚕️ Medico Curante</div>' +
+  '      <div style="font-size:12.5px; line-height:1.5;">' +
+  '        <b>' + d.medicoNome + '</b><br>' +
+  '        📱 Cellulare / WA: ' + d.medicoTel + '<br>' +
+  '        ✉️ Email: ' + d.medicoEmail +
+  '      </div>' +
+  '    </div>' +
+  '    <div class="section-box" style="background:#f8fafc;">' +
+  '      <div class="section-title" style="color:#15803d;">🏥 Farmacia di Riferimento</div>' +
+  '      <div style="font-size:12.5px; line-height:1.5;">' +
+  '        <b>' + d.farmaciaNome + '</b><br>' +
+  '        📞 Telefono: ' + d.farmaciaTel + '<br>' +
+  '        Ritiro ricette & DPC periodico' +
+  '      </div>' +
+  '    </div>' +
+  '  </div>' +
+  '  <div style="margin-top:20px; border-top:1.5px dashed #94a3b8; padding-top:10px; display:flex; justify-content:space-between; font-size:11.5px; color:#64748b;">' +
+  '    <div>CareAssist Pro • Documentazione Clinica Domiciliare</div>' +
+  '    <div>Firma Operatore Sanitario: ___________________________</div>' +
+  '  </div>' +
+  '  <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 250); };<\/script>' +
+  '</body></html>';
+
+  const w = window.open('', '_blank', 'width=880,height=900');
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+  } else {
+    window.print();
+  }
+}
+
+function inviaSchedaClinicaWhatsApp() {
+  const d = getDatiSchedaClinicaAttuale();
+  if (!d) {
+    alert('Nessun assistito selezionato per WhatsApp.');
+    return;
+  }
+
+  const patologieTxt = d.patologie.length > 0
+    ? d.patologie.map(item => '• ' + item).join('\n')
+    : 'Nessuna patologia inserita';
+
+  const msg = '🩺 *CAREASSIST PRO — CARTELLA CLINICA ASSISTITO*' + '\n' +
+    '👤 *Assistito:* ' + d.nome + ' (' + d.eta + ' anni, nato il ' + formattaDataItalianaNascita(d.dataNascita) + ')\n' +
+    '📍 *Domicilio:* ' + d.indirizzo + '\n' +
+    (d.cellulare ? '📱 *Cellulare:* ' + d.cellulare + '\n' : '') +
+    '\n' +
+    '🚫 *ALLERGIE SALVAVITA (118):*\n' +
+    '⚠️ ' + (d.allergie || 'Nessuna nota') + '\n\n' +
+    '🩺 *PATOLOGIE & DIAGNOSI ATTIVE:*\n' +
+    patologieTxt + '\n\n' +
+    '📋 *NOTE CLINICHE / SINTESI:*\n' +
+    (d.note || 'Nessuna annotazione') + '\n\n' +
+    '👨‍⚕️ *Medico:* ' + d.medicoNome + ' (Tel: ' + d.medicoTel + ')\n' +
+    '🏥 *Farmacia:* ' + d.farmaciaNome + ' (Tel: ' + d.farmaciaTel + ')\n' +
+    '👥 *Caregiver:* ' + d.caregiverNome + ' (Tel: ' + d.caregiverCell + ')\n' +
+    '----------------------------------------\n' +
+    '_Scheda generata con CareAssist Pro C. Milella_';
+
+  // Seleziona destinatario o prompt
+  let phone = d.medicoTel || d.caregiverCell || '';
+  const scelta = prompt(
+    'A chi vuoi inviare la cartella clinica su WhatsApp?\n\n' +
+    '1 = Medico (' + d.medicoNome + ' - ' + d.medicoTel + ')\n' +
+    '2 = Caregiver (' + d.caregiverNome + ' - ' + d.caregiverCell + ')\n' +
+    'Oppure scrivi direttamente il numero desiderato:',
+    phone
+  );
+
+  if (!scelta) return;
+  let targetPhone = scelta.trim();
+  if (targetPhone === '1') targetPhone = d.medicoTel;
+  else if (targetPhone === '2') targetPhone = d.caregiverCell;
+
+  const cleanNum = targetPhone.replace(/[^0-9]/g, '');
+  let waPhone = cleanNum;
+  if (waPhone.length === 10) waPhone = '39' + waPhone;
+
+  const url = 'https://api.whatsapp.com/send?phone=' + waPhone + '&text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+  if (typeof showToast === 'function') showToast('📲 Apertura WhatsApp completata!', 'success');
+}
+
+function inviaSchedaClinicaEmail() {
+  const d = getDatiSchedaClinicaAttuale();
+  if (!d) {
+    alert('Nessun assistito selezionato per Email.');
+    return;
+  }
+
+  const patologieTxt = d.patologie.length > 0
+    ? d.patologie.map(item => '- ' + item).join('\n')
+    : 'Nessuna patologia inserita';
+
+  const subject = '[CareAssist Pro] Cartella Clinica & Diagnosi - ' + d.nome;
+  const body = 'Gentile Dottore / Referente,\n\n' +
+    'Si trasmette il riepilogo aggiornato della cartella clinica dell\'assistito in carico:\n\n' +
+    'DATI ASSISTITO:\n' +
+    '- Nome e Cognome: ' + d.nome + '\n' +
+    '- Data di Nascita: ' + formattaDataItalianaNascita(d.dataNascita) + ' (Età: ' + d.eta + ' anni)\n' +
+    '- Residenza / Domicilio: ' + d.indirizzo + '\n' +
+    '- Telefono / Cellulare: ' + (d.cellulare || d.telefono || '--') + '\n' +
+    '- Caregiver Familiare: ' + d.caregiverNome + ' (Tel: ' + d.caregiverCell + ')\n\n' +
+    'ALLERGIE SALVAVITA (SCHEDA 118):\n' +
+    (d.allergie || 'Nessuna nota') + '\n\n' +
+    'PATOLOGIE & DIAGNOSI ATTIVE:\n' +
+    patologieTxt + '\n\n' +
+    'NOTE CLINICHE / SINTESI:\n' +
+    (d.note || 'Nessuna annotazione') + '\n\n' +
+    'RIFERIMENTI MEDICI & FARMACEUTICI:\n' +
+    '- Medico di Medicina Generale: ' + d.medicoNome + ' (Tel: ' + d.medicoTel + ', Email: ' + d.medicoEmail + ')\n' +
+    '- Farmacia di Riferimento: ' + d.farmaciaNome + ' (Tel: ' + d.farmaciaTel + ')\n\n' +
+    'Cordiali saluti,\n' +
+    'Servizio di Assistenza Domiciliare CareAssist Pro';
+
+  const mailTo = d.medicoEmail || '';
+  const mailtoUrl = 'mailto:' + encodeURIComponent(mailTo) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  window.open(mailtoUrl, '_blank');
+  if (typeof showToast === 'function') showToast('✉️ Apertura programma Email completata!', 'success');
+}
+
+// Funzioni per l\'editor a tutto schermo
+function stampaTestoFullscreen() {
+  const textarea = document.getElementById('fullscreen-editor-textarea');
+  const title = (document.getElementById('fullscreen-editor-title') && document.getElementById('fullscreen-editor-title').textContent) || 'Testo Clinico';
+  const p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  const val = (textarea && textarea.value) ? textarea.value : '';
+
+  if (!val.trim()) {
+    alert('Il testo è vuoto.');
+    return;
+  }
+
+  const html = '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+    '<title>' + title + ' - ' + (p ? p.nome : 'Assistito') + '</title>' +
+    '<style>' +
+    '  @page { size: A4; margin: 15mm; }' +
+    '  body { font-family: Arial, sans-serif; padding: 16px; color: #0f172a; line-height: 1.6; }' +
+    '  .no-print { margin-bottom: 16px; display: flex; justify-content: space-between; }' +
+    '  button { padding: 8px 16px; font-weight: bold; background: #0284c7; color: white; border: none; border-radius: 6px; cursor: pointer; }' +
+    '  @media print { .no-print { display: none !important; } }' +
+    '</style></head><body>' +
+    '  <div class="no-print">' +
+    '    <button onclick="window.print()">🖨️ Stampa Documento</button>' +
+    '    <button onclick="window.close()" style="background:#64748b;">Chiudi</button>' +
+    '  </div>' +
+    '  <h2 style="color:#0369a1; border-bottom:2px solid #0284c7; padding-bottom:6px; margin-top:0;">' + title + '</h2>' +
+    '  <div style="font-size:14px; font-weight:bold; margin-bottom:12px;">👤 Assistito: ' + (p ? p.nome : '--') + ' | Data: ' + (new Date().toLocaleDateString('it-IT')) + '</div>' +
+    '  <div style="white-space:pre-wrap; font-size:14.5px; line-height:1.65; background:#f8fafc; padding:16px; border-radius:10px; border:1px solid #cbd5e1;">' + val + '</div>' +
+    '  <script>window.onload=function(){setTimeout(function(){window.print();},250);};<\/script>' +
+    '</body></html>';
+
+  const w = window.open('', '_blank', 'width=800,height=800');
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+  } else {
+    window.print();
+  }
+}
+
+function inviaTestoFullscreenWhatsApp() {
+  const textarea = document.getElementById('fullscreen-editor-textarea');
+  const title = (document.getElementById('fullscreen-editor-title') && document.getElementById('fullscreen-editor-title').textContent) || 'Testo Clinico';
+  const p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  const val = (textarea && textarea.value) ? textarea.value : '';
+
+  if (!val.trim()) {
+    alert('Il testo è vuoto.');
+    return;
+  }
+
+  const msg = '🩺 *CareAssist Pro - ' + title + '*\n' +
+    '👤 Assistito: *' + (p ? p.nome : 'Assistito') + '*\n\n' +
+    val + '\n\n' +
+    '----------------------------------------\n' +
+    '_Inviato con CareAssist Pro C. Milella_';
+
+  const num = prompt('Inserisci il numero WhatsApp o conferma:', (p && (p.medicoTel || p.moglieCellulare || p.cellulare)) || '');
+  if (!num) return;
+
+  const cleanNum = num.replace(/[^0-9]/g, '');
+  let waPhone = cleanNum;
+  if (waPhone.length === 10) waPhone = '39' + waPhone;
+
+  const url = 'https://api.whatsapp.com/send?phone=' + waPhone + '&text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+}
+
+function inviaTestoFullscreenEmail() {
+  const textarea = document.getElementById('fullscreen-editor-textarea');
+  const title = (document.getElementById('fullscreen-editor-title') && document.getElementById('fullscreen-editor-title').textContent) || 'Testo Clinico';
+  const p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  const val = (textarea && textarea.value) ? textarea.value : '';
+
+  if (!val.trim()) {
+    alert('Il testo è vuoto.');
+    return;
+  }
+
+  const subject = '[CareAssist Pro] ' + title + ' - ' + (p ? p.nome : 'Assistito');
+  const body = 'Gentile Destinatario,\n\n' +
+    'Si inoltra il seguente testo clinico relativo all\'assistito ' + (p ? p.nome : '') + ':\n\n' +
+    val + '\n\n' +
+    'Cordiali saluti,\nCareAssist Pro C. Milella';
+
+  const mailTo = (p && p.medicoEmail) ? p.medicoEmail : '';
+  const mailtoUrl = 'mailto:' + encodeURIComponent(mailTo) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  window.open(mailtoUrl, '_blank');
+}
+

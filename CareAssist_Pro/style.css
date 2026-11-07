@@ -8493,3 +8493,106 @@ main, .main-content, .dashboard-container {
   color: #dc2626;
 }
 
+
+
+/* ==========================================================================
+   STILI BARRA CONDIVISIONE & STAMPA SCHEDA CLINICA
+   ========================================================================== */
+.box-condivisione-clinica {
+  background: #f8fafc !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 12px !important;
+  padding: 10px 12px !important;
+  margin-top: 10px !important;
+}
+
+.btn-condividi-clinica {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 10px 12px !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  border: none !important;
+  text-decoration: none !important;
+}
+
+.btn-condividi-clinica.btn-stampa {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3) !important;
+}
+.btn-condividi-clinica.btn-stampa:hover, .btn-condividi-clinica.btn-stampa:active {
+  background: #0369a1 !important;
+  transform: translateY(-1px);
+}
+
+.btn-condividi-clinica.btn-whatsapp {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3) !important;
+}
+.btn-condividi-clinica.btn-whatsapp:hover, .btn-condividi-clinica.btn-whatsapp:active {
+  background: #15803d !important;
+  transform: translateY(-1px);
+}
+
+.btn-condividi-clinica.btn-email {
+  background: #475569 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(71, 85, 105, 0.25) !important;
+}
+.btn-condividi-clinica.btn-email:hover, .btn-condividi-clinica.btn-email:active {
+  background: #334155 !important;
+  transform: translateY(-1px);
+}
+
+.btn-fullscreen-tool {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  font-size: 12.5px;
+  font-weight: 800;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+.btn-fullscreen-tool:hover {
+  background: #e2e8f0;
+}
+.btn-fullscreen-tool.btn-wa-mini {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #15803d;
+}
+.btn-fullscreen-tool.btn-wa-mini:hover {
+  background: #15803d;
+  color: #ffffff;
+}
+.btn-fullscreen-tool.btn-stampa-mini {
+  background: #f0f9ff;
+  border-color: #7dd3fc;
+  color: #0369a1;
+}
+.btn-fullscreen-tool.btn-stampa-mini:hover {
+  background: #0284c7;
+  color: #ffffff;
+}
+.btn-fullscreen-tool.btn-email-mini {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+.btn-fullscreen-tool.btn-email-mini:hover {
+  background: #334155;
+  color: #ffffff;
+}
+

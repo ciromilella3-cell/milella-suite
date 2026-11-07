@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v236-fullscreen-editor';
+const CACHE_NAME = 'careassist-pro-v237-stampa-wa-email';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
