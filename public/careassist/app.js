@@ -6461,6 +6461,77 @@ async function caricaScatolaRapida(farmacoId) {
 }
 window.caricaScatolaRapida = caricaScatolaRapida;
 
+// MODIFICA RAPIDA NUMERO DI CAPSULE / SCORTA (1-CLICK DALLA CARD O DALLA LISTA)
+function modificaScortaRapida(farmacoId) {
+  try {
+    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    var t = null;
+    if (p && Array.isArray(p.terapie)) {
+      t = p.terapie.find(function (item) { return String(item.id) === String(farmacoId) || item.id == farmacoId; });
+    }
+    if (!t && Array.isArray(window.pazienti)) {
+      for (var pi = 0; pi < window.pazienti.length; pi++) {
+        var cand = window.pazienti[pi];
+        if (cand && Array.isArray(cand.terapie)) {
+          var found = cand.terapie.find(function (item) { return String(item.id) === String(farmacoId) || item.id == farmacoId; });
+          if (found) { p = cand; t = found; if (typeof setActivePaziente === 'function') setActivePaziente(p.id); break; }
+        }
+      }
+    }
+    if (!t || !p) return;
+
+    var isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+    var attuale = isPen ? (t.penneScorta || t.scorta || 0) : (t.scorta || 0);
+    var unita = isPen ? 'penne' : 'capsule / compresse';
+
+    var valInput = prompt('📦 Modifica Scorta per:\n"' + t.farmaco + '"\n\nScorta attuale: ' + attuale + ' ' + unita + '\n\nInserisci il nuovo numero esatto di ' + unita + ' presenti a casa:', attuale);
+    if (valInput === null) return;
+    var num = parseFloat(String(valInput).replace(',', '.').trim());
+    if (isNaN(num) || num < 0) {
+      if (typeof showToast === 'function') showToast('⚠️ Valore scorta non valido.', 'warning');
+      return;
+    }
+
+    var nuovoVal = Math.round(num * 10) / 10;
+    t.scorta = nuovoVal;
+    if (isPen) t.penneScorta = nuovoVal;
+
+    // Allinea le dosi gemelle dello stesso farmaco (es. se prescritto più volte al giorno)
+    var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
+    (p.terapie || []).forEach(function (item) {
+      var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
+      if (n.length > 2 && (n === cleanNome || cleanNome.indexOf(n) >= 0 || n.indexOf(cleanNome) >= 0)) {
+        item.scorta = nuovoVal;
+        if (isPen) item.penneScorta = nuovoVal;
+      }
+    });
+
+    if (typeof saveDb === 'function') saveDb();
+    if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+    if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
+    if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
+    if (typeof renderTerapie === 'function') renderTerapie();
+    if (typeof showToast === 'function') showToast('✅ Scorta di "' + t.farmaco + '" aggiornata a ' + nuovoVal + ' ' + unita + '!', 'success');
+  } catch (e) {
+    console.error('Errore modificaScortaRapida:', e);
+  }
+}
+window.modificaScortaRapida = modificaScortaRapida;
+
+function modificaInputScortaModal(delta) {
+  var inp = document.getElementById('edit-farm-scorta');
+  if (!inp) return;
+  var current = parseInt(inp.value, 10) || 0;
+  if (delta === 'scatola') {
+    var cprScatola = parseInt(document.getElementById('edit-farm-cpr-scatola')?.value, 10) || 28;
+    inp.value = Math.max(0, current + cprScatola);
+  } else {
+    inp.value = Math.max(0, current + parseInt(delta, 10));
+  }
+  if (typeof ricalcolaRiepilogoCapsula === 'function') ricalcolaRiepilogoCapsula();
+}
+window.modificaInputScortaModal = modificaInputScortaModal;
+
 function cambiaModalitaCarico(modo) {
   const boxScatole = document.getElementById('box-carico-scatole');
   const boxSfuse = document.getElementById('box-carico-sfuse');
@@ -14326,7 +14397,6 @@ function renderDosiCards() {
   });
 
   container.innerHTML = html;
-  if (typeof renderMobileNativeView === 'function') renderMobileNativeView(terapieFiltrate, p);
 }
 
 
@@ -23641,6 +23711,8 @@ window.filtraMobileTerapie = filtraMobileTerapie;
 
 function renderMobileNativeView(terapie, p) {
   var container = document.getElementById('careassist-native-mobile-container');
+  if (!p) p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  if (!terapie && p) terapie = p.terapie || [];
   if (!container || !p) return;
 
   // Aggiorna sempre la pillola sticky nell'header in alto (così il nome non si perde MAI durante lo scroll!)
@@ -23836,7 +23908,9 @@ function renderMobileNativeView(terapie, p) {
           '</div>' +
           '<div class="mobile-card-footer" style="margin-top:9px; padding-top:8px; border-top:1px dashed rgba(0,0,0,0.12); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">' +
           '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
-          '<div class="mobile-card-scorta" style="font-size:12px; color:#334155; font-weight:700;">Scorta: <b style="color:#0f172a;">' + (t.scorta || 0) + '</b></div>' +
+          '<div class="mobile-card-scorta" onclick="event.stopPropagation(); modificaScortaRapida(\'' + t.id + '\')" title="Tocca per modificare il numero esatto di compresse/capsule in scorta" style="font-size:12px; color:#334155; font-weight:700; cursor:pointer; background:rgba(255,255,255,0.9); padding:2px 7px; border-radius:6px; border:1px solid #cbd5e1; display:inline-flex; align-items:center; gap:4px;">' +
+          '<span>📦 Scorta:</span> <b style="color:#0284c7; font-size:13px;">' + (t.scorta || 0) + '</b> <span style="font-size:10px; color:#0284c7;" title="Modifica scorta">✏️</span>' +
+          '</div>' +
           '<button type="button" class="btn-card-scatola-action" onclick="event.stopPropagation(); caricaScatolaRapida(\'' + t.id + '\')" title="Aggiungi 1 scatola ritirata dalla farmacia">📦 +Scatola</button>' +
           '<button type="button" class="btn-card-time-action" onclick="event.stopPropagation(); apriCambiaOrarioRapido(\'' + t.id + '\')" title="Sposta orario di somministrazione">🕒 Orario</button>' +
           '</div>' +

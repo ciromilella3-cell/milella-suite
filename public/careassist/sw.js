@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v243-modifica-farmaco-fix';
+const CACHE_NAME = 'careassist-pro-v244-fix-modifica-capsule';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

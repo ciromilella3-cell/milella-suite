@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=243">
+  <link rel="stylesheet" href="style.css?v=244">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -196,7 +196,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="registro_asl.css?v=243">
+  <link rel="stylesheet" href="registro_asl.css?v=244">
 
   <style>
     @keyframes menuDropAnim {
@@ -2851,9 +2851,16 @@
                   oninput="ricalcolaRiepilogoCapsula()">
               </div>
               <div class="form-group-compact" style="flex:1;">
-                <label class="form-label-compact">Scorta Attuale</label>
+                <label class="form-label-compact">Scorta Attuale (Capsule/Cpr)</label>
                 <input type="number" class="form-control-compact" id="edit-farm-scorta" min="0" value="28"
                   oninput="ricalcolaRiepilogoCapsula()">
+                <div style="display:flex; gap:3px; margin-top:4px; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-outline" style="padding:2px 5px; font-size:10px; border-radius:5px;" onclick="modificaInputScortaModal(-10)">-10</button>
+                  <button type="button" class="btn btn-outline" style="padding:2px 5px; font-size:10px; border-radius:5px;" onclick="modificaInputScortaModal(-1)">-1</button>
+                  <button type="button" class="btn btn-outline" style="padding:2px 5px; font-size:10px; border-radius:5px;" onclick="modificaInputScortaModal(+1)">+1</button>
+                  <button type="button" class="btn btn-outline" style="padding:2px 5px; font-size:10px; border-radius:5px;" onclick="modificaInputScortaModal(+10)">+10</button>
+                  <button type="button" class="btn btn-outline" style="padding:2px 5px; font-size:10px; border-radius:5px; background:#f0fdf4; color:#15803d; border-color:#86efac; font-weight:700;" onclick="modificaInputScortaModal('scatola')">+Scatola</button>
+                </div>
               </div>
               <div class="form-group-compact" style="flex:1;">
                 <label class="form-label-compact">🔔 Alert (gg)</label>
@@ -6736,7 +6743,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=243"></script>
+  <script src="app.js?v=244"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
