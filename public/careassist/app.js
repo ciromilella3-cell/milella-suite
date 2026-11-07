@@ -23439,3 +23439,136 @@ window.chiudiModalAllarmeSenzaSnooze = chiudiModalAllarmeSenzaSnooze;
 window.vaiACartellaPazienteDaAllarme = vaiACartellaPazienteDaAllarme;
 window.vaiADirettoFarmacoDaAllarme = vaiADirettoFarmacoDaAllarme;
 window.azioneRapidaMancanzaDaAllarme = azioneRapidaMancanzaDaAllarme;
+
+
+// ==========================================================================
+// EDITOR & VISUALIZZATORE A TUTTO SCHERMO (CAREASSIST PRO)
+// ==========================================================================
+let currentFullscreenEditorTarget = null;
+let currentFullscreenEditorFontSize = 17;
+
+function apriEditorFullscreen(targetId, customTitle, hintText) {
+  const targetEl = document.getElementById(targetId);
+  if (!targetEl) return;
+  currentFullscreenEditorTarget = targetId;
+
+  const modal = document.getElementById('modal-editor-fullscreen');
+  const textarea = document.getElementById('fullscreen-editor-textarea');
+  const titleEl = document.getElementById('fullscreen-editor-title');
+  const iconEl = document.getElementById('fullscreen-editor-icon');
+  const pazBadge = document.getElementById('fullscreen-editor-paziente-badge');
+  const hintEl = document.getElementById('fullscreen-editor-hint-txt');
+
+  if (!modal || !textarea) return;
+
+  // Carica testo attuale
+  textarea.value = targetEl.value || '';
+
+  // Imposta Titolo e Icona
+  const isPatologie = targetId.includes('patologie');
+  titleEl.textContent = customTitle || (isPatologie ? 'Patologie & Diagnosi Attive' : 'Note Cliniche / Sintesi');
+  iconEl.textContent = isPatologie ? '🩺' : '📋';
+
+  // Imposta Badge Paziente
+  const p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  if (pazBadge) {
+    pazBadge.textContent = p ? ('👤 ' + (p.nome || 'Assistito')) : '👤 Assistito';
+  }
+
+  // Imposta suggerimento guida
+  if (hintEl) {
+    hintEl.textContent = hintText || (isPatologie 
+      ? 'Scrivi una diagnosi per riga. Premi Invio per andare a capo.' 
+      : 'Note cliniche ad alta leggibilità. Modifica o leggi comodamente.');
+  }
+
+  // Ripristina dimensione font preferita
+  try {
+    const savedSize = localStorage.getItem('careassist_editor_fontsize');
+    if (savedSize) {
+      currentFullscreenEditorFontSize = parseInt(savedSize, 10) || 17;
+    }
+  } catch(e) {}
+  applicaDimensioneFontEditor();
+
+  // Mostra modale a tutto schermo
+  modal.style.display = 'flex';
+  modal.classList.add('active');
+  aggiornaStatisticheFullscreenEditor();
+
+  // Focus e cursore all'inizio o scroll
+  setTimeout(function() {
+    textarea.focus();
+    textarea.scrollTop = 0;
+  }, 120);
+}
+
+function chiudiEditorFullscreen() {
+  const modal = document.getElementById('modal-editor-fullscreen');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('active');
+  }
+  currentFullscreenEditorTarget = null;
+}
+
+function confermaEditorFullscreen() {
+  const textarea = document.getElementById('fullscreen-editor-textarea');
+  if (currentFullscreenEditorTarget && textarea) {
+    const targetEl = document.getElementById(currentFullscreenEditorTarget);
+    if (targetEl) {
+      targetEl.value = textarea.value;
+      // Notifica eventi
+      try {
+        targetEl.dispatchEvent(new Event('input', { bubbles: true }));
+        targetEl.dispatchEvent(new Event('change', { bubbles: true }));
+      } catch(e) {}
+    }
+  }
+  chiudiEditorFullscreen();
+  if (typeof showToast === 'function') {
+    showToast('✅ Testo aggiornato con successo!', 'success');
+  }
+}
+
+function cambiaDimensioneFontEditor(delta) {
+  let nuova = currentFullscreenEditorFontSize + delta;
+  if (nuova < 13) nuova = 13;
+  if (nuova > 26) nuova = 26;
+  currentFullscreenEditorFontSize = nuova;
+  try {
+    localStorage.setItem('careassist_editor_fontsize', nuova);
+  } catch(e) {}
+  applicaDimensioneFontEditor();
+}
+
+function applicaDimensioneFontEditor() {
+  const textarea = document.getElementById('fullscreen-editor-textarea');
+  const indicator = document.getElementById('fullscreen-font-indicator');
+  if (textarea) {
+    textarea.style.fontSize = currentFullscreenEditorFontSize + 'px';
+  }
+  if (indicator) {
+    indicator.textContent = currentFullscreenEditorFontSize + 'px';
+  }
+}
+
+function aggiornaStatisticheFullscreenEditor() {
+  const textarea = document.getElementById('fullscreen-editor-textarea');
+  const statsEl = document.getElementById('fullscreen-editor-stats');
+  if (!textarea || !statsEl) return;
+  const val = textarea.value || '';
+  const lines = val ? val.split('\n').length : 0;
+  const chars = val.length;
+  statsEl.textContent = lines + ' righe • ' + chars + ' car.';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const fsModal = document.getElementById('modal-editor-fullscreen');
+    if (fsModal && (fsModal.classList.contains('active') || fsModal.style.display === 'flex')) {
+      chiudiEditorFullscreen();
+    }
+  }
+});
+

@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=235">
+  <link rel="stylesheet" href="style.css?v=236">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -2022,19 +2022,45 @@
             </div>
 
             <div class="form-group" style="margin-bottom:12px;">
-              <label class="form-label" style="color:#0369a1; font-weight:800; display:flex; align-items:center; justify-content:space-between;">
-                <span>🩺 Patologie & Diagnosi Attive (una per riga o separate da virgola)</span>
-                <span style="font-size:10px; font-weight:normal; color:#64748b;">Visibili nei badge e Scheda 118</span>
-              </label>
-              <textarea class="form-control" id="edit-paz-patologie" rows="3"
-                placeholder="Es: Ipertensione arteriosa sistemica&#10;Diabete Mellito Tipo 2&#10;Cardiopatia ischemica cronica"
-                style="font-size:13px; font-weight:600; line-height:1.4; border:1.5px solid #7dd3fc; border-radius:8px;"></textarea>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; flex-wrap:wrap; gap:6px;">
+                <label class="form-label" style="color:#0369a1; font-weight:800; margin-bottom:0; display:flex; align-items:center; gap:6px;">
+                  <span>🩺 Patologie & Diagnosi Attive</span>
+                </label>
+                <button type="button" class="btn-espandi-fullscreen-inline"
+                  onclick="apriEditorFullscreen('edit-paz-patologie', '🩺 Patologie & Diagnosi Attive', 'Inserisci o modifica una patologia/diagnosi per riga. Visibili nei badge e Scheda 118.')"
+                  title="Apri a tutto schermo per leggere o modificare comodamente">
+                  <span>⛶ A Tutto Schermo</span>
+                </button>
+              </div>
+              <div class="textarea-touch-expand-wrapper" onclick="apriEditorFullscreen('edit-paz-patologie', '🩺 Patologie & Diagnosi Attive', 'Inserisci o modifica una patologia/diagnosi per riga. Visibili nei badge e Scheda 118.')" title="Tocca per aprire a tutto schermo">
+                <textarea class="form-control textarea-espandibile-pro" id="edit-paz-patologie" rows="4" readonly
+                  placeholder="Es: Ipertensione arteriosa sistemica&#10;Diabete Mellito Tipo 2&#10;Cardiopatia ischemica cronica"
+                  style="font-size:13.5px; font-weight:600; line-height:1.45; border:1.5px solid #7dd3fc; border-radius:10px; background:#f0f9ff; cursor:pointer; min-height:85px;"></textarea>
+                <div class="overlay-touch-hint">
+                  <span>👆 Clicca sopra per visualizzare o modificare a tutto schermo ⛶</span>
+                </div>
+              </div>
             </div>
 
             <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label" style="color:#7f1d1d;">Note Cliniche / Sintesi</label>
-              <textarea class="form-control" id="edit-paz-note" rows="2"
-                placeholder="Diagnosi principali, patologie concomitanti o annotazioni mediche..."></textarea>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; flex-wrap:wrap; gap:6px;">
+                <label class="form-label" style="color:#7f1d1d; font-weight:800; margin-bottom:0; display:flex; align-items:center; gap:6px;">
+                  <span>📋 Note Cliniche / Sintesi</span>
+                </label>
+                <button type="button" class="btn-espandi-fullscreen-inline btn-espandi-note"
+                  onclick="apriEditorFullscreen('edit-paz-note', '📋 Note Cliniche & Sintesi', 'Diagnosi principali, decorso clinico e note di sintesi per il personale.')"
+                  title="Apri a tutto schermo per leggere o modificare comodamente">
+                  <span>⛶ A Tutto Schermo</span>
+                </button>
+              </div>
+              <div class="textarea-touch-expand-wrapper" onclick="apriEditorFullscreen('edit-paz-note', '📋 Note Cliniche & Sintesi', 'Diagnosi principali, decorso clinico e note di sintesi per il personale.')" title="Tocca per aprire a tutto schermo">
+                <textarea class="form-control textarea-espandibile-pro" id="edit-paz-note" rows="3" readonly
+                  placeholder="Diagnosi principali, patologie concomitanti o annotazioni mediche..."
+                  style="font-size:13.5px; font-weight:600; line-height:1.45; border:1.5px solid #fca5a5; border-radius:10px; background:#fff5f5; cursor:pointer; min-height:75px;"></textarea>
+                <div class="overlay-touch-hint hint-note">
+                  <span>👆 Clicca sopra per visualizzare o modificare a tutto schermo ⛶</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -2056,6 +2082,63 @@
       </form>
     </div>
   </div>
+
+  
+  <!-- MODAL EDITOR & VISUALIZZATORE TESTO A TUTTO SCHERMO (ALTA LEGGIBILITA' SMARTPHONE / PC) -->
+  <div class="modal-overlay modal-editor-fullscreen-overlay" id="modal-editor-fullscreen" style="display:none;">
+    <div class="modal-card-fullscreen-editor">
+      <!-- HEADER FISSO IN ALTO -->
+      <div class="fullscreen-editor-header">
+        <div class="fullscreen-editor-header-left">
+          <div class="fullscreen-editor-title-row">
+            <span id="fullscreen-editor-icon" style="font-size:24px;">🩺</span>
+            <div style="min-width:0;">
+              <h3 id="fullscreen-editor-title" style="margin:0; font-size:16px; font-weight:800; color:#ffffff; line-height:1.2;">Patologie & Diagnosi Attive</h3>
+              <div id="fullscreen-editor-paziente-badge" class="fullscreen-paz-badge">👤 Assistito</div>
+            </div>
+          </div>
+        </div>
+        <div class="fullscreen-editor-header-right">
+          <!-- ZOOM CARATTERI PER MASSIMA LEGGIBILITA' -->
+          <div class="fullscreen-font-controls" title="Regola dimensione caratteri per gli occhi">
+            <button type="button" class="btn-font-zoom" onclick="cambiaDimensioneFontEditor(-1)" title="Riduci testo">A-</button>
+            <span id="fullscreen-font-indicator" style="font-size:11.5px; font-weight:800; color:#e2e8f0; min-width:34px; text-align:center;">17px</span>
+            <button type="button" class="btn-font-zoom" onclick="cambiaDimensioneFontEditor(1)" title="Ingrandisci testo">A+</button>
+          </div>
+          <button type="button" class="btn-close-fullscreen" onclick="chiudiEditorFullscreen()" title="Chiudi (Esc)">✕</button>
+        </div>
+      </div>
+
+      <!-- BARRA GUIDA & STATISTICHE TESTO -->
+      <div class="fullscreen-editor-infobar">
+        <div id="fullscreen-editor-hint" style="font-size:12px; font-weight:700; color:#38bdf8; display:flex; align-items:center; gap:6px;">
+          <span>💡</span> <span id="fullscreen-editor-hint-txt">Visualizzazione ed editing a tutto schermo</span>
+        </div>
+        <div id="fullscreen-editor-stats" style="font-size:11.5px; font-weight:800; color:#cbd5e1; background:rgba(255,255,255,0.08); padding:3px 10px; border-radius:6px;">
+          0 righe • 0 car.
+        </div>
+      </div>
+
+      <!-- AREA CENTRALE TEXTAREA A TUTTO SCHERMO -->
+      <div class="fullscreen-editor-body">
+        <textarea id="fullscreen-editor-textarea" class="fullscreen-editor-textarea"
+          placeholder="Scrivi qui il testo completo..."
+          oninput="aggiornaStatisticheFullscreenEditor()"
+          spellcheck="false"></textarea>
+      </div>
+
+      <!-- FOOTER FISSO IN BASSO -->
+      <div class="fullscreen-editor-footer">
+        <button type="button" class="btn-fullscreen-annulla" onclick="chiudiEditorFullscreen()">
+          ✕ Chiudi
+        </button>
+        <button type="button" class="btn-fullscreen-salva" onclick="confermaEditorFullscreen()">
+          <span>✔️ Conferma e Riporta in Cartella</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
 
   <!-- MODALE GUIDATO: AGGIUNGI AUSILIO O PRESIDIO SANITARIO -->
   <div class="modal-overlay" id="modal-aggiungi-ausilio">
@@ -6458,7 +6541,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=235"></script>
+  <script src="app.js?v=236"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {

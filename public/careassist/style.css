@@ -8186,3 +8186,310 @@ main, .main-content, .dashboard-container {
     color: #38bdf8 !important;
   }
 }
+
+
+/* ==========================================================================
+   MODAL EDITOR & VISUALIZZATORE A TUTTO SCHERMO (CAREASSIST PRO)
+   ========================================================================== */
+.modal-editor-fullscreen-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  z-index: 20000050 !important;
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.modal-editor-fullscreen-overlay.active {
+  display: flex !important;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-card-fullscreen-editor {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 900px;
+  max-height: 100vh !important;
+  max-height: 100dvh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #0b1329 !important;
+  color: #f8fafc !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.8) !important;
+}
+
+@media (min-width: 768px) {
+  .modal-card-fullscreen-editor {
+    height: 94vh !important;
+    max-height: 94vh !important;
+    border-radius: 20px !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
+  }
+}
+
+.fullscreen-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #091e3a 0%, #0f2744 60%, #0369a1 100%);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.fullscreen-editor-header-left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.fullscreen-editor-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.fullscreen-paz-badge {
+  display: inline-block;
+  margin-top: 3px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #e0f2fe;
+  background: rgba(255, 255, 255, 0.16);
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fullscreen-editor-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.fullscreen-font-controls {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 2px 4px;
+  gap: 2px;
+}
+
+.btn-font-zoom {
+  background: transparent;
+  color: #ffffff;
+  border: none;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-font-zoom:hover, .btn-font-zoom:active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.btn-close-fullscreen {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-close-fullscreen:hover, .btn-close-fullscreen:active {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.fullscreen-editor-infobar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: #0f172a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fullscreen-editor-body {
+  flex: 1;
+  display: flex;
+  padding: 12px 14px;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.fullscreen-editor-textarea {
+  width: 100% !important;
+  height: 100% !important;
+  border: 2px solid #38bdf8 !important;
+  border-radius: 14px !important;
+  padding: 16px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  font-size: 17px !important;
+  line-height: 1.65 !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+  background: #ffffff !important;
+  resize: none !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06) !important;
+  outline: none !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+}
+
+.fullscreen-editor-textarea:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25) !important;
+}
+
+.fullscreen-editor-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) 16px;
+  background: #ffffff;
+  border-top: 2px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.btn-fullscreen-annulla {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1.5px solid #cbd5e1;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-fullscreen-annulla:hover {
+  background: #e2e8f0;
+}
+
+.btn-fullscreen-salva {
+  flex: 1;
+  max-width: 480px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  padding: 13px 20px;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+
+.btn-fullscreen-salva:hover {
+  filter: brightness(1.05);
+}
+
+.btn-fullscreen-salva:active {
+  transform: scale(0.98);
+}
+
+/* Inline expand button nella maschera modifica */
+.btn-espandi-fullscreen-inline {
+  background: #eff6ff;
+  border: 1.5px solid #93c5fd;
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-espandi-fullscreen-inline:hover {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.btn-espandi-fullscreen-inline.btn-espandi-note {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.btn-espandi-fullscreen-inline.btn-espandi-note:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.textarea-touch-expand-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.textarea-espandibile-pro {
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.textarea-touch-expand-wrapper:hover .textarea-espandibile-pro {
+  border-color: #0284c7 !important;
+  background-color: #ffffff !important;
+}
+
+.overlay-touch-hint {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.overlay-touch-hint.hint-note {
+  color: #dc2626;
+}
+
