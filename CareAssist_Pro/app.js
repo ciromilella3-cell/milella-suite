@@ -1805,10 +1805,22 @@ function showAdminSyncToast(msg, isHighlight) {
   toast.innerHTML = iconSvg + ' <span>' + cleanMsg + '</span>';
   document.body.appendChild(toast);
 
+  // Se c'è una notifica toast già presente, sposta il toast più in basso per evitare qualsiasi sovrapposizione
+  var activeToast = document.querySelector('.toast-notification');
+  if (activeToast) {
+    activeToast.style.top = '76px';
+  }
+
   setTimeout(function () {
     toast.style.opacity = '0';
     toast.style.transform = 'translateX(-50%) translateY(-14px)';
-    setTimeout(function () { toast.remove(); }, 380);
+    setTimeout(function () {
+      toast.remove();
+      var remainingToast = document.querySelector('.toast-notification');
+      if (remainingToast) {
+        remainingToast.style.top = (window.innerWidth <= 768 ? '16px' : '20px');
+      }
+    }, 380);
   }, 4800);
 }
 
@@ -3471,15 +3483,26 @@ function showToast(messaggio, tipo = 'success') {
   const toast = document.createElement('div');
   toast.className = 'toast-notification';
   toast.style.borderLeftColor = tipo === 'success' ? '#10b981' : (tipo === 'warning' ? '#f59e0b' : '#ef4444');
+
+  // Calcolo intelligente della posizione verticale per evitare qualsiasi sovrapposizione con il banner Cloud Sync
+  var adminToast = document.getElementById('careassist-admin-sync-toast');
+  var topPos = (window.innerWidth <= 768 ? '16px' : '20px');
+  if (adminToast && adminToast.isConnected && adminToast.offsetHeight > 0) {
+    var rect = adminToast.getBoundingClientRect();
+    topPos = Math.max(76, rect.bottom + 12) + 'px';
+  }
+  toast.style.top = topPos;
+
+  var iconEmoji = tipo === 'success' ? '✅' : (tipo === 'warning' ? '⚠️' : '🚨');
   toast.innerHTML = `
-    <span style="font-size:18px;">${tipo === 'success' ? '✅' : 'ℹ️'}</span>
-    <span>${messaggio}</span>
+    <span style="font-size:18px; flex-shrink:0;">${iconEmoji}</span>
+    <span style="line-height:1.35;">${messaggio}</span>
   `;
   document.body.appendChild(toast);
   setTimeout(() => {
     toast.style.animation = 'fadeIn 0.2s reverse forwards';
     setTimeout(() => toast.remove(), 250);
-  }, 3200);
+  }, 3400);
 }
 
 function cambiaPaziente(pazId) {
