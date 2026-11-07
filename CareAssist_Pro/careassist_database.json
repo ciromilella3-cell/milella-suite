@@ -704,11 +704,10 @@
           "dosaggio": "60 mg (1 cpr rilascio modificato)",
           "modo": "A colazione, non masticare (Diabete) - rischio ipoglicemia con insulina ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 30,
-          "scorta": 83,
+          "scorta": 23,
           "farmacia": "Farmacia Girasole Picconi",
           "fattoOggi": true,
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 306,
@@ -719,7 +718,7 @@
           "dosaggio": "5 mg (Dose alternata: ½ cpr e 1 cpr)",
           "modo": "A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno successivo (Pressione arteriosa)",
           "cprPerScatola": 14,
-          "scorta": 36.5,
+          "scorta": 8.5,
           "farmacia": "Farmacia Girasole Picconi",
           "fattoOggi": true,
           "cadenzaTipo": "alternata_mezza_intera",
@@ -731,8 +730,7 @@
             "medico": "Cardiologo",
             "motivo": "Alternanza ½ cpr e 1 cpr a giorni alterni per controllo pressione"
           },
-          "ultimaDoseSomministrata": 0.5,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 0.5
         },
         {
           "id": 307,
@@ -743,11 +741,10 @@
           "dosaggio": "25 mg (1 cpr)",
           "modo": "Al mattino (Diuretico: edemi / scompenso) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 30,
-          "scorta": 83,
+          "scorta": 23,
           "farmacia": "Farmacia Girasole Picconi",
           "fattoOggi": true,
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 1793524336083,
@@ -759,7 +756,7 @@
           "quantitaQuota": 1,
           "modo": "A colazione (Beta-bloccante: frequenza cardiaca) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 76,
+          "scorta": 20,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
@@ -775,8 +772,7 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 1793524736586,
@@ -788,7 +784,7 @@
           "quantitaQuota": 2,
           "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 50,
-          "scorta": 156,
+          "scorta": 56,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
@@ -804,8 +800,7 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 2,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 2
         },
         {
           "id": 1793524467949,
@@ -817,7 +812,7 @@
           "quantitaQuota": 1,
           "modo": "A stomaco pieno (Antinfiammatorio: dolore artrosi) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 77,
+          "scorta": 21,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
@@ -833,8 +828,7 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 1793524504366,
@@ -846,7 +840,7 @@
           "quantitaQuota": 1,
           "modo": "A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 78,
+          "scorta": 22,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": false,
@@ -862,8 +856,7 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 1793524382336,
@@ -875,7 +868,7 @@
           "quantitaQuota": 1,
           "modo": "Al mattino con acqua (Diabete / cuore / reni) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 77,
+          "scorta": 21,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": false,
@@ -891,8 +884,7 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 1793533535948,
@@ -904,7 +896,7 @@
           "quantitaQuota": 1,
           "modo": "A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 78,
+          "scorta": 22,
           "giorniAlert": 7,
           "cadenzaTipo": "",
           "fattoOggi": false,
@@ -920,8 +912,7 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 1793524736897,
@@ -933,7 +924,7 @@
           "quantitaQuota": 2,
           "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 50,
-          "scorta": 156,
+          "scorta": 56,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": false,
@@ -949,8 +940,7 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 2,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 2
         },
         {
           "id": 1793458294388,
@@ -962,7 +952,7 @@
           "quantitaQuota": 1,
           "modo": "A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 78,
+          "scorta": 22,
           "giorniAlert": 7,
           "cadenzaTipo": "",
           "fattoOggi": false,
@@ -978,8 +968,7 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 1793524442695,
@@ -990,16 +979,16 @@
           "dosaggio": "36 Unità (sottocute)",
           "quantitaQuota": 1,
           "modo": "Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 5,
-          "scorta": 11.64,
+          "cprPerScatola": 3,
+          "scorta": 1.64,
           "giorniAlert": 15,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": false,
           "tipoFormulazione": "penna",
-          "penneScorta": 11.64,
+          "penneScorta": 1.64,
           "unitaDoseDie": 36,
           "unitaPerPenna": 300,
-          "pennePerScatola": 5,
+          "pennePerScatola": 3,
           "kitGlicemiaAssociato": {
             "attivo": true,
             "sensoriNome": "GlucoMen areo Sensor (25 sensori)",
@@ -1013,8 +1002,7 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "ultimaDoseSomministrata": 1
         },
         {
           "id": 312,
@@ -1025,10 +1013,9 @@
           "dosaggio": "20.000 U.I. (1 capsula molle)",
           "modo": "Dose periodica (di solito settimanale): registrare il giorno di assunzione (Vitamina D) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 10,
-          "scorta": 30,
+          "scorta": 10,
           "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false,
-          "ultimoRitiro": "2026-11-07T11:32:09.453Z"
+          "fattoOggi": false
         }
       ],
       "registrazioni": [
@@ -1352,150 +1339,6 @@
           "minutiRitardo": 94,
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 34 min! Orario previsto: 10:30 - Orario effettivo assunzione: 12:04. Rimanenza scorta: 21 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129535_718",
-          "tipo": "scorta",
-          "farmacoId": 303,
-          "farmaco": "DIAMICRON 60 mg RM",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 60,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di DIAMICRON 60 mg RM (+60 cpr). Nuova scorta: 83 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129535_911",
-          "tipo": "scorta",
-          "farmacoId": 306,
-          "farmaco": "TRIATEC 5 mg",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 28,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di TRIATEC 5 mg (+28 cpr). Nuova scorta: 36.5 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129535_612",
-          "tipo": "scorta",
-          "farmacoId": 307,
-          "farmaco": "LASIX 25 mg",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 60,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di LASIX 25 mg (+60 cpr). Nuova scorta: 83 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129535_292",
-          "tipo": "scorta",
-          "farmacoId": 1793524336083,
-          "farmaco": "CONGESCOR 2,5 mg",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 56,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di CONGESCOR 2,5 mg (+56 cpr). Nuova scorta: 76 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129535_858",
-          "tipo": "scorta",
-          "farmacoId": 1793524736586,
-          "farmaco": "SINEMET 100+25 mg (1ª dose: 2 cpr - ore 10:00)",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 100,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di SINEMET 100+25 mg (1ª dose: 2 cpr - ore 10:00) (+100 cpr). Nuova scorta: 156 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129535_966",
-          "tipo": "scorta",
-          "farmacoId": 1793524467949,
-          "farmaco": "ARCOXIA 90 mg",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 56,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di ARCOXIA 90 mg (+56 cpr). Nuova scorta: 77 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129535_357",
-          "tipo": "scorta",
-          "farmacoId": 1793524504366,
-          "farmaco": "AVERELIX 75 mg",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 56,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di AVERELIX 75 mg (+56 cpr). Nuova scorta: 78 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129535_411",
-          "tipo": "scorta",
-          "farmacoId": 1793524382336,
-          "farmaco": "FORXIGA 10 mg",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 56,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di FORXIGA 10 mg (+56 cpr). Nuova scorta: 77 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129535_604",
-          "tipo": "scorta",
-          "farmacoId": 1793533535948,
-          "farmaco": "ADENURIC 80 mg",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 56,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di ADENURIC 80 mg (+56 cpr). Nuova scorta: 78 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129535_982",
-          "tipo": "scorta",
-          "farmacoId": 1793458294388,
-          "farmaco": "SIVASTIN 20 mg",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 56,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di SIVASTIN 20 mg (+56 cpr). Nuova scorta: 78 cpr.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129536_928",
-          "tipo": "scorta",
-          "farmacoId": 1793524442695,
-          "farmaco": "XULTOPHY penna",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "penneAggiunte": 10,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico DPC Farmacia: Ritiro di 2 confezioni di XULTOPHY penna (+10 penne preriempite). Nuova scorta: 11.64 penne.",
-          "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "log_1794051129536_875",
-          "tipo": "scorta",
-          "farmacoId": 312,
-          "farmaco": "FEDIVELLE 20.000 U.I.",
-          "azione": "carico_farmacia",
-          "numScatole": 2,
-          "cprAggiunte": 20,
-          "timestamp": "2026-11-07T11:32:09.453Z",
-          "desc": "Carico Farmacia: Ritiro di 2 scatole di FEDIVELLE 20.000 U.I. (+20 cpr). Nuova scorta: 30 cpr.",
           "operatore": "Ciro Milella (Admin)"
         }
       ],
@@ -2615,14 +2458,14 @@
       "idratazioneOggi": 0
     }
   ],
-  "lastModified": 1794051129536,
+  "lastModified": 1794051292433,
   "lastModifiedDevice": "pc",
   "lastModifiedBy": {
     "nome": "Ciro Milella (Admin)",
     "ruolo": "admin",
     "paziente": "Rosa Annunziata Cavalcante",
-    "ora": "12:32",
-    "timestamp": 1794051129536
+    "ora": "12:34",
+    "timestamp": 1794051292450
   },
   "ultimoGiornoOperativo": "2026-11-07",
   "aldoVimpatInizializzato2026": true,
