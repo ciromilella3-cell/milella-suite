@@ -1868,7 +1868,6 @@ app.get(['/api/suite/anagrafe-condivisa', '/careassist/api/suite/anagrafe-condiv
                         }
                     });
                 }
-            }
         } catch(eCa) { console.error('Errore lettura CA/Suite per anagrafe:', eCa.message); }
 
         // 2. Leggi Progetto Salute
