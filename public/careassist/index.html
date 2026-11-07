@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=639295999999999995">
+  <link rel="stylesheet" href="style.css?v=225">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -521,7 +521,32 @@
     </div>
 
     <!-- TAB 1: DASHBOARD OSS -->
-    <section id="tab-dashboard" class="tab-content">
+    
+  <!-- ========================================================================= -->
+  <!-- VISTA PRINCIPALE APP MOBILE (ZERO SFORZO - STILE APPLE SALUTE / WHATSAPP) -->
+  <!-- ========================================================================= -->
+  <div id="careassist-native-mobile-container" class="mobile-only-app-container">
+    <!-- Carosello Orizzontale Assistiti a Portata di Pollice -->
+    <div id="mobile-pazienti-chips" class="mobile-pazienti-chips-bar"></div>
+
+    <!-- Hero Action Card: Cosa devi fare ADESSO (1-Touch) -->
+    <div id="mobile-hero-action-card" class="mobile-hero-card"></div>
+
+    <!-- Filtri Rapidi Mobile -->
+    <div class="mobile-terapie-header-bar">
+      <div class="mobile-terapie-title">📋 Tutte le Terapie di Oggi</div>
+      <div class="mobile-filter-pills">
+        <button type="button" class="mobile-pill-filter active" onclick="filtraMobileTerapie('tutte', this)">Tutte</button>
+        <button type="button" class="mobile-pill-filter" onclick="filtraMobileTerapie('da_prendere', this)">⏳ Da Fare</button>
+        <button type="button" class="mobile-pill-filter" onclick="filtraMobileTerapie('fatte', this)">✅ Prese</button>
+      </div>
+    </div>
+
+    <!-- Timeline Schede Terapie Mobile -->
+    <div id="mobile-terapie-timeline" class="mobile-timeline-cards"></div>
+  </div>
+
+  <section id="tab-dashboard" class="tab-content">
 
       <!-- ALLARME ALVO INTELLIGENTE -->
       <div id="alvo-alert-container"></div>
@@ -900,23 +925,7 @@
           </div>
         </div>
         
-        <!-- VISTA APP NATIVA SMARTPHONE (DEDICATA A OPERATORI E CAREGIVER) -->
-        <div id="careassist-native-mobile-container" class="mobile-only-app-container">
-          <!-- Carosello Orizzontale Assistiti Touch -->
-          <div id="mobile-pazienti-chips" class="mobile-pazienti-chips-bar"></div>
-
-          <!-- Hero Action Card: Cosa devi fare ADESSO (Zero Sforzo) -->
-          <div id="mobile-hero-action-card" class="mobile-hero-card"></div>
-
-          <!-- Filtri Rapidi Mobile -->
-          <div class="mobile-terapie-header-bar">
-            <div class="mobile-terapie-title">📋 Terapie di Oggi</div>
-            <div class="mobile-filter-pills">
-              <button type="button" class="mobile-pill-filter active" onclick="filtraMobileTerapie('tutte', this)">Tutte</button>
-              <button type="button" class="mobile-pill-filter" onclick="filtraMobileTerapie('da_prendere', this)">⏳ Da Fare</button>
-              <button type="button" class="mobile-pill-filter" onclick="filtraMobileTerapie('fatte', this)">✅ Prese</button>
-            </div>
-          </div>
+        
 
           <!-- Timeline Schede Terapie Mobile -->
           <div id="mobile-terapie-timeline" class="mobile-timeline-cards"></div>
@@ -6399,7 +6408,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=639295999999999995"></script>
+  <script src="app.js?v=225"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -6410,7 +6419,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=112', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=225', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

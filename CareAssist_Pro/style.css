@@ -42,6 +42,11 @@
   padding: 0;
 }
 
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 body {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   background: linear-gradient(180deg, #f8fafc 0%, #eef2f6 100%);
@@ -1617,16 +1622,142 @@ body {
 /* ==========================================================================
    TABLES (CLEAN MEDICAL STYLE)
    ========================================================================== */
+/* TABELLE RESPONSIVE CON SCROLLBAR VISIBILE & DESIGN FLUIDO */
 .table-responsive {
-  overflow-x: auto;
+  width: 100%;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 16px;
+  border-radius: 14px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+/* Scrollbar orizzontale sempre visibile, ergonomica ed elegante */
+.table-responsive::-webkit-scrollbar {
+  height: 10px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 8px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #0284c7;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #0369a1;
+}
+
+/* Tabella Terapie Panoramica Full-View (TUTTO A VISTA SENZA SCROLL ORIZZONTALE) */
+.table-responsive {
+  width: 100%;
+  overflow-x: hidden; /* Niente barre o spostamenti sinistra-destra su schermi PC */
+  border-radius: 14px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
 }
 
 .custom-table {
   width: 100%;
+  table-layout: auto;
   border-collapse: separate;
   border-spacing: 0;
   text-align: left;
-  font-size: 13.5px;
+  font-size: 12px;
+}
+
+.custom-table th {
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 800;
+  padding: 10px 8px;
+  border-bottom: 2px solid #cbd5e1;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.custom-table td {
+  padding: 8px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+/* Card Scorta Compatta & Fluida */
+.scorta-card-executive {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 6px 8px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 170px;
+  margin: 0 auto;
+}
+.scorta-exec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.scorta-exec-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.scorta-exec-autonomia {
+  font-size: 10px;
+  font-weight: 800;
+  color: #0369a1;
+}
+.scorta-exec-quantita {
+  font-size: 12.5px;
+  font-weight: 800;
+}
+.scorta-exec-milestones {
+  display: flex;
+  gap: 4px;
+  font-size: 9px;
+}
+.milestone-pill {
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+/* Allargamento del container principale su Desktop per sfruttare al 100% lo schermo */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 98% !important;
+    padding: 0 16px !important;
+  }
+}
+
+.custom-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 800;
+  padding: 12px 14px;
+  border-bottom: 2px solid #cbd5e1;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.custom-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
 }
 
 .custom-table th {
@@ -6712,4 +6843,1037 @@ main, .main-content, .dashboard-container {
   background: #e11d48;
   color: #fff;
   border-color: #be123c;
+}
+
+
+
+/* ==========================================================================
+   TABELLA TERAPIE FULL-VIEW (100% IN PAGINA, NESSUNA BARRA DI SCORRIMENTO)
+   ========================================================================== */
+.table-fullview-container {
+  width: 100% !important;
+  overflow: visible !important;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  margin-top: 10px;
+}
+
+.custom-table-panoramica {
+  width: 100% !important;
+  table-layout: auto !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  text-align: left !important;
+  font-size: 12px !important;
+}
+
+.custom-table-panoramica th {
+  background: #f8fafc !important;
+  color: #1e293b !important;
+  font-weight: 800 !important;
+  padding: 10px 6px !important;
+  border-bottom: 2px solid #cbd5e1 !important;
+  text-transform: uppercase !important;
+  font-size: 10.5px !important;
+  letter-spacing: 0.3px !important;
+  white-space: nowrap !important;
+}
+
+.custom-table-panoramica td {
+  padding: 8px 6px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  vertical-align: middle !important;
+}
+
+.custom-table-panoramica tbody tr:nth-child(odd) td {
+  background-color: #ffffff !important;
+}
+
+.custom-table-panoramica tbody tr:nth-child(even) td {
+  background-color: #f8fafc !important;
+}
+
+.custom-table-panoramica tbody tr:hover td {
+  background-color: #e0f2fe !important;
+}
+
+/* ==========================================================================
+   RESTYLING MOBILE TOUCH EXECUTIVE (MODALI BOTTOM-SHEET, HEADER & TABELLE)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* 1. TOP-BAR E NAV-BAR MOBILE ORDINATI SENZA SOVRAPPOSIZIONI (Foto 3) */
+  .app-header {
+    position: relative !important;
+    top: auto !important;
+    z-index: 30 !important;
+  }
+
+  .nav-bar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    background: #ffffff !important;
+    border-bottom: 2px solid #cbd5e1 !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+    height: 44px !important;
+    padding: 4px 8px !important;
+  }
+
+  /* La barra sticky del paziente si posiziona ESATTAMENTE sotto la nav-bar senza mai accavallarsi */
+  #sticky-patient-bar.sticky-patient-bar,
+  .sticky-patient-bar {
+    top: 44px !important;
+    z-index: 48 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    padding: 6px 12px !important;
+  }
+
+  .sticky-patient-bar .sticky-patient-meta {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sticky-patient-bar .sticky-patient-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .sticky-patient-bar .btn-sticky-bridge-med span,
+  .sticky-patient-bar .btn-sticky-bridge-salute span {
+    display: none; /* Icone compatte su mobile per non far traboccare i bottoni */
+  }
+
+  .sticky-patient-bar .btn-sticky-bridge-med,
+  .sticky-patient-bar .btn-sticky-bridge-salute,
+  .sticky-patient-bar .btn-sticky-cambia {
+    padding: 5px 8px !important;
+    font-size: 11px !important;
+  }
+
+  /* 2. MODAL ALLERTA TERAPIE IN RITARDO (Foto 1) -> BOTTOM-SHEET MODERNO E CENTRATO */
+  .modal-overlay {
+    padding: 0 !important;
+    align-items: flex-end !important; /* Si ancora fluidamente dal basso come una vera app */
+    background: rgba(15, 23, 42, 0.82) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+
+  #modal-allarme-terapie .modal-card,
+  .modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 24px 24px 0 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    max-height: 88vh !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.45) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    animation: slideUpMobile 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  #modal-allarme-terapie .modal-header {
+    border-radius: 24px 24px 0 0 !important;
+    padding: 14px 16px !important;
+    flex-shrink: 0 !important;
+  }
+
+  #modal-allarme-terapie .modal-header h3 {
+    font-size: 15px !important;
+    line-height: 1.25 !important;
+  }
+
+  #modal-allarme-terapie .modal-body {
+    padding: 12px 14px !important;
+    max-height: calc(88vh - 75px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .card-allarme-paziente {
+    border-radius: 16px !important;
+    padding: 12px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .card-allarme-farmaco-item {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+
+  .card-allarme-farmaco-item > div:last-child {
+    display: flex !important;
+    width: 100% !important;
+    gap: 8px !important;
+    justify-content: stretch !important;
+  }
+
+  .card-allarme-farmaco-item > div:last-child button,
+  .card-allarme-farmaco-item > div:last-child span {
+    flex: 1 !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  /* 3. SAFETY CHECK OSPEDALIERO (Foto 2) -> GRANDE, CHIARO, ERGONOMICO */
+  #modal-safety-check-ospedaliero {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+
+  #modal-safety-check-ospedaliero .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 24px 24px 0 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    max-height: 90vh !important;
+    box-shadow: 0 -10px 45px rgba(2, 132, 199, 0.4) !important;
+    animation: slideUpMobile 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  #safety-check-body {
+    padding: 16px 14px !important;
+    max-height: calc(90vh - 70px) !important;
+  }
+
+  #safety-check-body button,
+  #safety-check-body .btn {
+    min-height: 46px !important;
+    font-size: 13.5px !important;
+  }
+
+  /* 4. TABELLA ANNOTAZIONI SOCIO-SANITARIE (Foto 3) -> CAROUSEL TOUCH SENZA SCROLL-BAR BRUTTA */
+  .table-fullview-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: 14px !important;
+  }
+
+  .custom-table-panoramica {
+    min-width: 600px !important; /* Permette uno scorrimento orizzontale liscio senza comprimere le colonne */
+  }
+
+  .diario-bulk-toolbar {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .diario-bulk-toolbar button {
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+  }
+
+  /* 5. MENU TENDINA 3 PUNTINI (⋮) HEADER SU SMARTPHONE (BOTTOM-SHEET APP NATIVA) */
+  #dropdown-menu-oss-top {
+    display: none !important; /* Su mobile sostituto dal bottomsheet nativo a tutto schermo */
+  }
+
+  #modal-menu-oss-bottomsheet {
+    display: none;
+    z-index: 9999999 !important;
+  }
+
+  /* 6. OTTIMIZZAZIONE RESPONSIVE CONTROLLI TESTATA & PULSANTIERA OSS SU SMARTPHONE */
+  .header-main-bar {
+    padding: 8px 10px !important;
+    gap: 8px !important;
+  }
+
+  /* Orologio compatto elegante su mobile per non far traboccare il logo */
+  .header-clock-pill {
+    padding: 3px 8px !important;
+  }
+  .header-clock-pill .clock-date-text {
+    font-size: 10px !important;
+  }
+  .header-clock-pill .clock-time-text {
+    font-size: 11px !important;
+  }
+
+  .header-top-utilities {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    order: 3 !important;
+  }
+
+  .btn-header-utility {
+    flex: 1 1 0 !important;
+    padding: 6px 4px !important;
+    font-size: 11px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    min-width: 0 !important;
+  }
+
+  .btn-header-utility span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dropdown-tools-wrapper {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  .dropdown-tools-wrapper .btn-tools-toggle {
+    width: 100% !important;
+  }
+
+  /* Barra Pulsanti OSS (Livello 2): Carousel orizzontale compatto e touch senza spezzarsi in verticale */
+  .header-toolbar-row {
+    padding: 6px 8px !important;
+  }
+
+  .header-toolbar-row > div {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .header-toolbar-row > div > div:first-child {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding-bottom: 2px !important;
+  }
+
+  .header-toolbar-row > div > div:first-child::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .header-toolbar-row .btn {
+    padding: 6px 10px !important;
+    font-size: 11.5px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    border-radius: 8px !important;
+  }
+
+  #menu-oss-top-container {
+    flex-shrink: 0 !important;
+    margin-left: 2px !important;
+  }
+
+  #btn-menu-oss-top {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+@keyframes slideUpMobile {
+  from {
+    transform: translateY(100%);
+    opacity: 0.7;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
+
+/* ==========================================================================
+   MODALITÀ APP NATIVA MOBILE PER OPERATORI / CAREGIVER (ZERO SFORZO)
+   ========================================================================== */
+@media (min-width: 769px) {
+  .mobile-only-app-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-fullview-container {
+    display: none !important;
+  }
+  
+  .mobile-only-app-container {
+    display: block !important;
+    margin-top: 10px;
+  }
+
+  .mobile-pazienti-chips-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 6px 4px 12px 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .mobile-pazienti-chips-bar::-webkit-scrollbar {
+    display: none;
+  }
+  .mobile-patient-chip {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .mobile-patient-chip.active {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+    border-color: #0284c7 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35) !important;
+  }
+
+  .mobile-hero-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    border: 2px solid #e2e8f0;
+    position: relative;
+    overflow: hidden;
+  }
+  .mobile-hero-card.urgent {
+    border-color: #ef4444 !important;
+    background: linear-gradient(to bottom, #fef2f2, #ffffff) !important;
+  }
+  .mobile-hero-card.ready {
+    border-color: #0284c7 !important;
+    background: linear-gradient(to bottom, #f0f9ff, #ffffff) !important;
+  }
+  .mobile-hero-card.done-all {
+    border-color: #10b981 !important;
+    background: linear-gradient(to bottom, #ecfdf5, #ffffff) !important;
+    text-align: center;
+  }
+
+  .mobile-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+  .mobile-hero-badge.badge-urgent {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+  .mobile-hero-badge.badge-ready {
+    background: #e0f2fe;
+    color: #0284c7;
+  }
+  .mobile-hero-badge.badge-done {
+    background: #d1fae5;
+    color: #059669;
+  }
+
+  .mobile-hero-title {
+    font-size: 19px;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.25;
+    margin-bottom: 4px;
+  }
+  .mobile-hero-sub {
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .btn-mobile-hero-action {
+    width: 100%;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-mobile-hero-action:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  }
+
+  .mobile-hero-secondary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed #e2e8f0;
+  }
+  .btn-mobile-hero-sub {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+  }
+
+  .mobile-terapie-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+  .mobile-terapie-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .mobile-filter-pills {
+    display: flex;
+    gap: 6px;
+  }
+  .mobile-pill-filter {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 4px 10px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+  }
+  .mobile-pill-filter.active {
+    background: #0f172a !important;
+    border-color: #0f172a !important;
+    color: #ffffff !important;
+  }
+
+  .mobile-timeline-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 80px;
+  }
+  .mobile-card-item {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+  }
+  .mobile-card-item.is-done {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    opacity: 0.9;
+  }
+  .mobile-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .mobile-card-time {
+    font-size: 13px;
+    font-weight: 800;
+    color: #0284c7;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mobile-card-status-pill {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+  .mobile-card-status-pill.status-done {
+    background: #dcfce7;
+    color: #15803d;
+  }
+  .mobile-card-status-pill.status-pending {
+    background: #fef3c7;
+    color: #b45309;
+  }
+  .mobile-card-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 2px;
+  }
+  .mobile-card-dosaggio {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 8px;
+  }
+  .mobile-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .mobile-card-scorta {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748b;
+  }
+  .btn-mobile-card-take {
+    min-height: 42px;
+    padding: 6px 16px;
+    background: #10b981;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+  }
+  .btn-mobile-card-take:active {
+    transform: scale(0.97);
+  }
+  .btn-mobile-card-undo {
+    min-height: 36px;
+    padding: 4px 12px;
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+}
+
+
+/* ==========================================================================
+   PULIZIA RADICALE APP MOBILE NATIVA (52px HEADER, ZERO RUMORE, HERO ACTION)
+   ========================================================================== */
+@media (min-width: 769px) {
+  .mobile-only-app-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* 1. NASCONDI TUTTE LE 5 RIGHE DI PULSANTI E HEADER SU SMARTPHONE */
+  .header-clock-pill,
+  .header-top-utilities,
+  .header-center-patient,
+  .header-action-pills-row,
+  .brand-sub,
+  .nav-bar,
+  #sticky-patient-bar,
+  .rsa-dashboard-strip,
+  #alvo-alert-container,
+  #farmaci-alert-scorte-dashboard,
+  #ausili-alert-scorte-dashboard {
+    display: none !important;
+  }
+
+  /* 2. HEADER SMARTPHONE SNELLO (SOLO 52px!) */
+  .app-header {
+    padding: 10px 14px !important;
+    background: #0f172a !important;
+    border-bottom: 1.5px solid #1e293b !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 99999 !important;
+  }
+
+  .header-main-bar {
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 0 !important;
+  }
+
+  .header-left {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+
+  .brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+  }
+
+  .brand-icon {
+    font-size: 22px !important;
+  }
+
+  .brand-title {
+    font-size: 17px !important;
+    font-weight: 900 !important;
+    color: #ffffff !important;
+    letter-spacing: -0.3px !important;
+  }
+
+  /* 3. VISTA MOBILE PRINCIPALE SEMPRE IN PRIMO PIANO */
+  .mobile-only-app-container {
+    display: block !important;
+    padding: 6px 4px 20px 4px !important;
+  }
+
+  /* Su mobile nascondi tab-dashboard e la tabella fitta a 8 colonne */
+  #tab-dashboard {
+    display: none !important; /* Mostrato solo se si preme "Clinica" dalla barra inferiore */
+  }
+  .table-fullview-container {
+    display: none !important;
+  }
+
+  /* 4. CAROSELLO ASSISTITI A PORTATA DI POLLICE */
+  .mobile-pazienti-chips-bar {
+    display: flex !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    padding: 8px 4px 14px 4px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  .mobile-pazienti-chips-bar::-webkit-scrollbar {
+    display: none !important;
+  }
+  .mobile-patient-chip {
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 9px 16px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 24px !important;
+    font-size: 13.5px !important;
+    font-weight: 800 !important;
+    color: #334155 !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  .mobile-patient-chip.active {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+    border-color: #0284c7 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4) !important;
+  }
+
+  /* 5. HERO CARD: "COSA DEVI FARE ADESSO" (Zero Sforzo) */
+  .mobile-hero-card {
+    background: #ffffff !important;
+    border-radius: 22px !important;
+    padding: 20px 20px 18px 20px !important;
+    margin-bottom: 22px !important;
+    box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.09), 0 8px 12px -6px rgba(0, 0, 0, 0.05) !important;
+    border: 2px solid #e2e8f0 !important;
+    position: relative !important;
+  }
+  .mobile-hero-card.urgent {
+    border-color: #ef4444 !important;
+    background: linear-gradient(to bottom, #fff5f5, #ffffff) !important;
+  }
+  .mobile-hero-card.ready {
+    border-color: #0284c7 !important;
+    background: linear-gradient(to bottom, #f0f9ff, #ffffff) !important;
+  }
+  .mobile-hero-card.done-all {
+    border-color: #10b981 !important;
+    background: linear-gradient(to bottom, #ecfdf5, #ffffff) !important;
+    text-align: center !important;
+  }
+
+  .mobile-hero-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 11.5px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    padding: 5px 12px !important;
+    border-radius: 12px !important;
+    margin-bottom: 12px !important;
+  }
+  .mobile-hero-badge.badge-urgent {
+    background: #fee2e2 !important;
+    color: #b91c1c !important;
+  }
+  .mobile-hero-badge.badge-ready {
+    background: #e0f2fe !important;
+    color: #0369a1 !important;
+  }
+  .mobile-hero-badge.badge-done {
+    background: #d1fae5 !important;
+    color: #047857 !important;
+  }
+
+  .mobile-hero-title {
+    font-size: 21px !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+    line-height: 1.25 !important;
+    margin-bottom: 6px !important;
+  }
+  .mobile-hero-sub {
+    font-size: 14px !important;
+    color: #475569 !important;
+    font-weight: 600 !important;
+    margin-bottom: 18px !important;
+  }
+
+  .btn-mobile-hero-action {
+    width: 100% !important;
+    min-height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 18px !important;
+    font-size: 17px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.45) !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  .btn-mobile-hero-action:active {
+    transform: scale(0.97) !important;
+  }
+
+  .mobile-hero-secondary-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-top: 14px !important;
+    padding-top: 12px !important;
+    border-top: 1px dashed #e2e8f0 !important;
+  }
+  .btn-mobile-hero-sub {
+    background: transparent !important;
+    border: none !important;
+    color: #64748b !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 6px 8px !important;
+  }
+
+  /* 6. TIMELINE SCHEDE MOBILE */
+  .mobile-terapie-header-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 14px !important;
+    padding: 0 4px !important;
+  }
+  .mobile-terapie-title {
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+  }
+  .mobile-filter-pills {
+    display: flex !important;
+    gap: 6px !important;
+  }
+  .mobile-pill-filter {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 16px !important;
+    padding: 5px 12px !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    color: #475569 !important;
+    cursor: pointer !important;
+  }
+  .mobile-pill-filter.active {
+    background: #0f172a !important;
+    border-color: #0f172a !important;
+    color: #ffffff !important;
+  }
+
+  .mobile-timeline-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding-bottom: 90px !important;
+  }
+  .mobile-card-item {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 18px !important;
+    padding: 16px 18px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  }
+  .mobile-card-item.is-done {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    opacity: 0.9 !important;
+  }
+  .mobile-card-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 8px !important;
+  }
+  .mobile-card-time {
+    font-size: 13.5px !important;
+    font-weight: 900 !important;
+    color: #0284c7 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+  .mobile-card-status-pill {
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    padding: 4px 10px !important;
+    border-radius: 12px !important;
+  }
+  .mobile-card-status-pill.status-done {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+  }
+  .mobile-card-status-pill.status-pending {
+    background: #fef3c7 !important;
+    color: #b45309 !important;
+  }
+  .mobile-card-name {
+    font-size: 17px !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+    margin-bottom: 4px !important;
+  }
+  .mobile-card-dosaggio {
+    font-size: 13.5px !important;
+    color: #64748b !important;
+    margin-bottom: 10px !important;
+  }
+  .mobile-card-footer {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-top: 10px !important;
+    padding-top: 10px !important;
+    border-top: 1px solid #f1f5f9 !important;
+  }
+  .mobile-card-scorta {
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    color: #64748b !important;
+  }
+  .btn-mobile-card-take {
+    min-height: 44px !important;
+    padding: 8px 18px !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 14px !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.35) !important;
+  }
+  .btn-mobile-card-undo {
+    min-height: 38px !important;
+    padding: 6px 14px !important;
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    font-size: 12.5px !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+  }
+
+  /* 7. FLOATING BOTTOM BAR NATIVA */
+  .mobile-bottom-bar {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 12px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100% - 24px) !important;
+    max-width: 440px !important;
+    height: 64px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 24px !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16) !important;
+    z-index: 9999999 !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    padding: 0 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  body {
+    padding-bottom: 90px !important;
+    background: #f8fafc !important;
+  }
 }

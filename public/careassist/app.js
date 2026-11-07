@@ -12206,6 +12206,8 @@ function renderAll() {
   aggiornaVisibilitaTabEpatologia();
   renderGlicemie();
   if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
+  var pAttivo = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (pAttivo && typeof renderMobileNativeView === 'function') renderMobileNativeView(pAttivo.terapie || [], pAttivo);
 }
 
 window._initialSyncDone = false;
