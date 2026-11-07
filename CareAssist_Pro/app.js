@@ -5599,7 +5599,7 @@ function controllaTerapieGlobaliTuttiPazienti() {
   } else {
     // Nessun ritardo attivo
     allarmeTerapieAttivo = false;
-    if (modalAllarme && modalAllarme.classList.contains('active')) {
+    if (!modalAllarmeApertoManualmente && modalAllarme && modalAllarme.classList.contains('active')) {
       modalAllarme.classList.remove('active');
     }
   }
@@ -5607,6 +5607,7 @@ function controllaTerapieGlobaliTuttiPazienti() {
 
 // Chiusura allarme da parte dell'utente: arresta il suono e mette in pausa per 5 minuti
 function chiudiModalAllarmeSenzaSnooze() {
+  modalAllarmeApertoManualmente = false;
   const modal = document.getElementById('modal-allarme-terapie');
   if (modal) modal.classList.remove('active');
   allarmeTerapieAttivo = false;
@@ -5615,6 +5616,7 @@ function chiudiModalAllarmeSenzaSnooze() {
 }
 
 function chiudiAllarmeTerapieGlobali() {
+  modalAllarmeApertoManualmente = false;
   const modal = document.getElementById('modal-allarme-terapie');
   if (modal) modal.classList.remove('active');
   allarmeTerapieAttivo = false;
@@ -5658,7 +5660,7 @@ function evidenziaEScrollaAFarmaco(farmacoId) {
     tentativi++;
     var row = null;
     if (farmacoId) {
-      row = document.getElementById('terapia-row-' + farmacoId) || document.querySelector('tr[data-farmaco-id="' + farmacoId + '"]');
+      row = document.getElementById('mobile-card-farmaco-' + farmacoId) || document.getElementById('terapia-row-' + farmacoId) || document.querySelector('tr[data-farmaco-id="' + farmacoId + '"]');
     }
 
     // Fallback: cerca la prima riga nella tabella terapie che ha un pulsante di ritardo
@@ -13997,12 +13999,104 @@ function apriMascheraNuovoFarmaco() {
 // ==========================================================================
 // GESTIONE BARRA STICKY CONTESTO ASSISTITO & SWITCH RAPIDO SENZA SCROLL
 // ==========================================================================
+var modalAllarmeApertoManualmente = false;
+
+function calcolaTerapieInRitardoGlobali() {
+  if (!AppData || !AppData.pazienti) return [];
+  const listaPazienti = typeof getPazientiAccessibili === 'function' ? getPazientiAccessibili() : AppData.pazienti;
+  const pazientiConRitardi = [];
+  listaPazienti.forEach(p => {
+    const terapieInRitardo = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo);
+    if (terapieInRitardo.length > 0) {
+      pazientiConRitardi.push({
+        paziente: p,
+        farmaci: terapieInRitardo
+      });
+    }
+  });
+  return pazientiConRitardi;
+}
+
+function aggiornaIndicatoriRitardiUI(totRitardi) {
+  // 1. Mobile Header Pill
+  const btnMhdr = document.getElementById('mobile-header-ritardi-btn');
+  const badgeMhdr = document.getElementById('mobile-header-ritardi-badge');
+  if (btnMhdr) {
+    if (totRitardi > 0) {
+      btnMhdr.classList.add('has-delays');
+      if (badgeMhdr) {
+        badgeMhdr.textContent = totRitardi;
+        badgeMhdr.style.display = 'inline-block';
+      }
+    } else {
+      btnMhdr.classList.remove('has-delays');
+      if (badgeMhdr) {
+        badgeMhdr.textContent = '0';
+        badgeMhdr.style.display = 'none';
+      }
+    }
+  }
+
+  // 2. Mobile Bottom Bar Tab
+  const badgeMbar = document.getElementById('mbar-ritardi-badge');
+  if (badgeMbar) {
+    if (totRitardi > 0) {
+      badgeMbar.textContent = totRitardi;
+      badgeMbar.style.display = 'inline-block';
+    } else {
+      badgeMbar.textContent = '0';
+      badgeMbar.style.display = 'none';
+    }
+  }
+
+  // 3. Mobile Hero Action Card Alert Banner
+  const bannerMhero = document.getElementById('mobile-hero-ritardi-banner');
+  const countMhero = document.getElementById('mhero-ritardi-count');
+  if (bannerMhero) {
+    if (totRitardi > 0) {
+      if (countMhero) countMhero.textContent = totRitardi;
+      bannerMhero.style.display = 'flex';
+    } else {
+      bannerMhero.style.display = 'none';
+    }
+  }
+}
+
 function apriAllarmiTerapieManuale() {
-  allarmeTerapieSnoozeFinoA = 0;
-  controllaTerapieGlobaliTuttiPazienti();
+  modalAllarmeApertoManualmente = true;
+  allarmeTerapieSnoozeFinoA = 0; // reset snooze per permettere immediata consultazione
+
+  const pazientiConRitardi = calcolaTerapieInRitardoGlobali();
+  const totRitardi = pazientiConRitardi.reduce((sum, it) => sum + it.farmaci.length, 0);
+  aggiornaIndicatoriRitardiUI(totRitardi);
+
   const modalAllarme = document.getElementById('modal-allarme-terapie');
+  const listaContainer = document.getElementById('lista-pazienti-terapie-ritardo');
+
+  if (pazientiConRitardi.length > 0) {
+    controllaTerapieGlobaliTuttiPazienti();
+  } else {
+    if (listaContainer) {
+      listaContainer.innerHTML = `
+        <div style="text-align:center; padding:32px 18px; background:#f0fdf4; border:2px dashed #86efac; border-radius:18px; margin:6px 0;">
+          <div style="font-size:46px; margin-bottom:10px;">🎉</div>
+          <div style="font-size:18px; font-weight:900; color:#166534; margin-bottom:4px;">Nessuna Terapia in Ritardo!</div>
+          <div style="font-size:13px; color:#15803d; line-height:1.4; max-width:380px; margin:0 auto;">
+            Tutti i farmaci previsti fino ad ora sono stati regolarmente somministrati oppure non sono ancora scaduti per tutti gli assistiti.
+          </div>
+          <div style="margin-top:16px;">
+            <button type="button" class="btn btn-primary" onclick="chiudiAllarmeTerapieGlobali()" style="background:#16a34a; border:none; padding:9px 22px; border-radius:12px; font-weight:800; font-size:13px; color:#ffffff; cursor:pointer; box-shadow:0 3px 10px rgba(22,163,74,0.3);">
+              ✓ Chiudi Schermata
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
   if (modalAllarme) modalAllarme.classList.add('active');
 }
+window.apriAllarmiTerapieManuale = apriAllarmiTerapieManuale;
 
 function aggiornaStickyPatientBar() {
   const p = getActivePaziente();
@@ -23072,7 +23166,7 @@ function renderMobileNativeView(terapie, p) {
       timelineContainer.innerHTML = lista.map(function (t) {
         var isDone = !!t.fattoOggi;
         var iconaFormato = (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) ? '💉' : '💊';
-        return '<div class="mobile-card-item' + (isDone ? ' is-done' : '') + '">' +
+        return '<div class="mobile-card-item' + (isDone ? ' is-done' : '') + '" id="mobile-card-farmaco-' + t.id + '">' +
           '<div class="mobile-card-header">' +
           '<div class="mobile-card-time">' +
           '<span>' + iconaFormato + '</span>' +
@@ -23125,3 +23219,9 @@ function apriScannerMobileUnClick() {
   }
 }
 window.apriScannerMobileUnClick = apriScannerMobileUnClick;
+
+window.chiudiAllarmeTerapieGlobali = chiudiAllarmeTerapieGlobali;
+window.chiudiModalAllarmeSenzaSnooze = chiudiModalAllarmeSenzaSnooze;
+window.vaiACartellaPazienteDaAllarme = vaiACartellaPazienteDaAllarme;
+window.vaiADirettoFarmacoDaAllarme = vaiADirettoFarmacoDaAllarme;
+window.azioneRapidaMancanzaDaAllarme = azioneRapidaMancanzaDaAllarme;

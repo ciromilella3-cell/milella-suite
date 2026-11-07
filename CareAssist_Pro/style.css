@@ -7877,3 +7877,85 @@ main, .main-content, .dashboard-container {
     background: #f8fafc !important;
   }
 }
+
+/* ==========================================================================
+   ALLERTA TERAPIE MULTI-PAZIENTE MOBILE (1-TOUCH HEADER + BOTTONI)
+   ========================================================================== */
+.mobile-header-ritardi-btn {
+  display: none;
+}
+@media (max-width: 768px) {
+  .mobile-header-ritardi-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    border: 1.5px solid #334155 !important;
+    color: #e2e8f0 !important;
+    padding: 5px 10px !important;
+    border-radius: 20px !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    margin-left: auto !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+  }
+  .mobile-header-ritardi-btn.has-delays {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+    border-color: #ef4444 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6) !important;
+    animation: pulseAlertGlow 1.8s infinite !important;
+  }
+  .mobile-header-ritardi-btn .mhdr-badge {
+    background: #ffffff !important;
+    color: #dc2626 !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    padding: 1px 6px !important;
+    border-radius: 10px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* MODALE TERAPIE IN RITARDO OTTIMIZZATA PER SMARTPHONE */
+  #modal-allarme-terapie .modal-card {
+    width: 95% !important;
+    max-width: 95vw !important;
+    margin: 10px auto !important;
+    max-height: 90vh !important;
+    border-radius: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  #modal-allarme-terapie .modal-header {
+    padding: 12px 14px !important;
+  }
+  #modal-allarme-terapie .modal-header h3 {
+    font-size: 14.5px !important;
+  }
+  #modal-allarme-terapie .modal-body {
+    padding: 10px !important;
+    max-height: calc(88vh - 120px) !important;
+  }
+  #modal-allarme-terapie .modal-footer {
+    padding: 10px 14px !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  #modal-allarme-terapie .card-allarme-farmaco-item {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  #modal-allarme-terapie .card-allarme-farmaco-item > div:last-child {
+    justify-content: flex-end !important;
+  }
+}
+
+@keyframes pulseAlertGlow {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
