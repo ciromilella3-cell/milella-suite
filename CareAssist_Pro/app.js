@@ -1,3 +1,75 @@
+
+// ==============================================================================
+// MOTORE VOCALE NATURALE HD CAREASSIST (Azure Neural HD + Pause Naturali)
+// ==============================================================================
+let _audioElementCareAssistAttivo = null;
+
+function fermaVoceHDGlobale() {
+  if (_audioElementCareAssistAttivo) {
+    try {
+      _audioElementCareAssistAttivo.pause();
+      _audioElementCareAssistAttivo.currentTime = 0;
+    } catch(e) {}
+    _audioElementCareAssistAttivo = null;
+  }
+  if ('speechSynthesis' in window) {
+    try { window.speechSynthesis.cancel(); } catch(e) {}
+  }
+}
+window.fermaVoceHDGlobale = fermaVoceHDGlobale;
+window.fermaVoceSintesiInApp = fermaVoceHDGlobale;
+
+function riproduciVoceNaturaleHD(testo, onEndCallback) {
+  fermaVoceHDGlobale();
+  if (!testo || typeof testo !== 'string') return;
+
+  // Formatta testo con pause naturali, espansioni fonetiche e punteggiatura morbida
+  let t = testo
+    .replace(/\bmg\b/gi, 'milligrammi')
+    .replace(/\bmcg\b/gi, 'microgrammi')
+    .replace(/\bcpr\b/gi, 'compresse')
+    .replace(/\bml\b/gi, 'millilitri')
+    .replace(/\bgg\b/gi, 'giorni')
+    .replace(/\bSGLT2\b/gi, 'S G L T 2')
+    .replace(/\bHbA1c\b/gi, 'emoglobina glicata')
+    .replace(/\bUI\b/gi, 'unità internazionali')
+    .replace(/•/g, ', ')
+    .replace(/\s*\/\s*/g, ' oppure ')
+    .replace(/\s*-\s*/g, ' - ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Inserisci pause espressive dopo due punti o punti fermi per ritmo cadenzato e naturale
+  t = t.replace(/:\s*/g, ': ... ').replace(/\.\s*/g, '. ... ');
+
+  // Usa l'endpoint Azure Neural HD con voce Isabella (italiano naturale alta definizione)
+  const apiUrl = '/api/tts-umano?voice=isabella&text=' + encodeURIComponent(t);
+  const audio = new Audio(apiUrl);
+  _audioElementCareAssistAttivo = audio;
+
+  audio.onended = function() {
+    _audioElementCareAssistAttivo = null;
+    if (typeof onEndCallback === 'function') onEndCallback();
+  };
+
+  audio.onerror = function() {
+    console.warn('Fallback a sintesi locale browser per voce');
+    _audioElementCareAssistAttivo = null;
+    if (typeof parlaFallbackBrowserCareAssist === 'function') {
+      parlaFallbackBrowserCareAssist(t);
+    }
+    if (typeof onEndCallback === 'function') onEndCallback();
+  };
+
+  audio.play().catch(function(err) {
+    console.warn('Riproduzione audio bloccata o fallita, uso WebSpeech:', err);
+    if (typeof parlaFallbackBrowserCareAssist === 'function') {
+      parlaFallbackBrowserCareAssist(t);
+    }
+  });
+}
+window.riproduciVoceNaturaleHD = riproduciVoceNaturaleHD;
+
 ﻿
 // ==============================================================
 // MOTORE CLINICO AUTOMATICO FARMACO MULTI-TEMPO & SCORTA CONDIVISA
@@ -175,20 +247,21 @@ window._currentFormatoModal = 'compressa';
 
 function impostaFormatoFarmacoModal(formato, skipCalc) {
   window._currentFormatoModal = formato;
+  var isPen = (formato === 'penna');
   var btnComp = document.getElementById('btn-formato-compressa');
   var btnPen = document.getElementById('btn-formato-penna');
   var btnGocce = document.getElementById('btn-formato-gocce');
-  var boxPen = document.getElementById('box-scorte-penna');
 
+  // Pulsanti selettore formato
   if (btnComp) {
     btnComp.style.background = (formato === 'compressa') ? '#0284c7' : '#ffffff';
     btnComp.style.color = (formato === 'compressa') ? '#ffffff' : '#334155';
     btnComp.style.borderColor = (formato === 'compressa') ? '#0284c7' : '#cbd5e1';
   }
   if (btnPen) {
-    btnPen.style.background = (formato === 'penna') ? '#2563eb' : '#ffffff';
-    btnPen.style.color = (formato === 'penna') ? '#ffffff' : '#334155';
-    btnPen.style.borderColor = (formato === 'penna') ? '#2563eb' : '#cbd5e1';
+    btnPen.style.background = isPen ? '#2563eb' : '#ffffff';
+    btnPen.style.color = isPen ? '#ffffff' : '#334155';
+    btnPen.style.borderColor = isPen ? '#2563eb' : '#cbd5e1';
   }
   if (btnGocce) {
     btnGocce.style.background = (formato === 'gocce') ? '#0284c7' : '#ffffff';
@@ -196,14 +269,46 @@ function impostaFormatoFarmacoModal(formato, skipCalc) {
     btnGocce.style.borderColor = (formato === 'gocce') ? '#0284c7' : '#cbd5e1';
   }
 
-  if (boxPen) {
-    boxPen.style.display = (formato === 'penna') ? 'block' : 'none';
+  // 1. GESTIONE CONTROLLI SCORTE: mostra SOLO i controlli interessati
+  var boxPen = document.getElementById('box-scorte-penna');
+  var boxCompScorte = document.getElementById('box-scorte-compresse-standard');
+  if (boxPen) boxPen.style.display = isPen ? 'block' : 'none';
+  if (boxCompScorte) boxCompScorte.style.display = isPen ? 'none' : 'flex';
+
+  // 2. GESTIONE FREQUENZE: per la penna l'iniezione è standard 1 volta al giorno (sempre alla stessa ora)
+  var freqSelector = document.querySelector('.capsula-freq-selector');
+  var btnAddDose = document.querySelector('.btn-add-dose-mini');
+  var lblOrariIcon = document.getElementById('label-icon-orari-sez');
+  var lblOrariTitolo = document.getElementById('label-titolo-orari-sez');
+  var badgeOrari = document.getElementById('badge-info-orari-sez');
+
+  if (freqSelector) freqSelector.style.display = isPen ? 'none' : 'flex';
+  if (btnAddDose) btnAddDose.style.display = isPen ? 'none' : 'inline-block';
+
+  if (lblOrariIcon) lblOrariIcon.textContent = isPen ? '💉' : '⏰';
+  if (lblOrariTitolo) lblOrariTitolo.textContent = isPen ? 'Orario Iniezione Penna Insulina' : 'Orari & Quota Somministrazioni';
+  if (badgeOrari) badgeOrari.textContent = isPen ? '1 Iniezione al giorno' : 'Tocca per impostare';
+
+  // Se è penna, adatta la card orario per mostrare l'unità UI al posto di "cpr"
+  if (isPen) {
+    if (_capsulaCurrentDosi.length === 0 || _capsulaCurrentDosi.length > 1) {
+      _capsulaCurrentDosi = [{ ora: '08:00', fascia: 'Mattina (Colazione)', quota: 1.0 }];
+    }
+    var doseInp = document.getElementById('edit-penna-dose-die');
+    var uiVal = doseInp ? (parseFloat(doseInp.value) || 16) : 16;
+    var dosaggioTxt = document.getElementById('edit-farm-dosaggio');
+    if (dosaggioTxt && (!dosaggioTxt.value || dosaggioTxt.value.includes('cpr') || dosaggioTxt.value.includes('mg'))) {
+      dosaggioTxt.value = uiVal + ' Unità (sottocute)';
+    }
   }
 
+  // 3. Modifica icona header
   var iconHeader = document.querySelector('#modal-modifica-farmaco .modal-header span');
   if (iconHeader) {
-    iconHeader.textContent = (formato === 'penna') ? '💉' : (formato === 'gocce' ? '💧' : '💊');
+    iconHeader.textContent = isPen ? '💉' : (formato === 'gocce' ? '💧' : '💊');
   }
+
+  renderDosiCards();
 
   if (!skipCalc && typeof ricalcolaRiepilogoCapsula === 'function') {
     ricalcolaRiepilogoCapsula();
@@ -547,11 +652,11 @@ function getDettagliAvatarPaziente(p) {
 
 // Inizializzazione dati per ALDO con anagrafica reale e farmaci
 function getPazienteAldoInit() {
-  const aldo = createPazienteTemplate('paz_aldo', 'Aldo Z.', '1935-04-18', 'Paziente allettato 91 anni. Terapia cardiologica, neurologica e urologica con scarico pressorio q2h.');
+  const aldo = createPazienteTemplate('paz_aldo', 'Aldo Zamparino', '1935-04-18', 'Paziente allettato 91 anni. Terapia cardiologica, neurologica e urologica con scarico pressorio q2h.');
   aldo.indirizzo = 'Via Roma, 10 - Bari';
   aldo.telefonoFisso = '080 561 57 14';
   aldo.cellulare = '338 000 00 01';
-  aldo.moglieNome = 'Mazzicone Angela';
+  aldo.moglieNome = 'M. Angela';
   aldo.moglieCellulare = '338 000 00 02';
   aldo.medico = 'Dott. Roberto Scarcia';
   aldo.medicoNome = 'Dott. Roberto Scarcia';
@@ -683,14 +788,14 @@ function getPazienteAldoInit() {
   return aldo;
 }
 
-// Inizializzazione dati per Angela M. con anagrafica e farmaci
+// Inizializzazione dati per Angela Mazzicone con anagrafica e farmaci
 function getPazienteAngelaInit() {
-  const angela = createPazienteTemplate('paz_angela', 'Angela M.', '1938-05-29', 'Coniuge di Aldo. Terapia cardiologica, ipertensiva, dislipidemica, uricosurica, gastroprotettiva e integrazione vit. D3.');
-  angela.nome = 'Angela M.';
+  const angela = createPazienteTemplate('paz_angela', 'Angela Mazzicone', '1938-05-29', 'Coniuge di Aldo. Terapia cardiologica, ipertensiva, dislipidemica, uricosurica, gastroprotettiva e integrazione vit. D3.');
+  angela.nome = 'Angela Mazzicone';
   angela.indirizzo = 'Via Roma, 10 - Bari (BA)';
   angela.telefonoFisso = '080 561 57 14';
   angela.cellulare = '338 000 00 02';
-  angela.maritoNome = 'Aldo Z.';
+  angela.maritoNome = 'Aldo Zamparino';
   angela.maritoCellulare = '338 000 00 01';
   angela.farmaciaDiRiferimento = 'Farmacia Dott. MACARIO';
   angela.farmaciaIndirizzo = 'Via G. Petroni, 69/b - Bari';
@@ -838,7 +943,7 @@ function getPazienteAngelaInit() {
   ];
 
   angela.visite = [
-    { id: 201, data: '2026-10-16', ora: '09:00', medico: 'Dott. Roberto Scarcia', motivo: 'Rinnovo ricette e piano terapeutico per Angela M.', fatto: false },
+    { id: 201, data: '2026-10-16', ora: '09:00', medico: 'Dott. Roberto Scarcia', motivo: 'Rinnovo ricette e piano terapeutico per Angela Mazzicone', fatto: false },
     { id: 202, data: '2026-10-19', ora: '10:30', medico: 'ASL / Servizio Ossigenoterapia Domiciliare', motivo: 'Richiesta e fornitura bombola ossigeno terapeutico per Angela', fatto: false }
   ];
 
@@ -903,19 +1008,78 @@ function getTerapieRosaFoto() {
     cprPerScatola: cpr, scorta: cpr, farmacia: F, fattoOggi: false
   });
   return [
-    mk(301, '07:30', 'Mattina (Digiuno)', 'SINEMET 100+25 mg (1ª dose)', 'Levodopa + Carbidopa', '100/25 mg (1 cpr)', '30 min prima di colazione (Parkinson)', 50),
-    mk(302, '08:00', 'Mattina (Colazione)', 'XULTOPHY penna', 'Insulina degludec + Liraglutide', '___ unità (sottocute)', 'Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete)', 15),
+    mk(305, '08:00', 'Mattina (Colazione)', 'CONGESCOR 2,5 mg', 'Bisoprololo', '2,5 mg (1 cpr)', 'A colazione (Beta-bloccante: frequenza cardiaca)', 28),
     mk(303, '08:00', 'Mattina (Colazione)', 'DIAMICRON 60 mg RM', 'Gliclazide', '60 mg (1 cpr rilascio modificato)', 'A colazione, non masticare (Diabete) - rischio ipoglicemia con insulina', 30),
     mk(304, '08:00', 'Mattina (Colazione)', 'FORXIGA 10 mg', 'Dapagliflozin', '10 mg (1 cpr)', 'Al mattino con acqua (Diabete / cuore / reni)', 28),
-    mk(305, '08:00', 'Mattina (Colazione)', 'CONGESCOR 2,5 mg', 'Bisoprololo', '2,5 mg (1 cpr)', 'A colazione (Beta-bloccante: frequenza cardiaca)', 28),
-    Object.assign(mk(306, '08:00', 'Mattina (Colazione)', 'TRIATEC 5 mg', 'Ramipril', '5 mg (Dose alternata: ½ cpr e 1 cpr)', 'A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno dopo su indicazione medica', 14), { cadenzaTipo: 'alternata_mezza_intera', quantitaQuota: 0.5, dataInizioAlterni: '2026-10-18', ultimaModificaClinica: { data: '22/10/2026', fonte: 'Visita Specialistica', medico: 'Cardiologo', motivo: 'Alternanza mezza compressa e una compressa per modulazione pressoria' } }),
+    {
+      id: 301,
+      gruppoFarmacoId: 'grp_sinemet_100_25_mg',
+      ora: '08:00',
+      fascia: 'Mattina (Colazione)',
+      farmaco: 'SINEMET 100+25 mg (1ª dose: 2 cpr - ore 08:00)',
+      principio: 'Levodopa + Carbidopa',
+      dosaggio: '100/25 mg (2 cpr)',
+      quantitaQuota: 2,
+      modo: '30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico',
+      cprPerScatola: 50,
+      scorta: 82,
+      giorniAlert: 7,
+      farmacia: F,
+      fattoOggi: false,
+      ultimaDoseSomministrata: 2
+    },
+    Object.assign(mk(306, '08:00', 'Mattina (Colazione)', 'TRIATEC 5 mg', 'Ramipril', '5 mg (Dose alternata: ½ cpr e 1 cpr)', 'A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno dopo su indicazione medica', 14), {
+      cadenzaTipo: 'alternata_mezza_intera',
+      quantitaQuota: 0.5,
+      dataInizioAlterni: '2026-10-18',
+      ultimaModificaClinica: { data: '22/10/2026', fonte: 'Visita Specialistica', medico: 'Cardiologo', motivo: 'Alternanza mezza compressa e una compressa per modulazione pressoria' }
+    }),
+    {
+      id: 302,
+      ora: '17:30',
+      fascia: 'Pomeriggio',
+      farmaco: 'XULTOPHY penna',
+      principio: 'Insulina degludec + Liraglutide',
+      dosaggio: '16 Unità (sottocute)',
+      tipoFormulazione: 'penna',
+      unitaDoseDie: 16,
+      unitaPerPenna: 300,
+      penneScorta: 2,
+      pennePerScatola: 3,
+      scorta: 2,
+      giorniAlert: 15,
+      farmacia: F,
+      fattoOggi: false,
+      modo: 'Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete)' + V
+    },
     mk(307, '08:30', 'Mattina (Colazione)', 'LASIX 25 mg', 'Furosemide', '25 mg (1 cpr)', 'Al mattino (Diuretico: edemi / scompenso)', 30),
-    mk(308, '12:30', 'Pranzo', 'SINEMET 100+25 mg (2ª dose)', 'Levodopa + Carbidopa', '100/25 mg (1 cpr)', '30 min prima di pranzo (Parkinson)', 50),
     mk(314, '13:00', 'Pranzo', 'AVERELIX 75 mg', 'Clopidogrel', '75 mg (1 cpr rivestita)', 'A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare)', 28),
-    Object.assign(mk(309, '13:30', 'Pranzo', 'ADENURIC 80 mg', 'Febuxostat', '80 mg (1 cpr)', 'A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta)', 28), { cadenzaTipo: 'alterni', dataInizioAlterni: '2026-10-18' }),
+    Object.assign(mk(309, '13:30', 'Pranzo', 'ADENURIC 80 mg', 'Febuxostat', '80 mg (1 cpr)', 'A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta)', 28), {
+      cadenzaTipo: 'alterni',
+      dataInizioAlterni: '2026-10-18'
+    }),
     mk(310, '13:30', 'Pranzo', 'ARCOXIA 90 mg', 'Etoricoxib', '90 mg (1 cpr)', 'A stomaco pieno (Antinfiammatorio: dolore artrosi)', 28),
-    mk(311, '19:30', 'Sera (Cena)', 'SINEMET 100+25 mg (3ª dose)', 'Levodopa + Carbidopa', '100/25 mg (1 cpr)', '30 min prima di cena (Parkinson)', 50),
-    Object.assign(mk(313, '21:00', 'Notte (Prima di dormire)', 'SIVASTIN 20 mg', 'Simvastatina', '20 mg (1 cpr)', 'A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo)', 28), { cadenzaTipo: 'alterni', dataInizioAlterni: '2026-10-17' }),
+    {
+      id: 311,
+      gruppoFarmacoId: 'grp_sinemet_100_25_mg',
+      ora: '20:00',
+      fascia: 'Sera (Cena)',
+      farmaco: 'SINEMET 100+25 mg (2ª dose: 2 cpr - ore 20:00)',
+      principio: 'Levodopa + Carbidopa',
+      dosaggio: '100/25 mg (2 cpr)',
+      quantitaQuota: 2,
+      modo: '30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico',
+      cprPerScatola: 50,
+      scorta: 82,
+      giorniAlert: 7,
+      farmacia: F,
+      fattoOggi: false,
+      ultimaDoseSomministrata: 2
+    },
+    Object.assign(mk(313, '21:00', 'Notte (Prima di dormire)', 'SIVASTIN 20 mg', 'Simvastatina', '20 mg (1 cpr)', 'A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo)', 28), {
+      cadenzaTipo: 'alterni',
+      dataInizioAlterni: '2026-10-17'
+    }),
     mk(312, 'Al Bisogno', 'Al Bisogno (SOS)', 'FEDIVELLE 20.000 U.I.', 'Colecalciferolo (Vitamina D3)', '20.000 U.I. (1 capsula molle)', 'Dose periodica (di solito settimanale): registrare il giorno di assunzione (Vitamina D)', 10)
   ];
 }
@@ -949,8 +1113,8 @@ function getPazienteMariaCarmelaInit() {
 }
 
 function getPazienteCiroInit() {
-  const ciro = createPazienteTemplate('paz_1793216119572', 'Ciro Milella', '1967-12-15', 'Paziente assistito a domicilio.');
-  ciro.eta = calcolaAnniDaData('1967-12-15');
+  const ciro = createPazienteTemplate('paz_1793216119572', 'Ciro Milella', '1967-12-16', 'Paziente assistito a domicilio.');
+  ciro.eta = calcolaAnniDaData('1967-12-16');
   ciro.indirizzo = 'Via Giulio Petroni, 69';
   ciro.telefonoFisso = '366 460 73 96';
   ciro.cellulare = '366 460 73 96';
@@ -1014,7 +1178,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
   AppData = defaultState;
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
 } else {
-  // Sincronizza i dati di Aldo Z. se già presenti
+  // Sincronizza i dati di Aldo Zamparino se già presenti
   // PULIZIA CLINICA: Rimuove eventuali cartelle epatologiche/infettive accidentalmente assegnate ad assistiti non infettivi
   if (Array.isArray(AppData.pazienti)) {
     AppData.pazienti.forEach(function (pt) {
@@ -1036,11 +1200,11 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     aldoEx.medicoOrari = 'Lunedì: 10:00-13:00. Martedì: 10:00-13:00 e 16:00-19:00. Mercoledì: 10:00-13:00. Giovedì: 16:00-19:00. Venerdì: 10:00-13:00 (Bari - Via Muciaccia 11)';
   }
   if (aldoEx) {
-    aldoEx.nome = aldoEx.nome || 'Aldo Z.';
+    aldoEx.nome = 'Aldo Zamparino';
     aldoEx.indirizzo = aldoEx.indirizzo || 'Via Roma, 10 - Bari (BA)';
     aldoEx.telefonoFisso = aldoEx.telefonoFisso || '080 561 57 14';
     aldoEx.cellulare = aldoEx.cellulare || '338 000 00 01';
-    aldoEx.moglieNome = aldoEx.moglieNome || 'Mazzicone Angela';
+    aldoEx.moglieNome = aldoEx.moglieNome || 'M. Angela';
     aldoEx.moglieCellulare = aldoEx.moglieCellulare || '338 000 00 02';
     aldoEx.farmaciaDiRiferimento = aldoEx.farmaciaDiRiferimento || 'Farmacia Dott. MACARIO';
     aldoEx.farmaciaIndirizzo = aldoEx.farmaciaIndirizzo || 'Via G. Petroni, 69/b - Bari';
@@ -1102,19 +1266,19 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     }
   }
 
-  // Verifica o sincronizza Angela M. nella lista pazienti
+  // Verifica o sincronizza Angela Mazzicone nella lista pazienti
   let angelaEx = AppData.pazienti.find(p => p.id === 'paz_angela' || p.nome.toLowerCase().includes('angela'));
   if (!angelaEx) {
     angelaEx = getPazienteAngelaInit();
     AppData.pazienti.push(angelaEx);
   } else {
     angelaEx.id = 'paz_angela';
-    angelaEx.nome = 'Angela M.';
+    angelaEx.nome = 'Angela Mazzicone';
     angelaEx.dataNascita = '1938-05-29';
     angelaEx.indirizzo = 'Via Roma, 10 - Bari (BA)';
     angelaEx.telefonoFisso = '080 561 57 14';
     angelaEx.cellulare = '338 000 00 02';
-    angelaEx.maritoNome = 'Aldo Z.';
+    angelaEx.maritoNome = 'Aldo Zamparino';
     angelaEx.maritoCellulare = '338 000 00 01';
     angelaEx.farmaciaDiRiferimento = 'Farmacia Dott. MACARIO';
     angelaEx.farmaciaIndirizzo = 'Via G. Petroni, 69/b - Bari';
@@ -1168,7 +1332,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     if (rosaEx.cellulare === '338 000 00 01' || rosaEx.cellulare === '338 3066905') {
       rosaEx.cellulare = '';
     }
-    if (!rosaEx.moglieNome || rosaEx.moglieNome.includes('Mazzicone') || rosaEx.moglieNome.trim() === '') {
+    if (!rosaEx.moglieNome || rosaEx.moglieNome.includes('M.') || rosaEx.moglieNome.trim() === '') {
       rosaEx.moglieNome = 'Maria Carmela (Figlia / Caregiver)';
       rosaEx.moglieCellulare = '338 739 76 71';
     }
@@ -1514,17 +1678,41 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     console.log('Profilo Ciro Milella integrato in AppData!');
   }
 
-  // RECUPERO UNA TANTUM (31/10/2026): terapia di Ciro Milella cancellata involontariamente.
-  // Se la lista è vuota ripristina Entecavir Sandoz 0,5 mg e la invia al Cloud. Il flag impedisce di riattivarsi dopo una cancellazione volontaria.
-  if (!AppData.ciroTerapiaRecuperata20261031) {
-    AppData.ciroTerapiaRecuperata20261031 = true;
-    const ciroRec = AppData.pazienti.find(p => p.id === 'paz_1793216119572' || (p.nome || '').toLowerCase().includes('ciro milella'));
-    if (ciroRec && (!Array.isArray(ciroRec.terapie) || ciroRec.terapie.length === 0)) {
-      ciroRec.terapie = getPazienteCiroInit().terapie;
-      AppData.lastModified = Date.now();
-      localStorage.setItem('careassist_pending_sync', 'true');
-      console.log('Terapia di Ciro Milella ripristinata (Entecavir Sandoz 0,5 mg).');
-    }
+  // RIPRISTINO AUTOMATICO GARANTITO (01/11/2026): Entecavir Sandoz 0,5 mg per Ciro Milella
+  const ciroRec = AppData.pazienti.find(p => p.id === 'paz_1793216119572' || (p.nome || '').toLowerCase().includes('ciro milella'));
+  if (ciroRec && (!Array.isArray(ciroRec.terapie) || ciroRec.terapie.length === 0 || !ciroRec.terapie.some(t => (t.farmaco || '').toLowerCase().includes('entecavir')))) {
+    ciroRec.terapie = ciroRec.terapie || [];
+    ciroRec.terapie.push({
+      id: 1793444784904,
+      ora: '12:15',
+      fascia: 'Pranzo',
+      farmaco: 'Entecavir Sandoz 0,5 mg',
+      principio: 'Entecavir',
+      dosaggio: '0,5 mg (1 cpr)',
+      quantitaQuota: 1,
+      modo: "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell'infezione cronica da virus dell'epatite B (HBV).",
+      cprPerScatola: 30,
+      scorta: 39,
+      giorniAlert: 10,
+      cadenzaTipo: 'giornaliera',
+      fattoOggi: false,
+      tipoFormulazione: 'compressa',
+      penneScorta: 40,
+      unitaDoseDie: 1,
+      unitaPerPenna: 300,
+      pennePerScatola: 30,
+      kitGlicemiaAssociato: null,
+      ultimaModificaClinica: {
+        data: '01/11/2026',
+        fonte: 'Ripristino Automatico',
+        medico: 'Dr.ssa Saracino',
+        motivo: 'Ripristino scheda terapia Entecavir Sandoz'
+      },
+      ultimaDoseSomministrata: 1
+    });
+    AppData.lastModified = Date.now();
+    localStorage.setItem('careassist_pending_sync', 'true');
+    console.log('Terapia di Ciro Milella ripristinata con successo (Entecavir Sandoz 0,5 mg).');
   }
 
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
@@ -1680,6 +1868,13 @@ function sincronizzaDbDalServer(callback) {
     var getUrl = (primaryBase ? primaryBase : '') + '/api/get-db?_t=' + Date.now();
 
     var reconcileData = function (serverData) {
+      if (serverData && serverData.pazienti) {
+        serverData.pazienti.forEach(function(sp) {
+          if (sp.id === 'paz_aldo' || (sp.nome && (sp.nome === 'Aldo Z.' || sp.nome.startsWith('Aldo Z')))) sp.nome = 'Aldo Zamparino';
+          if (sp.id === 'paz_angela' || (sp.nome && (sp.nome === 'Angela M.' || sp.nome.startsWith('Angela M')))) sp.nome = 'Angela Mazzicone';
+          if (sp.id === 'paz_rosa' || (sp.nome && (sp.nome === 'Rosa C.' || sp.nome.startsWith('Rosa C')))) sp.nome = 'Rosa Annunziata Cavalcante';
+        });
+      }
       if (serverData && serverData.pazienti && serverData.pazienti.length > 0) {
         var localTime = Number(AppData.lastModified) || 0;
         var serverTime = Number(serverData.lastModified) || 0;
@@ -1721,7 +1916,7 @@ function sincronizzaDbDalServer(callback) {
             showSyncToast('Cloud aggiornato con le ultime modifiche!', true);
           });
         }
-        // Caso 2: Il Server Cloud ha dati più recenti o profili aggiuntivi
+        // Caso 2: Il Server Cloud ha dati più recenti o profili aggiuntivi (es. smartphone stamattina)
         else if (serverTime > localTime || addedFromServer) {
           console.log('Rilevate modifiche più recenti sul Cloud. Aggiornamento interfaccia...');
           var prevActiveId = AppData.activePazienteId;
@@ -2555,6 +2750,9 @@ function renderPazientiSelector() {
                 <span class="badge badge-warning clinica-zoom-item" style="font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px; padding:3px 9px; border-radius:8px;" onclick="apriModificaAnagrafica()" title="Tocca per aprire e modificare cartella anagrafica e data di nascita" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${dataNascitaFmt} (Anno ${annoNascita || '--'}, ${eta} anni)', '🎂')" onmouseleave="nascondiLenteClinica()">
                   🎂 ${eta} anni • ${annoNascita || '--'} (${dataNascitaFmt || '--'})
                 </span>
+                <span class="badge clinica-zoom-item" style="background:#e0f2fe; color:#0369a1; border:1.5px solid #7dd3fc; font-size:11.5px; font-weight:800; padding:3px 9px; border-radius:8px; cursor:pointer;" onclick="apriModificaAnagrafica()" title="Tocca per visualizzare o modificare le patologie cliniche dell'assistito" onmouseenter="mostraLenteClinica('Patologie & Diagnosi Assistito', '${(activeP.patologie || []).join(' • ') || 'Nessuna patologia inserita'}', '🩺')" onmouseleave="nascondiLenteClinica()">
+                  🩺 Patologie (${(activeP.patologie || []).length})
+                </span>
                 ${allergieBadge}
                 ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; font-size:11px; padding:3px 9px; border-radius:8px; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe</span>' : ''}
                 ${activeP.id === 'paz_angela' ? '<span class="badge badge-danger" style="background:#dc2626; font-size:11px; padding:3px 9px; border-radius:8px;">🫁 CPAP (OSAS)</span>' : ''}
@@ -2582,29 +2780,59 @@ function renderPazientiSelector() {
 
         <!-- RIGA 3: PULSANTIERA COMANDI CLINICI SALVAVITA (UNIFICATA & ARMONIOSA) -->
         <div class="hero-command-bar">
-          <div class="hero-quick-actions-bar">
-            <button id="btn-scheda-118" class="btn-hero-action btn-hero-118" onclick="apriModalScheda118()" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
-              <span>🚨</span> <span>Scheda 118</span>
+          <div class="hero-quick-actions-bar" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            
+            <!-- TASTO SALVAVITA 1: SCHEDA 118 (ROSSO CUBITALE) -->
+            <button id="btn-scheda-118" class="btn" onclick="apriModalScheda118()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:#ffffff; font-weight:900; font-size:13px; padding:8px 16px; border-radius:10px; border:none; box-shadow:0 3px 8px rgba(220,38,38,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Apri Scheda Rapida di Emergenza per i Sanitari del 118">
+              <span style="font-size:16px;">🚨</span> <span>Scheda 118</span>
             </button>
-            <button class="btn-hero-action btn-hero-sos" onclick="apriModalSOSProntoSoccorso()" title="Pronto Soccorso Domiciliare & Emergenze con Voce Calma">
-              <span>🆘</span> <span>SOS Guida</span>
+
+            <!-- TASTO OSS 2: CONSEGNA VOCALE -->
+            <button class="btn" onclick="apriModalConsegnaVocale()" style="background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color:#ffffff; font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px; border:none; box-shadow:0 3px 8px rgba(79,70,229,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
+              <span style="font-size:16px;">🎙️</span> <span>Consegna Turno</span>
             </button>
-            <button class="btn-hero-action btn-hero-consegna" onclick="apriModalConsegnaVocale()" title="Registra Consegna Vocale con Trascrizione AI & Parametri">
-              <span>🎙️</span> <span>Consegna</span>
+
+            <!-- TASTO OSS 3: REPORT FAMIGLIA WHATSAPP -->
+            <button id="btn-report-whatsapp" class="btn" onclick="apriModalReportWhatsApp()" style="background:linear-gradient(135deg, #25D366 0%, #128C7E 100%); color:#ffffff; font-weight:900; font-size:13px; padding:8px 16px; border-radius:10px; border:none; box-shadow:0 3px 8px rgba(37,211,102,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
+              <span style="font-size:16px;">📲</span> <span>Report Famiglia WA</span>
             </button>
-            <button id="btn-report-whatsapp" class="btn-hero-action btn-hero-wa" onclick="apriModalReportWhatsApp()" title="Invia Sintesi Turno e Terapie ai Familiari su WhatsApp">
-              <span>💬</span> <span>Report WA</span>
+
+            <!-- TASTO OSS 4: MODIFICA ANAGRAFICA -->
+            <button class="btn" onclick="apriModificaAnagrafica()" style="background:#f1f5f9; color:#334155; font-weight:800; font-size:12.5px; padding:8px 14px; border-radius:10px; border:1.5px solid #cbd5e1; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Modifica dati anagrafici e clinici">
+              <span style="font-size:15px;">✏️</span> <span>Modifica</span>
             </button>
-            <!-- TRIADE SANITARIA BRIDGES HERO -->
-            <button type="button" class="btn-hero-action btn-hero-med" onclick="navigaAdAmbulatorio()" title="Apri Ambulatorio Medico & Nutrizione Clinica per questo Assistito" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:1px solid rgba(255,255,255,0.4);">
-              <span>🩺</span> <span>Ambulatorio</span>
-            </button>
-            <button type="button" class="btn-hero-action btn-hero-salute" onclick="navigaAProgettoSalute()" title="Apri Progetto Salute & Dieta per questo Assistito" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:1px solid rgba(255,255,255,0.4);">
-              <span>🥗</span> <span>Salute</span>
-            </button>
-            <button class="btn-hero-action btn-hero-edit" onclick="apriModificaAnagrafica()" title="Modifica dati anagrafici e clinici dell'assistito">
-              <span>✏️</span> <span>Modifica</span>
-            </button>
+
+            <!-- MENU TENDINA 3 PUNTINI ⋮ SCHEDA ASSISTITO -->
+            <div style="position:relative; display:inline-block;" id="menu-hero-more-container">
+              <button type="button" onclick="toggleMenuHeroMore(event)" id="btn-menu-hero-more" style="background:#ffffff; border:1.5px solid #cbd5e1; width:38px; height:38px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.06);" title="Altri strumenti dell'assistito">
+                <span style="font-size:20px; font-weight:900; line-height:1; letter-spacing:1px; color:#1e293b;">⋮</span>
+              </button>
+
+              <div id="dropdown-menu-hero-more" style="display:none; position:absolute; left:0; top:46px; z-index:99999; background:#ffffff; min-width:260px; border-radius:16px; box-shadow:0 15px 35px rgba(0,0,0,0.25); border:1.5px solid #cbd5e1; padding:8px 0; animation:menuDropAnim 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+                <div style="padding:6px 16px; font-size:10.5px; font-weight:900; color:#94a3b8; text-transform:uppercase; border-bottom:1px solid #f1f5f9;">
+                  Collegamenti Cartelle
+                </div>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); apriModalSOSProntoSoccorso();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#b91c1c; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
+                  <span>🆘</span> <span>SOS Guida Emergenze</span>
+                </a>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); navigaAdAmbulatorio();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                  <span>🩺</span> <span>Apri Ambulatorio</span>
+                </a>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); navigaAProgettoSalute();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                  <span>🥗</span> <span>Apri Progetto Salute</span>
+                </a>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); stampaReport();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                  <span>🖨️</span> <span>Stampa Diario Cartaceo</span>
+                </a>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); stampaPortapilloleSettimanale();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0284c7; text-decoration:none; font-size:13px; font-weight:800;" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='transparent'">
+                  <span>💊</span> <span>Portapillole Settimanale (A4)</span>
+                </a>
+                <a href="javascript:void(0)" onclick="chiudiMenuHeroMore(); apriModalScheda118();" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#dc2626; text-decoration:none; font-size:13px; font-weight:800;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
+                  <span>🚨</span> <span>Scheda Emergenza 118 Salva-Vita</span>
+                </a>
+              </div>
+            </div>
+
           </div>
           <div style="font-size:12px; color:#64748b; font-weight:600; display:flex; align-items:center; gap:6px;">
             <span>🛡️</span> <span>Cartella Clinica &bull; CareAssist Pro</span>
@@ -2727,9 +2955,46 @@ function mostraLenteClinica(titolo, testo, icona = '🩺', actionFn = null, acti
       txtCorpo.style.fontSize = '15.5px';
       txtCorpo.style.fontWeight = '500';
     } else {
-      txtCorpo.textContent = testo || '';
-      txtCorpo.style.fontSize = (testo && testo.length > 80) ? '17px' : '20px';
-      txtCorpo.style.fontWeight = '600';
+      const cleanNum = (n) => (n || '').replace(/[^0-9+]/g, '');
+      const waNum = (n) => {
+        const c = cleanNum(n);
+        if (!c) return '';
+        return c.startsWith('39') || c.startsWith('+39') ? c.replace('+', '') : '39' + c;
+      };
+
+      // Riconoscimento intelligente di numeri di telefono (fissi o cellulari)
+      const isTelefono = testo && /^[0-9\s\+\-\.\/]{6,20}$/.test(testo.trim());
+
+      if (isTelefono) {
+        const numPuro = cleanNum(testo);
+        const isCellulare = numPuro.startsWith('3') || numPuro.startsWith('+393') || numPuro.startsWith('00393') || numPuro.length >= 10;
+        txtCorpo.innerHTML = `
+          <div style="font-size:24px; font-weight:900; letter-spacing:0.8px; color:#ffffff; margin-bottom:14px; font-family:'Outfit',monospace;">
+            ${testo}
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
+            <a href="tel:${numPuro}" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(16,185,129,0.4); flex:1; justify-content:center;">
+              <span style="font-size:18px;">📞</span> Chiama Ora
+            </a>
+            ${isCellulare ? `
+              <a href="sms:${numPuro}" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(2,132,199,0.4); flex:1; justify-content:center;">
+                <span style="font-size:18px;">✉️</span> Invia SMS
+              </a>
+              <a href="https://api.whatsapp.com/send?phone=${waNum(testo)}" target="_blank" style="background:linear-gradient(135deg, #25d366 0%, #128c7e 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(37,211,102,0.4); flex:1; justify-content:center;">
+                <span style="font-size:18px;">💬</span> WhatsApp
+              </a>
+            ` : `
+              <a href="https://api.whatsapp.com/send?phone=${waNum(testo)}" target="_blank" style="background:linear-gradient(135deg, #25d366 0%, #128c7e 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(37,211,102,0.4); flex:1; justify-content:center;">
+                <span style="font-size:18px;">💬</span> WhatsApp
+              </a>
+            `}
+          </div>
+        `;
+      } else {
+        txtCorpo.textContent = testo || '';
+        txtCorpo.style.fontSize = (testo && testo.length > 80) ? '17px' : '20px';
+        txtCorpo.style.fontWeight = '600';
+      }
     }
   }
   if (txtIcona) txtIcona.textContent = icona;
@@ -3734,6 +3999,11 @@ function apriModificaAnagrafica() {
   }
   document.getElementById('edit-paz-note').value = p.note || '';
 
+  const elEditPatologie = document.getElementById('edit-paz-patologie');
+  if (elEditPatologie) {
+    elEditPatologie.value = Array.isArray(p.patologie) ? p.patologie.join('\n') : (p.patologie || '');
+  }
+
   const elEditAllergie = document.getElementById('edit-paz-allergie');
   if (elEditAllergie) {
     elEditAllergie.value = p.allergie || 'Nessuna nota';
@@ -3743,7 +4013,6 @@ function apriModificaAnagrafica() {
   if (elAllettatoChk) {
     elAllettatoChk.onchange = sincronizzaNoteAllettatoDinamico;
   }
-  document.getElementById('edit-paz-note').value = p.note || '';
 
   // Caricamento e rendering interattivo del Catalogo Ausili Sanitari con scadenze
   renderCatalogoAusiliForm('container-catalogo-ausili-edit', p.ausili || []);
@@ -3830,6 +4099,12 @@ function salvaModificaAnagrafica(e) {
     ultimoSuonoScadutoTimestamp = 0;
   }
   p.note = document.getElementById('edit-paz-note').value.trim();
+
+  const elEditPatologieVal = document.getElementById('edit-paz-patologie');
+  if (elEditPatologieVal) {
+    const rawLines = elEditPatologieVal.value.split(/[\n,;•]+/).map(s => s.trim()).filter(s => s.length > 0);
+    p.patologie = rawLines;
+  }
 
   const elEditAllergieVal = document.getElementById('edit-paz-allergie');
   if (elEditAllergieVal) {
@@ -4587,8 +4862,14 @@ function renderTerapie() {
   const container = document.getElementById('terapie-table-body');
   const preview = document.getElementById('terapie-preview-body');
   if (!container || !p) return;
-  if (p.terapie && typeof comparaOrariTerapie === 'function') {
-    p.terapie.sort(comparaOrariTerapie);
+  if (p.terapie) {
+    if (window._ordinamentoTerapieModalita === 'fisso') {
+      p.terapie.sort(function(a, b) {
+        return (a.farmaco || '').localeCompare(b.farmaco || '');
+      });
+    } else if (typeof comparaOrariTerapie === 'function') {
+      p.terapie.sort(comparaOrariTerapie);
+    }
   }
 
   // Riparazione automatica: DIAMICRON (compressa orale) erroneamente trattato come penna insulina
@@ -4608,6 +4889,7 @@ function renderTerapie() {
 
   const activeFascia = window._activeFasciaFilter || 'tutte';
   const terapieFiltrate = (p.terapie || []).filter(t => {
+    if (window._soloDaPrendereOggi && t.fattoOggi) return false;
     if (activeFascia === 'tutte') return true;
     const f = (t.fascia || '').toLowerCase();
     return f.includes(activeFascia.toLowerCase());
@@ -4859,8 +5141,22 @@ function renderTerapie() {
               `;
           }
           if (t.fattoOggi) {
+            // PROTEZIONE CLINICA ANTIDOPPIA DOSE:
+            // Se l'orario della terapia è già passato ed è un farmaco continuativo (non SOS),
+            // il pulsante si congela con lucchetto di protezione per impedire tocchi accidentali e scalature errate.
             return `
-                <button class="btn btn-azione-luxury done" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per annullare la spunta se hai sbagliato">
+                <div style="display:inline-flex; flex-direction:column; align-items:center; gap:3px;">
+                  <button class="btn btn-azione-luxury done" onclick="gestisciAnnullaSomministrazione(${t.id})" style="background:linear-gradient(135deg, #15803d 0%, #166534 100%); color:#ffffff; font-weight:800; font-size:12px; padding:7px 14px; border-radius:10px; border:1.5px solid #86efac; box-shadow:0 2px 8px rgba(22,101,52,0.25); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Clicca per correggere o annullare la somministrazione se non ancora effettuata">
+                    <span>🔒✓</span> <span>${isPen ? 'Iniettato Oggi' : 'Assunto Oggi'}</span>
+                  </button>
+                  <button type="button" onclick="gestisciAnnullaSomministrazione(${t.id})" style="background:transparent; border:none; color:#64748b; font-size:10px; font-weight:700; cursor:pointer; text-decoration:underline;">
+                    Annulla o Correggi
+                  </button>
+                </div>
+              `;
+
+            return `
+                <button class="btn btn-azione-luxury done" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per gestire o annullare la spunta">
                   ✓ ${isPen ? 'Iniettato Oggi' : 'Assunto Oggi'}
                 </button>
                 ${isBisogno ? `<div style="font-size:10px; color:#15803d; font-weight:700; margin-top:3px;">⚡ Assunto al bisogno</div>` : ''}
@@ -5194,30 +5490,32 @@ function controllaTerapieGlobaliTuttiPazienti() {
       try { navigator.vibrate([400, 200, 400]); } catch (e) { }
     }
 
-    // Notifica di sistema push (anche a schermo spento via Service Worker)
-    if ('Notification' in window && Notification.permission === 'granted') {
-      const adessoNotif = Date.now();
-      if (adessoNotif - ultimoNotificaRitardoTimestamp >= 60000) {
-        ultimoNotificaRitardoTimestamp = adessoNotif;
-        try {
-          const totR = pazientiConRitardi.reduce((sum, it) => sum + it.farmaci.length, 0);
-          const pPrimo = pazientiConRitardi[0].paziente.nome;
-          const fPrimo = pazientiConRitardi[0].farmaci[0] ? pazientiConRitardi[0].farmaci[0].farmaco : 'Farmaco';
-          const oraPrimo = pazientiConRitardi[0].farmaci[0] ? pazientiConRitardi[0].farmaci[0].ora : '';
+    // Notifica di sistema push (anche a schermo spento via Service Worker & Server Push Esterno)
+    const adessoNotif = Date.now();
+    if (adessoNotif - ultimoNotificaRitardoTimestamp >= 60000) {
+      ultimoNotificaRitardoTimestamp = adessoNotif;
+      try {
+        const totR = pazientiConRitardi.reduce((sum, it) => sum + it.farmaci.length, 0);
+        const pPrimo = pazientiConRitardi[0].paziente.nome;
+        const fPrimo = pazientiConRitardi[0].farmaci[0] ? pazientiConRitardi[0].farmaci[0].farmaco : 'Farmaco';
+        const oraPrimo = pazientiConRitardi[0].farmaci[0] ? pazientiConRitardi[0].farmaci[0].ora : '';
+        const titoloPush = `🚨 SVEGLIA TERAPIA ORE ${oraPrimo} (${pPrimo})`;
+        const corpoPush = `È ora di somministrare ${fPrimo} (${totR} farmaci in attesa)!`;
+
+        // 1. Notifica locale tramite Service Worker
+        if ('Notification' in window && Notification.permission === 'granted') {
           if (typeof mostraNotificaSistemaSchermoSpento === 'function') {
-            mostraNotificaSistemaSchermoSpento(
-              `🚨 SVEGLIA TERAPIA ORE ${oraPrimo} (${pPrimo})`,
-              `È ora di somministrare ${fPrimo} (${totR} in attesa)!`
-            );
+            mostraNotificaSistemaSchermoSpento(titoloPush, corpoPush);
           } else {
-            new Notification('🚨 SVEGLIA TERAPIA!', {
-              body: `${totR} farmaco/i da somministrare a ${pPrimo}!`,
-              icon: 'careassist_icon.jpg',
-              tag: 'terapia-ritardo'
-            });
+            new Notification(titoloPush, { body: corpoPush, icon: 'careassist_icon.jpg', tag: 'terapia-ritardo' });
           }
-        } catch (e) { }
-      }
+        }
+
+        // 2. DISPATCH PUSH SERVER-SIDE AL CELLULARE SPENTO (NTFY Priorità Massima 5)
+        if (typeof inviaAlertPushServerSide === 'function') {
+          inviaAlertPushServerSide(titoloPush, corpoPush, 5, 'pill,alarm_clock');
+        }
+      } catch (e) { }
     }
 
     // Popola lista pazienti e terapie scadute con design clinico moderno
@@ -5437,6 +5735,23 @@ function simulaAllarmeTerapieTest() {
 
 // SCARICO AUTOMATICO DELLA COMPRESSA ALLA SOMMINISTRAZIONE CON TRACCIABILITÀ & BLOCCO ORARIO
 async function toggleFarmacoConScarico(id) {
+  const p = getActivePaziente();
+  if (!p) return;
+  const t = p.terapie.find(item => item.id === id);
+  if (!t) return;
+
+  // SE IL FARMACO NON È STATO ASSUNTO: ATTIVA IL SAFETY CHECK OSPEDALIERO (BEDSIDE VERIFY)
+  if (!t.fattoOggi) {
+    const checkOrario = (typeof verificaStatoOrarioFarmaco === 'function') ? verificaStatoOrarioFarmaco(t.ora) : { consentito: true };
+    apriModalSafetyCheckOspedaliero(t, p, checkOrario);
+    return;
+  }
+  
+  // Se era già fatto e si vuole togliere la spunta, prosegue normalmente
+  return applicaSomministrazioneClinicaEffettiva(id);
+}
+
+async function applicaSomministrazioneClinicaEffettiva(id, sitoIniezione) {
   const p = getActivePaziente();
   if (!p) return;
   const t = p.terapie.find(item => item.id === id);
@@ -5901,6 +6216,19 @@ async function impostaScortaManuale(farmacoId) {
 }
 
 // CARICO NUOVE SCATOLE RITIRATE DALLA FARMACIA
+
+function aggiornaCampoEsattoCarico() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const select = document.getElementById('ricarica-farmaco-select');
+  if (!select) return;
+  const farmId = parseInt(select.value);
+  const t = (p.terapie || []).find(item => item.id === farmId);
+  const inputEsatto = document.getElementById('ricarica-num-esatto');
+  if (inputEsatto && t && typeof t.scorta !== 'undefined') {
+    inputEsatto.value = t.scorta;
+  }
+}
 function popolaSelectRicarica() {
   const select = document.getElementById('ricarica-farmaco-select');
   if (!select) return;
@@ -5917,7 +6245,7 @@ function apriRicaricaScorta(farmacoId) {
   if (farmacoId) {
     document.getElementById('ricarica-farmaco-select').value = farmacoId;
   }
-  openModal('modal-ricarica-scorta');
+  openModal('modal-ricarica-scorta'); if (typeof aggiornaCampoEsattoCarico === 'function') aggiornaCampoEsattoCarico();
 }
 
 // CARICO AUTOMATICO ISTANTANEO DI 1 SCATOLA INTERA (1-CLICK)
@@ -6034,7 +6362,17 @@ function salvaRicaricaScorta(e) {
   let cprAggiunte = 0;
   let descEvento = '';
 
-  if (modalita === 'scatole') {
+  if (modalita === 'esatto') {
+    const valoreEsatto = parseInt(document.getElementById('ricarica-num-esatto').value);
+    if (isNaN(valoreEsatto) || valoreEsatto < 0) {
+      showToast('Inserisci un conteggio valido di capsule.', 'warning');
+      return;
+    }
+    const diff = valoreEsatto - (t.scorta || 0);
+    t.scorta = valoreEsatto;
+    cprAggiunte = diff;
+    descEvento = `Inventario Esatto: Scorta allineata a ${valoreEsatto} compresse conteggiate dal paziente/operatore (variazione: ${diff >= 0 ? '+' : ''}${diff}).`;
+  } else if (modalita === 'scatole') {
     const numScatole = parseInt(document.getElementById('ricarica-num-scatole').value) || 1;
     cprAggiunte = (t.cprPerScatola || 28) * numScatole;
     descEvento = `Carico Farmacia: Ritiro di ${numScatole} scatola/e di ${t.farmaco} (+${cprAggiunte} compresse).`;
@@ -6161,7 +6499,7 @@ function generaTestoRichiesta() {
 
   const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
   const dataNascitaFmt = (typeof formattaDataNascitaItaliana === 'function') ? formattaDataNascitaItaliana(p.dataNascita, false) : (p.dataNascita || '--');
-  const caregiverInfo = p.caregiverNome || p.caregiver || p.moglieNome || (p.nome && p.nome.includes('Rosa') ? 'Maria Carmela (Figlia / Caregiver)' : 'Mazzicone Angela (Caregiver)');
+  const caregiverInfo = p.caregiverNome || p.caregiver || p.moglieNome || (p.nome && p.nome.includes('Rosa') ? 'Maria Carmela (Figlia / Caregiver)' : 'M. Angela (Caregiver)');
   const caregiverTel = p.caregiverCellulare || p.caregiverTel || p.moglieCellulare || (p.nome && p.nome.includes('Rosa') ? '338 739 76 71' : '338 000 00 02');
 
   let testo = 'Gentile ' + medicoNome + ',\n\n';
@@ -6262,10 +6600,13 @@ async function eliminaTerapia(id) {
     'Sposta nel Cestino'
   );
   if (ok) {
-    cestinoAggiungi('terapia', t.farmaco, (t.dosaggio || '') + (t.ora ? ' · ore ' + t.ora : ''), t, p);
+    var backupItem = JSON.parse(JSON.stringify(t));
+    var cestinoId = cestinoAggiungi('terapia', t.farmaco, (t.dosaggio || '') + (t.ora ? ' · ore ' + t.ora : ''), t, p);
     p.terapie = p.terapie.filter(x => x.id !== id);
     saveDb();
-    showToast('Farmaco spostato nel Cestino: puoi ripristinarlo da Opzioni → Cestino. 🗑️');
+    
+    // BANNER DI SICUREZZA FLOTTANTE "ANNULLA SUBITO" PER 12 SECONDI
+    mostraBannerAnnullaCancellazione(backupItem, cestinoId);
   }
 }
 
@@ -6341,11 +6682,11 @@ function toggleSelectAllDiarioBtn(scope) {
 }
 
 async function eliminaAnnotazioniSelezionate(scope) {
-  const normScope = (scope === 'recent') ? 'diario' : (scope || 'diario');
   const p = getActivePaziente();
   if (!p) return;
 
-  const cbs = getDiarioCheckboxes(normScope).filter(cb => cb.checked);
+  // Raccogli tutte le checkbox spuntate sia in diario che in full
+  const cbs = Array.from(document.querySelectorAll('.diario-cb-diario:checked, .diario-cb-recent:checked, .diario-cb-full:checked'));
   const count = cbs.length;
   if (!count) {
     showToast('Nessuna annotazione selezionata.', 'warning');
@@ -6354,17 +6695,24 @@ async function eliminaAnnotazioniSelezionate(scope) {
 
   const idsToDelete = new Set(cbs.map(cb => String(cb.dataset.id)));
 
-  const ok = await customConfirm(
-    'Elimina Annotazioni Selezionate',
-    `Stai per eliminare ${count} annotazion${count === 1 ? 'e' : 'i'} dal registro di ${p.nome}.` + CESTINO_AVVISO,
-    '🗑️',
-    'Sposta nel Cestino'
-  );
+  let ok = false;
+  try {
+    ok = await customConfirm(
+      'Elimina Annotazioni Selezionate',
+      `Stai per eliminare ${count} annotazion${count === 1 ? 'e' : 'i'} dal registro di ${p.nome}.` + CESTINO_AVVISO,
+      '🗑️',
+      'Sposta nel Cestino'
+    );
+  } catch (e) {
+    ok = window.confirm(`Vuoi eliminare ${count} annotazioni selezionate dal diario?`);
+  }
 
   if (ok) {
     const daArchiviare = (p.registrazioni || []).filter(r => idsToDelete.has(String(r.id)));
     if (daArchiviare.length && typeof cestinoAggiungi === 'function') {
-      cestinoAggiungi('annotazione', daArchiviare.length + ' annotazion' + (daArchiviare.length === 1 ? 'e' : 'i') + ' del diario', (daArchiviare[0].desc || daArchiviare[0].tipo || '').toString().slice(0, 110), daArchiviare, p);
+      try {
+        cestinoAggiungi('annotazione', daArchiviare.length + ' annotazioni del diario', (daArchiviare[0].desc || daArchiviare[0].tipo || '').toString().slice(0, 110), daArchiviare, p);
+      } catch (err) {}
     }
     p.registrazioni = (p.registrazioni || []).filter(r => !idsToDelete.has(String(r.id)));
     saveDb();
@@ -6998,21 +7346,9 @@ let _ultimaSintesiVocaleInApp = '';
 
 function recitaTestoSintesiInApp(testo) {
   const t = (testo || _ultimaSintesiVocaleInApp || '').trim();
-  if (!t || !('speechSynthesis' in window)) return;
+  if (!t) return;
   _ultimaSintesiVocaleInApp = t;
-  try {
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(
-      t.replace(/\bmg\b/gi, 'milligrammi')
-        .replace(/\bmcg\b/gi, 'microgrammi')
-        .replace(/\bcpr\b/gi, 'compresse')
-        .replace(/\bml\b/gi, 'millilitri')
-    );
-    utter.lang = 'it-IT';
-    utter.rate = 0.98;
-    utter.pitch = 1.0;
-    window.speechSynthesis.speak(utter);
-  } catch (e) { }
+  riproduciVoceNaturaleHD(t);
 }
 window.recitaTestoSintesiInApp = recitaTestoSintesiInApp;
 
@@ -7445,29 +7781,24 @@ window.apriBugiardinoAIFADaScanner = apriBugiardinoAIFADaScanner;
 
 function pronunciaCaratteristicheFarmaco(farmaco) {
   const f = farmaco || _ultimoFarmacoRiconosciutoScanner;
-  if (!f || !('speechSynthesis' in window)) return;
+  if (!f) return;
   try {
-    window.speechSynthesis.cancel();
     let testoVoce = '';
     if (f.isNonFarmaco && f.messaggioVocaleNonFarmaco) {
       testoVoce = f.messaggioVocaleNonFarmaco;
     } else {
       const nome = (f.nomePersonalizzato || f.nome || '').replace(/\bmg\b/gi, 'milligrammi').replace(/\bmcg\b/gi, 'microgrammi').replace(/\bcpr\b/gi, 'compresse');
       const principio = (f.principio || '').replace(/\bmg\b/gi, 'milligrammi');
-      const cprStr = f.cprRilevate || f.cpr ? `Confezione da ${f.cprRilevate || f.cpr} unità. ` : '';
+      const cprStr = (f.cprRilevate || f.cpr) ? ('Confezione da ' + (f.cprRilevate || f.cpr) + ' unità. ') : '';
       const indicazione = f.indicazione || f.modo || '';
-      const orarioStr = f.ora ? `Orario consigliato: ${f.ora}, ${f.fascia || ''}.` : '';
-      const scudo = analizzaSicurezzaClinicaFarmaco(f);
-      const extraScudo = (scudo && scudo.vocale) ? ` ${scudo.vocale}` : '';
-      testoVoce = `Farmaco riconosciuto: ${nome}. Principio attivo: ${principio}. ${cprStr}A cosa serve: ${indicazione} ${orarioStr}${extraScudo}`;
+      const orarioStr = f.ora ? ('Orario raccomandato: ' + f.ora + ', ' + (f.fascia || '') + '.') : '';
+      const scudo = typeof analizzaSicurezzaClinicaFarmaco === 'function' ? analizzaSicurezzaClinicaFarmaco(f) : null;
+      const extraScudo = (scudo && scudo.vocale) ? (' ' + scudo.vocale) : '';
+      testoVoce = 'Farmaco identificato: ' + nome + '... Principio attivo: ' + principio + '... ' + cprStr + 'A cosa serve: ' + indicazione + '... ' + orarioStr + extraScudo;
     }
-    const utter = new SpeechSynthesisUtterance(testoVoce);
-    utter.lang = 'it-IT';
-    utter.rate = 0.98;
-    utter.pitch = 1.0;
-    window.speechSynthesis.speak(utter);
+    riproduciVoceNaturaleHD(testoVoce);
   } catch (e) {
-    console.warn('Avviso sintesi vocale farmaco:', e);
+    console.warn('Avviso sintesi vocale farmaco HD:', e);
   }
 }
 window.pronunciaCaratteristicheFarmaco = pronunciaCaratteristicheFarmaco;
@@ -10016,19 +10347,62 @@ function salvaModificaFarmaco(e) {
     motivo: motivoMod
   };
 
-  // 1. Rimuovi tutte le dosi preesistenti dello stesso farmaco per ricrearle coerentemente
+  // 1. Salva lo stato delle dosi preesistenti prima di rimuoverle
   var nomeBase = cleanNome.toLowerCase();
+  var vecchieDosiFarmaco = (p.terapie || []).filter(function (item) {
+    var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
+    return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
+  });
+  var eraStatoAssuntoOggi = vecchieDosiFarmaco.some(function(item) { return item.fattoOggi === true; });
+
+  // Rimuovi le vecchie dosi per rigenerarle con la nuova scorta
   p.terapie = p.terapie.filter(function (item) {
     var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
     var isColl = n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
     return !isColl;
   });
 
-  // 2. Leggi le card dal form
+  // 2. Leggi le card dal form (con fallback sicuro su _capsulaCurrentDosi)
   var cardElements = document.querySelectorAll('#box-dosi-cards-container .dose-card-item');
   var totalDosi = cardElements.length;
 
-  cardElements.forEach(function (card, idx) {
+  // Se per qualsiasi motivo i cardElements nel DOM non avessero la classe, usa _capsulaCurrentDosi
+  if (totalDosi === 0 && Array.isArray(_capsulaCurrentDosi) && _capsulaCurrentDosi.length > 0) {
+    totalDosi = _capsulaCurrentDosi.length;
+    _capsulaCurrentDosi.forEach(function(d, idx) {
+      var oraVal = d.ora || '08:00';
+      var fasciaVal = d.fascia || deduciFasciaDaOrario(oraVal);
+      var quotaVal = parseFloat(d.quota) || 1.0;
+      var quotaLabel = (quotaVal === 0.5) ? '½ cpr' : (quotaVal === 1 ? '1 cpr' : (quotaVal === 1.5 ? '1½ cpr' : quotaVal + ' cpr'));
+      var farmacoNomeFinal = (totalDosi > 1) ? (cleanNome + ' (' + (idx + 1) + 'ª dose: ' + quotaLabel + ' - ore ' + oraVal + ')') : cleanNome;
+
+      // Preservazione assunzione nel ramo fallback
+      var fallbackFattoOggi = eraStatoAssuntoOggi;
+      if (!fallbackFattoOggi && typeof verificaStatoOrarioFarmaco === 'function') {
+        var chkF = verificaStatoOrarioFarmaco(oraVal);
+        if (chkF && chkF.orarioPassato) fallbackFattoOggi = true;
+      }
+
+      p.terapie.push({
+        id: Date.now() + idx * 311,
+        ora: oraVal,
+        fascia: fasciaVal,
+        farmaco: farmacoNomeFinal,
+        principio: principio,
+        dosaggio: (window._currentFormatoModal === 'penna') ? ((parseFloat(document.getElementById('edit-penna-dose-die')?.value) || 16) + ' Unità (sottocute)') : (dosaggioBase + ' (' + quotaLabel + ')'),
+        quantitaQuota: quotaVal,
+        modo: modoBase,
+        cprPerScatola: cprPerScatola,
+        scorta: scorta,
+        giorniAlert: giorniAlert,
+        cadenzaTipo: cadenza,
+        fattoOggi: fallbackFattoOggi,
+        tipoFormulazione: (window._currentFormatoModal === 'penna') ? 'penna' : 'compressa',
+        ultimaModificaClinica: ultimaMod
+      });
+    });
+  } else {
+    cardElements.forEach(function (card, idx) {
     var oraVal = card.querySelector('.dose-card-ora').value || '08:00';
     var fasciaVal = card.querySelector('.dose-card-fascia').value || deduciFasciaDaOrario(oraVal);
     var quotaVal = parseFloat(card.querySelector('.dose-card-quota-val').value) || 1.0;
@@ -10046,6 +10420,17 @@ function salvaModificaFarmaco(e) {
     var pUnitaTot = isFormatoPenna ? (parseInt(document.getElementById('edit-penna-unita-totali') ? document.getElementById('edit-penna-unita-totali').value : 300) || 300) : 300;
     var pScatola = isFormatoPenna ? (parseInt(document.getElementById('edit-penna-per-scatola') ? document.getElementById('edit-penna-per-scatola').value : 3) || 3) : cprPerScatola;
 
+    // PRESERVAZIONE INTELLIGENTE STATO ASSUNZIONE OGGI:
+    var eraGiaFattoOggi = eraStatoAssuntoOggi;
+    try {
+      if (!eraGiaFattoOggi && typeof verificaStatoOrarioFarmaco === 'function') {
+        var chkO = verificaStatoOrarioFarmaco(oraVal);
+        if (chkO && chkO.orarioPassato) {
+          eraGiaFattoOggi = true; // L'orario (es. 07:00) è già passato oggi: la dose si considera già assunta!
+        }
+      }
+    } catch(e) {}
+
     p.terapie.push({
       id: Date.now() + idx * 311,
       ora: oraVal,
@@ -10059,7 +10444,7 @@ function salvaModificaFarmaco(e) {
       scorta: pScorta,
       giorniAlert: giorniAlert,
       cadenzaTipo: cadenza,
-      fattoOggi: false,
+      fattoOggi: eraGiaFattoOggi,
       tipoFormulazione: isFormatoPenna ? 'penna' : 'compressa',
       penneScorta: pScorta,
       unitaDoseDie: pDoseDie,
@@ -10075,6 +10460,8 @@ function salvaModificaFarmaco(e) {
       ultimaModificaClinica: ultimaMod
     });
   });
+
+  }
 
   // 3. Ordina cronologicamente le terapie secondo il ciclo clinico
   p.terapie.sort(comparaOrariTerapie);
@@ -11362,9 +11749,46 @@ function apriModalRiconciliazione(giorni, ultimaData) {
   var inputGg = document.getElementById('riconciliazione-giorni-input');
   if (!modal) return;
 
-  var ultimaDataStr = ultimaData ? new Date(ultimaData).toLocaleDateString('it-IT') : 'data precedente';
+  // Calcolo saluto orario personalizzato (Buongiorno / Buon pomeriggio / Buonasera)
+  var oraAttuale = new Date().getHours();
+  var saluto = "Buongiorno";
+  if (oraAttuale >= 13 && oraAttuale < 18) saluto = "Buon pomeriggio";
+  else if (oraAttuale >= 18 || oraAttuale < 6) saluto = "Buonasera";
+
+  var salutoEl = document.getElementById('riconciliazione-saluto-orario');
+  if (salutoEl) salutoEl.textContent = saluto + ' Operatore';
+
+  // Recupera profilo operatore attivo
+  var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Dott. Ciro Milella';
+  var opRuolo = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
+  var ruoloBadgeText = (opRuolo === 'admin') ? 'Coordinatore Sanitario' : 'Operatore Socio-Sanitario (OSS)';
+
+  var opNomeEl = document.getElementById('riconciliazione-operatore-nome');
+  if (opNomeEl) opNomeEl.textContent = opNome;
+
+  var opBadgeEl = document.getElementById('riconciliazione-ruolo-badge');
+  if (opBadgeEl) opBadgeEl.textContent = ruoloBadgeText;
+
+  // Assistito attualmente selezionato
+  var pAttivo = (typeof getPazienteAttivo === 'function') ? getPazienteAttivo() : null;
+  var assEl = document.getElementById('riconciliazione-assistito-attivo');
+  if (assEl && pAttivo) {
+    assEl.textContent = 'Assistito in Carico: ' + (pAttivo.nome || 'Paziente');
+  }
+
+  // Correzione data ultimo accesso effettiva (precedente a oggi)
+  var dPrec = new Date();
+  dPrec.setDate(dPrec.getDate() - Math.max(1, giorni));
+  var ultimaDataStr = dPrec.toLocaleDateString('it-IT');
+  if (ultimaData && !isNaN(new Date(ultimaData).getTime())) {
+    var checkD = new Date(ultimaData);
+    if (checkD.toDateString() !== new Date().toDateString()) {
+      ultimaDataStr = checkD.toLocaleDateString('it-IT');
+    }
+  }
+
   if (msgIntro) {
-    msgIntro.innerHTML = 'Bentornato! L\'ultimo accesso al software risale a <b>' + ultimaDataStr + '</b> (' + giorni + ' ' + (giorni === 1 ? 'giorno fa' : 'giorni fa') + ').';
+    msgIntro.innerHTML = 'Bentornato! L\'ultimo accesso registrato al software risale a <b>' + ultimaDataStr + '</b> (' + giorni + ' ' + (giorni === 1 ? 'giorno fa' : 'giorni fa') + ').';
   }
   if (inputGg) {
     inputGg.value = Math.max(1, giorni);
@@ -11695,6 +12119,11 @@ function renderFiltroFasceTerapie() {
     { key: 'notte', label: 'Notte', icon: '😴', count: countFascia('notte'), isNow: fasciaAttuale === 'notte' }
   ];
 
+  // Calcolo farmaci rimanenti da prendere
+  const daPrendereTot = terapie.filter(t => !t.fattoOggi).length;
+  const targetFascia = (window._activeFasciaFilter || 'tutte').toLowerCase();
+  const daPrendereFascia = terapie.filter(t => !t.fattoOggi && (targetFascia === 'tutte' || (t.fascia || '').toLowerCase().includes(targetFascia))).length;
+
   container.innerHTML = `
     <div style="font-size:12px; font-weight:800; color:#334155; margin-right:4px; display:inline-flex; align-items:center; gap:4px; white-space:nowrap;">
       <span>Filtro Fascia:</span>
@@ -11710,6 +12139,32 @@ function renderFiltroFasceTerapie() {
         </button>
       `;
   }).join('')}
+
+    <!-- 3 MIGLIORIE DOMENICA & UX PRO: BARRA AZIONI RAPIDE -->
+    <div style="display:inline-flex; align-items:center; gap:8px; margin-left:auto; flex-wrap:wrap; padding:2px 0;">
+      <!-- Miglioria 1: Prendi Tutto Con 1 Tocco -->
+      ${daPrendereFascia > 0 ? `
+        <button type="button" class="btn btn-success" onclick="prendiTuttiFarmaciFascia()" style="font-size:11.5px; font-weight:800; padding:5px 12px; border-radius:20px; background:linear-gradient(135deg, #16a34a 0%, #15803d 100%); color:#fff; border:1.5px solid #86efac; box-shadow:0 2px 6px rgba(22,163,74,0.3); display:inline-flex; align-items:center; gap:5px; cursor:pointer;" title="Somministra e scarica contemporaneamente tutti i farmaci di questa fascia">
+          <span>✅ Prendi tutto ${targetFascia === 'tutte' ? 'oggi' : targetFascia.toUpperCase()}</span>
+          <span style="background:rgba(255,255,255,0.25); padding:1px 6px; border-radius:10px; font-size:11px;">${daPrendereFascia}</span>
+        </button>
+      ` : `
+        <span style="font-size:11px; font-weight:700; color:#16a34a; background:#dcfce7; padding:4px 10px; border-radius:20px; border:1px solid #86efac; display:inline-flex; align-items:center; gap:4px;">
+          ✓ Tutto somministrato per ${targetFascia === 'tutte' ? 'oggi' : targetFascia}
+        </span>
+      `}
+
+      <!-- Miglioria 3: Filtro Solo Da Prendere Oggi -->
+      <button type="button" class="btn" onclick="toggleFiltroSoloDaPrendere()" style="font-size:11px; font-weight:800; padding:5px 11px; border-radius:20px; background:${window._soloDaPrendereOggi ? '#0284c7' : '#f8fafc'}; color:${window._soloDaPrendereOggi ? '#ffffff' : '#475569'}; border:1.5px solid ${window._soloDaPrendereOggi ? '#0369a1' : '#cbd5e1'}; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Nascondi le compresse già somministrate e mostra solo quelle ancora da assumere">
+        <span>${window._soloDaPrendereOggi ? '👁️ Mostrando: Solo da Prendere' : '🔍 Mostra: Solo da Prendere'}</span>
+        <span style="background:${window._soloDaPrendereOggi ? '#0369a1' : '#e2e8f0'}; padding:1px 5px; border-radius:10px; font-size:10px;">${daPrendereTot}</span>
+      </button>
+
+      <!-- Miglioria 2: Stampa Foglio Frigo Promemoria A4 -->
+      <button type="button" class="btn" onclick="stampaFoglioFrigo()" style="font-size:11px; font-weight:800; padding:5px 11px; border-radius:20px; background:#fff7ed; color:#c2410c; border:1.5px solid #fed7aa; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Stampa o salva in PDF un promemoria essenziale e chiaro da attaccare al frigorifero o tenere a portata di mano">
+        <span>📄 Promemoria Frigo</span>
+      </button>
+    </div>
   `;
 }
 
@@ -11721,6 +12176,21 @@ function filtraFasciaTerapia(fascia) {
 
 
 function renderAll() {
+  if (AppData && Array.isArray(AppData.pazienti)) {
+    AppData.pazienti.forEach(function(p) {
+      if (p.id === 'paz_aldo' || (p.nome && (p.nome === 'Aldo Z.' || p.nome.startsWith('Aldo Z')))) p.nome = 'Aldo Zamparino';
+      if (p.id === 'paz_angela' || (p.nome && (p.nome === 'Angela M.' || p.nome.startsWith('Angela M')))) p.nome = 'Angela Mazzicone';
+      if (p.id === 'paz_rosa' || (p.nome && (p.nome === 'Rosa C.' || p.nome.startsWith('Rosa C')))) {
+        p.nome = 'Rosa Annunziata Cavalcante';
+        (p.terapie || []).forEach(function(t) {
+          if ((t.farmaco || '').toUpperCase().indexOf('XULTOPHY') >= 0) {
+            t.ora = '17:30';
+            t.fascia = 'Pomeriggio';
+          }
+        });
+      }
+    });
+  }
   verificaCambioDataAutomatico();
   aggiornaCardBuongiornoMattino();
   renderPazientiSelector();
@@ -11869,7 +12339,7 @@ function apriStampaScheda(tipoScheda) {
   const farmNome = p.farmaciaDiRiferimento || 'Farmacia MACARIO';
   const farmTel = p.farmaciaTelefono || '080 542 8061';
   const farmInd = p.farmaciaIndirizzo || 'Via G. Petroni, 69/b - Bari';
-  const coniugeNome = p.moglieNome || 'Mazzicone Angela';
+  const coniugeNome = p.moglieNome || 'M. Angela';
   const coniugeCell = p.moglieCellulare || '338 000 00 02';
 
   let htmlContent = '';
@@ -13200,24 +13670,62 @@ function renderDosiCards() {
 
     var quotaLabel = (quotaVal === 0.25 ? '¼ cpr' : (quotaVal === 0.5 ? '½ cpr' : (quotaVal === 1 ? '1 cpr' : (quotaVal === 1.5 ? '1½ cpr' : (quotaVal === 2 ? '2 cpr' : (quotaVal === 2.5 ? '2½ cpr' : (quotaVal === 3 ? '3 cpr' : (quotaVal === 3.5 ? '3½ cpr' : (quotaVal === 4 ? '4 cpr' : quotaVal + ' cpr')))))))));
 
-    html += '<div class="dose-card-item" id="dose-card-' + idx + '">' +
-      '<div class="dose-card-header">' +
-      '<span class="dose-card-badge">' +
-      '<span>⏰</span> <b>Tempo ' + doseNum + ' di ' + _capsulaCurrentDosi.length + ' (' + (d.ora || '08:00') + ')</b>' +
-      '</span>' +
-      (_capsulaCurrentDosi.length > 1 ? '<button type="button" class="btn-remove-dose-card" onclick="rimuoviDoseCard(' + idx + ')" title="Rimuovi questa dose">✕</button>' : '') +
+    var isFormatoPenna = (window._currentFormatoModal === 'penna');
+    
+    // Tavolozza cromatica clinica alternata per facilitare il riconoscimento a colpo d'occhio:
+    // Dose 1 (Mattina/Inizio) = Giallo Caldo / Ambra pastello
+    // Dose 2 (Pranzo/Metà)    = Smeraldo / Verde fresco
+    // Dose 3 (Sera/Cena)      = Blu Cobalto / Indaco
+    // Dose 4 (Notte/Letto)    = Viola tenue
+    var dosePalette = [
+      { border: '#f59e0b', bg: '#fffbeb', headerBg: '#fef3c7', text: '#b45309', icon: '🌅', label: '1ª DOSE' },
+      { border: '#10b981', bg: '#f0fdf4', headerBg: '#dcfce7', text: '#15803d', icon: '☀️', label: '2ª DOSE' },
+      { border: '#3b82f6', bg: '#eff6ff', headerBg: '#dbeafe', text: '#1d4ed8', icon: '🌆', label: '3ª DOSE' },
+      { border: '#8b5cf6', bg: '#f5f3ff', headerBg: '#ede9fe', text: '#6d28d9', icon: '🌙', label: '4ª DOSE' },
+      { border: '#ec4899', bg: '#fdf2f8', headerBg: '#fce7f3', text: '#be185d', icon: '⏰', label: '5ª DOSE' }
+    ];
+    var colInfo = isFormatoPenna 
+      ? { border: '#2563eb', bg: '#eff6ff', headerBg: '#dbeafe', text: '#1e40af', icon: '💉', label: 'INIEZIONE PENNA' }
+      : (dosePalette[idx % dosePalette.length]);
+
+    var badgeTitolo = isFormatoPenna 
+      ? ('💉 INIEZIONE INSULINA (ore ' + (d.ora || '08:00') + ')') 
+      : (colInfo.icon + ' ' + colInfo.label + (_capsulaCurrentDosi.length > 1 ? ' di ' + _capsulaCurrentDosi.length : '') + ' • Ore ' + (d.ora || '08:00'));
+
+    html += '<div class="dose-card-item" id="dose-card-' + idx + '" style="background:' + colInfo.bg + '; border:2.5px solid ' + colInfo.border + '; border-radius:14px; padding:12px 14px; margin-bottom:12px; box-shadow:0 3px 10px rgba(0,0,0,0.05);">' +
+      '<div style="background:' + colInfo.headerBg + '; border:1px solid ' + colInfo.border + '; border-radius:10px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">' +
+      '<div style="display:flex; align-items:center; gap:8px;">' +
+      '<span style="font-size:18px;">' + colInfo.icon + '</span>' +
+      '<b style="font-size:13.5px; color:' + colInfo.text + '; text-transform:uppercase; letter-spacing:0.4px;">' + badgeTitolo + '</b>' +
       '</div>' +
-      '<div class="form-row" style="margin-bottom:8px;">' +
-      '<div class="form-group" style="flex:1; margin-bottom:0;">' +
-      '<label style="font-size:11px; font-weight:800; color:#1e3a8a; margin-bottom:2px; display:block;">⏰ Orario</label>' +
+      (!isFormatoPenna && _capsulaCurrentDosi.length > 1 ? '<button type="button" onclick="rimuoviDoseCard(' + idx + ')" style="background:#fee2e2; border:1px solid #f87171; color:#b91c1c; font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; cursor:pointer;" title="Rimuovi questa dose">✕ Elimina</button>' : '') +
+      '</div>' +
+
+      // Pulsanti Scelta Rapida Orario a 1 Tocco (per chi ha fretta o non vuole digitare numeri)
+      (!isBisogno ?
+        '<div style="margin-bottom:8px;">' +
+        '<div style="font-size:10.5px; font-weight:800; color:#64748b; margin-bottom:4px; text-transform:uppercase;">⚡ Orario Rapido a 1 Tocco:</div>' +
+        '<div style="display:flex; gap:5px; flex-wrap:wrap;">' +
+        '<button type="button" onclick="impostaOrarioRapidoDose(' + idx + ', \'08:00\', \'Mattina (Colazione)\')" style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; border:1px solid #cbd5e1; background:#ffffff; color:#0f172a; cursor:pointer;">🌅 08:00 Colazione</button>' +
+        '<button type="button" onclick="impostaOrarioRapidoDose(' + idx + ', \'13:00\', \'Pranzo\')" style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; border:1px solid #cbd5e1; background:#ffffff; color:#0f172a; cursor:pointer;">☀️ 13:00 Pranzo</button>' +
+        '<button type="button" onclick="impostaOrarioRapidoDose(' + idx + ', \'20:00\', \'Sera (Cena)\')" style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; border:1px solid #cbd5e1; background:#ffffff; color:#0f172a; cursor:pointer;">🌆 20:00 Cena</button>' +
+        '<button type="button" onclick="impostaOrarioRapidoDose(' + idx + ', \'21:30\', \'Notte (Prima di dormire)\')" style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:800; border:1px solid #cbd5e1; background:#ffffff; color:#0f172a; cursor:pointer;">🌙 21:30 Notte</button>' +
+        '</div>' +
+        '</div>' : ''
+      ) +
+
+      '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">' +
+      '<div style="flex:1; min-width:130px;">' +
+      '<label style="font-size:11px; font-weight:800; color:#475569; display:block; margin-bottom:3px;">⏰ ORA ESATTA:</label>' +
       (isBisogno ?
-        '<input type="text" class="form-control dose-card-ora" value="Al Bisogno" readonly style="font-weight:800; font-size:13.5px; color:#b45309; background:#fffbeb;">' :
-        '<input type="time" class="form-control dose-card-ora" value="' + (d.ora || '08:00') + '" oninput="onDoseCardOraChanged(' + idx + ', this.value)" style="font-weight:800; font-size:14px; color:#1e3a8a; background:#f0f9ff; border-color:#bae6fd;">'
+        '<input type="text" class="dose-card-ora" value="Al Bisogno" readonly style="width:100%; font-weight:800; font-size:14px; padding:6px 10px; border-radius:8px; border:1.5px solid #cbd5e1; background:#fffbeb; color:#b45309;">' :
+        '<input type="time" class="dose-card-ora" value="' + (d.ora || '08:00') + '" oninput="onDoseCardOraChanged(' + idx + ', this.value)" style="width:100%; font-weight:800; font-size:15px; padding:6px 10px; border-radius:8px; border:1.5px solid #0284c7; background:#f0f9ff; color:#0284c7;">'
       ) +
       '</div>' +
-      '<div class="form-group" style="flex:1.4; margin-bottom:0;">' +
-      '<label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:2px; display:block;">🍽️ Fascia della Giornata</label>' +
-      '<select class="form-control dose-card-fascia" onchange="onDoseCardFasciaChanged(' + idx + ', this.value)" style="font-weight:600; font-size:12.5px;">' +
+
+      '<div style="flex:1.5; min-width:160px;">' +
+      '<label style="font-size:11px; font-weight:800; color:#475569; display:block; margin-bottom:3px;">🍽️ MOMENTO DELLA GIORNATA:</label>' +
+      '<select class="dose-card-fascia" onchange="onDoseCardFasciaChanged(' + idx + ', this.value)" style="width:100%; font-weight:700; font-size:13px; padding:7px 10px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff;">' +
       '<option value="Mattina (Digiuno)"' + (d.fascia && d.fascia.indexOf('Digiuno') >= 0 ? ' selected' : '') + '>Mattina (A Digiuno)</option>' +
       '<option value="Mattina (Colazione)"' + (!d.fascia || d.fascia.indexOf('Colazione') >= 0 ? ' selected' : '') + '>Mattina (A Colazione)</option>' +
       '<option value="Pranzo"' + (d.fascia && d.fascia.indexOf('Pranzo') >= 0 ? ' selected' : '') + '>Pranzo</option>' +
@@ -13228,45 +13736,23 @@ function renderDosiCards() {
       '</select>' +
       '</div>' +
       '</div>' +
-      '<div>' +
-      '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
-      '<label style="font-size:11px; font-weight:800; color:#0f172a; margin:0;">' +
-      '💊 Assunzione per questo orario:' +
-      '</label>' +
-      '<span style="font-size:11.5px; font-weight:800; color:#1d4ed8; background:#eff6ff; padding:2px 8px; border-radius:6px; border:1px solid #bfdbfe;">' +
-      'Dose attiva: <b>' + quotaLabel + '</b>' +
-      '</span>' +
-      '</div>' +
-      '<div class="quota-pill-group">' +
-      '<button type="button" class="quota-pill' + (quotaVal === 0.5 ? ' active' : '') + '" data-quota="0.5" onclick="setDoseCardQuota(' + idx + ', 0.5)">' +
-      '🌓 ½ dose (0,5 cpr)' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 1 ? ' active' : '') + '" data-quota="1" onclick="setDoseCardQuota(' + idx + ', 1)">' +
-      '🌕 1 dose (1 cpr)' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 1.5 ? ' active' : '') + '" data-quota="1.5" onclick="setDoseCardQuota(' + idx + ', 1.5)">' +
-      '1½ cpr (1,5 cpr)' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 2 ? ' active' : '') + '" data-quota="2" onclick="setDoseCardQuota(' + idx + ', 2)">' +
-      '💊💊 2 compresse' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 2.5 ? ' active' : '') + '" data-quota="2.5" onclick="setDoseCardQuota(' + idx + ', 2.5)">' +
-      '2½ compresse' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 3 ? ' active' : '') + '" data-quota="3" onclick="setDoseCardQuota(' + idx + ', 3)">' +
-      '💊💊💊 3 compresse' +
-      '</button>' +
-      '<button type="button" class="quota-pill' + (quotaVal === 4 ? ' active' : '') + '" data-quota="4" onclick="setDoseCardQuota(' + idx + ', 4)">' +
-      '4 compresse' +
-      '</button>' +
-      '</div>' +
-      '<div style="margin-top:8px; display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px 10px;">' +
-      '<label style="font-size:11px; font-weight:700; color:#475569; margin:0; white-space:nowrap;">✏️ Oppure inserisci quantità libera:</label>' +
-      '<input type="number" step="0.25" min="0.25" max="30" class="form-control" style="width:85px; height:32px; font-weight:800; font-size:13px; padding:2px 6px; color:#1e3a8a; border-color:#93c5fd;" value="' + quotaVal + '" oninput="setDoseCardQuotaCustom(' + idx + ', this.value)">' +
-      '<span style="font-size:11.5px; font-weight:700; color:#475569;">cpr</span>' +
-      '</div>' +
-      '<input type="hidden" class="dose-card-quota-val" value="' + quotaVal + '">' +
-      '</div>' +
+
+      // SELETTORE DOSE ULTRA-INTUITIVO CON 3 BOTTONI GRANDI (Mezza / 1 / 2)
+      (isFormatoPenna ?
+        '<div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:8px 10px; font-size:12px; color:#1e40af; font-weight:700;">' +
+        '💉 Dose regolata in Unità (UI) nel riquadro azzurro in basso.' +
+        '<input type="hidden" class="dose-card-quota-val" value="1.0">' +
+        '</div>' :
+        '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">' +
+        '<div style="font-size:11.5px; font-weight:800; color:#334155; margin-bottom:6px;">QUANTA COMPRESSA PRENDE A QUEST\'ORA?</div>' +
+        '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
+        '<button type="button" onclick="setDoseCardQuota(' + idx + ', 0.5)" style="flex:1; min-width:80px; padding:8px 4px; border-radius:8px; font-weight:900; font-size:13px; cursor:pointer; text-align:center; border:2px solid ' + (quotaVal === 0.5 ? '#f59e0b; background:#fef3c7; color:#b45309;' : '#cbd5e1; background:#fff; color:#475569;') + '">🌓 ½ cpr</button>' +
+        '<button type="button" onclick="setDoseCardQuota(' + idx + ', 1)" style="flex:1.2; min-width:90px; padding:8px 4px; border-radius:8px; font-weight:900; font-size:13.5px; cursor:pointer; text-align:center; border:2px solid ' + (quotaVal === 1 ? '#10b981; background:#ecfdf5; color:#047857;' : '#cbd5e1; background:#fff; color:#475569;') + '">🌕 1 cpr (Intera)</button>' +
+        '<button type="button" onclick="setDoseCardQuota(' + idx + ', 2)" style="flex:1; min-width:80px; padding:8px 4px; border-radius:8px; font-weight:900; font-size:13px; cursor:pointer; text-align:center; border:2px solid ' + (quotaVal === 2 ? '#3b82f6; background:#eff6ff; color:#1d4ed8;' : '#cbd5e1; background:#fff; color:#475569;') + '">💊💊 2 cpr</button>' +
+        '</div>' +
+        '<input type="hidden" class="dose-card-quota-val" value="' + quotaVal + '">' +
+        '</div>'
+      ) +
       '</div>';
   });
 
@@ -13428,17 +13914,23 @@ function ricalcolaRiepilogoCapsula() {
     dataScadenzaStr = dFine.toLocaleDateString('it-IT');
   }
 
+  var avvisoScortaColore = (giorniAutonomia <= 7) ? '#ef4444' : ((giorniAutonomia <= 14) ? '#f59e0b' : '#10b981');
+  var avvisoScortaBg = (giorniAutonomia <= 7) ? '#fef2f2' : ((giorniAutonomia <= 14) ? '#fffbeb' : '#ecfdf5');
+
   box.innerHTML =
-    '<div class="capsula-summary-title">' +
-    '<span>📊</span> Piano Terapeutico: ' + _capsulaCurrentDosi.length + ' Somministrazion' + (_capsulaCurrentDosi.length > 1 ? 'i' : 'e') + ' al giorno' +
+    '<div style="background:' + avvisoScortaBg + '; border:2px solid ' + avvisoScortaColore + '; border-radius:12px; padding:12px; margin-top:8px;">' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
+    '<b style="font-size:13px; color:#0f172a; text-transform:uppercase;">📊 Calcolo Autonomia & Scadenza Scorte:</b>' +
+    '<span style="font-size:12px; font-weight:900; color:' + avvisoScortaColore + ';">' + (giorniAutonomia <= 7 ? '🚨 ATTENZIONE SCORTA' : '🟢 SCORTA SUFFICIENTE') + '</span>' +
     '</div>' +
-    '<div class="capsula-summary-desc">' +
-    descParti.join(' + ') +
+    '<div style="font-size:12px; color:#334155; margin-bottom:8px;">' +
+    'Assunzione: <b>' + descParti.join(' + ') + '</b> (Totale: <b>' + totCprDie + ' cpr / die</b>)' +
     '</div>' +
-    '<div class="capsula-summary-metrics">' +
-    '<div><b>⚖️ Consumo Giornaliero:</b> <span style="color:#166534; font-weight:800;">' + totCprDie + ' cpr / die</span></div>' +
-    '<div><b>📦 Scorte Attuali:</b> <span style="color:#0f172a; font-weight:800;">' + scorta + ' compresse</span></div>' +
-    '<div><b>⏳ Autonomia Stimata:</b> <span style="color:#1d4ed8; font-weight:800;">~' + giorniAutonomia + ' giorni (fino al ' + dataScadenzaStr + ')</span></div>' +
+    '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px; background:#fff; border-radius:8px; padding:8px 10px; border:1px solid #cbd5e1;">' +
+    '<div><b>📦 Scorta in Casa:</b><br><span style="font-size:14px; font-weight:900; color:#0f172a;">' + scorta + ' pillole</span></div>' +
+    '<div><b>⏱️ Dura per:</b><br><span style="font-size:14px; font-weight:900; color:#1d4ed8;">~' + giorniAutonomia + ' giorni</span></div>' +
+    '<div><b>📅 Fine Scorta:</b><br><span style="font-size:14px; font-weight:900; color:' + (giorniAutonomia <= 7 ? '#dc2626' : '#15803d') + ';">' + dataScadenzaStr + '</span></div>' +
+    '</div>' +
     '</div>';
 }
 
@@ -15250,7 +15742,7 @@ function apriModuloPrenotazioneCto(farmacoIdCustom) {
     cognomePaziente = 'MILELLA';
   } else if (nomePaziente.toUpperCase() === 'ANGELA') {
     nomePaziente = 'ANGELA';
-    cognomePaziente = 'MAZZICONE';
+    cognomePaziente = 'M.';
   } else {
     nomePaziente = 'CIRO';
     cognomePaziente = 'MILELLA';
@@ -16816,8 +17308,8 @@ function pazHaDiagnosiMalattieInfettive(paziente) {
   var id = p.id || '';
   var pNome = (p.nome || '').toLowerCase();
 
-  // ESCLUSIONE CATEGORICA: Aldo Z. e Angela M. non sono pazienti di malattie infettive/epatologia!
-  if (id === 'paz_aldo' || id === 'paz_angela' || pNome.includes('aldo') || pNome.includes('zamparino') || pNome.includes('angela') || pNome.includes('mazzicone')) {
+  // ESCLUSIONE CATEGORICA: Aldo Zamparino e Angela Mazzicone non sono pazienti di malattie infettive/epatologia!
+  if (id === 'paz_aldo' || id === 'paz_angela' || pNome.includes('aldo') || pNome.includes('Z.') || pNome.includes('angela') || pNome.includes('M.')) {
     return false;
   }
 
@@ -16876,10 +17368,10 @@ function aggiornaVisibilitaTabEpatologia() {
     tabBtn.title = 'Cartella Ambulatoriale Follow-up Malattie Infettive & Epatologia - Policlinico di Bari (Ciro Milella)';
   } else if (pId === 'paz_aldo' || pNome.includes('aldo')) {
     tabBtn.innerHTML = '🧠 Neurologia & Cuore';
-    tabBtn.title = 'Cartella Monitoraggio Specialistico Geriatrico & Decubito (Aldo Z.)';
+    tabBtn.title = 'Cartella Monitoraggio Specialistico Geriatrico & Decubito (Aldo Zamparino)';
   } else if (pId === 'paz_angela' || pNome.includes('angela')) {
     tabBtn.innerHTML = '❤️ Cardiologia & PA';
-    tabBtn.title = 'Cartella Monitoraggio Cardiometabolico & Ipertensione (Angela M.)';
+    tabBtn.title = 'Cartella Monitoraggio Cardiometabolico & Ipertensione (Angela Mazzicone)';
   } else if (pId === 'paz_rosa' || pNome.includes('rosa') || pNome.includes('C.')) {
     tabBtn.innerHTML = '🩸 Diabete & Terapie';
     tabBtn.title = 'Cartella Diabetologia, Piani Terapeutici & Cardiovascolare (Rosa C.)';
@@ -17930,7 +18422,7 @@ function getPianoTerapeuticoAttivo(paziente) {
     return p.pianoTerapeuticoDpc;
   }
 
-  // 3. PROFILO Angela M. (Cardiopatia Ipertensiva / Scompenso - Irbesartan/Idroclorotiazide & Lasix)
+  // 3. PROFILO Angela Mazzicone (Cardiopatia Ipertensiva / Scompenso - Irbesartan/Idroclorotiazide & Lasix)
   if (pNome.includes('angela')) {
     if (!p.pianoTerapeuticoDpc) {
       p.pianoTerapeuticoDpc = {
@@ -17963,7 +18455,7 @@ function getPianoTerapeuticoAttivo(paziente) {
     return p.pianoTerapeuticoDpc;
   }
 
-  // 4. PROFILO Aldo Z. (Neurologico / Epilessia & Ipertrofia Prostatica - Vimpat & Silodyx)
+  // 4. PROFILO Aldo Zamparino (Neurologico / Epilessia & Ipertrofia Prostatica - Vimpat & Silodyx)
   if (pNome.includes('aldo')) {
     if (!p.pianoTerapeuticoDpc) {
       p.pianoTerapeuticoDpc = {
@@ -18130,7 +18622,7 @@ window.apriDocumentiPianoVisitaOriginali = apriDocumentiPianoVisitaOriginali;
 
 // ==============================================================================
 // MODULO CLINICO AVANZATO: MONITORAGGIO NRE 180GG, STAMPA MMG, ALLEGATI REFERTI
-// & SCHEDE SPECIALISTICHE DEDICATE (Aldo Z. & Angela M.)
+// & SCHEDE SPECIALISTICHE DEDICATE (Aldo Zamparino & Angela Mazzicone)
 // ==============================================================================
 
 // 1. MONITORAGGIO SCADENZA RICETTE ELETTRONICHE NRE (180 GIORNI)
@@ -18531,7 +19023,7 @@ window.scaricaRefertoZoomCorrente = scaricaRefertoZoomCorrente;
 
 
 // ==============================================================================
-// SCHEDE SPECIALISTICHE DEDICATE: Aldo Z. & Angela M.
+// SCHEDE SPECIALISTICHE DEDICATE: Aldo Zamparino & Angela Mazzicone
 // ==============================================================================
 
 const ESAMI_ALDO_DEFAULT = [
@@ -18650,7 +19142,7 @@ function renderTabellaEsamiSpecialisticiGenerica(esami, isAldo) {
   }).join('');
 }
 
-// RENDER SCHEDA Aldo Z. (NEUROLOGIA & CARDIOLOGIA GERIATRICA)
+// RENDER SCHEDA Aldo Zamparino (NEUROLOGIA & CARDIOLOGIA GERIATRICA)
 function renderSchedaSpecialisticaAldo(container, p) {
   var scheda = getSchedaSpecialisticaAldo(p);
   var esami = scheda.esami || [];
@@ -18659,7 +19151,7 @@ function renderSchedaSpecialisticaAldo(container, p) {
   var perc = esami.length > 0 ? Math.round((completati / esami.length) * 100) : 0;
 
   var html = `
-    <!-- BANNER CLINICO GERIATRICO DEDICATO AD Aldo Z. -->
+    <!-- BANNER CLINICO GERIATRICO DEDICATO AD Aldo Zamparino -->
     <div style="background:linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(30,27,75,0.35); border:2px solid #818cf8; position:relative; overflow:hidden;">
       <div style="position:absolute; right:-20px; top:-20px; font-size:120px; opacity:0.07; pointer-events:none;">🧠</div>
       
@@ -18677,7 +19169,7 @@ function renderSchedaSpecialisticaAldo(container, p) {
               Protocollo Neurologia, Cardiologia & Prevenzione Decubito
             </h2>
             <div style="font-size:13px; color:#c7d2fe; font-weight:500;">
-              Assistito: <b>Aldo Z.</b> &bull; MMG Curante: <b>Dott. Roberto Scarcia</b> &bull; Servizio ADI Territoriale
+              Assistito: <b>Aldo Zamparino</b> &bull; MMG Curante: <b>Dott. Roberto Scarcia</b> &bull; Servizio ADI Territoriale
             </div>
           </div>
         </div>
@@ -18757,7 +19249,7 @@ function renderSchedaSpecialisticaAldo(container, p) {
     <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
       <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Monitoraggio Clinico Specialistico - Aldo Z.</div>
+          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Monitoraggio Clinico Specialistico - Aldo Zamparino</div>
           <div style="font-size:12px; color:#64748b;">Tracciamento integrato: Richieste al Curante &bull; Visite Domiciliari &bull; Referti</div>
         </div>
       </div>
@@ -18786,7 +19278,7 @@ function renderSchedaSpecialisticaAldo(container, p) {
   container.innerHTML = html;
 }
 
-// RENDER SCHEDA Angela M. (CARDIOLOGIA, IPERTENSIONE & METABOLICA)
+// RENDER SCHEDA Angela Mazzicone (CARDIOLOGIA, IPERTENSIONE & METABOLICA)
 function renderSchedaSpecialisticaAngela(container, p) {
   var scheda = getSchedaSpecialisticaAngela(p);
   var esami = scheda.esami || [];
@@ -18795,7 +19287,7 @@ function renderSchedaSpecialisticaAngela(container, p) {
   var perc = esami.length > 0 ? Math.round((completati / esami.length) * 100) : 0;
 
   var html = `
-    <!-- BANNER CLINICO CARDIOLOGICO DEDICATO AD Angela M. -->
+    <!-- BANNER CLINICO CARDIOLOGICO DEDICATO AD Angela Mazzicone -->
     <div style="background:linear-gradient(135deg, #831843 0%, #9d174d 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(131,24,67,0.35); border:2px solid #f472b6; position:relative; overflow:hidden;">
       <div style="position:absolute; right:-20px; top:-20px; font-size:120px; opacity:0.07; pointer-events:none;">❤️</div>
       
@@ -18813,7 +19305,7 @@ function renderSchedaSpecialisticaAngela(container, p) {
               Protocollo Cardiologia, Ipertensione & Metabolica
             </h2>
             <div style="font-size:13px; color:#fce7f3; font-weight:500;">
-              Assistita: <b>Angela M.</b> &bull; MMG Curante: <b>Dott. Roberto Scarcia</b> &bull; Cardiologia Territoriale ASL Bari
+              Assistita: <b>Angela Mazzicone</b> &bull; MMG Curante: <b>Dott. Roberto Scarcia</b> &bull; Cardiologia Territoriale ASL Bari
             </div>
           </div>
         </div>
@@ -18893,7 +19385,7 @@ function renderSchedaSpecialisticaAngela(container, p) {
     <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
       <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Sorveglianza Cardiometabolica - Angela M.</div>
+          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Sorveglianza Cardiometabolica - Angela Mazzicone</div>
           <div style="font-size:12px; color:#64748b;">Monitoraggio: Ipertensione &bull; Assetto Lipidico &bull; Acido Urico &bull; Vitamina D3</div>
         </div>
       </div>
@@ -20962,7 +21454,57 @@ var _timerDisplaySpento = null;
 var _audioAllarmeVoceSpento = null;
 var _keepAliveOscillator = null;
 
+function inviaAlertPushServerSide(titolo, messaggio, priorita = 5, tag = 'alarm_clock') {
+  try {
+    return fetch('/api/invia-alert-smartphone', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ titolo, messaggio, priorita, tag })
+    }).catch(function(err) {
+      console.warn('[Push Alert] Errore invio:', err);
+    });
+  } catch(e) {
+    return Promise.reject(e);
+  }
+}
+
+// Funzione richiamata dal bottone di test nel modale smartphone
+window.testSvegliaSmartphonePush = async function() {
+  const btn = document.getElementById('btn-test-push-sveglia');
+  const stato = document.getElementById('stato-test-push');
+  if (btn) btn.disabled = true;
+  if (stato) stato.textContent = 'Invio in corso...';
+
+  try {
+    const res = await fetch('/api/invia-alert-smartphone', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        titolo: '🚨 TEST SVEGLIA CAREASSIST PRO',
+        messaggio: 'Allarme di prova urgente! Il telefono suona anche a display spento.',
+        priorita: 5,
+        tag: 'alarm_clock,rotating_light'
+      })
+    });
+    const data = await res.json();
+    if (stato) {
+      stato.textContent = '✅ Inviato! Se il canale è iscritto sul cellulare, suonerà tra 2 secondi.';
+      stato.style.color = '#047857';
+    }
+  } catch (err) {
+    if (stato) {
+      stato.textContent = '❌ Errore di connessione al server.';
+      stato.style.color = '#b91c1c';
+    }
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+};
+
 function mostraNotificaSistemaSchermoSpento(titolo, corpo) {
+  // 1. Spedisci anche al canale Push di sistema NTFY
+  inviaAlertPushServerSide(titolo, corpo, 5, 'warning,alarm_clock');
+
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   try {
     if ('serviceWorker' in navigator) {
@@ -21118,3 +21660,1281 @@ function avviaTestDisplaySpento10Secondi() {
 
 window.avviaTestDisplaySpento10Secondi = avviaTestDisplaySpento10Secondi;
 window.mostraNotificaSistemaSchermoSpento = mostraNotificaSistemaSchermoSpento;
+
+window.impostaOrarioRapidoDose = function(cardIdx, oraVal, fasciaVal) {
+  if (!_capsulaCurrentDosi[cardIdx]) return;
+  _capsulaCurrentDosi[cardIdx].ora = oraVal;
+  _capsulaCurrentDosi[cardIdx].fascia = fasciaVal;
+  renderDosiCards();
+  ricalcolaRiepilogoCapsula();
+};
+
+
+window.mostraBannerAnnullaCancellazione = function(item, cestinoId) {
+  var oldBanner = document.getElementById('banner-annulla-cancellazione-flottante');
+  if (oldBanner) oldBanner.remove();
+
+  var b = document.createElement('div');
+  b.id = 'banner-annulla-cancellazione-flottante';
+  b.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#0f172a; color:#fff; border:2px solid #ef4444; border-radius:30px; padding:10px 20px; z-index:999999; display:flex; align-items:center; gap:12px; box-shadow:0 8px 30px rgba(0,0,0,0.6); font-size:13px; font-weight:800;';
+  
+  b.innerHTML = 
+    '<span>🗑️ Hai rimosso: <b>' + (item.farmaco || 'Farmaco') + '</b></span>' +
+    '<button type="button" onclick="annullaCancellazioneFarmacoImmediata(' + item.id + ', \'' + (cestinoId || '') + '\')" style="background:#10b981; color:#fff; border:none; padding:6px 14px; border-radius:20px; font-weight:900; font-size:12px; cursor:pointer; box-shadow:0 2px 8px rgba(16,185,129,0.4);">' +
+    '↩️ ANNULLA SUBITO' +
+    '</button>' +
+    '<button type="button" onclick="this.parentElement.remove()" style="background:transparent; border:none; color:#94a3b8; font-size:16px; cursor:pointer; padding:0 4px;">✕</button>';
+
+  document.body.appendChild(b);
+  setTimeout(function() {
+    if (b && b.parentElement) b.remove();
+  }, 12000);
+};
+
+window.annullaCancellazioneFarmacoImmediata = function(farmacoId, cestinoId) {
+  var b = document.getElementById('banner-annulla-cancellazione-flottante');
+  if (b) b.remove();
+
+  // Usa la funzione di ripristino cestino
+  if (cestinoId && typeof cestinoRipristina === 'function') {
+    cestinoRipristina(cestinoId);
+  } else {
+    location.reload();
+  }
+};
+
+
+// ==========================================
+// 3 MIGLIORIE DOMENICA & UX PRO (v131)
+// 1) Prendi Tutto Ora (Fascia o Prossimi)
+// 2) Stampa / Promemoria Foglio Frigo A4
+// 3) Filtro 'Solo da prendere oggi'
+// ==========================================
+
+window._soloDaPrendereOggi = false;
+
+window.prendiTuttiFarmaciFascia = async function(fasciaNome) {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+  const targetFascia = (fasciaNome || window._activeFasciaFilter || '').toLowerCase();
+  
+  let daPrendere = p.terapie.filter(t => {
+    if (t.fattoOggi) return false;
+    if (targetFascia && targetFascia !== 'tutte') {
+      return (t.fascia || '').toLowerCase().includes(targetFascia);
+    }
+    return true;
+  });
+
+  if (daPrendere.length === 0) {
+    if (typeof showToast === 'function') {
+      showToast('Nessun farmaco da prendere in questa fascia!', 'info');
+    } else {
+      alert('Tutti i farmaci di questa fascia sono già stati somministrati!');
+    }
+    return;
+  }
+
+  const elencoNomi = daPrendere.map(t => '• ' + t.farmaco + ' (' + (t.dosaggio || t.ora) + ')').join('\n');
+  const confirmMsg = 'Stai per confermare la somministrazione di ' + daPrendere.length + ' farmaci:\n\n' + elencoNomi + '\n\nConfermi l\'assunzione e lo scarico delle scorte?';
+  
+  let ok = false;
+  if (typeof customConfirm === 'function') {
+    ok = await customConfirm('✅ Prendi Tutto (' + (targetFascia === 'tutte' ? 'Oggi' : targetFascia.toUpperCase()) + ')', confirmMsg, '💊');
+  } else {
+    ok = window.confirm(confirmMsg);
+  }
+  if (!ok) return;
+
+  const now = new Date();
+  const oraFormattata = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  const dataFormattata = now.toLocaleDateString('it-IT');
+  const nomeOperatore = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore OSS / Caregiver';
+
+  let count = 0;
+  for (const t of daPrendere) {
+    t.fattoOggi = true;
+    t.orarioEffettivoAssunzione = oraFormattata;
+    t.operatoreAssunzione = nomeOperatore;
+    t.dataUltimaSomministrazione = dataFormattata;
+    if (typeof scaricaScortaFarmaco === 'function') {
+      scaricaScortaFarmaco(t);
+    }
+    count++;
+  }
+
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof renderAll === 'function') renderAll();
+  if (typeof showToast === 'function') {
+    showToast('✅ Somministrati con successo ' + count + ' farmaci!', 'success');
+  }
+};
+
+window.toggleFiltroSoloDaPrendere = function() {
+  window._soloDaPrendereOggi = !window._soloDaPrendereOggi;
+  if (typeof renderFiltroFasceTerapie === 'function') renderFiltroFasceTerapie();
+  if (typeof renderTerapie === 'function') renderTerapie();
+};
+
+
+// ==========================================
+// SCHEDA TERAPEUTICA CLINICO-SANITARIA UFFICIALE (PDF A4 EXECUTIVE)
+// ==========================================
+window.stampaCartellaClinicaCompletaPDF = function() {
+  const p = getActivePaziente();
+  if (!p) {
+    alert('Nessun assistito selezionato.');
+    return;
+  }
+  const terapie = (p.terapie || []).slice().sort((a,b) => (a.ora || '').localeCompare(b.ora || ''));
+  const scorteCritiche = terapie.filter(t => (t.scorta !== undefined && t.scorta <= 5));
+  const operatoreNome = localStorage.getItem('milella_user_nome') || 'Dott. Ciro Milella';
+  const operatoreRuolo = localStorage.getItem('milella_role') || 'Coordinatore Sanitario';
+
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('Consenti i popup per stampare o salvare in PDF la Scheda Ufficiale!');
+    return;
+  }
+
+  const html = `<!DOCTYPE html>
+  <html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <title>Scheda Terapeutica Ufficiale - ${p.nome}</title>
+    <style>
+      @page { size: A4 portrait; margin: 12mm 15mm; }
+      body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 0; font-size: 11pt; line-height: 1.4; }
+      .header-table { width: 100%; border-bottom: 2.5px solid #0284c7; padding-bottom: 10px; margin-bottom: 12px; }
+      .brand-title { font-size: 17pt; font-weight: 800; color: #0369a1; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+      .brand-sub { font-size: 9pt; color: #64748b; font-weight: 600; }
+      .badge-doc { background: #e0f2fe; color: #0369a1; font-weight: 800; font-size: 8.5pt; padding: 4px 8px; border-radius: 6px; border: 1px solid #7dd3fc; }
+      
+      .box-paziente { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: table; width: 100%; box-sizing: border-box; }
+      .box-col { display: table-cell; vertical-align: top; width: 33.3%; font-size: 9.5pt; }
+      .box-col strong { color: #1e293b; }
+      
+      .table-farmaci { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 14px; font-size: 9pt; }
+      .table-farmaci th { background: #0f172a; color: #ffffff; text-align: left; padding: 7px 8px; font-weight: 700; border: 1px solid #0f172a; font-size: 8.5pt; text-transform: uppercase; }
+      .table-farmaci td { padding: 6px 8px; border: 1px solid #cbd5e1; vertical-align: middle; }
+      .table-farmaci tr:nth-child(even) { background: #f8fafc; }
+      
+      .tag-fascia { display: inline-block; font-weight: 800; font-size: 8pt; padding: 2px 6px; border-radius: 4px; }
+      .tag-mattina { background: #fef08a; color: #854d0e; }
+      .tag-pranzo { background: #bbf7d0; color: #166534; }
+      .tag-pomeriggio { background: #fbcfe8; color: #9d174d; }
+      .tag-sera { background: #bae6fd; color: #075985; }
+      .tag-notte { background: #ddd6fe; color: #5b21b6; }
+      .tag-sos { background: #fee2e2; color: #991b1b; }
+
+      .box-alert { background: #fffbeb; border: 1.5px solid #f59e0b; border-left: 5px solid #d97706; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 8.5pt; }
+      .firma-section { margin-top: 24px; display: table; width: 100%; font-size: 9pt; }
+      .firma-col { display: table-cell; width: 50%; vertical-align: top; }
+      .linea-firma { margin-top: 35px; width: 85%; border-top: 1px solid #475569; text-align: center; font-size: 8pt; color: #64748b; padding-top: 4px; }
+      
+      @media print {
+        .no-print { display: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="no-print" style="background:#0f172a; color:#fff; padding:12px 18px; margin:-12mm -15mm 15mm -15mm; display:flex; justify-content:space-between; align-items:center;">
+      <div style="font-weight:700; font-size:13px;">📄 Anteprima Ufficiale Scheda Terapeutica Farmaci (A4)</div>
+      <div>
+        <button onclick="window.print()" style="padding:8px 18px; font-weight:800; background:#0284c7; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:12px; margin-right:8px;">🖨️ Stampa / Salva in PDF</button>
+        <button onclick="window.close()" style="padding:8px 14px; background:#475569; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:12px;">Chiudi</button>
+      </div>
+    </div>
+
+    <table class="header-table">
+      <tr>
+        <td style="vertical-align:top;">
+          <h1 class="brand-title">🩺 CareAssist &bull; Fascicolo Terapeutico</h1>
+          <div class="brand-sub">Sistema Territoriale Integrato di Assistenza e Riconciliazione Farmacologica</div>
+        </td>
+        <td style="text-align:right; vertical-align:top;">
+          <span class="badge-doc">DOC. ADI-FAR-01</span>
+          <div style="font-size:8pt; color:#64748b; margin-top:4px;">
+            Data Emissione: <b>${new Date().toLocaleDateString('it-IT')} ${new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}</b>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="box-paziente">
+      <div class="box-col">
+        <strong>Paziente / Assistito:</strong><br>
+        <span style="font-size:12pt; font-weight:800; color:#0369a1;">${p.nome}</span><br>
+        <span>CF: ${p.codiceFiscale || 'N.D.'}</span><br>
+        <span>Nascita: ${p.dataNascita || 'N.D.'} (${p.eta || '--'} anni)</span>
+      </div>
+      <div class="box-col">
+        <strong>Riferimenti Medici & Cura:</strong><br>
+        <span>Medico Curante: <b>${p.medicoCurante || 'Dott. Roberto Scarcia'}</b></span><br>
+        <span>Farmacia Territoriale: <b>${p.farmaciaDiRiferimento || 'Farmacia Macario'}</b></span><br>
+        <span>Caregiver / Famiglia: ${p.caregiver || 'Mazzicone Angela'}</span>
+      </div>
+      <div class="box-col">
+        <strong>Quadro Sintetico:</strong><br>
+        <span>Diagnosi / Focus: <b>${p.diagnosiPrincipale || (p.patologie && p.patologie[0]) || 'Ipertensione, Diabete tipo 2'}</b></span><br>
+        <span>Allergie: <b style="color:#b91c1c;">${p.allergie || 'Nessuna nota'}</b></span><br>
+        <span>Totale Farmaci Attivi: <b>${terapie.length} molecole</b></span>
+      </div>
+    </div>
+
+    ${scorteCritiche.length > 0 ? `
+      <div class="box-alert">
+        ⚠️ <b>ALERT SCORTE IN ESAURIMENTO:</b> Si segnalano <b>${scorteCritiche.length} farmaci</b> con scorta residua critica (&le; 5 compresse). Richiedere ricetta al MMG: ${scorteCritiche.map(s => s.farmaco + ' (' + s.scorta + ' cpr)').join(', ')}.
+      </div>
+    ` : ''}
+
+    <div style="font-size:10pt; font-weight:800; color:#0f172a; margin-top:6px; text-transform:uppercase; border-bottom:1px solid #cbd5e1; padding-bottom:3px;">
+      💊 Elenco Molecole, Orari & Schemi di Somministrazione
+    </div>
+
+    <table class="table-farmaci">
+      <thead>
+        <tr>
+          <th style="width: 14%;">Fascia / Orario</th>
+          <th style="width: 28%;">Farmaco & Principio Attivo</th>
+          <th style="width: 14%;">Dosaggio</th>
+          <th style="width: 22%;">Indicazioni & Modalità</th>
+          <th style="width: 11%; text-align:center;">Giacenza</th>
+          <th style="width: 11%; text-align:center;">Stato</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${terapie.map(t => {
+          const f = (t.fascia || '').toLowerCase();
+          let cls = 'tag-mattina';
+          if (f.includes('pranzo')) cls = 'tag-pranzo';
+          else if (f.includes('pomeriggio')) cls = 'tag-pomeriggio';
+          else if (f.includes('sera')) cls = 'tag-sera';
+          else if (f.includes('notte')) cls = 'tag-notte';
+          else if (f.includes('bisogno') || f.includes('sos')) cls = 'tag-sos';
+
+          const isSos = (t.alBisogno || f.includes('bisogno'));
+          const scortaNum = (t.scorta !== undefined) ? t.scorta : '--';
+          const scortaColor = (scortaNum <= 3) ? '#dc2626' : ((scortaNum <= 7) ? '#d97706' : '#16a34a');
+
+          return `
+            <tr>
+              <td>
+                <span class="tag-fascia ${cls}">${t.fascia || 'Generale'}</span><br>
+                <b style="color:#0369a1; font-size:8.5pt;">⏰ ${t.ora || '--:--'}</b>
+              </td>
+              <td>
+                <strong style="font-size:9.5pt; color:#0f172a;">${t.farmaco}</strong>
+                ${t.principioAttivo ? '<br><span style="color:#64748b; font-size:8pt;">' + t.principioAttivo + '</span>' : ''}
+              </td>
+              <td><b>${t.dosaggio || '1 cpr'}</b></td>
+              <td>
+                <span style="color:#334155;">${t.note || t.istruzioni || 'Assumere regolarmente con acqua'}</span>
+                ${isSos ? '<br><b style="color:#b91c1c; font-size:7.5pt;">[AL BISOGNO / SOS]</b>' : ''}
+              </td>
+              <td style="text-align:center; font-weight:800; color:${scortaColor};">
+                ${scortaNum} ${scortaNum !== '--' ? 'cpr' : ''}
+              </td>
+              <td style="text-align:center;">
+                <span style="font-size:7.5pt; font-weight:700; color:#15803d; background:#dcfce7; padding:2px 6px; border-radius:4px; border:1px solid #86efac;">ATTIVO</span>
+              </td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+
+    <div class="firma-section">
+      <div class="firma-col">
+        <div>Operatore Responsabile della Compilazione:</div>
+        <div style="font-weight:700; color:#0369a1; margin-top:2px;">${operatoreNome}</div>
+        <div style="font-size:8pt; color:#64748b;">${operatoreRuolo} &bull; Suite Sanitaria</div>
+        <div class="linea-firma">Firma Operatore Territoriale</div>
+      </div>
+      <div class="firma-col">
+        <div>Validazione Medica / Coordinamento:</div>
+        <div style="font-weight:700; color:#0369a1; margin-top:2px;">${p.medicoCurante || 'Dott. Roberto Scarcia'}</div>
+        <div style="font-size:8pt; color:#64748b;">Medico di Medicina Generale / Prescrittore</div>
+        <div class="linea-firma">Firma & Timbro del Medico</div>
+      </div>
+    </div>
+  </body>
+  </html>`;
+
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+};
+
+// ==========================================================================
+// 1. DETTATURA VOCALE NOTA DI TURNO & PARSING AUTOMATICO
+// ==========================================================================
+let _dettaturaNotaRecognition = null;
+let _isDettandoNota = false;
+
+function toggleDettaturaVocaleNota() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    showToast('Il riconoscimento vocale non è supportato dal browser corrente.', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('btn-mic-dettatura-nota');
+  const txtArea = document.getElementById('nota-turno-testo');
+
+  if (_isDettandoNota) {
+    if (_dettaturaNotaRecognition) _dettaturaNotaRecognition.stop();
+    _isDettandoNota = false;
+    if (btn) {
+      btn.style.background = '#f0f9ff';
+      btn.style.borderColor = '#0284c7';
+      btn.style.color = '#0284c7';
+      btn.innerHTML = '<span>🎤</span> Dettatura Vocale';
+    }
+    return;
+  }
+
+  try {
+    _dettaturaNotaRecognition = new SpeechRecognition();
+    _dettaturaNotaRecognition.lang = 'it-IT';
+    _dettaturaNotaRecognition.continuous = true;
+    _dettaturaNotaRecognition.interimResults = false;
+
+    _dettaturaNotaRecognition.onstart = function() {
+      _isDettandoNota = true;
+      if (btn) {
+        btn.style.background = '#dc2626';
+        btn.style.borderColor = '#b91c1c';
+        btn.style.color = '#ffffff';
+        btn.innerHTML = '<span>⏹️</span> In ascolto... Parla ora!';
+      }
+      showToast('🎙️ Parla chiaramente: trascrizione in tempo reale...');
+    };
+
+    _dettaturaNotaRecognition.onresult = function(event) {
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          const trascritto = event.results[i][0].transcript.trim();
+          if (txtArea) {
+            const current = txtArea.value.trim();
+            txtArea.value = current ? current + '. ' + trascritto : trascritto;
+            
+            // Smart Parsing: Se rileva parole chiave cliniche come alvo, pressione, glicemia o acqua, suggerisce o compila
+            if (trascritto.toLowerCase().includes('pressione') || trascritto.toLowerCase().includes('alvo') || trascritto.toLowerCase().includes('beve')) {
+              showToast('💡 Rilevati parametri clinici nel parlato!', 'success');
+            }
+          }
+        }
+      }
+    };
+
+    _dettaturaNotaRecognition.onerror = function(err) {
+      console.warn('Speech error:', err);
+      _isDettandoNota = false;
+      if (btn) {
+        btn.style.background = '#f0f9ff';
+        btn.style.borderColor = '#0284c7';
+        btn.style.color = '#0284c7';
+        btn.innerHTML = '<span>🎤</span> Dettatura Vocale';
+      }
+    };
+
+    _dettaturaNotaRecognition.onend = function() {
+      _isDettandoNota = false;
+      if (btn) {
+        btn.style.background = '#f0f9ff';
+        btn.style.borderColor = '#0284c7';
+        btn.style.color = '#0284c7';
+        btn.innerHTML = '<span>🎤</span> Dettatura Vocale';
+      }
+    };
+
+    _dettaturaNotaRecognition.start();
+  } catch (err) {
+    console.error('Impossibile avviare SpeechRecognition:', err);
+    showToast('Errore microfono. Verifica i permessi del browser.', 'warning');
+  }
+}
+window.toggleDettaturaVocaleNota = toggleDettaturaVocaleNota;
+
+// ==========================================================================
+// 4. GENERATORE PILLBOX SETTIMANALE STAMPABILE A4 (PORTAPILLOLE 7 GIORNI)
+// ==========================================================================
+window.stampaPortapilloleSettimanale = function() {
+  const p = getActivePaziente();
+  if (!p) {
+    showToast('Seleziona un assistito per stampare il portapillole settimanale', 'warning');
+    return;
+  }
+
+  const terapie = (p.terapie || []).slice().sort((a,b) => (a.ora || '').localeCompare(b.ora || ''));
+  const giorni = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+  
+  const fasce = [
+    { id: 'mattina', label: '☀️ Mattina', sub: 'Ore 07:00 - 09:00', bg: '#fef9c3' },
+    { id: 'pranzo', label: '🍽️ Pranzo', sub: 'Ore 12:30 - 14:00', bg: '#dcfce7' },
+    { id: 'pomeriggio', label: '☕ Pomeriggio', sub: 'Ore 16:00 - 18:00', bg: '#f3e8ff' },
+    { id: 'sera', label: '🌙 Sera / Cena', sub: 'Ore 19:30 - 21:00', bg: '#e0f2fe' },
+    { id: 'notte', label: '😴 Notte', sub: 'Prima di dormire', bg: '#ede9fe' }
+  ];
+
+  const getFarmaciPerFascia = (fasciaId) => {
+    return terapie.filter(t => {
+      const f = (t.fascia || '').toLowerCase();
+      if (fasciaId === 'mattina') return f.includes('mattina') || (t.ora && t.ora >= '06:00' && t.ora <= '10:00');
+      if (fasciaId === 'pranzo') return f.includes('pranzo') || (t.ora && t.ora >= '12:00' && t.ora <= '14:30');
+      if (fasciaId === 'pomeriggio') return f.includes('pomeriggio') || (t.ora && t.ora >= '16:00' && t.ora <= '18:30');
+      if (fasciaId === 'sera') return f.includes('sera') || (t.ora && t.ora >= '19:30' && t.ora <= '21:30');
+      if (fasciaId === 'notte') return f.includes('notte') || (t.ora && (t.ora >= '22:00' || t.ora <= '04:00'));
+      return false;
+    });
+  };
+
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('Consenti i popup per visualizzare e stampare il portapillole!');
+    return;
+  }
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+      <meta charset="utf-8">
+      <title>Griglia Portapillole Settimanale A4 - ${p.nome}</title>
+      <style>
+        @page { size: A4 landscape; margin: 6mm; }
+        *, *:before, *:after { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 6mm; color: #0f172a; }
+        .no-print { display: flex; gap: 10px; margin-bottom: 12px; }
+        .btn-print { background: #0284c7; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; }
+        .pillbox-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
+        .pillbox-table th, .pillbox-table td { border: 1.5px solid #334155; padding: 6px 8px; vertical-align: top; }
+        .pillbox-table th { background: #0f172a; color: #ffffff; text-align: center; text-transform: uppercase; font-size: 11.5px; }
+        .pill-item { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 6px; margin-bottom: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .pill-name { font-weight: 900; color: #0f172a; font-size: 11.5px; }
+        .pill-dose { color: #0284c7; font-weight: 700; font-size: 10px; }
+        @media print { .no-print { display: none !important; } }
+      </style>
+    </head>
+    <body>
+      <div class="no-print">
+        <button class="btn-print" onclick="window.print()">🖨️ Stampa Portapillole Settimanale (A4 Orizzontale)</button>
+        <button onclick="window.close()" style="background:#e2e8f0; border:none; padding:8px 14px; border-radius:8px; cursor:pointer;">Chiudi</button>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:2px solid #0284c7; padding-bottom:6px;">
+        <div>
+          <h2 style="margin:0; font-size:17px; text-transform:uppercase; color:#0369a1;">💊 SCHEDA ORGANIZZAZIONE PORTAPILLOLE SETTIMANALE</h2>
+          <div style="font-size:13px; font-weight:bold; margin-top:2px;">Paziente: <span style="font-size:15px; color:#0f172a;">${p.nome}</span> &bull; Medico: ${p.medicoCurante || p.medicoNome || 'Dr. di Famiglia'}</div>
+        </div>
+        <div style="text-align:right; font-size:10px; color:#64748b; font-weight:600;">
+          Generato da CareAssist Pro &bull; Data: ${new Date().toLocaleDateString('it-IT')}<br>
+          <b>In caso di dubbi sui dosaggi: 📞 Famiglia / Medico</b>
+        </div>
+      </div>
+
+      <table class="pillbox-table">
+        <thead>
+          <tr>
+            <th style="width:14%;">Fascia Oraria</th>
+            ${giorni.map(g => `<th>${g}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${fasce.map(f => {
+            const list = getFarmaciPerFascia(f.id);
+            const content = list.length === 0 ? '<span style="color:#94a3b8; font-style:italic;">-</span>' : 
+              list.map(t => `
+                <div class="pill-item">
+                  <div class="pill-name">💊 ${t.farmaco}</div>
+                  <div class="pill-dose">${t.dosaggio || '1 cpr'} &bull; Ore ${t.ora || '--:--'}</div>
+                  ${t.note ? `<div style="font-size:9px; color:#64748b;">${t.note}</div>` : ''}
+                </div>
+              `).join('');
+
+            return `
+              <tr>
+                <td style="background:${f.bg}; font-weight:900;">
+                  <div style="font-size:12px;">${f.label}</div>
+                  <div style="font-size:9.5px; color:#475569; font-weight:normal; margin-top:2px;">${f.sub}</div>
+                </td>
+                ${giorni.map(() => `<td>${content}</td>`).join('')}
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+
+      <div style="margin-top:8px; display:flex; justify-content:space-between; font-size:9.5px; color:#475569; border-top:1px solid #cbd5e1; padding-top:4px;">
+        <span>⚠️ <b>Avvertenza Terapie:</b> Preparare le vaschette con mani disinfettate. Conservare al riparo dalla luce e fonti di calore.</span>
+        <span><b>Emergenze Sanitarie: 📞 118</b></span>
+      </div>
+    </body>
+    </html>
+  `;
+
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+};
+
+window.stampaFoglioFrigo = function() {
+  const p = getActivePaziente();
+  if (!p) return;
+  const terapie = (p.terapie || []).slice().sort((a,b) => (a.ora || '').localeCompare(b.ora || ''));
+  
+  const raggruppate = {
+    mattina: terapie.filter(t => (t.fascia || '').toLowerCase().includes('mattina')),
+    pranzo: terapie.filter(t => (t.fascia || '').toLowerCase().includes('pranzo')),
+    pomeriggio: terapie.filter(t => (t.fascia || '').toLowerCase().includes('pomeriggio')),
+    sera: terapie.filter(t => (t.fascia || '').toLowerCase().includes('sera')),
+    notte: terapie.filter(t => (t.fascia || '').toLowerCase().includes('notte')),
+    altri: terapie.filter(t => {
+      const f = (t.fascia || '').toLowerCase();
+      return !f.includes('mattina') && !f.includes('pranzo') && !f.includes('pomeriggio') && !f.includes('sera') && !f.includes('notte');
+    })
+  };
+
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('Consenti i popup per visualizzare e stampare il promemoria!');
+    return;
+  }
+
+  const renderColonna = (titolo, icona, bg, lista) => {
+    return `
+      <div style="background:${bg}; border-radius:12px; padding:12px 14px; margin-bottom:12px; border:1px solid rgba(0,0,0,0.08);">
+        <div style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+          <span>${icona}</span> <span>${titolo}</span>
+        </div>
+        ${lista.length === 0 ? '<div style="font-size:11px; color:#64748b; font-style:italic;">Nessun farmaco in questa fascia</div>' : 
+          lista.map(t => `
+            <div style="display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; border-bottom:1px dashed rgba(0,0,0,0.1); font-size:13px;">
+              <div>
+                <strong style="color:#0f172a;">${t.farmaco}</strong>
+                <span style="color:#475569; font-size:11.5px;"> (${t.dosaggio || '1 cpr'}${t.note ? ' - ' + t.note : ''})</span>
+              </div>
+              <div style="font-weight:800; color:#0369a1; font-size:13px; margin-left:12px; white-space:nowrap;">
+                ⏰ ${t.ora || '--:--'}
+              </div>
+            </div>
+          `).join('')}
+      </div>
+    `;
+  };
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Promemoria Terapie Frigo - ${p.nome}</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 24px; color: #0f172a; }
+        @media print {
+          body { margin: 10mm; }
+          .no-print { display: none !important; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="no-print" style="margin-bottom:16px; display:flex; gap:10px;">
+        <button onclick="window.print()" style="padding:10px 18px; font-size:14px; font-weight:bold; background:#0284c7; color:white; border:none; border-radius:8px; cursor:pointer;">🖨️ Stampa Adesso (A4)</button>
+        <button onclick="window.close()" style="padding:10px 14px; font-size:14px; background:#e2e8f0; border:none; border-radius:8px; cursor:pointer;">Chiudi</button>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0284c7; padding-bottom:8px; margin-bottom:14px;">
+        <div>
+          <h2 style="margin:0; font-size:20px; color:#0369a1;">📋 PROMEMORIA TERAPIE GIORNALIERE DA FRIGORIFERO</h2>
+          <div style="font-size:15px; font-weight:bold; margin-top:4px;">Assistito: ${p.nome} ${p.codiceFiscale ? '(' + p.codiceFiscale + ')' : ''}</div>
+        </div>
+        <div style="text-align:right; font-size:11px; color:#64748b;">
+          Aggiornato: ${new Date().toLocaleDateString('it-IT')} ${new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}<br>
+          CareAssist Pro Suite
+        </div>
+      </div>
+
+      ${renderColonna('MATTINA / COLAZIONE', '☀️', '#fef9c3', raggruppate.mattina)}
+      ${renderColonna('PRANZO', '🍽️', '#dcfce7', raggruppate.pranzo)}
+      ${renderColonna('POMERIGGIO', '☕', '#f3e8ff', raggruppate.pomeriggio)}
+      ${renderColonna('SERA / CENA', '🌙', '#e0f2fe', raggruppate.sera)}
+      ${renderColonna('NOTTE', '😴', '#ede9fe', raggruppate.notte)}
+      ${raggruppate.altri.length > 0 ? renderColonna('ALTRI ORARI / AL BISOGNO', '💊', '#f1f5f9', raggruppate.altri) : ''}
+
+      <div style="margin-top:20px; font-size:11px; color:#64748b; border-top:1px solid #e2e8f0; padding-top:6px; display:flex; justify-content:space-between;">
+        <span>Medico curante: ${p.medicoCurante || 'N.D.'}</span>
+        <span>Farmacia di riferimento: ${p.farmaciaDiRiferimento || 'Farmacia MACARIO'}</span>
+        <span>Emergenze: 118</span>
+      </div>
+    </body>
+    </html>
+  `;
+
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+};
+
+window.apriProspettoFarmaciPazienteAttivo = function() {
+  window.stampaFoglioFrigo();
+};
+window.apriProspettoFarmaciScelto = function(val) {
+  window.stampaFoglioFrigo();
+};
+
+
+// ==========================================================================
+// MODALITÀ "ORDINE FISSO & INVENTARIO RAPIDO CASA" (ANTI-SLITTAMENTO RIGHE)
+// Ideale per fare l'inventario delle scatole a tavolo senza che i farmaci saltino via!
+// ==========================================================================
+window._ordinamentoTerapieModalita = localStorage.getItem('careassist_ordinamento_terapie') || 'orario';
+window._ultimoFarmacoModificatoId = null;
+
+function impostaOrdinamentoTerapie(tipo) {
+  window._ordinamentoTerapieModalita = tipo;
+  localStorage.setItem('careassist_ordinamento_terapie', tipo);
+
+  const bOra = document.getElementById('btn-vista-orario');
+  const bFis = document.getElementById('btn-vista-fisso');
+  if (bOra && bFis) {
+    if (tipo === 'orario') {
+      bOra.style.background = '#0284c7'; bOra.style.color = '#fff';
+      bFis.style.background = 'transparent'; bFis.style.color = '#475569';
+      showToast('🕒 Ordinamento Cronologico (per orario di somministrazione)');
+    } else {
+      bFis.style.background = '#0284c7'; bFis.style.color = '#fff';
+      bOra.style.background = 'transparent'; bOra.style.color = '#475569';
+      showToast('🔒 Vista Fissa Attiva: le righe non slittano mai da sotto gli occhi!');
+    }
+  }
+  renderTerapie();
+}
+
+function calcolaSemaforoAutonomia(terapia, scortaVal) {
+  const isPen = (terapia.tipoFormulazione === 'penna' || (terapia.dosaggio || '').toLowerCase().includes('unit') || (terapia.farmaco || '').toLowerCase().includes('penna') || (terapia.farmaco || '').toLowerCase().includes('xultophy'));
+  let giorniAutonomia = 99;
+  
+  if (isPen) {
+    // 1 penna di insulina (es. Xultophy 300 unità) a 16 unità/giorno dura circa 18 giorni
+    const unitaTotali = scortaVal * 300;
+    const doseGiornaliera = 16;
+    giorniAutonomia = Math.floor(unitaTotali / doseGiornaliera);
+  } else {
+    // Calcola consumo compresse/die
+    const dose = (terapia.dosaggio || '').toLowerCase();
+    let cprDie = 1;
+    if (dose.includes('2 cpr') || dose.includes('2 compresse') || dose.includes('due')) cprDie = 2;
+    else if (dose.includes('3 cpr') || dose.includes('3 compresse')) cprDie = 3;
+    else if (dose.includes('½') || dose.includes('1/2') || dose.includes('mezza')) cprDie = 0.5;
+    giorniAutonomia = Math.floor(scortaVal / cprDie);
+  }
+
+  if (giorniAutonomia <= 3) {
+    return { colore: '#ef4444', bg: '#fef2f2', border: '#fca5a5', testo: 'Mancano ' + giorniAutonomia + ' gg (Critico)', giorni: giorniAutonomia, stato: 'critico' };
+  } else if (giorniAutonomia <= 7) {
+    return { colore: '#d97706', bg: '#fffbeb', border: '#fde68a', testo: 'Mancano ' + giorniAutonomia + ' gg (Da ordinare)', giorni: giorniAutonomia, stato: 'allerta' };
+  } else {
+    return { colore: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', testo: giorniAutonomia + ' gg di autonomia', giorni: giorniAutonomia, stato: 'ottimo' };
+  }
+}
+
+window._invRapidoFasciaAttiva = 'tutti';
+
+function filtraInventarioFascia(fascia, btn) {
+  window._invRapidoFasciaAttiva = fascia;
+  const btns = document.querySelectorAll('#inv-rapido-filtri-fasce .inv-filtro-btn');
+  btns.forEach(b => {
+    b.style.background = 'transparent';
+    b.style.color = '#475569';
+  });
+  if (btn) {
+    btn.style.background = '#0284c7';
+    btn.style.color = '#ffffff';
+  }
+  apriModalInventarioRapido();
+}
+
+function apriModalInventarioRapido() {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+
+  const nomeEl = document.getElementById('inv-rapido-paziente-nome');
+  const countEl = document.getElementById('inv-rapido-count-tutti');
+  const listEl = document.getElementById('inv-rapido-body-list');
+  if (nomeEl) nomeEl.textContent = p.nome;
+  if (countEl) countEl.textContent = (p.terapie || []).length;
+
+  // Ordina RIGOROSAMENTE in ordine alfabetico per non far slittare mai le righe
+  let terapie = [...p.terapie].sort((a, b) => (a.farmaco || '').localeCompare(b.farmaco || ''));
+
+  // Filtro per fascia selezionata
+  if (window._invRapidoFasciaAttiva && window._invRapidoFasciaAttiva !== 'tutti') {
+    terapie = terapie.filter(t => {
+      const f = (t.fascia || '').toLowerCase();
+      const ora = (t.ora || '');
+      if (window._invRapidoFasciaAttiva === 'mattina') return f.includes('mattina') || (ora >= '06:00' && ora < '12:00');
+      if (window._invRapidoFasciaAttiva === 'pranzo') return f.includes('pranzo') || (ora >= '12:00' && ora < '15:00');
+      if (window._invRapidoFasciaAttiva === 'pomeriggio') return f.includes('pomeriggio') || (ora >= '15:00' && ora < '19:00');
+      if (window._invRapidoFasciaAttiva === 'sera') return f.includes('sera') || f.includes('notte') || (ora >= '19:00' || ora < '06:00');
+      return true;
+    });
+  }
+
+  if (listEl) {
+    if (terapie.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center; padding:30px; color:#64748b; font-weight:700; font-size:15px;">Nessun farmaco programmato per questa fascia oraria.</div>';
+    } else {
+      listEl.innerHTML = terapie.map((t, idx) => {
+        const isPen = (t.tipoFormulazione === 'penna' || (t.dosaggio || '').toLowerCase().includes('unit') || (t.farmaco || '').toLowerCase().includes('penna') || (t.farmaco || '').toLowerCase().includes('xultophy'));
+        const scortaVal = isPen ? (t.penneScorta || t.scorta || 1) : (t.scorta || 0);
+        const unitaTxt = isPen ? 'penne' : 'pillole';
+        const cprPerPacco = t.cprPerScatola || (isPen ? 5 : 28);
+        const sem = calcolaSemaforoAutonomia(t, scortaVal);
+
+        return `
+          <div class="inv-rapido-row" data-id="${t.id}" style="background:#ffffff; border:2px solid #e2e8f0; border-radius:16px; padding:12px 18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; box-shadow:0 2px 6px rgba(0,0,0,0.03); transition:all 0.15s ease;">
+            
+            <!-- COLONNA 1: SEMAFORO A FARO + FARMACO E DOSAGGIO -->
+            <div style="flex:1; min-width:240px; display:flex; align-items:center; gap:12px;">
+              
+              <!-- SEMAFORO ROTONDO VISTOSO (30px) -->
+              <div class="inv-semaforo-faro" style="width:34px; height:34px; min-width:34px; border-radius:50%; background:${sem.colore}; border:3px solid #ffffff; box-shadow:0 0 10px ${sem.colore}88, inset 0 2px 4px rgba(255,255,255,0.4); display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:15px; font-weight:900;" title="${sem.testo}">
+                ${sem.stato === 'ottimo' ? '✓' : (sem.stato === 'allerta' ? '!' : '⚠')}
+              </div>
+
+              <!-- ICONA FARMACO E DETTAGLI -->
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:22px; background:#f1f5f9; width:42px; height:42px; min-width:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid #cbd5e1;">${isPen ? '💉' : '💊'}</span>
+                <div>
+                  <div style="font-size:16.5px; font-weight:900; color:#0f172a; line-height:1.2;">${t.farmaco}</div>
+                  <div style="font-size:12.5px; color:#475569; font-weight:700; margin-top:2px;">
+                    ${t.principio ? '<span style="color:#0284c7;">' + t.principio + '</span> • ' : ''}${t.dosaggio || ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- COLONNA 2: SELETTORE ORA -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:2px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:5px 10px; min-width:130px;">
+              <span style="font-size:10.5px; font-weight:900; color:#64748b; text-transform:uppercase;">⏰ Orario</span>
+              <input type="time" class="inv-rapido-ora" value="${t.ora || '08:00'}" style="padding:5px 8px; border:2px solid #0284c7; border-radius:8px; font-weight:900; font-size:15px; color:#0f172a; width:100px; text-align:center; background:#ffffff;">
+            </div>
+
+            <!-- COLONNA 3: CONTATORE + BADGE GRANDE SEMAFORO AUTONOMIA -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:5px; background:#ffffff; border:2px solid ${sem.border}; border-radius:14px; padding:6px 14px; min-width:270px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" onclick="modificaContatoreInvRapido(this, -1)" style="width:36px; height:36px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff; font-size:20px; font-weight:900; color:#dc2626; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Togli 1">-</button>
+                
+                <input type="number" class="inv-rapido-scorta" value="${scortaVal}" min="0" oninput="aggiornaSemaforoRigaLive(this)" style="width:65px; text-align:center; font-size:18px; font-weight:900; color:#0f172a; border:2px solid #86efac; border-radius:8px; background:#f0fdf4; padding:3px 0;">
+                
+                <span style="font-size:12.5px; font-weight:800; color:#334155; width:45px;">${unitaTxt}</span>
+                
+                <button type="button" onclick="modificaContatoreInvRapido(this, 1)" style="width:36px; height:36px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff; font-size:20px; font-weight:900; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Aggiungi 1">+</button>
+              </div>
+
+              <!-- BADGE SEMAFORO REAL-TIME AD ALTA VISIBILITÀ -->
+              <div class="inv-semaforo-badge" style="font-size:12px; font-weight:900; color:${sem.colore}; background:${sem.bg}; border:1.5px solid ${sem.border}; padding:4px 12px; border-radius:12px; display:inline-flex; align-items:center; gap:6px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                <span style="font-size:14px;">●</span> <span>${sem.testo}</span>
+              </div>
+            </div>
+
+            <!-- COLONNA 4: PULSANTE +1 SCATOLA -->
+            <div style="display:flex; align-items:center;">
+              <button type="button" onclick="aggiungiScatolaInteraInvRapido(this, ${cprPerPacco})" style="background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:1.5px solid #3b82f6; color:#1d4ed8; font-weight:900; font-size:12.5px; padding:9px 12px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Aggiungi una confezione nuova intera">
+                <span>📦</span> +${cprPerPacco}
+              </button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  const modal = document.getElementById('modal-inventario-rapido');
+  if (modal) modal.style.display = 'flex';
+}
+
+function aggiornaSemaforoRigaLive(input) {
+  const row = input.closest('.inv-rapido-row');
+  if (!row) return;
+  const tid = Number(row.getAttribute('data-id'));
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+  const t = p.terapie.find(item => item.id === tid);
+  if (!t) return;
+
+  const val = parseInt(input.value) || 0;
+  const sem = calcolaSemaforoAutonomia(t, val);
+  
+  // 1. Aggiorna il Faro Circolare a sinistra del nome farmaco
+  const faro = row.querySelector('.inv-semaforo-faro');
+  if (faro) {
+    faro.style.background = sem.colore;
+    faro.style.boxShadow = '0 0 10px ' + sem.colore + '88, inset 0 2px 4px rgba(255,255,255,0.4)';
+    faro.title = sem.testo;
+    faro.innerHTML = (sem.stato === 'ottimo' ? '✓' : (sem.stato === 'allerta' ? '!' : '⚠'));
+  }
+
+  // 2. Aggiorna il Badge sotto il contatore
+  const badge = row.querySelector('.inv-semaforo-badge');
+  if (badge) {
+    badge.style.color = sem.colore;
+    badge.style.background = sem.bg;
+    badge.style.borderColor = sem.border;
+    badge.innerHTML = '<span style="font-size:14px;">●</span> <span>' + sem.testo + '</span>';
+  }
+}
+
+function inviaRichiestaRicetteWhatsApp() {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+
+  const inEsaurimento = [];
+  const rows = document.querySelectorAll('#inv-rapido-body-list .inv-rapido-row');
+
+  p.terapie.forEach(t => {
+    // Leggi scorta attuale
+    const scorta = (t.scorta || t.penneScorta || 0);
+    const sem = calcolaSemaforoAutonomia(t, scorta);
+    if (sem.stato === 'critico' || sem.stato === 'allerta') {
+      inEsaurimento.push('- ' + t.farmaco + ' (rimaste ' + scorta + ', ' + sem.testo + ')');
+    }
+  });
+
+  let testoMsg = '';
+  if (inEsaurimento.length === 0) {
+    testoMsg = 'Buongiorno Dottore, per l\'assistito ' + p.nome + ' verifichiamo la situazione farmaci: al momento le scorte a casa sono regolari.';
+  } else {
+    testoMsg = 'Buongiorno Dottore, per l\'assistito ' + p.nome + ' avremmo bisogno delle seguenti ricette per rinnovo scorta a casa:\n\n' +
+      inEsaurimento.join('\n') + '\n\nGrazie mille per la disponibilità!';
+  }
+
+  const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(testoMsg);
+  window.open(url, '_blank');
+  showToast('📲 Apertura WhatsApp con messaggio prescrizioni pronto!', 'success');
+}
+
+function modificaContatoreInvRapido(btn, delta) {
+  const row = btn.closest('.inv-rapido-row');
+  if (!row) return;
+  const input = row.querySelector('.inv-rapido-scorta');
+  if (input) {
+    let val = parseInt(input.value) || 0;
+    val = Math.max(0, val + delta);
+    input.value = val;
+    aggiornaSemaforoRigaLive(input);
+    row.style.background = '#f0fdf4';
+    row.style.borderColor = '#86efac';
+  }
+}
+
+function aggiungiScatolaInteraInvRapido(btn, cprPacco) {
+  const row = btn.closest('.inv-rapido-row');
+  if (!row) return;
+  const input = row.querySelector('.inv-rapido-scorta');
+  if (input) {
+    let val = parseInt(input.value) || 0;
+    val += (parseInt(cprPacco) || 30);
+    input.value = val;
+    aggiornaSemaforoRigaLive(input);
+    row.style.background = '#eff6ff';
+    row.style.borderColor = '#93c5fd';
+  }
+}
+
+function chiudiModalInventarioRapido() {
+  const modal = document.getElementById('modal-inventario-rapido');
+  if (modal) modal.style.display = 'none';
+}
+
+function salvaTuttoInventarioRapido() {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+
+  const rows = document.querySelectorAll('#inv-rapido-body-list .inv-rapido-row');
+  let modificate = 0;
+
+  rows.forEach(row => {
+    const tid = Number(row.getAttribute('data-id'));
+    const t = p.terapie.find(item => item.id === tid);
+    if (t) {
+      const oraInp = row.querySelector('.inv-rapido-ora');
+      const scortaInp = row.querySelector('.inv-rapido-scorta');
+
+      if (oraInp && oraInp.value) {
+        t.ora = oraInp.value;
+        if (typeof deduciFasciaDaOrario === 'function') {
+          t.fascia = deduciFasciaDaOrario(t.ora);
+        }
+      }
+      if (scortaInp) {
+        const nScorta = parseInt(scortaInp.value) || 0;
+        t.scorta = nScorta;
+        if (t.tipoFormulazione === 'penna') t.penneScorta = nScorta;
+      }
+      modificate++;
+    }
+  });
+
+  saveDb();
+  chiudiModalInventarioRapido();
+  showToast(`🎉 Inventario salvato con successo! Aggiornati ${modificate} farmaci.`, 'success');
+}
+
+function evidenziaAncoraVisivaFarmaco(nomeLow) {
+  try {
+    const rows = document.querySelectorAll('#terapie-table-body tr');
+    for (const r of rows) {
+      if ((r.textContent || '').toLowerCase().includes(nomeLow)) {
+        r.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        r.style.transition = 'all 0.4s ease';
+        r.style.background = 'linear-gradient(135deg, #fef9c3 0%, #fef08a 100%)';
+        r.style.boxShadow = '0 0 15px rgba(234,179,8,0.5)';
+        setTimeout(() => {
+          r.style.background = '';
+          r.style.boxShadow = '';
+        }, 2500);
+        break;
+      }
+    }
+  } catch(e) {}
+}
+
+
+// ==============================================================================
+// MOTORE CLINICO OSPEDALIERO BEDSIDE: 5 REGOLE D'ORO & SAFETY CHECK DOPPIO CONTROLLO
+// ==============================================================================
+let _farmacoInAttesaSafetyCheck = null;
+let _sitoIniezioneScelto = null;
+
+const _SITI_ROTAZIONE_INIEZIONE = [
+  'Addome Sinistro',
+  'Addome Destro',
+  'Coscia Sinistra',
+  'Coscia Destra'
+];
+
+function isFarmacoHighAlertOspedaliero(terapia) {
+  if (!terapia) return false;
+  const f = (terapia.farmaco || '').toLowerCase();
+  const d = (terapia.dosaggio || '').toLowerCase();
+  const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(terapia);
+  
+  // Insuline, anticoagulanti, digitatici, antiaritmici forti
+  if (isPen || f.includes('xultophy') || f.includes('insulina') || f.includes('lantus') || f.includes('novorapid') || f.includes('tresiba')) return true;
+  if (f.includes('coumadin') || f.includes('sintrom') || f.includes('eliquis') || f.includes('xarelto') || f.includes('pradaxa') || f.includes('clexane')) return true;
+  if (f.includes('digossina') || f.includes('congescor') || f.includes('cordarone') || f.includes('amiodarone')) return true;
+  return false;
+}
+
+function suggerisciProssimoSitoIniezione(pazienteId) {
+  const k = 'careassist_ultimo_sito_iniezione_' + pazienteId;
+  const lastIndex = parseInt(localStorage.getItem(k) || '0', 10);
+  const nextIndex = (lastIndex + 1) % _SITI_ROTAZIONE_INIEZIONE.length;
+  return {
+    sitoConsigliato: _SITI_ROTAZIONE_INIEZIONE[nextIndex],
+    sitoPrecedente: _SITI_ROTAZIONE_INIEZIONE[lastIndex],
+    nextIndex: nextIndex
+  };
+}
+
+function selezionaSitoIniezione(sito, btn) {
+  _sitoIniezioneScelto = sito;
+  const btns = document.querySelectorAll('#safety-check-quadranti-grid .safety-sito-btn');
+  btns.forEach(b => {
+    b.style.borderColor = '#cbd5e1';
+    b.style.background = '#ffffff';
+  });
+  if (btn) {
+    btn.style.borderColor = '#0284c7';
+    btn.style.background = '#e0f2fe';
+  }
+}
+
+function apriModalSafetyCheckOspedaliero(terapia, paziente, checkOrario) {
+  _farmacoInAttesaSafetyCheck = terapia;
+  _sitoIniezioneScelto = null;
+
+  const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(terapia);
+  const isHighAlert = isFarmacoHighAlertOspedaliero(terapia);
+
+  // Popola campi
+  const catEl = document.getElementById('safety-check-categoria');
+  const oraEl = document.getElementById('safety-check-orario');
+  const nomeEl = document.getElementById('safety-check-farmaco-nome');
+  const doseEl = document.getElementById('safety-check-dosaggio');
+  const pazEl = document.getElementById('safety-check-paziente-nome');
+  
+  if (catEl) catEl.textContent = isPen ? 'INIEZIONE SOTTOCUTE CRITICA' : (isHighAlert ? 'FARMACO HIGH-ALERT OSPEDALIERO' : 'TERAPIA PROGRAMMATA');
+  if (oraEl) oraEl.textContent = 'Orario: ' + (terapia.ora || 'Orario standard');
+  if (nomeEl) nomeEl.textContent = terapia.farmaco;
+  if (doseEl) doseEl.textContent = (terapia.dosaggio || '1 dose standard') + (terapia.modo ? ' • ' + terapia.modo : '');
+  if (pazEl) pazEl.textContent = paziente ? paziente.nome : 'Rosa Annunziata Cavalcante';
+
+  // Finestra Oraria: avviso se anticipo o ritardo
+  const alertOrarioEl = document.getElementById('safety-check-alert-orario');
+  const alertOrarioTxt = document.getElementById('safety-check-alert-orario-testo');
+  if (alertOrarioEl && alertOrarioTxt) {
+    if (checkOrario && !checkOrario.consentito) {
+      alertOrarioEl.style.display = 'flex';
+      alertOrarioTxt.innerHTML = '<b>Somministrazione Anticipata:</b> Il farmaco è pianificato per le <b>' + terapia.ora + '</b>. Conferma se la situazione clinica richiede l\'anticipo.';
+    } else if (checkOrario && checkOrario.inRitardo) {
+      alertOrarioEl.style.display = 'flex';
+      alertOrarioTxt.innerHTML = '<b>Somministrazione Oltre Finestra:</b> Previsto per le <b>' + terapia.ora + '</b> (in ritardo di circa ' + checkOrario.minutiRitardo + ' min). Verifica se il paziente ha già mangiato.';
+    } else {
+      alertOrarioEl.style.display = 'none';
+    }
+  }
+
+  // Sezione Doppio Controllo Dosaggio
+  const sezDose = document.getElementById('safety-check-sezione-dosaggio');
+  const chkDose = document.getElementById('safety-check-chk-dosaggio');
+  const lblDose = document.getElementById('safety-check-label-dosaggio');
+  if (chkDose) chkDose.checked = false;
+  if (lblDose) {
+    if (isPen) {
+      lblDose.textContent = 'Confermo di aver impostato esattamente ' + (terapia.dosaggio || '16 Unità') + ' sulla ghiera della penna';
+    } else {
+      lblDose.textContent = 'Confermo corrispondenza visiva blister: ' + (terapia.dosaggio || '1 compressa intera');
+    }
+  }
+
+  // Sezione Rotazione Siti (attiva solo per iniezioni / penne)
+  const sezSiti = document.getElementById('safety-check-sezione-siti');
+  const avvisoSito = document.getElementById('safety-check-sito-raccomandato-avviso');
+  if (sezSiti) {
+    if (isPen) {
+      sezSiti.style.display = 'block';
+      const rotaz = suggerisciProssimoSitoIniezione(paziente ? paziente.id : 1);
+      _sitoIniezioneScelto = rotaz.sitoConsigliato;
+      if (avvisoSito) {
+        avvisoSito.innerHTML = '🌟 <b>Sito consigliato oggi per rotazione:</b> ' + rotaz.sitoConsigliato + ' (ultimo registrato: ' + rotaz.sitoPrecedente + ')';
+      }
+      // Evidenzia pulsante sito consigliato
+      setTimeout(() => {
+        const btns = document.querySelectorAll('#safety-check-quadranti-grid .safety-sito-btn');
+        btns.forEach(b => {
+          if (b.getAttribute('data-sito') === rotaz.sitoConsigliato) {
+            b.style.borderColor = '#16a34a';
+            b.style.background = '#f0fdf4';
+          } else {
+            b.style.borderColor = '#cbd5e1';
+            b.style.background = '#ffffff';
+          }
+        });
+      }, 50);
+    } else {
+      sezSiti.style.display = 'none';
+    }
+  }
+
+  const modal = document.getElementById('modal-safety-check-ospedaliero');
+  if (modal) modal.style.display = 'flex';
+}
+
+function chiudiModalSafetyCheckOspedaliero() {
+  const modal = document.getElementById('modal-safety-check-ospedaliero');
+  if (modal) modal.style.display = 'none';
+  _farmacoInAttesaSafetyCheck = null;
+  _sitoIniezioneScelto = null;
+}
+
+function avviaScannerFotoVerificaPillola() {
+  if (_farmacoInAttesaSafetyCheck) {
+    const nome = _farmacoInAttesaSafetyCheck.farmaco;
+    chiudiModalSafetyCheckOspedaliero();
+    if (typeof apriScannerFotoFarmaco === 'function') {
+      apriScannerFotoFarmaco('camera', 'modale');
+      showToast('Inquadra la pillola o la scatola per verifica visiva AI');
+    }
+  }
+}
+
+async function eseguiConfermaSafetyCheckOspedaliero() {
+  if (!_farmacoInAttesaSafetyCheck) return;
+  const t = _farmacoInAttesaSafetyCheck;
+  const p = getActivePaziente();
+
+  const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+  const chkDose = document.getElementById('safety-check-chk-dosaggio');
+  
+  if (chkDose && !chkDose.checked) {
+    // EFFETTO WOW CLINICO: evidenzia la casella con effetto rimbalzo, luce pulsante e suono morbido
+    const sez = document.getElementById('safety-check-sezione-dosaggio');
+    if (sez) {
+      sez.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      sez.style.transition = 'all 0.3s ease';
+      sez.style.borderColor = '#dc2626';
+      sez.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.45)';
+      sez.style.background = '#fef2f2';
+      
+      // Crea o aggiorna avviso interno elegante
+      let avv = document.getElementById('safety-check-warning-spunta');
+      if (!avv) {
+        avv = document.createElement('div');
+        avv.id = 'safety-check-warning-spunta';
+        avv.style.cssText = 'margin-top:10px; font-size:13px; font-weight:900; color:#b91c1c; display:flex; align-items:center; gap:6px; animation:shakeX 0.4s ease-in-out;';
+        sez.appendChild(avv);
+      }
+      avv.innerHTML = '<span>⚠️</span> Spunta questa casella per confermare il dosaggio e procedere in sicurezza!';
+      
+      setTimeout(() => {
+        sez.style.boxShadow = '0 0 10px rgba(249, 115, 22, 0.3)';
+      }, 1500);
+    }
+    chkDose.focus();
+    if (typeof showToast === 'function') {
+      showToast('⚠️ Spunta la casella di verifica per convalidare la dose!', 'warning');
+    }
+    return;
+  }
+
+  // Salva l'avvenuto sito di rotazione se penna
+  if (isPen && _sitoIniezioneScelto && p) {
+    const rot = suggerisciProssimoSitoIniezione(p.id);
+    localStorage.setItem('careassist_ultimo_sito_iniezione_' + p.id, rot.nextIndex);
+    t.ultimoSitoIniezione = _sitoIniezioneScelto;
+  }
+
+  // Esegui la registrazione vera e propria
+  chiudiModalSafetyCheckOspedaliero();
+  await applicaSomministrazioneClinicaEffettiva(t.id, _sitoIniezioneScelto);
+}
+
+
+async function gestisciAnnullaSomministrazione(id) {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+  const t = p.terapie.find(item => item.id === id);
+  if (!t) return;
+
+  const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+  const icona = isPen ? '💉' : '💊';
+  const titolo = 'Ripristina Terapia: ' + t.farmaco;
+  const spiegazione = 'Vuoi annullare la registrazione di avvenuta somministrazione per "' + t.farmaco + '" e riportare la dose allo stato DA ASSUMERE?\n\nLa quota verrà automaticamente riaccreditata nella scorta disponibile.';
+
+  let confermato = false;
+  if (typeof customConfirm === 'function') {
+    confermato = await customConfirm(titolo, spiegazione, icona, '↩️ Ripristina come Da Prendere');
+  } else {
+    confermato = confirm('Vuoi annullare la somministrazione di ' + t.farmaco + '?');
+  }
+
+  if (confermato) {
+    t.fattoOggi = false;
+    delete t.dataUltimaSomministrazione;
+    delete t.orarioSomministrazione;
+    delete t.ultimoOperatore;
+
+    // Ripristina quota scorta
+    if (isPen) {
+      var dPen = (typeof calcolaDatiPennaIniettabile === 'function') ? calcolaDatiPennaIniettabile(t) : { giorniPerPenna: 18.75 };
+      var frazPenna = 1 / dPen.giorniPerPenna;
+      t.penneScorta = Math.round(((t.penneScorta || 1) + frazPenna) * 100) / 100;
+      t.scorta = t.penneScorta;
+    } else {
+      var q = parseFloat(t.quantitaQuota) || (typeof calcolaConsumoGiornalieroFarmaco === 'function' ? calcolaConsumoGiornalieroFarmaco(t) : 1) || 1;
+      t.scorta = Math.round(((t.scorta || 0) + q) * 100) / 100;
+    }
+
+    if (typeof saveDb === 'function') saveDb();
+    if (typeof renderAll === 'function') renderAll();
+    if (typeof showToast === 'function') showToast('↩️ Terapia ripristinata con successo: ' + t.farmaco, 'success');
+  }
+}
+window.gestisciAnnullaSomministrazione = gestisciAnnullaSomministrazione;
+
+
+// ==============================================================================
+// GESTIONE MENU STRUMENTI A TENDINA STILE WHATSAPP (3 PUNTINI ⋮ CON EFFETTO WOW)
+// ==============================================================================
+function toggleMenuStrumentiTerapie(event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  const dropdown = document.getElementById('careassist-toolbar-dropdown');
+  const btn = document.getElementById('btn-toolbar-tre-puntini');
+  if (!dropdown) return;
+
+  const isVisible = dropdown.style.display === 'block';
+  if (isVisible) {
+    chiudiMenuStrumenti();
+  } else {
+    dropdown.style.display = 'block';
+    if (btn) {
+      btn.style.background = '#e2e8f0';
+      btn.style.borderColor = '#0284c7';
+    }
+  }
+}
+window.toggleMenuStrumentiTerapie = toggleMenuStrumentiTerapie;
+
+function chiudiMenuStrumenti() {
+  const dropdown = document.getElementById('careassist-toolbar-dropdown');
+  const btn = document.getElementById('btn-toolbar-tre-puntini');
+  if (dropdown) dropdown.style.display = 'none';
+  if (btn) {
+    btn.style.background = '#ffffff';
+    btn.style.borderColor = '#cbd5e1';
+  }
+}
+window.chiudiMenuStrumenti = chiudiMenuStrumenti;
+
+// Chiudi la tendina automaticamente cliccando in qualsiasi altro punto della schermata
+document.addEventListener('click', function(e) {
+  const container = document.getElementById('careassist-toolbar-menu-container');
+  if (container && !container.contains(e.target)) {
+    chiudiMenuStrumenti();
+  }
+});
+
+
+function toggleMenuOSSTop(event) {
+  if (event) { event.stopPropagation(); event.preventDefault(); }
+  if (window.innerWidth <= 768) {
+    const bs = document.getElementById('modal-menu-oss-bottomsheet');
+    if (bs) {
+      bs.style.display = (bs.style.display === 'flex' ? 'none' : 'flex');
+      return;
+    }
+  }
+  const d = document.getElementById('dropdown-menu-oss-top');
+  if (!d) return;
+  const isOpening = d.style.display !== 'block';
+  d.style.display = isOpening ? 'block' : 'none';
+  if (isOpening) {
+    d.style.left = 'auto';
+    d.style.right = '0px';
+  }
+}
+window.toggleMenuOSSTop = toggleMenuOSSTop;
+
+function chiudiMenuOSSTop() {
+  const d = document.getElementById('dropdown-menu-oss-top');
+  if (d) d.style.display = 'none';
+  const bs = document.getElementById('modal-menu-oss-bottomsheet');
+  if (bs) bs.style.display = 'none';
+}
+window.chiudiMenuOSSTop = chiudiMenuOSSTop;
+
+function toggleMenuHeroMore(event) {
+  if (event) { event.stopPropagation(); event.preventDefault(); }
+  const d = document.getElementById('dropdown-menu-hero-more');
+  if (d) d.style.display = (d.style.display === 'block' ? 'none' : 'block');
+}
+window.toggleMenuHeroMore = toggleMenuHeroMore;
+
+function chiudiMenuHeroMore() {
+  const d = document.getElementById('dropdown-menu-hero-more');
+  if (d) d.style.display = 'none';
+}
+window.chiudiMenuHeroMore = chiudiMenuHeroMore;
+
+document.addEventListener('click', function(e) {
+  const c1 = document.getElementById('menu-oss-top-container');
+  if (c1 && !c1.contains(e.target)) chiudiMenuOSSTop();
+  const c2 = document.getElementById('menu-hero-more-container');
+  if (c2 && !c2.contains(e.target)) chiudiMenuHeroMore();
+});

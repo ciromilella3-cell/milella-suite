@@ -31,6 +31,18 @@ function safeWriteAtomic(filePath, data) {
     }
 }
 
+// Helper per lettura sicura JSON (rimuove automaticamente BOM UTF-8 se presente)
+function safeReadJsonSync(filePath, defaultValue) {
+    try {
+        if (!fs.existsSync(filePath)) return defaultValue;
+        let c = fs.readFileSync(filePath, 'utf8');
+        if (c && c.charCodeAt(0) === 0xFEFF) c = c.slice(1);
+        return JSON.parse(c || '{}');
+    } catch(e) {
+        return defaultValue;
+    }
+}
+
 
 // ==============================================================================
 // CLOUD DATABASE LAYER (MONGODB ATLAS) CON FALLBACK LOCALE TRASPARENTE
@@ -1392,10 +1404,7 @@ const suitePazientiDbFile = path.join(__dirname, 'data', 'suite_pazienti.json');
 function sincronizzaPazientiInCareAssist(caData) {
     if (!caData || !Array.isArray(caData.pazienti)) return;
     try {
-        let suiteDb = { pazienti: [] };
-        if (fs.existsSync(suitePazientiDbFile)) {
-            suiteDb = JSON.parse(fs.readFileSync(suitePazientiDbFile, 'utf8') || '{"pazienti":[]}');
-        }
+        let suiteDb = safeReadJsonSync(suitePazientiDbFile, { pazienti: [] });
         if (!Array.isArray(suiteDb.pazienti)) suiteDb.pazienti = [];
 
         // Mappa per unire e arricchire senza duplicati
@@ -1436,10 +1445,7 @@ function sincronizzaPazientiInCareAssist(caData) {
 // ============================================================================
 app.get(['/api/suite/pazienti', '/careassist/api/suite/pazienti'], async (req, res) => {
     try {
-        let suiteDb = { pazienti: [] };
-        if (fs.existsSync(suitePazientiDbFile)) {
-            suiteDb = JSON.parse(fs.readFileSync(suitePazientiDbFile, 'utf8') || '{"pazienti":[]}');
-        }
+        let suiteDb = safeReadJsonSync(suitePazientiDbFile, { pazienti: [] });
         res.json({ success: true, count: (suiteDb.pazienti || []).length, pazienti: suiteDb.pazienti || [] });
     } catch(e) {
         res.status(500).json({ error: e.message });
@@ -1451,10 +1457,7 @@ app.post(['/api/suite/pazienti', '/careassist/api/suite/pazienti'], async (req, 
         const nuovoP = req.body;
         if (!nuovoP || !nuovoP.nome) return res.status(400).json({ error: 'Nome obbligatorio' });
 
-        let suiteDb = { pazienti: [] };
-        if (fs.existsSync(suitePazientiDbFile)) {
-            suiteDb = JSON.parse(fs.readFileSync(suitePazientiDbFile, 'utf8') || '{"pazienti":[]}');
-        }
+        let suiteDb = safeReadJsonSync(suitePazientiDbFile, { pazienti: [] });
         if (!Array.isArray(suiteDb.pazienti)) suiteDb.pazienti = [];
 
         const k = nuovoP.nome.trim().toLowerCase();
@@ -1832,9 +1835,8 @@ app.get(['/api/suite/anagrafe-condivisa', '/careassist/api/suite/anagrafe-condiv
             }
 
             // Unisci con suite_pazienti.json (Master Suite)
-            if (fs.existsSync(suitePazientiDbFile)) {
-                const sDb = JSON.parse(fs.readFileSync(suitePazientiDbFile, 'utf8') || '{"pazienti":[]}');
-                if (Array.isArray(sDb.pazienti)) {
+            const sDb = safeReadJsonSync(suitePazientiDbFile, { pazienti: [] });
+            if (Array.isArray(sDb.pazienti)) {
                     sDb.pazienti.forEach(p => {
                         if (p && p.nome) {
                             const k = p.nome.trim().toLowerCase();

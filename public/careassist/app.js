@@ -1905,19 +1905,19 @@ function sincronizzaDbDalServer(callback) {
           }
         });
 
-        // Caso 1: Lo Smartphone o PC locale ha modifiche (anche con orario clock disallineato)
-        if (isPendingSync) {
-          console.log('Rilevate modifiche locali sullo Smartphone in attesa di sincronizzazione. Salvataggio prioritario sul Cloud...');
+        // Caso 1: Lo Smartphone o PC locale ha modifiche più recenti fatte offline
+        if (isPendingSync && localTime > serverTime) {
+          console.log('Rilevate modifiche offline sul dispositivo più recenti del server. Invio al Cloud...');
           if (addedFromServer) {
             localStorage.setItem(DB_KEY, JSON.stringify(AppData));
             renderAll();
           }
           inviaModificheAlServer(function () {
-            showSyncToast('Cloud aggiornato con le modifiche dello smartphone!', true);
+            showSyncToast('Cloud aggiornato con le ultime modifiche!', true);
           });
         }
-        // Caso 2: Il Server Cloud ha dati più recenti e non ci sono modifiche locali in sospeso
-        else if (!isPendingSync && (serverTime > localTime || addedFromServer)) {
+        // Caso 2: Il Server Cloud ha dati più recenti o profili aggiuntivi (es. smartphone stamattina)
+        else if (serverTime > localTime || addedFromServer) {
           console.log('Rilevate modifiche più recenti sul Cloud. Aggiornamento interfaccia...');
           var prevActiveId = AppData.activePazienteId;
           AppData = serverData;
