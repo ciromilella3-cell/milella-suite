@@ -560,7 +560,7 @@ function impostaValoreSelettoreData(prefix, dataStr) {
   const selAnno = document.getElementById(`${prefix}-paz-nascita-anno`);
   const inputNativo = document.getElementById(`${prefix}-paz-nascita`);
 
-  let g = '18', m = '04', a = '1935';
+  let g = '06', m = '01', a = '1935';
   if (dataStr && typeof dataStr === 'string' && dataStr.trim() !== '') {
     if (dataStr.includes('-')) {
       const parts = dataStr.trim().split('-');
@@ -713,7 +713,7 @@ function getDettagliAvatarPaziente(p) {
 
 // Inizializzazione dati per ALDO con anagrafica reale e farmaci
 function getPazienteAldoInit() {
-  const aldo = createPazienteTemplate('paz_aldo', 'Aldo Zamparino', '1935-04-18', 'Paziente allettato 91 anni. Terapia cardiologica, neurologica e urologica con scarico pressorio q2h.');
+  const aldo = createPazienteTemplate('paz_aldo', 'Aldo Zamparino', '1935-01-06', 'Paziente allettato 91 anni. Terapia cardiologica, neurologica e urologica con scarico pressorio q2h.');
   aldo.indirizzo = 'Via Roma, 10 - Bari';
   aldo.telefonoFisso = '080 561 57 14';
   aldo.cellulare = '338 000 00 01';
@@ -1931,7 +1931,7 @@ function sincronizzaDbDalServer(callback) {
     var reconcileData = function (serverData) {
       if (serverData && serverData.pazienti) {
         serverData.pazienti.forEach(function (sp) {
-          if (sp.id === 'paz_aldo' || (sp.nome && (sp.nome === 'Aldo Z.' || sp.nome.startsWith('Aldo Z')))) sp.nome = 'Aldo Zamparino';
+          if (sp.id === 'paz_aldo' || (sp.nome && (sp.nome === 'Aldo Z.' || sp.nome.startsWith('Aldo Z')))) { sp.nome = 'Aldo Zamparino'; sp.dataNascita = '1935-01-06'; }
           if (sp.id === 'paz_angela' || (sp.nome && (sp.nome === 'Angela M.' || sp.nome.startsWith('Angela M')))) sp.nome = 'Angela Mazzicone';
           if (sp.id === 'paz_rosa' || (sp.nome && (sp.nome === 'Rosa C.' || sp.nome.startsWith('Rosa C')))) sp.nome = 'Rosa Annunziata Cavalcante';
         });
@@ -4018,7 +4018,7 @@ function apriModificaAnagrafica() {
   cambiaTabAnagrafica('paziente');
 
   document.getElementById('edit-paz-nome').value = p.nome || '';
-  popolaSelettoreDataItaliano('edit', p.dataNascita || '1935-04-18');
+  popolaSelettoreDataItaliano('edit', p.dataNascita || '1935-01-06');
   document.getElementById('edit-paz-eta').value = `${calcolaAnniDaData(p.dataNascita)} anni`;
   document.getElementById('edit-paz-indirizzo').value = p.indirizzo || '';
   const defaultCaregiverNome = (p.id === 'paz_rosa' && (!p.moglieNome || p.moglieNome.trim() === ''))

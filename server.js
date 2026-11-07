@@ -1413,7 +1413,7 @@ function sincronizzaPazientiInCareAssist(caData) {
         // 1. Inserisci i pazienti della suite come base
         suiteDb.pazienti.forEach(p => {
             if (p && p.id) {
-                if (p.id === 'paz_aldo') p.nome = 'Aldo Zamparino';
+                if (p.id === 'paz_aldo') { p.nome = 'Aldo Zamparino'; p.dataNascita = '1935-01-06'; }
                 if (p.id === 'paz_angela') p.nome = 'Angela Mazzicone';
                 if (p.id === 'paz_rosa') p.nome = 'Rosa Annunziata Cavalcante';
                 if (p.id === 'paz_mariacarmela') p.nome = 'Maria Carmela Stoppelli';
@@ -1425,7 +1425,7 @@ function sincronizzaPazientiInCareAssist(caData) {
         // 2. Arricchisci e sovrascrivi con i dati completi di CareAssist
         caData.pazienti.forEach(p => {
             if (p && p.id) {
-                if (p.id === 'paz_aldo') p.nome = 'Aldo Zamparino';
+                if (p.id === 'paz_aldo') { p.nome = 'Aldo Zamparino'; p.dataNascita = '1935-01-06'; }
                 if (p.id === 'paz_angela') p.nome = 'Angela Mazzicone';
                 if (p.id === 'paz_rosa') p.nome = 'Rosa Annunziata Cavalcante';
                 if (p.id === 'paz_mariacarmela') p.nome = 'Maria Carmela Stoppelli';
@@ -1512,7 +1512,14 @@ app.get('/api/get-db', async (req, res) => {
         if (data && typeof data === 'object') {
             sincronizzaPazientiInCareAssist(data);
         }
-        res.json(data);
+                // Forza data di nascita ufficiale per Aldo Zamparino (06/01/1935)
+        (data.pazienti || []).forEach(p => {
+            if (p.id === 'paz_aldo' || (p.nome && p.nome.toLowerCase().includes('aldo'))) {
+                p.dataNascita = '1935-01-06';
+                p.nome = 'Aldo Zamparino';
+            }
+        });
+res.json(data);
     } catch(e) {
         res.status(500).json({ error: e.message });
     }
