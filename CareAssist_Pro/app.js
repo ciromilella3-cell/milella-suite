@@ -2134,6 +2134,156 @@ function forzaSincronizzazioneCloudManuale() {
   });
 }
 
+// ==========================================================================
+// MOTORE CLINICO AUTOMATICO: DEDUZIONE PATOLOGIE & DIAGNOSI DA FARMACI (AI)
+// ==========================================================================
+window.deduciDiagnosiClinicheDaFarmaci = function (paziente, mostraToast) {
+  if (!paziente) return [];
+  const terapie = paziente.terapie || [];
+  if (terapie.length === 0) {
+    if (mostraToast && typeof showToast === 'function') {
+      showToast('Nessun farmaco caricato per dedurre le patologie.', 'warning');
+    }
+    return paziente.patologie || [];
+  }
+
+  const diagnosiSet = new Set();
+
+  terapie.forEach(t => {
+    const testo = [
+      t.farmaco || '',
+      t.nome || '',
+      t.nomeFarmaco || '',
+      t.principio || '',
+      t.principioAttivo || '',
+      t.indicazione || '',
+      t.modo || '',
+      t.note || ''
+    ].join(' ').toLowerCase();
+
+    // 1. DIABETE MELLITO
+    if (testo.match(/\b(insulina|xultophy|diamicron|gliclazide|metformina|forxiga|dapagliflozin|jardiance|empagliflozin|januvia|sitagliptin|victoza|liraglutide|ozempic|semaglutide|rybelsus|trulicity|dulaglutide|synjardy|vokanamet|pioglitazone|actos)\b/)) {
+      if (testo.includes('insulina') || testo.includes('xultophy')) {
+        diagnosiSet.add('Diabete mellito tipo 2 in duplice terapia (insulinica ed orale)');
+      } else {
+        diagnosiSet.add('Diabete mellito tipo 2 in terapia ipoglicemizzante orale');
+      }
+    }
+
+    // 2. IPERTENSIONE ARTERIOSA / CARDIOPATIA IPERTENSIVA
+    if (testo.match(/\b(ramipril|triatec|enalapril|enapren|lisinopril|zestril|losartan|cozaar|valsartan|tareg|olmesartan|olmetec|irbesartan|aprovel|telmisartan|micardis|amlodipina|norvasc|felodipina|lercanidipina|zavedos|congescor|bisoprololo|cardicor|nebivololo|lobivon|carvedilolo|dilatrend|atenololo|tenormin|diltiazem|verapamil|isoptin)\b/)) {
+      diagnosiSet.add('Cardiopatia ipertensiva / Ipertensione arteriosa sistemica');
+    }
+
+    // 3. SCOMPENSO CARDIACO CRONICO / EDEMI
+    if (testo.match(/\b(lasix|furosemide|torasemide|diurix|spironolattone|aldactone|eplerenone|inspra|kanrenol|diuretico)\b/)) {
+      diagnosiSet.add('Cardiopatia con scompenso cardiaco cronico / edemi periferici');
+    }
+
+    // 4. PREVENZIONE TROMBOEMBOLICA / ANTIAGGREGANTI & ANTICOAGULANTI
+    if (testo.match(/\b(clopidogrel|averelix|plavix|cardioaspirina|cardirene|aspirinetta|ticagrelor|brilique|prasugrel|efient|eliquis|apixaban|xarelto|rivaroxaban|lixiana|edoxaban|pradaxa|dabigatran|coumadin|warfarin|sintrom|acencumarolo|eparina|clexane|seleparina)\b/)) {
+      diagnosiSet.add('Prevenzione secondaria eventi aterotrombotici e cardio-cerebrovascolari');
+    }
+
+    // 5. DISLIPIDEMIA / IPERCOLESTEROLEMIA
+    if (testo.match(/\b(atorvastatina|torvast|totalip|simvastatina|sivastin|rosuvastatina|crestor|ezetimibe|zetia|inegy|esapent|omega 3|pravastatina|aplastin|seletin|fenofibrato|fulcro)\b/)) {
+      diagnosiSet.add('Dislipidemia / Ipercolesterolemia primaria e mista');
+    }
+
+    // 6. MORBO DI PARKINSON / SINDROME EXTRAPIRAMIDALE
+    if (testo.match(/\b(levodopa|carbidopa|sinemet|madopar|benserazide|pramipexolo|mirapexin|ropinirolo|requip|rotigotina|neupro|rasagilina|azilect|safinamide|xadago|entacapone|comtan|stalevo)\b/)) {
+      diagnosiSet.add('Morbo di Parkinson / Sindrome extrapiramidale');
+    }
+
+    // 7. IPERURICEMIA / GOTTA
+    if (testo.match(/\b(febuxostat|adenuric|allopurinolo|zyloric|colchicina)\b/)) {
+      diagnosiSet.add('Iperuricemia cronica / Artrite gottosa');
+    }
+
+    // 8. OSTEOARTROSI / DOLORE CRONICO
+    if (testo.match(/\b(etoricoxib|arcoxia|celecoxib|celebrex|brufen|ibuprofene|ketoprofene|oki|diclofenac|voltaren|paracetamolo|tachipirina|co-efferalgan|tramadolo|contramal|depalgos|palexia|tapentadolo|ossicodone|targin)\b/)) {
+      diagnosiSet.add('Osteoartrosi diffusa con sindrome dolorosa cronica');
+    }
+
+    // 9. GASTROPROTEZIONE / MALATTIA DA REFLUSSO
+    if (testo.match(/\b(pantoprazolo|pantorc|peptazol|omeprazolo|antratec|lansoprazolo|lansox|esomeprazolo|lucen|nexium|rabeprazolo|pariet|ranitidina|gaviscon|magaldrato|riopan)\b/)) {
+      diagnosiSet.add('Gastroprotezione / Malattia da reflusso gastroesofageo (MRGE) o gastropatia');
+    }
+
+    // 10. IPOVITAMINOSI D / OSTEOPOROSI
+    if (testo.match(/\b(colecalciferolo|vitamina d|dibase|fedivelle|annister|xarenyl|alendronato|fosamax|risedronato|actonel|denosumab|prolia)\b/)) {
+      diagnosiSet.add('Ipovitaminosi D / Osteopenia - Osteoporosi senile');
+    }
+
+    // 11. IPERTROFIA PROSTATICA BENIGNA (IPB)
+    if (testo.match(/\b(silodosina|silodyx|tamsulosina|omnic|pradif|dutasteride|avodart|finasteride|proscar|alfuzosina|xatral|serenoa|permixon)\b/)) {
+      diagnosiSet.add('Ipertrofia prostatica benigna (IPB) con disturbi minzionali');
+    }
+
+    // 12. IPOTIROIDISMO
+    if (testo.match(/\b(levotiroxina|eutirox|tirosint|synthroid)\b/)) {
+      diagnosiSet.add('Ipotiroidismo primitivo in terapia ormonale sostitutiva');
+    }
+
+    // 13. DISTURBO DEL SONNO / STATO D'ANSIA / MODULAZIONE COMPORTAMENTALE
+    if (testo.match(/\b(quetiapina|seroquel|olanzapina|zyprexa|risperidone|risperdal|delorazepam|en|lorazepam|tavor|alprazolam|xanax|diazepam|valium|zolpidem|stilnox|sertralina|zoloft|citalopram|elopram|escitalopram|cipralex|donepezil|aricept|memantina|ebixa)\b/)) {
+      diagnosiSet.add('Disturbo del sonno e dell\'adattamento / Modulazione dell\'umore e del comportamento');
+    }
+
+    // 14. PATOLOGIA NEUROLOGICA / EPILESSIA
+    if (testo.match(/\b(lacosamide|vimpat|levetiracetam|keppra|acido valproico|depakin|carbamazepina|tegretol|oxcarbazepina|trileptal|gabapentin|neurontin|pregabalin|lyrica)\b/)) {
+      diagnosiSet.add('Quadro neurologico cronico / Profilassi anticomiziale o dolore neuropatico');
+    }
+
+    // 15. BPCO / ASMA
+    if (testo.match(/\b(salbutamolo|ventolin|foster|formoterolo|beclometasone|spiriva|tiotropio|breztri|trelegy|anoro|inuvair)\b/)) {
+      diagnosiSet.add('Broncopneumopatia cronica ostruttiva (BPCO) / Asma bronchiale');
+    }
+  });
+
+  // Se allettato, aggiungi il rischio piaghe se non presente
+  if (paziente.allettato) {
+    diagnosiSet.add('Paziente allettato a rischio lesioni da pressione (Rotazione posturale q2h)');
+  }
+
+  const elencoDiagnosi = Array.from(diagnosiSet);
+
+  if (elencoDiagnosi.length === 0 && terapie.length > 0) {
+    elencoDiagnosi.push('Trattamento polifarmacologico domiciliare in monitoraggio');
+  }
+
+  return elencoDiagnosi;
+};
+
+window.applicaDiagnosiAutomaticheDaFarmaci = function (pazienteId) {
+  let p = null;
+  if (pazienteId && AppData && Array.isArray(AppData.pazienti)) {
+    p = AppData.pazienti.find(x => x.id === pazienteId);
+  }
+  if (!p && typeof getActivePaziente === 'function') {
+    p = getActivePaziente();
+  }
+  if (!p) {
+    if (typeof showToast === 'function') showToast('Nessun assistito selezionato.', 'error');
+    return;
+  }
+
+  const diagnosi = window.deduciDiagnosiClinicheDaFarmaci(p, true);
+  if (diagnosi && diagnosi.length > 0) {
+    p.patologie = diagnosi;
+    p.diagnosi = diagnosi.join(' • ');
+
+    const txtEdit = document.getElementById('edit-paz-patologie');
+    if (txtEdit) txtEdit.value = diagnosi.join('\n');
+
+    if (typeof saveDb === 'function') saveDb();
+    if (typeof showToast === 'function') {
+      showToast(`✨ Diagnosi generate con successo per ${p.nome} (${diagnosi.length} patologie rilevate dai farmaci)!`, 'success');
+    }
+    if (typeof renderAll === 'function') renderAll();
+  }
+};
+
 function deduplicatePazientiMaster(list) {
   if (!Array.isArray(list)) return [];
   var seen = new Set();
@@ -2145,6 +2295,25 @@ function deduplicatePazientiMaster(list) {
       if (p.id === 'paz_angela') p.nome = 'Angela Mazzicone';
       if (p.id === 'paz_rosa') p.nome = 'Rosa Annunziata Cavalcante';
       if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+
+      // Controllo genere e sesso
+      if (p.nome && (p.nome.toLowerCase().includes('gabriele') || p.nome.toLowerCase().includes('francesco')) && !p.sesso) {
+        p.sesso = 'M';
+      }
+      if (!p.sesso) {
+        p.sesso = (typeof getGenerePaziente === 'function') ? getGenerePaziente(p) : 'M';
+      }
+
+      // Se il paziente ha farmaci caricati ma non ha patologie formalizzate, deducile automaticamente
+      if ((!p.patologie || p.patologie.length === 0) && Array.isArray(p.terapie) && p.terapie.length > 0) {
+        if (typeof deduciDiagnosiClinicheDaFarmaci === 'function') {
+          p.patologie = deduciDiagnosiClinicheDaFarmaci(p, false);
+          if (!p.diagnosi && p.patologie && p.patologie.length > 0) {
+            p.diagnosi = p.patologie.join(' • ');
+          }
+        }
+      }
+
       res.push(p);
     }
   });
@@ -2752,19 +2921,47 @@ function renderPazientiSelector() {
 
       patologieHtml = `
         <div class="patologie-container" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:8px;">
-          <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+          <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
             <span style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.3px;">
               Diagnosi & Quadro Clinico (${totale}):
             </span>
-            ${totale > 3 ? `
-              <button type="button" class="btn btn-outline patologie-toggle-btn" onclick="toggleTuttePatologie(this)" style="font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:10px; background:#f8fafc; color:#0284c7; border-color:#cbd5e1; cursor:pointer;">
-                + Mostra tutte (${totale})
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci()" style="font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:10px; background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; cursor:pointer;" title="Ricalcola le diagnosi cliniche esaminando i farmaci attivi">
+                ✨ Aggiorna dai Farmaci
               </button>
-            ` : ''}
+              ${totale > 3 ? `
+                <button type="button" class="btn btn-outline patologie-toggle-btn" onclick="toggleTuttePatologie(this)" style="font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:10px; background:#f8fafc; color:#0284c7; border-color:#cbd5e1; cursor:pointer;">
+                  + Mostra tutte (${totale})
+                </button>
+              ` : ''}
+            </div>
           </div>
           <div class="patologie-tags-wrapper" style="display:flex; flex-wrap:wrap; gap:6px; width:100%;">
             ${pTags}
           </div>
+        </div>
+      `;
+    } else {
+      const numFarmaci = (activeP.terapie || []).length;
+      patologieHtml = `
+        <div class="patologie-container" style="background:#f0f9ff; border:1.5px dashed #38bdf8; border-radius:12px; padding:10px 14px; margin-top:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="font-size:12px; font-weight:800; color:#0369a1; display:flex; align-items:center; gap:5px;">
+              <span>🩺</span> <span>Diagnosi clinica da formalizzare</span>
+            </div>
+            <div style="font-size:11px; color:#475569; margin-top:2px;">
+              ${numFarmaci > 0 ? `Rilevati <b>${numFarmaci} farmaci</b> in cartella: puoi dedurre automaticamente il quadro clinico con 1 tap.` : 'Nessuna patologia o diagnosi clinica attualmente inserita.'}
+            </div>
+          </div>
+          ${numFarmaci > 0 ? `
+            <button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; padding:6px 14px; border-radius:8px; font-weight:800; font-size:11.5px; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow:0 2px 8px rgba(2,132,199,0.35);">
+              <span>✨ Genera Diagnosi dai Farmaci</span>
+            </button>
+          ` : `
+            <button type="button" onclick="apriModificaAnagrafica()" style="background:#f8fafc; color:#0284c7; border:1px solid #cbd5e1; padding:5px 12px; border-radius:8px; font-weight:800; font-size:11px; cursor:pointer;">
+              ✏️ Inserisci Diagnosi
+            </button>
+          `}
         </div>
       `;
     }
@@ -3651,6 +3848,7 @@ function salvaNuovoPaziente(e) {
     alert('Attenzione: inserisci il Nome e Cognome dell\'assistito.');
     return;
   }
+  const sesso = document.getElementById('nuovo-paz-sesso')?.value || 'M';
   const mobilita = document.getElementById('nuovo-paz-mobilita')?.value || 'deambulante';
   const indirizzo = (document.getElementById('nuovo-paz-indirizzo')?.value || '').trim();
   const telCasa = formattaNumeroTelefonico(document.getElementById('nuovo-paz-telefono').value.trim());
@@ -3690,7 +3888,8 @@ function salvaNuovoPaziente(e) {
   console.log('[salvaNuovoPaziente] Creazione assistito:', nome, dataNascita);
 
   const newId = 'paz_' + Date.now();
-  const newPaz = createPazienteTemplate(newId, nome, dataNascita, patologieTesto);
+  const newPaz = createPazienteTemplate(newId, nome, dataNascita, patologieTesto, sesso);
+  newPaz.sesso = sesso;
   newPaz.allettato = (mobilita === 'allettato');
   newPaz.indirizzo = indirizzo;
   newPaz.telefonoFisso = telCasa;
@@ -4048,6 +4247,8 @@ function apriModificaAnagrafica() {
   cambiaTabAnagrafica('paziente');
 
   document.getElementById('edit-paz-nome').value = p.nome || '';
+  const elEditSesso = document.getElementById('edit-paz-sesso');
+  if (elEditSesso) elEditSesso.value = p.sesso || getGenerePaziente(p) || 'M';
   popolaSelettoreDataItaliano('edit', p.dataNascita || '1935-01-06');
   document.getElementById('edit-paz-eta').value = `${calcolaAnniDaData(p.dataNascita)} anni`;
   document.getElementById('edit-paz-indirizzo').value = p.indirizzo || '';
@@ -4163,6 +4364,7 @@ function salvaModificaAnagrafica(e) {
   if (!p) return;
 
   p.nome = document.getElementById('edit-paz-nome').value.trim();
+  p.sesso = document.getElementById('edit-paz-sesso')?.value || 'M';
   p.dataNascita = document.getElementById('edit-paz-nascita').value;
   p.eta = calcolaAnniDaData(p.dataNascita);
   p.indirizzo = document.getElementById('edit-paz-indirizzo').value.trim();

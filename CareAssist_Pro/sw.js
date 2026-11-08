@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v250-piano-terapeutico-scorte-richieste';
+const CACHE_NAME = 'careassist-pro-v251-sesso-diagnosi-automatica';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

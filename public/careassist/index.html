@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=250">
+  <link rel="stylesheet" href="style.css?v=251">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -196,7 +196,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="registro_asl.css?v=250">
+  <link rel="stylesheet" href="registro_asl.css?v=251">
 
   <style>
     @keyframes menuDropAnim {
@@ -1577,10 +1577,19 @@
               <span>📋</span> <span>1. Dati Anagrafici & Mobilità</span>
             </div>
 
-            <div class="form-group" style="margin-bottom:8px;">
-              <label class="form-label">Nome e Cognome Assistito *</label>
-              <input type="text" class="form-control" id="nuovo-paz-nome" placeholder="Es. Maria Rossi" required
-                style="font-weight:700; font-size:14.5px;">
+            <div class="riga-doppia-pro" style="margin-bottom:8px;">
+              <div class="form-group" style="flex:2; margin-bottom:0;">
+                <label class="form-label">Nome e Cognome Assistito *</label>
+                <input type="text" class="form-control" id="nuovo-paz-nome" placeholder="Es. Stoppelli Gabriele Francesco" required
+                  style="font-weight:700; font-size:14.5px;">
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label">Sesso / Genere *</label>
+                <select class="form-control" id="nuovo-paz-sesso" style="font-weight:800; font-size:13.5px; color:#0f172a;">
+                  <option value="M">👨 Maschile (M)</option>
+                  <option value="F">👩 Femminile (F)</option>
+                </select>
+              </div>
             </div>
 
             <div class="riga-doppia-pro" style="margin-bottom:8px;">
@@ -1847,10 +1856,19 @@
               <span>👤</span> <span>Dati Anagrafici & Residenza</span>
             </div>
 
-            <div class="form-group" style="margin-bottom:8px;">
-              <label class="form-label">Nome e Cognome Assistito</label>
-              <input type="text" class="form-control" id="edit-paz-nome" required placeholder="Nome e Cognome"
-                style="font-weight:700; font-size:14.5px;">
+            <div class="riga-doppia-pro" style="margin-bottom:8px;">
+              <div class="form-group" style="flex:2; margin-bottom:0;">
+                <label class="form-label">Nome e Cognome Assistito</label>
+                <input type="text" class="form-control" id="edit-paz-nome" required placeholder="Nome e Cognome"
+                  style="font-weight:700; font-size:14.5px;">
+              </div>
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label class="form-label">Sesso / Genere</label>
+                <select class="form-control" id="edit-paz-sesso" style="font-weight:800; font-size:13.5px; color:#0f172a;">
+                  <option value="M">👨 Maschile (M)</option>
+                  <option value="F">👩 Femminile (F)</option>
+                </select>
+              </div>
             </div>
 
             <div class="riga-doppia-pro" style="margin-bottom:8px;">
@@ -2055,11 +2073,18 @@
                 <label class="form-label" style="color:#0369a1; font-weight:800; margin-bottom:0; display:flex; align-items:center; gap:6px;">
                   <span>🩺 Patologie & Diagnosi Attive</span>
                 </label>
-                <button type="button" class="btn-espandi-fullscreen-inline"
-                  onclick="apriEditorFullscreen('edit-paz-patologie', '🩺 Patologie & Diagnosi Attive', 'Inserisci o modifica una patologia/diagnosi per riga. Visibili nei badge e Scheda 118.')"
-                  title="Apri a tutto schermo per leggere o modificare comodamente">
-                  <span>⛶ A Tutto Schermo</span>
-                </button>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <button type="button" class="btn btn-sm" onclick="applicaDiagnosiAutomaticheDaFarmaci()"
+                    style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; padding:4px 10px; border-radius:8px; font-weight:800; font-size:11.5px; cursor:pointer; display:flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(2,132,199,0.3);"
+                    title="Deduce e genera automaticamente l'elenco delle diagnosi dai farmaci assunti">
+                    <span>✨ Deduci dai Farmaci (AI)</span>
+                  </button>
+                  <button type="button" class="btn-espandi-fullscreen-inline"
+                    onclick="apriEditorFullscreen('edit-paz-patologie', '🩺 Patologie & Diagnosi Attive', 'Inserisci o modifica una patologia/diagnosi per riga. Visibili nei badge e Scheda 118.')"
+                    title="Apri a tutto schermo per leggere o modificare comodamente">
+                    <span>⛶ A Tutto Schermo</span>
+                  </button>
+                </div>
               </div>
               <div class="textarea-touch-expand-wrapper" onclick="apriEditorFullscreen('edit-paz-patologie', '🩺 Patologie & Diagnosi Attive', 'Inserisci o modifica una patologia/diagnosi per riga. Visibili nei badge e Scheda 118.')" title="Tocca per aprire a tutto schermo">
                 <textarea class="form-control textarea-espandibile-pro" id="edit-paz-patologie" rows="4" readonly
@@ -6868,7 +6893,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=250"></script>
+  <script src="app.js?v=251"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -6879,7 +6904,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=225', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=251', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
