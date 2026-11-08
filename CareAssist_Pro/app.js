@@ -15137,10 +15137,12 @@ function apriSwitchPazienteRapido() {
     const ritardi = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo).length;
 
     // Avatar and clinical focus by patient
-    let avatarEmoji = '👤';
-    let avatarBg = 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)';
-    let avatarBorder = '#7dd3fc';
-    let focusClinico = 'Assistito Domiciliare';
+    const avInfo = typeof getDettagliAvatarPaziente === 'function' ? getDettagliAvatarPaziente(p) : null;
+    const isFem = (p.sesso === 'F') || (avInfo && avInfo.isFemmina);
+    let avatarEmoji = isFem ? (eta >= 65 ? '👵' : '👩') : (eta >= 65 ? '👴' : '👨');
+    let avatarBg = isFem ? 'linear-gradient(135deg, #fdf2f8 0%, #fbcfe8 100%)' : 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)';
+    let avatarBorder = isFem ? '#f472b6' : '#7dd3fc';
+    let focusClinico = p.allettato ? '🛏️ Allettato • Assistenza Continua' : '🚶 Deambulante • Monitoraggio Terapie';
 
     if (p.id === 'paz_aldo' || pulitoNome.toLowerCase().includes('aldo')) {
       avatarEmoji = '👴';
@@ -15162,6 +15164,11 @@ function apriSwitchPazienteRapido() {
       avatarBg = 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)';
       avatarBorder = '#38bdf8';
       focusClinico = '🚶 Deambulante • Epatite HBV & Lab. Scotti / Policlinico';
+    } else if (p.id === 'paz_mariacarmela' || (pulitoNome.toLowerCase().includes('carmela') && pulitoNome.toLowerCase().includes('stoppelli'))) {
+      avatarEmoji = '👩';
+      avatarBg = 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)';
+      avatarBorder = '#f59e0b';
+      focusClinico = '🚶 Deambulante • Follow-up Benessere & Nutrizione';
     }
 
     return `
@@ -24715,53 +24722,56 @@ function renderMobileNativeView(terapie, p) {
   if (!terapie && p) terapie = p.terapie || [];
   if (!container || !p) return;
 
-  // Aggiorna sempre la pillola sticky nell'header in alto (così il nome non si perde MAI durante lo scroll!)
-  var hdrPillName = document.getElementById('mhdr-patient-name');
-  var hdrPillAvatar = document.getElementById('mhdr-patient-avatar');
-  if (hdrPillName && p) {
-    hdrPillName.textContent = p.nome || 'Assistito';
-  }
-  if (hdrPillAvatar && p) {
-    hdrPillAvatar.textContent = p.sesso === 'F' ? '👵' : '👴';
-  }
-
-  // Aggiorna nome assistito nella pillola fissa in alto e nel titolo sezione
+  // Aggiorna nome e avatar assistito nella pillola sticky nell'header in alto
   var hdrPillName = document.getElementById('mhdr-patient-name');
   var hdrPillAvatar = document.getElementById('mhdr-patient-avatar');
   var pulitoNomeHeader = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+  var etaHeader = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || 85);
+  var avInfo = (typeof getDettagliAvatarPaziente === 'function') ? getDettagliAvatarPaziente(p) : null;
+  var isFem = (p.sesso === 'F') || (avInfo && avInfo.isFemmina);
+  var headerAvatarEmoji = isFem ? (etaHeader >= 65 ? '👵' : '👩') : (etaHeader >= 65 ? '👴' : '👨');
+
+  if (p.id === 'paz_aldo' || pulitoNomeHeader.toLowerCase().includes('aldo')) { headerAvatarEmoji = '👴'; }
+  else if (p.id === 'paz_angela' || pulitoNomeHeader.toLowerCase().includes('angela')) { headerAvatarEmoji = '👵'; }
+  else if (p.id === 'paz_rosa' || pulitoNomeHeader.toLowerCase().includes('rosa')) { headerAvatarEmoji = '👵'; }
+  else if (p.id === 'paz_1793216119572' || pulitoNomeHeader.toLowerCase().includes('ciro')) { headerAvatarEmoji = '👨'; }
+  else if (p.id === 'paz_mariacarmela' || (pulitoNomeHeader.toLowerCase().includes('carmela') && pulitoNomeHeader.toLowerCase().includes('stoppelli'))) { headerAvatarEmoji = '👩'; }
+
   if (hdrPillName && p) {
     hdrPillName.textContent = pulitoNomeHeader || 'Assistito';
   }
   if (hdrPillAvatar && p) {
-    hdrPillAvatar.textContent = p.sesso === 'F' ? '👵' : '👴';
+    hdrPillAvatar.textContent = headerAvatarEmoji;
   }
+
   var secTitle = document.querySelector('.mobile-terapie-title');
   if (secTitle && p) {
     secTitle.innerHTML = '📋 Terapie di Oggi • <b style="color:#0284c7;">' + pulitoNomeHeader + '</b>';
   }
 
-  // 1. Render Card Assistito Attivo (Senza testi troncati, layout moderno!)
+  // 1. Render Card Assistito Attivo (Con accesso diretto a Scheda Clinica e Modifica)
   var activeCard = document.getElementById('mobile-active-patient-card');
   if (!activeCard) {
     activeCard = document.getElementById('mobile-pazienti-chips');
   }
   if (activeCard && p) {
-    var pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
-    var eta = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || 85);
-    var avatarEmoji = p.sesso === 'F' ? '👵' : '👴';
-    var avatarBg = '#e0f2fe';
-    var avatarBorder = '#0284c7';
+    var pulitoNome = pulitoNomeHeader;
+    var eta = etaHeader;
+    var avatarEmoji = isFem ? (eta >= 65 ? '👵' : '👩') : (eta >= 65 ? '👴' : '👨');
+    var avatarBg = isFem ? '#fdf2f8' : '#e0f2fe';
+    var avatarBorder = isFem ? '#ec4899' : '#0284c7';
+
     if (p.id === 'paz_aldo' || pulitoNome.toLowerCase().includes('aldo')) { avatarEmoji = '👴'; avatarBg = '#ede9fe'; avatarBorder = '#8b5cf6'; }
     else if (p.id === 'paz_angela' || pulitoNome.toLowerCase().includes('angela')) { avatarEmoji = '👵'; avatarBg = '#fce7f3'; avatarBorder = '#ec4899'; }
     else if (p.id === 'paz_rosa' || pulitoNome.toLowerCase().includes('rosa')) { avatarEmoji = '👵'; avatarBg = '#fae8ff'; avatarBorder = '#d946ef'; }
     else if (p.id === 'paz_1793216119572' || pulitoNome.toLowerCase().includes('ciro')) { avatarEmoji = '👨'; avatarBg = '#dcfce7'; avatarBorder = '#22c55e'; }
-    else if (p.id === 'paz_mariacarmela' || pulitoNome.toLowerCase().includes('stoppelli')) { avatarEmoji = '👩'; avatarBg = '#fef3c7'; avatarBorder = '#f59e0b'; }
+    else if (p.id === 'paz_mariacarmela' || (pulitoNome.toLowerCase().includes('carmela') && pulitoNome.toLowerCase().includes('stoppelli'))) { avatarEmoji = '👩'; avatarBg = '#fef3c7'; avatarBorder = '#f59e0b'; }
 
     var nTerapie = (p.terapie || []).length;
     var nFatti = (p.terapie || []).filter(function (t) { return t.fattoOggi; }).length;
 
-    activeCard.innerHTML = '<div onclick="apriSwitchPazienteRapido()" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:18px; padding:12px 14px; margin:0 0 10px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 3px 10px rgba(0,0,0,0.05); cursor:pointer;">' +
-      '<div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">' +
+    activeCard.innerHTML = '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:18px; padding:12px 14px; margin:0 0 10px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 3px 10px rgba(0,0,0,0.05);">' +
+      '<div onclick="navigaMobileTab(\'clinica\', document.getElementById(\'mbar-btn-clinica\'))" style="display:flex; align-items:center; gap:12px; flex:1; min-width:0; cursor:pointer;" title="Tocca per entrare nella Scheda Clinica">' +
       '<div style="width:48px; height:48px; border-radius:50%; background:' + avatarBg + '; border:2.5px solid ' + avatarBorder + '; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.08);">' +
       avatarEmoji +
       '</div>' +
@@ -24776,10 +24786,20 @@ function renderMobileNativeView(terapie, p) {
       '<div style="font-size:11.5px; color:#059669; font-weight:800; margin-top:2px;">' +
       '✅ ' + nFatti + ' di ' + nTerapie + ' terapie assunte oggi' +
       '</div>' +
+      '<div style="display:flex; align-items:center; gap:6px; margin-top:5px; flex-wrap:wrap;">' +
+      '<button type="button" onclick="event.stopPropagation(); navigaMobileTab(\'clinica\', document.getElementById(\'mbar-btn-clinica\'))" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
+      '<span>📋 Scheda Clinica ➜</span>' +
+      '</button>' +
+      '<button type="button" onclick="event.stopPropagation(); apriModificaAnagrafica()" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
+      '<span>✏️ Modifica Dati</span>' +
+      '</button>' +
       '</div>' +
       '</div>' +
-      '<div style="background:#f1f5f9; border:1.5px solid #cbd5e1; border-radius:16px; padding:8px 12px; font-size:12px; font-weight:800; color:#0284c7; display:flex; align-items:center; gap:4px; flex-shrink:0; box-shadow:0 1px 3px rgba(0,0,0,0.04);">' +
+      '</div>' +
+      '<div style="flex-shrink:0;">' +
+      '<button type="button" onclick="apriSwitchPazienteRapido()" style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:14px; padding:8px 10px; font-size:11.5px; font-weight:800; color:#0284c7; display:flex; align-items:center; gap:4px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.04);">' +
       '<span>👥 Cambia</span> <span>▾</span>' +
+      '</button>' +
       '</div>' +
       '</div>' +
       '<!-- Pulsanti Vocali Mobili Simmetrici 50% / 50% (Zero overflow!) -->' +
