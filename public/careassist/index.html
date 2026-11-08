@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=254">
+  <link rel="stylesheet" href="style.css?v=255">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -196,7 +196,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="registro_asl.css?v=254">
+  <link rel="stylesheet" href="registro_asl.css?v=255">
 
   <style>
     @keyframes menuDropAnim {
@@ -1078,7 +1078,7 @@
 
               <!-- Finestra a Scomparsa / Tendina WhatsApp (Glassmorphism & Dropdown Fluido) -->
               <div id="careassist-toolbar-dropdown"
-                style="display:none; position:absolute; right:0; top:46px; z-index:99999; background:#ffffff; min-width:280px; border-radius:16px; box-shadow:0 15px 35px rgba(0,0,0,0.2), 0 3px 10px rgba(0,0,0,0.08); border:1.5px solid #cbd5e1; padding:8px 0; animation:menuDropAnim 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+                style="display:none; position:absolute; left:0; top:46px; z-index:99999; background:#ffffff; width:280px; max-width:calc(100vw - 32px); border-radius:16px; box-shadow:0 15px 35px rgba(0,0,0,0.2), 0 3px 10px rgba(0,0,0,0.08); border:1.5px solid #cbd5e1; padding:8px 0; animation:menuDropAnim 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
 
                 <div
                   style="padding:6px 16px; font-size:10.5px; font-weight:900; color:#94a3b8; text-transform:uppercase; letter-spacing:0.8px; border-bottom:1px solid #f1f5f9;">
@@ -6925,7 +6925,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=254"></script>
+  <script src="app.js?v=255"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -6936,7 +6936,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=254', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=255', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

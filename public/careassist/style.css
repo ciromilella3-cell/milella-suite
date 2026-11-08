@@ -7369,8 +7369,11 @@ main, .main-content, .dashboard-container {
 }
 
 @media (max-width: 768px) {
-  .table-fullview-container {
-    display: none !important;
+  #tab-farmaci .table-fullview-container,
+  body.viewing-farmaci .table-fullview-container {
+    display: block !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
   
   .mobile-only-app-container {
@@ -7732,8 +7735,12 @@ main, .main-content, .dashboard-container {
   #tab-dashboard {
     display: none !important; /* Mostrato solo se si preme "Clinica" dalla barra inferiore */
   }
-  .table-fullview-container {
-    display: none !important;
+  /* Su mobile la tabella panoramica terapie è visibile con scorrimento touch */
+  #tab-farmaci .table-fullview-container,
+  body.viewing-farmaci .table-fullview-container {
+    display: block !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   /* 4. CAROSELLO ASSISTITI A PORTATA DI POLLICE */

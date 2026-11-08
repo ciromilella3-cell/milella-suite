@@ -5035,15 +5035,19 @@ function checkFarmaciScorteAlert() {
     if (!existingPzHeader) {
       const bannerDiv = document.createElement('div');
       bannerDiv.id = 'sticky-pz-header-banner';
-      bannerDiv.style.cssText = 'background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; padding:10px 16px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 8px rgba(2,132,199,0.25); font-weight:800;';
-      bannerDiv.innerHTML = '<div style="display:flex; align-items:center; gap:8px;">' +
-        '<span style="font-size:20px;">👤</span>' +
-        '<span style="font-size:14px;">Stai visualizzando le terapie di: <span style="font-size:15px; color:#fef08a; font-weight:900;">' + p.nome + '</span></span>' +
+      bannerDiv.style.cssText = 'background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; padding:10px 14px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; box-shadow:0 2px 8px rgba(2,132,199,0.25); font-weight:800;';
+      bannerDiv.innerHTML = '<div style="display:flex; align-items:center; gap:8px; min-width:0;">' +
+        '<span style="font-size:22px; flex-shrink:0;">👤</span>' +
+        '<div style="min-width:0;">' +
+        '<div style="font-size:11.5px; color:#e0f2fe; font-weight:600; line-height:1.2;">Stai visualizzando le terapie di:</div>' +
+        '<div style="font-size:15px; color:#fef08a; font-weight:900; line-height:1.2;">' + p.nome + '</div>' +
         '</div>' +
-        '<div style="font-size:12px; color:#e0f2fe; font-weight:600;">Sincronizzato Cloud in tempo reale ☁️</div>';
+        '</div>' +
+        '<div style="font-size:11px; color:#bae6fd; font-weight:700; background:rgba(255,255,255,0.15); padding:3px 8px; border-radius:8px; flex-shrink:0;">☁️ Sincronizzato Cloud</div>';
       cTerapie.parentNode.insertBefore(bannerDiv, cTerapie);
     } else {
-      existingPzHeader.querySelector('span[style*="#fef08a"]').textContent = p.nome;
+      var nameEl = existingPzHeader.querySelector('div[style*="#fef08a"]') || existingPzHeader.querySelector('span[style*="#fef08a"]');
+      if (nameEl) nameEl.textContent = p.nome;
     }
   }
 
@@ -5636,6 +5640,8 @@ function renderTerapie() {
   // Aggiorna le etichette con la data odierna del giorno di terapia
   aggiornaDataGiornoTerapia();
 }
+window.renderTerapie = renderTerapie;
+window.renderTerapieTable = renderTerapie;
 
 // Funzione dedicata per aggiornare la data del giorno terapia e orologio live
 function aggiornaDataGiornoTerapia() {
@@ -24995,6 +25001,7 @@ function navigaMobileTab(mode, btn) {
     if (tabFarmaci) tabFarmaci.style.setProperty('display', 'block', 'important');
 
     var pAct = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+    if (typeof renderTerapie === 'function') renderTerapie();
     if (typeof renderTerapieTable === 'function') renderTerapieTable();
     if (typeof checkFarmaciScorteAlert === 'function') checkFarmaciScorteAlert();
     window.scrollTo({ top: 0, behavior: 'smooth' });
