@@ -5573,13 +5573,13 @@ function renderTerapie() {
         <td class="td-col td-azioni" style="text-align: center;">
           <div class="row-azioni-group">
             ${canEdit ? `
-              <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="apriModificaFarmaco('${t.id}')" title="Modifica dati e orario del farmaco">✏️ Modifica</button>
-              <button class="btn btn-outline" style="padding:5px 7px; font-size:11.5px; background:#fff1f2; border:1.5px solid #fca5a5; color:#be123c; cursor:pointer;" onclick="eliminaTerapia('${t.id}')" title="Elimina farmaco dal piano">🗑️ Elimina</button>
+              <button class="btn btn-outline" style="padding:6px 8px; font-size:12px; font-weight:800;" onclick="apriModificaFarmaco('${t.id}')" title="Modifica dati e orario del farmaco"><span>✏️</span> <span>Modifica</span></button>
+              <button class="btn btn-outline" style="padding:6px 8px; font-size:12px; font-weight:800; background:#fff1f2; border:1.5px solid #fca5a5; color:#be123c; cursor:pointer;" onclick="eliminaTerapia('${t.id}')" title="Elimina farmaco dal piano"><span>🗑️</span> <span>Elimina</span></button>
             ` : `
               <span style="font-size:11px; color:#64748b; font-weight:600;" title="Sola somministrazione e spunta (Modifiche riservate all'Amministratore)">🔒 Sola Lettura</span>
             `}
-            <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="mostraAuditFarmaco(${t.id})" title="Tracciabilità e cronologia controlli">🕒 Traccia</button>
-            <button class="btn btn-outline" style="padding:5px 8px; font-size:11px; background:#f0fdf4; border-color:#86efac; color:#166534; font-weight:700;" onclick="apriModalAvvisoFarmacoEsterno(${t.id})" title="Configura avviso esterno su Smartphone, Calendario, WhatsApp e Mail per questo farmaco">🔔 Avviso</button>
+            <button class="btn btn-outline" style="padding:6px 8px; font-size:12px; font-weight:800;" onclick="mostraAuditFarmaco(${t.id})" title="Tracciabilità e cronologia controlli"><span>🕒</span> <span>Traccia</span></button>
+            <button class="btn btn-outline" style="padding:6px 8px; font-size:12px; font-weight:800; background:#f0fdf4; border:1.5px solid #86efac; color:#166534;" onclick="apriModalAvvisoFarmacoEsterno(${t.id})" title="Configura avviso esterno su Smartphone, Calendario, WhatsApp e Mail per questo farmaco"><span>🔔</span> <span>Avviso</span></button>
           </div>
         </td>
       </tr>
