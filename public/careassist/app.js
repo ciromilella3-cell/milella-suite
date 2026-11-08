@@ -22838,6 +22838,94 @@ window.stampaCartellaClinicaCompletaPDF = function () {
 // ==========================================================================
 window._pazientePianoTerapeuticoCorrente = null;
 
+// Helper unificato per calcolare scorta residua, giorni di autonomia e data prevista richiesta ricetta al Medico
+window._calcolaDatiScortaERichiesta = function (t, tutteTerapie) {
+  const isPenna = (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) ||
+                  (t.tipoFormulazione === 'penna') ||
+                  ((t.farmaco || t.nome || '').toLowerCase().includes('penna'));
+  
+  let scortaNum = 0;
+  let unita = isPenna ? 'penne' : 'cpr';
+
+  if (isPenna) {
+    scortaNum = (typeof t.penneScorta !== 'undefined') ? parseFloat(t.penneScorta) : (parseFloat(t.scorta) || 0);
+  } else {
+    scortaNum = (typeof t.scorta !== 'undefined' && t.scorta !== null) ? parseFloat(t.scorta) : 0;
+  }
+
+  // Giorni di autonomia
+  let ggAutonomia = 0;
+  if (typeof calcolaGiorniAutonomiaFarmaco === 'function') {
+    ggAutonomia = calcolaGiorniAutonomiaFarmaco(t, tutteTerapie);
+  } else {
+    ggAutonomia = Math.max(0, Math.floor(scortaNum));
+  }
+
+  const oggi = new Date();
+  
+  // Data stimata fine scorta (esaurimento totale)
+  const dtFine = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate());
+  dtFine.setDate(dtFine.getDate() + (ggAutonomia > 0 ? ggAutonomia : 0));
+  const dataFineStr = ggAutonomia > 0 
+    ? dtFine.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : 'ESAURITO OGGI';
+
+  // Preavviso di sicurezza per richiesta ricetta al MMG (default: 7 gg per compresse, 15 gg per penne)
+  const preavviso = Math.min(30, Math.max(1, parseInt(t.giorniAlert) || (isPenna ? 15 : 7)));
+  
+  // Giorni mancanti fino alla data consigliata per richiedere la ricetta
+  const ggAllaRichiesta = Math.max(0, ggAutonomia - preavviso);
+  const dtRichiesta = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate());
+  dtRichiesta.setDate(dtRichiesta.getDate() + ggAllaRichiesta);
+  const dataRichiestaStr = dtRichiesta.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+  let urgenzaRichiesta = 'regolare'; // 'urgente', 'imminente', 'regolare'
+  let badgeRichiesta = '';
+  let bgBadge = '#dcfce7';
+  let colorBadge = '#166534';
+  let borderBadge = '#86efac';
+
+  if (scortaNum <= 0) {
+    urgenzaRichiesta = 'urgente';
+    badgeRichiesta = '🔴 RICHIEDERE SUBITO';
+    bgBadge = '#fee2e2';
+    colorBadge = '#991b1b';
+    borderBadge = '#f87171';
+  } else if (ggAutonomia <= preavviso) {
+    urgenzaRichiesta = 'urgente';
+    badgeRichiesta = `⚠️ RICHIEDERE SUBITO (Entro ${dataRichiestaStr})`;
+    bgBadge = '#fef2f2';
+    colorBadge = '#b91c1c';
+    borderBadge = '#f87171';
+  } else if (ggAllaRichiesta <= 7) {
+    urgenzaRichiesta = 'imminente';
+    badgeRichiesta = `🟡 Richiesta entro il ${dataRichiestaStr}`;
+    bgBadge = '#fef9c3';
+    colorBadge = '#854d0e';
+    borderBadge = '#fde047';
+  } else {
+    urgenzaRichiesta = 'regolare';
+    badgeRichiesta = `🟢 Richiesta MMG: ${dataRichiestaStr}`;
+    bgBadge = '#f0fdf4';
+    colorBadge = '#15803d';
+    borderBadge = '#bbf7d0';
+  }
+
+  return {
+    scortaNum,
+    unita,
+    ggAutonomia,
+    dataFineStr,
+    preavviso,
+    dataRichiestaStr,
+    urgenzaRichiesta,
+    badgeRichiesta,
+    bgBadge,
+    colorBadge,
+    borderBadge
+  };
+};
+
 window.generaHtmlPianoTerapeutico = function (p) {
   if (!p) return '<div style="padding:20px; text-align:center; color:#ef4444;">Nessun dato assistito disponibile</div>';
 
@@ -22903,15 +22991,8 @@ window.generaHtmlPianoTerapeutico = function (p) {
       const isSalvavita = t.salvavita || t.critico || t.is112 || (nomeFarmaco.toLowerCase().includes('salvavita'));
       const isSos = t.alBisogno || t.sos || (t.fascia && t.fascia.toLowerCase().includes('bisogno'));
       
-      let scortaTesto = '--';
-      let scortaBassa = false;
-      if (t.tipoFormulazione === 'penna' && t.penneScorta !== undefined) {
-        scortaTesto = `${t.penneScorta} penne`;
-        scortaBassa = (t.penneScorta <= 1);
-      } else if (t.scorta !== undefined && t.scorta !== null) {
-        scortaTesto = `${t.scorta} unità`;
-        scortaBassa = (typeof t.scorta === 'number' && t.scorta <= 5);
-      }
+      // Calcolo dati scorta e data richiesta ricetta
+      const info = window._calcolaDatiScortaERichiesta(t, terapie);
 
       const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
 
@@ -22928,8 +23009,8 @@ window.generaHtmlPianoTerapeutico = function (p) {
             ${isSos ? '<span style="display:inline-block; font-size:6pt; font-weight:900; background:#fee2e2; color:#b91c1c; padding:1px 4px; border-radius:3px; margin-top:3px; border:0.5px solid #f87171;">AL BISOGNO</span>' : ''}
           </td>
 
-          <!-- 2. FARMACO & PRINCIPIO ATTIVO -->
-          <td style="padding:8px 8px; vertical-align:middle; border-right:1px solid #cbd5e1; min-width:160px;">
+          <!-- 2. FARMACO & PRINCIPIO ATTIVO + SCORTA E RICHIESTA MOBILE -->
+          <td style="padding:8px 8px; vertical-align:middle; border-right:1px solid #cbd5e1; min-width:170px;">
             <div style="font-size:9.5pt; font-weight:900; color:#0f172a; line-height:1.25;">
               ${nomeFarmaco}
               ${isSalvavita ? '<span style="display:inline-block; margin-left:4px; font-size:6.5pt; font-weight:900; background:#dc2626; color:#ffffff; padding:1px 5px; border-radius:3px; vertical-align:middle; letter-spacing:0.3px;">112 SALVAVITA</span>' : ''}
@@ -22938,6 +23019,16 @@ window.generaHtmlPianoTerapeutico = function (p) {
               Principio: <i style="font-style:italic;">${principio}</i>
             </div>
             ${t.cadenzaTipo === 'alterni' ? '<div style="font-size:7pt; color:#d97706; font-weight:800; margin-top:2px;">🔄 Somministrazione a giorni alterni</div>' : ''}
+            
+            <!-- BADGE SCORTA E DATA RICHIESTA DIRETTAMENTE VISIBILI SU SMARTPHONE -->
+            <div style="margin-top:5px; font-size:7.5pt; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
+              <span style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:2px 6px; border-radius:4px; font-weight:800;">
+                📦 Scorta: <b>${info.scortaNum} ${info.unita}</b> (~${info.ggAutonomia} gg)
+              </span>
+              <span style="background:${info.bgBadge}; color:${info.colorBadge}; border:1px solid ${info.borderBadge}; padding:2px 6px; border-radius:4px; font-weight:800;">
+                📅 Richiesta MMG: <b>${info.dataRichiestaStr}</b>
+              </span>
+            </div>
           </td>
 
           <!-- 3. DOSAGGIO PRESCRITTO -->
@@ -22946,14 +23037,24 @@ window.generaHtmlPianoTerapeutico = function (p) {
           </td>
 
           <!-- 4. MODALITÀ & INDICAZIONI -->
-          <td style="padding:8px 8px; vertical-align:middle; border-right:1px solid #cbd5e1; min-width:160px; font-size:8pt; color:#334155; line-height:1.35;">
+          <td style="padding:8px 8px; vertical-align:middle; border-right:1px solid #cbd5e1; min-width:150px; font-size:8pt; color:#334155; line-height:1.35;">
             ${istruzioni}
           </td>
 
-          <!-- 5. SCORTA A DOMICILIO -->
-          <td style="padding:8px 6px; vertical-align:middle; text-align:center; border-right:1px solid #cbd5e1; width:70px; min-width:70px; font-size:8.5pt; font-weight:900; color:${scortaBassa ? '#dc2626' : '#15803d'}; white-space:nowrap;">
-            ${scortaTesto}
-            ${scortaBassa ? '<div style="font-size:6pt; color:#b91c1c; font-weight:800;">Scorta bassa!</div>' : ''}
+          <!-- 5. SCORTA COMPLETA & CALENDARIO RICHIESTA MEDICO -->
+          <td style="padding:8px 6px; vertical-align:middle; text-align:center; border-right:1px solid #cbd5e1; width:110px; min-width:110px; font-size:8pt; line-height:1.25;">
+            <div style="font-weight:900; color:${info.urgenzaRichiesta === 'urgente' ? '#dc2626' : '#0369a1'}; font-size:9pt;">
+              ${info.scortaNum} ${info.unita}
+            </div>
+            <div style="font-size:7pt; color:#64748b; font-weight:700;">
+              ~${info.ggAutonomia} gg autonomia
+            </div>
+            <div style="margin-top:3px; font-size:7pt; font-weight:800; padding:2px 4px; border-radius:3px; background:${info.bgBadge}; color:${info.colorBadge}; border:1px solid ${info.borderBadge};">
+              ${info.badgeRichiesta}
+            </div>
+            <div style="font-size:6.5pt; color:#64748b; margin-top:2px;">
+              Fine scorta: <b>${info.dataFineStr}</b>
+            </div>
           </td>
 
           <!-- 6. SIGLA OSS CONVALIDA -->
@@ -22964,6 +23065,63 @@ window.generaHtmlPianoTerapeutico = function (p) {
       `;
     });
   }
+
+  // Costruisci lista deduplicata per Quadro Fabbisogno Scorte & Riordino MMG
+  const mappaFarmaciUnici = new Map();
+  terapie.forEach(t => {
+    const nomeF = (t.farmaco || t.nome || t.nomeFarmaco || 'Farmaco').trim();
+    const baseKey = (typeof getNomeBaseFarmaco === 'function') ? getNomeBaseFarmaco(t) : nomeF.toLowerCase();
+    if (!mappaFarmaciUnici.has(baseKey)) {
+      const info = window._calcolaDatiScortaERichiesta(t, terapie);
+      mappaFarmaciUnici.set(baseKey, {
+        farmaco: nomeF,
+        principio: t.principio || t.principioAttivo || 'Principio attivo non specificato',
+        dosaggio: t.dosaggio || t.dose || '1 dose',
+        info: info,
+        farmacia: t.farmacia || p.farmaciaDiRiferimento || p.farmacia || 'Farmacia Territoriale'
+      });
+    }
+  });
+
+  const listaFabbisogno = Array.from(mappaFarmaciUnici.values()).sort((a, b) => {
+    return a.info.ggAutonomia - b.info.ggAutonomia;
+  });
+
+  const numUrgenti = listaFabbisogno.filter(item => item.info.urgenzaRichiesta === 'urgente').length;
+  const numImminenti = listaFabbisogno.filter(item => item.info.urgenzaRichiesta === 'imminente').length;
+  const numRegolari = listaFabbisogno.filter(item => item.info.urgenzaRichiesta === 'regolare').length;
+  const farmaciaNome = p.farmaciaDiRiferimento || p.farmacia || 'Farmacia Comunale Centrale';
+
+  // Costruisci righe del quadro fabbisogno
+  const righeFabbisognoHtml = listaFabbisogno.map((item, idx) => {
+    const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+    return `
+      <tr style="background:${rowBg}; border-bottom:1px solid #e2e8f0;">
+        <td style="padding:6px 8px; vertical-align:middle; border-right:1px solid #e2e8f0; font-weight:800; color:#0f172a;">
+          <div>${item.farmaco}</div>
+          <div style="font-size:7.5pt; color:#64748b; font-weight:600;">${item.principio} &bull; ${item.dosaggio}</div>
+        </td>
+        <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-weight:900; color:${item.info.urgenzaRichiesta === 'urgente' ? '#dc2626' : '#1e293b'};">
+          ${item.info.scortaNum} ${item.info.unita}
+        </td>
+        <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-weight:800; color:#0369a1;">
+          ~${item.info.ggAutonomia} gg
+        </td>
+        <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-weight:900;">
+          <span style="background:${item.info.bgBadge}; color:${item.info.colorBadge}; border:1px solid ${item.info.borderBadge}; padding:2px 6px; border-radius:4px; font-size:7.5pt;">
+            ${item.info.dataRichiestaStr}
+          </span>
+          <div style="font-size:6.5pt; color:#64748b; margin-top:2px;">(Preavviso ${item.info.preavviso} gg)</div>
+        </td>
+        <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-weight:700; color:#64748b; font-size:8pt;">
+          ${item.info.dataFineStr}
+        </td>
+        <td style="padding:6px 8px; vertical-align:middle; text-align:center; font-size:7.5pt; font-weight:800; color:${item.info.urgenzaRichiesta === 'urgente' ? '#b91c1c' : '#15803d'};">
+          ${item.info.urgenzaRichiesta === 'urgente' ? '🔴 RICHIEDERE ORA' : (item.info.urgenzaRichiesta === 'imminente' ? '🟡 IN SCADENZA' : '🟢 REGOLARE')}
+        </td>
+      </tr>
+    `;
+  }).join('');
 
   // Costruisci riepilogo a fasce
   const generaBadgeFascia = (titolo, lista, icona, bgHeader, colorHeader) => {
@@ -22994,7 +23152,7 @@ window.generaHtmlPianoTerapeutico = function (p) {
   const haAllergie = allergieTesto && allergieTesto !== 'Nessuna allergia farmacologica nota segnalata' && allergieTesto.toLowerCase() !== 'nessuna';
 
   return `
-    <div style="color:#0f172a; font-family:'Segoe UI', -apple-system, Roboto, Helvetica, Arial, sans-serif; line-height:1.35; max-width:800px; margin:0 auto; background:#ffffff;">
+    <div style="color:#0f172a; font-family:'Segoe UI', -apple-system, Roboto, Helvetica, Arial, sans-serif; line-height:1.35; max-width:820px; margin:0 auto; background:#ffffff;">
       
       <!-- INTESTAZIONE ISTITUZIONALE -->
       <table style="width:100%; border-bottom:2.5px solid #0284c7; padding-bottom:8px; margin-bottom:12px; border-collapse:collapse;">
@@ -23014,7 +23172,7 @@ window.generaHtmlPianoTerapeutico = function (p) {
           </td>
           <td style="vertical-align:top; text-align:right; width:35%;">
             <div style="display:inline-block; background:#e0f2fe; color:#0369a1; border:1.5px solid #7dd3fc; border-radius:6px; padding:3px 8px; font-size:8pt; font-weight:800;">
-              SCHEDA TERAPIE & ORARI
+              SCHEDA TERAPIE, SCORTE & ORARI
             </div>
             <div style="font-size:7.5pt; color:#64748b; margin-top:4px;">
               Emissione: <b>${dataEmissione}</b> ore <b>${oraEmissione}</b>
@@ -23051,7 +23209,7 @@ window.generaHtmlPianoTerapeutico = function (p) {
                 📞 ${p.telefonoMedico || 'Contatto su cartella'}
               </div>
               <div style="font-size:7.5pt; color:#64748b; margin-top:4px;">
-                Farmacia: <b>${p.farmaciaRiferimento || 'Farmacia Territoriale'}</b>
+                Farmacia: <b>${farmaciaNome}</b>
               </div>
             </td>
             <td style="width:25%; vertical-align:top; border-left:1px solid #e2e8f0; padding-left:12px;">
@@ -23082,25 +23240,25 @@ window.generaHtmlPianoTerapeutico = function (p) {
         </div>
       </div>
 
-      <!-- TABELLA CRONOPROGRAMMA DEI FARMACI (CON OVERFLOW-X PROTETTO) -->
-      <div style="margin-bottom:14px;">
+      <!-- 1. TABELLA CRONOPROGRAMMA DEI FARMACI CON SCORTE & DATE RICHIESTA MMG -->
+      <div style="margin-bottom:16px;">
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
           <div style="font-size:10.5pt; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.3px;">
             📋 Tabella Cronologica di Somministrazione Giornaliera
           </div>
           <div style="font-size:7.5pt; color:#64748b; font-style:italic;">
-            Ordinata per fascia oraria di assunzione
+            Ordinata per orario &bull; Con scorte e data prevista richiesta ricetta
           </div>
         </div>
         <div style="width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:6px; border:1.5px solid #cbd5e1;">
-          <table style="width:100%; min-width:620px; border-collapse:collapse; font-size:8.5pt;">
+          <table style="width:100%; min-width:640px; border-collapse:collapse; font-size:8.5pt;">
             <thead>
               <tr style="background:#0f172a; color:#ffffff; font-size:8pt; text-transform:uppercase; letter-spacing:0.3px;">
                 <th style="padding:6px 8px; text-align:center; width:80px; border-right:1px solid #334155;">Orario</th>
-                <th style="padding:6px 8px; text-align:left; border-right:1px solid #334155;">Farmaco & Principio Attivo</th>
+                <th style="padding:6px 8px; text-align:left; border-right:1px solid #334155;">Farmaco, Principio & Scorta</th>
                 <th style="padding:6px 8px; text-align:left; width:95px; border-right:1px solid #334155;">Dosaggio</th>
                 <th style="padding:6px 8px; text-align:left; border-right:1px solid #334155;">Modalità / Note</th>
-                <th style="padding:6px 8px; text-align:center; width:70px; border-right:1px solid #334155;">Scorta</th>
+                <th style="padding:6px 8px; text-align:center; width:110px; border-right:1px solid #334155;">Scorta & Richiesta</th>
                 <th style="padding:6px 8px; text-align:center; width:55px;">Sigla OSS</th>
               </tr>
             </thead>
@@ -23108,6 +23266,48 @@ window.generaHtmlPianoTerapeutico = function (p) {
               ${righeTable}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- 2. QUADRO FABBISOGNO SCORTE & CALENDARIO RICHIESTA RICETTE AL MEDICO (MMG) -->
+      <div style="margin-bottom:16px; background:#ffffff; border:1.5px solid #0284c7; border-radius:8px; padding:12px 14px; box-shadow:0 2px 8px rgba(2,132,199,0.08);">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #e0f2fe; padding-bottom:8px; margin-bottom:10px; flex-wrap:wrap; gap:6px;">
+          <div>
+            <div style="font-size:10pt; font-weight:900; color:#0369a1; text-transform:uppercase; letter-spacing:0.3px; display:flex; align-items:center; gap:6px;">
+              <span>📦</span> <span>Quadro Fabbisogno Farmaci & Calendario Richiesta Ricette MMG</span>
+            </div>
+            <div style="font-size:7.5pt; color:#64748b; margin-top:2px;">
+              Pianificazione approvvigionamenti con date calcolate con preavviso di 7-15 gg prima dell'esaurimento
+            </div>
+          </div>
+          <div style="display:flex; gap:6px; font-size:7.5pt; font-weight:800;">
+            ${numUrgenti > 0 ? `<span style="background:#fee2e2; color:#991b1b; padding:2px 8px; border-radius:12px; border:1px solid #f87171;">🔴 ${numUrgenti} Richiedere Subito</span>` : ''}
+            ${numImminenti > 0 ? `<span style="background:#fef9c3; color:#854d0e; padding:2px 8px; border-radius:12px; border:1px solid #fde047;">🟡 ${numImminenti} Entro 15 gg</span>` : ''}
+            <span style="background:#f0fdf4; color:#166534; padding:2px 8px; border-radius:12px; border:1px solid #86efac;">🟢 ${numRegolari} Regolari</span>
+          </div>
+        </div>
+
+        <div style="width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:6px; border:1px solid #cbd5e1;">
+          <table style="width:100%; min-width:620px; border-collapse:collapse; font-size:8pt;">
+            <thead>
+              <tr style="background:#1e293b; color:#ffffff; font-size:7.5pt; text-transform:uppercase;">
+                <th style="padding:6px 8px; text-align:left; border-right:1px solid #334155;">Farmaco Prescritto</th>
+                <th style="padding:6px 8px; text-align:center; width:80px; border-right:1px solid #334155;">Giacenza</th>
+                <th style="padding:6px 8px; text-align:center; width:80px; border-right:1px solid #334155;">Autonomia</th>
+                <th style="padding:6px 8px; text-align:center; width:125px; border-right:1px solid #334155;">Data Richiesta MMG</th>
+                <th style="padding:6px 8px; text-align:center; width:95px; border-right:1px solid #334155;">Fine Scorta</th>
+                <th style="padding:6px 8px; text-align:center; width:100px;">Priorità</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${righeFabbisognoHtml}
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:8px; font-size:7.5pt; color:#64748b; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+          <span>🏥 Farmacia territoriale di ritiro ricette: <b style="color:#0f172a;">${farmaciaNome}</b></span>
+          <span>👨‍⚕️ Prescrittore assegnato: <b style="color:#0f172a;">${p.medicoCurante || p.medico || 'Medico Curante'}</b></span>
         </div>
       </div>
 
@@ -23134,6 +23334,7 @@ window.generaHtmlPianoTerapeutico = function (p) {
         • Non variare orari o dosaggi senza preventiva autorizzazione del Medico Curante.<br>
         • Verificare sempre la corretta assunzione con acqua a temperatura ambiente e segnalare immediatamente ritardi o rifiuti al coordinatore.<br>
         • Per eventuali farmaci da conservare in frigorifero (es. insuline in uso/scorta), mantenere temperatura controllata tra +2°C e +8°C.<br>
+        • Inviare tempestivamente la richiesta di rinnovo ricetta al Medico Curante entro la <b>Data Prevista di Richiesta</b> indicata per evitare interruzioni di terapia.<br>
         • In caso di reazioni avverse o urgenze cliniche, allertare tempestivamente il <b>Numero Unico di Emergenza 112</b>.
       </div>
 
@@ -23206,7 +23407,7 @@ window.apriPianoTerapeuticoPDF = function (pazienteId) {
   }
 
   if (typeof showToast === 'function') {
-    showToast(`Piano Terapeutico pronto per ${p.nome}: puoi stamparlo, salvarlo in PDF o condividerlo.`, 'success');
+    showToast(`Piano Terapeutico e Scorte generati per ${p.nome}.`, 'success');
   }
 };
 
@@ -23233,14 +23434,15 @@ window.condividiPianoTerapeuticoWhatsApp = function () {
   if (!p) return;
 
   const terapie = (p.terapie || []).slice().sort((a, b) => (a.ora || '99:99').localeCompare(b.ora || '99:99'));
-  let msg = `📋 *PIANO TERAPEUTICO & ORARI ASSUNZIONE*\n`;
+  let msg = `📋 *PIANO TERAPEUTICO, SCORTE & CALENDARIO RICHIESTE RICETTE*\n`;
   msg += `👤 *Assistito:* ${p.nome}\n`;
   msg += `📍 *Indirizzo:* ${p.indirizzo || 'Domicilio'}\n`;
   msg += `👨‍⚕️ *Medico Curante:* ${p.medicoCurante || p.medico || 'Dott. Curante'}\n`;
+  msg += `🏥 *Farmacia di Riferimento:* ${p.farmaciaDiRiferimento || p.farmacia || 'Farmacia Territoriale'}\n`;
   if (p.allergie) {
     msg += `⚠️ *Allergie:* ${Array.isArray(p.allergie) ? p.allergie.join(', ') : p.allergie}\n`;
   }
-  msg += `\n*CRONOPROGRAMMA SOMMINISTRAZIONI:*\n`;
+  msg += `\n*CRONOPROGRAMMA SOMMINISTRAZIONI & SCORTE:*\n`;
 
   if (terapie.length === 0) {
     msg += `Nessuna terapia registrata.\n`;
@@ -23251,13 +23453,18 @@ window.condividiPianoTerapeuticoWhatsApp = function () {
       const princ = t.principio || t.principioAttivo || '';
       const sos = (t.alBisogno || t.sos) ? ' [SOS]' : '';
       const salvavita = (t.salvavita || t.critico || t.is112 || nomeF.toLowerCase().includes('salvavita')) ? ' 🚨 [SALVAVITA]' : '';
+      const info = window._calcolaDatiScortaERichiesta(t, terapie);
+
       msg += `⏰ *${t.ora || '--:--'}* - *${nomeF}*${salvavita}${sos}\n`;
       msg += `   • Dose: ${dos}${princ ? ' (Principio: ' + princ + ')' : ''}\n`;
-      if (t.modo || t.note || t.istruzioni) msg += `   • Modo: ${t.modo || t.note || t.istruzioni}\n`;
+      msg += `   • 📦 Scorta residua: ${info.scortaNum} ${info.unita} (~${info.ggAutonomia} gg di autonomia)\n`;
+      msg += `   • 📅 Data prevista richiesta ricetta MMG: *${info.dataRichiestaStr}* (Fine scorta: ${info.dataFineStr})\n`;
+      if (t.modo || t.note || t.istruzioni) msg += `   • Istruzioni: ${t.modo || t.note || t.istruzioni}\n`;
+      msg += `\n`;
     });
   }
 
-  msg += `\n_Generato tramite CareAssist Pro_ 🩺`;
+  msg += `_Generato tramite CareAssist Pro_ 🩺`;
 
   const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
@@ -23268,18 +23475,22 @@ window.condividiPianoTerapeuticoEmail = function () {
   if (!p) return;
 
   const terapie = (p.terapie || []).slice().sort((a, b) => (a.ora || '99:99').localeCompare(b.ora || '99:99'));
-  const subject = `Piano Terapeutico e Cronoprogramma Farmaci - ${p.nome}`;
-  let body = `PIANO TERAPEUTICO FARMACOLOGICO & ORARI DI ASSUNZIONE\n`;
+  const subject = `Piano Terapeutico, Scorte e Calendario Richiesta Ricette - ${p.nome}`;
+  let body = `PIANO TERAPEUTICO FARMACOLOGICO, SCORTE & DATE RICHIESTA RICETTE\n`;
   body += `Assistito: ${p.nome}\n`;
   body += `Data: ${new Date().toLocaleDateString('it-IT')}\n`;
-  body += `Medico: ${p.medicoCurante || p.medico || 'Dott. Curante'}\n\n`;
-  body += `FARMACI E ORARI:\n`;
+  body += `Medico Curante: ${p.medicoCurante || p.medico || 'Dott. Curante'}\n`;
+  body += `Farmacia di Riferimento: ${p.farmaciaDiRiferimento || p.farmacia || 'Farmacia Territoriale'}\n\n`;
+  body += `DETTAGLIO SOMMINISTRAZIONI, SCORTE E RICHIESTE MMG:\n`;
   terapie.forEach(t => {
     const nomeF = t.farmaco || t.nome || t.nomeFarmaco || 'Farmaco';
     const dos = t.dosaggio || t.dose || '1 dose';
-    body += `- Ore ${t.ora || '--:--'}: ${nomeF} | Dose: ${dos} | Note: ${t.modo || t.note || t.istruzioni || ''}\n`;
+    const info = window._calcolaDatiScortaERichiesta(t, terapie);
+    body += `- Ore ${t.ora || '--:--'}: ${nomeF} | Dose: ${dos}\n`;
+    body += `  Scorta: ${info.scortaNum} ${info.unita} (~${info.ggAutonomia} gg) | Data prevista richiesta: ${info.dataRichiestaStr} (Fine: ${info.dataFineStr})\n`;
+    body += `  Note: ${t.modo || t.note || t.istruzioni || ''}\n\n`;
   });
-  body += `\nDistinti saluti,\nEquipe ADI CareAssist Pro`;
+  body += `Distinti saluti,\nEquipe Territoriale CareAssist Pro`;
 
   const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   window.location.href = mailtoUrl;
