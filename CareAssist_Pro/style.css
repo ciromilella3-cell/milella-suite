@@ -8953,5 +8953,120 @@ main, .main-content, .dashboard-container {
   pointer-events: auto !important;
 }
 
+/* ==========================================================================
+   ALLERTA ASSIMILAZIONE & RITARDO FARMACO: CORNICE ROSSA LAMPEGGIANTE / PULSE
+   ========================================================================== */
+@keyframes alertAssimilazionePulse {
+  0% {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.75), 0 4px 14px rgba(220, 38, 38, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    border-color: #b91c1c;
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0), 0 8px 24px rgba(220, 38, 38, 0.45);
+    transform: scale(1.012);
+  }
+  100% {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 4px 14px rgba(220, 38, 38, 0.2);
+    transform: scale(1);
+  }
+}
+
+@keyframes alertIconHeartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.25); }
+  28% { transform: scale(1.05); }
+  42% { transform: scale(1.2); }
+  70% { transform: scale(1); }
+}
+
+/* 1. Hero Action Card quando in ritardo o allarme somministrazione attiva */
+.mobile-hero-card.urgent {
+  border: 2.8px solid #dc2626 !important;
+  background: linear-gradient(145deg, #fff1f2 0%, #ffffff 70%) !important;
+  animation: alertAssimilazionePulse 1.8s infinite ease-in-out !important;
+  box-shadow: 0 4px 18px rgba(220, 38, 38, 0.25) !important;
+}
+
+.mobile-hero-card.urgent .mobile-hero-badge {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%) !important;
+  color: #ffffff !important;
+  border: 1.5px solid #fecaca !important;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4) !important;
+}
+
+.mobile-hero-card.urgent .pulse-alert-icon {
+  display: inline-block;
+  animation: alertIconHeartbeat 1.5s infinite ease-in-out;
+}
+
+/* 2. Scheda del Farmaco nella Timeline (Oggi) quando l'alert è attivo */
+.mobile-card-item.is-alert-urgent {
+  border: 2.8px solid #dc2626 !important;
+  background: linear-gradient(145deg, #fff5f5 0%, #ffffff 80%) !important;
+  animation: alertAssimilazionePulse 1.8s infinite ease-in-out !important;
+  position: relative !important;
+  z-index: 1;
+}
+
+.mobile-card-item.is-alert-urgent::before {
+  content: "🚨 ATTENZIONE ORA";
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 900;
+  padding: 1.5px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.4px;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.45);
+  border: 1px solid #fecaca;
+  z-index: 2;
+}
+
+.mobile-card-item.is-alert-urgent .mobile-card-status-pill {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  border: 1px solid #fca5a5 !important;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35) !important;
+}
+
+.mobile-card-item.is-alert-urgent .mobile-card-time {
+  background: #fee2e2 !important;
+  border: 1.5px solid #fca5a5 !important;
+}
+
+.mobile-card-item.is-alert-urgent .mobile-card-time span {
+  color: #991b1b !important;
+}
+
+/* 3. Badge Assimilazione Farmaco (Intervallo Pasti / Digiuno) */
+.pill-assimilazione-avviso {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 5px;
+  box-shadow: 0 1px 3px rgba(245, 158, 11, 0.1);
+}
+
+/* 4. Modal Allarmi Terapie Globale: card farmaco scaduto */
+.card-allarme-farmaco-item.is-alert-urgent {
+  border: 2px solid #ef4444 !important;
+  animation: alertAssimilazionePulse 1.8s infinite ease-in-out !important;
+}
+
+
 
 

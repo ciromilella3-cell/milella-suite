@@ -5875,15 +5875,16 @@ function controllaTerapieGlobaliTuttiPazienti() {
           const rMin = check.minutiRitardo % 60;
           const ritardoStr = (check.minutiRitardo === 0) ? 'ADESSO (ORA ESATTA!)' : (rOre > 0 ? `+${rOre}h ${rMin}m` : `+${rMin} min`);
           return `
-            <div class="card-allarme-farmaco-item" style="background:linear-gradient(135deg, #ffffff 0%, #fffbfb 100%); border:1.5px solid #fee2e2; border-left:4.5px solid #e11d48; border-radius:14px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+            <div class="card-allarme-farmaco-item is-alert-urgent" style="background:linear-gradient(135deg, #ffffff 0%, #fffbfb 100%); border:2px solid #ef4444; border-left:5px solid #dc2626; border-radius:14px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
               <div style="flex:1; min-width:200px;">
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:3px;">
                   <span style="background:#fee2e2; color:#991b1b; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; letter-spacing:0.3px;">🕒 ORE ${f.ora}</span>
                   <span style="font-size:15.5px; font-weight:800; color:#0f172a; letter-spacing:-0.2px;">${f.farmaco}</span>
                 </div>
                 <div style="font-size:12px; color:#475569; font-weight:500;">
-                  ${f.modo ? `<span style="color:#0284c7; font-weight:700;">${f.modo}</span> &bull; ` : ''}Dosaggio: <b style="color:#0f172a;">${f.dosaggio}</b>
+                  Dosaggio: <b style="color:#0f172a;">${f.dosaggio}</b>
                 </div>
+                ${f.modo ? `<div class="pill-assimilazione-avviso" style="margin-top:4px;"><span>🍽️ Assimilazione / Istruzioni:</span> <b>${f.modo}</b></div>` : ''}
               </div>
               <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                 <span style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:#ffffff !important; font-weight:800; font-size:11.5px; padding:5px 12px; border-radius:20px; box-shadow:0 2px 6px rgba(220,38,38,0.3); letter-spacing:0.3px; display:inline-flex; align-items:center; gap:4px;">
@@ -24900,14 +24901,22 @@ function renderMobileNativeView(terapie, p) {
       var nextT = nonFatti[0];
       var minNext = (nextT.ora && nextT.ora.includes(':')) ? (parseInt(nextT.ora.split(':')[0]) * 60 + parseInt(nextT.ora.split(':')[1])) : 0;
       var diffMin = minAttuali - minNext;
-      var isRitardo = diffMin > 30; // Più di 30 minuti di ritardo
+      var isRitardo = diffMin >= 0; // Orario di assunzione scattato o superato!
 
       if (isRitardo) {
         heroContainer.className = 'mobile-hero-card urgent';
+        var badgeRitardoTesto = (diffMin === 0)
+          ? '<span class="pulse-alert-icon">🚨</span> ATTENZIONE • DA ASSUMERE ADESSO (ORE ' + nextT.ora + ')'
+          : '<span class="pulse-alert-icon">🚨</span> ATTENZIONE • IN RITARDO DI ' + (diffMin >= 60 ? Math.floor(diffMin / 60) + 'h ' : '') + (diffMin % 60) + 'm';
+        var heroAssimilazioneHtml = nextT.modo
+          ? '<div class="pill-assimilazione-avviso" style="margin:6px 0 10px 0;"><span>🍽️ Assimilazione / Istruzioni:</span> <b>' + nextT.modo + '</b></div>'
+          : '';
+
         heroContainer.innerHTML =
-          '<div class="mobile-hero-badge badge-urgent">⚠️ ATTENZIONE • IN RITARDO DI ' + Math.floor(diffMin / 60) + 'h ' + (diffMin % 60) + 'm</div>' +
+          '<div class="mobile-hero-badge badge-urgent">' + badgeRitardoTesto + '</div>' +
           '<div class="mobile-hero-title">' + nextT.farmaco + '</div>' +
           '<div class="mobile-hero-sub">Orario previsto: <b>' + nextT.ora + '</b> (' + (nextT.fascia || 'Oggi') + ') • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b></div>' +
+          heroAssimilazioneHtml +
           '<button type="button" class="btn-mobile-hero-action" style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);" onclick="toggleFarmacoConScarico(' + nextT.id + ')">' +
           '<span>✅</span> <span>HO SOMMINISTRATO ORA</span>' +
           '</button>' +
@@ -24917,13 +24926,15 @@ function renderMobileNativeView(terapie, p) {
           '</div>';
       } else {
         heroContainer.className = 'mobile-hero-card ready';
-        var labelOrario = diffMin >= 0
-          ? '⏰ DA SOMMINISTRARE ADESSO • ORE ' + nextT.ora
-          : '⏰ PROSSIMA SOMMINISTRAZIONE • ORE ' + nextT.ora;
+        var labelOrario = '⏰ PROSSIMA SOMMINISTRAZIONE • ORE ' + nextT.ora;
+        var heroAssimilazioneHtml = nextT.modo
+          ? '<div class="pill-assimilazione-avviso" style="margin:5px 0 8px 0;"><span>🍽️ Modo d\'uso:</span> <b>' + nextT.modo + '</b></div>'
+          : '';
         heroContainer.innerHTML =
           '<div class="mobile-hero-badge badge-ready">' + labelOrario + '</div>' +
           '<div class="mobile-hero-title">' + nextT.farmaco + '</div>' +
           '<div class="mobile-hero-sub">' + (nextT.fascia || 'Oggi') + ' • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b> • Scorta: <b>' + (nextT.scorta || 0) + '</b></div>' +
+          heroAssimilazioneHtml +
           '<button type="button" class="btn-mobile-hero-action" onclick="toggleFarmacoConScarico(' + nextT.id + ')">' +
           '<span>✅</span> <span>REGISTRA ASSUNZIONE ORA</span>' +
           '</button>' +
@@ -24956,6 +24967,12 @@ function renderMobileNativeView(terapie, p) {
     } else {
       timelineContainer.innerHTML = lista.map(function (t, idx) {
         var isDone = !!t.fattoOggi;
+        var checkStato = (typeof verificaStatoOrarioFarmaco === 'function') ? verificaStatoOrarioFarmaco(t.ora) : { inRitardo: false, minutiRitardo: 0 };
+        var isUrgent = !isDone && checkStato.inRitardo;
+        var alertClass = isUrgent ? ' is-alert-urgent' : '';
+        var pillLabel = isDone ? '✓ PRESO' : (isUrgent ? ('🚨 RITARDO ' + (checkStato.minutiRitardo >= 60 ? Math.floor(checkStato.minutiRitardo / 60) + 'h ' : '') + (checkStato.minutiRitardo % 60) + 'm') : 'DA FARE');
+        var pillClass = isDone ? 'status-done' : (isUrgent ? 'status-urgent' : 'status-pending');
+
         var iconaFormato = (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) ? '💉' : '💊';
         var isSalvavita = (t.farmaco || '').match(/cardioaspirin|lasix|bisoprolol|irbesartan|sintrom|coumadin|eliquis|xarelto|pradaxa|cordarone|sinemet|madopar|vimpat|averelix|clopidogrel|diamicron/i);
         var badgeSalvavita = isSalvavita ? '<span class="badge-salvavita-118-mini" title="Farmaco essenziale salvavita (NUE 112)">112 SALVAVITA</span>' : '';
@@ -24963,7 +24980,10 @@ function renderMobileNativeView(terapie, p) {
         var principioHtml = principioAttivo ? ('<div class="mobile-card-principio">🔬 Principio: <b>' + principioAttivo + '</b></div>') : '';
         var paletteClass = 'palette-' + (idx % 5);
 
-        return '<div class="mobile-card-item ' + paletteClass + (isDone ? ' is-done' : '') + '" id="mobile-card-farmaco-' + t.id + '" onclick="apriSchedaFarmacoFullscreen(\'' + t.id + '\')" title="Tocca la scheda per aprire a tutta pagina e intervenire" style="cursor:pointer;">' +
+        var isAssimilazioneInfo = t.modo && /(digiun|pasto|pasti|colazion|pranzo|cena|assorb|assunzion|stomaco|acqua)/i.test(t.modo);
+        var assimilazioneHtml = isAssimilazioneInfo ? ('<div class="pill-assimilazione-avviso"><span>🍽️ Assimilazione:</span> <span>' + t.modo + '</span></div>') : '';
+
+        return '<div class="mobile-card-item ' + paletteClass + (isDone ? ' is-done' : '') + alertClass + '" id="mobile-card-farmaco-' + t.id + '" onclick="apriSchedaFarmacoFullscreen(\'' + t.id + '\')" title="Tocca la scheda per aprire a tutta pagina e intervenire" style="cursor:pointer;">' +
           '<div class="mobile-card-header">' +
           '<div class="mobile-card-time" onclick="event.stopPropagation(); apriCambiaOrarioRapido(\'' + t.id + '\')" title="Tocca per cambiare orario di somministrazione" style="cursor:pointer; display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,0.9); padding:3px 9px; border-radius:8px; border:1px solid rgba(0,0,0,0.1);">' +
           '<span>' + iconaFormato + '</span>' +
@@ -24973,8 +24993,8 @@ function renderMobileNativeView(terapie, p) {
           '</div>' +
           '<div style="display:flex; align-items:center; gap:6px;">' +
           '<button type="button" class="btn-card-edit-mini" onclick="event.stopPropagation(); apriModificaFarmaco(\'' + t.id + '\')" title="Modifica terapia, dosaggio o note per OSS">✏️ Modifica</button>' +
-          '<div class="mobile-card-status-pill ' + (isDone ? 'status-done' : 'status-pending') + '">' +
-          (isDone ? '✓ PRESO' : 'DA FARE') +
+          '<div class="mobile-card-status-pill ' + pillClass + '">' +
+          pillLabel +
           '</div>' +
           '</div>' +
           '</div>' +
@@ -24984,8 +25004,9 @@ function renderMobileNativeView(terapie, p) {
           '</div>' +
           principioHtml +
           '<div class="mobile-card-dosaggio" style="margin-top:2px; font-size:12px; color:#334155; font-weight:600;">' +
-          (t.dosaggio || '') + (t.modo ? (' — ' + t.modo) : '') +
+          (t.dosaggio || '') + (t.modo && !isAssimilazioneInfo ? (' — ' + t.modo) : '') +
           '</div>' +
+          assimilazioneHtml +
           '<div class="mobile-card-footer" style="margin-top:9px; padding-top:8px; border-top:1px dashed rgba(0,0,0,0.12); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">' +
           '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
           '<div class="mobile-card-scorta" onclick="event.stopPropagation(); modificaScortaRapida(\'' + t.id + '\')" title="Tocca per modificare il numero esatto di compresse/capsule in scorta" style="font-size:12px; color:#334155; font-weight:700; cursor:pointer; background:rgba(255,255,255,0.9); padding:2px 7px; border-radius:6px; border:1px solid #cbd5e1; display:inline-flex; align-items:center; gap:4px;">' +
