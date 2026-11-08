@@ -25980,19 +25980,45 @@ window.calcolaFabbisognoRicettePaziente = function (paziente) {
   var mappaUnici = {};
 
   terapie.forEach(function (t) {
-    var nomeChiave = (t.farmaco || t.nome || '').trim().toLowerCase();
-    if (!nomeChiave) return;
+    // Normalizzazione nome base per raggruppare dosi multiple (es. Vimpat 1ª, 2ª e 3ª dose)
+    var cleanBase = (typeof getNomeBaseFarmaco === 'function') ? getNomeBaseFarmaco(t) : '';
+    if (!cleanBase) {
+      cleanBase = (t.farmaco || t.nome || '')
+        .replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '')
+        .replace(/\s*\(tempo\s*\d+[^)]*\)/gi, '')
+        .trim().toLowerCase();
+    }
+    if (!cleanBase) return;
+
+    var nomeChiave = cleanBase;
 
     if (!mappaUnici[nomeChiave]) {
+      var mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, terapie) : null;
       var infoScorta = (typeof window._calcolaDatiScortaERichiesta === 'function')
         ? window._calcolaDatiScortaERichiesta(t, terapie)
         : null;
 
-      var scortaNum = (infoScorta && typeof infoScorta.scortaNum !== 'undefined') ? infoScorta.scortaNum : (parseFloat(t.scorta) || 0);
-      var ggAutonomia = (infoScorta && typeof infoScorta.ggAutonomia !== 'undefined') ? infoScorta.ggAutonomia : Math.max(0, Math.floor(scortaNum));
-      var dataFineStr = (infoScorta && infoScorta.dataFineStr) ? infoScorta.dataFineStr : 'Da calcolare';
-      var dataRichiestaStr = (infoScorta && infoScorta.dataRichiestaStr) ? infoScorta.dataRichiestaStr : 'Da calcolare';
-      var unita = (infoScorta && infoScorta.unita) ? infoScorta.unita : 'cpr';
+      var scortaNum = 0;
+      var ggAutonomia = 0;
+      var dataFineStr = 'Da calcolare';
+      var dataRichiestaStr = 'Da calcolare';
+      var unita = 'cpr';
+
+      if (mt) {
+        scortaNum = mt.scortaCondivisa;
+        ggAutonomia = mt.giorniAutonomia;
+        dataFineStr = mt.dataTermineStr || 'Da calcolare';
+        unita = 'cpr';
+      } else if (infoScorta) {
+        scortaNum = (typeof infoScorta.scortaNum !== 'undefined') ? infoScorta.scortaNum : (parseFloat(t.scorta) || 0);
+        ggAutonomia = (typeof infoScorta.ggAutonomia !== 'undefined') ? infoScorta.ggAutonomia : Math.max(0, Math.floor(scortaNum));
+        dataFineStr = infoScorta.dataFineStr || 'Da calcolare';
+        dataRichiestaStr = infoScorta.dataRichiestaStr || 'Da calcolare';
+        unita = infoScorta.unita || 'cpr';
+      } else {
+        scortaNum = parseFloat(t.scorta) || 0;
+        ggAutonomia = Math.max(0, Math.floor(scortaNum));
+      }
 
       var sogliaPreavviso = isFestivita ? 15 : (parseInt(t.giorniAlert, 10) || (unita === 'penne' ? 15 : 7));
       var daRichiedere = (ggAutonomia <= sogliaPreavviso);
@@ -26004,16 +26030,26 @@ window.calcolaFabbisognoRicettePaziente = function (paziente) {
         livelloUrgenza = 'urgente';
       } else if (ggAutonomia <= 7) {
         livelloUrgenza = 'imminente';
-      } else if (ggAutonomia <= 15) {
+      } else if (ggAutonomia <= 15 && isFestivita) {
         livelloUrgenza = 'festivita';
+      }
+
+      var nomeDisplay = (t.farmaco || t.nome || '')
+        .replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '')
+        .replace(/\s*\(tempo\s*\d+[^)]*\)/gi, '')
+        .trim();
+
+      var modoDisplay = t.modo || t.istruzioni || t.note || '';
+      if (mt && mt.numTempi > 1) {
+        modoDisplay = mt.numTempi + ' somministrazioni/die (' + mt.consumoTotaleDie + ' cpr totali)' + (modoDisplay ? ' · ' + modoDisplay : '');
       }
 
       mappaUnici[nomeChiave] = {
         id: t.id,
-        farmaco: t.farmaco || t.nome,
+        farmaco: nomeDisplay,
         principio: t.principio || t.principioAttivo || '',
         dosaggio: t.dosaggio || t.dose || '',
-        modo: t.modo || t.istruzioni || t.note || '',
+        modo: modoDisplay,
         ora: t.ora || '--:--',
         scorta: scortaNum,
         unita: unita,
@@ -26067,7 +26103,7 @@ window.apriModalFabbisognoRicette = function () {
   if (elMedNome) elMedNome.textContent = p.medicoNome || p.medicoCurante || p.medico || 'Dottore Curante';
   if (elMedTel) elMedTel.textContent = p.medicoCellulare || p.medicoTelefono || p.cellulareMedico || 'Telefono MMG';
   if (elFarmNome) elFarmNome.textContent = p.farmaciaDiRiferimento || p.farmacia || 'Farmacia Territoriale di fiducia';
-  if (elSub) elSub.textContent = 'Controllo scorte e fabbisogno per ' + (p.nome || 'l\'assistito');
+  if (elSub) elSub.textContent = 'Controllo scorte e fabbisogno per ' + (p.nome || "l'assistito");
 
   aggiornaGraficaTastoFestivita(p.modalitaFestivitaAttiva);
   renderizzaContenutoFabbisogno(p);
@@ -26148,9 +26184,9 @@ function renderizzaContenutoFabbisogno(p) {
 
   if (titConteggio) {
     if (fabb.farmaciDaRichiedere.length === 0) {
-      titConteggio.innerHTML = '<span style="color:#059669;">✅ Tutte le scorte sono coperte per i prossimi ' + fabb.giorniOrizzonte + ' giorni!</span>';
+      titConteggio.innerHTML = '<span style="color:#059669;">✅ Tutte le scorte risultano coperte per i prossimi ' + fabb.giorniOrizzonte + ' giorni.</span>';
     } else {
-      titConteggio.innerHTML = '🚨 <b>' + fabb.farmaciDaRichiedere.length + ' farmaci</b> da richiedere al Medico per i prossimi <b>' + fabb.giorniOrizzonte + ' giorni</b>:';
+      titConteggio.innerHTML = '🚨 <b>' + fabb.farmaciDaRichiedere.length + ' farmaci</b> in scadenza nei prossimi <b>' + fabb.giorniOrizzonte + ' giorni</b>:';
     }
   }
 
@@ -26174,48 +26210,50 @@ function renderizzaContenutoFabbisogno(p) {
     if (item.scorta <= 0) {
       borderClr = '#f87171';
       bgCard = '#fef2f2';
-      badgeTag = '<span style="background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fca5a5;">🔴 ESAURITO</span>';
+      badgeTag = '<span style="background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fca5a5; white-space:nowrap;">🔴 ESAURITO</span>';
     } else if (item.ggAutonomia <= 3) {
       borderClr = '#fb923c';
       bgCard = '#fff7ed';
-      badgeTag = '<span style="background:#ffedd5; color:#c2410c; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fdba74;">🚨 URGENTE (≤3 gg)</span>';
+      badgeTag = '<span style="background:#ffedd5; color:#c2410c; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fdba74; white-space:nowrap;">🚨 URGENTE (≤3 gg)</span>';
     } else if (item.ggAutonomia <= 7) {
       borderClr = '#fbbf24';
       bgCard = '#fffbeb';
-      badgeTag = '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fde68a;">⚠️ IN SCADENZA (≤7 gg)</span>';
+      badgeTag = '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fde68a; white-space:nowrap;">⚠️ IN SCADENZA (≤7 gg)</span>';
     } else if (item.ggAutonomia <= 15 && fabb.isFestivita) {
       borderClr = '#f59e0b';
       bgCard = '#fffbeb';
-      badgeTag = '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fde68a;">🎄 COPERTURA FESTIVA</span>';
+      badgeTag = '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fde68a; white-space:nowrap;">🎄 COPERTURA FESTIVA</span>';
     } else {
-      badgeTag = '<span style="background:#f0fdf4; color:#15803d; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #bbf7d0;">🟢 SCORTA SUFFICIENTE</span>';
+      badgeTag = '<span style="background:#f0fdf4; color:#15803d; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #bbf7d0; white-space:nowrap;">🟢 SCORTA SUFFICIENTE</span>';
     }
 
-    card.style.cssText = 'background:' + bgCard + '; border:1.5px solid ' + borderClr + '; border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:0 1px 4px rgba(0,0,0,0.03); transition:all 0.15s ease;';
+    card.style.cssText = 'background:' + bgCard + '; border:1.5px solid ' + borderClr + '; border-radius:12px; padding:12px 14px; box-shadow:0 1px 4px rgba(0,0,0,0.03); transition:all 0.15s ease;';
 
     card.innerHTML = 
-      '<div style="display:flex; align-items:center; gap:12px; flex:1; min-width:240px;">' +
-        '<input type="checkbox" id="mfr-check-' + idx + '" class="mfr-farmaco-checkbox" ' + (item.selezionato ? 'checked' : '') + ' onchange="rigeneraTestoFabbisogno()" style="width:20px; height:20px; cursor:pointer; accent-color:#059669;">' +
-        '<div>' +
-          '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
-            '<span style="font-size:14px; font-weight:900; color:#0f172a;">' + item.farmaco + '</span>' +
-            (item.dosaggio ? '<span style="font-size:12px; font-weight:700; color:#475569;">(' + item.dosaggio + ')</span>' : '') +
-            badgeTag +
-          '</div>' +
-          '<div style="font-size:11.5px; color:#64748b; margin-top:2px;">' +
-            (item.principio ? 'Principio: <b>' + item.principio + '</b> · ' : '') +
-            (item.modo ? 'Assunzione: <i>' + item.modo + '</i>' : '') +
-          '</div>' +
+      '<div style="width:100%; display:flex; flex-direction:column; gap:6px;">' +
+        '<div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">' +
+          '<label style="display:flex; align-items:center; gap:10px; cursor:pointer; flex:1; margin:0;">' +
+            '<input type="checkbox" id="mfr-check-' + idx + '" class="mfr-farmaco-checkbox" ' + (item.selezionato ? 'checked' : '') + ' onchange="rigeneraTestoFabbisogno()" style="width:20px; height:20px; cursor:pointer; accent-color:#059669; flex-shrink:0;">' +
+            '<div>' +
+              '<span style="font-size:14.5px; font-weight:900; color:#0f172a;">' + item.farmaco + '</span>' +
+              (item.dosaggio ? ' <span style="font-size:12px; font-weight:700; color:#475569;">(' + item.dosaggio + ')</span>' : '') +
+            '</div>' +
+          '</label>' +
+          '<div>' + badgeTag + '</div>' +
         '</div>' +
-      '</div>' +
-      '<div style="display:flex; align-items:center; gap:14px; text-align:right;">' +
-        '<div style="font-size:12px; line-height:1.35;">' +
-          '<div>Scorta: <b style="color:#0f172a; font-size:13px;">' + item.scorta + ' ' + item.unita + '</b> (~<b>' + item.ggAutonomia + ' gg</b>)</div>' +
-          '<div style="color:#64748b; font-size:11px;">Fine scorta: <b>' + item.dataFineStr + '</b></div>' +
-        '</div>' +
-        '<div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:4px 8px; display:flex; align-items:center; gap:4px;" title="Scatole da richiedere">' +
-          '<span style="font-size:11px; font-weight:700; color:#64748b;">Scatole:</span>' +
-          '<input type="number" id="mfr-scatole-' + idx + '" min="1" max="10" value="' + item.scatoleConsigliate + '" onchange="rigeneraTestoFabbisogno()" style="width:40px; border:none; text-align:center; font-size:12.5px; font-weight:900; color:#0f172a; outline:none;">' +
+        ((item.principio || item.modo) ? 
+          ('<div style="font-size:12px; color:#64748b; padding-left:30px; line-height:1.35;">' +
+            (item.principio ? 'Principio: <b style="color:#334155;">' + item.principio + '</b> · ' : '') +
+            (item.modo ? '<i>' + item.modo + '</i>' : '') +
+          '</div>') : '') +
+        '<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:4px; padding-top:6px; border-top:1px dashed #e2e8f0; padding-left:30px;">' +
+          '<div style="font-size:12px; color:#475569;">' +
+            'Scorta: <b style="color:#0f172a; font-size:13px;">' + item.scorta + ' ' + item.unita + '</b> (~<b>' + item.ggAutonomia + ' gg</b>) · Fine: <b>' + item.dataFineStr + '</b>' +
+          '</div>' +
+          '<div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:3px 8px; display:inline-flex; align-items:center; gap:6px;">' +
+            '<span style="font-size:11px; font-weight:800; color:#64748b;">Scatole:</span>' +
+            '<input type="number" id="mfr-scatole-' + idx + '" min="1" max="10" value="' + item.scatoleConsigliate + '" onchange="rigeneraTestoFabbisogno()" style="width:38px; border:none; text-align:center; font-size:13px; font-weight:900; color:#0f172a; outline:none;">' +
+          '</div>' +
         '</div>' +
       '</div>';
 
