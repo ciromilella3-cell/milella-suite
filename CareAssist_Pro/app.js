@@ -22834,6 +22834,413 @@ window.stampaCartellaClinicaCompletaPDF = function () {
 };
 
 // ==========================================================================
+// PIANO TERAPEUTICO FARMACOLOGICO & ORARI DI ASSUNZIONE (PDF A4 ELEGANTE)
+// ==========================================================================
+window._pazientePianoTerapeuticoCorrente = null;
+
+window.generaHtmlPianoTerapeutico = function (p) {
+  if (!p) return '<div style="padding:20px; text-align:center; color:#ef4444;">Nessun dato assistito disponibile</div>';
+
+  const terapie = (p.terapie || []).slice().sort((a, b) => {
+    const oraA = a.ora || '99:99';
+    const oraB = b.ora || '99:99';
+    return oraA.localeCompare(oraB);
+  });
+
+  const now = new Date();
+  const dataEmissione = now.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const oraEmissione = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+  const operatoreNome = localStorage.getItem('milella_user_nome') || 'Dott. Ciro Milella';
+  const operatoreRuolo = localStorage.getItem('milella_role') || 'Coordinatore Sanitario';
+
+  // Raggruppamento orario e fasce
+  const fasceMap = {
+    mattina: [],
+    pranzo: [],
+    pomeriggio: [],
+    sera: [],
+    notte: [],
+    sos: []
+  };
+
+  terapie.forEach(t => {
+    const f = (t.fascia || '').toLowerCase();
+    if (t.alBisogno || t.sos || f.includes('sos') || f.includes('bisogno')) {
+      fasceMap.sos.push(t);
+    } else if (f.includes('mattin') || f.includes('colaz') || f.includes('digiun')) {
+      fasceMap.mattina.push(t);
+    } else if (f.includes('pranz')) {
+      fasceMap.pranzo.push(t);
+    } else if (f.includes('pomerig')) {
+      fasceMap.pomeriggio.push(t);
+    } else if (f.includes('ser') || f.includes('cen')) {
+      fasceMap.sera.push(t);
+    } else if (f.includes('nott') || f.includes('dormir')) {
+      fasceMap.notte.push(t);
+    } else {
+      fasceMap.mattina.push(t);
+    }
+  });
+
+  // Costruisci le righe della tabella cronologica
+  let righeTable = '';
+  if (terapie.length === 0) {
+    righeTable = `
+      <tr>
+        <td colspan="6" style="text-align:center; padding:18px; color:#64748b; font-style:italic;">
+          Nessuna terapia farmacologica attualmente attiva registrata per questo assistito.
+        </td>
+      </tr>
+    `;
+  } else {
+    terapie.forEach((t, idx) => {
+      const isSalvavita = t.salvavita || t.critico || t.is112 || (t.nome && t.nome.toLowerCase().includes('salvavita'));
+      const isSos = t.alBisogno || t.sos || (t.fascia && t.fascia.toLowerCase().includes('bisogno'));
+      const principio = t.principio || t.principioAttivo || 'Non specificato';
+      const istruzioni = t.modo || t.note || t.istruzioni || 'Assumere secondo prescrizione medica';
+      const scorta = (t.scorta !== undefined && t.scorta !== null) ? t.scorta : '--';
+      const scortaBassa = (typeof scorta === 'number' && scorta <= 5);
+
+      righeTable += `
+        <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'}; border-bottom:1px solid #e2e8f0;">
+          <td style="padding:7px 8px; vertical-align:middle; text-align:center; font-weight:800; color:#0f172a; border-right:1px solid #e2e8f0; white-space:nowrap;">
+            <div style="font-size:11pt; color:#0284c7; font-weight:900;">${t.ora || '--:--'}</div>
+            <div style="font-size:7.5pt; text-transform:uppercase; color:#64748b; font-weight:700;">${t.fascia || 'Programmata'}</div>
+            ${isSos ? '<span style="display:inline-block; font-size:6.5pt; font-weight:800; background:#fee2e2; color:#b91c1c; padding:1px 4px; border-radius:3px; margin-top:2px;">AL BISOGNO</span>' : ''}
+          </td>
+          <td style="padding:7px 8px; vertical-align:middle; border-right:1px solid #e2e8f0;">
+            <div style="font-size:9.5pt; font-weight:800; color:#0f172a; line-height:1.2;">
+              ${t.nome}
+              ${isSalvavita ? '<span style="display:inline-block; margin-left:4px; font-size:7pt; font-weight:900; background:#dc2626; color:#ffffff; padding:1px 5px; border-radius:3px; vertical-align:middle;">112 SALVAVITA</span>' : ''}
+            </div>
+            <div style="font-size:8pt; color:#0369a1; font-weight:600; margin-top:2px;">
+              Principio: <i>${principio}</i>
+            </div>
+          </td>
+          <td style="padding:7px 8px; vertical-align:middle; border-right:1px solid #e2e8f0; font-size:8.5pt; font-weight:700; color:#1e293b;">
+            ${t.dose || '1 compressa'}
+          </td>
+          <td style="padding:7px 8px; vertical-align:middle; border-right:1px solid #e2e8f0; font-size:8pt; color:#334155; line-height:1.3;">
+            ${istruzioni}
+          </td>
+          <td style="padding:7px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-size:8.5pt; font-weight:800; color:${scortaBassa ? '#dc2626' : '#15803d'}; white-space:nowrap;">
+            ${scorta} ${scorta !== '--' ? 'unità' : ''}
+            ${scortaBassa ? '<div style="font-size:6.5pt; color:#b91c1c; font-weight:800;">Scorta bassa!</div>' : ''}
+          </td>
+          <td style="padding:7px 6px; vertical-align:middle; text-align:center; width:65px;">
+            <div style="border:1.5px dashed #94a3b8; height:24px; border-radius:4px; background:#f8fafc;"></div>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  // Costruisci riepilogo a fasce
+  const generaBadgeFascia = (titolo, lista, icona, bgHeader, colorHeader) => {
+    if (lista.length === 0) return '';
+    return `
+      <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; font-size:8pt;">
+        <div style="background:${bgHeader}; color:${colorHeader}; padding:4px 8px; font-weight:800; font-size:8pt; display:flex; justify-content:space-between; align-items:center;">
+          <span>${icona} ${titolo}</span>
+          <span style="background:rgba(255,255,255,0.8); color:#0f172a; padding:1px 5px; border-radius:10px; font-size:7pt; font-weight:900;">${lista.length}</span>
+        </div>
+        <div style="padding:5px 8px;">
+          ${lista.map(item => `
+            <div style="padding:2px 0; border-bottom:1px dashed #f1f5f9; display:flex; justify-content:space-between;">
+              <span style="font-weight:700; color:#1e293b;">${item.ora ? item.ora + ' &bull; ' : ''}${item.nome}</span>
+              <span style="color:#64748b; font-size:7.5pt; margin-left:6px;">${item.dose || ''}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  };
+
+  const allergieTesto = p.allergie ? (Array.isArray(p.allergie) ? p.allergie.join(', ') : p.allergie) : 'Nessuna allergia farmacologica nota segnalata';
+  const haAllergie = allergieTesto && allergieTesto !== 'Nessuna allergia farmacologica nota segnalata' && allergieTesto.toLowerCase() !== 'nessuna';
+
+  return `
+    <div style="color:#0f172a; font-family:'Segoe UI', -apple-system, Roboto, Helvetica, Arial, sans-serif; line-height:1.35; max-width:800px; margin:0 auto; background:#ffffff;">
+      
+      <!-- INTESTAZIONE ISTITUZIONALE -->
+      <table style="width:100%; border-bottom:2.5px solid #0284c7; padding-bottom:8px; margin-bottom:12px; border-collapse:collapse;">
+        <tr>
+          <td style="vertical-align:top; width:65%;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:24pt;">🩺</span>
+              <div>
+                <div style="font-size:15pt; font-weight:900; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px; line-height:1.1;">
+                  CareAssist &bull; Fascicolo Terapeutico
+                </div>
+                <div style="font-size:8.5pt; color:#475569; font-weight:700; margin-top:2px;">
+                  Servizio Sanitario Integrato &bull; Assistenza Domiciliare Integrata (ADI)
+                </div>
+              </div>
+            </div>
+          </td>
+          <td style="vertical-align:top; text-align:right; width:35%;">
+            <div style="display:inline-block; background:#e0f2fe; color:#0369a1; border:1.5px solid #7dd3fc; border-radius:6px; padding:3px 8px; font-size:8pt; font-weight:800;">
+              SCHEDA TERAPIE & ORARI
+            </div>
+            <div style="font-size:7.5pt; color:#64748b; margin-top:4px;">
+              Emissione: <b>${dataEmissione}</b> ore <b>${oraEmissione}</b>
+            </div>
+            <div style="font-size:7pt; color:#94a3b8;">
+              ID Assistito: <b>#${p.id || 'ADI-' + Math.floor(1000 + Math.random() * 9000)}</b>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- SCHEDA ANAGRAFICA ASSISTITO -->
+      <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:8px; padding:10px 14px; margin-bottom:12px;">
+        <table style="width:100%; border-collapse:collapse; font-size:8.5pt;">
+          <tr>
+            <td style="width:45%; vertical-align:top;">
+              <div style="font-size:7pt; text-transform:uppercase; color:#64748b; font-weight:800;">Assistito Domiciliare</div>
+              <div style="font-size:13pt; font-weight:900; color:#0f172a; margin-top:1px;">
+                ${p.nome}
+              </div>
+              <div style="color:#475569; margin-top:2px;">
+                Età: <b>${p.eta ? p.eta + ' anni' : '--'}</b> &bull; Condizione: <span style="font-weight:700; color:#0284c7;">${p.stato || 'In trattamento'}</span>
+              </div>
+              <div style="color:#475569; margin-top:2px;">
+                📍 Indirizzo: <b>${p.indirizzo || 'Domicilio Assistito'}</b>
+              </div>
+            </td>
+            <td style="width:30%; vertical-align:top; border-left:1px solid #e2e8f0; padding-left:12px;">
+              <div style="font-size:7pt; text-transform:uppercase; color:#64748b; font-weight:800;">Medico Curante (MMG)</div>
+              <div style="font-weight:800; color:#1e293b; font-size:9.5pt; margin-top:1px;">
+                ${p.medicoCurante || p.medico || 'Dott. Curante Assegnato'}
+              </div>
+              <div style="color:#475569; font-size:8pt; margin-top:2px;">
+                📞 ${p.telefonoMedico || 'Contatto su cartella'}
+              </div>
+              <div style="font-size:7.5pt; color:#64748b; margin-top:4px;">
+                Farmacia: <b>${p.farmaciaRiferimento || 'Farmacia Territoriale'}</b>
+              </div>
+            </td>
+            <td style="width:25%; vertical-align:top; border-left:1px solid #e2e8f0; padding-left:12px;">
+              <div style="font-size:7pt; text-transform:uppercase; color:#64748b; font-weight:800;">Caregiver / Riferimento</div>
+              <div style="font-weight:800; color:#1e293b; font-size:9pt; margin-top:1px;">
+                ${p.caregiver || p.contattoCaregiver || 'Familiare delegato'}
+              </div>
+              <div style="font-size:8pt; color:#475569; margin-top:2px;">
+                Emergenze Territoriali: <b style="color:#dc2626;">NUE 112</b>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- BOX ALLERGIE / ALLERTA CLINICA -->
+      <div style="background:${haAllergie ? '#fef2f2' : '#f0fdf4'}; border:1.5px solid ${haAllergie ? '#f87171' : '#86efac'}; border-left:5px solid ${haAllergie ? '#dc2626' : '#16a34a'}; border-radius:6px; padding:6px 12px; margin-bottom:12px; font-size:8pt; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <span style="font-weight:900; color:${haAllergie ? '#991b1b' : '#166534'};">
+            ${haAllergie ? '⚠️ ALLERTA ALLERGIE & INTOLLERANZE FARMACOLOGICHE:' : '✅ QUADRO ALLERGOLOGICO:'}
+          </span>
+          <span style="font-weight:700; color:${haAllergie ? '#b91c1c' : '#15803d'}; margin-left:6px;">
+            ${allergieTesto}
+          </span>
+        </div>
+        <div style="font-size:7.5pt; font-weight:800; color:#475569; text-transform:uppercase;">
+          Totale Terapie: <b>${terapie.length}</b>
+        </div>
+      </div>
+
+      <!-- TABELLA CRONOPROGRAMMA DEI FARMACI -->
+      <div style="margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+          <div style="font-size:10.5pt; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.3px;">
+            📋 Tabella Cronologica di Somministrazione Giornaliera
+          </div>
+          <div style="font-size:7.5pt; color:#64748b; font-style:italic;">
+            Ordinata per fascia oraria di assunzione
+          </div>
+        </div>
+        <table style="width:100%; border-collapse:collapse; font-size:8.5pt; border:1.5px solid #cbd5e1; border-radius:6px; overflow:hidden;">
+          <thead>
+            <tr style="background:#0f172a; color:#ffffff; font-size:8pt; text-transform:uppercase; letter-spacing:0.3px;">
+              <th style="padding:6px 8px; text-align:center; width:80px; border-right:1px solid #334155;">Orario</th>
+              <th style="padding:6px 8px; text-align:left; border-right:1px solid #334155;">Farmaco & Principio Attivo</th>
+              <th style="padding:6px 8px; text-align:left; width:125px; border-right:1px solid #334155;">Dosaggio</th>
+              <th style="padding:6px 8px; text-align:left; border-right:1px solid #334155;">Modalità / Note</th>
+              <th style="padding:6px 8px; text-align:center; width:75px; border-right:1px solid #334155;">Scorta</th>
+              <th style="padding:6px 8px; text-align:center; width:65px;">Sigla OSS</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${righeTable}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- QUADRO DI SINTESI FASCE ORARIE -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:9pt; font-weight:800; color:#334155; text-transform:uppercase; margin-bottom:6px;">
+          🕒 Quadro di Sintesi Rapida per Fascia Oraria
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:6px;">
+          ${generaBadgeFascia('Mattina / Colazione', fasceMap.mattina, '🌅', '#fef3c7', '#92400e')}
+          ${generaBadgeFascia('Pranzo / Metà Giorno', fasceMap.pranzo, '🍽️', '#dcfce7', '#166534')}
+          ${generaBadgeFascia('Pomeriggio', fasceMap.pomeriggio, '☕', '#fce7f3', '#9d174d')}
+          ${generaBadgeFascia('Sera / Cena', fasceMap.sera, '🌙', '#e0f2fe', '#0369a1')}
+          ${generaBadgeFascia('Notte / Riposo', fasceMap.notte, '🛏️', '#ede9fe', '#5b21b6')}
+          ${generaBadgeFascia('Al Bisogno / SOS', fasceMap.sos, '🚨', '#fee2e2', '#991b1b')}
+        </div>
+      </div>
+
+      <!-- NOTE OPERATIVE & CONSERVAZIONE FRIGO -->
+      <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; padding:8px 12px; margin-bottom:14px; font-size:7.5pt; color:#475569; line-height:1.4;">
+        <div style="font-weight:800; color:#1e293b; margin-bottom:2px;">
+          📌 NOTE OPERATIVE PER GLI OPERATORI OSS & CAREGIVER:
+        </div>
+        • Non variare orari o dosaggi senza preventiva autorizzazione del Medico Curante.<br>
+        • Verificare sempre la corretta assunzione con acqua a temperatura ambiente e segnalare immediatamente ritardi o rifiuti al coordinatore.<br>
+        • Per eventuali farmaci da conservare in frigorifero (es. insuline in uso/scorta), mantenere temperatura controllata tra +2°C e +8°C.<br>
+        • In caso di reazioni avverse o urgenze cliniche, allertare tempestivamente il <b>Numero Unico di Emergenza 112</b>.
+      </div>
+
+      <!-- SEZIONE FIRME E CONVALIDA -->
+      <table style="width:100%; border-collapse:collapse; margin-top:16px; font-size:8.5pt;">
+        <tr>
+          <td style="width:50%; vertical-align:top; padding-right:15px;">
+            <div style="font-size:7.5pt; text-transform:uppercase; color:#64748b; font-weight:800;">Operatore Territoriale Redattore</div>
+            <div style="font-weight:800; color:#0369a1; font-size:9.5pt; margin-top:2px;">${operatoreNome}</div>
+            <div style="font-size:7.5pt; color:#64748b;">${operatoreRuolo} &bull; CareAssist Pro</div>
+            <div style="margin-top:28px; border-top:1px solid #64748b; width:90%; text-align:center; font-size:7.5pt; color:#64748b; padding-top:4px;">
+              Firma Operatore Sanitario / OSS
+            </div>
+          </td>
+          <td style="width:50%; vertical-align:top; padding-left:15px;">
+            <div style="font-size:7.5pt; text-transform:uppercase; color:#64748b; font-weight:800;">Validazione Medica / Riconciliazione</div>
+            <div style="font-weight:800; color:#0369a1; font-size:9.5pt; margin-top:2px;">${p.medicoCurante || p.medico || 'Dott. Roberto Scarcia'}</div>
+            <div style="font-size:7.5pt; color:#64748b;">Medico di Medicina Generale / Prescrittore ASL</div>
+            <div style="margin-top:28px; border-top:1px solid #64748b; width:90%; text-align:center; font-size:7.5pt; color:#64748b; padding-top:4px;">
+              Timbro e Firma del Medico
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- FOOTER DEL DOCUMENTO -->
+      <div style="margin-top:14px; text-align:center; font-size:6.5pt; color:#94a3b8; border-top:1px dashed #cbd5e1; padding-top:6px;">
+        CareAssist Pro Healthcare Management Suite &bull; Conforme alle Linee Guida Ministeriali e Farmacovigilanza Territoriale &bull; Documento generato elettronicamente per uso clinico e domiciliare.
+      </div>
+    </div>
+  `;
+};
+
+window.apriPianoTerapeuticoPDF = function (pazienteId) {
+  let p = null;
+  if (pazienteId && window.pazienti && Array.isArray(window.pazienti)) {
+    p = window.pazienti.find(x => x.id === pazienteId);
+  }
+  if (!p && typeof getActivePaziente === 'function') {
+    p = getActivePaziente();
+  }
+  if (!p && window.pazienti && window.pazienti.length > 0) {
+    p = window.pazienti[0];
+  }
+
+  if (!p) {
+    if (typeof showToast === 'function') {
+      showToast('Nessun assistito selezionato per la generazione del Piano Terapeutico.', 'error');
+    } else {
+      alert('Nessun assistito selezionato.');
+    }
+    return;
+  }
+
+  window._pazientePianoTerapeuticoCorrente = p;
+
+  const container = document.getElementById('foglio-a4-piano-terapeutico-content');
+  if (container) {
+    container.innerHTML = window.generaHtmlPianoTerapeutico(p);
+  }
+
+  const modal = document.getElementById('modal-anteprima-piano-terapeutico');
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+
+  if (typeof showToast === 'function') {
+    showToast(`Piano Terapeutico pronto per ${p.nome}: puoi stamparlo, salvarlo in PDF o condividerlo.`, 'success');
+  }
+};
+
+window.chiudiPianoTerapeuticoPDF = function () {
+  const modal = document.getElementById('modal-anteprima-piano-terapeutico');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+  document.body.classList.remove('printing-piano-terapeutico');
+};
+
+window.stampaDirettaPianoTerapeutico = function () {
+  document.body.classList.add('printing-piano-terapeutico');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      document.body.classList.remove('printing-piano-terapeutico');
+    }, 1500);
+  }, 150);
+};
+
+window.condividiPianoTerapeuticoWhatsApp = function () {
+  const p = window._pazientePianoTerapeuticoCorrente || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
+  if (!p) return;
+
+  const terapie = (p.terapie || []).slice().sort((a, b) => (a.ora || '99:99').localeCompare(b.ora || '99:99'));
+  let msg = `📋 *PIANO TERAPEUTICO & ORARI ASSUNZIONE*\n`;
+  msg += `👤 *Assistito:* ${p.nome}\n`;
+  msg += `📍 *Indirizzo:* ${p.indirizzo || 'Domicilio'}\n`;
+  msg += `👨‍⚕️ *Medico Curante:* ${p.medicoCurante || p.medico || 'Dott. Curante'}\n`;
+  if (p.allergie) {
+    msg += `⚠️ *Allergie:* ${Array.isArray(p.allergie) ? p.allergie.join(', ') : p.allergie}\n`;
+  }
+  msg += `\n*CRONOPROGRAMMA SOMMINISTRAZIONI:*\n`;
+
+  if (terapie.length === 0) {
+    msg += `Nessuna terapia registrata.\n`;
+  } else {
+    terapie.forEach(t => {
+      const sos = (t.alBisogno || t.sos) ? ' [SOS]' : '';
+      const salvavita = (t.salvavita || t.critico || t.is112) ? ' 🚨 [SALVAVITA]' : '';
+      msg += `⏰ *${t.ora || '--:--'}* - *${t.nome}*${salvavita}${sos}\n`;
+      msg += `   • Dosaggio: ${t.dose || '1 dose'}\n`;
+      if (t.modo || t.note) msg += `   • Istruzioni: ${t.modo || t.note}\n`;
+    });
+  }
+
+  msg += `\n_Generato tramite CareAssist Pro_ 🩺`;
+
+  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+};
+
+window.condividiPianoTerapeuticoEmail = function () {
+  const p = window._pazientePianoTerapeuticoCorrente || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
+  if (!p) return;
+
+  const terapie = (p.terapie || []).slice().sort((a, b) => (a.ora || '99:99').localeCompare(b.ora || '99:99'));
+  const subject = `Piano Terapeutico e Cronoprogramma Farmaci - ${p.nome}`;
+  let body = `PIANO TERAPEUTICO FARMACOLOGICO & ORARI DI ASSUNZIONE\n`;
+  body += `Assistito: ${p.nome}\n`;
+  body += `Data: ${new Date().toLocaleDateString('it-IT')}\n`;
+  body += `Medico: ${p.medicoCurante || p.medico || 'Dott. Curante'}\n\n`;
+  body += `FARMACI E ORARI:\n`;
+  terapie.forEach(t => {
+    body += `- Ore ${t.ora || '--:--'}: ${t.nome} | Dose: ${t.dose || '1 dose'} | Note: ${t.modo || t.note || ''}\n`;
+  });
+  body += `\nDistinti saluti,\nEquipe ADI CareAssist Pro`;
+
+  const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailtoUrl;
+};
+
+// ==========================================================================
 // 1. DETTATURA VOCALE NOTA DI TURNO & PARSING AUTOMATICO
 // ==========================================================================
 let _dettaturaNotaRecognition = null;
