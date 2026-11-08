@@ -22895,40 +22895,69 @@ window.generaHtmlPianoTerapeutico = function (p) {
     `;
   } else {
     terapie.forEach((t, idx) => {
-      const isSalvavita = t.salvavita || t.critico || t.is112 || (t.nome && t.nome.toLowerCase().includes('salvavita'));
+      // Determinazione sicura del nome del farmaco (supporta sia t.farmaco che t.nome / t.nomeFarmaco)
+      const nomeFarmaco = t.farmaco || t.nome || t.nomeFarmaco || t.prodotto || 'Terapia Farmacologica';
+      const principio = t.principio || t.principioAttivo || 'Principio attivo non specificato';
+      const dosaggio = t.dosaggio || t.dose || '1 compressa';
+      const istruzioni = t.modo || t.note || t.istruzioni || t.indicazione || 'Assumere secondo prescrizione medica';
+      const isSalvavita = t.salvavita || t.critico || t.is112 || (nomeFarmaco.toLowerCase().includes('salvavita'));
       const isSos = t.alBisogno || t.sos || (t.fascia && t.fascia.toLowerCase().includes('bisogno'));
-      const principio = t.principio || t.principioAttivo || 'Non specificato';
-      const istruzioni = t.modo || t.note || t.istruzioni || 'Assumere secondo prescrizione medica';
-      const scorta = (t.scorta !== undefined && t.scorta !== null) ? t.scorta : '--';
-      const scortaBassa = (typeof scorta === 'number' && scorta <= 5);
+      
+      let scortaTesto = '--';
+      let scortaBassa = false;
+      if (t.tipoFormulazione === 'penna' && t.penneScorta !== undefined) {
+        scortaTesto = `${t.penneScorta} penne`;
+        scortaBassa = (t.penneScorta <= 1);
+      } else if (t.scorta !== undefined && t.scorta !== null) {
+        scortaTesto = `${t.scorta} unità`;
+        scortaBassa = (typeof t.scorta === 'number' && t.scorta <= 5);
+      }
+
+      const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
 
       righeTable += `
-        <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'}; border-bottom:1px solid #e2e8f0;">
-          <td style="padding:7px 8px; vertical-align:middle; text-align:center; font-weight:800; color:#0f172a; border-right:1px solid #e2e8f0; white-space:nowrap;">
-            <div style="font-size:11pt; color:#0284c7; font-weight:900;">${t.ora || '--:--'}</div>
-            <div style="font-size:7.5pt; text-transform:uppercase; color:#64748b; font-weight:700;">${t.fascia || 'Programmata'}</div>
-            ${isSos ? '<span style="display:inline-block; font-size:6.5pt; font-weight:800; background:#fee2e2; color:#b91c1c; padding:1px 4px; border-radius:3px; margin-top:2px;">AL BISOGNO</span>' : ''}
-          </td>
-          <td style="padding:7px 8px; vertical-align:middle; border-right:1px solid #e2e8f0;">
-            <div style="font-size:9.5pt; font-weight:800; color:#0f172a; line-height:1.2;">
-              ${t.nome}
-              ${isSalvavita ? '<span style="display:inline-block; margin-left:4px; font-size:7pt; font-weight:900; background:#dc2626; color:#ffffff; padding:1px 5px; border-radius:3px; vertical-align:middle;">112 SALVAVITA</span>' : ''}
+        <tr style="background:${rowBg}; border-bottom:1px solid #cbd5e1;">
+          <!-- 1. ORARIO & FASCIA -->
+          <td style="padding:8px 6px; vertical-align:middle; text-align:center; border-right:1px solid #cbd5e1; width:80px; min-width:80px;">
+            <div style="font-size:12pt; color:#0284c7; font-weight:900; line-height:1.1;">
+              ${t.ora || (isSos ? 'SOS' : '--:--')}
             </div>
-            <div style="font-size:8pt; color:#0369a1; font-weight:600; margin-top:2px;">
-              Principio: <i>${principio}</i>
+            <div style="font-size:7pt; text-transform:uppercase; color:#64748b; font-weight:800; margin-top:2px;">
+              ${t.fascia || (isSos ? 'Al Bisogno' : 'Orario')}
             </div>
+            ${isSos ? '<span style="display:inline-block; font-size:6pt; font-weight:900; background:#fee2e2; color:#b91c1c; padding:1px 4px; border-radius:3px; margin-top:3px; border:0.5px solid #f87171;">AL BISOGNO</span>' : ''}
           </td>
-          <td style="padding:7px 8px; vertical-align:middle; border-right:1px solid #e2e8f0; font-size:8.5pt; font-weight:700; color:#1e293b;">
-            ${t.dose || '1 compressa'}
+
+          <!-- 2. FARMACO & PRINCIPIO ATTIVO -->
+          <td style="padding:8px 8px; vertical-align:middle; border-right:1px solid #cbd5e1; min-width:160px;">
+            <div style="font-size:9.5pt; font-weight:900; color:#0f172a; line-height:1.25;">
+              ${nomeFarmaco}
+              ${isSalvavita ? '<span style="display:inline-block; margin-left:4px; font-size:6.5pt; font-weight:900; background:#dc2626; color:#ffffff; padding:1px 5px; border-radius:3px; vertical-align:middle; letter-spacing:0.3px;">112 SALVAVITA</span>' : ''}
+            </div>
+            <div style="font-size:8pt; color:#0369a1; font-weight:700; margin-top:2px;">
+              Principio: <i style="font-style:italic;">${principio}</i>
+            </div>
+            ${t.cadenzaTipo === 'alterni' ? '<div style="font-size:7pt; color:#d97706; font-weight:800; margin-top:2px;">🔄 Somministrazione a giorni alterni</div>' : ''}
           </td>
-          <td style="padding:7px 8px; vertical-align:middle; border-right:1px solid #e2e8f0; font-size:8pt; color:#334155; line-height:1.3;">
+
+          <!-- 3. DOSAGGIO PRESCRITTO -->
+          <td style="padding:8px 8px; vertical-align:middle; border-right:1px solid #cbd5e1; width:95px; min-width:95px; font-size:8.5pt; font-weight:800; color:#1e293b; line-height:1.2;">
+            ${dosaggio}
+          </td>
+
+          <!-- 4. MODALITÀ & INDICAZIONI -->
+          <td style="padding:8px 8px; vertical-align:middle; border-right:1px solid #cbd5e1; min-width:160px; font-size:8pt; color:#334155; line-height:1.35;">
             ${istruzioni}
           </td>
-          <td style="padding:7px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-size:8.5pt; font-weight:800; color:${scortaBassa ? '#dc2626' : '#15803d'}; white-space:nowrap;">
-            ${scorta} ${scorta !== '--' ? 'unità' : ''}
-            ${scortaBassa ? '<div style="font-size:6.5pt; color:#b91c1c; font-weight:800;">Scorta bassa!</div>' : ''}
+
+          <!-- 5. SCORTA A DOMICILIO -->
+          <td style="padding:8px 6px; vertical-align:middle; text-align:center; border-right:1px solid #cbd5e1; width:70px; min-width:70px; font-size:8.5pt; font-weight:900; color:${scortaBassa ? '#dc2626' : '#15803d'}; white-space:nowrap;">
+            ${scortaTesto}
+            ${scortaBassa ? '<div style="font-size:6pt; color:#b91c1c; font-weight:800;">Scorta bassa!</div>' : ''}
           </td>
-          <td style="padding:7px 6px; vertical-align:middle; text-align:center; width:65px;">
+
+          <!-- 6. SIGLA OSS CONVALIDA -->
+          <td style="padding:6px 4px; vertical-align:middle; text-align:center; width:55px; min-width:55px;">
             <div style="border:1.5px dashed #94a3b8; height:24px; border-radius:4px; background:#f8fafc;"></div>
           </td>
         </tr>
@@ -22946,12 +22975,16 @@ window.generaHtmlPianoTerapeutico = function (p) {
           <span style="background:rgba(255,255,255,0.8); color:#0f172a; padding:1px 5px; border-radius:10px; font-size:7pt; font-weight:900;">${lista.length}</span>
         </div>
         <div style="padding:5px 8px;">
-          ${lista.map(item => `
-            <div style="padding:2px 0; border-bottom:1px dashed #f1f5f9; display:flex; justify-content:space-between;">
-              <span style="font-weight:700; color:#1e293b;">${item.ora ? item.ora + ' &bull; ' : ''}${item.nome}</span>
-              <span style="color:#64748b; font-size:7.5pt; margin-left:6px;">${item.dose || ''}</span>
-            </div>
-          `).join('')}
+          ${lista.map(item => {
+            const nf = item.farmaco || item.nome || item.nomeFarmaco || 'Farmaco';
+            const dos = item.dosaggio || item.dose || '';
+            return `
+              <div style="padding:3px 0; border-bottom:1px dashed #f1f5f9; display:flex; justify-content:space-between; align-items:center; gap:4px;">
+                <span style="font-weight:700; color:#1e293b;">${item.ora ? item.ora + ' &bull; ' : ''}${nf}</span>
+                <span style="color:#64748b; font-size:7.5pt; white-space:nowrap;">${dos}</span>
+              </div>
+            `;
+          }).join('')}
         </div>
       </div>
     `;
@@ -23049,7 +23082,7 @@ window.generaHtmlPianoTerapeutico = function (p) {
         </div>
       </div>
 
-      <!-- TABELLA CRONOPROGRAMMA DEI FARMACI -->
+      <!-- TABELLA CRONOPROGRAMMA DEI FARMACI (CON OVERFLOW-X PROTETTO) -->
       <div style="margin-bottom:14px;">
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
           <div style="font-size:10.5pt; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.3px;">
@@ -23059,21 +23092,23 @@ window.generaHtmlPianoTerapeutico = function (p) {
             Ordinata per fascia oraria di assunzione
           </div>
         </div>
-        <table style="width:100%; border-collapse:collapse; font-size:8.5pt; border:1.5px solid #cbd5e1; border-radius:6px; overflow:hidden;">
-          <thead>
-            <tr style="background:#0f172a; color:#ffffff; font-size:8pt; text-transform:uppercase; letter-spacing:0.3px;">
-              <th style="padding:6px 8px; text-align:center; width:80px; border-right:1px solid #334155;">Orario</th>
-              <th style="padding:6px 8px; text-align:left; border-right:1px solid #334155;">Farmaco & Principio Attivo</th>
-              <th style="padding:6px 8px; text-align:left; width:125px; border-right:1px solid #334155;">Dosaggio</th>
-              <th style="padding:6px 8px; text-align:left; border-right:1px solid #334155;">Modalità / Note</th>
-              <th style="padding:6px 8px; text-align:center; width:75px; border-right:1px solid #334155;">Scorta</th>
-              <th style="padding:6px 8px; text-align:center; width:65px;">Sigla OSS</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${righeTable}
-          </tbody>
-        </table>
+        <div style="width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:6px; border:1.5px solid #cbd5e1;">
+          <table style="width:100%; min-width:620px; border-collapse:collapse; font-size:8.5pt;">
+            <thead>
+              <tr style="background:#0f172a; color:#ffffff; font-size:8pt; text-transform:uppercase; letter-spacing:0.3px;">
+                <th style="padding:6px 8px; text-align:center; width:80px; border-right:1px solid #334155;">Orario</th>
+                <th style="padding:6px 8px; text-align:left; border-right:1px solid #334155;">Farmaco & Principio Attivo</th>
+                <th style="padding:6px 8px; text-align:left; width:95px; border-right:1px solid #334155;">Dosaggio</th>
+                <th style="padding:6px 8px; text-align:left; border-right:1px solid #334155;">Modalità / Note</th>
+                <th style="padding:6px 8px; text-align:center; width:70px; border-right:1px solid #334155;">Scorta</th>
+                <th style="padding:6px 8px; text-align:center; width:55px;">Sigla OSS</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${righeTable}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- QUADRO DI SINTESI FASCE ORARIE -->
@@ -23155,6 +23190,11 @@ window.apriPianoTerapeuticoPDF = function (pazienteId) {
 
   window._pazientePianoTerapeuticoCorrente = p;
 
+  const headerPazienteEl = document.getElementById('pt-modal-header-paziente');
+  if (headerPazienteEl) {
+    headerPazienteEl.textContent = p.nome;
+  }
+
   const container = document.getElementById('foglio-a4-piano-terapeutico-content');
   if (container) {
     container.innerHTML = window.generaHtmlPianoTerapeutico(p);
@@ -23206,11 +23246,14 @@ window.condividiPianoTerapeuticoWhatsApp = function () {
     msg += `Nessuna terapia registrata.\n`;
   } else {
     terapie.forEach(t => {
+      const nomeF = t.farmaco || t.nome || t.nomeFarmaco || 'Farmaco';
+      const dos = t.dosaggio || t.dose || '1 dose';
+      const princ = t.principio || t.principioAttivo || '';
       const sos = (t.alBisogno || t.sos) ? ' [SOS]' : '';
-      const salvavita = (t.salvavita || t.critico || t.is112) ? ' 🚨 [SALVAVITA]' : '';
-      msg += `⏰ *${t.ora || '--:--'}* - *${t.nome}*${salvavita}${sos}\n`;
-      msg += `   • Dosaggio: ${t.dose || '1 dose'}\n`;
-      if (t.modo || t.note) msg += `   • Istruzioni: ${t.modo || t.note}\n`;
+      const salvavita = (t.salvavita || t.critico || t.is112 || nomeF.toLowerCase().includes('salvavita')) ? ' 🚨 [SALVAVITA]' : '';
+      msg += `⏰ *${t.ora || '--:--'}* - *${nomeF}*${salvavita}${sos}\n`;
+      msg += `   • Dose: ${dos}${princ ? ' (Principio: ' + princ + ')' : ''}\n`;
+      if (t.modo || t.note || t.istruzioni) msg += `   • Modo: ${t.modo || t.note || t.istruzioni}\n`;
     });
   }
 
@@ -23232,7 +23275,9 @@ window.condividiPianoTerapeuticoEmail = function () {
   body += `Medico: ${p.medicoCurante || p.medico || 'Dott. Curante'}\n\n`;
   body += `FARMACI E ORARI:\n`;
   terapie.forEach(t => {
-    body += `- Ore ${t.ora || '--:--'}: ${t.nome} | Dose: ${t.dose || '1 dose'} | Note: ${t.modo || t.note || ''}\n`;
+    const nomeF = t.farmaco || t.nome || t.nomeFarmaco || 'Farmaco';
+    const dos = t.dosaggio || t.dose || '1 dose';
+    body += `- Ore ${t.ora || '--:--'}: ${nomeF} | Dose: ${dos} | Note: ${t.modo || t.note || t.istruzioni || ''}\n`;
   });
   body += `\nDistinti saluti,\nEquipe ADI CareAssist Pro`;
 
