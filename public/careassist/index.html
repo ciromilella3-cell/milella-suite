@@ -560,6 +560,72 @@
         <span style="font-size:22px;">🚨</span>
         <div>
           <div style="font-size:13.5px; font-weight:900; color:#991b1b;"><span id="mhero-ritardi-count">0</span> Terapie in Ritardo!</div>
+
+    <!-- OROLOGIO POSTURALE & ANTIDECUBITO (Q2H) MOBILE - DEDICATO PER PAZIENTI ALLETTATI -->
+    <div id="mobile-card-orologio-posturale" class="mobile-postura-card" style="display:none; margin:10px 14px 14px 14px; background:#ffffff; border:2px solid #38bdf8; border-radius:18px; padding:14px 16px; box-shadow:0 4px 16px rgba(2,132,199,0.12);">
+      
+      <!-- INTESTAZIONE CARD: TITOLO, AUDIO E BADGE TIMER -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:22px;">🔄</span>
+          <div>
+            <div style="font-family:'Outfit',sans-serif; font-weight:900; font-size:14.5px; color:#0f172a; line-height:1.2;">
+              Orologio Posturale &amp; Antidecubito (q2h)
+            </div>
+            <div style="font-size:10.5px; color:#0284c7; font-weight:700;">Rotazione antidecubito ogni 2 ore</div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button type="button" id="mobile-btn-toggle-audio-postura" onclick="toggleAudioPostura()" style="background:#f1f5f9; border:1px solid #cbd5e1; color:#334155; font-size:11px; font-weight:800; padding:4px 8px; border-radius:8px; cursor:pointer;" title="Audio Allarme ON/OFF">
+            🔔 Audio ON
+          </button>
+          <span class="badge" id="mobile-postura-timer-badge" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; font-size:11px; font-weight:800; padding:4px 8px; border-radius:8px;">
+            ⏳ Controllo Timer
+          </span>
+        </div>
+      </div>
+
+      <!-- CORPO: STATO ATTUALE + CERCHIO COUNTDOWN -->
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:10px 12px;">
+        <div style="flex:1;">
+          <div id="mobile-postura-label-nome-paziente" style="font-size:11px; color:#64748b; font-weight:700;">Posizione Attuale:</div>
+          <div id="mobile-postura-attuale-testo" style="font-size:15.5px; font-weight:900; color:#1e3a8a; margin-top:2px; line-height:1.2;">Supino (Schiena a letto)</div>
+          <div id="mobile-postura-ultimo-cambio" style="font-size:11px; color:#475569; margin-top:3px; font-weight:600;">Dalle ore --:-- (da 0 min)</div>
+        </div>
+
+        <div id="mobile-postura-circle" class="postura-status-circle ok" style="flex-shrink:0; width:68px; height:68px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.08); text-align:center;">
+          <span id="mobile-postura-circle-icon" style="font-size:14px;">⏳</span>
+          <span id="mobile-postura-circle-label" style="font-size:10.5px; font-weight:900; line-height:1.1;">01:43:02</span>
+        </div>
+      </div>
+
+      <!-- I 4 TASTI POSTURALI TATTILI (2x2 GRID SUI TELEFONI) -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+        <button type="button" class="postura-btn mobile-postura-btn" id="mobile-btn-postura-fianco-dx" onclick="cambioPosturaRapido('Fianco Destro (inclinato 30°)')" style="border-radius:12px; padding:10px 8px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span>🛏️</span> <span>Fianco Dx</span>
+        </button>
+        <button type="button" class="postura-btn mobile-postura-btn" id="mobile-btn-postura-supino" onclick="cambioPosturaRapido('Supino (Schiena a letto)')" style="border-radius:12px; padding:10px 8px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span>🛏️</span> <span>Supino</span>
+        </button>
+        <button type="button" class="postura-btn mobile-postura-btn" id="mobile-btn-postura-fianco-sx" onclick="cambioPosturaRapido('Fianco Sinistro (inclinato 30°)')" style="border-radius:12px; padding:10px 8px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span>🛏️</span> <span>Fianco Sx</span>
+        </button>
+        <button type="button" class="postura-btn mobile-postura-btn" id="mobile-btn-postura-semiseduto" onclick="cambioPosturaRapido('Semiseduto (Pasto / Digestione)')" style="border-radius:12px; padding:10px 8px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span>🪑</span> <span>Semiseduto</span>
+        </button>
+      </div>
+
+      <!-- SUGGERIMENTO PROSSIMA POSTURA & STORICO -->
+      <div id="mobile-postura-suggerimento-box" style="font-size:11.5px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:8px 12px; display:flex; align-items:center; gap:8px;">
+        <span style="font-size:16px;">💡</span>
+        <div id="mobile-postura-suggerimento-testo" style="color:#166534; font-weight:600; line-height:1.35;">
+          Calcolo rotazione consigliata in corso...
+        </div>
+      </div>
+
+    </div>
+
           <div style="font-size:11px; color:#b91c1c; font-weight:600;">Tocca qui per aprire l'elenco multi-paziente</div>
         </div>
       </div>

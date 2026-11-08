@@ -11964,26 +11964,21 @@ function aggiornaOrologioPosturale() {
   if (!p) return;
 
   const cardOrologio = document.getElementById('card-orologio-posturale');
+  const cardOrologioMobile = document.getElementById('mobile-card-orologio-posturale');
   const tileCute = document.getElementById('tile-ispezione-cute');
 
   // GESTIONE PAZIENTE DEAMBULANTE (es. Angela): Disattiva e nasconde l'orologio posturale q2h
   if (!p.allettato) {
-    if (cardOrologio) {
-      cardOrologio.style.display = 'none';
-    }
-    if (tileCute) {
-      tileCute.style.display = 'none';
-    }
+    if (cardOrologio) cardOrologio.style.display = 'none';
+    if (cardOrologioMobile) cardOrologioMobile.style.display = 'none';
+    if (tileCute) tileCute.style.display = 'none';
     ultimoSuonoScadutoTimestamp = 0;
     return;
   } else {
-    // PAZIENTE ALLETTATO (es. Aldo): Mostra e attiva regolarmente
-    if (cardOrologio) {
-      cardOrologio.style.display = 'block';
-    }
-    if (tileCute) {
-      tileCute.style.display = 'flex';
-    }
+    // PAZIENTE ALLETTATO (es. Aldo): Mostra e attiva regolarmente sia su desktop che su smartphone
+    if (cardOrologio) cardOrologio.style.display = 'block';
+    if (cardOrologioMobile) cardOrologioMobile.style.display = 'block';
+    if (tileCute) tileCute.style.display = 'flex';
   }
 
   if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
@@ -11991,6 +11986,7 @@ function aggiornaOrologioPosturale() {
     .filter(r => r.tipo === 'postura')
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
+  // Riferimenti Desktop
   const txtPos = document.getElementById('postura-attuale-testo');
   const txtUltimo = document.getElementById('postura-ultimo-cambio');
   const circle = document.getElementById('postura-circle');
@@ -11999,18 +11995,25 @@ function aggiornaOrologioPosturale() {
   const timerBadge = document.getElementById('postura-timer-badge');
   const lblNome = document.getElementById('postura-label-nome-paziente');
 
-  if (!txtPos) return;
+  // Riferimenti Mobile
+  const mTxtPos = document.getElementById('mobile-postura-attuale-testo');
+  const mTxtUltimo = document.getElementById('mobile-postura-ultimo-cambio');
+  const mCircle = document.getElementById('mobile-postura-circle');
+  const mCircleIcon = document.getElementById('mobile-postura-circle-icon');
+  const mCircleLabel = document.getElementById('mobile-postura-circle-label');
+  const mTimerBadge = document.getElementById('mobile-postura-timer-badge');
+  const mLblNome = document.getElementById('mobile-postura-label-nome-paziente');
+  const mBtnAudio = document.getElementById('mobile-btn-toggle-audio-postura');
 
-  // Aggiorna etichetta con il nome esatto dell'assistito corrente
-  if (lblNome) {
-    lblNome.textContent = `Posizione Attuale di ${p.nome.split(' ')[0]}:`;
+  if (mBtnAudio) {
+    mBtnAudio.textContent = audioPosturaAbilitato ? '🔔 Audio ON' : '🔕 Muto';
   }
 
-  // Se è appena diventato allettato o non ha ancora registrazioni posturali,
-  // inizializzalo SUBITO da adesso (ora attuale) in posizione Supino!
-  if (!Array.isArray(p.registrazioni)) {
-    p.registrazioni = [];
-  }
+  const nomePrimo = p.nome ? p.nome.split(' ')[0] : 'Paziente';
+  if (lblNome) lblNome.textContent = `Posizione Attuale di ${nomePrimo}:`;
+  if (mLblNome) mLblNome.textContent = `Posizione Attuale di ${nomePrimo}:`;
+
+  // Se non ha ancora registrazioni, inizializza Supino
   if (!logsPostura.length) {
     const oraInit = new Date().toISOString();
     p.registrazioni.push({
@@ -12029,32 +12032,30 @@ function aggiornaOrologioPosturale() {
   const now = new Date();
   const diffMs = now - lastTime;
   const diffSec = Math.floor(diffMs / 1000);
-  const totalLimitSec = 120 * 60; // 2 ore esatte = 7200 secondi
+  const totalLimitSec = 120 * 60; // 2 ore = 7200 secondi
   const remSec = totalLimitSec - diffSec;
 
-  // Formatta tempo trascorso in mm:ss o hh:mm:ss
   const pad = (n) => String(n).padStart(2, '0');
   const tOre = Math.floor(diffSec / 3600);
   const tMin = Math.floor((diffSec % 3600) / 60);
-  const tSec = diffSec % 60;
   const trascorsoStr = tOre > 0 ? `${tOre}h ${pad(tMin)}m` : `${tMin} min`;
+  const oraFormattata = lastTime.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  const strUltimo = `Dalle ore ${oraFormattata} (da ${trascorsoStr}) - Cute: ${last.cute || 'Integra'}`;
 
-  txtPos.textContent = last.posizione;
-  txtUltimo.textContent = `Dalle ore ${lastTime.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} (da ${trascorsoStr}) - Cute: ${last.cute || 'Integra'}`;
+  if (txtPos) txtPos.textContent = last.posizione;
+  if (mTxtPos) mTxtPos.textContent = last.posizione;
 
-  // Calcolo Posizione Precedente e Suggerimento Prossima Rotazione
+  if (txtUltimo) txtUltimo.textContent = strUltimo;
+  if (mTxtUltimo) mTxtUltimo.textContent = strUltimo;
+
   const prev = logsPostura.length > 1 ? logsPostura[1] : null;
   const posPrecedente = prev ? prev.posizione : 'Nessuna (Inizio giornata)';
 
-  // Sequenza posturale clinica standard di rotazione antidecubito:
-  // Supino -> Fianco Destro -> Fianco Sinistro -> Supino (o Semiseduto se orario pasti)
   let posSuggerita = '';
   let idBtnSuggerito = '';
 
   const posAttualeLower = (last.posizione || '').toLowerCase();
-
   if (posAttualeLower.includes('supino')) {
-    // Da Supino si ruota preferibilmente sul fianco opposto alla penultima postura
     if (prev && prev.posizione.toLowerCase().includes('destro')) {
       posSuggerita = 'Fianco Sinistro (inclinato 30°)';
       idBtnSuggerito = 'btn-postura-fianco-sx';
@@ -12063,20 +12064,17 @@ function aggiornaOrologioPosturale() {
       idBtnSuggerito = 'btn-postura-fianco-dx';
     }
   } else if (posAttualeLower.includes('destro')) {
-    // Da Fianco Dx si ruota sul Fianco Sx (scarico totale sacro) o Supino
     posSuggerita = 'Fianco Sinistro (inclinato 30°)';
     idBtnSuggerito = 'btn-postura-fianco-sx';
   } else if (posAttualeLower.includes('sinistro')) {
-    // Da Fianco Sx si ruota su Supino o Fianco Dx
     posSuggerita = 'Supino (Schiena a letto)';
     idBtnSuggerito = 'btn-postura-supino';
   } else {
-    // Se Semiseduto (dopo pranzo/cena) si torna a letto su un fianco
     posSuggerita = 'Fianco Destro (inclinato 30°)';
     idBtnSuggerito = 'btn-postura-fianco-dx';
   }
 
-  // Evidenzia pulsante attivo e fa lampeggiare il pulsante suggerito
+  // Evidenzia pulsanti attivi e suggeriti (sia Desktop che Mobile)
   document.querySelectorAll('.postura-btn').forEach(btn => {
     btn.classList.toggle('active', btn.textContent.toLowerCase().includes(last.posizione.slice(0, 5).toLowerCase()));
     btn.classList.remove('suggerita');
@@ -12086,79 +12084,112 @@ function aggiornaOrologioPosturale() {
   if (btnSuggerito && !btnSuggerito.classList.contains('active')) {
     btnSuggerito.classList.add('suggerita');
   }
-
-  // Aggiorna box di supporto visivo per i colleghi
-  const suggBox = document.getElementById('postura-suggerimento-testo');
-  if (suggBox) {
-    suggBox.innerHTML = `
-      <span>Posizione precedente: <b>${posPrecedente}</b> &bull; Prossima consigliata: <b style="color:#059669; text-decoration:underline;">${posSuggerita}</b> (pulsante lampeggiante verde)</span>
-    `;
+  const mBtnSuggerito = document.getElementById('mobile-' + idBtnSuggerito);
+  if (mBtnSuggerito && !mBtnSuggerito.classList.contains('active')) {
+    mBtnSuggerito.classList.add('suggerita');
   }
 
+  const suggHtml = `<span>Posizione precedente: <b>${posPrecedente}</b> &bull; Prossima consigliata: <b style="color:#059669; text-decoration:underline;">${posSuggerita}</b> (pulsante lampeggiante verde)</span>`;
+  const suggBox = document.getElementById('postura-suggerimento-testo');
+  if (suggBox) suggBox.innerHTML = suggHtml;
+  const mSuggBox = document.getElementById('mobile-postura-suggerimento-testo');
+  if (mSuggBox) mSuggBox.innerHTML = suggHtml;
+
   if (remSec <= 0) {
-    // TEMPO SCADUTO (RITARDO IN CONTEGGIO POSITIVO)
     const overSec = Math.abs(remSec);
     const oOre = Math.floor(overSec / 3600);
     const oMin = Math.floor((overSec % 3600) / 60);
     const oSec = overSec % 60;
     const overFmt = oOre > 0 ? `+${oOre}:${pad(oMin)}:${pad(oSec)}` : `+${pad(oMin)}:${pad(oSec)}`;
 
-    // SEGNALE COSTANTE E DOLCE: Riproduce ogni 4 secondi un rintocco dolce continuo finché non viene cliccato il cambio postura
     const nowTimeMs = Date.now();
     if (audioPosturaAbilitato && (nowTimeMs - ultimoSuonoScadutoTimestamp >= 4000)) {
       ultimoSuonoScadutoTimestamp = nowTimeMs;
       suonaSegnaleDolce();
     }
 
-    if (circle) {
-      circle.className = 'postura-status-circle urgent';
-      circleIcon.textContent = '⌛';
-      circleLabel.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; gap:1px; line-height:1.1;">
-          <span style="font-size:13px; font-weight:800; font-family:monospace; color:#b91c1c;">${overFmt}</span>
-          <span style="font-size:9.5px; font-weight:800; color:#ef4444; letter-spacing:0.5px;">SCADUTO</span>
-        </div>`;
-    }
+    const circleHtml = `
+      <div style="display:flex; flex-direction:column; align-items:center; gap:1px; line-height:1.1;">
+        <span style="font-size:12px; font-weight:800; font-family:monospace; color:#b91c1c;">${overFmt}</span>
+        <span style="font-size:9px; font-weight:800; color:#ef4444; letter-spacing:0.5px;">SCADUTO</span>
+      </div>`;
+
+    [circle, mCircle].forEach(c => {
+      if (c) c.className = 'postura-status-circle urgent';
+    });
+    [circleIcon, mCircleIcon].forEach(ci => {
+      if (ci) ci.textContent = '⌛';
+    });
+    [circleLabel, mCircleLabel].forEach(cl => {
+      if (cl) cl.innerHTML = circleHtml;
+    });
+
+    const badgeDangerHtml = `⌛ SCADUTO DA ${overFmt} &bull; RUOTARE ORA! 🔔`;
     if (timerBadge) {
       timerBadge.className = 'badge badge-danger';
-      timerBadge.innerHTML = `⌛ SCADUTO DA ${overFmt} &bull; RUOTARE ORA! 🔔`;
+      timerBadge.innerHTML = badgeDangerHtml;
+    }
+    if (mTimerBadge) {
+      mTimerBadge.className = 'badge badge-danger';
+      mTimerBadge.innerHTML = badgeDangerHtml;
     }
   } else {
-    // CONTO ALLA ROVESCIA ATTIVO (HH:MM:SS)
     const rOre = Math.floor(remSec / 3600);
     const rMin = Math.floor((remSec % 3600) / 60);
     const rSec = remSec % 60;
     const countFmt = `${pad(rOre)}:${pad(rMin)}:${pad(rSec)}`;
 
     if (remSec <= 30 * 60) {
-      // Meno di 30 minuti: Avviso giallo
-      if (circle) {
-        circle.className = 'postura-status-circle warning';
-        circleIcon.textContent = '⏳';
-        circleLabel.innerHTML = `
-          <div style="display:flex; flex-direction:column; align-items:center; gap:1px; line-height:1.1;">
-            <span style="font-size:13px; font-weight:800; font-family:monospace; color:#a16207;">${countFmt}</span>
-            <span style="font-size:9px; font-weight:800; color:#854d0e; letter-spacing:0.5px;">SCADENZA</span>
-          </div>`;
-      }
+      const circleWarningHtml = `
+        <div style="display:flex; flex-direction:column; align-items:center; gap:1px; line-height:1.1;">
+          <span style="font-size:12px; font-weight:800; font-family:monospace; color:#a16207;">${countFmt}</span>
+          <span style="font-size:8.5px; font-weight:800; color:#854d0e; letter-spacing:0.5px;">SCADENZA</span>
+        </div>`;
+
+      [circle, mCircle].forEach(c => {
+        if (c) c.className = 'postura-status-circle warning';
+      });
+      [circleIcon, mCircleIcon].forEach(ci => {
+        if (ci) ci.textContent = '⏳';
+      });
+      [circleLabel, mCircleLabel].forEach(cl => {
+        if (cl) cl.innerHTML = circleWarningHtml;
+      });
+
+      const badgeWarnHtml = `⏳ Conto alla rovescia: <b>${countFmt}</b> al cambio postura`;
       if (timerBadge) {
         timerBadge.className = 'badge badge-warning';
-        timerBadge.innerHTML = `⏳ Conto alla rovescia: <b>${countFmt}</b> al cambio postura`;
+        timerBadge.innerHTML = badgeWarnHtml;
+      }
+      if (mTimerBadge) {
+        mTimerBadge.className = 'badge badge-warning';
+        mTimerBadge.innerHTML = badgeWarnHtml;
       }
     } else {
-      // Regolare: Verde con countdown in tempo reale
-      if (circle) {
-        circle.className = 'postura-status-circle ok';
-        circleIcon.textContent = '⏳';
-        circleLabel.innerHTML = `
-          <div style="display:flex; flex-direction:column; align-items:center; gap:1px; line-height:1.1;">
-            <span style="font-size:13.5px; font-weight:800; font-family:monospace; color:#15803d;">${countFmt}</span>
-            <span style="font-size:9.5px; font-weight:800; color:#166534; letter-spacing:0.5px;">RIMASTI</span>
-          </div>`;
-      }
+      const circleOkHtml = `
+        <div style="display:flex; flex-direction:column; align-items:center; gap:1px; line-height:1.1;">
+          <span style="font-size:12.5px; font-weight:800; font-family:monospace; color:#15803d;">${countFmt}</span>
+          <span style="font-size:9px; font-weight:800; color:#166534; letter-spacing:0.5px;">RIMASTI</span>
+        </div>`;
+
+      [circle, mCircle].forEach(c => {
+        if (c) c.className = 'postura-status-circle ok';
+      });
+      [circleIcon, mCircleIcon].forEach(ci => {
+        if (ci) ci.textContent = '⏳';
+      });
+      [circleLabel, mCircleLabel].forEach(cl => {
+        if (cl) cl.innerHTML = circleOkHtml;
+      });
+
+      const badgeOkHtml = `⏳ Conto alla rovescia: <b>${countFmt}</b> (In posizione da ${trascorsoStr})`;
       if (timerBadge) {
         timerBadge.className = 'badge badge-success';
-        timerBadge.innerHTML = `⏳ Conto alla rovescia: <b>${countFmt}</b> (In posizione da ${trascorsoStr})`;
+        timerBadge.innerHTML = badgeOkHtml;
+      }
+      if (mTimerBadge) {
+        mTimerBadge.className = 'badge badge-success';
+        mTimerBadge.innerHTML = badgeOkHtml;
       }
     }
   }
@@ -12182,6 +12213,7 @@ function cambioPosturaRapido(nuovaPosizione) {
 
   p.registrazioni.push(entry);
   saveDb();
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40, 60, 40]);
   showToast(`Postura aggiornata: "${nuovaPosizione}"! Allarme arrestato e timer q2h azzerato.`);
 }
 

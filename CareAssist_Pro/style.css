@@ -9407,3 +9407,14 @@ main, .main-content, .dashboard-container {
 .pulse-pwa {
   animation: pwaPulseGlow 2s infinite;
 }
+
+
+/* STILI MOBILE OROLOGIO POSTURALE ANTIDECUBITO */
+.mobile-postura-btn {
+  min-height: 44px !important;
+  justify-content: center !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.mobile-postura-card {
+  animation: fadeInDown 0.3s ease-out;
+}

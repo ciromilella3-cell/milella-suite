@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v265-ricette-mobile-perfect';
+const CACHE_NAME = 'careassist-pro-v266-orologio-posturale-mobile';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
