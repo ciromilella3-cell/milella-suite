@@ -9067,6 +9067,219 @@ main, .main-content, .dashboard-container {
   animation: alertAssimilazionePulse 1.8s infinite ease-in-out !important;
 }
 
+/* ==========================================================================
+   PIANO TERAPEUTICO MOBILE RESPONSIVE (TAB-FARMACI: CARDS NATIVE SENZA OVERFLOW)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Sezione e Card contenitore */
+  #tab-farmaci {
+    padding-bottom: 95px !important;
+  }
+  #tab-farmaci .card {
+    padding: 8px 6px !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    margin-bottom: 24px !important;
+  }
+  #tab-farmaci .card-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    background: #ffffff !important;
+    border-radius: 18px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    padding: 14px !important;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.04) !important;
+  }
+  #tab-farmaci .card-header > div:last-child {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  #tab-farmaci .card-header > div:last-child > button,
+  #tab-farmaci .card-header > div:last-child > div {
+    width: 100% !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+  #tab-farmaci .card-header > div:last-child > .btn-primary {
+    order: -2 !important; /* + Nuovo Farmaco in primo piano */
+  }
+  #tab-farmaci .card-header > div:last-child > button[onclick*="apriModalInventarioRapido"] {
+    order: -1 !important; /* Modifica Piano e Orari a schermo intero */
+  }
+
+  /* Barra filtri fasce orarie scorrevole */
+  #terapie-filtro-fasce {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 6px !important;
+    padding: 4px 2px 10px 2px !important;
+    margin: 8px 0 !important;
+  }
+  #terapie-filtro-fasce::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* Trasformazione Tabella in Card Cliniche Verticali */
+  .table-fullview-container {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    margin-top: 6px !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
+  .custom-table-panoramica {
+    display: block !important;
+    width: 100% !important;
+    border: none !important;
+  }
+  .custom-table-panoramica thead {
+    display: none !important; /* Nasconde l'intestazione a colonne fissa non adatta a smartphone */
+  }
+  .custom-table-panoramica tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    width: 100% !important;
+  }
+  .custom-table-panoramica tr.terapia-row-item {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    border-radius: 18px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    padding: 14px 16px !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05) !important;
+    box-sizing: border-box !important;
+    gap: 10px !important;
+    position: relative !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  }
+  .custom-table-panoramica td.td-col {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+    text-align: left !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 1. Fascia e Orario */
+  .td-fascia-ora {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 1.5px dashed #e2e8f0 !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 2px !important;
+  }
+  .td-fascia-ora b {
+    font-size: 15px !important;
+    color: #0369a1 !important;
+    background: #f0f9ff !important;
+    padding: 2px 8px !important;
+    border-radius: 8px !important;
+    border: 1px solid #bae6fd !important;
+  }
+
+  /* 2. Farmaco e Principio */
+  .td-farmaco-principio .audit-pill-clickable b {
+    font-size: 17px !important;
+    color: #0f172a !important;
+    line-height: 1.25 !important;
+  }
+
+  /* 3. Dosaggio */
+  .td-dosaggio {
+    font-size: 13.5px !important;
+    color: #1e293b !important;
+  }
+
+  /* 4. Modalità e Indicazioni Cliniche */
+  .td-modo {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 9px 12px !important;
+    font-size: 12.5px !important;
+    line-height: 1.4 !important;
+  }
+
+  /* 5. Scorte e Ritiro */
+  .td-scorte {
+    width: 100% !important;
+  }
+  .td-scorte .scorta-card-executive {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    border-radius: 12px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* 6. Carico Scatola */
+  .td-carico button.btn-carico-luxury {
+    width: 100% !important;
+    min-height: 40px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    border-radius: 10px !important;
+    justify-content: center !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
+  }
+
+  /* 7. Azione Oggi (Assunto / Somministra) */
+  .td-azione-oggi {
+    width: 100% !important;
+  }
+  .td-azione-oggi button {
+    width: 100% !important;
+    min-height: 48px !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    border-radius: 12px !important;
+    justify-content: center !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  /* 8. Azioni (Modifica, Elimina, Traccia, Avviso) */
+  .td-azioni {
+    border-top: 1.5px dashed #e2e8f0 !important;
+    padding-top: 10px !important;
+    margin-top: 4px !important;
+  }
+  .row-azioni-group {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .row-azioni-group button {
+    width: 100% !important;
+    min-height: 40px !important;
+    font-size: 12.5px !important;
+    font-weight: 800 !important;
+    border-radius: 10px !important;
+    justify-content: center !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    margin: 0 !important;
+  }
+}
+
+
 
 
 

@@ -5278,7 +5278,7 @@ function renderTerapie() {
 
       return `
       <tr id="terapia-row-${t.id}" class="terapia-row-item" data-farmaco-id="${t.id}">
-        <td>
+        <td class="td-col td-fascia-ora">
   ${(() => {
           if (t.cadenzaTipo === 'alternata_mezza_intera') {
             const doseAlt = getDoseOdiernaAlternata(t);
@@ -5304,7 +5304,7 @@ function renderTerapie() {
           return `<span class="badge badge-primary">${t.fascia}</span> <b>${t.ora}</b>`;
         })()}
 </td>
-        <td>
+        <td class="td-col td-farmaco-principio">
           <div class="audit-pill-clickable" onclick="mostraAuditFarmaco(${t.id})" title="Clicca per aprire la tracciabilità e la cronologia">
             <b style="color:var(--primary); font-size:14.5px; text-decoration: underline; text-decoration-color: rgba(37,99,235,0.4);">${t.farmaco}</b>
             <span style="font-size:11px; margin-left:4px;" title="Storico">🔍</span>
@@ -5319,7 +5319,7 @@ function renderTerapie() {
             ${t.principio ? `<br><small style="color:#64748b;">Principio: ${t.principio}</small>` : ''}
           </div>
         </td>
-        <td>
+        <td class="td-col td-dosaggio">
           <b>${t.dosaggio}</b>
           ${(() => {
           const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
@@ -5350,7 +5350,7 @@ function renderTerapie() {
           return '';
         })()}
         </td>
-        <td>
+        <td class="td-col td-modo">
           ${(() => {
           const isSinemet = (t.farmaco || '').toUpperCase().includes('SINEMET');
           const isAverelix = (t.farmaco || '').toUpperCase().includes('AVERELIX');
@@ -5363,7 +5363,7 @@ function renderTerapie() {
           return avvisoBox + `<small style="color:#334155; font-size:12.5px;">${t.modo}</small>`;
         })()}
         </td>
-        <td style="text-align: center; vertical-align: middle;">
+        <td class="td-col td-scorte" style="text-align: center; vertical-align: middle;">
           ${(() => {
           const isPenna = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
           if (isPenna) {
@@ -5454,7 +5454,7 @@ function renderTerapie() {
             `;
         })()}
         </td>
-        <td style="text-align: center; vertical-align: middle;">
+        <td class="td-col td-carico" style="text-align: center; vertical-align: middle;">
           ${(() => {
           const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
           if (isPen) {
@@ -5471,7 +5471,7 @@ function renderTerapie() {
             `;
         })()}
         </td>
-        <td style="text-align: center; vertical-align: middle;">
+        <td class="td-col td-azione-oggi" style="text-align: center; vertical-align: middle;">
           ${(() => {
           const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
           const isBisogno = t.fascia === 'Al Bisogno' || t.fascia === 'Al Bisogno (SOS)' || t.ora === 'Al Bisogno' || (t.frequenzaTipo === 'bisogno');
@@ -5554,15 +5554,17 @@ function renderTerapie() {
             `;
         })()}
         </td>
-        <td style="text-align: center;">
-          ${canEdit ? `
-            <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="apriModificaFarmaco('${t.id}')" title="Modifica dati e orario del farmaco">✏️ Modifica</button>
-            <button class="btn btn-outline" style="padding:5px 7px; font-size:11.5px; background:#fff1f2; border:1.5px solid #fca5a5; color:#be123c; cursor:pointer;" onclick="eliminaTerapia('${t.id}')" title="Elimina farmaco dal piano">🗑️</button>
-          ` : `
-            <span style="font-size:11px; color:#64748b; font-weight:600;" title="Sola somministrazione e spunta (Modifiche riservate all'Amministratore)">🔒 Sola Lettura</span>
-          `}
-          <button class="btn btn-outline" style="padding:5px 8px; font-size:11px; margin-left:3px;" onclick="mostraAuditFarmaco(${t.id})" title="Tracciabilità e cronologia controlli">🕒 Traccia</button>
-          <button class="btn btn-outline" style="padding:5px 8px; font-size:11px; margin-left:3px; background:#f0fdf4; border-color:#86efac; color:#166534; font-weight:700;" onclick="apriModalAvvisoFarmacoEsterno(${t.id})" title="Configura avviso esterno su Smartphone, Calendario, WhatsApp e Mail per questo farmaco">🔔 Avviso</button>
+        <td class="td-col td-azioni" style="text-align: center;">
+          <div class="row-azioni-group">
+            ${canEdit ? `
+              <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="apriModificaFarmaco('${t.id}')" title="Modifica dati e orario del farmaco">✏️ Modifica</button>
+              <button class="btn btn-outline" style="padding:5px 7px; font-size:11.5px; background:#fff1f2; border:1.5px solid #fca5a5; color:#be123c; cursor:pointer;" onclick="eliminaTerapia('${t.id}')" title="Elimina farmaco dal piano">🗑️ Elimina</button>
+            ` : `
+              <span style="font-size:11px; color:#64748b; font-weight:600;" title="Sola somministrazione e spunta (Modifiche riservate all'Amministratore)">🔒 Sola Lettura</span>
+            `}
+            <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="mostraAuditFarmaco(${t.id})" title="Tracciabilità e cronologia controlli">🕒 Traccia</button>
+            <button class="btn btn-outline" style="padding:5px 8px; font-size:11px; background:#f0fdf4; border-color:#86efac; color:#166534; font-weight:700;" onclick="apriModalAvvisoFarmacoEsterno(${t.id})" title="Configura avviso esterno su Smartphone, Calendario, WhatsApp e Mail per questo farmaco">🔔 Avviso</button>
+          </div>
         </td>
       </tr>
     `;
