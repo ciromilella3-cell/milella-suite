@@ -276,6 +276,9 @@
 
       <!-- UTILITY HEADER: MENU APPLICAZIONI & OPZIONI / BACKUP -->
       <div class="header-top-utilities">
+        <button class="btn btn-header-utility btn-installa-pwa" id="btn-installa-pwa-header" onclick="apriGuidaInstallazionePWA()" title="Installa CareAssist come App sul tuo telefono o PC" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-weight:800; border:none; box-shadow:0 2px 6px rgba(16,185,129,0.3); display:inline-flex; align-items:center; gap:6px;">
+          <span>📲</span> <span>Installa App</span>
+        </button>
         <button class="btn btn-header-utility btn-menu-home" onclick="window.location.href='/launcher.html'"
           title="Torna al Portale Aziendale">
           <span>🏠</span> <span>Torna al Menu</span>
@@ -294,6 +297,12 @@
           </button>
           <div class="tools-dropdown-menu" id="tools-dropdown-panel">
             <div class="dropdown-section-title">✨ Chicche &amp; Presentazione Medico</div>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriModalFabbisognoRicette()" style="font-weight:800; color:#047857; background:#ecfdf5;">
+              <span>📋</span> Il Lunedì delle Ricette (WhatsApp Medico MMG)
+            </button>
+            <button class="dropdown-menu-item" onclick="chiudiMenuStrumenti(); apriGuidaInstallazionePWA()">
+              <span>📲</span> Installa App su Smartphone / Tablet (PWA)
+            </button>
             <a href="/presentazione_aziendale.html" target="_blank" class="dropdown-menu-item"
               onclick="chiudiMenuStrumenti()" style="font-weight:800; color:#b45309; background:#fffbeb;">
               <span>🏢</span> Presentazione Suite &amp; Nuova Azienda (Video + Moduli)
@@ -571,6 +580,10 @@
     
     <!-- BARRA AZIONI OPERATIVE RAPIDE (PER OSS, 118 E STAMPA PDF) -->
     <div class="mobile-operativa-action-bar" style="display:flex; flex-direction:column; gap:8px; margin:8px 14px 10px 14px;">
+      <button type="button" class="btn-operativo-ricette" onclick="apriModalFabbisognoRicette()" style="background:linear-gradient(135deg, #065f46 0%, #047857 55%, #10b981 100%); color:#ffffff; border:1.5px solid #6ee7b7; padding:11px 16px; border-radius:12px; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 3px 12px rgba(6,95,70,0.35); transition:transform 0.1s ease;">
+        <span style="font-size:17px;">📋</span> <span>Il Lunedì delle Ricette: Fabbisogno &amp; WhatsApp MMG</span>
+        <span style="font-size:10px; background:#f59e0b; color:#fff; padding:2px 7px; border-radius:6px; font-weight:900; letter-spacing:0.3px;">PROMEMORIA</span>
+      </button>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
         <button type="button" class="btn-operativo-oss" onclick="apriMascheraNuovoFarmaco()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; padding:10px 12px; border-radius:12px; font-weight:800; font-size:12.5px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 3px 10px rgba(2,132,199,0.3); transition:transform 0.1s ease;">
           <span style="font-size:15px;">➕</span> <span>Nuova Terapia (OSS)</span>
@@ -1031,6 +1044,9 @@
           <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
 
             <!-- TASTO PRIMARIO 1: + NUOVO FARMACO -->
+            <button type="button" class="btn" onclick="apriModalFabbisognoRicette()" style="background:linear-gradient(135deg, #065f46 0%, #047857 100%); color:#ffffff; font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px; border:none; box-shadow:0 3px 8px rgba(6,95,70,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Riepilogo farmaci da richiedere questa settimana e invio lista al Medico via WhatsApp">
+              <span style="font-size:16px;">📋</span> Lunedì Ricette (WhatsApp)
+            </button>
             <button class="btn btn-primary" onclick="apriMascheraNuovoFarmaco()"
               style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px; border:none; box-shadow:0 3px 8px rgba(2,132,199,0.3); display:inline-flex; align-items:center; gap:6px;">
               <span style="font-size:16px;">➕</span> Nuovo Farmaco
@@ -8407,6 +8423,170 @@
         <button type="button" id="btn-conferma-safety-check" onclick="eseguiConfermaSafetyCheckOspedaliero()"
           style="background:linear-gradient(135deg, #16a34a 0%, #15803d 100%); color:#ffffff; border:none; padding:12px 24px; border-radius:12px; font-weight:900; font-size:14.5px; cursor:pointer; box-shadow:0 4px 14px rgba(22,163,74,0.35); display:inline-flex; align-items:center; gap:8px;">
           <span>🔒✓</span> Convalida Somministrazione Sicura
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- MODAL: IL LUNEDÌ DELLE RICETTE / FABBISOGNO SETTIMANALE & WHATSAPP MMG -->
+  <div id="modal-fabbisogno-ricette-settimana" class="modal-overlay" style="display:none; align-items:center; justify-content:center; z-index:999999;">
+    <div class="modal-box" style="max-width:850px; width:95%; max-height:92vh; display:flex; flex-direction:column; padding:0; border-radius:18px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.45); border:1.5px solid #10b981;">
+      
+      <!-- MODAL HEADER -->
+      <div style="background:linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%); color:#ffffff; padding:16px 22px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.15);">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="background:rgba(255,255,255,0.18); width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px;">📋</div>
+          <div>
+            <div style="font-size:17px; font-weight:900; letter-spacing:0.3px;">Il Lunedì delle Ricette · Fabbisogno &amp; WhatsApp MMG</div>
+            <div id="mfr-sottotitolo-paziente" style="font-size:12px; color:#a7f3d0; font-weight:600;">Controllo preventivo scorte per l'assistito attivo</div>
+          </div>
+        </div>
+        <button type="button" onclick="chiudiModalFabbisognoRicette()" style="background:rgba(255,255,255,0.15); border:none; color:#ffffff; width:34px; height:34px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+      </div>
+
+      <!-- MODAL BODY SCROLLABILE -->
+      <div style="padding:18px 22px; overflow-y:auto; flex:1; background:#f8fafc; display:flex; flex-direction:column; gap:14px;">
+        
+        <!-- BANNER INFO MEDICO & FARMACIA + TOGGLE FESTIVITÀ -->
+        <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+          <div style="font-size:13px; color:#334155; line-height:1.45;">
+            <div>👤 <b>Assistito:</b> <span id="mfr-paziente-nome" style="font-weight:800; color:#0f172a;">--</span> &nbsp;|&nbsp; 🆔 <b>C.F.:</b> <span id="mfr-paziente-cf" style="font-weight:700;">--</span></div>
+            <div style="margin-top:3px;">🩺 <b>Medico Curante:</b> <span id="mfr-medico-nome" style="font-weight:800; color:#047857;">--</span> &nbsp;|&nbsp; 📞 <span id="mfr-medico-tel">--</span></div>
+            <div style="margin-top:2px; font-size:12px; color:#64748b;">🏥 <b>Farmacia di Riferimento:</b> <span id="mfr-farmacia-nome">--</span></div>
+          </div>
+          
+          <!-- TOGGLE FESTIVITA & PONTI -->
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+            <div style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Anticipo Scorte</div>
+            <button type="button" id="btn-toggle-festivita-mfr" onclick="toggleModalitaFestivitaPaziente()" style="background:#f1f5f9; border:1.5px solid #cbd5e1; color:#334155; font-size:12px; font-weight:800; padding:6px 14px; border-radius:20px; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.2s ease;">
+              <span id="mfr-icon-festivita">🎄</span> <span id="mfr-label-festivita">Modalità Ordinaria (7 gg)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- STATO FABBISOGNO & SOMMARIO -->
+        <div id="mfr-sommario-container" style="background:#ecfdf5; border:1.5px solid #6ee7b7; border-radius:12px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:24px;">💡</span>
+            <div>
+              <div id="mfr-conteggio-titolo" style="font-size:14px; font-weight:900; color:#065f46;">3 Farmaci da richiedere al Medico nei prossimi 7 giorni</div>
+              <div style="font-size:11.5px; color:#047857; margin-top:2px;">Seleziona i farmaci da includere nel messaggio WhatsApp o nella stampa promemoria:</div>
+            </div>
+          </div>
+          <button type="button" onclick="selezionaTuttiFabbisogno(true)" style="background:#ffffff; border:1px solid #10b981; color:#047857; font-weight:800; font-size:11.5px; padding:5px 10px; border-radius:8px; cursor:pointer;">
+            ✓ Seleziona Tutti
+          </button>
+        </div>
+
+        <!-- LISTA INTERATTIVA FARMACI IN ESAURIMENTO -->
+        <div id="mfr-lista-farmaci-fabbisogno" style="display:flex; flex-direction:column; gap:10px;">
+          <!-- Generato via JavaScript -->
+        </div>
+
+        <!-- ANTEPRIMA TESTO PER IL MEDICO (EDITABILE) -->
+        <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:12px 16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">
+              💬 Anteprima Messaggio per il Medico (WhatsApp / SMS / Email)
+            </div>
+            <button type="button" onclick="rigeneraTestoFabbisogno()" style="background:none; border:none; color:#0284c7; font-size:11.5px; font-weight:700; cursor:pointer;">
+              🔄 Aggiorna Testo
+            </button>
+          </div>
+          <textarea id="mfr-testo-whatsapp-anteprima" rows="6" style="width:100%; border:1px solid #cbd5e1; border-radius:10px; padding:10px; font-size:12.5px; font-family:monospace; line-height:1.45; color:#0f172a; background:#f8fafc; resize:vertical; box-sizing:border-box;"></textarea>
+        </div>
+
+      </div>
+
+      <!-- MODAL FOOTER CON TASTI AZIONE -->
+      <div style="background:#ffffff; border-top:1.5px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <button type="button" onclick="chiudiModalFabbisognoRicette()" style="background:#f1f5f9; border:1px solid #cbd5e1; color:#475569; font-weight:800; font-size:13px; padding:10px 18px; border-radius:10px; cursor:pointer;">
+          Annulla
+        </button>
+
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <button type="button" onclick="stampaFabbisognoA4()" style="background:#ffffff; border:1.5px solid #0284c7; color:#0284c7; font-weight:800; font-size:13px; padding:10px 16px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <span>🖨️</span> Stampa A4
+          </button>
+          <button type="button" onclick="copiaTestoFabbisogno()" style="background:#ffffff; border:1.5px solid #059669; color:#059669; font-weight:800; font-size:13px; padding:10px 16px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <span>📋</span> Copia Testo
+          </button>
+          <button type="button" onclick="inviaFabbisognoWhatsApp()" style="background:linear-gradient(135deg, #25d366 0%, #128c7e 100%); border:none; color:#ffffff; font-weight:900; font-size:13.5px; padding:10px 20px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(37,211,102,0.4);">
+            <span style="font-size:16px;">📲</span> Invia via WhatsApp al Medico
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: GUIDA INSTALLAZIONE PWA (APP SU SCHERMATA HOME) -->
+  <div id="modal-guida-installazione-pwa" class="modal-overlay" style="display:none; align-items:center; justify-content:center; z-index:999999;">
+    <div class="modal-box" style="max-width:560px; width:92%; max-height:90vh; display:flex; flex-direction:column; padding:0; border-radius:18px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.45); border:1.5px solid #0284c7;">
+      
+      <div style="background:linear-gradient(135deg, #0f172a 0%, #0369a1 100%); color:#ffffff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="background:rgba(255,255,255,0.18); width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px;">📲</div>
+          <div>
+            <div style="font-size:16px; font-weight:900;">Installa CareAssist come App</div>
+            <div style="font-size:11.5px; color:#bae6fd;">Accesso immediato a schermo intero senza barre del browser</div>
+          </div>
+        </div>
+        <button type="button" onclick="chiudiGuidaInstallazionePWA()" style="background:rgba(255,255,255,0.15); border:none; color:#ffffff; width:32px; height:32px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+      </div>
+
+      <div style="padding:18px 20px; overflow-y:auto; flex:1; background:#f8fafc; display:flex; flex-direction:column; gap:14px;">
+        
+        <!-- PULSANTE INSTALLAZIONE DIRETTA SE DISPONIBILE -->
+        <div id="pwa-direct-install-btn" style="display:none;">
+          <button type="button" onclick="eseguiInstallazionePWADiretta()" style="width:100%; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:none; padding:14px; border-radius:12px; font-weight:900; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(16,185,129,0.35);">
+            <span style="font-size:18px;">📲</span> Clicca qui per Installare Subito sul Dispositivo
+          </button>
+          <div style="text-align:center; font-size:11.5px; color:#64748b; margin-top:6px;">oppure segui le istruzioni guidate sottostanti:</div>
+        </div>
+
+        <!-- SCHEDA ANDROID -->
+        <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:14px 16px;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:800; color:#0f172a; margin-bottom:8px;">
+            <span>🤖</span> <b>Smartphone Android (Chrome / Edge / Samsung)</b>
+          </div>
+          <ol style="margin:0; padding-left:20px; font-size:12.5px; color:#334155; line-height:1.6;">
+            <li>Tocca i <b>tre puntini ⋮</b> in alto a destra nel browser Chrome.</li>
+            <li>Seleziona <b>"Aggiungi a schermata Home"</b> oppure <b>"Installa app"</b>.</li>
+            <li>Conferma premendo <b>"Aggiungi"</b>. L'icona di CareAssist Pro comparirà tra le tue app!</li>
+          </ol>
+        </div>
+
+        <!-- SCHEDA IPHONE / IPAD -->
+        <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:14px 16px;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:800; color:#0f172a; margin-bottom:8px;">
+            <span>🍏</span> <b>Apple iPhone &amp; iPad (Safari)</b>
+          </div>
+          <ol style="margin:0; padding-left:20px; font-size:12.5px; color:#334155; line-height:1.6;">
+            <li>Apri il portale su <b>Safari</b>.</li>
+            <li>Tocca l'icona di <b>Condivisione ⎋</b> (il quadrato con la freccia verso l'alto in basso al centro).</li>
+            <li>Scorri le opzioni verso il basso e tocca <b>"Aggiungi alla schermata Home" ➕</b>.</li>
+            <li>Tocca <b>"Aggiungi"</b> in alto a destra.</li>
+          </ol>
+        </div>
+
+        <!-- SCHEDA PC WINDOWS / MAC -->
+        <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:12px 16px;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; color:#0f172a; margin-bottom:6px;">
+            <span>💻</span> <b>PC Windows &amp; Mac (Chrome / Edge)</b>
+          </div>
+          <div style="font-size:12px; color:#334155; line-height:1.5;">
+            Clicca sull'icona <b>Installa 💻⊕</b> nella barra degli indirizzi in alto a destra, oppure nel menu a tre puntini scegli <i>"Installa CareAssist Pro..."</i> per usarla come applicazione desktop dedicata.
+          </div>
+        </div>
+
+      </div>
+
+      <div style="background:#ffffff; border-top:1px solid #e2e8f0; padding:12px 20px; display:flex; justify-content:flex-end;">
+        <button type="button" onclick="chiudiGuidaInstallazionePWA()" style="background:#0284c7; color:#ffffff; border:none; padding:10px 22px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;">
+          Ho Capito
         </button>
       </div>
 

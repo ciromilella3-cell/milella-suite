@@ -1,4 +1,3 @@
-
 // ==============================================================================
 // SELETTORE ASSISTITI STILE WHATSAPP CANALI (RICERCA & FILTRI ISTANTANEI)
 // ==============================================================================
@@ -6225,6 +6224,7 @@ async function applicaSomministrazioneClinicaEffettiva(id, sitoIniezione) {
     } else {
       showToast(`✓ Somministrato "${t.farmaco}" alle ore ${oraFormattata} da ${nomeOperatore}`);
     }
+    if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40, 60, 40]);
 
   } else {
     // Si annulla per errore o modifica con DIALOG ELEGANTE
@@ -6670,6 +6670,7 @@ async function caricaScatolaRapida(farmacoId) {
       if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
       if (typeof renderTerapie === 'function') renderTerapie();
       if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+      if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([60]);
       if (typeof showToast === 'function') showToast('💉 Caricate +' + penneDaAggiungere + ' penne di "' + t.farmaco + '". Nuova scorta: ' + t.scorta + ' penne!');
       return;
     }
@@ -6706,6 +6707,7 @@ async function caricaScatolaRapida(farmacoId) {
     if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
     if (typeof renderTerapie === 'function') renderTerapie();
     if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+    if (typeof triggerHapticFeedback === "function") triggerHapticFeedback([60]);
     if (typeof showToast === 'function') showToast('📦 Caricata 1 scatola di "' + t.farmaco + '" (+' + cprDaAggiungere + ' cpr). Nuova scorta: ' + t.scorta + ' compresse!');
   } catch (err) {
     console.error('Errore caricaScatolaRapida:', err);
@@ -25896,3 +25898,505 @@ function inviaTestoFullscreenEmail() {
   const mailtoUrl = 'mailto:' + encodeURIComponent(mailTo) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   window.open(mailtoUrl, '_blank');
 }
+
+// ==========================================================================
+// FUNZIONI EVOLUTE V263: PWA INSTALL, HAPTIC FEEDBACK, LUNEDÌ DELLE RICETTE
+// ==========================================================================
+
+// 1. FEEDBACK APTICO / VIBRAZIONE TATTILE SMARTPHONE
+window.triggerHapticFeedback = function (pattern) {
+  try {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(pattern || [40, 60, 40]);
+    }
+  } catch (e) {
+    // Ignorato se non supportato
+  }
+};
+
+// 2. PWA INSTALL HANDLERS & GUIDA INSTALLAZIONE
+let _deferredPromptPWA = null;
+
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault();
+  _deferredPromptPWA = e;
+  var btnHeader = document.getElementById('btn-installa-pwa-header');
+  if (btnHeader) {
+    btnHeader.style.display = 'inline-flex';
+    btnHeader.classList.add('pulse-pwa');
+  }
+});
+
+window.addEventListener('appinstalled', function () {
+  _deferredPromptPWA = null;
+  if (typeof showToast === 'function') {
+    showToast('🎉 CareAssist Pro è stata installata con successo sulla tua schermata Home!', 'success');
+  }
+});
+
+window.apriGuidaInstallazionePWA = function () {
+  var modal = document.getElementById('modal-guida-installazione-pwa');
+  if (!modal) return;
+  var directBtn = document.getElementById('pwa-direct-install-btn');
+  if (directBtn) {
+    directBtn.style.display = _deferredPromptPWA ? 'block' : 'none';
+  }
+  modal.style.display = 'flex';
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([30]);
+};
+
+window.chiudiGuidaInstallazionePWA = function () {
+  var modal = document.getElementById('modal-guida-installazione-pwa');
+  if (modal) modal.style.display = 'none';
+};
+
+window.eseguiInstallazionePWADiretta = async function () {
+  if (_deferredPromptPWA) {
+    _deferredPromptPWA.prompt();
+    try {
+      var res = await _deferredPromptPWA.userChoice;
+      console.log('PWA Prompt choice:', res.outcome);
+    } catch (err) {
+      console.warn('PWA prompt error:', err);
+    }
+    _deferredPromptPWA = null;
+    chiudiGuidaInstallazionePWA();
+  } else {
+    if (typeof showToast === 'function') {
+      showToast('Segui i 3 semplici passaggi qui sotto per aggiungerla alla schermata Home dal browser.', 'info');
+    }
+  }
+};
+
+// 3. IL LUNEDÌ DELLE RICETTE / FABBISOGNO SETTIMANALE & WHATSAPP MMG
+window.calcolaFabbisognoRicettePaziente = function (paziente) {
+  var p = paziente || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
+  if (!p) return { farmaciDaRichiedere: [], tuttiFarmaci: [], isFestivita: false, giorniOrizzonte: 7 };
+
+  var isFestivita = !!p.modalitaFestivitaAttiva;
+  var giorniOrizzonte = isFestivita ? 15 : 7;
+  var terapie = Array.isArray(p.terapie) ? p.terapie : [];
+
+  var mappaUnici = {};
+
+  terapie.forEach(function (t) {
+    var nomeChiave = (t.farmaco || t.nome || '').trim().toLowerCase();
+    if (!nomeChiave) return;
+
+    if (!mappaUnici[nomeChiave]) {
+      var infoScorta = (typeof window._calcolaDatiScortaERichiesta === 'function')
+        ? window._calcolaDatiScortaERichiesta(t, terapie)
+        : null;
+
+      var scortaNum = (infoScorta && typeof infoScorta.scortaNum !== 'undefined') ? infoScorta.scortaNum : (parseFloat(t.scorta) || 0);
+      var ggAutonomia = (infoScorta && typeof infoScorta.ggAutonomia !== 'undefined') ? infoScorta.ggAutonomia : Math.max(0, Math.floor(scortaNum));
+      var dataFineStr = (infoScorta && infoScorta.dataFineStr) ? infoScorta.dataFineStr : 'Da calcolare';
+      var dataRichiestaStr = (infoScorta && infoScorta.dataRichiestaStr) ? infoScorta.dataRichiestaStr : 'Da calcolare';
+      var unita = (infoScorta && infoScorta.unita) ? infoScorta.unita : 'cpr';
+
+      var sogliaPreavviso = isFestivita ? 15 : (parseInt(t.giorniAlert, 10) || (unita === 'penne' ? 15 : 7));
+      var daRichiedere = (ggAutonomia <= sogliaPreavviso);
+
+      var livelloUrgenza = 'regolare';
+      if (scortaNum <= 0) {
+        livelloUrgenza = 'critico';
+      } else if (ggAutonomia <= 3) {
+        livelloUrgenza = 'urgente';
+      } else if (ggAutonomia <= 7) {
+        livelloUrgenza = 'imminente';
+      } else if (ggAutonomia <= 15) {
+        livelloUrgenza = 'festivita';
+      }
+
+      mappaUnici[nomeChiave] = {
+        id: t.id,
+        farmaco: t.farmaco || t.nome,
+        principio: t.principio || t.principioAttivo || '',
+        dosaggio: t.dosaggio || t.dose || '',
+        modo: t.modo || t.istruzioni || t.note || '',
+        ora: t.ora || '--:--',
+        scorta: scortaNum,
+        unita: unita,
+        ggAutonomia: ggAutonomia,
+        dataFineStr: dataFineStr,
+        dataRichiestaStr: dataRichiestaStr,
+        sogliaPreavviso: sogliaPreavviso,
+        daRichiedere: daRichiedere,
+        livelloUrgenza: livelloUrgenza,
+        scatoleConsigliate: 1,
+        selezionato: daRichiedere
+      };
+    }
+  });
+
+  var tutti = Object.values(mappaUnici);
+  var daRichiedere = tutti.filter(function (item) { return item.daRichiedere; });
+
+  daRichiedere.sort(function (a, b) { return a.ggAutonomia - b.ggAutonomia; });
+  tutti.sort(function (a, b) { return a.ggAutonomia - b.ggAutonomia; });
+
+  return {
+    farmaciDaRichiedere: daRichiedere,
+    tuttiFarmaci: tutti,
+    isFestivita: isFestivita,
+    giorniOrizzonte: giorniOrizzonte
+  };
+};
+
+window.apriModalFabbisognoRicette = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) {
+    if (typeof showToast === 'function') showToast('Seleziona prima un assistito.', 'warning');
+    return;
+  }
+
+  var modal = document.getElementById('modal-fabbisogno-ricette-settimana');
+  if (!modal) return;
+
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40]);
+
+  var elNome = document.getElementById('mfr-paziente-nome');
+  var elCf = document.getElementById('mfr-paziente-cf');
+  var elMedNome = document.getElementById('mfr-medico-nome');
+  var elMedTel = document.getElementById('mfr-medico-tel');
+  var elFarmNome = document.getElementById('mfr-farmacia-nome');
+  var elSub = document.getElementById('mfr-sottotitolo-paziente');
+
+  if (elNome) elNome.textContent = p.nome || '--';
+  if (elCf) elCf.textContent = p.codiceFiscale || p.cf || 'Non specificato';
+  if (elMedNome) elMedNome.textContent = p.medicoNome || p.medicoCurante || p.medico || 'Dottore Curante';
+  if (elMedTel) elMedTel.textContent = p.medicoCellulare || p.medicoTelefono || p.cellulareMedico || 'Telefono MMG';
+  if (elFarmNome) elFarmNome.textContent = p.farmaciaDiRiferimento || p.farmacia || 'Farmacia Territoriale di fiducia';
+  if (elSub) elSub.textContent = 'Controllo scorte e fabbisogno per ' + (p.nome || 'l\'assistito');
+
+  aggiornaGraficaTastoFestivita(p.modalitaFestivitaAttiva);
+  renderizzaContenutoFabbisogno(p);
+
+  modal.style.display = 'flex';
+};
+
+window.chiudiModalFabbisognoRicette = function () {
+  var modal = document.getElementById('modal-fabbisogno-ricette-settimana');
+  if (modal) modal.style.display = 'none';
+};
+
+function aggiornaGraficaTastoFestivita(isAttiva) {
+  var btn = document.getElementById('btn-toggle-festivita-mfr');
+  var icon = document.getElementById('mfr-icon-festivita');
+  var lbl = document.getElementById('mfr-label-festivita');
+  if (!btn) return;
+
+  if (isAttiva) {
+    btn.style.background = 'linear-gradient(135deg, #b45309 0%, #d97706 100%)';
+    btn.style.borderColor = '#f59e0b';
+    btn.style.color = '#ffffff';
+    btn.style.boxShadow = '0 3px 10px rgba(217,119,6,0.35)';
+    if (icon) icon.textContent = '🎄';
+    if (lbl) lbl.textContent = 'Modalità Festività & Ponti (15 gg)';
+  } else {
+    btn.style.background = '#f1f5f9';
+    btn.style.borderColor = '#cbd5e1';
+    btn.style.color = '#334155';
+    btn.style.boxShadow = 'none';
+    if (icon) icon.textContent = '📅';
+    if (lbl) lbl.textContent = 'Modalità Ordinaria (7 gg)';
+  }
+}
+
+window.toggleModalitaFestivitaPaziente = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  p.modalitaFestivitaAttiva = !p.modalitaFestivitaAttiva;
+  var nuovaSoglia = p.modalitaFestivitaAttiva ? 15 : 7;
+  p.giorniAlertScorte = nuovaSoglia;
+
+  if (Array.isArray(p.terapie)) {
+    p.terapie.forEach(function (t) {
+      t.giorniAlert = nuovaSoglia;
+    });
+  }
+
+  try {
+    localStorage.setItem(DB_KEY, JSON.stringify(AppData));
+  } catch (e) {
+    console.error('Errore salvataggio modalità festività:', e);
+  }
+
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([60, 40]);
+
+  aggiornaGraficaTastoFestivita(p.modalitaFestivitaAttiva);
+  renderizzaContenutoFabbisogno(p);
+
+  if (typeof renderAll === 'function') renderAll();
+
+  if (typeof showToast === 'function') {
+    if (p.modalitaFestivitaAttiva) {
+      showToast('🎄 Modalità Festività & Ponti ATTIVA: soglia minima scorte estesa a 15 giorni!', 'warning');
+    } else {
+      showToast('📅 Ripristinata Modalità Ordinaria: soglia minima scorte standard a 7 giorni.', 'info');
+    }
+  }
+};
+
+function renderizzaContenutoFabbisogno(p) {
+  var fabb = calcolaFabbisognoRicettePaziente(p);
+  var container = document.getElementById('mfr-lista-farmaci-fabbisogno');
+  var titConteggio = document.getElementById('mfr-conteggio-titolo');
+
+  var listaVisualizzata = fabb.farmaciDaRichiedere.length > 0 ? fabb.farmaciDaRichiedere : fabb.tuttiFarmaci;
+
+  if (titConteggio) {
+    if (fabb.farmaciDaRichiedere.length === 0) {
+      titConteggio.innerHTML = '<span style="color:#059669;">✅ Tutte le scorte sono coperte per i prossimi ' + fabb.giorniOrizzonte + ' giorni!</span>';
+    } else {
+      titConteggio.innerHTML = '🚨 <b>' + fabb.farmaciDaRichiedere.length + ' farmaci</b> da richiedere al Medico per i prossimi <b>' + fabb.giorniOrizzonte + ' giorni</b>:';
+    }
+  }
+
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (listaVisualizzata.length === 0) {
+    container.innerHTML = '<div style="background:#ffffff; border:1px dashed #cbd5e1; padding:20px; border-radius:12px; text-align:center; color:#64748b; font-weight:700;">Nessuna terapia farmacologica registrata per questo assistito.</div>';
+    rigeneraTestoFabbisogno();
+    return;
+  }
+
+  listaVisualizzata.forEach(function (item, idx) {
+    var card = document.createElement('div');
+    card.id = 'mfr-card-farmaco-' + idx;
+    
+    var borderClr = '#cbd5e1';
+    var bgCard = '#ffffff';
+    var badgeTag = '';
+
+    if (item.scorta <= 0) {
+      borderClr = '#f87171';
+      bgCard = '#fef2f2';
+      badgeTag = '<span style="background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fca5a5;">🔴 ESAURITO</span>';
+    } else if (item.ggAutonomia <= 3) {
+      borderClr = '#fb923c';
+      bgCard = '#fff7ed';
+      badgeTag = '<span style="background:#ffedd5; color:#c2410c; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fdba74;">🚨 URGENTE (≤3 gg)</span>';
+    } else if (item.ggAutonomia <= 7) {
+      borderClr = '#fbbf24';
+      bgCard = '#fffbeb';
+      badgeTag = '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fde68a;">⚠️ IN SCADENZA (≤7 gg)</span>';
+    } else if (item.ggAutonomia <= 15 && fabb.isFestivita) {
+      borderClr = '#f59e0b';
+      bgCard = '#fffbeb';
+      badgeTag = '<span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #fde68a;">🎄 COPERTURA FESTIVA</span>';
+    } else {
+      badgeTag = '<span style="background:#f0fdf4; color:#15803d; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; border:1px solid #bbf7d0;">🟢 SCORTA SUFFICIENTE</span>';
+    }
+
+    card.style.cssText = 'background:' + bgCard + '; border:1.5px solid ' + borderClr + '; border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:0 1px 4px rgba(0,0,0,0.03); transition:all 0.15s ease;';
+
+    card.innerHTML = 
+      '<div style="display:flex; align-items:center; gap:12px; flex:1; min-width:240px;">' +
+        '<input type="checkbox" id="mfr-check-' + idx + '" class="mfr-farmaco-checkbox" ' + (item.selezionato ? 'checked' : '') + ' onchange="rigeneraTestoFabbisogno()" style="width:20px; height:20px; cursor:pointer; accent-color:#059669;">' +
+        '<div>' +
+          '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+            '<span style="font-size:14px; font-weight:900; color:#0f172a;">' + item.farmaco + '</span>' +
+            (item.dosaggio ? '<span style="font-size:12px; font-weight:700; color:#475569;">(' + item.dosaggio + ')</span>' : '') +
+            badgeTag +
+          '</div>' +
+          '<div style="font-size:11.5px; color:#64748b; margin-top:2px;">' +
+            (item.principio ? 'Principio: <b>' + item.principio + '</b> · ' : '') +
+            (item.modo ? 'Assunzione: <i>' + item.modo + '</i>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex; align-items:center; gap:14px; text-align:right;">' +
+        '<div style="font-size:12px; line-height:1.35;">' +
+          '<div>Scorta: <b style="color:#0f172a; font-size:13px;">' + item.scorta + ' ' + item.unita + '</b> (~<b>' + item.ggAutonomia + ' gg</b>)</div>' +
+          '<div style="color:#64748b; font-size:11px;">Fine scorta: <b>' + item.dataFineStr + '</b></div>' +
+        '</div>' +
+        '<div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:4px 8px; display:flex; align-items:center; gap:4px;" title="Scatole da richiedere">' +
+          '<span style="font-size:11px; font-weight:700; color:#64748b;">Scatole:</span>' +
+          '<input type="number" id="mfr-scatole-' + idx + '" min="1" max="10" value="' + item.scatoleConsigliate + '" onchange="rigeneraTestoFabbisogno()" style="width:40px; border:none; text-align:center; font-size:12.5px; font-weight:900; color:#0f172a; outline:none;">' +
+        '</div>' +
+      '</div>';
+
+    card.dataset.farmacoIdx = idx;
+    card.dataset.farmacoNome = item.farmaco;
+    card.dataset.principio = item.principio;
+    card.dataset.dosaggio = item.dosaggio;
+    card.dataset.modo = item.modo;
+    card.dataset.scorta = item.scorta;
+    card.dataset.unita = item.unita;
+    card.dataset.ggAutonomia = item.ggAutonomia;
+    card.dataset.dataFineStr = item.dataFineStr;
+    card.dataset.dataRichiestaStr = item.dataRichiestaStr;
+
+    container.appendChild(card);
+  });
+
+  rigeneraTestoFabbisogno();
+}
+
+window.selezionaTuttiFabbisogno = function (stato) {
+  var checkboxes = document.querySelectorAll('.mfr-farmaco-checkbox');
+  checkboxes.forEach(function (cb) {
+    cb.checked = (stato !== false);
+  });
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([30]);
+  rigeneraTestoFabbisogno();
+};
+
+window.rigeneraTestoFabbisogno = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  var cards = document.querySelectorAll('#mfr-lista-farmaci-fabbisogno > div');
+  var selezionati = [];
+
+  cards.forEach(function (c, idx) {
+    var cb = document.getElementById('mfr-check-' + idx);
+    var inpScatole = document.getElementById('mfr-scatole-' + idx);
+    if (cb && cb.checked) {
+      selezionati.push({
+        farmaco: c.dataset.farmacoNome,
+        dosaggio: c.dataset.dosaggio,
+        principio: c.dataset.principio,
+        modo: c.dataset.modo,
+        scorta: c.dataset.scorta,
+        unita: c.dataset.unita,
+        ggAutonomia: c.dataset.ggAutonomia,
+        dataFineStr: c.dataset.dataFineStr,
+        numScatole: (inpScatole ? parseInt(inpScatole.value, 10) : 1) || 1
+      });
+    }
+  });
+
+  var testo = generaTestoRichiestaMMG(p, selezionati);
+  var textarea = document.getElementById('mfr-testo-whatsapp-anteprima');
+  if (textarea) textarea.value = testo;
+};
+
+window.generaTestoRichiestaMMG = function (p, farmaci) {
+  var medico = p.medicoNome || p.medicoCurante || p.medico || 'Dottore';
+  var oggiStr = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+  oggiStr = oggiStr.charAt(0).toUpperCase() + oggiStr.slice(1);
+
+  var msg = 'Gentile ' + medico + ',\n' +
+    'Le trasmetto la richiesta per il rinnovo delle ricette mediche per il paziente:\n\n' +
+    '👤 Assistito: ' + (p.nome || '--') + '\n';
+  if (p.codiceFiscale || p.cf) msg += '🆔 Codice Fiscale: ' + (p.codiceFiscale || p.cf) + '\n';
+  if (p.dataNascita) msg += '🎂 Nato il: ' + p.dataNascita + '\n';
+  if (p.farmaciaDiRiferimento || p.farmacia) msg += '🏥 Farmacia di Riferimento: ' + (p.farmaciaDiRiferimento || p.farmacia) + '\n';
+  msg += '📅 Data monitoraggio: ' + oggiStr + '\n\n';
+
+  if (!farmaci || farmaci.length === 0) {
+    msg += 'Tutte le scorte attuali risultano al momento regolari. Nessuna richiesta urgente pervenuta.\n\n';
+  } else {
+    msg += '📋 ELENCO FARMACI IN SCADENZA / DA RINNOVARE (' + farmaci.length + '):\n';
+    farmaci.forEach(function (f, i) {
+      msg += (i + 1) + '️⃣ ' + f.farmaco + (f.dosaggio ? ' (' + f.dosaggio + ')' : '') + '\n';
+      if (f.principio) msg += '   • Principio Attivo: ' + f.principio + '\n';
+      if (f.modo) msg += '   • Posologia: ' + f.modo + '\n';
+      msg += '   • Scorta residua: ' + f.scorta + ' ' + f.unita + ' (~' + f.ggAutonomia + ' giorni di autonomia)\n';
+      msg += '   • Fine scorta stimata: ' + f.dataFineStr + '\n';
+      msg += '   • Confezioni richieste: ' + f.numScatole + ' ' + (f.numScatole === 1 ? 'scatola' : 'scatole') + '\n\n';
+    });
+  }
+
+  msg += 'La ringraziamo sentitamente per la consueta disponibilità e collaborazione.\n';
+  msg += 'Cordiali saluti,\n';
+  msg += 'Equipe Assistenziale Domiciliare · CareAssist Pro 🩺';
+
+  return msg;
+};
+
+window.inviaFabbisognoWhatsApp = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  var textarea = document.getElementById('mfr-testo-whatsapp-anteprima');
+  var testo = textarea ? textarea.value : '';
+  if (!testo.trim()) {
+    if (typeof showToast === 'function') showToast('Nessun farmaco selezionato nel messaggio.', 'warning');
+    return;
+  }
+
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40, 60, 40]);
+
+  var telRaw = p.medicoCellulare || p.medicoTelefono || p.cellulareMedico || '';
+  var telPulito = telRaw.replace(/[^0-9]/g, '');
+
+  if (telPulito.length === 10 && (telPulito.startsWith('3') || telPulito.startsWith('0'))) {
+    telPulito = '39' + telPulito;
+  }
+
+  var waUrl = telPulito ? ('https://wa.me/' + telPulito + '?text=' + encodeURIComponent(testo)) : ('https://wa.me/?text=' + encodeURIComponent(testo));
+  window.open(waUrl, '_blank');
+
+  if (typeof showToast === 'function') {
+    showToast('📲 Apertura WhatsApp per l\'invio della richiesta farmaci al Medico...', 'success');
+  }
+};
+
+window.copiaTestoFabbisogno = function () {
+  var textarea = document.getElementById('mfr-testo-whatsapp-anteprima');
+  var testo = textarea ? textarea.value : '';
+  if (!testo.trim()) {
+    if (typeof showToast === 'function') showToast('Nessun testo da copiare.', 'warning');
+    return;
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(testo).then(function () {
+      if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([50]);
+      if (typeof showToast === 'function') showToast('📋 Testo promemoria copiato negli appunti! Incollalo in WhatsApp, SMS o Email.', 'success');
+    }).catch(function () {
+      copiaFallbackTextarea(textarea);
+    });
+  } else {
+    copiaFallbackTextarea(textarea);
+  }
+};
+
+function copiaFallbackTextarea(ta) {
+  try {
+    ta.select();
+    document.execCommand('copy');
+    if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([50]);
+    if (typeof showToast === 'function') showToast('📋 Testo copiato negli appunti!', 'success');
+  } catch (err) {
+    if (typeof showToast === 'function') showToast('Seleziona il testo manualmente e premi Copia.', 'info');
+  }
+}
+
+window.stampaFabbisognoA4 = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  var textarea = document.getElementById('mfr-testo-whatsapp-anteprima');
+  var testo = textarea ? textarea.value : '';
+
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40]);
+
+  var win = window.open('', '_blank');
+  if (!win) {
+    if (typeof showToast === 'function') showToast('Consenti i popup per visualizzare la stampa promemoria.', 'warning');
+    return;
+  }
+
+  win.document.write('<!DOCTYPE html><html><head><title>Fabbisogno Farmaci MMG - ' + (p.nome || 'Paziente') + '</title>');
+  win.document.write('<style>');
+  win.document.write('body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 28px; color: #0f172a; line-height: 1.5; }');
+  win.document.write('h2 { color: #065f46; margin-bottom: 4px; }');
+  win.document.write('.header-box { border-bottom: 2px solid #065f46; padding-bottom: 12px; margin-bottom: 18px; }');
+  win.document.write('pre { background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; font-family: inherit; font-size: 13.5px; white-space: pre-wrap; word-wrap: break-word; }');
+  win.document.write('@media print { button { display: none !important; } }');
+  win.document.write('</style></head><body>');
+  win.document.write('<div class="header-box">');
+  win.document.write('<h2>📋 PROMEMORIA FABBISOGNO RICETTE FARMACI MMG</h2>');
+  win.document.write('<div>CareAssist Pro · Sistema Territoriale Assistenza Pazienti Fragili</div>');
+  win.document.write('</div>');
+  win.document.write('<button onclick="window.print()" style="background:#059669; color:#fff; border:none; padding:10px 18px; border-radius:8px; font-weight:800; cursor:pointer; margin-bottom:16px;">🖨️ Stampa Adesso (A4)</button>');
+  win.document.write('<pre>' + testo.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>');
+  win.document.write('</body></html>');
+  win.document.close();
+};

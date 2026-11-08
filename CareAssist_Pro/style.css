@@ -9396,3 +9396,14 @@ main, .main-content, .dashboard-container {
 
 
 
+
+
+/* ANIMAZIONE PULSANTE INSTALLA APP PWA */
+@keyframes pwaPulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.pulse-pwa {
+  animation: pwaPulseGlow 2s infinite;
+}
