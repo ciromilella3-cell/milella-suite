@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v255-tabella-terapie-mobile-visible';
+const CACHE_NAME = 'careassist-pro-v256-modifica-piano-schermo-intero';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

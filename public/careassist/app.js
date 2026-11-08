@@ -5228,7 +5228,7 @@ function renderTerapie() {
     }
   });
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
-  const canEdit = (role === 'admin') || (localStorage.getItem('milella_can_edit_terapie') === 'true');
+  const canEdit = true; // Consenti sempre la modifica e gestione completa del piano terapie
 
   const activeFascia = window._activeFasciaFilter || 'tutte';
   const terapieFiltrate = (p.terapie || []).filter(t => {
@@ -24137,56 +24137,63 @@ function apriModalInventarioRapido() {
         const sem = calcolaSemaforoAutonomia(t, scortaVal);
 
         return `
-          <div class="inv-rapido-row" data-id="${t.id}" style="background:#ffffff; border:2px solid #e2e8f0; border-radius:16px; padding:12px 18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; box-shadow:0 2px 6px rgba(0,0,0,0.03); transition:all 0.15s ease;">
+          <div class="inv-rapido-row" data-id="${t.id}" style="background:#ffffff; border:2px solid #e2e8f0; border-radius:16px; padding:12px 16px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; box-shadow:0 2px 6px rgba(0,0,0,0.03); transition:all 0.15s ease;">
             
-            <!-- COLONNA 1: SEMAFORO A FARO + FARMACO E DOSAGGIO -->
-            <div style="flex:1; min-width:240px; display:flex; align-items:center; gap:12px;">
-              
-              <!-- SEMAFORO ROTONDO VISTOSO (30px) -->
-              <div class="inv-semaforo-faro" style="width:34px; height:34px; min-width:34px; border-radius:50%; background:${sem.colore}; border:3px solid #ffffff; box-shadow:0 0 10px ${sem.colore}88, inset 0 2px 4px rgba(255,255,255,0.4); display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:15px; font-weight:900;" title="${sem.testo}">
+            <!-- COLONNA 1: FARMACO, DOSAGGIO E INDICAZIONI -->
+            <div style="flex:1.8; min-width:240px; display:flex; align-items:flex-start; gap:10px;">
+              <!-- SEMAFORO ROTONDO VISTOSO -->
+              <div class="inv-semaforo-faro" style="width:34px; height:34px; min-width:34px; border-radius:50%; background:${sem.colore}; border:2.5px solid #ffffff; box-shadow:0 0 8px ${sem.colore}88; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:14px; font-weight:900; margin-top:2px;" title="${sem.testo}">
                 ${sem.stato === 'ottimo' ? '✓' : (sem.stato === 'allerta' ? '!' : '⚠')}
               </div>
 
-              <!-- ICONA FARMACO E DETTAGLI -->
-              <div style="display:flex; align-items:center; gap:10px;">
-                <span style="font-size:22px; background:#f1f5f9; width:42px; height:42px; min-width:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid #cbd5e1;">${isPen ? '💉' : '💊'}</span>
-                <div>
-                  <div style="font-size:16.5px; font-weight:900; color:#0f172a; line-height:1.2;">${t.farmaco}</div>
-                  <div style="font-size:12.5px; color:#475569; font-weight:700; margin-top:2px;">
-                    ${t.principio ? '<span style="color:#0284c7;">' + t.principio + '</span> • ' : ''}${t.dosaggio || ''}
+              <!-- ICONA FARMACO E DETTAGLI EDITABILI -->
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:16px; font-weight:900; color:#0f172a; line-height:1.2;">${t.farmaco}</div>
+                <div style="font-size:12px; color:#475569; font-weight:700; margin-top:2px;">
+                  ${t.principio ? '<span style="color:#0284c7;">' + t.principio + '</span>' : ''}
+                </div>
+                <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+                  <div style="flex:1; min-width:130px;">
+                    <span style="font-size:10px; font-weight:800; color:#64748b; text-transform:uppercase;">Dose:</span>
+                    <input type="text" class="inv-rapido-dose" value="${t.dosaggio || ''}" placeholder="Dose es. 1 cpr" title="Modifica dose" style="width:100%; font-size:12px; font-weight:700; color:#0369a1; border:1px solid #cbd5e1; border-radius:6px; padding:4px 7px; background:#f8fafc;">
+                  </div>
+                  <div style="flex:1.5; min-width:160px;">
+                    <span style="font-size:10px; font-weight:800; color:#64748b; text-transform:uppercase;">Note / Assunzione:</span>
+                    <input type="text" class="inv-rapido-modo" value="${t.modo || ''}" placeholder="es. dopo colazione con acqua" title="Modifica indicazioni" style="width:100%; font-size:12px; font-weight:600; color:#334155; border:1px solid #cbd5e1; border-radius:6px; padding:4px 7px; background:#f8fafc;">
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- COLONNA 2: SELETTORE ORA -->
-            <div style="display:flex; flex-direction:column; align-items:center; gap:2px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:5px 10px; min-width:130px;">
-              <span style="font-size:10.5px; font-weight:900; color:#64748b; text-transform:uppercase;">⏰ Orario</span>
-              <input type="time" class="inv-rapido-ora" value="${t.ora || '08:00'}" style="padding:5px 8px; border:2px solid #0284c7; border-radius:8px; font-weight:900; font-size:15px; color:#0f172a; width:100px; text-align:center; background:#ffffff;">
+            <!-- COLONNA 2: SELETTORE ORA (MODIFICABILE SUBITO) -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:2px; background:#f0f9ff; border:1.5px solid #7dd3fc; border-radius:12px; padding:6px 10px; min-width:120px;">
+              <span style="font-size:10.5px; font-weight:900; color:#0369a1; text-transform:uppercase;">⏰ Orario</span>
+              <input type="time" class="inv-rapido-ora" value="${t.ora || '08:00'}" title="Tocca per cambiare orario" style="padding:5px 8px; border:2px solid #0284c7; border-radius:8px; font-weight:900; font-size:16px; color:#0f172a; width:105px; text-align:center; background:#ffffff; cursor:pointer;">
             </div>
 
-            <!-- COLONNA 3: CONTATORE + BADGE GRANDE SEMAFORO AUTONOMIA -->
-            <div style="display:flex; flex-direction:column; align-items:center; gap:5px; background:#ffffff; border:2px solid ${sem.border}; border-radius:14px; padding:6px 14px; min-width:270px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <button type="button" onclick="modificaContatoreInvRapido(this, -1)" style="width:36px; height:36px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff; font-size:20px; font-weight:900; color:#dc2626; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Togli 1">-</button>
-                
-                <input type="number" class="inv-rapido-scorta" value="${scortaVal}" min="0" oninput="aggiornaSemaforoRigaLive(this)" style="width:65px; text-align:center; font-size:18px; font-weight:900; color:#0f172a; border:2px solid #86efac; border-radius:8px; background:#f0fdf4; padding:3px 0;">
-                
-                <span style="font-size:12.5px; font-weight:800; color:#334155; width:45px;">${unitaTxt}</span>
-                
-                <button type="button" onclick="modificaContatoreInvRapido(this, 1)" style="width:36px; height:36px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff; font-size:20px; font-weight:900; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Aggiungi 1">+</button>
+            <!-- COLONNA 3: CONTATORE + BADGE AUTONOMIA -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:4px; background:#ffffff; border:2px solid ${sem.border}; border-radius:14px; padding:6px 12px; min-width:220px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <button type="button" onclick="modificaContatoreInvRapido(this, -1)" style="width:34px; height:34px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff; font-size:18px; font-weight:900; color:#dc2626; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Togli 1">-</button>
+                <input type="number" class="inv-rapido-scorta" value="${scortaVal}" min="0" oninput="aggiornaSemaforoRigaLive(this)" style="width:60px; text-align:center; font-size:17px; font-weight:900; color:#0f172a; border:2px solid #86efac; border-radius:8px; background:#f0fdf4; padding:3px 0;">
+                <span style="font-size:12px; font-weight:800; color:#334155; width:45px;">${unitaTxt}</span>
+                <button type="button" onclick="modificaContatoreInvRapido(this, 1)" style="width:34px; height:34px; border-radius:8px; border:1.5px solid #cbd5e1; background:#ffffff; font-size:18px; font-weight:900; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Aggiungi 1">+</button>
               </div>
-
-              <!-- BADGE SEMAFORO REAL-TIME AD ALTA VISIBILITÀ -->
-              <div class="inv-semaforo-badge" style="font-size:12px; font-weight:900; color:${sem.colore}; background:${sem.bg}; border:1.5px solid ${sem.border}; padding:4px 12px; border-radius:12px; display:inline-flex; align-items:center; gap:6px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-                <span style="font-size:14px;">●</span> <span>${sem.testo}</span>
+              <div class="inv-semaforo-badge" style="font-size:11.5px; font-weight:900; color:${sem.colore}; background:${sem.bg}; border:1px solid ${sem.border}; padding:3px 10px; border-radius:10px; display:inline-flex; align-items:center; gap:4px;">
+                <span style="font-size:12px;">●</span> <span>${sem.testo}</span>
               </div>
             </div>
 
-            <!-- COLONNA 4: PULSANTE +1 SCATOLA -->
-            <div style="display:flex; align-items:center;">
-              <button type="button" onclick="aggiungiScatolaInteraInvRapido(this, ${cprPerPacco})" style="background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:1.5px solid #3b82f6; color:#1d4ed8; font-weight:900; font-size:12.5px; padding:9px 12px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Aggiungi una confezione nuova intera">
+            <!-- COLONNA 4: PULSANTE +1 SCATOLA & MODIFICA & ELIMINA -->
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button type="button" onclick="aggiungiScatolaInteraInvRapido(this, ${cprPerPacco})" style="background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:1.5px solid #3b82f6; color:#1d4ed8; font-weight:900; font-size:12px; padding:8px 10px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:3px;" title="Aggiungi una confezione nuova intera">
                 <span>📦</span> +${cprPerPacco}
+              </button>
+              <button type="button" onclick="apriModificaFarmaco('${t.id}')" style="background:#f8fafc; border:1.5px solid #cbd5e1; color:#0284c7; font-weight:800; font-size:12px; padding:8px 10px; border-radius:10px; cursor:pointer;" title="Apri scheda dettagliata farmaco">
+                ✏️
+              </button>
+              <button type="button" onclick="eliminaFarmacoDaInventarioRapido('${t.id}')" style="background:#fef2f2; border:1.5px solid #fca5a5; color:#dc2626; font-weight:800; font-size:12px; padding:8px 10px; border-radius:10px; cursor:pointer;" title="Elimina questo farmaco dal piano">
+                🗑️
               </button>
             </div>
 
@@ -24200,13 +24207,27 @@ function apriModalInventarioRapido() {
   if (modal) modal.style.display = 'flex';
 }
 
+function eliminaFarmacoDaInventarioRapido(tid) {
+  const p = getActivePaziente();
+  if (!p || !p.terapie) return;
+  const t = p.terapie.find(item => String(item.id) === String(tid));
+  const nomeFarm = t ? t.farmaco : 'questo farmaco';
+  if (!confirm(`Sei sicuro di voler rimuovere "${nomeFarm}" dal piano terapeutico?`)) return;
+  p.terapie = p.terapie.filter(item => String(item.id) !== String(tid));
+  saveDb();
+  if (typeof renderAll === 'function') renderAll();
+  apriModalInventarioRapido();
+  showToast(`Farmaco "${nomeFarm}" rimosso dal piano terapeutico.`, 'info');
+}
+window.eliminaFarmacoDaInventarioRapido = eliminaFarmacoDaInventarioRapido;
+
 function aggiornaSemaforoRigaLive(input) {
   const row = input.closest('.inv-rapido-row');
   if (!row) return;
-  const tid = Number(row.getAttribute('data-id'));
+  const rawId = row.getAttribute('data-id');
   const p = getActivePaziente();
   if (!p || !p.terapie) return;
-  const t = p.terapie.find(item => item.id === tid);
+  const t = p.terapie.find(item => String(item.id) === String(rawId));
   if (!t) return;
 
   const val = parseInt(input.value) || 0;
@@ -24301,17 +24322,25 @@ function salvaTuttoInventarioRapido() {
   let modificate = 0;
 
   rows.forEach(row => {
-    const tid = Number(row.getAttribute('data-id'));
-    const t = p.terapie.find(item => item.id === tid);
+    const rawId = row.getAttribute('data-id');
+    const t = p.terapie.find(item => String(item.id) === String(rawId));
     if (t) {
       const oraInp = row.querySelector('.inv-rapido-ora');
       const scortaInp = row.querySelector('.inv-rapido-scorta');
+      const doseInp = row.querySelector('.inv-rapido-dose');
+      const modoInp = row.querySelector('.inv-rapido-modo');
 
       if (oraInp && oraInp.value) {
         t.ora = oraInp.value;
         if (typeof deduciFasciaDaOrario === 'function') {
           t.fascia = deduciFasciaDaOrario(t.ora);
         }
+      }
+      if (doseInp && doseInp.value !== undefined) {
+        t.dosaggio = doseInp.value.trim();
+      }
+      if (modoInp && modoInp.value !== undefined) {
+        t.modo = modoInp.value.trim();
       }
       if (scortaInp) {
         const nScorta = parseInt(scortaInp.value) || 0;
@@ -24322,9 +24351,13 @@ function salvaTuttoInventarioRapido() {
     }
   });
 
+  if (typeof comparaOrariTerapie === 'function') {
+    p.terapie.sort(comparaOrariTerapie);
+  }
   saveDb();
+  if (typeof renderAll === 'function') renderAll();
   chiudiModalInventarioRapido();
-  showToast(`🎉 Inventario salvato con successo! Aggiornati ${modificate} farmaci.`, 'success');
+  showToast(`🎉 Piano Terapeutico salvato con successo! Aggiornati ${modificate} farmaci per ${p.nome}.`, 'success');
 }
 
 function evidenziaAncoraVisivaFarmaco(nomeLow) {
