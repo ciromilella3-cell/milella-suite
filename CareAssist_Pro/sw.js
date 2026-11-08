@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v260-piano-terapeutico-mobile-cards';
+const CACHE_NAME = 'careassist-pro-v261-data-richiesta-farmaci';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

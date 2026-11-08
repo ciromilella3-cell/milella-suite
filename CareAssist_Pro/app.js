@@ -5409,6 +5409,11 @@ function renderTerapie() {
           if (mt) {
             const mtStatusClass = (mt.scortaCondivisa <= 0) ? 'status-danger' : (mt.giorniAutonomia <= sogliaAlert ? 'status-warning' : 'status-success');
             const mtStatusText = (mt.scortaCondivisa <= 0) ? '🔴 Scorta Zero' : (mt.giorniAutonomia <= sogliaAlert ? '🚨 Allerta Scorta' : '🟢 Farmacia Caricata');
+            const mtGgAllaRich = Math.max(0, mt.giorniAutonomia - sogliaAlert);
+            const mtDtRich = new Date();
+            mtDtRich.setDate(mtDtRich.getDate() + mtGgAllaRich);
+            const mtDataRichStr = mtDtRich.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const mtIsRichUrgente = mt.giorniAutonomia <= sogliaAlert;
             return `
                 <div class="scorta-card-executive multitempo">
                   <div class="scorta-exec-header">
@@ -5419,6 +5424,9 @@ function renderTerapie() {
                     📦 <b>${mt.scortaCondivisa} cpr</b> <small style="color:#64748b; font-weight:600; font-size:11px;">(🔗 ${mt.numTempi} tempi · ${mt.consumoTotaleDie} cpr/die)</small>
                   </div>
                   <div class="scorta-exec-milestones">
+                    <div class="milestone-pill mmg ${mtIsRichUrgente ? 'urgent' : ''}" title="Data consigliata per richiedere la ricetta al MMG">
+                      <span>📅 MMG:</span> <b>${mtDataRichStr}</b>
+                    </div>
                     <div class="milestone-pill fine" title="Data termine scorta calcolata sul consumo totale combinato">
                       <span>⏳ Fine Scorta:</span> <b>${mt.dataTermineStr}</b>
                     </div>
@@ -5432,6 +5440,11 @@ function renderTerapie() {
           }
           const sClass = (t.scorta <= 0) ? 'status-danger' : (giorniAutonomia <= sogliaAlert ? 'status-warning' : 'status-success');
           const sText = (t.scorta <= 0) ? '🔴 Mancante' : (giorniAutonomia <= sogliaAlert ? '🚨 Allerta Scorta' : '🟢 Farmacia Caricata');
+          const stdGgAllaRich = Math.max(0, giorniAutonomia - sogliaAlert);
+          const stdDtRich = new Date();
+          stdDtRich.setDate(stdDtRich.getDate() + stdGgAllaRich);
+          const stdDataRichStr = stdDtRich.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          const stdIsRichUrgente = giorniAutonomia <= sogliaAlert;
           return `
               <div class="scorta-card-executive standard">
                 <div class="scorta-exec-header">
@@ -5442,6 +5455,9 @@ function renderTerapie() {
                   📦 <b>${t.scorta} compresse</b>
                 </div>
                 <div class="scorta-exec-milestones">
+                  <div class="milestone-pill mmg ${stdIsRichUrgente ? 'urgent' : ''}" title="Data consigliata per richiedere la ricetta al MMG">
+                    <span>📅 MMG:</span> <b>${stdDataRichStr}</b>
+                  </div>
                   <div class="milestone-pill fine" title="Data presunta termine compresse">
                     <span>⏳ Fine Scorta:</span> <b>${dataTermineStr}</b>
                   </div>
@@ -11173,6 +11189,44 @@ function apriSchedaFarmacoFullscreen(farmacoId) {
         badgeAuto.style.background = '#dcfce7';
         badgeAuto.style.color = '#15803d';
         badgeAuto.textContent = '🟢 Scorta Regolare';
+      }
+    }
+
+    // Calcolo Data Richiesta e Fine Scorta Fullscreen
+    var infoScorta = (typeof window._calcolaDatiScortaERichiesta === 'function')
+      ? window._calcolaDatiScortaERichiesta(t, (p && p.terapie) ? p.terapie : [])
+      : null;
+
+    var dataReqEl = document.getElementById('sff-data-richiesta-val');
+    var dataFineEl = document.getElementById('sff-data-fine-val');
+    var autoGgEl = document.getElementById('sff-autonomia-giorni-val');
+    var badgeReqEl = document.getElementById('sff-badge-urgenza-alert');
+
+    if (infoScorta) {
+      if (dataReqEl) dataReqEl.textContent = infoScorta.dataRichiestaStr;
+      if (dataFineEl) dataFineEl.textContent = infoScorta.dataFineStr;
+      if (autoGgEl) autoGgEl.textContent = '(~' + infoScorta.ggAutonomia + ' gg)';
+
+      if (badgeReqEl) {
+        if (infoScorta.urgenzaRichiesta === 'urgente') {
+          badgeReqEl.style.display = 'block';
+          badgeReqEl.style.background = '#fee2e2';
+          badgeReqEl.style.color = '#991b1b';
+          badgeReqEl.style.border = '1px solid #f87171';
+          badgeReqEl.innerHTML = '🚨 <b>RICHIEDERE SUBITO LA NUOVA RICETTA AL MEDICO!</b>';
+        } else if (infoScorta.urgenzaRichiesta === 'imminente') {
+          badgeReqEl.style.display = 'block';
+          badgeReqEl.style.background = '#fef9c3';
+          badgeReqEl.style.color = '#854d0e';
+          badgeReqEl.style.border = '1px solid #fde047';
+          badgeReqEl.innerHTML = '⚠️ <b>Richiesta ricetta consigliata a breve</b> (entro il ' + infoScorta.dataRichiestaStr + ')';
+        } else {
+          badgeReqEl.style.display = 'block';
+          badgeReqEl.style.background = '#f0fdf4';
+          badgeReqEl.style.color = '#15803d';
+          badgeReqEl.style.border = '1px solid #bbf7d0';
+          badgeReqEl.innerHTML = '🟢 Scorta regolare fino al ' + infoScorta.dataFineStr + ' • Richiedere entro: ' + infoScorta.dataRichiestaStr;
+        }
       }
     }
 
@@ -24958,11 +25012,19 @@ function renderMobileNativeView(terapie, p) {
           ? '<div class="pill-assimilazione-avviso" style="margin:6px 0 10px 0;"><span>🍽️ Assimilazione / Istruzioni:</span> <b>' + nextT.modo + '</b></div>'
           : '';
 
+        var nextTInfo = (typeof window._calcolaDatiScortaERichiesta === 'function')
+          ? window._calcolaDatiScortaERichiesta(nextT, p.terapie || [])
+          : null;
+        var heroRichiestaBanner = nextTInfo
+          ? ('<div style="font-size:11.5px; font-weight:800; color:#1e40af; margin:4px 0 8px 0; background:#eff6ff; padding:4px 9px; border-radius:8px; border:1px solid #bfdbfe; display:inline-flex; align-items:center; gap:5px;"><span>📅 Richiesta Farmaco:</span> <b style="text-decoration:underline;">' + nextTInfo.dataRichiestaStr + '</b> <span style="font-size:10.5px; color:#64748b; font-weight:700;">(Fine: ' + nextTInfo.dataFineStr + ')</span></div>')
+          : '';
+
         heroContainer.innerHTML =
           '<div class="mobile-hero-badge badge-urgent">' + badgeRitardoTesto + '</div>' +
           '<div class="mobile-hero-title">' + nextT.farmaco + '</div>' +
-          '<div class="mobile-hero-sub">Orario previsto: <b>' + nextT.ora + '</b> (' + (nextT.fascia || 'Oggi') + ') • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b></div>' +
+          '<div class="mobile-hero-sub">Orario previsto: <b>' + nextT.ora + '</b> (' + (nextT.fascia || 'Oggi') + ') • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b> • Scorta: <b>' + (nextTInfo ? (nextTInfo.scortaNum + ' ' + nextTInfo.unita + ' (~' + nextTInfo.ggAutonomia + ' gg)') : (nextT.scorta || 0)) + '</b></div>' +
           heroAssimilazioneHtml +
+          heroRichiestaBanner +
           '<button type="button" class="btn-mobile-hero-action" style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);" onclick="toggleFarmacoConScarico(' + nextT.id + ')">' +
           '<span>✅</span> <span>HO SOMMINISTRATO ORA</span>' +
           '</button>' +
@@ -24976,11 +25038,20 @@ function renderMobileNativeView(terapie, p) {
         var heroAssimilazioneHtml = nextT.modo
           ? '<div class="pill-assimilazione-avviso" style="margin:5px 0 8px 0;"><span>🍽️ Modo d\'uso:</span> <b>' + nextT.modo + '</b></div>'
           : '';
+
+        var nextTInfo = (typeof window._calcolaDatiScortaERichiesta === 'function')
+          ? window._calcolaDatiScortaERichiesta(nextT, p.terapie || [])
+          : null;
+        var heroRichiestaBanner = nextTInfo
+          ? ('<div style="font-size:11.5px; font-weight:800; color:#1e40af; margin:4px 0 8px 0; background:#eff6ff; padding:4px 9px; border-radius:8px; border:1px solid #bfdbfe; display:inline-flex; align-items:center; gap:5px;"><span>📅 Richiesta Farmaco:</span> <b style="text-decoration:underline;">' + nextTInfo.dataRichiestaStr + '</b> <span style="font-size:10.5px; color:#64748b; font-weight:700;">(Fine: ' + nextTInfo.dataFineStr + ')</span></div>')
+          : '';
+
         heroContainer.innerHTML =
           '<div class="mobile-hero-badge badge-ready">' + labelOrario + '</div>' +
           '<div class="mobile-hero-title">' + nextT.farmaco + '</div>' +
-          '<div class="mobile-hero-sub">' + (nextT.fascia || 'Oggi') + ' • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b> • Scorta: <b>' + (nextT.scorta || 0) + '</b></div>' +
+          '<div class="mobile-hero-sub">' + (nextT.fascia || 'Oggi') + ' • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b> • Scorta: <b>' + (nextTInfo ? (nextTInfo.scortaNum + ' ' + nextTInfo.unita + ' (~' + nextTInfo.ggAutonomia + ' gg)') : (nextT.scorta || 0)) + '</b></div>' +
           heroAssimilazioneHtml +
+          heroRichiestaBanner +
           '<button type="button" class="btn-mobile-hero-action" onclick="toggleFarmacoConScarico(' + nextT.id + ')">' +
           '<span>✅</span> <span>REGISTRA ASSUNZIONE ORA</span>' +
           '</button>' +
@@ -25029,6 +25100,34 @@ function renderMobileNativeView(terapie, p) {
         var isAssimilazioneInfo = t.modo && /(digiun|pasto|pasti|colazion|pranzo|cena|assorb|assunzion|stomaco|acqua)/i.test(t.modo);
         var assimilazioneHtml = isAssimilazioneInfo ? ('<div class="pill-assimilazione-avviso"><span>🍽️ Assimilazione:</span> <span>' + t.modo + '</span></div>') : '';
 
+        var infoScorta = (typeof window._calcolaDatiScortaERichiesta === 'function')
+          ? window._calcolaDatiScortaERichiesta(t, p.terapie || [])
+          : null;
+
+        var richiestaHtml = '';
+        if (infoScorta) {
+          var isUrg = infoScorta.urgenzaRichiesta === 'urgente';
+          var isImm = infoScorta.urgenzaRichiesta === 'imminente';
+          var bgRich = isUrg ? '#fef2f2' : (isImm ? '#fefce8' : '#eff6ff');
+          var borderRich = isUrg ? '#f87171' : (isImm ? '#fde047' : '#bae6fd');
+          var colorRich = isUrg ? '#991b1b' : (isImm ? '#854d0e' : '#1e40af');
+          var badgeUrgenza = isUrg 
+            ? '<span style="background:#dc2626; color:#ffffff; font-size:9.5px; padding:2px 6px; border-radius:4px; font-weight:900; letter-spacing:0.3px; margin-left:3px;">🚨 RICHIEDERE SUBITO</span>' 
+            : (isImm ? '<span style="background:#eab308; color:#ffffff; font-size:9.5px; padding:2px 6px; border-radius:4px; font-weight:900; letter-spacing:0.3px; margin-left:3px;">⚠️ IMMINENTE</span>' : '');
+
+          richiestaHtml = '<div class="mobile-card-richiesta-box" style="margin-top:7px; padding:6px 10px; border-radius:10px; background:' + bgRich + '; border:1.5px solid ' + borderRich + '; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">' +
+            '<div style="display:flex; align-items:center; flex-wrap:wrap; gap:4px; font-size:12px; font-weight:800; color:' + colorRich + ';">' +
+            '<span>📅</span> <span>Richiesta Farmaco:</span>' +
+            '<b style="text-decoration:underline; font-size:12.5px; color:' + (isUrg ? '#dc2626' : '#0284c7') + ';">' + infoScorta.dataRichiestaStr + '</b>' +
+            badgeUrgenza +
+            '</div>' +
+            '<div style="font-size:11px; font-weight:700; color:#475569; display:inline-flex; align-items:center; gap:4px;">' +
+            '<span>⏳ Fine Scorta: <b style="color:#0f172a;">' + infoScorta.dataFineStr + '</b></span>' +
+            '<span style="color:#64748b;">(~' + infoScorta.ggAutonomia + ' gg)</span>' +
+            '</div>' +
+            '</div>';
+        }
+
         return '<div class="mobile-card-item ' + paletteClass + (isDone ? ' is-done' : '') + alertClass + '" id="mobile-card-farmaco-' + t.id + '" onclick="apriSchedaFarmacoFullscreen(\'' + t.id + '\')" title="Tocca la scheda per aprire a tutta pagina e intervenire" style="cursor:pointer;">' +
           '<div class="mobile-card-header">' +
           '<div class="mobile-card-time" onclick="event.stopPropagation(); apriCambiaOrarioRapido(\'' + t.id + '\')" title="Tocca per cambiare orario di somministrazione" style="cursor:pointer; display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,0.9); padding:3px 9px; border-radius:8px; border:1px solid rgba(0,0,0,0.1);">' +
@@ -25053,10 +25152,11 @@ function renderMobileNativeView(terapie, p) {
           (t.dosaggio || '') + (t.modo && !isAssimilazioneInfo ? (' — ' + t.modo) : '') +
           '</div>' +
           assimilazioneHtml +
+          richiestaHtml +
           '<div class="mobile-card-footer" style="margin-top:9px; padding-top:8px; border-top:1px dashed rgba(0,0,0,0.12); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">' +
           '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
           '<div class="mobile-card-scorta" onclick="event.stopPropagation(); modificaScortaRapida(\'' + t.id + '\')" title="Tocca per modificare il numero esatto di compresse/capsule in scorta" style="font-size:12px; color:#334155; font-weight:700; cursor:pointer; background:rgba(255,255,255,0.9); padding:2px 7px; border-radius:6px; border:1px solid #cbd5e1; display:inline-flex; align-items:center; gap:4px;">' +
-          '<span>📦 Scorta:</span> <b style="color:#0284c7; font-size:13px;">' + (t.scorta || 0) + '</b> <span style="font-size:10px; color:#0284c7;" title="Modifica scorta">✏️</span>' +
+          '<span>📦 Scorta:</span> <b style="color:#0284c7; font-size:13px;">' + (infoScorta ? infoScorta.scortaNum : (t.scorta || 0)) + '</b>' + (infoScorta ? (' <span style="font-size:10px; color:#64748b; font-weight:700;">(~' + infoScorta.ggAutonomia + ' gg)</span>') : '') + ' <span style="font-size:10px; color:#0284c7;" title="Modifica scorta">✏️</span>' +
           '</div>' +
           '<button type="button" class="btn-card-scatola-action" onclick="event.stopPropagation(); caricaScatolaRapida(\'' + t.id + '\')" title="Aggiungi 1 scatola ritirata dalla farmacia">📦 +Scatola</button>' +
           '<button type="button" class="btn-card-time-action" onclick="event.stopPropagation(); apriCambiaOrarioRapido(\'' + t.id + '\')" title="Sposta orario di somministrazione">🕒 Orario</button>' +
