@@ -5557,7 +5557,7 @@ function renderTerapie() {
         <td style="text-align: center;">
           ${canEdit ? `
             <button class="btn btn-outline" style="padding:5px 8px; font-size:11px;" onclick="apriModificaFarmaco('${t.id}')" title="Modifica dati e orario del farmaco">✏️ Modifica</button>
-            <button class="btn btn-outline" style="padding:5px 6px; font-size:11px;" onclick="eliminaTerapia('${t.id}')" title="Elimina farmaco">🗑️</button>
+            <button class="btn btn-outline" style="padding:5px 7px; font-size:11.5px; background:#fff1f2; border:1.5px solid #fca5a5; color:#be123c; cursor:pointer;" onclick="eliminaTerapia('${t.id}')" title="Elimina farmaco dal piano">🗑️</button>
           ` : `
             <span style="font-size:11px; color:#64748b; font-weight:600;" title="Sola somministrazione e spunta (Modifiche riservate all'Amministratore)">🔒 Sola Lettura</span>
           `}
@@ -7143,25 +7143,69 @@ function inviaRichiestaVia(canale) {
 
 async function eliminaTerapia(id) {
   const p = getActivePaziente();
-  if (!p) return;
-  const t = (p.terapie || []).find(x => x.id === id);
-  if (!t) return;
-  const ok = await customConfirm(
-    'Elimina Farmaco',
-    'Vuoi eliminare "' + t.farmaco + '" dal piano terapeutico di ' + p.nome + '?' + CESTINO_AVVISO,
-    '🗑️',
-    'Sposta nel Cestino'
-  );
+  if (!p || !p.terapie) return;
+  const t = p.terapie.find(x => String(x.id) === String(id) || x.id == id);
+  if (!t) {
+    console.warn('eliminaTerapia: farmaco non trovato per id', id);
+    return;
+  }
+
+  let ok = false;
+  if (typeof customConfirm === 'function') {
+    ok = await customConfirm(
+      'Elimina Farmaco',
+      'Vuoi eliminare "' + t.farmaco + '" dal piano terapeutico di ' + (p.nome || 'questo assistito') + '?' + (typeof CESTINO_AVVISO !== 'undefined' ? CESTINO_AVVISO : ''),
+      '🗑️',
+      'Sposta nel Cestino'
+    );
+  } else {
+    ok = confirm('Vuoi eliminare "' + t.farmaco + '" dal piano terapeutico di ' + (p.nome || 'questo assistito') + '?');
+  }
+
   if (ok) {
     var backupItem = JSON.parse(JSON.stringify(t));
-    var cestinoId = cestinoAggiungi('terapia', t.farmaco, (t.dosaggio || '') + (t.ora ? ' · ore ' + t.ora : ''), t, p);
-    p.terapie = p.terapie.filter(x => x.id !== id);
-    saveDb();
+    var cestinoId = null;
+    if (typeof cestinoAggiungi === 'function') {
+      cestinoId = cestinoAggiungi('terapia', t.farmaco, (t.dosaggio || '') + (t.ora ? ' · ore ' + t.ora : ''), t, p);
+    }
+    p.terapie = p.terapie.filter(x => String(x.id) !== String(id) && x.id != id);
+    if (typeof saveDb === 'function') saveDb();
+
+    // RENDER IMMEDIATO DI TUTTE LE VISTE
+    if (typeof renderTerapie === 'function') renderTerapie();
+    if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
+    if (typeof renderDashboard === 'function') renderDashboard();
+    if (typeof renderTerapiePreview === 'function') renderTerapiePreview();
+    if (typeof aggiornaIndicatoriRitardiUI === 'function') aggiornaIndicatoriRitardiUI();
+    if (typeof renderAll === 'function') renderAll();
+
+    // CHIUDI MODALI SE APERTI
+    if (typeof closeModal === 'function') {
+      closeModal('modal-modifica-farmaco');
+    }
+    if (typeof chiudiSchedaFarmacoFullscreen === 'function') {
+      chiudiSchedaFarmacoFullscreen();
+    }
+
+    if (typeof showToast === 'function') {
+      showToast('Farmaco "' + t.farmaco + '" rimosso con successo e spostato nel Cestino! 🗑️', 'info');
+    }
 
     // BANNER DI SICUREZZA FLOTTANTE "ANNULLA SUBITO" PER 12 SECONDI
-    mostraBannerAnnullaCancellazione(backupItem, cestinoId);
+    if (typeof mostraBannerAnnullaCancellazione === 'function' && cestinoId) {
+      mostraBannerAnnullaCancellazione(backupItem, cestinoId);
+    }
   }
 }
+window.eliminaTerapia = eliminaTerapia;
+
+function eliminaFarmacoCorrenteDaModale() {
+  const idEl = document.getElementById('edit-farm-id');
+  const id = idEl ? idEl.value : null;
+  if (!id) return;
+  eliminaTerapia(id);
+}
+window.eliminaFarmacoCorrenteDaModale = eliminaFarmacoCorrenteDaModale;
 
 // Rendering Registro Attività Recenti (Diario OSS) con Selezione ed Eliminazione Massiva
 function getDiarioCheckboxes(scope) {
