@@ -67,7 +67,10 @@
       "ruolo": "Admin / Coordinatore",
       "tel": "366 460 7396",
       "profilo": "diurno",
-      "disponibileCoperture": true
+      "disponibileCoperture": true,
+      "regimeOrario": "full_time",
+      "condizioneOrario": "ft_ssn_turnista_36h",
+      "oreContrattuali": 36
     },
     {
       "id": "op_stoppelli",
@@ -75,7 +78,10 @@
       "ruolo": "operatore",
       "tel": "338 739 7671",
       "profilo": "misto_pn",
-      "disponibileCoperture": true
+      "disponibileCoperture": true,
+      "regimeOrario": "full_time",
+      "condizioneOrario": "ft_ssn_turnista_36h",
+      "oreContrattuali": 36
     },
     {
       "id": "op_marco",
@@ -83,7 +89,10 @@
       "ruolo": "OSS",
       "tel": "340 123 4567",
       "profilo": "full_h24",
-      "disponibileCoperture": false
+      "disponibileCoperture": false,
+      "regimeOrario": "full_time",
+      "condizioneOrario": "ft_ssn_turnista_36h",
+      "oreContrattuali": 36
     },
     {
       "id": "op_sara",
@@ -91,7 +100,10 @@
       "ruolo": "Infermiera / OSS",
       "tel": "347 987 6543",
       "profilo": "misto_pn",
-      "disponibileCoperture": true
+      "disponibileCoperture": true,
+      "regimeOrario": "full_time",
+      "condizioneOrario": "ft_ssn_turnista_36h",
+      "oreContrattuali": 36
     },
     {
       "id": "op_elena",
@@ -99,7 +111,10 @@
       "ruolo": "OSS Domiciliare",
       "tel": "339 555 1234",
       "profilo": "full_h24",
-      "disponibileCoperture": false
+      "disponibileCoperture": false,
+      "regimeOrario": "full_time",
+      "condizioneOrario": "ft_ssn_turnista_36h",
+      "oreContrattuali": 36
     }
   ],
   "griglia": {
