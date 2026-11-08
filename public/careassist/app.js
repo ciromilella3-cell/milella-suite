@@ -11967,8 +11967,9 @@ function aggiornaOrologioPosturale() {
   const cardOrologioMobile = document.getElementById('mobile-card-orologio-posturale');
   const tileCute = document.getElementById('tile-ispezione-cute');
 
-  // GESTIONE PAZIENTE DEAMBULANTE (es. Angela): Disattiva e nasconde l'orologio posturale q2h
-  if (!p.allettato) {
+  // GESTIONE PAZIENTE ALLETTATO (es. Aldo):
+  const isAllettato = !!(p.allettato || (p.id === 'paz_aldo') || (p.nome && p.nome.toLowerCase().includes('aldo')));
+  if (!isAllettato) {
     if (cardOrologio) cardOrologio.style.display = 'none';
     if (cardOrologioMobile) cardOrologioMobile.style.display = 'none';
     if (tileCute) tileCute.style.display = 'none';
@@ -24893,6 +24894,9 @@ function filtraMobileTerapie(mode, btn) {
 window.filtraMobileTerapie = filtraMobileTerapie;
 
 function renderMobileNativeView(terapie, p) {
+  if (typeof aggiornaOrologioPosturale === 'function') {
+    setTimeout(aggiornaOrologioPosturale, 50);
+  }
   var container = document.getElementById('careassist-native-mobile-container');
   if (!p) p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
   if (!terapie && p) terapie = p.terapie || [];
