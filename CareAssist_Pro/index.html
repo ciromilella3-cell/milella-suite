@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=253">
+  <link rel="stylesheet" href="style.css?v=254">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -196,7 +196,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="registro_asl.css?v=253">
+  <link rel="stylesheet" href="registro_asl.css?v=254">
 
   <style>
     @keyframes menuDropAnim {
@@ -582,6 +582,9 @@
       <button type="button" class="btn-operativo-pdf" onclick="apriPianoTerapeuticoPDF()" style="background:linear-gradient(135deg, #091e3a 0%, #1e3a8a 55%, #0284c7 100%); color:#ffffff; border:1.5px solid #38bdf8; padding:11px 16px; border-radius:12px; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 3px 12px rgba(9,30,58,0.35); transition:transform 0.1s ease;">
         <span style="font-size:17px;">📄</span> <span>Scarica Piano Terapie & Orari (PDF)</span>
         <span style="font-size:10px; background:#10b981; color:#fff; padding:2px 7px; border-radius:6px; font-weight:800; letter-spacing:0.3px;">STAMPA A4</span>
+      </button>
+      <button type="button" class="btn-operativo-piano" onclick="navigaMobileTab('farmaci', document.getElementById('mbar-btn-farmaci'))" style="background:#ffffff; color:#0284c7; border:1.5px solid #7dd3fc; padding:10px 14px; border-radius:12px; font-weight:800; font-size:12.5px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 2px 6px rgba(2,132,199,0.12);">
+        <span style="font-size:16px;">💊</span> <span>Vedi Tutto il Piano Terapeutico &amp; Modifica Orari ➔</span>
       </button>
     </div>
 
@@ -1002,6 +1005,13 @@
 
     <!-- TAB 2: TERAPIE & FARMACI -->
     <section id="tab-farmaci" class="tab-content" style="display:none;">
+      <!-- NAVIGAZIONE RAPIDA: TORNA A OGGI -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-outline" onclick="navigaMobileTab('oggi', document.getElementById('mbar-btn-oggi'))"
+          style="background:#ffffff; color:#0284c7; border:1.5px solid #cbd5e1; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+          <span>⬅️ Torna alle Terapie di Oggi</span>
+        </button>
+      </div>
       <!-- BANNER DI ALLERTA SCORTE FARMACI (GIORNI PERSONALIZZABILI 1-30) -->
       <div id="farmaci-alert-scorte-terapie"></div>
       <div class="card" style="padding: 16px; margin: 0 auto 24px auto;">
@@ -6915,7 +6925,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=253"></script>
+  <script src="app.js?v=254"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -6926,7 +6936,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=253', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=254', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
