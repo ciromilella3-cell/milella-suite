@@ -7548,18 +7548,18 @@ function openModal(id) {
     if (p && id !== 'modal-nuovo-paziente' && id !== 'modal-report-whatsapp' && id !== 'modal-scheda-118' && id !== 'modal-modifica-farmaco') {
       const header = el.querySelector('.modal-header');
       if (header) {
-        // Cerca o crea il badge del paziente
+        // Cerca o crea il badge del paziente all'interno di .modal-title (layout a 2 righe pulito, zero sovrapposizioni)
         let badge = header.querySelector('.modal-patient-badge');
+        const titleEl = header.querySelector('.modal-title');
         if (!badge) {
           badge = document.createElement('div');
           badge.className = 'modal-patient-badge';
           badge.style.marginTop = '4px';
-          const titleEl = header.querySelector('.modal-title');
-          if (titleEl && titleEl.parentNode) {
-            titleEl.parentNode.insertBefore(badge, titleEl.nextSibling);
-          } else {
-            header.appendChild(badge);
-          }
+        }
+        if (titleEl) {
+          titleEl.appendChild(badge);
+        } else {
+          header.appendChild(badge);
         }
         badge.innerHTML = `👤 Assistito: <b>${p.nome}</b>`;
         badge.title = `Stai operando sulla cartella clinica di ${p.nome}`;
