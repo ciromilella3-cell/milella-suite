@@ -471,8 +471,7 @@
       "medicoEmail": "scarcia.roberto@alice.it",
       "patologie": [
         "Paziente geriatrico allettato ad alto rischio di lesioni da decubito (Scala Braden: Rischio Elevato)",
-        "Cardiopatia / Aritmia (in terapia con Bisoprololo 1",
-        "25 mg)",
+        "Cardiopatia / Aritmia (in terapia con Bisoprololo 1,25 mg)",
         "Epilessia / Disturbo neurologico focale (in terapia con VIMPAT Lacosamide 100 mg b.i.d.)",
         "Ipertrofia Prostatica Benigna (IPB) con difficoltà minzionali (in terapia con SILODYX 8 mg)",
         "Disturbo comportamentale del sonno / Agitazione notturna (in terapia con Quetiapina 25 mg)",
@@ -595,7 +594,8 @@
       "peso": "68.5",
       "polso": "18",
       "lifestyle": "1.2",
-      "goal": "mantenimento"
+      "goal": "mantenimento",
+      "diagnosi": "Paziente geriatrico allettato ad alto rischio di lesioni da decubito (Scala Braden: Rischio Elevato) • Cardiopatia / Aritmia (in terapia con Bisoprololo 1,25 mg) • Epilessia / Disturbo neurologico focale (in terapia con VIMPAT Lacosamide 100 mg b.i.d.) • Ipertrofia Prostatica Benigna (IPB) con difficoltà minzionali (in terapia con SILODYX 8 mg) • Disturbo comportamentale del sonno / Agitazione notturna (in terapia con Quetiapina 25 mg) • Gastroprotezione per terapia cronica (in terapia con Pantoprazolo 40 mg)"
     },
     {
       "id": "paz_angela",
@@ -1369,7 +1369,8 @@
       "peso": "62.0",
       "polso": "16",
       "lifestyle": "1.2",
-      "goal": "mantenimento"
+      "goal": "mantenimento",
+      "diagnosi": "Ipertensione arteriosa sistemica in polichemioterapia • Sindrome delle Apnee Ostruttive nel Sonno (OSAS) con indicazione ausilio CPAP notturna • Dislipidemia / Ipercolesterolemia • Iperuricemia con rischio gotta • Ipovitaminosi D3 (in integrazione ciclica con DIBASE) • Reflusso gastroesofageo / gastrite"
     },
     {
       "id": "paz_rosa",
@@ -2788,7 +2789,8 @@
       "peso": "59.0",
       "polso": "16",
       "lifestyle": "1.2",
-      "goal": "mantenimento"
+      "goal": "mantenimento",
+      "diagnosi": "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga) • Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga) • Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel) • Morbo di Parkinson / parkinsonismo (Sinemet) • Iperuricemia / gotta (Adenuric) • Osteoartrosi con dolore cronico (Arcoxia) • Ipovitaminosi D (Fedivelle) • Dislipidemia / Ipercolesterolemia (Sivastin)"
     },
     {
       "id": "paz_1793216119572",
@@ -3677,7 +3679,8 @@
       "medicoTel": "347 126 59 71",
       "farmaciaTelefono": "080 542 80 61",
       "farmaciaIndirizzo": "Via G. Petroni, 69/b - Bari",
-      "ausili": []
+      "ausili": [],
+      "diagnosi": "Epatite B cronica (HBV) in trattamento antivirale con Entecavir 0,5 mg • Follow-up periodico semestrale presso U.O. Malattie Infettive ed Epatologia - Policlinico di Bari"
     },
     {
       "id": "paz_mariacarmela",
@@ -3704,7 +3707,10 @@
       "peso": "65.0",
       "polso": "16",
       "lifestyle": "1.375",
-      "goal": "mantenimento"
+      "goal": "mantenimento",
+      "diagnosi": "Nutrizione & Benessere",
+      "allergie": "Nessuna nota",
+      "note": "Paziente assistito a domicilio."
     },
     {
       "id": "paz_1794120705837",

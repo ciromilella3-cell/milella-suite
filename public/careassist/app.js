@@ -4424,8 +4424,10 @@ function salvaModificaAnagrafica(e) {
 
   const elEditPatologieVal = document.getElementById('edit-paz-patologie');
   if (elEditPatologieVal) {
-    const rawLines = elEditPatologieVal.value.split(/[\n,;•]+/).map(s => s.trim()).filter(s => s.length > 0);
+    // Separa SOLO per riga o punto elenco/punto e virgola, MAI per virgola decimale (preserva dosaggi es. 1,25 mg)
+    const rawLines = elEditPatologieVal.value.split(/[\n;•]+/).map(s => s.trim()).filter(s => s.length > 0);
     p.patologie = rawLines;
+    p.diagnosi = rawLines.join(' • ');
   }
 
   const elEditAllergieVal = document.getElementById('edit-paz-allergie');
@@ -24809,9 +24811,27 @@ function renderMobileNativeView(terapie, p) {
     var nTerapie = (p.terapie || []).length;
     var nFatti = (p.terapie || []).filter(function (t) { return t.fattoOggi; }).length;
 
-    activeCard.innerHTML = '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:18px; padding:12px 14px; margin:0 0 10px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 3px 10px rgba(0,0,0,0.05);">' +
-      '<div onclick="navigaMobileTab(\'clinica\', document.getElementById(\'mbar-btn-clinica\'))" style="display:flex; align-items:center; gap:12px; flex:1; min-width:0; cursor:pointer;" title="Tocca per entrare nella Scheda Clinica">' +
-      '<div style="width:48px; height:48px; border-radius:50%; background:' + avatarBg + '; border:2.5px solid ' + avatarBorder + '; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.08);">' +
+    // Estrazione pulita e sicura delle patologie per visualizzazione istantanea
+    var patList = Array.isArray(p.patologie) ? p.patologie : (typeof p.patologie === 'string' ? [p.patologie] : (p.diagnosi ? p.diagnosi.split(' • ') : []));
+    var pillsPatologieHtml = '';
+    if (patList.length > 0) {
+      pillsPatologieHtml = '<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">' +
+        patList.slice(0, 3).map(function (pt) {
+          return '<span onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\');" style="background:#eff6ff; color:#0369a1; border:1px solid #bfdbfe; border-radius:7px; padding:2px 7px; font-size:10.5px; font-weight:700; max-width:210px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;" title="' + pt.replace(/"/g, '&quot;') + '">🩺 ' + pt + '</span>';
+        }).join('') +
+        (patList.length > 3 ? '<span onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\');" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:7px; padding:2px 6px; font-size:10px; font-weight:800; cursor:pointer;">+' + (patList.length - 3) + ' altre</span>' : '') +
+      '</div>';
+    } else {
+      pillsPatologieHtml = '<div style="margin-top:5px;">' +
+        '<button type="button" onclick="event.stopPropagation(); applicaDiagnosiAutomaticheDaFarmaci();" style="background:#f0f9ff; color:#0284c7; border:1.5px dashed #7dd3fc; border-radius:8px; padding:3px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+        '<span>✨ Deduci Diagnosi dai Farmaci (AI)</span>' +
+        '</button>' +
+      '</div>';
+    }
+
+    activeCard.innerHTML = '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:18px; padding:12px 14px; margin:0 0 10px 0; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; box-shadow:0 3px 10px rgba(0,0,0,0.05);">' +
+      '<div onclick="apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="display:flex; align-items:flex-start; gap:12px; flex:1; min-width:0; cursor:pointer;" title="Tocca per entrare nella Cartella Clinica Completa">' +
+      '<div style="width:48px; height:48px; border-radius:50%; background:' + avatarBg + '; border:2.5px solid ' + avatarBorder + '; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.08); margin-top:2px;">' +
       avatarEmoji +
       '</div>' +
       '<div style="flex:1; min-width:0;">' +
@@ -24822,14 +24842,15 @@ function renderMobileNativeView(terapie, p) {
       '<div style="font-size:12px; color:#64748b; font-weight:600; margin-top:2px; line-height:1.2;">' +
       eta + ' anni • ' + (p.allettato ? 'Allettato' : 'Deambulante') +
       '</div>' +
-      '<div style="font-size:11.5px; color:#059669; font-weight:800; margin-top:2px;">' +
+      pillsPatologieHtml +
+      '<div style="font-size:11.5px; color:#059669; font-weight:800; margin-top:4px;">' +
       '✅ ' + nFatti + ' di ' + nTerapie + ' terapie assunte oggi' +
       '</div>' +
-      '<div style="display:flex; align-items:center; gap:6px; margin-top:5px; flex-wrap:wrap;">' +
-      '<button type="button" onclick="event.stopPropagation(); navigaMobileTab(\'clinica\', document.getElementById(\'mbar-btn-clinica\'))" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
+      '<div style="display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap;">' +
+      '<button type="button" onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
       '<span>📋 Scheda Clinica ➜</span>' +
       '</button>' +
-      '<button type="button" onclick="event.stopPropagation(); apriModificaAnagrafica()" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
+      '<button type="button" onclick="event.stopPropagation(); apriModificaAnagrafica()" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
       '<span>✏️ Modifica Dati</span>' +
       '</button>' +
       '</div>' +
@@ -25014,15 +25035,19 @@ function navigaMobileTab(mode, btn) {
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else if (mode === 'clinica') {
-    document.body.classList.remove('viewing-oggi');
-    document.body.classList.add('viewing-clinica');
+    if (typeof apriModalSchedaClinicaMobile === 'function') {
+      apriModalSchedaClinicaMobile();
+    } else {
+      document.body.classList.remove('viewing-oggi');
+      document.body.classList.add('viewing-clinica');
 
-    if (mobileContainer) mobileContainer.style.setProperty('display', 'none', 'important');
-    if (anagraficaHero) anagraficaHero.style.setProperty('display', 'block', 'important');
-    if (cruscottoSmart) cruscottoSmart.style.setProperty('display', 'block', 'important');
-    if (tabDashboard) tabDashboard.style.setProperty('display', 'block', 'important');
-    if (tabFarmaci) tabFarmaci.style.setProperty('display', 'none', 'important');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (mobileContainer) mobileContainer.style.setProperty('display', 'none', 'important');
+      if (anagraficaHero) anagraficaHero.style.setProperty('display', 'block', 'important');
+      if (cruscottoSmart) cruscottoSmart.style.setProperty('display', 'block', 'important');
+      if (tabDashboard) tabDashboard.style.setProperty('display', 'block', 'important');
+      if (tabFarmaci) tabFarmaci.style.setProperty('display', 'none', 'important');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   } else if (mode === 'farmaci') {
     document.body.classList.remove('viewing-oggi', 'viewing-clinica');
     document.body.classList.add('viewing-farmaci');
@@ -25041,6 +25066,137 @@ function navigaMobileTab(mode, btn) {
   }
 }
 window.navigaMobileTab = navigaMobileTab;
+
+// ==========================================================================
+// MODALE SCHEDA CLINICA DEDICATA PER SMARTPHONE (CARTELLA COMPLETA & DIAGNOSI)
+// ==========================================================================
+function apriModalSchedaClinicaMobile(pazId) {
+  const p = pazId ? (AppData.pazienti || []).find(x => x.id === pazId) : getActivePaziente();
+  if (!p) return;
+
+  const modal = document.getElementById('modal-scheda-clinica-mobile');
+  if (!modal) return;
+
+  const nomeEl = document.getElementById('scm-nome');
+  const avatarEl = document.getElementById('scm-avatar');
+  const etaEl = document.getElementById('scm-eta');
+  const sessoEl = document.getElementById('scm-sesso');
+  const nascitaEl = document.getElementById('scm-nascita');
+  const deambulanteEl = document.getElementById('scm-deambulante');
+  const indirizzoEl = document.getElementById('scm-indirizzo');
+  const navigaBtn = document.getElementById('scm-btn-naviga');
+  const telCasaEl = document.getElementById('scm-tel-casa');
+  const cellEl = document.getElementById('scm-cell');
+  const caregiverEl = document.getElementById('scm-caregiver');
+  const medicoEl = document.getElementById('scm-medico');
+  const medicoTelEl = document.getElementById('scm-medico-tel');
+  const farmaciaEl = document.getElementById('scm-farmacia');
+  const allergieBox = document.getElementById('scm-allergie-box');
+  const patologieListEl = document.getElementById('scm-patologie-list');
+
+  const av = (typeof getDettagliAvatarPaziente === 'function') ? getDettagliAvatarPaziente(p) : { emoji: '👤', isFemmina: false, labelGenere: 'Maschile' };
+  const eta = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || '--');
+  const dataFmt = (typeof formattaDataNascitaItaliana === 'function') ? formattaDataNascitaItaliana(p.dataNascita, true) : (p.dataNascita || '--');
+
+  if (nomeEl) nomeEl.textContent = (p.nome || 'Assistito').replace(/\s*\(\d+\s*anni\)/gi, '');
+  if (avatarEl) avatarEl.textContent = av.emoji;
+  if (etaEl) etaEl.textContent = eta + ' anni';
+  if (sessoEl) sessoEl.textContent = (p.sesso === 'F' || av.isFemmina) ? 'Donna 👩' : 'Uomo 👨';
+  if (nascitaEl) nascitaEl.textContent = dataFmt;
+  if (deambulanteEl) deambulanteEl.textContent = p.allettato ? 'Allettato 🛏️ (q2h)' : 'Deambulante 🚶';
+  if (indirizzoEl) indirizzoEl.textContent = p.indirizzo || 'Residenza domiciliare';
+  if (navigaBtn) {
+    navigaBtn.href = p.indirizzo ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.indirizzo)}` : '#';
+  }
+  if (telCasaEl) {
+    const tCasa = p.telefonoFisso || p.telefono || '';
+    telCasaEl.textContent = tCasa || 'Non presente';
+    telCasaEl.href = tCasa ? `tel:${tCasa.replace(/[^0-9+]/g, '')}` : '#';
+  }
+  if (cellEl) {
+    const cVal = p.cellulare || '';
+    cellEl.textContent = cVal || 'Non presente';
+    cellEl.href = cVal ? `tel:${cVal.replace(/[^0-9+]/g, '')}` : '#';
+  }
+
+  // Caregiver
+  if (caregiverEl) {
+    const cgNome = p.moglieNome || p.caregiverNome || 'Familiare / Caregiver';
+    const cgCell = p.moglieCellulare || p.caregiverCellulare || '';
+    caregiverEl.innerHTML = `<b>${cgNome}</b> ${cgCell ? `&bull; <a href="tel:${cgCell.replace(/[^0-9+]/g, '')}" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ${cgCell}</a>` : ''}`;
+  }
+
+  // Medico
+  if (medicoEl) {
+    const mNome = p.medicoNome || p.medico || 'Dott. Curante MMG';
+    const mTel = p.medicoTel || p.telMedico || p.medicoTelStudio || '';
+    medicoEl.innerHTML = `<b>🩺 ${mNome}</b>`;
+    if (medicoTelEl) {
+      if (mTel) {
+        medicoTelEl.innerHTML = `<a href="tel:${mTel.replace(/[^0-9+]/g, '')}" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; gap:3px;">📞 Chiama</a> ` +
+          `<a href="https://api.whatsapp.com/send?phone=${mTel.replace(/[^0-9]/g, '')}" target="_blank" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; gap:3px;">💬 WhatsApp</a>`;
+      } else {
+        medicoTelEl.innerHTML = '';
+      }
+    }
+  }
+
+  // Farmacia
+  if (farmaciaEl) {
+    const fNome = p.farmaciaDiRiferimento || 'Farmacia Territoriale';
+    const fTel = p.farmaciaTelefono || '';
+    farmaciaEl.innerHTML = `<b>🏥 ${fNome}</b> ${fTel ? `&bull; <a href="tel:${fTel.replace(/[^0-9+]/g, '')}" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ${fTel}</a>` : ''}`;
+  }
+
+  // Allergie
+  if (allergieBox) {
+    const haAllergie = p.allergie && !p.allergie.toLowerCase().includes('nessun') && p.allergie.trim() !== '' && p.allergie.trim() !== '-';
+    if (haAllergie) {
+      allergieBox.style.background = '#fef2f2';
+      allergieBox.style.border = '2px solid #ef4444';
+      allergieBox.innerHTML = `<div style="display:flex; align-items:center; gap:8px;"><span style="font-size:20px;">🚫</span> <div><b style="color:#b91c1c; font-size:13px; text-transform:uppercase;">⚠️ ALLERGIE: ${p.allergie}</b><div style="font-size:11px; color:#991b1b; font-weight:700;">Segnalazione di sicurezza per somministrazione farmaci</div></div></div>`;
+    } else {
+      allergieBox.style.background = '#f0fdf4';
+      allergieBox.style.border = '1.5px solid #86efac';
+      allergieBox.innerHTML = `<div style="display:flex; align-items:center; gap:8px;"><span style="font-size:20px;">🛡️</span> <div><b style="color:#166534; font-size:13px;">Nessuna allergia farmacologica nota riferita (NKDA)</b></div></div>`;
+    }
+  }
+
+  // Patologie List
+  if (patologieListEl) {
+    const patList = Array.isArray(p.patologie) ? p.patologie : (typeof p.patologie === 'string' ? [p.patologie] : (p.diagnosi ? p.diagnosi.split(' • ') : []));
+    if (patList.length === 0) {
+      patologieListEl.innerHTML = `
+        <div style="background:#f0f9ff; border:1.5px dashed #38bdf8; border-radius:12px; padding:14px; text-align:center;">
+          <div style="font-size:13.5px; font-weight:800; color:#0369a1;">Nessuna diagnosi o patologia formalizzata</div>
+          <div style="font-size:11.5px; color:#475569; margin:6px 0 10px 0;">Puoi dedurre le patologie dai farmaci assunti con 1 tap:</div>
+          <button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci(); apriModalSchedaClinicaMobile('${p.id}');" style="background:#0284c7; color:#fff; border:none; padding:8px 16px; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer;">
+            ✨ Deduci Diagnosi dai Farmaci (AI)
+          </button>
+        </div>
+      `;
+    } else {
+      patologieListEl.innerHTML = patList.map((pt, idx) => `
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:12px; padding:10px 12px; margin-bottom:7px; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+          <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+            <span style="font-size:16px;">🩺</span>
+            <span style="font-size:13px; font-weight:800; color:#0f172a; line-height:1.3;">${pt}</span>
+          </div>
+          <span style="background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:800; padding:3px 7px; border-radius:6px; flex-shrink:0;">Attiva</span>
+        </div>
+      `).join('');
+    }
+  }
+
+  modal.style.display = 'flex';
+}
+window.apriModalSchedaClinicaMobile = apriModalSchedaClinicaMobile;
+
+function chiudiModalSchedaClinicaMobile() {
+  const modal = document.getElementById('modal-scheda-clinica-mobile');
+  if (modal) modal.style.display = 'none';
+}
+window.chiudiModalSchedaClinicaMobile = chiudiModalSchedaClinicaMobile;
 
 function apriScannerMobileUnClick() {
   var camInput = document.getElementById('scan-carico-camera') || document.getElementById('scan-farm-camera');

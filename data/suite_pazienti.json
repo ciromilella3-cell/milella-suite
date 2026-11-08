@@ -1,6 +1,6 @@
 {
   "versione": "2.3.0",
-  "ultimoAggiornamento": "2026-11-07T14:18:31.410Z",
+  "ultimoAggiornamento": "2026-11-08T16:21:12.335Z",
   "pazienti": [
     {
       "id": "paz_aldo",
@@ -10,7 +10,7 @@
       "sesso": "M",
       "medico": "Dott. Roberto Scarcia",
       "telMedico": "347 126 59 71",
-      "allergie": "Nessuna nota",
+      "allergie": "Penicilline / Beta-lattamici",
       "catetere": false,
       "allettato": false,
       "note": "Paziente deambulante 91 anni. Cardiopatia ipertensiva in buon compenso, osteoartrosi diffusa e insufficienza venosa periferica.",
@@ -24,21 +24,37 @@
           "dosaggio": "40 mg (1 cpr gastroresistente)",
           "modo": "A DIGIUNO, 30 min prima di colazione (Protezione gastrica)",
           "cprPerScatola": 28,
-          "scorta": 21,
+          "scorta": 48,
           "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "ultimoRitiro": "2026-11-07T21:20:21.450Z"
         },
         {
-          "id": 102,
+          "id": 1794085262569,
           "ora": "08:30",
           "fascia": "Mattina (Colazione)",
           "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
           "principio": "Bisoprololo fumarato",
-          "dosaggio": "1,25 mg (1 cpr rivestita)",
+          "dosaggio": "1,25 mg (1 cpr)",
+          "quantitaQuota": 1,
           "modo": "A colazione (Controllo frequenza cardiaca e pressione)",
           "cprPerScatola": 28,
-          "scorta": 21,
+          "scorta": 88,
+          "giorniAlert": 7,
+          "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
+          "tipoFormulazione": "compressa",
+          "penneScorta": 89,
+          "unitaDoseDie": 1,
+          "unitaPerPenna": 300,
+          "pennePerScatola": 28,
+          "kitGlicemiaAssociato": null,
+          "ultimaModificaClinica": {
+            "data": "07/11/2026",
+            "fonte": "Visita Specialistica",
+            "medico": "",
+            "motivo": ""
+          },
           "ultimaDoseSomministrata": 1
         },
         {
@@ -50,9 +66,10 @@
           "dosaggio": "100 mg (1 capsula)",
           "modo": "A colazione con acqua (Controllo neurologico)",
           "cprPerScatola": 56,
-          "scorta": 43,
+          "scorta": 543,
           "fattoOggi": true,
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "ultimoRitiro": "2026-11-07T19:46:40.008Z"
         },
         {
           "id": 1032,
@@ -63,9 +80,10 @@
           "dosaggio": "100 mg (1 capsula)",
           "modo": "A pranzo con acqua (Controllo neurologico)",
           "cprPerScatola": 56,
-          "scorta": 43,
-          "fattoOggi": false,
-          "ultimaDoseSomministrata": 1
+          "scorta": 543,
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1,
+          "ultimoRitiro": "2026-11-07T19:46:40.008Z"
         },
         {
           "id": 104,
@@ -76,7 +94,7 @@
           "dosaggio": "8 mg (1 capsula)",
           "modo": "A CENA, a stomaco pieno con acqua (Ipertrofia prostatica / diuresi)",
           "cprPerScatola": 30,
-          "scorta": 26,
+          "scorta": 25,
           "fattoOggi": false,
           "ultimaDoseSomministrata": 1
         },
@@ -89,9 +107,10 @@
           "dosaggio": "200 mg (2 capsule insieme)",
           "modo": "Dopo cena (Dose serale cumulativa di 2 capsule = 200 mg)",
           "cprPerScatola": 56,
-          "scorta": 43,
+          "scorta": 543,
           "fattoOggi": false,
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "ultimoRitiro": "2026-11-07T19:46:40.008Z"
         },
         {
           "id": 106,
@@ -102,66 +121,330 @@
           "dosaggio": "25 mg (1 cpr rivestita)",
           "modo": "Prima di coricarsi con acqua (Modulatore umore e sonno)",
           "cprPerScatola": 30,
-          "scorta": 27,
+          "scorta": 26,
           "fattoOggi": false,
           "ultimaDoseSomministrata": 1
         }
       ],
       "registrazioni": [
         {
-          "id": "log_1793709688433",
+          "id": "esc_1794144092970",
+          "timestamp": "2026-11-08T13:21:32.963Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:21 il farmaco \"VIMPAT 100 mg (2ª dose)\" delle ore 13:30 risulta non ancora spuntato (+51 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794127562472",
+          "timestamp": "2026-11-08T08:46:02.397Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 09:46 il farmaco \"VIMPAT 100 mg (1ª dose)\" delle ore 08:30 risulta non ancora spuntato (+76 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794127562401",
+          "timestamp": "2026-11-08T08:46:02.397Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 09:46 il farmaco \"Bisoprololo Teva/Sandoz 1,25 mg\" delle ore 08:30 risulta non ancora spuntato (+76 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794082073765",
+          "timestamp": "2026-11-07T20:07:53.762Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 21:07 il farmaco \"VIMPAT 100 mg (3ª dose serale)\" delle ore 20:30 risulta non ancora spuntato (+37 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794082063895",
+          "timestamp": "2026-11-07T20:07:43.893Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 21:07 il farmaco \"VIMPAT 100 mg (3ª dose serale)\" delle ore 20:30 risulta non ancora spuntato (+37 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794056988576",
+          "timestamp": "2026-11-07T13:09:48.567Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:09 il farmaco \"VIMPAT 100 mg (2ª dose)\" delle ore 13:30 risulta non ancora spuntato (+39 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "log_1794078926032",
           "tipo": "farmaco_ritardo",
-          "timestamp": "2026-11-03T12:41:28.433Z",
-          "farmacoId": 1032,
-          "farmaco": "VIMPAT 100 mg (2ª dose)",
-          "dosaggio": "100 mg (1 capsula)",
-          "orarioPrevisto": "13:30",
-          "orarioReale": "13:41",
-          "minutiRitardo": 11,
+          "timestamp": "2026-11-07T19:15:26.031Z",
+          "farmacoId": 104,
+          "farmaco": "SILODYX 8 mg (Silodosina)",
+          "dosaggio": "8 mg (1 capsula)",
+          "orarioPrevisto": "20:00",
+          "orarioReale": "20:15",
+          "minutiRitardo": 15,
           "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 11 minuti! Orario previsto: 13:30 - Orario effettivo assunzione: 13:41. Rimanenza scorta: 44 cpr.",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 15 minuti! Orario previsto: 20:00 - Orario effettivo assunzione: 20:15. Rimanenza scorta: 25 cpr.",
           "operatore": "Ciro Milella (Admin)"
         },
         {
-          "id": "log_1794049363052",
+          "id": "log_1794080569283",
+          "tipo": "scorta",
+          "farmacoId": 105,
+          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 56,
+          "timestamp": "2026-11-07T19:42:49.283Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di VIMPAT 100 mg (3ª dose serale) (+56 cpr). Nuova scorta: 98 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794080576945",
+          "tipo": "scorta",
+          "farmacoId": 105,
+          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 56,
+          "timestamp": "2026-11-07T19:42:56.945Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di VIMPAT 100 mg (3ª dose serale) (+56 cpr). Nuova scorta: 154 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794080584002",
+          "tipo": "scorta",
+          "farmacoId": 105,
+          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 56,
+          "timestamp": "2026-11-07T19:43:04.001Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di VIMPAT 100 mg (3ª dose serale) (+56 cpr). Nuova scorta: 210 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794080626755",
+          "tipo": "scorta",
+          "farmacoId": 105,
+          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 56,
+          "timestamp": "2026-11-07T19:43:46.755Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di VIMPAT 100 mg (3ª dose serale) (+56 cpr). Nuova scorta: 266 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794080631655",
+          "tipo": "scorta",
+          "farmacoId": 105,
+          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 56,
+          "timestamp": "2026-11-07T19:43:51.655Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di VIMPAT 100 mg (3ª dose serale) (+56 cpr). Nuova scorta: 322 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794080631884",
+          "tipo": "scorta",
+          "farmacoId": 105,
+          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 56,
+          "timestamp": "2026-11-07T19:43:51.883Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di VIMPAT 100 mg (3ª dose serale) (+56 cpr). Nuova scorta: 378 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794080668712",
+          "tipo": "scorta",
+          "farmacoId": 105,
+          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 56,
+          "timestamp": "2026-11-07T19:44:28.711Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di VIMPAT 100 mg (3ª dose serale) (+56 cpr). Nuova scorta: 434 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794080782733",
+          "tipo": "scorta",
+          "farmacoId": 105,
+          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 56,
+          "timestamp": "2026-11-07T19:46:22.732Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di VIMPAT 100 mg (3ª dose serale) (+56 cpr). Nuova scorta: 490 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794080800009",
+          "tipo": "scorta",
+          "farmacoId": 105,
+          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 56,
+          "timestamp": "2026-11-07T19:46:40.008Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di VIMPAT 100 mg (3ª dose serale) (+56 cpr). Nuova scorta: 546 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794082078053",
           "tipo": "farmaco_ritardo",
-          "timestamp": "2026-11-07T11:02:43.052Z",
+          "timestamp": "2026-11-07T20:07:58.052Z",
+          "farmacoId": 105,
+          "farmaco": "VIMPAT 100 mg (3ª dose serale)",
+          "dosaggio": "200 mg (2 capsule insieme)",
+          "orarioPrevisto": "20:30",
+          "orarioReale": "21:07",
+          "minutiRitardo": 37,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 37 minuti! Orario previsto: 20:30 - Orario effettivo assunzione: 21:07. Rimanenza scorta: 545 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794083418610",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T20:30:18.609Z",
+          "farmacoId": 106,
+          "farmaco": "Quetiapina Teva 25 mg",
+          "dosaggio": "25 mg (1 cpr rivestita)",
+          "orarioPrevisto": "21:30",
+          "orarioReale": "21:30",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 21:30 - Orario effettivo assunzione: 21:30. Rimanenza scorta: 26 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794083465906",
+          "tipo": "scorta",
+          "farmacoId": 102,
+          "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 28,
+          "timestamp": "2026-11-07T20:31:05.906Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Bisoprololo Teva/Sandoz 1,25 mg (+28 cpr). Nuova scorta: 49 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794084061629",
+          "tipo": "scorta",
+          "farmacoId": 102,
+          "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 28,
+          "timestamp": "2026-11-07T20:41:01.629Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Bisoprololo Teva/Sandoz 1,25 mg (+28 cpr). Nuova scorta: 77 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794084691681",
+          "tipo": "scorta",
+          "farmacoId": 102,
+          "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 28,
+          "timestamp": "2026-11-07T20:51:31.681Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Bisoprololo Teva/Sandoz 1,25 mg (+28 cpr). Nuova scorta: 33 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794084724861",
+          "tipo": "scorta",
+          "farmacoId": 1794084715021,
+          "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 28,
+          "timestamp": "2026-11-07T20:52:04.861Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Bisoprololo Teva/Sandoz 1,25 mg (+28 cpr). Nuova scorta: 61 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794084745083",
+          "tipo": "scorta",
+          "farmacoId": 1794084715021,
+          "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 28,
+          "timestamp": "2026-11-07T20:52:25.083Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Bisoprololo Teva/Sandoz 1,25 mg (+28 cpr). Nuova scorta: 89 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794086421450",
+          "tipo": "scorta",
+          "farmacoId": 101,
+          "farmaco": "Pantoprazolo 40 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 28,
+          "timestamp": "2026-11-07T21:20:21.450Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Pantoprazolo 40 mg (+28 cpr). Nuova scorta: 49 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794119504431",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T06:31:44.430Z",
           "farmacoId": 101,
           "farmaco": "Pantoprazolo 40 mg",
           "dosaggio": "40 mg (1 cpr gastroresistente)",
           "orarioPrevisto": "07:30",
-          "orarioReale": "12:02",
-          "minutiRitardo": 272,
+          "orarioReale": "07:31",
+          "minutiRitardo": 1,
           "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 32 min! Orario previsto: 07:30 - Orario effettivo assunzione: 12:02. Rimanenza scorta: 21 cpr.",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 minuti! Orario previsto: 07:30 - Orario effettivo assunzione: 07:31. Rimanenza scorta: 48 cpr.",
           "operatore": "Ciro Milella (Admin)"
         },
         {
-          "id": "log_1794049373000",
+          "id": "log_1794127568144",
           "tipo": "farmaco_ritardo",
-          "timestamp": "2026-11-07T11:02:52.999Z",
-          "farmacoId": 102,
+          "timestamp": "2026-11-08T08:46:08.144Z",
+          "farmacoId": 1794085262569,
           "farmaco": "Bisoprololo Teva/Sandoz 1,25 mg",
-          "dosaggio": "1,25 mg (1 cpr rivestita)",
+          "dosaggio": "1,25 mg (1 cpr)",
           "orarioPrevisto": "08:30",
-          "orarioReale": "12:02",
-          "minutiRitardo": 212,
+          "orarioReale": "09:46",
+          "minutiRitardo": 76,
           "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 ore e 32 min! Orario previsto: 08:30 - Orario effettivo assunzione: 12:02. Rimanenza scorta: 21 cpr.",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 16 min! Orario previsto: 08:30 - Orario effettivo assunzione: 09:46. Rimanenza scorta: 88 cpr.",
           "operatore": "Ciro Milella (Admin)"
         },
         {
-          "id": "log_1794049378590",
+          "id": "log_1794127587892",
           "tipo": "farmaco_ritardo",
-          "timestamp": "2026-11-07T11:02:58.589Z",
+          "timestamp": "2026-11-08T08:46:27.891Z",
           "farmacoId": 103,
           "farmaco": "VIMPAT 100 mg (1ª dose)",
           "dosaggio": "100 mg (1 capsula)",
           "orarioPrevisto": "08:30",
-          "orarioReale": "12:02",
-          "minutiRitardo": 212,
+          "orarioReale": "09:46",
+          "minutiRitardo": 76,
           "azione": "somministrazione",
-          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 ore e 32 min! Orario previsto: 08:30 - Orario effettivo assunzione: 12:02. Rimanenza scorta: 43 cpr.",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 16 min! Orario previsto: 08:30 - Orario effettivo assunzione: 09:46. Rimanenza scorta: 544 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794144098081",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T13:21:38.080Z",
+          "farmacoId": 1032,
+          "farmaco": "VIMPAT 100 mg (2ª dose)",
+          "dosaggio": "100 mg (1 capsula)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "14:21",
+          "minutiRitardo": 51,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 51 minuti! Orario previsto: 13:30 - Orario effettivo assunzione: 14:21. Rimanenza scorta: 543 cpr.",
           "operatore": "Ciro Milella (Admin)"
         }
       ],
@@ -301,7 +584,19 @@
             "prenotatoCUP": false
           }
         ]
-      }
+      },
+      "telefono": "338 000 00 01",
+      "diario": [],
+      "origini": [
+        "CareAssist Pro"
+      ],
+      "creatoIl": "2026-11-03T10:05:10.534Z",
+      "altezza": "172",
+      "peso": "68.5",
+      "polso": "18",
+      "lifestyle": "1.2",
+      "goal": "mantenimento",
+      "diagnosi": "Paziente geriatrico allettato ad alto rischio di lesioni da decubito (Scala Braden: Rischio Elevato) • Cardiopatia / Aritmia (in terapia con Bisoprololo 1,25 mg) • Epilessia / Disturbo neurologico focale (in terapia con VIMPAT Lacosamide 100 mg b.i.d.) • Ipertrofia Prostatica Benigna (IPB) con difficoltà minzionali (in terapia con SILODYX 8 mg) • Disturbo comportamentale del sonno / Agitazione notturna (in terapia con Quetiapina 25 mg) • Gastroprotezione per terapia cronica (in terapia con Pantoprazolo 40 mg)"
     },
     {
       "id": "paz_angela",
@@ -317,17 +612,31 @@
       "note": "Coniuge di Aldo. Terapia cardiologica, ipertensiva, dislipidemica, uricosurica, gastroprotettiva e integrazione vit. D3.",
       "terapie": [
         {
-          "id": 201,
+          "id": 1794085864934,
           "ora": "08:00",
           "fascia": "Mattina (Colazione)",
           "farmaco": "Bisoprololo Sandoz 1,25 mg",
           "principio": "Bisoprololo fumarato",
-          "dosaggio": "1,25 mg (1 cpr rivestita con film)",
+          "dosaggio": "1,25 mg (1 cpr)",
+          "quantitaQuota": 1,
           "modo": "Al mattino a colazione (Beta-bloccante: controllo frequenza e battito cardiaco)",
           "cprPerScatola": 28,
-          "scorta": 21,
-          "farmacia": "Farmacia MACARIO",
+          "scorta": 20,
+          "giorniAlert": 7,
+          "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
+          "tipoFormulazione": "compressa",
+          "penneScorta": 21,
+          "unitaDoseDie": 1,
+          "unitaPerPenna": 300,
+          "pennePerScatola": 28,
+          "kitGlicemiaAssociato": null,
+          "ultimaModificaClinica": {
+            "data": "07/11/2026",
+            "fonte": "Visita Specialistica",
+            "medico": "",
+            "motivo": ""
+          },
           "ultimaDoseSomministrata": 1
         },
         {
@@ -339,7 +648,7 @@
           "dosaggio": "300 mg / 12,5 mg (1 cpr rivestita)",
           "modo": "Al mattino dopo colazione con acqua (Antipertensivo combinato per la pressione arteriosa)",
           "cprPerScatola": 28,
-          "scorta": 21,
+          "scorta": 20,
           "farmacia": "Farmacia MACARIO",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
@@ -353,7 +662,7 @@
           "dosaggio": "25 mg (1 compressa)",
           "modo": "Al mattino (Diuretico dell'ansa per eliminazione liquidi in eccesso ed edemi)",
           "cprPerScatola": 30,
-          "scorta": 23,
+          "scorta": 22,
           "farmacia": "Farmacia MACARIO",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
@@ -367,7 +676,7 @@
           "dosaggio": "50.000 U.I. in 2,5 ml flaconcino monodose",
           "modo": "Assunzione orale periodica con un po' di cibo grasso [Ogni 15 giorni: il 15 e il 30 del mese]",
           "cprPerScatola": 1,
-          "scorta": 0.65,
+          "scorta": 0.58,
           "farmacia": "Farmacia MACARIO",
           "fattoOggi": true,
           "cadenzaTipo": "quindicinale_15_30",
@@ -382,9 +691,9 @@
           "dosaggio": "100 mg (1 cpr gastroresistente)",
           "modo": "A metà o fine pranzo con abbondante acqua (Antiaggregante piastrinico salvacuore)",
           "cprPerScatola": 30,
-          "scorta": 24,
+          "scorta": 22,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "ultimaDoseSomministrata": 1
         },
         {
@@ -396,10 +705,11 @@
           "dosaggio": "300 mg (1 compressa)",
           "modo": "Dopo pranzo (Uricosurico: riduzione e controllo dell'acido urico e prevenzione gotta)",
           "cprPerScatola": 30,
-          "scorta": 24,
+          "scorta": 232,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false,
-          "ultimaDoseSomministrata": 1
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1,
+          "ultimoRitiro": "2026-11-07T20:18:10.813Z"
         },
         {
           "id": 206,
@@ -410,9 +720,9 @@
           "dosaggio": "80 mg/ml (Gel orale / Bustina)",
           "modo": "1 ora dopo i pasti o al bisogno (Antiacido gastroprotettore contro bruciore e reflusso)",
           "cprPerScatola": 20,
-          "scorta": 14,
+          "scorta": 12,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "ultimaDoseSomministrata": 1
         },
         {
@@ -424,13 +734,118 @@
           "dosaggio": "40 mg (1 compressa)",
           "modo": "La sera dopo cena o prima di dormire (Statina: controllo del colesterolo e lipidi)",
           "cprPerScatola": 28,
-          "scorta": 24,
+          "scorta": 23,
           "farmacia": "Farmacia MACARIO",
           "fattoOggi": false,
           "ultimaDoseSomministrata": 1
         }
       ],
       "registrazioni": [
+        {
+          "id": "esc_1794144114347",
+          "timestamp": "2026-11-08T13:21:54.240Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:21 il farmaco \"Cardioaspirin 100 mg (Acido Acetilsalicilico)\" delle ore 13:00 risulta non ancora spuntato (+81 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794144114244",
+          "timestamp": "2026-11-08T13:21:54.240Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:21 il farmaco \"Allopurinolo Teva Italia 300 mg\" delle ore 13:30 risulta non ancora spuntato (+51 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794127602505",
+          "timestamp": "2026-11-08T08:46:42.398Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 09:46 il farmaco \"Lasix 25 mg (Furosemide)\" delle ore 09:00 risulta non ancora spuntato (+46 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794127602404",
+          "timestamp": "2026-11-08T08:46:42.398Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 09:46 il farmaco \"Irbesartan/Idroclorotiazide Teva 300 mg/12,5 mg\" delle ore 08:30 risulta non ancora spuntato (+76 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794083392664",
+          "timestamp": "2026-11-07T20:29:52.662Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 21:29 il farmaco \"Aplactin 40 mg (Pravastatina)\" delle ore 20:30 risulta non ancora spuntato (+59 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794083052281",
+          "timestamp": "2026-11-07T20:24:12.278Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 21:24 il farmaco \"Aplactin 40 mg (Pravastatina)\" delle ore 20:30 risulta non ancora spuntato (+54 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794083045069",
+          "timestamp": "2026-11-07T20:24:05.067Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 21:24 il farmaco \"Aplactin 40 mg (Pravastatina)\" delle ore 20:30 risulta non ancora spuntato (+54 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794082470891",
+          "timestamp": "2026-11-07T20:14:30.889Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 21:14 il farmaco \"Aplactin 40 mg (Pravastatina)\" delle ore 20:30 risulta non ancora spuntato (+44 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794082464086",
+          "timestamp": "2026-11-07T20:14:24.084Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 21:14 il farmaco \"Aplactin 40 mg (Pravastatina)\" delle ore 20:30 risulta non ancora spuntato (+44 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794082279854",
+          "timestamp": "2026-11-07T20:11:19.851Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 21:11 il farmaco \"Aplactin 40 mg (Pravastatina)\" delle ore 20:30 risulta non ancora spuntato (+41 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794082170008",
+          "timestamp": "2026-11-07T20:09:30.004Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 21:09 il farmaco \"Aplactin 40 mg (Pravastatina)\" delle ore 20:30 risulta non ancora spuntato (+39 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794082094771",
+          "timestamp": "2026-11-07T20:08:14.767Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 21:08 il farmaco \"Aplactin 40 mg (Pravastatina)\" delle ore 20:30 risulta non ancora spuntato (+38 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794061495855",
+          "timestamp": "2026-11-07T14:24:55.852Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:24 il farmaco \"Allopurinolo Teva Italia 300 mg\" delle ore 13:30 risulta non ancora spuntato (+114 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794061491138",
+          "timestamp": "2026-11-07T14:24:51.136Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:24 il farmaco \"Allopurinolo Teva Italia 300 mg\" delle ore 13:30 risulta non ancora spuntato (+114 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794057008489",
+          "timestamp": "2026-11-07T13:10:08.487Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:10 il farmaco \"Allopurinolo Teva Italia 300 mg\" delle ore 13:30 risulta non ancora spuntato (+40 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
         {
           "id": "log_1793707277666",
           "tipo": "farmaco_ritardo",
@@ -541,6 +956,269 @@
           "minutiRitardo": 123,
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 3 min! Orario previsto: 10:00 - Orario effettivo assunzione: 12:03. Rimanenza scorta: 0.65 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794052838747",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T12:00:38.746Z",
+          "farmacoId": 204,
+          "farmaco": "Cardioaspirin 100 mg (Acido Acetilsalicilico)",
+          "dosaggio": "100 mg (1 cpr gastroresistente)",
+          "orarioPrevisto": "13:00",
+          "orarioReale": "13:00",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 13:00 - Orario effettivo assunzione: 13:00. Rimanenza scorta: 23 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794061513749",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T14:25:13.748Z",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "dosaggio": "300 mg (1 compressa)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "15:25",
+          "minutiRitardo": 115,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 55 min! Orario previsto: 13:30 - Orario effettivo assunzione: 15:25. Rimanenza scorta: 23 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794062438849",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T14:40:38.848Z",
+          "farmacoId": 206,
+          "farmaco": "Riopan 80 mg/ml (Magaldrato)",
+          "dosaggio": "80 mg/ml (Gel orale / Bustina)",
+          "orarioPrevisto": "15:30",
+          "orarioReale": "15:40",
+          "minutiRitardo": 10,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 10 minuti! Orario previsto: 15:30 - Orario effettivo assunzione: 15:40. Rimanenza scorta: 13 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794082097396",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T20:08:17.395Z",
+          "farmacoId": 207,
+          "farmaco": "Aplactin 40 mg (Pravastatina)",
+          "dosaggio": "40 mg (1 compressa)",
+          "orarioPrevisto": "20:30",
+          "orarioReale": "21:08",
+          "minutiRitardo": 38,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 38 minuti! Orario previsto: 20:30 - Orario effettivo assunzione: 21:08. Rimanenza scorta: 23 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794082159368",
+          "tipo": "farmaco_annullato",
+          "timestamp": "2026-11-07T20:09:17.861Z",
+          "farmacoId": 207,
+          "farmaco": "Aplactin 40 mg (Pravastatina)",
+          "dosaggio": "40 mg (1 compressa)",
+          "azione": "annullamento",
+          "dettaglio": "Somministrazione annullata alle ore 21:09. 1 compressa riaccreditata in scorta (24 cpr).",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794082242283",
+          "tipo": "scorta",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 30,
+          "timestamp": "2026-11-07T20:10:42.283Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Allopurinolo Teva Italia 300 mg (+30 cpr). Nuova scorta: 53 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794082244133",
+          "tipo": "scorta",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 30,
+          "timestamp": "2026-11-07T20:10:44.133Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Allopurinolo Teva Italia 300 mg (+30 cpr). Nuova scorta: 83 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794082244985",
+          "tipo": "scorta",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 30,
+          "timestamp": "2026-11-07T20:10:44.985Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Allopurinolo Teva Italia 300 mg (+30 cpr). Nuova scorta: 113 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794082245778",
+          "tipo": "scorta",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 30,
+          "timestamp": "2026-11-07T20:10:45.778Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Allopurinolo Teva Italia 300 mg (+30 cpr). Nuova scorta: 143 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794082559104",
+          "tipo": "scorta",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 30,
+          "timestamp": "2026-11-07T20:15:59.104Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Allopurinolo Teva Italia 300 mg (+30 cpr). Nuova scorta: 173 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794082564847",
+          "tipo": "scorta",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 30,
+          "timestamp": "2026-11-07T20:16:04.847Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Allopurinolo Teva Italia 300 mg (+30 cpr). Nuova scorta: 203 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794082690813",
+          "tipo": "scorta",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 30,
+          "timestamp": "2026-11-07T20:18:10.813Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di Allopurinolo Teva Italia 300 mg (+30 cpr). Nuova scorta: 233 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794083400134",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T20:30:00.127Z",
+          "farmacoId": 207,
+          "farmaco": "Aplactin 40 mg (Pravastatina)",
+          "dosaggio": "40 mg (1 compressa)",
+          "orarioPrevisto": "20:30",
+          "orarioReale": "21:30",
+          "minutiRitardo": 60,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 0 min! Orario previsto: 20:30 - Orario effettivo assunzione: 21:30. Rimanenza scorta: 23 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794121244868",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T07:00:44.867Z",
+          "farmacoId": 1794085864934,
+          "farmaco": "Bisoprololo Sandoz 1,25 mg",
+          "dosaggio": "1,25 mg (1 cpr)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "08:00",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 08:00 - Orario effettivo assunzione: 08:00. Rimanenza scorta: 20 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794127608505",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T08:46:48.505Z",
+          "farmacoId": 202,
+          "farmaco": "Irbesartan/Idroclorotiazide Teva 300 mg/12,5 mg",
+          "dosaggio": "300 mg / 12,5 mg (1 cpr rivestita)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "09:46",
+          "minutiRitardo": 76,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 16 min! Orario previsto: 08:30 - Orario effettivo assunzione: 09:46. Rimanenza scorta: 20 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794127625746",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T08:47:05.745Z",
+          "farmacoId": 203,
+          "farmaco": "Lasix 25 mg (Furosemide)",
+          "dosaggio": "25 mg (1 compressa)",
+          "orarioPrevisto": "09:00",
+          "orarioReale": "09:47",
+          "minutiRitardo": 47,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 47 minuti! Orario previsto: 09:00 - Orario effettivo assunzione: 09:47. Rimanenza scorta: 22 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794144117761",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T13:21:57.760Z",
+          "farmacoId": 204,
+          "farmaco": "Cardioaspirin 100 mg (Acido Acetilsalicilico)",
+          "dosaggio": "100 mg (1 cpr gastroresistente)",
+          "orarioPrevisto": "13:00",
+          "orarioReale": "14:21",
+          "minutiRitardo": 81,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 21 min! Orario previsto: 13:00 - Orario effettivo assunzione: 14:21. Rimanenza scorta: 22 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794144137843",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T13:22:17.842Z",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "dosaggio": "300 mg (1 compressa)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "14:22",
+          "minutiRitardo": 52,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 52 minuti! Orario previsto: 13:30 - Orario effettivo assunzione: 14:22. Rimanenza scorta: 232 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794148421372",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T14:33:41.372Z",
+          "farmacoId": 206,
+          "farmaco": "Riopan 80 mg/ml (Magaldrato)",
+          "dosaggio": "80 mg/ml (Gel orale / Bustina)",
+          "orarioPrevisto": "15:30",
+          "orarioReale": "15:33",
+          "minutiRitardo": 3,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 3 minuti! Orario previsto: 15:30 - Orario effettivo assunzione: 15:33. Rimanenza scorta: 12 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794148440248",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T14:34:00.247Z",
+          "farmacoId": 208,
+          "farmaco": "DIBASE 50.000 U.I. / 2,5 ml (Colecalciferolo)",
+          "dosaggio": "50.000 U.I. in 2,5 ml flaconcino monodose",
+          "orarioPrevisto": "10:00",
+          "orarioReale": "15:34",
+          "minutiRitardo": 334,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 5 ore e 34 min! Orario previsto: 10:00 - Orario effettivo assunzione: 15:34. Rimanenza scorta: 0.58 cpr.",
           "operatore": "Ciro Milella (Admin)"
         }
       ],
@@ -681,7 +1359,19 @@
           }
         ]
       },
-      "idratazioneOggi": 0
+      "idratazioneOggi": 0,
+      "telefono": "338 000 00 02",
+      "diario": [],
+      "origini": [
+        "CareAssist Pro"
+      ],
+      "creatoIl": "2026-11-03T10:05:10.542Z",
+      "altezza": "158",
+      "peso": "62.0",
+      "polso": "16",
+      "lifestyle": "1.2",
+      "goal": "mantenimento",
+      "diagnosi": "Ipertensione arteriosa sistemica in polichemioterapia • Sindrome delle Apnee Ostruttive nel Sonno (OSAS) con indicazione ausilio CPAP notturna • Dislipidemia / Ipercolesterolemia • Iperuricemia con rischio gotta • Ipovitaminosi D3 (in integrazione ciclica con DIBASE) • Reflusso gastroesofageo / gastrite"
     },
     {
       "id": "paz_rosa",
@@ -705,50 +1395,68 @@
           "dosaggio": "60 mg (1 cpr rilascio modificato)",
           "modo": "A colazione, non masticare (Diabete) - rischio ipoglicemia con insulina ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 30,
-          "scorta": 23,
+          "scorta": 22,
           "farmacia": "Farmacia Girasole Picconi",
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1
         },
         {
-          "id": 306,
+          "id": 1794119789330,
           "ora": "08:00",
           "fascia": "Mattina (Colazione)",
           "farmaco": "TRIATEC 5 mg",
           "principio": "Ramipril",
-          "dosaggio": "5 mg (Dose alternata: ½ cpr e 1 cpr)",
+          "dosaggio": "5 mg (½ cpr)",
+          "quantitaQuota": 0.5,
           "modo": "A colazione con acqua: ½ cpr un giorno e 1 cpr il giorno successivo (Pressione arteriosa)",
           "cprPerScatola": 14,
-          "scorta": 8.5,
-          "farmacia": "Farmacia Girasole Picconi",
+          "scorta": 25,
+          "giorniAlert": 7,
+          "cadenzaTipo": "",
           "fattoOggi": true,
-          "cadenzaTipo": "alternata_mezza_intera",
-          "quantitaQuota": 0.5,
-          "dataInizioAlterni": "2026-10-18",
+          "tipoFormulazione": "compressa",
+          "penneScorta": 25,
+          "unitaDoseDie": 1,
+          "unitaPerPenna": 300,
+          "pennePerScatola": 14,
+          "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "22/10/2026",
+            "data": "08/11/2026",
             "fonte": "Visita Specialistica",
-            "medico": "Cardiologo",
-            "motivo": "Alternanza ½ cpr e 1 cpr a giorni alterni per controllo pressione"
-          },
-          "ultimaDoseSomministrata": 0.5
+            "medico": "",
+            "motivo": ""
+          }
         },
         {
-          "id": 307,
+          "id": 1794119271026,
           "ora": "08:30",
           "fascia": "Mattina (Colazione)",
           "farmaco": "LASIX 25 mg",
           "principio": "Furosemide",
           "dosaggio": "25 mg (1 cpr)",
+          "quantitaQuota": 1,
           "modo": "Al mattino (Diuretico: edemi / scompenso) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 30,
-          "scorta": 23,
-          "farmacia": "Farmacia Girasole Picconi",
+          "scorta": 59,
+          "giorniAlert": 7,
+          "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
+          "tipoFormulazione": "compressa",
+          "penneScorta": 60,
+          "unitaDoseDie": 1,
+          "unitaPerPenna": 300,
+          "pennePerScatola": 30,
+          "kitGlicemiaAssociato": null,
+          "ultimaModificaClinica": {
+            "data": "08/11/2026",
+            "fonte": "Visita Specialistica",
+            "medico": "",
+            "motivo": ""
+          },
           "ultimaDoseSomministrata": 1
         },
         {
-          "id": 1793524336083,
+          "id": 1794120216740,
           "ora": "10:00",
           "fascia": "Mattina (Colazione)",
           "farmaco": "CONGESCOR 2,5 mg",
@@ -757,18 +1465,18 @@
           "quantitaQuota": 1,
           "modo": "A colazione (Beta-bloccante: frequenza cardiaca) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 20,
+          "scorta": 12,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
           "tipoFormulazione": "compressa",
-          "penneScorta": 26,
+          "penneScorta": 13,
           "unitaDoseDie": 1,
           "unitaPerPenna": 300,
           "pennePerScatola": 28,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "01/11/2026",
+            "data": "08/11/2026",
             "fonte": "Visita Specialistica",
             "medico": "",
             "motivo": ""
@@ -776,7 +1484,7 @@
           "ultimaDoseSomministrata": 1
         },
         {
-          "id": 1793524736586,
+          "id": 1794119856922,
           "ora": "10:00",
           "fascia": "Mattina (Colazione)",
           "farmaco": "SINEMET 100+25 mg (1ª dose: 2 cpr - ore 10:00)",
@@ -785,18 +1493,18 @@
           "quantitaQuota": 2,
           "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 50,
-          "scorta": 56,
+          "scorta": 66,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
           "tipoFormulazione": "compressa",
-          "penneScorta": 72,
+          "penneScorta": 70,
           "unitaDoseDie": 1,
           "unitaPerPenna": 300,
           "pennePerScatola": 50,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "01/11/2026",
+            "data": "08/11/2026",
             "fonte": "Visita Specialistica",
             "medico": "",
             "motivo": ""
@@ -804,7 +1512,7 @@
           "ultimaDoseSomministrata": 2
         },
         {
-          "id": 1793524467949,
+          "id": 1794119962919,
           "ora": "10:30",
           "fascia": "Mattina (Colazione)",
           "farmaco": "ARCOXIA 90 mg",
@@ -812,19 +1520,19 @@
           "dosaggio": "90 mg (1 cpr)",
           "quantitaQuota": 1,
           "modo": "A stomaco pieno (Antinfiammatorio: dolore artrosi) ⚠️ Orario/dose da confermare col medico",
-          "cprPerScatola": 28,
-          "scorta": 21,
+          "cprPerScatola": 20,
+          "scorta": 23,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
           "tipoFormulazione": "compressa",
-          "penneScorta": 27,
+          "penneScorta": 24,
           "unitaDoseDie": 1,
           "unitaPerPenna": 300,
-          "pennePerScatola": 28,
+          "pennePerScatola": 20,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "01/11/2026",
+            "data": "08/11/2026",
             "fonte": "Visita Specialistica",
             "medico": "",
             "motivo": ""
@@ -832,7 +1540,7 @@
           "ultimaDoseSomministrata": 1
         },
         {
-          "id": 1793524504366,
+          "id": 1794118995873,
           "ora": "13:29",
           "fascia": "Pranzo",
           "farmaco": "AVERELIX 75 mg",
@@ -841,18 +1549,18 @@
           "quantitaQuota": 1,
           "modo": "A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 22,
+          "scorta": 76,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
-          "penneScorta": 27,
+          "penneScorta": 77,
           "unitaDoseDie": 1,
           "unitaPerPenna": 300,
           "pennePerScatola": 28,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "01/11/2026",
+            "data": "08/11/2026",
             "fonte": "Visita Specialistica",
             "medico": "",
             "motivo": ""
@@ -860,7 +1568,7 @@
           "ultimaDoseSomministrata": 1
         },
         {
-          "id": 1793524382336,
+          "id": 1794119202709,
           "ora": "13:30",
           "fascia": "Pranzo",
           "farmaco": "FORXIGA 10 mg",
@@ -869,18 +1577,18 @@
           "quantitaQuota": 1,
           "modo": "Al mattino con acqua (Diabete / cuore / reni) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 21,
+          "scorta": 59,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
-          "penneScorta": 26,
+          "penneScorta": 60,
           "unitaDoseDie": 1,
           "unitaPerPenna": 300,
           "pennePerScatola": 28,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "01/11/2026",
+            "data": "08/11/2026",
             "fonte": "Visita Specialistica",
             "medico": "",
             "motivo": ""
@@ -888,7 +1596,7 @@
           "ultimaDoseSomministrata": 1
         },
         {
-          "id": 1793533535948,
+          "id": 1794120309246,
           "ora": "16:00",
           "fascia": "Pomeriggio",
           "farmaco": "ADENURIC 80 mg",
@@ -897,18 +1605,18 @@
           "quantitaQuota": 1,
           "modo": "A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 22,
+          "scorta": 59,
           "giorniAlert": 7,
-          "cadenzaTipo": "",
-          "fattoOggi": false,
+          "cadenzaTipo": "giornaliera",
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
-          "penneScorta": 27,
+          "penneScorta": 60,
           "unitaDoseDie": 1,
           "unitaPerPenna": 300,
           "pennePerScatola": 28,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "01/11/2026",
+            "data": "08/11/2026",
             "fonte": "Visita Specialistica",
             "medico": "",
             "motivo": ""
@@ -916,7 +1624,7 @@
           "ultimaDoseSomministrata": 1
         },
         {
-          "id": 1793524736897,
+          "id": 1794119857233,
           "ora": "16:00",
           "fascia": "Pomeriggio",
           "farmaco": "SINEMET 100+25 mg (2ª dose: 2 cpr - ore 16:00)",
@@ -925,18 +1633,18 @@
           "quantitaQuota": 2,
           "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 50,
-          "scorta": 56,
+          "scorta": 66,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
-          "penneScorta": 72,
+          "penneScorta": 70,
           "unitaDoseDie": 1,
           "unitaPerPenna": 300,
           "pennePerScatola": 50,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "01/11/2026",
+            "data": "08/11/2026",
             "fonte": "Visita Specialistica",
             "medico": "",
             "motivo": ""
@@ -953,10 +1661,10 @@
           "quantitaQuota": 1,
           "modo": "A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 22,
+          "scorta": 20,
           "giorniAlert": 7,
           "cadenzaTipo": "",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
           "penneScorta": 28,
           "unitaDoseDie": 1,
@@ -981,12 +1689,12 @@
           "quantitaQuota": 1,
           "modo": "Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 3,
-          "scorta": 1.64,
+          "scorta": 4.52,
           "giorniAlert": 15,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": false,
           "tipoFormulazione": "penna",
-          "penneScorta": 1.64,
+          "penneScorta": 4.52,
           "unitaDoseDie": 36,
           "unitaPerPenna": 300,
           "pennePerScatola": 3,
@@ -1003,7 +1711,9 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "ultimoSitoIniezione": "Addome Destro",
+          "ultimoRitiro": "2026-11-08T06:19:10.720Z"
         },
         {
           "id": 312,
@@ -1014,12 +1724,209 @@
           "dosaggio": "20.000 U.I. (1 capsula molle)",
           "modo": "Dose periodica (di solito settimanale): registrare il giorno di assunzione (Vitamina D) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 10,
-          "scorta": 10,
+          "scorta": 9.5,
           "farmacia": "Farmacia Girasole Picconi",
-          "fattoOggi": false
+          "fattoOggi": false,
+          "ultimaDoseSomministrata": 0.5
         }
       ],
       "registrazioni": [
+        {
+          "id": "esc_1794152337251",
+          "timestamp": "2026-11-08T15:38:56.980Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 16:38 il farmaco \"SIVASTIN 20 mg\" delle ore 16:00 risulta non ancora spuntato (+38 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794152337127",
+          "timestamp": "2026-11-08T15:38:56.980Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 16:38 il farmaco \"SINEMET 100+25 mg (2ª dose: 2 cpr - ore 16:00)\" delle ore 16:00 risulta non ancora spuntato (+38 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794152336990",
+          "timestamp": "2026-11-08T15:38:56.980Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 16:38 il farmaco \"ADENURIC 80 mg\" delle ore 16:00 risulta non ancora spuntato (+38 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794144177174",
+          "timestamp": "2026-11-08T13:22:57.171Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:22 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+52 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794144145674",
+          "timestamp": "2026-11-08T13:22:25.571Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:22 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+52 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794144145575",
+          "timestamp": "2026-11-08T13:22:25.571Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:22 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+53 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794134894093",
+          "timestamp": "2026-11-08T10:48:13.923Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:48 il farmaco \"SINEMET 100+25 mg (1ª dose: 2 cpr - ore 10:00)\" delle ore 10:00 risulta non ancora spuntato (+108 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794134894014",
+          "timestamp": "2026-11-08T10:48:13.923Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:48 il farmaco \"CONGESCOR 2,5 mg\" delle ore 10:00 risulta non ancora spuntato (+108 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794134893928",
+          "timestamp": "2026-11-08T10:48:13.923Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:48 il farmaco \"ARCOXIA 90 mg\" delle ore 10:30 risulta non ancora spuntato (+78 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794127655666",
+          "timestamp": "2026-11-08T08:47:35.662Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 09:47 il farmaco \"LASIX 25 mg\" delle ore 08:30 risulta non ancora spuntato (+77 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794127547476",
+          "timestamp": "2026-11-08T08:45:47.473Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 09:45 il farmaco \"LASIX 25 mg\" delle ore 08:30 risulta non ancora spuntato (+75 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794070200197",
+          "timestamp": "2026-11-07T16:50:00.194Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 17:50 il farmaco \"XULTOPHY penna\" delle ore 17:30 risulta non ancora spuntato (+20 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794062442197",
+          "timestamp": "2026-11-07T14:40:42.178Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:40 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+130 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794062442180",
+          "timestamp": "2026-11-07T14:40:42.178Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:40 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+131 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794062398035",
+          "timestamp": "2026-11-07T14:39:58.010Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:39 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+129 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794062398012",
+          "timestamp": "2026-11-07T14:39:58.010Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:39 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+130 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794061701396",
+          "timestamp": "2026-11-07T14:28:21.376Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:28 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+118 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794061701377",
+          "timestamp": "2026-11-07T14:28:21.376Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:28 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+119 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794061659213",
+          "timestamp": "2026-11-07T14:27:39.195Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:27 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+117 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794061659196",
+          "timestamp": "2026-11-07T14:27:39.195Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:27 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+118 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794061519852",
+          "timestamp": "2026-11-07T14:25:19.834Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:25 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+115 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794061519835",
+          "timestamp": "2026-11-07T14:25:19.834Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:25 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+116 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794056985478",
+          "timestamp": "2026-11-07T13:09:45.456Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:09 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+39 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794056985458",
+          "timestamp": "2026-11-07T13:09:45.456Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:09 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+40 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794056983305",
+          "timestamp": "2026-11-07T13:09:43.281Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:09 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+39 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794056983283",
+          "timestamp": "2026-11-07T13:09:43.281Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:09 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+40 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794056979439",
+          "timestamp": "2026-11-07T13:09:39.417Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:09 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+39 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794056979419",
+          "timestamp": "2026-11-07T13:09:39.417Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 14:09 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+40 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
         {
           "id": "esc_1794049424139",
           "timestamp": "2026-11-07T11:03:43.858Z",
@@ -1341,6 +2248,318 @@
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 34 min! Orario previsto: 10:30 - Orario effettivo assunzione: 12:04. Rimanenza scorta: 21 cpr.",
           "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794062447728",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T14:40:47.728Z",
+          "farmacoId": 1793524504366,
+          "farmaco": "AVERELIX 75 mg",
+          "dosaggio": "75 mg (1 cpr)",
+          "orarioPrevisto": "13:29",
+          "orarioReale": "15:40",
+          "minutiRitardo": 131,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 11 min! Orario previsto: 13:29 - Orario effettivo assunzione: 15:40. Rimanenza scorta: 21 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794062452509",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T14:40:52.508Z",
+          "farmacoId": 1793524382336,
+          "farmaco": "FORXIGA 10 mg",
+          "dosaggio": "10 mg (1 cpr)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "15:40",
+          "minutiRitardo": 130,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 10 min! Orario previsto: 13:30 - Orario effettivo assunzione: 15:40. Rimanenza scorta: 20 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794063618277",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T15:00:18.276Z",
+          "farmacoId": 1793533535948,
+          "farmaco": "ADENURIC 80 mg",
+          "dosaggio": "80 mg (1 cpr)",
+          "orarioPrevisto": "16:00",
+          "orarioReale": "16:00",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 16:00 - Orario effettivo assunzione: 16:00. Rimanenza scorta: 21 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794063630267",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T15:00:30.267Z",
+          "farmacoId": 1793524736897,
+          "farmaco": "SINEMET 100+25 mg (2ª dose: 2 cpr - ore 16:00)",
+          "dosaggio": "100/25 mg (2 cpr)",
+          "orarioPrevisto": "16:00",
+          "orarioReale": "16:00",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 16:00 - Orario effettivo assunzione: 16:00. Rimanenza scorta: 54 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794063639002",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T15:00:39.001Z",
+          "farmacoId": 1793458294388,
+          "farmaco": "SIVASTIN 20 mg",
+          "dosaggio": "20 mg (1 cpr)",
+          "orarioPrevisto": "16:00",
+          "orarioReale": "16:00",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 16:00 - Orario effettivo assunzione: 16:00. Rimanenza scorta: 21 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794063661763",
+          "tipo": "farmaco",
+          "timestamp": "2026-11-07T15:01:01.762Z",
+          "farmacoId": 312,
+          "farmaco": "FEDIVELLE 20.000 U.I.",
+          "dosaggio": "20.000 U.I. (1 capsula molle)",
+          "orarioPrevisto": "Al Bisogno",
+          "orarioReale": "16:01",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "Dose registrata alle ore 16:01 (Orario previsto: Al Bisogno). Rimanenza scorta: 9.5 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794070265968",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-07T16:51:05.956Z",
+          "farmacoId": 1793524442695,
+          "farmaco": "XULTOPHY penna",
+          "dosaggio": "36 Unità (sottocute)",
+          "orarioPrevisto": "17:30",
+          "orarioReale": "17:51",
+          "minutiRitardo": 21,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 21 minuti! Orario previsto: 17:30 - Orario effettivo assunzione: 17:51. Rimanenza scorta: 1.52 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794118750720",
+          "tipo": "scorta",
+          "farmacoId": 1793524442695,
+          "farmaco": "XULTOPHY penna",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "penneAggiunte": 3,
+          "timestamp": "2026-11-08T06:19:10.720Z",
+          "desc": "Carico DPC Farmacia: Ritiro di 1 confezione di XULTOPHY penna (+3 penne). Nuova scorta: 4.52 penne.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794119084110",
+          "tipo": "scorta",
+          "farmacoId": 1793524382336,
+          "farmaco": "FORXIGA 10 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 28,
+          "timestamp": "2026-11-08T06:24:44.110Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di FORXIGA 10 mg (+28 cpr). Nuova scorta: 48 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794119089386",
+          "tipo": "scorta",
+          "farmacoId": 1793524382336,
+          "farmaco": "FORXIGA 10 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 28,
+          "timestamp": "2026-11-08T06:24:49.386Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di FORXIGA 10 mg (+28 cpr). Nuova scorta: 76 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794119182343",
+          "tipo": "scorta",
+          "farmacoId": 1794119171522,
+          "farmaco": "FORXIGA 10 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 28,
+          "timestamp": "2026-11-08T06:26:22.343Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di FORXIGA 10 mg (+28 cpr). Nuova scorta: 104 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794119563944",
+          "tipo": "farmaco",
+          "timestamp": "2026-11-08T06:32:43.944Z",
+          "farmacoId": 303,
+          "farmaco": "DIAMICRON 60 mg RM",
+          "dosaggio": "60 mg (1 cpr rilascio modificato)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "07:32",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "Dose registrata alle ore 07:32 (Orario previsto: 08:00). Rimanenza scorta: 22 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794119585882",
+          "tipo": "farmaco",
+          "timestamp": "2026-11-08T06:33:05.878Z",
+          "farmacoId": 306,
+          "farmaco": "TRIATEC 5 mg",
+          "dosaggio": "5 mg (Dose alternata: ½ cpr e 1 cpr)",
+          "orarioPrevisto": "08:00",
+          "orarioReale": "07:33",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "Dose registrata alle ore 07:33 (Orario previsto: 08:00). Rimanenza scorta: 7.5 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794120279825",
+          "tipo": "scorta",
+          "farmacoId": 1793533535948,
+          "farmaco": "ADENURIC 80 mg",
+          "azione": "carico_farmacia",
+          "numScatole": 1,
+          "cprAggiunte": 28,
+          "timestamp": "2026-11-08T06:44:39.825Z",
+          "desc": "Carico Farmacia: Ritiro di 1 scatola di ADENURIC 80 mg (+28 cpr). Nuova scorta: 49 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794127659488",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T08:47:39.487Z",
+          "farmacoId": 1794119271026,
+          "farmaco": "LASIX 25 mg",
+          "dosaggio": "25 mg (1 cpr)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "09:47",
+          "minutiRitardo": 77,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 17 min! Orario previsto: 08:30 - Orario effettivo assunzione: 09:47. Rimanenza scorta: 59 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794134901296",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T10:48:21.296Z",
+          "farmacoId": 1794119962919,
+          "farmaco": "ARCOXIA 90 mg",
+          "dosaggio": "90 mg (1 cpr)",
+          "orarioPrevisto": "10:30",
+          "orarioReale": "11:48",
+          "minutiRitardo": 78,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 18 min! Orario previsto: 10:30 - Orario effettivo assunzione: 11:48. Rimanenza scorta: 23 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794134916167",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T10:48:36.167Z",
+          "farmacoId": 1794120216740,
+          "farmaco": "CONGESCOR 2,5 mg",
+          "dosaggio": "2,5 mg (1 cpr)",
+          "orarioPrevisto": "10:00",
+          "orarioReale": "11:48",
+          "minutiRitardo": 108,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 48 min! Orario previsto: 10:00 - Orario effettivo assunzione: 11:48. Rimanenza scorta: 12 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794134935948",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T10:48:55.948Z",
+          "farmacoId": 1794119856922,
+          "farmaco": "SINEMET 100+25 mg (1ª dose: 2 cpr - ore 10:00)",
+          "dosaggio": "100/25 mg (2 cpr)",
+          "orarioPrevisto": "10:00",
+          "orarioReale": "11:48",
+          "minutiRitardo": 108,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 48 min! Orario previsto: 10:00 - Orario effettivo assunzione: 11:48. Rimanenza scorta: 68 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794144166914",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T13:22:46.914Z",
+          "farmacoId": 1794118995873,
+          "farmaco": "AVERELIX 75 mg",
+          "dosaggio": "75 mg (1 cpr)",
+          "orarioPrevisto": "13:29",
+          "orarioReale": "14:22",
+          "minutiRitardo": 53,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 53 minuti! Orario previsto: 13:29 - Orario effettivo assunzione: 14:22. Rimanenza scorta: 76 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794144190996",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T13:23:10.995Z",
+          "farmacoId": 1794119202709,
+          "farmaco": "FORXIGA 10 mg",
+          "dosaggio": "10 mg (1 cpr)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "14:23",
+          "minutiRitardo": 53,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 53 minuti! Orario previsto: 13:30 - Orario effettivo assunzione: 14:23. Rimanenza scorta: 59 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794152384719",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T15:39:44.718Z",
+          "farmacoId": 1794120309246,
+          "farmaco": "ADENURIC 80 mg",
+          "dosaggio": "80 mg (1 cpr)",
+          "orarioPrevisto": "16:00",
+          "orarioReale": "16:39",
+          "minutiRitardo": 39,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 39 minuti! Orario previsto: 16:00 - Orario effettivo assunzione: 16:39. Rimanenza scorta: 59 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794152401268",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T15:40:01.268Z",
+          "farmacoId": 1794119857233,
+          "farmaco": "SINEMET 100+25 mg (2ª dose: 2 cpr - ore 16:00)",
+          "dosaggio": "100/25 mg (2 cpr)",
+          "orarioPrevisto": "16:00",
+          "orarioReale": "16:40",
+          "minutiRitardo": 40,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 40 minuti! Orario previsto: 16:00 - Orario effettivo assunzione: 16:40. Rimanenza scorta: 66 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794152425056",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T15:40:25.055Z",
+          "farmacoId": 1793458294388,
+          "farmaco": "SIVASTIN 20 mg",
+          "dosaggio": "20 mg (1 cpr)",
+          "orarioPrevisto": "16:00",
+          "orarioReale": "16:40",
+          "minutiRitardo": 40,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 40 minuti! Orario previsto: 16:00 - Orario effettivo assunzione: 16:40. Rimanenza scorta: 20 cpr.",
+          "operatore": "Ciro Milella (Admin)"
         }
       ],
       "visite": [
@@ -1560,7 +2779,19 @@
             "luogoPrenotazione": "ASP Basilicata - Distretto"
           }
         ]
-      }
+      },
+      "telefono": "338 000 00 03",
+      "diario": [],
+      "origini": [
+        "CareAssist Pro"
+      ],
+      "creatoIl": "2026-11-03T10:05:10.542Z",
+      "altezza": "155",
+      "peso": "59.0",
+      "polso": "16",
+      "lifestyle": "1.2",
+      "goal": "mantenimento",
+      "diagnosi": "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga) • Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga) • Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel) • Morbo di Parkinson / parkinsonismo (Sinemet) • Iperuricemia / gotta (Adenuric) • Osteoartrosi con dolore cronico (Arcoxia) • Ipovitaminosi D (Fedivelle) • Dislipidemia / Ipercolesterolemia (Sivastin)"
     },
     {
       "id": "paz_1793216119572",
@@ -1585,7 +2816,7 @@
           "quantitaQuota": 1,
           "modo": "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell'infezione cronica da virus dell'epatite B (HBV).",
           "cprPerScatola": 30,
-          "scorta": 35,
+          "scorta": 32,
           "giorniAlert": 10,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
@@ -1617,6 +2848,20 @@
           "minutiRitardo": 304,
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 5 ore e 4 min! Orario previsto: 07:00 - Orario effettivo assunzione: 12:04. Rimanenza scorta: 35 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794118379917",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T06:12:59.917Z",
+          "farmacoId": 1793544102871,
+          "farmaco": "Entecavir Sandoz 0,5 mg",
+          "dosaggio": "0,5 mg (1 cpr)",
+          "orarioPrevisto": "07:00",
+          "orarioReale": "07:12",
+          "minutiRitardo": 12,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 12 minuti! Orario previsto: 07:00 - Orario effettivo assunzione: 07:12. Rimanenza scorta: 34 cpr.",
           "operatore": "Ciro Milella (Admin)"
         }
       ],
@@ -2435,7 +3680,8 @@
       "medicoTel": "347 126 59 71",
       "farmaciaTelefono": "080 542 80 61",
       "farmaciaIndirizzo": "Via G. Petroni, 69/b - Bari",
-      "ausili": []
+      "ausili": [],
+      "diagnosi": "Epatite B cronica (HBV) in trattamento antivirale con Entecavir 0,5 mg • Follow-up periodico semestrale presso U.O. Malattie Infettive ed Epatologia - Policlinico di Bari"
     },
     {
       "id": "paz_mariacarmela",
@@ -2457,7 +3703,196 @@
       ],
       "creatoIl": "2026-11-03T10:05:10.542Z",
       "idratazioneOggi": 0,
-      "registrazioni": []
+      "registrazioni": [],
+      "altezza": "165",
+      "peso": "65.0",
+      "polso": "16",
+      "lifestyle": "1.375",
+      "goal": "mantenimento",
+      "diagnosi": "Nutrizione & Benessere",
+      "allergie": "Nessuna nota",
+      "note": "Paziente assistito a domicilio."
+    },
+    {
+      "id": "paz_1794120705837",
+      "nome": "Stoppelli Gabriele francesco",
+      "dataNascita": "1977-04-02",
+      "eta": 49,
+      "sesso": "M",
+      "medico": "Dr.ssa Carolina Potenza",
+      "telMedico": "Sarconi: Via Provinciale 1 / Moliterno: Via Parco del Seggio 1",
+      "allergie": "Nessuna nota",
+      "catetere": false,
+      "allettato": false,
+      "note": "Paziente assistito a domicilio.",
+      "terapie": [
+        {
+          "id": 1794145563718,
+          "ora": "08:30",
+          "fascia": "Mattina (Colazione)",
+          "farmaco": "ATENOLOLO HEXAL",
+          "principio": "Atenololo",
+          "dosaggio": "50 mg (1 cpr)",
+          "quantitaQuota": 1,
+          "modo": "Al mattino con acqua • Beta-bloccante per ipertensione arteriosa, angina pectoris e aritmie.",
+          "cprPerScatola": 42,
+          "scorta": 40,
+          "giorniAlert": 7,
+          "cadenzaTipo": "giornaliera",
+          "fattoOggi": true,
+          "tipoFormulazione": "compressa",
+          "penneScorta": 41,
+          "unitaDoseDie": 1,
+          "unitaPerPenna": 300,
+          "pennePerScatola": 42,
+          "kitGlicemiaAssociato": null,
+          "ultimaModificaClinica": {
+            "data": "08/11/2026",
+            "fonte": "Visita Specialistica",
+            "medico": "",
+            "motivo": ""
+          },
+          "ultimaDoseSomministrata": 1
+        },
+        {
+          "id": 1794121219164,
+          "ora": "08:30",
+          "fascia": "Mattina (Colazione)",
+          "farmaco": "Tenormin 100 mg",
+          "principio": "Atenololo",
+          "dosaggio": "100 mg (1 cpr) (1 cpr)",
+          "quantitaQuota": 1,
+          "modo": "Al mattino con acqua • Beta-bloccante per ipertensione arteriosa, angina pectoris e aritmie.",
+          "cprPerScatola": 42,
+          "scorta": 41,
+          "giorniAlert": 7,
+          "cadenzaTipo": "giornaliera",
+          "fattoOggi": true,
+          "tipoFormulazione": "compressa",
+          "penneScorta": 42,
+          "unitaDoseDie": 1,
+          "unitaPerPenna": 300,
+          "pennePerScatola": 42,
+          "kitGlicemiaAssociato": null,
+          "ultimaModificaClinica": {
+            "data": "08/11/2026",
+            "fonte": "Visita Specialistica",
+            "medico": "",
+            "motivo": ""
+          },
+          "ultimaDoseSomministrata": 1
+        },
+        {
+          "id": 1794120980598,
+          "ora": "08:30",
+          "fascia": "Mattina (Colazione)",
+          "farmaco": "Triatec 5 mg",
+          "principio": "Ramipril",
+          "dosaggio": "5 mg (1 cpr) (1 cpr)",
+          "quantitaQuota": 1,
+          "modo": "Al mattino a colazione (ACE-inibitore / Pressione e insufficienza cardiaca) • ACE-inibitore: controllo ottimale dell'ipertensione e rimodellamento miocardico.",
+          "cprPerScatola": 28,
+          "scorta": 27,
+          "giorniAlert": 7,
+          "cadenzaTipo": "giornaliera",
+          "fattoOggi": true,
+          "tipoFormulazione": "compressa",
+          "penneScorta": 28,
+          "unitaDoseDie": 1,
+          "unitaPerPenna": 300,
+          "pennePerScatola": 28,
+          "kitGlicemiaAssociato": null,
+          "ultimaModificaClinica": {
+            "data": "08/11/2026",
+            "fonte": "Visita Specialistica",
+            "medico": "",
+            "motivo": ""
+          },
+          "ultimaDoseSomministrata": 1
+        }
+      ],
+      "registrazioni": [
+        {
+          "id": "esc_1794127674741",
+          "timestamp": "2026-11-08T08:47:54.707Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 09:47 il farmaco \"Triatec 5 mg\" delle ore 08:30 risulta non ancora spuntato (+77 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1794127674709",
+          "timestamp": "2026-11-08T08:47:54.707Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 09:47 il farmaco \"Tenormin 100 mg\" delle ore 08:30 risulta non ancora spuntato (+77 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "log_1794127683948",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T08:48:03.946Z",
+          "farmacoId": 1794121219164,
+          "farmaco": "Tenormin 100 mg",
+          "dosaggio": "100 mg (1 cpr) (1 cpr)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "09:48",
+          "minutiRitardo": 78,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 18 min! Orario previsto: 08:30 - Orario effettivo assunzione: 09:48. Rimanenza scorta: 41 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794127696957",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T08:48:16.956Z",
+          "farmacoId": 1794120980598,
+          "farmaco": "Triatec 5 mg",
+          "dosaggio": "5 mg (1 cpr) (1 cpr)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "09:48",
+          "minutiRitardo": 78,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 18 min! Orario previsto: 08:30 - Orario effettivo assunzione: 09:48. Rimanenza scorta: 27 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1794145575228",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-08T13:46:15.228Z",
+          "farmacoId": 1794145563718,
+          "farmaco": "ATENOLOLO HEXAL",
+          "dosaggio": "50 mg (1 cpr)",
+          "orarioPrevisto": "08:30",
+          "orarioReale": "14:46",
+          "minutiRitardo": 376,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 6 ore e 16 min! Orario previsto: 08:30 - Orario effettivo assunzione: 14:46. Rimanenza scorta: 40 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        }
+      ],
+      "visite": [],
+      "indirizzo": "Via Domenico Cirillo, 9 CORLETO PERTICARA",
+      "telefonoFisso": "0971 963 221",
+      "cellulare": "349 124 06 57",
+      "moglieNome": "Stoppelli Maria Carmela",
+      "moglieCellulare": "338 739 76 71",
+      "caregiverEmail": "",
+      "moglieEmail": "",
+      "caregiverPec": "",
+      "mogliePec": "",
+      "medicoNome": "Dr.ssa Carolina Potenza",
+      "medicoTel": "Sarconi: Via Provinciale 1 / Moliterno: Via Parco del Seggio 1",
+      "medicoEmail": "carolina.potenza@aspbasilicata.it",
+      "farmaciaDiRiferimento": "Farmacia Comunale Centrale (Via Ariosto, 4 / 16 - 85012 Corleto Perticara (PZ))",
+      "farmaciaTelefono": "0971 963 055",
+      "patologie": [
+        "Cardiopatia ipertensiva / Ipertensione arteriosa sistemica"
+      ],
+      "ausili": [],
+      "medicoIndirizzo": "",
+      "medicoStudio": "",
+      "medicoTelStudio": "",
+      "farmaciaIndirizzo": "",
+      "diagnosi": "Cardiopatia ipertensiva / Ipertensione arteriosa sistemica"
     }
   ]
 }

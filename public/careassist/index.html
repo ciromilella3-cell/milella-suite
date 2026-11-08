@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=256">
+  <link rel="stylesheet" href="style.css?v=257">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -196,7 +196,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="registro_asl.css?v=256">
+  <link rel="stylesheet" href="registro_asl.css?v=257">
 
   <style>
     @keyframes menuDropAnim {
@@ -2118,13 +2118,10 @@
                   </button>
                 </div>
               </div>
-              <div class="textarea-touch-expand-wrapper" onclick="apriEditorFullscreen('edit-paz-patologie', '🩺 Patologie & Diagnosi Attive', 'Inserisci o modifica una patologia/diagnosi per riga. Visibili nei badge e Scheda 118.')" title="Tocca per aprire a tutto schermo">
-                <textarea class="form-control textarea-espandibile-pro" id="edit-paz-patologie" rows="4" readonly
+              <div>
+                <textarea class="form-control" id="edit-paz-patologie" rows="4"
                   placeholder="Es: Ipertensione arteriosa sistemica&#10;Diabete Mellito Tipo 2&#10;Cardiopatia ischemica cronica"
-                  style="font-size:13.5px; font-weight:600; line-height:1.45; border:1.5px solid #7dd3fc; border-radius:10px; background:#f0f9ff; cursor:pointer; min-height:85px;"></textarea>
-                <div class="overlay-touch-hint">
-                  <span>👆 Clicca sopra per visualizzare o modificare a tutto schermo ⛶</span>
-                </div>
+                  style="font-size:13.5px; font-weight:600; line-height:1.45; border:1.5px solid #7dd3fc; border-radius:10px; background:#ffffff; min-height:85px; width:100%;"></textarea>
               </div>
             </div>
 
@@ -2139,13 +2136,10 @@
                   <span>⛶ A Tutto Schermo</span>
                 </button>
               </div>
-              <div class="textarea-touch-expand-wrapper" onclick="apriEditorFullscreen('edit-paz-note', '📋 Note Cliniche & Sintesi', 'Diagnosi principali, decorso clinico e note di sintesi per il personale.')" title="Tocca per aprire a tutto schermo">
-                <textarea class="form-control textarea-espandibile-pro" id="edit-paz-note" rows="3" readonly
+              <div>
+                <textarea class="form-control" id="edit-paz-note" rows="3"
                   placeholder="Diagnosi principali, patologie concomitanti o annotazioni mediche..."
-                  style="font-size:13.5px; font-weight:600; line-height:1.45; border:1.5px solid #fca5a5; border-radius:10px; background:#fff5f5; cursor:pointer; min-height:75px;"></textarea>
-                <div class="overlay-touch-hint hint-note">
-                  <span>👆 Clicca sopra per visualizzare o modificare a tutto schermo ⛶</span>
-                </div>
+                  style="font-size:13.5px; font-weight:600; line-height:1.45; border:1.5px solid #fca5a5; border-radius:10px; background:#ffffff; min-height:75px; width:100%;"></textarea>
               </div>
             </div>
           </div>
@@ -2261,6 +2255,118 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL CARTELLA CLINICA & PATOLOGIE DEDICATA MOBILE (1-TAP TOUCH) -->
+  <div class="modal-overlay" id="modal-scheda-clinica-mobile" style="display:none; z-index:20000050; position:fixed; inset:0; background:rgba(15,23,42,0.75); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:12px;">
+    <div class="modal-card" style="max-width:540px; width:100%; max-height:92vh; display:flex; flex-direction:column; background:#ffffff; border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden; border:1.5px solid #cbd5e1;">
+      
+      <!-- HEADER CLINICO -->
+      <div class="modal-header" style="background:linear-gradient(135deg, #091e3a 0%, #1e3a8a 55%, #0284c7 100%); color:#ffffff; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid rgba(255,255,255,0.15);">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+          <span style="font-size:24px; line-height:1;">🩺</span>
+          <div style="min-width:0;">
+            <div style="font-size:15.5px; font-weight:800; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Cartella Clinica &amp; Patologie</div>
+            <div id="scm-nome" style="font-size:12px; font-weight:700; color:#93c5fd; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">--</div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline" onclick="chiudiModalSchedaClinicaMobile()" style="color:#ffffff; border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.1); width:34px; height:34px; min-width:34px; border-radius:50%; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer;">✕</button>
+      </div>
+
+      <!-- BODY SCROLLABILE TOUCH -->
+      <div class="modal-body" style="padding:14px 16px; overflow-y:auto; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; gap:12px; background:#f8fafc;">
+
+        <!-- CARD IDENTIFICATIVA ASSISTITO -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:14px; padding:12px 14px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+            <div id="scm-avatar" style="width:48px; height:48px; border-radius:50%; background:#e0f2fe; display:flex; align-items:center; justify-content:center; font-size:26px; border:2px solid #38bdf8; flex-shrink:0;">👤</div>
+            <div style="min-width:0; flex:1;">
+              <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                <span id="scm-eta" style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-size:11.5px; font-weight:800; padding:2px 8px; border-radius:6px;">--</span>
+                <span id="scm-sesso" style="background:#f1f5f9; color:#475569; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">--</span>
+                <span id="scm-deambulante" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px;">--</span>
+              </div>
+              <div style="font-size:11.5px; color:#64748b; margin-top:4px;">
+                Nato il: <span id="scm-nascita" style="font-weight:700; color:#334155;">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RESIDENZA E NAVIGATORE -->
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding-top:8px; border-top:1px dashed #e2e8f0;">
+            <div style="min-width:0; flex:1;">
+              <div style="font-size:10.5px; font-weight:800; color:#64748b; text-transform:uppercase;">📍 Domicilio / Residenza</div>
+              <div id="scm-indirizzo" style="font-size:12.5px; font-weight:700; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">--</div>
+            </div>
+            <a id="scm-btn-naviga" href="#" target="_blank" style="background:#0284c7; color:#fff; padding:5px 10px; border-radius:8px; font-size:11px; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; gap:4px; flex-shrink:0;">
+              🗺️ Naviga
+            </a>
+          </div>
+
+          <!-- TELEFONI -->
+          <div style="display:flex; gap:10px; margin-top:8px; padding-top:8px; border-top:1px dashed #e2e8f0; font-size:11.5px;">
+            <div style="flex:1;">
+              <span style="color:#64748b; font-weight:700;">☎️ Casa: </span>
+              <a id="scm-tel-casa" href="#" style="font-weight:800; color:#0284c7; text-decoration:none;">--</a>
+            </div>
+            <div style="flex:1;">
+              <span style="color:#64748b; font-weight:700;">📱 Cell: </span>
+              <a id="scm-cell" href="#" style="font-weight:800; color:#0284c7; text-decoration:none;">--</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOX ALLERGIE SALVAVITA -->
+        <div id="scm-allergie-box" style="border-radius:12px; padding:10px 12px; font-size:12px;">
+          <!-- Dinamico -->
+        </div>
+
+        <!-- SEZIONE PATOLOGIE CRONICHE & DIAGNOSI CLINICHE -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:14px; padding:12px 14px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+            <div style="font-size:12.5px; font-weight:800; color:#0369a1; display:flex; align-items:center; gap:6px;">
+              <span>🩺</span> <span>Patologie &amp; Diagnosi Attive</span>
+            </div>
+            <span style="font-size:10px; font-weight:800; background:#eff6ff; color:#1e40af; padding:2px 6px; border-radius:6px;">Cartella Clinica</span>
+          </div>
+          <div id="scm-patologie-list">
+            <!-- Elenco patologie popolato dinamicamente via JS -->
+          </div>
+        </div>
+
+        <!-- CAREGIVER & FAMIGLIA -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:14px; padding:12px 14px;">
+          <div style="font-size:11px; font-weight:800; color:#0369a1; text-transform:uppercase; margin-bottom:4px;">
+            👥 Caregiver &amp; Riferimento Famiglia
+          </div>
+          <div id="scm-caregiver" style="font-size:12.5px; color:#1e293b;">--</div>
+        </div>
+
+        <!-- MEDICO & FARMACIA -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:14px; padding:12px 14px;">
+          <div style="font-size:11px; font-weight:800; color:#166534; text-transform:uppercase; margin-bottom:6px;">
+            🩺 Medico Curante MMG &amp; Farmacia
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px;">
+            <div id="scm-medico" style="font-size:12.5px; color:#1e293b;">--</div>
+            <div id="scm-medico-tel"></div>
+          </div>
+          <div id="scm-farmacia" style="font-size:12px; color:#475569; padding-top:6px; border-top:1px dashed #e2e8f0;">--</div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER AZIONI RAPIDE -->
+      <div class="modal-footer" style="background:#ffffff; border-top:1px solid #e2e8f0; padding:10px 14px; display:flex; gap:10px; align-items:center;">
+        <button type="button" class="btn btn-outline" onclick="chiudiModalSchedaClinicaMobile()" style="flex:0 0 90px; padding:9px 12px; font-weight:700; border-radius:10px;">
+          Chiudi
+        </button>
+        <button type="button" class="btn btn-primary" onclick="chiudiModalSchedaClinicaMobile(); apriModificaAnagrafica();" style="flex:1; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:13px; border-radius:10px; padding:10px 14px; border:none; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span>✏️ Modifica Cartella</span>
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -6925,7 +7031,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=256"></script>
+  <script src="app.js?v=257"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -6936,7 +7042,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=256', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=257', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
