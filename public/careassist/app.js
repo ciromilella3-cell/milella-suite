@@ -26284,7 +26284,16 @@ window.generaTestoRichiestaMMG = function (p, farmaci) {
     'Le trasmetto la richiesta per il rinnovo delle ricette mediche per il paziente:\n\n' +
     '👤 Assistito: ' + (p.nome || '--') + '\n';
   if (p.codiceFiscale || p.cf) msg += '🆔 Codice Fiscale: ' + (p.codiceFiscale || p.cf) + '\n';
-  if (p.dataNascita) msg += '🎂 Nato il: ' + p.dataNascita + '\n';
+  if (p.dataNascita) {
+    var dataNascitaStr = p.dataNascita;
+    if (dataNascitaStr.includes('-')) {
+      var parti = dataNascitaStr.split('-');
+      if (parti.length === 3 && parti[0].length === 4) {
+        dataNascitaStr = parti[2] + '/' + parti[1] + '/' + parti[0];
+      }
+    }
+    msg += '🎂 Nato il: ' + dataNascitaStr + '\n';
+  }
   if (p.farmaciaDiRiferimento || p.farmacia) msg += '🏥 Farmacia di Riferimento: ' + (p.farmaciaDiRiferimento || p.farmacia) + '\n';
   msg += '📅 Data monitoraggio: ' + oggiStr + '\n\n';
 

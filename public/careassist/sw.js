@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v263-ricette-pwa-haptic';
+const CACHE_NAME = 'careassist-pro-v264-ricette-data-italiana';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
