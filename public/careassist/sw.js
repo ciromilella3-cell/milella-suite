@@ -1,12 +1,12 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v278-integrazione-visite-e-specialistica';
+const CACHE_NAME = 'careassist-pro-v279-titoli-modal-visibili';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './turni.html',
   './style.css',
-  './style.css?v=117',
-  './app.js?v=117',
+  './style.css?v=118',
+  './app.js?v=118',
   './app.js',
   './turnario_admin.js',
   './turnario_admin.js?v=2',
