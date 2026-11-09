@@ -172,15 +172,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1 1 420px;
-  max-width: 620px;
-  min-width: 280px;
+  flex: 0 1 auto;
+  max-width: 490px;
+  min-width: 180px;
 }
 
 .patient-picker-box {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #ffffff;
   padding: 4px 6px 4px 8px;
   border-radius: 12px;
@@ -215,7 +215,8 @@ body {
 
 .patient-select-input {
   flex: 1 1 auto;
-  min-width: 200px;
+  min-width: 140px;
+  max-width: 215px;
   width: 100%;
   font-size: 13.5px;
   font-weight: 700;
@@ -9487,5 +9488,31 @@ main, .main-content, .dashboard-container {
   #tab-epatologia div[style*="grid-template-columns: 2fr 1fr"],
   #tab-epatologia div[style*="grid-template-columns: 2.1fr 1fr"] {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* STAMPA PULITA A4 DEL MODULO PRESTAMPATO (ISOLAMENTO TOTALE) */
+@media print {
+  body.printing-prestampato * {
+    visibility: hidden !important;
+  }
+  body.printing-prestampato #sezione-modulo-prestampato-card,
+  body.printing-prestampato #sezione-modulo-prestampato-card * {
+    visibility: visible !important;
+  }
+  body.printing-prestampato #sezione-modulo-prestampato-card {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+  body.printing-prestampato #sezione-modulo-prestampato-card .card-header button,
+  body.printing-prestampato #sezione-modulo-prestampato-card input[type="text"] {
+    display: none !important;
   }
 }

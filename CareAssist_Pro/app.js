@@ -19393,6 +19393,21 @@ function aggiungiNuovoEsamePersonalizzato() {
 }
 window.aggiungiNuovoEsamePersonalizzato = aggiungiNuovoEsamePersonalizzato;
 
+// STAMPA / SALVA PDF A4 DEL MODULO PRESTAMPATO UFFICIALE (ISOLATO E PULITO)
+function stampaModuloPrestampatoA4() {
+  var card = document.getElementById('sezione-modulo-prestampato-card');
+  if (!card) {
+    if (typeof showToast === 'function') showToast('⚠️ Modulo prestampato non trovato.');
+    return;
+  }
+  document.body.classList.add('printing-prestampato');
+  window.print();
+  setTimeout(function () {
+    document.body.classList.remove('printing-prestampato');
+  }, 1200);
+}
+window.stampaModuloPrestampatoA4 = stampaModuloPrestampatoA4;
+
 
 // ==============================================================================
 // MOTORE CLINICO AUTOMATICO: RILEVAMENTO MALATTIE CRONICHE DAI FARMACI & PROTOCOLLI
@@ -20231,12 +20246,18 @@ function renderEpatologiaInfettiviCiro(container, p) {
             </div>
             <div style="font-size:12px; color:#64748b;">Disposizione identica al prestampato originale &bull; ${esamiSpuntati.length} esami contrassegnati</div>
           </div>
-          <div style="display:flex; align-items:center; gap:6px;">
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
             <button type="button" class="btn btn-sm" onclick="impostaTipoVistaModulo('colonne')" style="font-size:11.5px; font-weight:800; border-radius:8px; padding:6px 12px; cursor:pointer; background:${_vistaModuloTipo === 'colonne' ? '#0284c7' : '#ffffff'}; color:${_vistaModuloTipo === 'colonne' ? '#ffffff' : '#334155'}; border:1.5px solid ${_vistaModuloTipo === 'colonne' ? '#0284c7' : '#cbd5e1'};">
               📄 Vista a 4 Colonne (Prestampato)
             </button>
             <button type="button" class="btn btn-sm" onclick="impostaTipoVistaModulo('tabella')" style="font-size:11.5px; font-weight:800; border-radius:8px; padding:6px 12px; cursor:pointer; background:${_vistaModuloTipo === 'tabella' ? '#0284c7' : '#ffffff'}; color:${_vistaModuloTipo === 'tabella' ? '#ffffff' : '#334155'}; border:1.5px solid ${_vistaModuloTipo === 'tabella' ? '#0284c7' : '#cbd5e1'};">
               📋 Vista Tabella Dettagli
+            </button>
+            <button type="button" class="btn btn-sm" onclick="aggiungiNuovoEsamePersonalizzato()" style="font-size:11.5px; font-weight:800; border-radius:8px; padding:6px 12px; cursor:pointer; background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; display:inline-flex; align-items:center; gap:4px;">
+              ➕ Aggiungi Esame
+            </button>
+            <button type="button" class="btn btn-sm" onclick="stampaModuloPrestampatoA4()" style="font-size:11.5px; font-weight:800; border-radius:8px; padding:6px 12px; cursor:pointer; background:#10b981; color:#ffffff; border:none; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(16,185,129,0.35);" title="Stampa il modulo a 4 colonne o salvalo in PDF">
+              🖨️ Stampa A4
             </button>
           </div>
         </div>
