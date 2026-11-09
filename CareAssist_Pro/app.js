@@ -5303,6 +5303,24 @@ function renderTerapie() {
               return `<span class="badge badge-warning" style="background:#fef08a; color:#854d0e; font-weight:800; border:1px solid #facc15;">🌟 OGGI È IL GIORNO (15 o 30)!</span> <b>${t.ora}</b>`;
             }
           }
+          if (t.cadenzaTipo === 'settimanale') {
+            const previstaOggi = isTerapiaPrevistaOggi(t);
+            const gNome = (typeof formattaGiornoSettimana === 'function') ? formattaGiornoSettimana(t.cadenzaGiornoSettimana || 1) : 'Lunedì';
+            if (!previstaOggi) {
+              return `<span class="badge" style="background:#e2e8f0; color:#475569; font-weight:700;">📅 Settimanale (${gNome})</span><br><small style="color:#64748b; font-size:10.5px;">Non prevista oggi</small>`;
+            } else {
+              return `<span class="badge badge-warning" style="background:#fef08a; color:#854d0e; font-weight:800; border:1px solid #facc15;">🌟 OGGI TOCCA (Settimanale - ${gNome})!</span> <b>${t.ora}</b>`;
+            }
+          }
+          if (['mensile', 'bimestrale', 'trimestrale', 'semestrale', 'annuale'].indexOf(t.cadenzaTipo) >= 0) {
+            const previstaOggi = isTerapiaPrevistaOggi(t);
+            const cNome = (typeof formattaNomeCadenza === 'function') ? formattaNomeCadenza(t.cadenzaTipo) : t.cadenzaTipo;
+            if (!previstaOggi) {
+              return `<span class="badge" style="background:#e2e8f0; color:#475569; font-weight:700;">🗓️ ${cNome}</span><br><small style="color:#64748b; font-size:10.5px;">Non prevista oggi</small>`;
+            } else {
+              return `<span class="badge badge-warning" style="background:#fef08a; color:#854d0e; font-weight:800; border:1px solid #facc15;">🌟 OGGI TOCCA (${cNome})!</span> <b>${t.ora}</b>`;
+            }
+          }
           return `<span class="badge badge-primary">${t.fascia}</span> <b>${t.ora}</b>`;
         })()}
 </td>
@@ -5612,9 +5630,21 @@ function renderTerapie() {
         // NON deve MAI mostrare "Ritardo!" perché non è prevista per la data odierna
         let proxData = '';
         if (t.cadenzaTipo === 'quindicinale_15_30' || ((t.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0)) {
-          proxData = ' (Prox: 30 Ottobre)';
+          proxData = ' (il 15 e 30)';
         } else if (t.cadenzaTipo === 'alterni') {
           proxData = ' (Tocca domani)';
+        } else if (t.cadenzaTipo === 'settimanale') {
+          proxData = ' (' + ((typeof formattaGiornoSettimana === 'function') ? formattaGiornoSettimana(t.cadenzaGiornoSettimana || 1) : 'Settimanale') + ')';
+        } else if (t.cadenzaTipo === 'mensile') {
+          proxData = ' (il ' + (t.cadenzaGiornoMese === 'fine' ? 'fine mese' : (t.cadenzaGiornoMese ? (t.cadenzaGiornoMese + '°') : '1°')) + ')';
+        } else if (t.cadenzaTipo === 'bimestrale') {
+          proxData = ' (Ogni 2 mesi)';
+        } else if (t.cadenzaTipo === 'trimestrale') {
+          proxData = ' (Ogni 3 mesi)';
+        } else if (t.cadenzaTipo === 'semestrale') {
+          proxData = ' (Ogni 6 mesi)';
+        } else if (t.cadenzaTipo === 'annuale') {
+          proxData = ' (1 volta/anno)';
         }
         btnPreview = `<span class="badge" style="background:#f1f5f9; color:#64748b; font-size:10.5px; font-weight:700; border:1px solid #cbd5e1; padding:4px 8px; border-radius:8px;" title="Terapia periodica non programmata per la giornata odierna">📅 Non oggi${proxData}</span>`;
       } else if (t.fattoOggi) {
@@ -10607,6 +10637,95 @@ function rimuoviDoseExtraRow(idRow) {
 // ============================================================================
 
 // ============================================================================
+// FORMATTAZIONE E GESTIONE CADENZE PERIODICHE FARMACI (SETTIMANALE, MENSILE, ECC.)
+// ============================================================================
+function formattaNomeCadenza(cadenzaTipo) {
+  switch (cadenzaTipo) {
+    case 'alterni': return 'A giorni alterni';
+    case 'alternata_mezza_intera': return 'Dose alternata (0,5 / 1 cpr)';
+    case 'settimanale': return 'Settimanale';
+    case 'quindicinale_15_30': return 'Ogni 15 giorni (15 e 30)';
+    case 'mensile': return 'Mensile (1 volta al mese)';
+    case 'bimestrale': return 'Bimestrale (ogni 2 mesi)';
+    case 'trimestrale': return 'Trimestrale (ogni 3 mesi)';
+    case 'semestrale': return 'Semestrale (ogni 6 mesi)';
+    case 'annuale': return 'Annuale (1 volta all\'anno)';
+    case 'bisogno': return 'Al bisogno (SOS)';
+    default: return 'Quotidiana';
+  }
+}
+window.formattaNomeCadenza = formattaNomeCadenza;
+
+function formattaGiornoSettimana(g) {
+  var gg = parseInt(g);
+  switch (gg) {
+    case 1: return 'Lunedì';
+    case 2: return 'Martedì';
+    case 3: return 'Mercoledì';
+    case 4: return 'Giovedì';
+    case 5: return 'Venerdì';
+    case 6: return 'Sabato';
+    case 7: return 'Domenica';
+    default: return 'Lunedì';
+  }
+}
+window.formattaGiornoSettimana = formattaGiornoSettimana;
+
+function gestisciCambioCadenzaFarmaco() {
+  var elCad = document.getElementById('edit-farm-cadenza');
+  var boxDettaglio = document.getElementById('box-dettaglio-cadenza');
+  var rowSett = document.getElementById('row-cadenza-settimanale');
+  var rowMese = document.getElementById('row-cadenza-mensile');
+  var colDataInizio = document.getElementById('col-cadenza-data-inizio');
+  var rowAnnuale = document.getElementById('row-cadenza-annuale');
+  var feedbackTesto = document.getElementById('cadenza-feedback-testo');
+
+  if (!elCad) return;
+  var val = elCad.value;
+
+  if (val === 'giornaliera' || val === 'bisogno') {
+    if (boxDettaglio) boxDettaglio.style.display = 'none';
+    return;
+  }
+
+  if (boxDettaglio) boxDettaglio.style.display = 'block';
+
+  if (rowSett) rowSett.style.display = 'none';
+  if (rowMese) rowMese.style.display = 'none';
+  if (colDataInizio) colDataInizio.style.display = 'none';
+  if (rowAnnuale) rowAnnuale.style.display = 'none';
+
+  if (val === 'settimanale') {
+    if (rowSett) rowSett.style.display = 'block';
+    if (feedbackTesto) feedbackTesto.textContent = 'Si assume 1 volta a settimana nel giorno prescelto.';
+  } else if (val === 'mensile') {
+    if (rowMese) rowMese.style.display = 'block';
+    if (colDataInizio) colDataInizio.style.display = 'none';
+    if (feedbackTesto) feedbackTesto.textContent = 'Si assume 1 volta al mese nel giorno indicato.';
+  } else if (val === 'bimestrale') {
+    if (rowMese) rowMese.style.display = 'block';
+    if (colDataInizio) colDataInizio.style.display = 'block';
+    if (feedbackTesto) feedbackTesto.textContent = 'Si assume ogni 2 mesi nel giorno indicato a partire dalla data di riferimento.';
+  } else if (val === 'trimestrale') {
+    if (rowMese) rowMese.style.display = 'block';
+    if (colDataInizio) colDataInizio.style.display = 'block';
+    if (feedbackTesto) feedbackTesto.textContent = 'Si assume ogni 3 mesi nel giorno indicato a partire dalla data di riferimento.';
+  } else if (val === 'semestrale') {
+    if (rowMese) rowMese.style.display = 'block';
+    if (colDataInizio) colDataInizio.style.display = 'block';
+    if (feedbackTesto) feedbackTesto.textContent = 'Si assume ogni 6 mesi nel giorno indicato a partire dalla data di riferimento.';
+  } else if (val === 'annuale') {
+    if (rowAnnuale) rowAnnuale.style.display = 'block';
+    if (feedbackTesto) feedbackTesto.textContent = 'Si assume 1 volta all\'anno nel giorno e mese indicati.';
+  } else if (val === 'alternati') {
+    if (feedbackTesto) feedbackTesto.textContent = 'Si assume a giorni alterni (un giorno sì e un giorno di riposo).';
+  } else if (val === 'quindicinale_15_30') {
+    if (feedbackTesto) feedbackTesto.textContent = 'Si assume due volte al mese: il 15 e il 30 (o ultimo giorno del mese).';
+  }
+}
+window.gestisciCambioCadenzaFarmaco = gestisciCambioCadenzaFarmaco;
+
+// ============================================================================
 // CALCOLO AVANZATO CONSUMO CLINICO, DOSI FRAZIONATE & SCHEMA ALTERNATO
 // ============================================================================
 function calcolaConsumoGiornalieroFarmaco(t) {
@@ -10633,6 +10752,31 @@ function calcolaConsumoGiornalieroFarmaco(t) {
   if (t.cadenzaTipo === 'settimanale') {
     var q = parseFloat(t.quantitaQuota) || 1;
     return q / 7;
+  }
+  // Mensile: 1 volta ogni 30 giorni
+  if (t.cadenzaTipo === 'mensile') {
+    var q = parseFloat(t.quantitaQuota) || 1;
+    return q / 30;
+  }
+  // Bimestrale: 1 volta ogni 60 giorni (ogni 2 mesi)
+  if (t.cadenzaTipo === 'bimestrale') {
+    var q = parseFloat(t.quantitaQuota) || 1;
+    return q / 60;
+  }
+  // Trimestrale: 1 volta ogni 90 giorni (ogni 3 mesi)
+  if (t.cadenzaTipo === 'trimestrale') {
+    var q = parseFloat(t.quantitaQuota) || 1;
+    return q / 90;
+  }
+  // Semestrale: 1 volta ogni 180 giorni (ogni 6 mesi)
+  if (t.cadenzaTipo === 'semestrale') {
+    var q = parseFloat(t.quantitaQuota) || 1;
+    return q / 180;
+  }
+  // Annuale: 1 volta all'anno (ogni 365 giorni)
+  if (t.cadenzaTipo === 'annuale') {
+    var q = parseFloat(t.quantitaQuota) || 1;
+    return q / 365;
   }
   // Quotidiana: basata su quantitaQuota (es. 0.5 cpr, 1 cpr, 0.25 cpr)
   var quota = parseFloat(t.quantitaQuota);
@@ -10909,6 +11053,24 @@ function apriModificaFarmaco(farmacoId) {
 
     var elCad = document.getElementById('edit-farm-cadenza');
     if (elCad) elCad.value = t.cadenzaTipo || 'giornaliera';
+    if (document.getElementById('edit-farm-giorno-settimana')) {
+      document.getElementById('edit-farm-giorno-settimana').value = t.cadenzaGiornoSettimana || '1';
+    }
+    if (document.getElementById('edit-farm-giorno-mese')) {
+      document.getElementById('edit-farm-giorno-mese').value = t.cadenzaGiornoMese || '1';
+    }
+    if (document.getElementById('edit-farm-data-inizio')) {
+      document.getElementById('edit-farm-data-inizio').value = t.cadenzaDataInizio || (new Date().toISOString().slice(0, 10));
+    }
+    if (document.getElementById('edit-farm-mese-annuale')) {
+      document.getElementById('edit-farm-mese-annuale').value = t.cadenzaMeseAnnuale || (new Date().getMonth() + 1);
+    }
+    if (document.getElementById('edit-farm-giorno-annuale')) {
+      document.getElementById('edit-farm-giorno-annuale').value = t.cadenzaGiornoAnnuale || new Date().getDate();
+    }
+    if (typeof gestisciCambioCadenzaFarmaco === 'function') {
+      gestisciCambioCadenzaFarmaco();
+    }
 
     // 3. PREPARA L'ARRAY DELLE DOSI PRIMA DI QUALSIASI CHIAMATA GRAFICA
     var nomeBase = cleanNome.toLowerCase();
@@ -11389,6 +11551,11 @@ function salvaModificaFarmaco(e) {
   var giorniAlert = parseInt(document.getElementById('edit-farm-giorni-alert').value) || 7;
   var modoBase = document.getElementById('edit-farm-modo').value.trim();
   var cadenza = document.getElementById('edit-farm-cadenza') ? document.getElementById('edit-farm-cadenza').value : 'giornaliera';
+  var cadGiornoSettimana = (cadenza === 'settimanale') ? (parseInt(document.getElementById('edit-farm-giorno-settimana')?.value) || 1) : null;
+  var cadGiornoMese = (['mensile', 'bimestrale', 'trimestrale', 'semestrale'].indexOf(cadenza) >= 0) ? (document.getElementById('edit-farm-giorno-mese')?.value || '1') : null;
+  var cadDataInizio = (['bimestrale', 'trimestrale', 'semestrale', 'alterni'].indexOf(cadenza) >= 0) ? (document.getElementById('edit-farm-data-inizio')?.value || new Date().toISOString().slice(0, 10)) : null;
+  var cadMeseAnnuale = (cadenza === 'annuale') ? (parseInt(document.getElementById('edit-farm-mese-annuale')?.value) || (new Date().getMonth() + 1)) : null;
+  var cadGiornoAnnuale = (cadenza === 'annuale') ? (parseInt(document.getElementById('edit-farm-giorno-annuale')?.value) || new Date().getDate()) : null;
 
   var fonteTipoEl = document.getElementById('edit-farm-fonte-tipo');
   var medNomeEl = document.getElementById('edit-farm-medico-nome');
@@ -11455,6 +11622,11 @@ function salvaModificaFarmaco(e) {
         scorta: scorta,
         giorniAlert: giorniAlert,
         cadenzaTipo: cadenza,
+        cadenzaGiornoSettimana: cadGiornoSettimana,
+        cadenzaGiornoMese: cadGiornoMese,
+        cadenzaDataInizio: cadDataInizio,
+        cadenzaMeseAnnuale: cadMeseAnnuale,
+        cadenzaGiornoAnnuale: cadGiornoAnnuale,
         fattoOggi: fallbackFattoOggi,
         tipoFormulazione: (window._currentFormatoModal === 'penna') ? 'penna' : 'compressa',
         ultimaModificaClinica: ultimaMod
@@ -11503,6 +11675,11 @@ function salvaModificaFarmaco(e) {
         scorta: pScorta,
         giorniAlert: giorniAlert,
         cadenzaTipo: cadenza,
+        cadenzaGiornoSettimana: cadGiornoSettimana,
+        cadenzaGiornoMese: cadGiornoMese,
+        cadenzaDataInizio: cadDataInizio,
+        cadenzaMeseAnnuale: cadMeseAnnuale,
+        cadenzaGiornoAnnuale: cadGiornoAnnuale,
         fattoOggi: eraGiaFattoOggi,
         tipoFormulazione: isFormatoPenna ? 'penna' : 'compressa',
         penneScorta: pScorta,
@@ -13217,8 +13394,20 @@ function eseguiRiconciliazioneScorte() {
       var dosiDaScalare = giorni;
       if (t.cadenzaTipo === 'alterni') {
         dosiDaScalare = Math.round(giorni / 2);
+      } else if (t.cadenzaTipo === 'settimanale') {
+        dosiDaScalare = Math.round(giorni / 7);
       } else if (t.cadenzaTipo === 'quindicinale_15_30') {
-        dosiDaScalare = 0;
+        dosiDaScalare = Math.round((giorni * 2) / 30);
+      } else if (t.cadenzaTipo === 'mensile') {
+        dosiDaScalare = Math.round(giorni / 30);
+      } else if (t.cadenzaTipo === 'bimestrale') {
+        dosiDaScalare = Math.round(giorni / 60);
+      } else if (t.cadenzaTipo === 'trimestrale') {
+        dosiDaScalare = Math.round(giorni / 90);
+      } else if (t.cadenzaTipo === 'semestrale') {
+        dosiDaScalare = Math.round(giorni / 180);
+      } else if (t.cadenzaTipo === 'annuale') {
+        dosiDaScalare = Math.round(giorni / 365);
       }
 
       if (dosiDaScalare > 0 && typeof t.scorta !== 'undefined') {
@@ -13238,6 +13427,7 @@ function isTerapiaPrevistaOggi(t) {
   if (!t) return true;
   var oggi = new Date();
   var giornoMese = oggi.getDate();
+  var ultimoGiornoMese = new Date(oggi.getFullYear(), oggi.getMonth() + 1, 0).getDate();
 
   // Schema alternato mezza / intera: prevista OGNI GIORNO (con dosaggio variabile 0.5 o 1)
   if (t.cadenzaTipo === 'alternata_mezza_intera') {
@@ -13245,27 +13435,102 @@ function isTerapiaPrevistaOggi(t) {
   }
 
   // 0. Giorni alterni: prevista se i giorni trascorsi dalla data di inizio sono pari (date locali)
-  if (t.cadenzaTipo === 'alterni' && t.dataInizioAlterni) {
-    var pz = t.dataInizioAlterni.split('-').map(Number);
-    var inizio = new Date(pz[0], pz[1] - 1, pz[2]);
-    var oggiMezzanotte = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate());
-    var diffGiorni = Math.round((oggiMezzanotte - inizio) / 86400000);
-    return diffGiorni >= 0 && diffGiorni % 2 === 0;
+  if (t.cadenzaTipo === 'alterni') {
+    if (t.dataInizioAlterni || t.cadenzaDataInizio) {
+      var dStr = t.dataInizioAlterni || t.cadenzaDataInizio;
+      var pz = dStr.split('-').map(Number);
+      var inizio = new Date(pz[0], pz[1] - 1, pz[2]);
+      var oggiMezzanotte = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate());
+      var diffGiorni = Math.round((oggiMezzanotte - inizio) / 86400000);
+      return diffGiorni >= 0 && diffGiorni % 2 === 0;
+    }
+    var epochDays = Math.floor(oggi.getTime() / 86400000);
+    return epochDays % 2 === 0;
   }
 
-  // 1. Cadenza quindicinale (il 15 e il 30 del mese)
+  // 1. Settimanale (1 volta a settimana nel giorno prescelto)
+  if (t.cadenzaTipo === 'settimanale') {
+    var dayOfWeek = oggi.getDay(); // 0 = Dom, 1 = Lun ... 6 = Sab
+    var isoDay = (dayOfWeek === 0) ? 7 : dayOfWeek; // 1 = Lun ... 7 = Dom
+    var targetDay = parseInt(t.cadenzaGiornoSettimana) || 1; // Default Lunedì
+    return isoDay === targetDay;
+  }
+
+  // 2. Cadenza quindicinale (il 15 e il 30 del mese o ultimo del mese)
   if (t.cadenzaTipo === 'quindicinale_15_30' || ((t.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0 && (t.modo || '').indexOf('15') >= 0)) {
-    // Il 15 e l'ultimo giorno del mese (30 o 31, o 28/29 febbraio)
-    var ultimoGiornoMese = new Date(oggi.getFullYear(), oggi.getMonth() + 1, 0).getDate();
     return (giornoMese === 15 || giornoMese === 30 || giornoMese === ultimoGiornoMese);
   }
 
-  // 2. Al bisogno
+  function verificaGiornoMeseMatch(valGiorno) {
+    if (valGiorno === 'fine') {
+      return giornoMese === ultimoGiornoMese;
+    }
+    var num = parseInt(valGiorno) || 1;
+    if (num > ultimoGiornoMese) {
+      return giornoMese === ultimoGiornoMese;
+    }
+    return giornoMese === num;
+  }
+
+  // 3. Mensile (1 volta al mese nel giorno prescelto)
+  if (t.cadenzaTipo === 'mensile') {
+    return verificaGiornoMeseMatch(t.cadenzaGiornoMese || '1');
+  }
+
+  // 4. Bimestrale (Ogni 2 mesi)
+  if (t.cadenzaTipo === 'bimestrale') {
+    if (!verificaGiornoMeseMatch(t.cadenzaGiornoMese || '1')) return false;
+    if (t.cadenzaDataInizio) {
+      var pzB = t.cadenzaDataInizio.split('-').map(Number);
+      var inizioB = new Date(pzB[0], pzB[1] - 1, pzB[2] || 1);
+      var diffMesi = (oggi.getFullYear() - inizioB.getFullYear()) * 12 + (oggi.getMonth() - inizioB.getMonth());
+      return diffMesi >= 0 && (diffMesi % 2 === 0);
+    }
+    return (oggi.getMonth() % 2 === 0);
+  }
+
+  // 5. Trimestrale (Ogni 3 mesi)
+  if (t.cadenzaTipo === 'trimestrale') {
+    if (!verificaGiornoMeseMatch(t.cadenzaGiornoMese || '1')) return false;
+    if (t.cadenzaDataInizio) {
+      var pzT = t.cadenzaDataInizio.split('-').map(Number);
+      var inizioT = new Date(pzT[0], pzT[1] - 1, pzT[2] || 1);
+      var diffMesiT = (oggi.getFullYear() - inizioT.getFullYear()) * 12 + (oggi.getMonth() - inizioT.getMonth());
+      return diffMesiT >= 0 && (diffMesiT % 3 === 0);
+    }
+    return (oggi.getMonth() % 3 === 0);
+  }
+
+  // 6. Semestrale (Ogni 6 mesi)
+  if (t.cadenzaTipo === 'semestrale') {
+    if (!verificaGiornoMeseMatch(t.cadenzaGiornoMese || '1')) return false;
+    if (t.cadenzaDataInizio) {
+      var pzS = t.cadenzaDataInizio.split('-').map(Number);
+      var inizioS = new Date(pzS[0], pzS[1] - 1, pzS[2] || 1);
+      var diffMesiS = (oggi.getFullYear() - inizioS.getFullYear()) * 12 + (oggi.getMonth() - inizioS.getMonth());
+      return diffMesiS >= 0 && (diffMesiS % 6 === 0);
+    }
+    return (oggi.getMonth() % 6 === 0);
+  }
+
+  // 7. Annuale (1 volta all'anno)
+  if (t.cadenzaTipo === 'annuale') {
+    var targetMese = parseInt(t.cadenzaMeseAnnuale) || 1;
+    var targetGiorno = parseInt(t.cadenzaGiornoAnnuale) || 1;
+    var meseCorrente = oggi.getMonth() + 1;
+    if (meseCorrente !== targetMese) return false;
+    if (targetGiorno > ultimoGiornoMese) {
+      return giornoMese === ultimoGiornoMese;
+    }
+    return giornoMese === targetGiorno;
+  }
+
+  // 8. Al bisogno
   if (t.cadenzaTipo === 'bisogno' || t.fascia === 'Al Bisogno' || t.ora === 'Al Bisogno') {
     return true; // sempre richiamabile
   }
 
-  // 3. Quotidiana o default
+  // 9. Quotidiana o default
   return true;
 }
 
@@ -14624,6 +14889,14 @@ function ricalcolaAutonomiaScorteModifica() {
     consumoGiornaliero = (quotaDose * 2) / 30;
   } else if (cadTipo === 'mensile') {
     consumoGiornaliero = quotaDose / 30;
+  } else if (cadTipo === 'bimestrale') {
+    consumoGiornaliero = quotaDose / 60;
+  } else if (cadTipo === 'trimestrale') {
+    consumoGiornaliero = quotaDose / 90;
+  } else if (cadTipo === 'semestrale') {
+    consumoGiornaliero = quotaDose / 180;
+  } else if (cadTipo === 'annuale') {
+    consumoGiornaliero = quotaDose / 365;
   } else if (cadTipo === 'bisogno') {
     consumoGiornaliero = quotaDose * 0.2; // stima al bisogno
   }
@@ -14711,8 +14984,36 @@ function ricalcolaSimulatoreCadenzaOggi() {
       elBadge.style.background = '#dbeafe';
       elBadge.style.color = '#1d4ed8';
     }
+  } else if (cadTipo === 'settimanale') {
+    var dayOfWeek = oggi.getDay();
+    var isoDay = (dayOfWeek === 0) ? 7 : dayOfWeek;
+    var targetG = parseInt(document.getElementById('edit-farm-giorno-settimana')?.value) || 1;
+    var toccaSett = (isoDay === targetG);
+    var nomeG = (typeof formattaGiornoSettimana === 'function') ? formattaGiornoSettimana(targetG) : 'Lunedì';
+    elTesto.innerHTML = toccaSett ? ('<b style="color:#15803d;">Oggi è ' + nomeG + ': GIORNO DI ASSUNZIONE!</b>') : ('Oggi <b>NON</b> va assunto. Si assume ogni <b>' + nomeG + '</b>.');
+    if (elBadge) {
+      elBadge.textContent = toccaSett ? '✅ SI OGGI' : '❌ NO OGGI';
+      elBadge.style.background = toccaSett ? '#dcfce7' : '#fee2e2';
+      elBadge.style.color = toccaSett ? '#15803d' : '#dc2626';
+    }
+  } else if (cadTipo === 'mensile' || cadTipo === 'bimestrale' || cadTipo === 'trimestrale' || cadTipo === 'semestrale' || cadTipo === 'annuale') {
+    var toccaPer = (typeof isTerapiaPrevistaOggi === 'function') ? isTerapiaPrevistaOggi({
+      cadenzaTipo: cadTipo,
+      cadenzaGiornoSettimana: document.getElementById('edit-farm-giorno-settimana')?.value,
+      cadenzaGiornoMese: document.getElementById('edit-farm-giorno-mese')?.value,
+      cadenzaDataInizio: document.getElementById('edit-farm-data-inizio')?.value,
+      cadenzaMeseAnnuale: document.getElementById('edit-farm-mese-annuale')?.value,
+      cadenzaGiornoAnnuale: document.getElementById('edit-farm-giorno-annuale')?.value
+    }) : true;
+    var descTipo = (typeof formattaNomeCadenza === 'function') ? formattaNomeCadenza(cadTipo) : cadTipo;
+    elTesto.innerHTML = toccaPer ? ('<b style="color:#15803d;">OGGI È GIORNO DI ASSUNZIONE!</b> (' + descTipo + ')') : ('Oggi <b>NON</b> va assunto. Cadenza: ' + descTipo + '.');
+    if (elBadge) {
+      elBadge.textContent = toccaPer ? '✅ SI OGGI' : '❌ NO OGGI';
+      elBadge.style.background = toccaPer ? '#dcfce7' : '#fee2e2';
+      elBadge.style.color = toccaPer ? '#15803d' : '#dc2626';
+    }
   } else {
-    elTesto.innerHTML = 'Regola periodica: ' + elCad.options[elCad.selectedIndex].text;
+    elTesto.innerHTML = 'Regola periodica: ' + (elCad.options[elCad.selectedIndex] ? elCad.options[elCad.selectedIndex].text : cadTipo);
     if (elBadge) {
       elBadge.textContent = 'Periodico';
       elBadge.style.background = '#e2e8f0';
@@ -15330,10 +15631,46 @@ function ricalcolaRiepilogoCapsula() {
   var scorta = parseInt(document.getElementById('edit-farm-scorta') ? document.getElementById('edit-farm-scorta').value : 0) || 0;
   var cprScatola = parseInt(document.getElementById('edit-farm-cpr-scatola') ? document.getElementById('edit-farm-cpr-scatola').value : 28) || 28;
 
+  var elCadSel = document.getElementById('edit-farm-cadenza');
+  var cadTipo = elCadSel ? elCadSel.value : 'giornaliera';
+  var consumoGiornaliero = totCprDie;
+  var descCadenza = 'Tutti i giorni';
+
+  if (cadTipo === 'alternati') {
+    consumoGiornaliero = totCprDie / 2;
+    descCadenza = 'A giorni alterni';
+  } else if (cadTipo === 'settimanale') {
+    consumoGiornaliero = totCprDie / 7;
+    var gSett = (typeof formattaGiornoSettimana === 'function') ? formattaGiornoSettimana(document.getElementById('edit-farm-giorno-settimana')?.value || 1) : 'Lunedì';
+    descCadenza = 'Settimanale (ogni ' + gSett + ')';
+  } else if (cadTipo === 'quindicinale_15_30') {
+    consumoGiornaliero = (totCprDie * 2) / 30;
+    descCadenza = 'Ogni 15 gg (il 15 e 30)';
+  } else if (cadTipo === 'mensile') {
+    consumoGiornaliero = totCprDie / 30;
+    var gM = document.getElementById('edit-farm-giorno-mese')?.value || '1';
+    descCadenza = 'Mensile (il ' + (gM === 'fine' ? 'fine mese' : gM + '°') + ')';
+  } else if (cadTipo === 'bimestrale') {
+    consumoGiornaliero = totCprDie / 60;
+    descCadenza = 'Bimestrale (ogni 2 mesi)';
+  } else if (cadTipo === 'trimestrale') {
+    consumoGiornaliero = totCprDie / 90;
+    descCadenza = 'Trimestrale (ogni 3 mesi)';
+  } else if (cadTipo === 'semestrale') {
+    consumoGiornaliero = totCprDie / 180;
+    descCadenza = 'Semestrale (ogni 6 mesi)';
+  } else if (cadTipo === 'annuale') {
+    consumoGiornaliero = totCprDie / 365;
+    descCadenza = 'Annuale (1 volta all\'anno)';
+  } else if (cadTipo === 'bisogno') {
+    consumoGiornaliero = totCprDie * 0.2;
+    descCadenza = 'Al bisogno';
+  }
+
   var giorniAutonomia = 0;
   var dataScadenzaStr = 'Esaurito';
-  if (totCprDie > 0 && scorta > 0) {
-    giorniAutonomia = Math.floor(scorta / totCprDie);
+  if (consumoGiornaliero > 0 && scorta > 0) {
+    giorniAutonomia = Math.floor(scorta / consumoGiornaliero);
     var dFine = new Date();
     dFine.setDate(dFine.getDate() + giorniAutonomia);
     dataScadenzaStr = dFine.toLocaleDateString('it-IT');
@@ -15349,7 +15686,7 @@ function ricalcolaRiepilogoCapsula() {
     '<span style="font-size:12px; font-weight:900; color:' + avvisoScortaColore + ';">' + (giorniAutonomia <= 7 ? '🚨 ATTENZIONE SCORTA' : '🟢 SCORTA SUFFICIENTE') + '</span>' +
     '</div>' +
     '<div style="font-size:12px; color:#334155; margin-bottom:8px;">' +
-    'Assunzione: <b>' + descParti.join(' + ') + '</b> (Totale: <b>' + totCprDie + ' cpr / die</b>)' +
+    'Assunzione: <b>' + descParti.join(' + ') + '</b> • Cadenza: <b style="color:#0369a1;">' + descCadenza + '</b>' +
     '</div>' +
     '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px; background:#fff; border-radius:8px; padding:8px 10px; border:1px solid #cbd5e1;">' +
     '<div><b>📦 Scorta in Casa:</b><br><span style="font-size:14px; font-weight:900; color:#0f172a;">' + scorta + ' pillole</span></div>' +
@@ -15395,6 +15732,15 @@ function apriMascheraNuovoFarmaco() {
   document.getElementById('edit-farm-cpr-scatola').value = '28';
   document.getElementById('edit-farm-scorta').value = '28';
   document.getElementById('edit-farm-giorni-alert').value = '7';
+
+  var elCad = document.getElementById('edit-farm-cadenza');
+  if (elCad) elCad.value = 'giornaliera';
+  if (document.getElementById('edit-farm-giorno-settimana')) document.getElementById('edit-farm-giorno-settimana').value = '1';
+  if (document.getElementById('edit-farm-giorno-mese')) document.getElementById('edit-farm-giorno-mese').value = '1';
+  if (document.getElementById('edit-farm-data-inizio')) document.getElementById('edit-farm-data-inizio').value = (new Date().toISOString().slice(0, 10));
+  if (document.getElementById('edit-farm-mese-annuale')) document.getElementById('edit-farm-mese-annuale').value = (new Date().getMonth() + 1);
+  if (document.getElementById('edit-farm-giorno-annuale')) document.getElementById('edit-farm-giorno-annuale').value = (new Date().getDate());
+  if (typeof gestisciCambioCadenzaFarmaco === 'function') gestisciCambioCadenzaFarmaco();
 
   // Default: 1 dose al giorno alle 08:00
   selezionaFrequenzaCapsula(1);
@@ -23675,7 +24021,18 @@ window.generaHtmlPianoTerapeutico = function (p) {
             <div style="font-size:8pt; color:#0369a1; font-weight:700; margin-top:2px;">
               Principio: <i style="font-style:italic;">${principio}</i>
             </div>
-            ${t.cadenzaTipo === 'alterni' ? '<div style="font-size:7pt; color:#d97706; font-weight:800; margin-top:2px;">🔄 Somministrazione a giorni alterni</div>' : ''}
+            ${(() => {
+              if (t.cadenzaTipo === 'alterni') return '<div style="font-size:7pt; color:#d97706; font-weight:800; margin-top:2px;">🔄 Somministrazione a giorni alterni</div>';
+              if (t.cadenzaTipo === 'settimanale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">📅 Settimanale (' + ((typeof formattaGiornoSettimana === 'function') ? formattaGiornoSettimana(t.cadenzaGiornoSettimana || 1) : 'Lunedì') + ')</div>';
+              if (t.cadenzaTipo === 'quindicinale_15_30') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">📅 Ogni 15 giorni (il 15 e 30)</div>';
+              if (t.cadenzaTipo === 'mensile') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Mensile (il ' + (t.cadenzaGiornoMese === 'fine' ? 'fine mese' : (t.cadenzaGiornoMese ? (t.cadenzaGiornoMese + '°') : '1°')) + ')</div>';
+              if (t.cadenzaTipo === 'bimestrale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Bimestrale (ogni 2 mesi)</div>';
+              if (t.cadenzaTipo === 'trimestrale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Trimestrale (ogni 3 mesi)</div>';
+              if (t.cadenzaTipo === 'semestrale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Semestrale (ogni 6 mesi)</div>';
+              if (t.cadenzaTipo === 'annuale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Annuale (' + (t.cadenzaGiornoAnnuale || '1') + '/' + (t.cadenzaMeseAnnuale || '1') + ')</div>';
+              if (t.cadenzaTipo === 'bisogno') return '<div style="font-size:7pt; color:#b45309; font-weight:800; margin-top:2px;">🚨 Al bisogno (SOS)</div>';
+              return '';
+            })()}
             
             <!-- BADGE SCORTA E DATA RICHIESTA DIRETTAMENTE VISIBILI SU SMARTPHONE -->
             <div style="margin-top:5px; font-size:7.5pt; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">

@@ -3193,13 +3193,91 @@
 
             <div class="form-group-compact">
               <label class="form-label-compact">Regola Frequenza / Cadenza</label>
-              <select class="form-control-compact" id="edit-farm-cadenza" style="font-weight:700; color:#0f172a;">
+              <select class="form-control-compact" id="edit-farm-cadenza" style="font-weight:700; color:#0f172a;"
+                onchange="if(typeof gestisciCambioCadenzaFarmaco==='function') gestisciCambioCadenzaFarmaco(); if(typeof ricalcolaRiepilogoCapsula==='function') ricalcolaRiepilogoCapsula();">
                 <option value="giornaliera">Tutti i giorni (Quotidiana)</option>
                 <option value="alternati">A giorni alterni (Un giorno sì / no)</option>
+                <option value="settimanale">1 volta a settimana (Settimanale)</option>
                 <option value="quindicinale_15_30">Ogni 15 giorni (il 15 e 30 del mese)</option>
-                <option value="settimanale">Una volta a settimana</option>
+                <option value="mensile">1 volta al mese (Mensile)</option>
+                <option value="bimestrale">Ogni 2 mesi (Bimestrale)</option>
+                <option value="trimestrale">Ogni 3 mesi (Trimestrale)</option>
+                <option value="semestrale">Ogni 6 mesi (Semestrale)</option>
+                <option value="annuale">1 volta all'anno (Annuale)</option>
                 <option value="bisogno">Al bisogno (SOS / Sintomatico)</option>
               </select>
+            </div>
+
+            <!-- DETTAGLIO CADENZA PERIODICA (VISIBILE QUANDO NON È QUOTIDIANA) -->
+            <div id="box-dettaglio-cadenza" style="display:none; margin-top:8px; padding:10px 12px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px;">
+              
+              <!-- Sottosezione Settimanale -->
+              <div id="row-cadenza-settimanale" style="display:none;">
+                <label class="form-label-compact" style="color:#0369a1; font-weight:800;">📅 Giorno della settimana di assunzione</label>
+                <select class="form-control-compact" id="edit-farm-giorno-settimana" onchange="if(typeof ricalcolaRiepilogoCapsula==='function') ricalcolaRiepilogoCapsula();">
+                  <option value="1">Lunedì</option>
+                  <option value="2">Martedì</option>
+                  <option value="3">Mercoledì</option>
+                  <option value="4">Giovedì</option>
+                  <option value="5">Venerdì</option>
+                  <option value="6">Sabato</option>
+                  <option value="7">Domenica</option>
+                </select>
+              </div>
+
+              <!-- Sottosezione Mensile / Plurimensile -->
+              <div id="row-cadenza-mensile" style="display:none;">
+                <div class="riga-doppia-pro" style="margin-bottom:0;">
+                  <div class="form-group-compact" style="flex:1;">
+                    <label class="form-label-compact" style="color:#0369a1; font-weight:800;">🗓️ Giorno del Mese</label>
+                    <select class="form-control-compact" id="edit-farm-giorno-mese" onchange="if(typeof ricalcolaRiepilogoCapsula==='function') ricalcolaRiepilogoCapsula();">
+                      <option value="1">1° del mese (Inizio mese)</option>
+                      <option value="5">5 del mese</option>
+                      <option value="10">10 del mese</option>
+                      <option value="15">15 del mese (Metà mese)</option>
+                      <option value="20">20 del mese</option>
+                      <option value="25">25 del mese</option>
+                      <option value="fine">Ultimo giorno del mese</option>
+                    </select>
+                  </div>
+                  <div class="form-group-compact" id="col-cadenza-data-inizio" style="flex:1; display:none;">
+                    <label class="form-label-compact" style="color:#0369a1; font-weight:800;">📆 Data di Inizio / Riferimento</label>
+                    <input type="date" class="form-control-compact" id="edit-farm-data-inizio" onchange="if(typeof ricalcolaRiepilogoCapsula==='function') ricalcolaRiepilogoCapsula();">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sottosezione Annuale -->
+              <div id="row-cadenza-annuale" style="display:none;">
+                <div class="riga-doppia-pro" style="margin-bottom:0;">
+                  <div class="form-group-compact" style="flex:1.2;">
+                    <label class="form-label-compact" style="color:#0369a1; font-weight:800;">🗓️ Mese di Assunzione</label>
+                    <select class="form-control-compact" id="edit-farm-mese-annuale" onchange="if(typeof ricalcolaRiepilogoCapsula==='function') ricalcolaRiepilogoCapsula();">
+                      <option value="1">Gennaio</option>
+                      <option value="2">Febbraio</option>
+                      <option value="3">Marzo</option>
+                      <option value="4">Aprile</option>
+                      <option value="5">Maggio</option>
+                      <option value="6">Giugno</option>
+                      <option value="7">Luglio</option>
+                      <option value="8">Agosto</option>
+                      <option value="9">Settembre</option>
+                      <option value="10">Ottobre</option>
+                      <option value="11">Novembre</option>
+                      <option value="12">Dicembre</option>
+                    </select>
+                  </div>
+                  <div class="form-group-compact" style="flex:0.8;">
+                    <label class="form-label-compact" style="color:#0369a1; font-weight:800;">Giorno</label>
+                    <input type="number" class="form-control-compact" id="edit-farm-giorno-annuale" min="1" max="31" value="1" onchange="if(typeof ricalcolaRiepilogoCapsula==='function') ricalcolaRiepilogoCapsula();">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pillola informativa su cosa tocca -->
+              <div id="cadenza-feedback-info" style="margin-top:6px; font-size:11px; font-weight:700; color:#475569; display:flex; align-items:center; gap:5px;">
+                <span>ℹ️</span> <span id="cadenza-feedback-testo">Assunzione prevista solo nei giorni stabiliti.</span>
+              </div>
             </div>
           </div>
 
@@ -7239,7 +7317,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=269"></script>
+  <script src="app.js?v=270"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
