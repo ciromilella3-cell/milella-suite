@@ -2467,6 +2467,96 @@
     </div>
   </div>
 
+  <!-- MODAL GUIDA CLINICA & FAMILIARI: LETTO ORTOPEDICO, AUSILI E ALLETTAMENTO -->
+  <div class="modal-overlay" id="modal-guida-letto-ausili" style="display:none; z-index:20000100; position:fixed; inset:0; background:rgba(15,23,42,0.8); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:12px;">
+    <div class="modal-card" style="max-width:580px; width:100%; max-height:92vh; display:flex; flex-direction:column; background:#ffffff; border-radius:20px; box-shadow:0 24px 70px rgba(0,0,0,0.35); overflow:hidden; border:2px solid #38bdf8;">
+      
+      <!-- HEADER -->
+      <div class="modal-header" style="background:linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #38bdf8 100%); color:#ffffff; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+          <span style="font-size:26px;">🛏️</span>
+          <div>
+            <div style="font-size:16px; font-weight:900; line-height:1.2;">Guida Familiari &amp; Caregiver</div>
+            <div style="font-size:11.5px; font-weight:700; opacity:0.95;">Letto a Manovella, Ausili &amp; Gestione Allettamento</div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline" onclick="chiudiGuidaLettoManovella()" style="color:#ffffff; border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.15); width:34px; height:34px; min-width:34px; border-radius:50%; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer;">✕</button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body" style="padding:16px; overflow-y:auto; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; gap:14px; background:#f8fafc; font-size:13px; line-height:1.5; color:#1e293b;">
+
+        <!-- BARRA STRUMENTI MULTIMEDIALI: VOCE + WHATSAPP -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <button type="button" id="btn-audio-guida-letto" onclick="toggleAudioGuidaLettoManovella()" style="background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color:#fff; border:none; border-radius:12px; padding:10px 12px; font-weight:800; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 2px 6px rgba(79,70,229,0.25);">
+            <span style="font-size:16px;">🔊</span> <span id="txt-audio-guida-letto">Ascolta a Voce</span>
+          </button>
+          <button type="button" onclick="condividiGuidaLettoWhatsApp()" style="background:#25d366; color:#fff; border:none; border-radius:12px; padding:10px 12px; font-weight:800; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 2px 6px rgba(37,211,102,0.25);">
+            <span style="font-size:16px;">💬</span> <span>Invia su WhatsApp</span>
+          </button>
+        </div>
+
+        <!-- 1. LA VERITÀ CLINICA FONDAMENTALE -->
+        <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-left:5px solid #0284c7; border-radius:12px; padding:12px 14px;">
+          <div style="font-weight:900; font-size:13.5px; color:#0369a1; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+            <span>💡</span> 1. Avere il letto con manovella NON significa essere "allettati"
+          </div>
+          <div style="color:#334155;">
+            Il letto articolato a manovella o elettrico con sponde è un ausilio di <b>comfort, sicurezza e supporto all'autonomia</b>. Viene prescritto dall'ASL e dai geriatri a tantissimi anziani deambulanti o semi-deambulanti per aiutarli a rialzarsi da soli facendo leva sulle spondine, e per proteggere la schiena dei familiari durante l'assistenza.
+          </div>
+        </div>
+
+        <!-- 2. LA REGOLA D'ORO DEI PASTI: POSIZIONE FOWLER (30°-45°) -->
+        <div style="background:#fefce8; border:1.5px solid #fde047; border-left:5px solid #eab308; border-radius:12px; padding:12px 14px;">
+          <div style="font-weight:900; font-size:13.5px; color:#854d0e; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+            <span>🍽️</span> 2. La regola d'oro dei pasti (Posizione Fowler 30°-45°)
+          </div>
+          <div style="color:#713f12;">
+            <b>Prima di ogni pasto, colazione o assunzione di pillole orali</b>, girare sempre la manovella per sollevare lo schienale a 30°-45°. Questa postura è vitale per:
+            <ul style="margin:6px 0 0 18px; padding:0;">
+              <li>Prevenire il rischio soffocamento e aspirazione polmonare (<i>polmonite ab ingestis</i>).</li>
+              <li>Favorire il respiro nei cardiopatici e la corretta digestione gastrica.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3. PERCHÉ IL CONTO ALLA ROVESCIA (Q2H) RIMANE SPENTO -->
+        <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; border-left:5px solid #16a34a; border-radius:12px; padding:12px 14px;">
+          <div style="font-weight:900; font-size:13.5px; color:#166534; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+            <span>⏱️</span> 3. Perché l'orologio posturale (q2h) resta spento
+          </div>
+          <div style="color:#14532d;">
+            Negli ospedali e nelle RSA il timer q2h si attiva <b>solo</b> per i pazienti completamente immobili a letto (Scala Braden ad alto rischio). Per una persona non allettata, far suonare un allarme ogni 2 ore crea solo stress immotivato (<i>alarm fatigue</i>). Il timer si attiva solo nei periodi in cui il paziente è effettivamente confinato a letto.
+          </div>
+        </div>
+
+        <!-- 4. I 3 CONSIGLI PRATICI PER LA CASA -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:12px; padding:12px 14px;">
+          <div style="font-weight:900; font-size:13px; color:#0f172a; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+            <span>🛡️</span> 4. Tre regole pratiche per familiari e badanti:
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; font-size:12.5px; color:#475569;">
+            <div><b>1. Bloccare sempre i freni</b> delle ruote del letto prima di aiutare la persona ad alzarsi o risedersi.</div>
+            <div><b>2. Favorire la sedia e la poltrona:</b> incoraggiare a sedersi durante il giorno per mantenere attivi i muscoli.</div>
+            <div><b>3. Controllo della cute:</b> approfittare del momento del cambio o della vestizione per osservare che la pelle sui talloni e sul sacro sia rosea e priva di arrossamenti prolungati.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer" style="background:#ffffff; border-top:1px solid #e2e8f0; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <button type="button" class="btn btn-outline" onclick="stampaVademecumLettoManovellaA4()" style="background:#f8fafc; border:1.5px solid #cbd5e1; color:#334155; font-weight:800; font-size:12px; border-radius:10px; padding:8px 12px; cursor:pointer; display:flex; align-items:center; gap:5px;">
+          <span>🖨️</span> <span>Stampa Foglio A4</span>
+        </button>
+        <button type="button" class="btn btn-primary" onclick="chiudiGuidaLettoManovella()" style="background:#0284c7; color:#fff; border:none; font-weight:800; font-size:12.5px; border-radius:10px; padding:9px 18px; cursor:pointer;">
+          Ho Capito, Chiudi
+        </button>
+      </div>
+
+    </div>
+  </div>
+
 
   <!-- MODALE GUIDATO: AGGIUNGI AUSILIO O PRESIDIO SANITARIO -->
   <div class="modal-overlay" id="modal-aggiungi-ausilio">
@@ -7149,7 +7239,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=268"></script>
+  <script src="app.js?v=269"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {

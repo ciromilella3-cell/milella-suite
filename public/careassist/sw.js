@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v268-orologio-posturale-toggle-allettato';
+const CACHE_NAME = 'careassist-pro-v269-guida-letto-familiari';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

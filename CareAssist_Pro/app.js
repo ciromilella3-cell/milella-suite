@@ -3035,6 +3035,9 @@ function renderPazientiSelector() {
                   🩺 Patologie (${(activeP.patologie || []).length})
                 </span>
                 ${allergieBadge}
+                <button type="button" class="badge clinica-zoom-item" style="background:#fefce8; color:#854d0e; border:1.5px solid #fde047; font-size:11.5px; font-weight:800; padding:3px 9px; border-radius:8px; cursor:pointer;" onclick="apriGuidaLettoManovella()" title="Guida Pratica Familiari &amp; Caregiver sul Letto a Manovella e gestione Posture">
+                  📘 Guida Letto a Manovella
+                </button>
                 ${activeP.allettato ? '<span class="badge badge-danger clinica-zoom-item" style="background:#b91c1c; font-size:11px; padding:3px 9px; border-radius:8px; cursor:pointer;" onmouseenter="mostraLenteClinica(\'Valutazione Lesioni da Pressione (Braden)\', \'Rischio elevato di piaghe da decubito: rotazione q2h, materasso a pressione alternata e ispezione cutanea costante.\', \'⚠️\')" onmouseleave="nascondiLenteClinica()">⚠️ Rischio Piaghe</span>' : ''}
                 ${activeP.id === 'paz_angela' ? '<span class="badge badge-danger" style="background:#dc2626; font-size:11px; padding:3px 9px; border-radius:8px;">🫁 CPAP (OSAS)</span>' : ''}
               </div>
@@ -12355,6 +12358,169 @@ function toggleStatoAllettatoPaziente(pazId) {
 
 window.toggleTimerPostura = toggleTimerPostura;
 window.toggleStatoAllettatoPaziente = toggleStatoAllettatoPaziente;
+
+// ==========================================================================
+// GUIDA FAMILIARI & CAREGIVER: LETTO ORTOPEDICO, AUSILI E POSTURA
+// ==========================================================================
+let _isGuidaAudioPlaying = false;
+
+function apriGuidaLettoManovella() {
+  const m = document.getElementById('modal-guida-letto-ausili');
+  if (m) m.style.display = 'flex';
+}
+window.apriGuidaLettoManovella = apriGuidaLettoManovella;
+
+function chiudiGuidaLettoManovella() {
+  const m = document.getElementById('modal-guida-letto-ausili');
+  if (m) m.style.display = 'none';
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  _isGuidaAudioPlaying = false;
+  const txt = document.getElementById('txt-audio-guida-letto');
+  if (txt) txt.textContent = 'Ascolta a Voce';
+}
+window.chiudiGuidaLettoManovella = chiudiGuidaLettoManovella;
+
+function toggleAudioGuidaLettoManovella() {
+  if (!('speechSynthesis' in window)) {
+    if (typeof showToast === 'function') showToast('Sintesi vocale non supportata su questo browser', 'warning');
+    return;
+  }
+  const txtBtn = document.getElementById('txt-audio-guida-letto');
+  if (_isGuidaAudioPlaying) {
+    window.speechSynthesis.cancel();
+    _isGuidaAudioPlaying = false;
+    if (txtBtn) txtBtn.textContent = 'Ascolta a Voce';
+    return;
+  }
+
+  const p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  const pNome = p ? p.nome.split(' ')[0] : 'il nostro assistito';
+
+  const testoVoce = `Guida pratica per familiari e assistenti di ${pNome}. ` +
+    `Punto primo: Avere il letto con manovella non significa essere allettati. ` +
+    `Questo ausilio serve per garantire comfort, facilitare l'alzata autonoma con le sponde e proteggere la schiena di chi assiste. ` +
+    `Punto secondo: La regola d'oro dei pasti. Prima di ogni pasto o assunzione di pillole orali, girare sempre la manovella per sollevare lo schienale a 30 o 45 gradi. Questa posizione previene il soffocamento e favorisce il respiro nei cardiopatici. ` +
+    `Punto terzo: L'orologio posturale con conto alla rovescia di due ore è pensato solo per chi è completamente immobile a letto. Quando la persona deambula o si siede in poltrona, il timer viene tenuto spento per non generare allarmi inutili. ` +
+    `Ricordate di bloccare sempre i freni prima di ogni trasferimento e di controllare regolarmente l'integrità della cute.`;
+
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(testoVoce);
+  utter.lang = 'it-IT';
+  utter.rate = 0.95;
+  utter.pitch = 1.0;
+  utter.onend = function() {
+    _isGuidaAudioPlaying = false;
+    if (txtBtn) txtBtn.textContent = 'Ascolta a Voce';
+  };
+  utter.onerror = function() {
+    _isGuidaAudioPlaying = false;
+    if (txtBtn) txtBtn.textContent = 'Ascolta a Voce';
+  };
+
+  _isGuidaAudioPlaying = true;
+  if (txtBtn) txtBtn.textContent = '⏸️ Ferma Voce';
+  window.speechSynthesis.speak(utter);
+}
+window.toggleAudioGuidaLettoManovella = toggleAudioGuidaLettoManovella;
+
+function condividiGuidaLettoWhatsApp() {
+  const p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  const pNome = p ? p.nome : 'Nostro Assistito';
+  const cgCell = p ? (p.moglieCellulare || p.caregiverCellulare || '') : '';
+
+  const testoWA = `🛏️ *GUIDA FAMILIARI & ASSISTENTI — CareAssist Pro*\n` +
+    `*Assistito:* ${pNome}\n\n` +
+    `Ecco i punti chiave condivisi con il medico e i centri sanitari sull'uso del *Letto Ortopedico a Manovella*:\n\n` +
+    `✅ *1. Letto con manovella ≠ Allettamento*\n` +
+    `L'ausilio serve per comfort, sicurezza contro le cadute notturne e per aiutare ad alzarsi da soli facendo leva sulle spondine. La persona è incoraggiata a camminare e sedersi in poltrona.\n\n` +
+    `🍽️ *2. Regola Vitale dei Pasti (Fowler 30°-45°)*\n` +
+    `Prima di colazione, pranzo, cena e farmaci orali, girare SEMPRE la manovella per sollevare il busto. Protegge le vie aeree dal rischio soffocamento (ab ingestis) e aiuta il cuore a respirare meglio.\n\n` +
+    `⏱️ *3. Perché il timer decubito q2h è spento*\n` +
+    `Negli ospedali e RSA il timer di rotazione continua ogni 2 ore serve solo a chi è totalmente immobile. Una persona non allettata cambia posizione da sola: allarmi sonori continui creerebbero solo stress ingiustificato.\n\n` +
+    `🛡️ *4. Regole di Sicurezza:*\n` +
+    `• Bloccare sempre i freni delle ruote prima di alzarsi.\n` +
+    `• Verificare sempre la pelle rosea su sacro e talloni.\n\n` +
+    `_Condiviso da CareAssist Pro per tutta la famiglia._`;
+
+  let waUrl = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(testoWA);
+  if (cgCell) {
+    const clean = cgCell.replace(/[^0-9]/g, '');
+    waUrl = 'https://api.whatsapp.com/send?phone=' + clean + '&text=' + encodeURIComponent(testoWA);
+  }
+  window.open(waUrl, '_blank');
+}
+window.condividiGuidaLettoWhatsApp = condividiGuidaLettoWhatsApp;
+
+function stampaVademecumLettoManovellaA4() {
+  const p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  const pNome = p ? p.nome : 'Assistito';
+  const printWin = window.open('', '_blank');
+  if (!printWin) {
+    if (typeof showToast === 'function') showToast('Consenti i popup per visualizzare la scheda A4', 'warning');
+    return;
+  }
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>VADEMECUM LETTO ORTOPEDICO A MANOVELLA - ${pNome}</title>
+  <style>
+    @page { size: A4 portrait; margin: 15mm; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 10px; line-height: 1.5; }
+    .header { border-bottom: 3px solid #0284c7; padding-bottom: 12px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+    .title { font-size: 20px; font-weight: 900; color: #0369a1; }
+    .sub { font-size: 13px; color: #64748b; font-weight: 700; margin-top: 3px; }
+    .box { border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; page-break-inside: avoid; }
+    .box-blue { background: #f0f9ff; border: 1.5px solid #bae6fd; border-left: 6px solid #0284c7; }
+    .box-yellow { background: #fefce8; border: 1.5px solid #fef08a; border-left: 6px solid #eab308; }
+    .box-green { background: #f0fdf4; border: 1.5px solid #bbf7d0; border-left: 6px solid #16a34a; }
+    .box-gray { background: #f8fafc; border: 1.5px solid #e2e8f0; border-left: 6px solid #475569; }
+    .box-title { font-size: 14.5px; font-weight: 800; margin-bottom: 6px; }
+    .footer { margin-top: 25px; border-top: 1px dashed #cbd5e1; padding-top: 10px; font-size: 11px; color: #64748b; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="title">🛏️ GUIDA DOMICILIARE &amp; FAMILIARI — LETTO A MANOVELLA</div>
+      <div class="sub">Scheda Informativa &amp; Presidio di Sicurezza per: <b>${pNome}</b></div>
+    </div>
+    <div style="text-align:right; font-size:11px; font-weight:700; color:#0369a1;">CareAssist Pro<br>Protocollo Assistenza Territoriale</div>
+  </div>
+
+  <div class="box box-blue">
+    <div class="box-title" style="color:#0369a1;">💡 1. AVERE IL LETTO CON MANOVELLA NON SIGNIFICA ESSERE ALLETTATI</div>
+    <div>Il letto articolato a manovella o elettrico con sponde è un ausilio di <b>comfort, prevenzione cadute e supporto all'autonomia</b>. Viene assegnato dall'ASL a persone deambulanti o semi-deambulanti per favorire l'alzata autonoma con le spondine e per non sovraccaricare la schiena dei familiari. Il paziente è incoraggiato a muoversi e deambulare.</div>
+  </div>
+
+  <div class="box box-yellow">
+    <div class="box-title" style="color:#854d0e;">🍽️ 2. LA REGOLA VITALE DEI PASTI (POSIZIONE FOWLER 30°-45°)</div>
+    <div><b>Prima di qualsiasi pasto, colazione o somministrazione di pastiglie:</b><br>
+    Girare sempre la manovella per sollevare il tronco del paziente a 30°-45°. Questa posizione è vitale per prevenire il soffocamento e l'aspirazione nei polmoni (<i>ab ingestis</i>), e agevola la respirazione nei pazienti cardiopatici.</div>
+  </div>
+
+  <div class="box box-green">
+    <div class="box-title" style="color:#166534;">⏱️ 3. PERCHÉ IL CONTO ALLA ROVESCIA (Q2H) RIMANE SPENTO</div>
+    <div>Nelle RSA e negli ospedali, il timer delle 2 ore suona solo per chi è completamente immobile a letto (Scala Braden ad alto rischio). Quando una persona cammina o si siede in poltrona, cambia posizione da sola: far suonare allarmi continui creerebbe solo stress al paziente e alla famiglia (<i>alarm fatigue</i>).</div>
+  </div>
+
+  <div class="box box-gray">
+    <div class="box-title" style="color:#334155;">🛡️ 4. TRE REGOLE D'ORO PER TUTTI GLI OPERATORI E FAMILIARI</div>
+    <div><b>1. Freni Ruote:</b> Bloccare sempre le ruote del letto prima di ogni alzata o seduta.<br>
+    <b>2. Mobilità:</b> Incoraggiare a stare seduti in poltrona per mantenere i muscoli attivi.<br>
+    <b>3. Controllo Cute:</b> Verificare regolarmente che la cute su sacro e talloni sia rosea e priva di arrossamenti prolungati.</div>
+  </div>
+
+  <div class="footer">
+    Documento informativo ad uso della famiglia, badanti e assistenti domiciliari &bull; Stampato da CareAssist Pro il ${new Date().toLocaleDateString('it-IT')}
+  </div>
+  <script>window.onload = function() { window.print(); };</script>
+</body>
+</html>`;
+  printWin.document.write(html);
+  printWin.document.close();
+}
+window.stampaVademecumLettoManovellaA4 = stampaVademecumLettoManovellaA4;
 
 // 2. BILANCIO IDRICO GIORNALIERO (RSA HYDRATION)
 function aggiornaIdratazioneUI() {
@@ -25129,6 +25295,9 @@ function renderMobileNativeView(terapie, p) {
       '<div style="display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap;">' +
       '<button type="button" onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
       '<span>📋 Scheda Clinica ➜</span>' +
+      '</button>' +
+      '<button type="button" onclick="event.stopPropagation(); apriGuidaLettoManovella()" style="background:#fefce8; color:#854d0e; border:1px solid #fde047; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(133,77,14,0.1);">' +
+      '<span>📘 Guida Letto</span>' +
       '</button>' +
       '<button type="button" onclick="event.stopPropagation(); apriModificaAnagrafica()" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
       '<span>✏️ Modifica Dati</span>' +
