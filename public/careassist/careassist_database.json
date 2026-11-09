@@ -490,12 +490,15 @@
           "giorniAlert": 15
         },
         {
-          "tipo": "Protocollo Posturale Rotatorio (q2h)",
-          "utilizzo": "Rotazione obbligatoria ogni 2 ore: Supino, Fianco Dx, Fianco Sx, Semiseduto",
+          "tipo": "Letto ortopedico a manovella o elettrico con sponde",
+          "utilizzo": "Regolazione inclinazione busto/gambe a manovella per postura semiseduta e spondine anticaduta",
+          "accessori": "Asta con triangolo alzamalati, manovella e sponde laterali",
+          "stato": "In uso attivo",
+          "cartoni": "",
+          "dataRifornimento": "",
           "prossimaRichiesta": "",
           "dataScadenza": "",
-          "giorniAlert": 15,
-          "stato": "In uso"
+          "giorniAlert": 15
         }
       ],
       "farmaciaDiRiferimento": "Farmacia Dott. MACARIO",
