@@ -76,6 +76,16 @@
   // Navigazione Rapida verso Ambulatorio Medico con paziente attivo
   window.navigaAdAmbulatorio = function() {
     salvaRiferimentoCondiviso();
+    // Se siamo all'interno di CareAssist Pro, apri direttamente la cartella ambulatoriale / specialistica interna
+    if (typeof apriAmbulatorioSpecialisticoMobile === 'function') {
+      apriAmbulatorioSpecialisticoMobile();
+      return;
+    }
+    const tabEpa = document.getElementById('tab-epatologia');
+    if (tabEpa) {
+      if (typeof vaiATab === 'function') vaiATab('tab-epatologia');
+      return;
+    }
     const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
     const nome = p ? encodeURIComponent(p.nome) : '';
     window.location.href = '/mednutri/?patient=' + nome;
@@ -97,4 +107,3 @@
     setTimeout(sincronizzaPazienteInIngresso, 300);
   }
 })();
-

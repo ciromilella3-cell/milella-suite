@@ -19254,24 +19254,47 @@ function aggiornaVisibilitaTabEpatologia() {
   var pNome = (p.nome || '').toLowerCase();
   var pId = p.id || '';
   var isInfettivo = (typeof pazHaDiagnosiMalattieInfettive === 'function') && pazHaDiagnosiMalattieInfettive(p);
+  var topPrestampatoBtn = document.getElementById('btn-top-prestampato');
 
   tabBtn.style.display = 'inline-flex';
 
   if (isInfettivo) {
-    tabBtn.innerHTML = '🩺 Malattie Infettive';
-    tabBtn.title = 'Cartella Ambulatoriale Follow-up Malattie Infettive & Epatologia - Policlinico di Bari (Ciro Milella)';
-  } else if (pId === 'paz_aldo' || pNome.includes('aldo')) {
-    tabBtn.innerHTML = '🧠 Neurologia & Cuore';
-    tabBtn.title = 'Cartella Monitoraggio Specialistico Geriatrico & Decubito (Aldo Zamparino)';
-  } else if (pId === 'paz_angela' || pNome.includes('angela')) {
-    tabBtn.innerHTML = '❤️ Cardiologia & PA';
-    tabBtn.title = 'Cartella Monitoraggio Cardiometabolico & Ipertensione (Angela Mazzicone)';
-  } else if (pId === 'paz_rosa' || pNome.includes('rosa') || pNome.includes('C.')) {
-    tabBtn.innerHTML = '🩸 Diabete & Terapie';
-    tabBtn.title = 'Cartella Diabetologia, Piani Terapeutici & Cardiovascolare (Rosa C.)';
+    tabBtn.innerHTML = '📑 Prestampato Infettivi (Policlinico)';
+    tabBtn.title = 'Modulo Prestampato Ufficiale Malattie Infettive & Epatologia - Policlinico di Bari (Ciro Milella)';
+    tabBtn.style.background = '#e0f2fe';
+    tabBtn.style.color = '#0369a1';
+    tabBtn.style.border = '1.5px solid #38bdf8';
+    tabBtn.style.fontWeight = '900';
+    if (topPrestampatoBtn) {
+      topPrestampatoBtn.style.display = 'inline-flex';
+      topPrestampatoBtn.innerHTML = '<span style="font-size:16px;">📑</span> <span>Prestampato Infettivi</span>';
+      topPrestampatoBtn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+    }
   } else {
-    tabBtn.innerHTML = '🩺 Ambulatorio & Esami';
-    tabBtn.title = 'Cartella Clinica Specialistica & Follow-up (' + (p.nome || 'Assistito') + ')';
+    tabBtn.style.background = '';
+    tabBtn.style.color = '';
+    tabBtn.style.border = '';
+    tabBtn.style.fontWeight = '';
+    // Il pulsante Prestampato rimane SEMPRE visibile nella barra superiore con indicazione "(Ciro)"
+    if (topPrestampatoBtn) {
+      topPrestampatoBtn.style.display = 'inline-flex';
+      topPrestampatoBtn.innerHTML = '<span style="font-size:16px;">📑</span> <span>Prestampato Infettivi (Ciro)</span>';
+      topPrestampatoBtn.style.background = 'linear-gradient(135deg, #0369a1 0%, #075985 100%)';
+    }
+
+    if (pId === 'paz_aldo' || pNome.includes('aldo')) {
+      tabBtn.innerHTML = '🧠 Neurologia & Cuore';
+      tabBtn.title = 'Cartella Monitoraggio Specialistico Geriatrico & Decubito (Aldo Zamparino)';
+    } else if (pId === 'paz_angela' || pNome.includes('angela')) {
+      tabBtn.innerHTML = '❤️ Cardiologia & PA';
+      tabBtn.title = 'Cartella Monitoraggio Cardiometabolico & Ipertensione (Angela Mazzicone)';
+    } else if (pId === 'paz_rosa' || pNome.includes('rosa') || pNome.includes('C.')) {
+      tabBtn.innerHTML = '🩸 Diabete & Terapie';
+      tabBtn.title = 'Cartella Diabetologia, Piani Terapeutici & Cardiovascolare (Rosa C.)';
+    } else {
+      tabBtn.innerHTML = '🩺 Ambulatorio & Esami';
+      tabBtn.title = 'Cartella Clinica Specialistica & Follow-up (' + (p.nome || 'Assistito') + ')';
+    }
   }
 
   // Se il tab è attualmente visualizzato, aggiorna il render per il nuovo assistito
@@ -19280,6 +19303,95 @@ function aggiornaVisibilitaTabEpatologia() {
   }
 }
 window.aggiornaVisibilitaTabEpatologia = aggiornaVisibilitaTabEpatologia;
+
+// APRE DIRETTAMENTE IL MODULO PRESTAMPATO UFFICIALE DEGLI INFETTIVI SUL PC / CELLULARE
+function apriPrestampatoInfettiviDiretto() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  // Se non è selezionato Ciro, seleziona automaticamente Ciro Milella
+  if (!p || !pazHaDiagnosiMalattieInfettive(p)) {
+    var ciro = (AppData.pazienti || []).find(function(x) { return (x.nome || '').toLowerCase().includes('ciro'); });
+    if (ciro && typeof cambiaPaziente === 'function') {
+      cambiaPaziente(ciro.id);
+    }
+  }
+
+  // Su mobile attiva la visualizzazione specialistica
+  if (window.innerWidth <= 768 && typeof apriAmbulatorioSpecialisticoMobile === 'function') {
+    apriAmbulatorioSpecialisticoMobile();
+  } else {
+    // Su PC attiva il tab
+    var tabBtn = document.querySelector('[data-target="tab-epatologia"]');
+    if (tabBtn) {
+      tabBtn.click();
+    } else {
+      document.querySelectorAll('.tab-content').forEach(function(c) { c.style.display = 'none'; });
+      var tabSection = document.getElementById('tab-epatologia');
+      if (tabSection) {
+        tabSection.style.display = 'block';
+        if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
+      }
+    }
+  }
+
+  // Imposta la vista a 4 colonne del foglio originale
+  if (typeof impostaTipoVistaModulo === 'function') {
+    impostaTipoVistaModulo('colonne');
+  }
+
+  // Scorri dolcemente alla sezione del prestampato
+  setTimeout(function () {
+    var sez = document.getElementById('sezione-modulo-prestampato-card');
+    if (sez) {
+      sez.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      sez.style.outline = '3px solid #38bdf8';
+      sez.style.boxShadow = '0 0 25px rgba(2,132,199,0.45)';
+      setTimeout(function () {
+        sez.style.outline = '';
+        sez.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)';
+      }, 3500);
+    }
+  }, 250);
+
+  if (typeof showToast === 'function') {
+    showToast('📑 Aperto Modulo Prestampato Ufficiale Malattie Infettive Policlinico di Bari');
+  }
+}
+window.apriPrestampatoInfettiviDiretto = apriPrestampatoInfettiviDiretto;
+
+// AGGIUNTA DI UN NUOVO ESAME PERSONALIZZATO NEL MODULO
+function aggiungiNuovoEsamePersonalizzato() {
+  var nome = prompt('Inserisci il nome del nuovo esame / prestazione da aggiungere nel modulo:');
+  if (!nome || !nome.trim()) return;
+  var categoria = prompt('Inserisci la categoria (es. FEGATO, ESAMI GENERALI, SIEROLOGIA, ESAMI RADIOLOGICI):', 'ESAMI GENERALI');
+
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var scheda = (typeof getSchedaCronicaAttivaPaziente === 'function') ? getSchedaCronicaAttivaPaziente() : null;
+  if (!scheda || !scheda.esami) {
+    scheda = (typeof getEpatologiaDatiPaziente === 'function') ? getEpatologiaDatiPaziente() : null;
+  }
+  if (!scheda || !scheda.esami) {
+    if (typeof showToast === 'function') showToast('⚠️ Nessuna cartella clinica attiva.');
+    return;
+  }
+
+  var nuovoId = 'custom_' + Date.now();
+  scheda.esami.push({
+    id: nuovoId,
+    nome: nome.trim(),
+    categoria: categoria ? categoria.trim().toUpperCase() : 'ESAMI GENERALI',
+    spuntato: true,
+    richiestoMMG: true,
+    dataRichiestaMMG: new Date().toLocaleDateString('it-IT'),
+    prenotatoCUP: false,
+    refertato: false,
+    note: 'Aggiunto manualmente dall\'utente'
+  });
+
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
+  if (typeof showToast === 'function') showToast('✓ Esame "' + nome.trim() + '" inserito nel modulo!');
+}
+window.aggiungiNuovoEsamePersonalizzato = aggiungiNuovoEsamePersonalizzato;
 
 
 // ==============================================================================
@@ -20109,7 +20221,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
     <!-- SEZIONE MODULO PRESTAMPATO POLICLINICO A TUTTA LARGHEZZA (100% FULL WIDTH) -->
     ${(() => {
       return `
-        <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; width:100%; margin-top:20px;">
+        <div class="card" id="sezione-modulo-prestampato-card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:2px solid #0284c7; border-radius:16px; background:#ffffff; width:100%; margin-top:20px;">
         
         <!-- HEADER DELLA SCHEDA CON SELETTORE VISTA -->
         <div class="card-header" style="background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-bottom:1.5px solid #cbd5e1; border-radius:16px 16px 0 0; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -25914,9 +26026,10 @@ function navigaMobileTab(mode, btn) {
   const cruscottoSmart = document.getElementById('cruscotto-smart-oggi');
   const tabDashboard = document.getElementById('tab-dashboard');
   const tabFarmaci = document.getElementById('tab-farmaci');
+  const tabEpatologia = document.getElementById('tab-epatologia');
 
   if (mode === 'oggi') {
-    document.body.classList.remove('viewing-clinica');
+    document.body.classList.remove('viewing-clinica', 'viewing-farmaci', 'viewing-specialistica');
     document.body.classList.add('viewing-oggi');
 
     if (mobileContainer) mobileContainer.style.setProperty('display', 'block', 'important');
@@ -25924,6 +26037,7 @@ function navigaMobileTab(mode, btn) {
     if (cruscottoSmart) cruscottoSmart.style.setProperty('display', 'none', 'important');
     if (tabDashboard) tabDashboard.style.setProperty('display', 'none', 'important');
     if (tabFarmaci) tabFarmaci.style.setProperty('display', 'none', 'important');
+    if (tabEpatologia) tabEpatologia.style.setProperty('display', 'none', 'important');
 
     var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
     if (p && typeof renderMobileNativeView === 'function') {
@@ -25934,7 +26048,7 @@ function navigaMobileTab(mode, btn) {
     if (typeof apriModalSchedaClinicaMobile === 'function') {
       apriModalSchedaClinicaMobile();
     } else {
-      document.body.classList.remove('viewing-oggi');
+      document.body.classList.remove('viewing-oggi', 'viewing-farmaci', 'viewing-specialistica');
       document.body.classList.add('viewing-clinica');
 
       if (mobileContainer) mobileContainer.style.setProperty('display', 'none', 'important');
@@ -25942,10 +26056,11 @@ function navigaMobileTab(mode, btn) {
       if (cruscottoSmart) cruscottoSmart.style.setProperty('display', 'block', 'important');
       if (tabDashboard) tabDashboard.style.setProperty('display', 'block', 'important');
       if (tabFarmaci) tabFarmaci.style.setProperty('display', 'none', 'important');
+      if (tabEpatologia) tabEpatologia.style.setProperty('display', 'none', 'important');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   } else if (mode === 'farmaci') {
-    document.body.classList.remove('viewing-oggi', 'viewing-clinica');
+    document.body.classList.remove('viewing-oggi', 'viewing-clinica', 'viewing-specialistica');
     document.body.classList.add('viewing-farmaci');
 
     if (mobileContainer) mobileContainer.style.setProperty('display', 'none', 'important');
@@ -25953,6 +26068,7 @@ function navigaMobileTab(mode, btn) {
     if (cruscottoSmart) cruscottoSmart.style.setProperty('display', 'none', 'important');
     if (tabDashboard) tabDashboard.style.setProperty('display', 'none', 'important');
     if (tabFarmaci) tabFarmaci.style.setProperty('display', 'block', 'important');
+    if (tabEpatologia) tabEpatologia.style.setProperty('display', 'none', 'important');
 
     var pAct = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
     if (typeof renderTerapie === 'function') renderTerapie();
@@ -25962,6 +26078,47 @@ function navigaMobileTab(mode, btn) {
   }
 }
 window.navigaMobileTab = navigaMobileTab;
+
+// APRE AMBULATORIO SPECIALISTICO / MALATTIE INFETTIVE SU SMARTPHONE
+function apriAmbulatorioSpecialisticoMobile() {
+  document.querySelectorAll('.mobile-bottom-bar .bar-item').forEach(function (b) { b.classList.remove('active'); });
+  document.body.classList.remove('viewing-oggi', 'viewing-clinica', 'viewing-farmaci');
+  document.body.classList.add('viewing-specialistica');
+
+  const mobileContainer = document.getElementById('careassist-native-mobile-container');
+  if (mobileContainer) mobileContainer.style.setProperty('display', 'none', 'important');
+  const anagraficaHero = document.querySelector('.anagrafica-hero');
+  if (anagraficaHero) anagraficaHero.style.setProperty('display', 'none', 'important');
+  const cruscottoSmart = document.getElementById('cruscotto-smart-oggi');
+  if (cruscottoSmart) cruscottoSmart.style.setProperty('display', 'none', 'important');
+
+  // Nascondi tutti i tab e mostra tab-epatologia
+  document.querySelectorAll('.tab-content').forEach(function (c) { c.style.display = 'none'; });
+  const tabEpatologia = document.getElementById('tab-epatologia');
+  if (tabEpatologia) {
+    tabEpatologia.style.setProperty('display', 'block', 'important');
+    if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
+
+    // Inserisci pulsante sticky "← Torna a Oggi" in cima al tab se non presente
+    if (!document.getElementById('mobile-specialistica-back-bar')) {
+      const bar = document.createElement('div');
+      bar.id = 'mobile-specialistica-back-bar';
+      bar.style.cssText = 'position:sticky; top:54px; z-index:99; margin:0 0 14px 0; display:flex; justify-content:space-between; align-items:center; gap:8px; background:rgba(15,23,42,0.92); backdrop-filter:blur(8px); padding:8px 12px; border-radius:14px; border:1px solid #38bdf8; box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+      bar.innerHTML = '<button type="button" onclick="navigaMobileTab(\'oggi\')" style="background:#0284c7; color:#fff; border:none; border-radius:10px; padding:7px 12px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">' +
+        '<span>⬅️</span> <span>Torna a Oggi</span>' +
+        '</button>' +
+        '<div style="display:flex; gap:6px;">' +
+        '<button type="button" onclick="openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:10px; padding:7px 12px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+        '<span>📅</span> <span>+ Visita</span>' +
+        '</button>' +
+        '</div>';
+      tabEpatologia.insertBefore(bar, tabEpatologia.firstChild);
+    }
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.apriAmbulatorioSpecialisticoMobile = apriAmbulatorioSpecialisticoMobile;
 
 // ==========================================================================
 // MODALE SCHEDA CLINICA DEDICATA PER SMARTPHONE (CARTELLA COMPLETA & DIAGNOSI)

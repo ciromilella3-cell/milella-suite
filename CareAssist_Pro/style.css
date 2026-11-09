@@ -9474,3 +9474,18 @@ main, .main-content, .dashboard-container {
 .mobile-postura-card {
   animation: fadeInDown 0.3s ease-out;
 }
+
+/* RESPONSIVE PER CARTELLA SPECIALISTICA / EPATOLOGIA SU SMARTPHONE */
+@media (max-width: 768px) {
+  #tab-epatologia {
+    padding: 10px 8px !important;
+  }
+  #tab-epatologia .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  #tab-epatologia div[style*="grid-template-columns: 2fr 1fr"],
+  #tab-epatologia div[style*="grid-template-columns: 2.1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}

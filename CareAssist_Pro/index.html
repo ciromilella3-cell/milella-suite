@@ -419,6 +419,13 @@
             <span style="font-size:16px;">🚨</span> <span>SOS 112</span>
           </button>
 
+          <!-- TASTO DIRETTO IN PRIMO PIANO: PRESTAMPATO INFETTIVI & EPATOLOGIA POLICLINICO -->
+          <button class="btn" id="btn-top-prestampato" onclick="apriPrestampatoInfettiviDiretto()"
+            style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:900; font-size:12.5px; padding:7px 15px; border-radius:10px; border:1.5px solid #38bdf8; box-shadow:0 2px 8px rgba(2,132,199,0.35); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
+            title="Apri Modulo Prestampato Ufficiale Malattie Infettive Policlinico di Bari (Ciro Milella)">
+            <span style="font-size:16px;">📑</span> <span>Prestampato Infettivi</span>
+          </button>
+
         </div>
 
         <!-- MENU TENDINA STILE WHATSAPP (3 PUNTINI ⋮) PER GLI STRUMENTI SECONDARI -->
@@ -490,6 +497,8 @@
     <button class="nav-tab" data-target="tab-visite"
       style="font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px;">📅 Visite &amp; Prestazioni
       ADI</button>
+    <button class="nav-tab" data-target="tab-epatologia" id="tab-btn-epatologia"
+      style="font-weight:900; font-size:13px; padding:8px 16px; border-radius:10px; background:#eff6ff; color:#0369a1; border:1.5px solid #38bdf8;">📑 Prestampato Infettivi</button>
     <button class="nav-tab" data-target="tab-diario"
       style="font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px;">📋 Storico Diario</button>
   </nav>
@@ -654,6 +663,15 @@
     
     <!-- BARRA AZIONI OPERATIVE RAPIDE (PER OSS, 118 E STAMPA PDF) -->
     <div class="mobile-operativa-action-bar" style="display:flex; flex-direction:column; gap:8px; margin:8px 14px 10px 14px;">
+      <!-- ACCESSO DIRETTO AMBULATORIO SPECIALISTICO & VISITE -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <button type="button" class="btn-operativo-ambulatorio" onclick="apriAmbulatorioSpecialisticoMobile()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:1.5px solid #38bdf8; padding:11px 10px; border-radius:12px; font-weight:900; font-size:12px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 3px 10px rgba(2,132,199,0.35); transition:transform 0.1s ease;">
+          <span style="font-size:16px;">🩺</span> <span>Ambulatorio &amp; Esami</span>
+        </button>
+        <button type="button" class="btn-operativo-visita" onclick="openModal('modal-visita')" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:1.5px solid #34d399; padding:11px 10px; border-radius:12px; font-weight:900; font-size:12px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 3px 10px rgba(5,150,105,0.35); transition:transform 0.1s ease;">
+          <span style="font-size:16px;">📅</span> <span>Pianifica Visita</span>
+        </button>
+      </div>
       <button type="button" class="btn-operativo-ricette" onclick="apriModalFabbisognoRicette()" style="background:linear-gradient(135deg, #065f46 0%, #047857 55%, #10b981 100%); color:#ffffff; border:1.5px solid #6ee7b7; padding:11px 16px; border-radius:12px; font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 3px 12px rgba(6,95,70,0.35); transition:transform 0.1s ease;">
         <span style="font-size:17px;">📋</span> <span>Il Lunedì delle Ricette: Fabbisogno &amp; WhatsApp MMG</span>
         <span style="font-size:10px; background:#f59e0b; color:#fff; padding:2px 7px; border-radius:6px; font-weight:900; letter-spacing:0.3px;">PROMEMORIA</span>
@@ -2373,6 +2391,20 @@
 
       <!-- BODY SCROLLABILE TOUCH -->
       <div class="modal-body" style="padding:14px 16px; overflow-y:auto; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; gap:12px; background:#f8fafc;">
+
+        <!-- ACCESSO RAPIDO SPECIALISTICA & VISITE -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <button type="button" onclick="chiudiModalSchedaClinicaMobile(); apriAmbulatorioSpecialisticoMobile();"
+            style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12px; padding:10px 8px; border-radius:12px; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; box-shadow:0 2px 8px rgba(2,132,199,0.3); text-align:center;">
+            <span style="font-size:20px;">🩺</span>
+            <span>Ambulatorio &amp; Esami</span>
+          </button>
+          <button type="button" onclick="chiudiModalSchedaClinicaMobile(); openModal('modal-visita');"
+            style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:800; font-size:12px; padding:10px 8px; border-radius:12px; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; box-shadow:0 2px 8px rgba(5,150,105,0.3); text-align:center;">
+            <span style="font-size:20px;">📅</span>
+            <span>Pianifica Visita</span>
+          </button>
+        </div>
 
         <!-- CARD IDENTIFICATIVA ASSISTITO -->
         <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:14px; padding:12px 14px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
