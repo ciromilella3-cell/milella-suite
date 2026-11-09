@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=277">
+  <link rel="stylesheet" href="style.css?v=278">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -2464,6 +2464,21 @@
           </div>
         </div>
 
+        <!-- VISITE E APPUNTAMENTI SPECIALISTICI & PIANI TERAPEUTICI -->
+        <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:14px; padding:12px 14px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+            <div style="font-size:12.5px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:6px;">
+              <span>📅</span> <span>Appuntamenti &amp; Piani Terapeutici</span>
+            </div>
+            <button type="button" onclick="openModal('modal-visita')" style="background:#059669; color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 4px rgba(5,150,105,0.25);">
+              <span>➕</span> <span>Nuova Visita</span>
+            </button>
+          </div>
+          <div id="scm-visite-list">
+            <!-- Popolato dinamicamente da app.js -->
+          </div>
+        </div>
+
         <!-- CAREGIVER & FAMIGLIA -->
         <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:14px; padding:12px 14px;">
           <div style="font-size:11px; font-weight:800; color:#0369a1; text-transform:uppercase; margin-bottom:4px;">
@@ -4230,6 +4245,29 @@
             <div class="form-group">
               <label class="form-label">Orario</label>
               <input type="time" class="form-control" id="vis-ora" value="10:00" required>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label class="form-label" style="font-size:11px; color:#64748b; font-weight:800; text-transform:uppercase;">⚡ Suggerimenti Rapidi (1 Tap per compilare):</label>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
+              <button type="button" onclick="impostaPresetVisita('Dr.ssa Carolina Potenza / MMG', 'Rinnovo ricette e richiesta piano terapeutico')" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
+                🩺 MMG (Piano Terapeutico)
+              </button>
+              <button type="button" onclick="impostaPresetVisita('Specialista Neurologo / ASP', 'Visita Neurologica di controllo, valutazione parkinsonismo & rinnovo piano terapeutico')" style="background:#fdf2f8; color:#be185d; border:1px solid #fbcfe8; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
+                🧠 Visita Neurologica
+              </button>
+              <button type="button" onclick="impostaPresetVisita('Ambulatorio Diabetologia / CAD', 'Controllo Diabetologico, profilo glicemico & piano Xultophy')" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
+                🩸 Diabetologia
+              </button>
+              <button type="button" onclick="impostaPresetVisita('Clinica Malattie Infettive Policlinico Bari', 'Visita Infettivologica di controllo HBV & esami sangue')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
+                🔬 Malattie Infettive
+              </button>
+              <button type="button" onclick="impostaPresetVisita('Specialista Cardiologo', 'Controllo cardiologico, ECG & monitoraggio pressione')" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
+                ❤️ Visita Cardiologica
+              </button>
+              <button type="button" onclick="impostaPresetVisita('Infermiere Domiciliare ADI', 'Prelievo ematico domiciliare / Controllo parametri')" style="background:#fefce8; color:#a16207; border:1px solid #fde047; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
+                💉 Prelievo / ADI
+              </button>
             </div>
           </div>
           <div class="form-group">
@@ -7349,7 +7387,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=277"></script>
+  <script src="app.js?v=278"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {

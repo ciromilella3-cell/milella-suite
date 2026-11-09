@@ -1782,6 +1782,48 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     console.log('Terapia di Ciro Milella ripristinata con successo (Entecavir Sandoz 0,5 mg).');
   }
 
+  // SINCRONIZZAZIONE VISITE & PIANI TERAPEUTICI GARANTITI (09/11/2026)
+  // 1. Ciro Milella: Visita Policlinico 22/03/2027 & Ecografia PO San Paolo 08/06/2027
+  if (ciroRec) {
+    ciroRec.visite = ciroRec.visite || [];
+    if (!ciroRec.visite.some(v => (v.motivo || '').toLowerCase().includes('infettiv') || (v.medico || '').toLowerCase().includes('saracino') || (v.medico || '').toLowerCase().includes('milella'))) {
+      ciroRec.visite.push({
+        id: 1793218169991,
+        data: '2027-03-22',
+        ora: '10:00',
+        medico: 'Clinica Malattie Infettive - Policlinico Bari (Prof.ssa Saracino / Dr. Michele Milella)',
+        motivo: 'Visita Infettivologica ed Epatologica di controllo periodico HBV (Ricetta NRE 160A24681622429 - Esenzione 016)',
+        fatto: false
+      });
+    }
+    if (!ciroRec.visite.some(v => (v.motivo || '').toLowerCase().includes('ecografia'))) {
+      ciroRec.visite.push({
+        id: 1793218169992,
+        data: '2027-06-08',
+        ora: '09:15',
+        medico: 'PO San Paolo Bari - U.O. Gastroenterologia (Piano 5° Est)',
+        motivo: 'Ecografia addome superiore/completo di controllo semestrale HBV (CUP Prenotazione 1588303 - NRE 160A24681691013)',
+        fatto: false
+      });
+    }
+  }
+
+  // 2. Rosa Annunziata Cavalcante: Visita Neurologica & Piano Terapeutico Parkinson Sinemet
+  const rosaRec = AppData.pazienti.find(p => p.id === 'paz_rosa' || (p.nome || '').toLowerCase().includes('rosa'));
+  if (rosaRec) {
+    rosaRec.visite = rosaRec.visite || [];
+    if (!rosaRec.visite.some(v => (v.motivo || '').toLowerCase().includes('neurolog') || (v.medico || '').toLowerCase().includes('neurolog'))) {
+      rosaRec.visite.push({
+        id: 1793218169993,
+        data: '2026-12-15',
+        ora: '11:00',
+        medico: 'Specialista Neurologo / ASP Territoriale Potenza',
+        motivo: 'Visita Neurologica di controllo, valutazione parkinsonismo & rinnovo piano terapeutico Sinemet',
+        fatto: false
+      });
+    }
+  }
+
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
 }
 
@@ -7615,10 +7657,13 @@ function renderVisite() {
 function toggleVisita(id) {
   const p = getActivePaziente();
   if (!p) return;
-  const v = p.visite.find(item => item.id === id);
+  const v = (p.visite || []).find(item => item.id === id);
   if (v) {
     v.fatto = !v.fatto;
     saveDb();
+    if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
+    if (typeof renderVisite === 'function') renderVisite();
+    if (typeof showToast === 'function') showToast(v.fatto ? 'Visita segnata come Eseguita! ✓' : 'Visita riaperta in programma ⏳');
   }
 }
 
@@ -7637,6 +7682,8 @@ async function eliminaVisita(id) {
     cestinoAggiungi('visita', (v.medico || 'Visita') + (v.motivo ? ' - ' + v.motivo : ''), (v.data ? new Date(v.data).toLocaleDateString('it-IT') : '') + (v.ora ? ' ore ' + v.ora : ''), v, p);
     p.visite = p.visite.filter(x => x.id !== id);
     saveDb();
+    if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
+    if (typeof renderVisite === 'function') renderVisite();
     showToast('Appuntamento spostato nel Cestino. 📅');
   }
 }
@@ -7669,6 +7716,13 @@ function openModal(id) {
         }
         badge.innerHTML = `👤 Assistito: <b>${p.nome}</b>`;
         badge.title = `Stai operando sulla cartella clinica di ${p.nome}`;
+      }
+    }
+
+    if (id === 'modal-visita') {
+      const visDateEl = document.getElementById('vis-data');
+      if (visDateEl && !visDateEl.value) {
+        visDateEl.value = new Date().toISOString().slice(0, 10);
       }
     }
 
@@ -11851,6 +11905,14 @@ function salvaNuovoFarmaco(e) {
   showToast('Farmaco "' + nome + '" inserito con successo!');
 }
 
+function impostaPresetVisita(medico, motivo) {
+  var medEl = document.getElementById('vis-medico');
+  var motEl = document.getElementById('vis-motivo');
+  if (medEl) medEl.value = medico;
+  if (motEl) motEl.value = motivo;
+}
+window.impostaPresetVisita = impostaPresetVisita;
+
 function salvaNuovaVisita(e) {
   e.preventDefault();
   const p = getActivePaziente();
@@ -11870,6 +11932,11 @@ function salvaNuovaVisita(e) {
   if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
   if (typeof renderTerapie === 'function') renderTerapie();
   if (typeof renderVisite === 'function') renderVisite();
+  // Se la scheda clinica mobile è aperta, aggiorna la lista visite all'istante
+  var modalScm = document.getElementById('modal-scheda-clinica-mobile');
+  if (modalScm && modalScm.style.display === 'flex' && typeof apriModalSchedaClinicaMobile === 'function') {
+    apriModalSchedaClinicaMobile(p.id);
+  }
   if (typeof showToast === 'function') {
     showToast('📅 Visita per ' + (p.nome || 'assistito') + ' salvata con successo!');
   }
@@ -25816,6 +25883,9 @@ function renderMobileNativeView(terapie, p) {
       '<button type="button" onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
       '<span>📋 Scheda Clinica ➜</span>' +
       '</button>' +
+      '<button type="button" onclick="event.stopPropagation(); openModal(\'modal-visita\')" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(5,150,105,0.15);">' +
+      '<span>📅 + Visita</span>' +
+      '</button>' +
       '<button type="button" onclick="event.stopPropagation(); apriGuidaLettoManovella()" style="background:#fefce8; color:#854d0e; border:1px solid #fde047; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(133,77,14,0.1);">' +
       '<span>📘 Guida Letto</span>' +
       '</button>' +
@@ -25832,14 +25902,40 @@ function renderMobileNativeView(terapie, p) {
       '</div>' +
       '</div>' +
       '<!-- Pulsanti Vocali Mobili Simmetrici 50% / 50% (Zero overflow!) -->' +
-      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 0 12px 0;">' +
+      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 0 10px 0;">' +
       '<button type="button" onclick="apriModalConsegnaVocale()" style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; font-weight:800; font-size:12px; padding:9px 10px; border-radius:12px; border:none; box-shadow:0 2px 6px rgba(79,70,229,0.25); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">' +
       '<span style="font-size:15px;">🗣️</span> <span>Consegna OSS</span>' +
       '</button>' +
       '<button type="button" onclick="avviaBriefingVocaleAssistitoDemo()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12px; padding:9px 10px; border-radius:12px; border:none; box-shadow:0 2px 6px rgba(2,132,199,0.25); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">' +
       '<span style="font-size:15px;">🎙️</span> <span>Briefing Vocale</span>' +
       '</button>' +
-      '</div>';
+      '</div>' +
+      (() => {
+        var visiteInProgramma = (p.visite || []).filter(function (v) { return !v.fatto; });
+        if (visiteInProgramma.length === 0) return '';
+        visiteInProgramma.sort(function (a, b) { return new Date(a.data) - new Date(b.data); });
+        var pv = visiteInProgramma[0];
+        var dFmt = (pv.data && pv.data.length >= 10) ? (pv.data.slice(8, 10) + '/' + pv.data.slice(5, 7) + '/' + pv.data.slice(0, 4)) : pv.data;
+        return '<div style="background:#ffffff; border:1.5px solid #059669; border-radius:14px; padding:10px 12px; margin:0 0 12px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 2px 8px rgba(5,150,105,0.08);">' +
+          '<div onclick="apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="flex:1; min-width:0; cursor:pointer;" title="Tocca per entrare nella Cartella Clinica e vedere tutti gli appuntamenti">' +
+          '<div style="font-size:11px; font-weight:800; color:#059669; text-transform:uppercase; display:flex; align-items:center; gap:4px;">' +
+          '<span>📅 Prossimo Appuntamento Specialistico</span>' +
+          (visiteInProgramma.length > 1 ? '<span style="background:#dcfce7; color:#15803d; padding:1px 6px; border-radius:10px; font-size:10px; font-weight:800;">+' + (visiteInProgramma.length - 1) + ' altri</span>' : '') +
+          '</div>' +
+          '<div style="font-size:13.5px; font-weight:900; color:#0f172a; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+          dFmt + (pv.ora ? ' ore ' + pv.ora : '') + ' &bull; <b>' + (pv.medico || 'Specialista') + '</b>' +
+          '</div>' +
+          '<div style="font-size:11.5px; color:#475569; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+          (pv.motivo || 'Visita specialistica / Controllo periodico') +
+          '</div>' +
+          '</div>' +
+          '<div style="display:flex; flex-direction:column; gap:4px; flex-shrink:0;">' +
+          '<button type="button" onclick="openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:8px; padding:6px 10px; font-size:11px; font-weight:800; cursor:pointer;">' +
+          '+ Visita' +
+          '</button>' +
+          '</div>' +
+          '</div>';
+      })();
   }
 
   // 2. Calcola la Hero Action Card: "COSA DEVI FARE ADESSO"
@@ -26265,6 +26361,56 @@ function apriModalSchedaClinicaMobile(pazId) {
           <span style="background:#e0f2fe; color:#0369a1; font-size:10.5px; font-weight:800; padding:3px 7px; border-radius:6px; flex-shrink:0;">Attiva</span>
         </div>
       `).join('');
+    }
+  }
+
+  // Appuntamenti & Visite Specialistiche Mobile
+  const visiteListEl = document.getElementById('scm-visite-list');
+  if (visiteListEl) {
+    const vList = Array.isArray(p.visite) ? p.visite : [];
+    if (vList.length === 0) {
+      visiteListEl.innerHTML = `
+        <div style="background:#f8fafc; border:1.5px dashed #cbd5e1; border-radius:12px; padding:14px; text-align:center;">
+          <div style="font-size:12.5px; color:#64748b; font-weight:700;">Nessun appuntamento o visita specialistica in programma</div>
+          <button type="button" onclick="openModal('modal-visita')" style="margin-top:8px; background:#059669; color:#fff; border:none; padding:7px 14px; border-radius:8px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+            <span>➕</span> <span>Pianifica Visita Specialistica</span>
+          </button>
+        </div>
+      `;
+    } else {
+      const vSorted = [...vList].sort((a, b) => new Date(a.data) - new Date(b.data));
+      visiteListEl.innerHTML = vSorted.map(v => {
+        const dStr = (v.data && v.data.length >= 10) ? (v.data.slice(8, 10) + '/' + v.data.slice(5, 7) + '/' + v.data.slice(0, 4)) : v.data;
+        const isFatto = !!v.fatto;
+        return `
+          <div style="background:${isFatto ? '#f0fdf4' : '#ffffff'}; border:1.5px solid ${isFatto ? '#86efac' : '#e2e8f0'}; border-radius:12px; padding:10px 12px; margin-bottom:8px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:13px; font-weight:900; color:#0f172a; line-height:1.25;">
+                  📅 ${dStr} ${v.ora ? `<span style="color:#0284c7; font-weight:800;">ore ${v.ora}</span>` : ''}
+                </div>
+                <div style="font-size:12px; font-weight:800; color:#0369a1; margin-top:2px;">
+                  🩺 ${v.medico || 'Specialista'}
+                </div>
+                <div style="font-size:11.5px; color:#475569; margin-top:3px; line-height:1.35;">
+                  ${v.motivo || 'Visita periodica / Controllo specialistico'}
+                </div>
+              </div>
+              <span style="background:${isFatto ? '#dcfce7' : '#fef3c7'}; color:${isFatto ? '#15803d' : '#b45309'}; border:1px solid ${isFatto ? '#86efac' : '#fde047'}; font-size:10px; font-weight:800; padding:2px 7px; border-radius:6px; flex-shrink:0;">
+                ${isFatto ? '✓ Eseguita' : '⏳ In programma'}
+              </span>
+            </div>
+            <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0;">
+              <button type="button" onclick="event.stopPropagation(); toggleVisita(${v.id}); apriModalSchedaClinicaMobile('${p.id}');" style="background:${isFatto ? '#f1f5f9' : '#059669'}; color:${isFatto ? '#475569' : '#ffffff'}; border:none; border-radius:6px; padding:4px 10px; font-size:11px; font-weight:800; cursor:pointer;">
+                ${isFatto ? '↩️ Riapri' : '✓ Segna come Fatta'}
+              </button>
+              <button type="button" onclick="event.stopPropagation(); eliminaVisita(${v.id}); apriModalSchedaClinicaMobile('${p.id}');" style="background:#fee2e2; color:#b91c1c; border:none; border-radius:6px; padding:4px 8px; font-size:11px; font-weight:800; cursor:pointer;" title="Elimina appuntamento">
+                🗑️
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
   }
 

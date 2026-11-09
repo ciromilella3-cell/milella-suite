@@ -1,12 +1,12 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v277-prestampato-responsive-smartphone';
+const CACHE_NAME = 'careassist-pro-v278-integrazione-visite-e-specialistica';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './turni.html',
   './style.css',
-  './style.css?v=116',
-  './app.js?v=116',
+  './style.css?v=117',
+  './app.js?v=117',
   './app.js',
   './turnario_admin.js',
   './turnario_admin.js?v=2',
