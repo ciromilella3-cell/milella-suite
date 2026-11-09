@@ -19280,11 +19280,9 @@ function aggiornaVisibilitaTabEpatologia() {
     tabBtn.style.color = '';
     tabBtn.style.border = '';
     tabBtn.style.fontWeight = '';
-    // Il pulsante Prestampato rimane SEMPRE visibile nella barra superiore con indicazione "(Ciro)"
+    // Il pulsante in evidenza scompare quando è selezionato un altro assistito!
     if (topPrestampatoBtn) {
-      topPrestampatoBtn.style.display = 'inline-flex';
-      topPrestampatoBtn.innerHTML = '<span style="font-size:16px;">📑</span> <span>Prestampato Infettivi (Ciro)</span>';
-      topPrestampatoBtn.style.background = 'linear-gradient(135deg, #0369a1 0%, #075985 100%)';
+      topPrestampatoBtn.style.display = 'none';
     }
 
     if (pId === 'paz_aldo' || pNome.includes('aldo')) {
