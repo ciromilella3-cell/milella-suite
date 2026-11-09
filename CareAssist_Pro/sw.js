@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v279-titoli-modal-visibili';
+const CACHE_NAME = 'careassist-pro-v280-laboratorio-scotti-header-visibile';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

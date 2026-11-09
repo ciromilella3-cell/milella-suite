@@ -7698,7 +7698,7 @@ function openModal(id) {
 
     // Inietta o aggiorna in automatico l'indicazione chiara del paziente attivo
     const p = getActivePaziente();
-    if (p && id !== 'modal-nuovo-paziente' && id !== 'modal-report-whatsapp' && id !== 'modal-scheda-118' && id !== 'modal-modifica-farmaco') {
+    if (p && id !== 'modal-nuovo-paziente' && id !== 'modal-report-whatsapp' && id !== 'modal-scheda-118' && id !== 'modal-modifica-farmaco' && id !== 'modal-laboratorio-scotti' && id !== 'modal-archivio-storico-controlli') {
       const header = el.querySelector('.modal-header');
       if (header) {
         // Cerca o crea il badge del paziente all'interno di .modal-title (layout a 2 righe pulito, zero sovrapposizioni)

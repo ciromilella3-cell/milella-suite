@@ -1879,7 +1879,7 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
   overflow: hidden;
 }
 
-.modal-header {
+.modal-header:not(.header-laboratorio-scotti):not(.header-archivio-storico):not(.header-scorta-rapida):not(.header-farmaco-pro):not(.header-118-pro):not(.header-wa-pro):not(.header-consegna-pro):not(.header-sos-pro):not(.header-interazioni-pro):not(.modal-anagrafica-pro) {
   background: #f8fafc;
   padding: 16px 24px;
   border-bottom: 1px solid var(--border);
@@ -3208,7 +3208,7 @@ textarea.form-control {
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
     background: #ffffff !important;
   }
-  .modal-header {
+  .modal-header:not(.header-laboratorio-scotti):not(.header-archivio-storico):not(.header-scorta-rapida):not(.header-farmaco-pro):not(.header-118-pro):not(.header-wa-pro):not(.header-consegna-pro):not(.header-sos-pro):not(.header-interazioni-pro):not(.modal-anagrafica-pro) {
     flex-shrink: 0 !important;
     padding: 12px 14px !important;
     display: flex !important;
@@ -9857,6 +9857,76 @@ main, .main-content, .dashboard-container {
 #modal-archivio-storico-controlli .modal-header .modal-close:hover {
   background: #ffffff !important;
   color: #312e81 !important;
+}
+
+/* ==========================================================================
+   HEADER MODALE LABORATORIO ANALISI SCOTTI (LEGGIBILITÀ TOTALE SU TUTTI I DISPOSITIVI)
+   ========================================================================== */
+#modal-laboratorio-scotti .modal-header,
+.header-laboratorio-scotti {
+  background: linear-gradient(135deg, #092e48 0%, #0c4a6e 50%, #0284c7 100%) !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid #38bdf8 !important;
+  padding: 14px 18px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  box-shadow: 0 4px 15px rgba(9, 46, 72, 0.35) !important;
+}
+
+#modal-laboratorio-scotti .modal-header h2,
+#modal-laboratorio-scotti .modal-header #scotti-modal-title,
+.header-laboratorio-scotti h2,
+.header-laboratorio-scotti #scotti-modal-title {
+  color: #ffffff !important;
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  margin: 2px 0 !important;
+  line-height: 1.25 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+}
+
+#modal-laboratorio-scotti .modal-header .scotti-header-sub,
+#modal-laboratorio-scotti .modal-header div[style*="bae6fd"],
+.header-laboratorio-scotti .scotti-header-sub {
+  color: #e0f2fe !important;
+  font-size: 11.5px !important;
+  line-height: 1.35 !important;
+}
+
+#modal-laboratorio-scotti .modal-header .scotti-header-sub b,
+.header-laboratorio-scotti .scotti-header-sub b {
+  color: #ffffff !important;
+}
+
+#modal-laboratorio-scotti .modal-header .btn-outline,
+#modal-laboratorio-scotti .modal-header button,
+#modal-laboratorio-scotti .modal-header .modal-close,
+.header-laboratorio-scotti .modal-close {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.7) !important;
+  border-radius: 50% !important;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 18px !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
+  transition: all 0.15s ease !important;
+}
+
+#modal-laboratorio-scotti .modal-header .btn-outline:hover,
+#modal-laboratorio-scotti .modal-header button:hover,
+.header-laboratorio-scotti .modal-close:hover {
+  background: #ffffff !important;
+  color: #0c4a6e !important;
 }
 
 /* STAMPA PULITA A4 DEL MODULO PRESTAMPATO (ISOLAMENTO TOTALE) */

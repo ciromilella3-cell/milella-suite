@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=279">
+  <link rel="stylesheet" href="style.css?v=280">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -7385,7 +7385,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=279"></script>
+  <script src="app.js?v=280"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7728,35 +7728,35 @@
     <div class="modal-card"
       style="max-width: 920px; width: 95%; max-height: 94vh; display: flex; flex-direction: column; background: #ffffff;">
 
-      <!-- HEADER LABORATORIO ELEGANTE -->
-      <div class="modal-header"
-        style="background: linear-gradient(135deg, #092e48 0%, #0b3d60 100%); color: #ffffff; padding: 18px 24px; border-bottom: 2px solid #0284c7; display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; align-items: center; gap: 14px;">
+      <!-- HEADER LABORATORIO ELEGANTE (LEGGIBILITÀ TOTALE SU TUTTI I DISPOSITIVI) -->
+      <div class="modal-header header-laboratorio-scotti"
+        style="background: linear-gradient(135deg, #092e48 0%, #0c4a6e 50%, #0284c7 100%) !important; color: #ffffff !important; padding: 14px 18px !important; border-bottom: 2px solid #38bdf8 !important; display: flex !important; justify-content: space-between !important; align-items: flex-start !important; gap: 12px !important;">
+        <div style="display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 0;">
           <div
-            style="width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,0.12); border: 1.5px solid #38bdf8; display: flex; align-items: center; justify-content: center; font-size: 26px;">
+            style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: rgba(255,255,255,0.15); border: 1.5px solid #38bdf8; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">
             🔬
           </div>
-          <div>
-            <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="flex: 1; min-width: 0;">
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px;">
               <span
-                style="background: #38bdf8; color: #082f49; font-size: 10.5px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;">LABORATORIO
+                style="background: #38bdf8; color: #082f49; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">LABORATORIO
                 ANALISI CLINICHE CONVENZIONATO</span>
               <span
-                style="background: #f59e0b; color: #1e1b4b; font-size: 10.5px; font-weight: 900; padding: 2px 8px; border-radius: 6px;">REQUISITO
+                style="background: #f59e0b; color: #1e1b4b; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 6px; white-space: nowrap;">REQUISITO
                 ASL: PRIORITÀ [ P ]</span>
             </div>
             <h2 id="scotti-modal-title"
-              style="font-size: 20px; font-weight: 900; margin: 3px 0 1px; color: #ffffff; letter-spacing: -0.3px;">
+              style="font-size: 17px; font-weight: 900; margin: 2px 0; color: #ffffff !important; letter-spacing: -0.3px; line-height: 1.25; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">
               Laboratorio di Analisi Scotti srl &bull; Gestione & Prenotazione
             </h2>
-            <div style="font-size: 12px; color: #bae6fd;">
-              Assistito: <b>Ciro Milella</b> &bull; MMG: <b>Dott. Roberto Scarcia</b> &bull; Sede: <b
-                id="scotti-header-indirizzo">Via Giuseppe Maria Giovene 60, Bari</b>
+            <div class="scotti-header-sub" style="font-size: 11.5px; color: #e0f2fe !important; line-height: 1.35; margin-top: 2px;">
+              Assistito: <b style="color: #ffffff !important;">Ciro Milella</b> &bull; MMG: <b style="color: #ffffff !important;">Dott. Roberto Scarcia</b> &bull; Sede: <b
+                id="scotti-header-indirizzo" style="color: #ffffff !important;">Via Giuseppe Maria Giovene 60, Bari</b>
             </div>
           </div>
         </div>
-        <button class="btn btn-outline" onclick="closeModal('modal-laboratorio-scotti')"
-          style="color: #ffffff; border-color: rgba(255,255,255,0.4);">✕</button>
+        <button class="btn btn-outline modal-close" onclick="closeModal('modal-laboratorio-scotti')" aria-label="Chiudi finestra"
+          style="color: #ffffff !important; background: rgba(255,255,255,0.22) !important; border: 1.5px solid rgba(255,255,255,0.7) !important; border-radius: 50% !important; width: 34px !important; height: 34px !important; min-width: 34px !important; min-height: 34px !important; display: flex !important; align-items: center !important; justify-content: center !important; font-size: 18px !important; flex-shrink: 0 !important; cursor: pointer !important; padding: 0 !important;">✕</button>
       </div>
 
       <!-- BODY MODALE -->
