@@ -7948,8 +7948,8 @@ const DB_FARMACI_COMUNI = [
   { nome: 'Averelix 75 mg', principio: 'Clopidogrel', dosaggio: '75 mg (1 cpr rivestita)', modo: 'A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare)', cpr: 28, ora: '13:00', fascia: 'Pranzo', indicazione: 'Antiaggregante piastrinico per la prevenzione secondaria di ictus, infarto e trombosi.' },
   { nome: 'Arcoxia 60 mg', principio: 'Etoricoxib', dosaggio: '60 mg (1 cpr)', modo: 'A stomaco pieno una volta al giorno per dolori artrosici', cpr: 20, ora: '13:30', fascia: 'Pranzo', indicazione: 'Antinfiammatorio selettivo COX-2 per osteoartrosi e dolore cronico articolare.' },
   { nome: 'Arcoxia 90 mg', principio: 'Etoricoxib', dosaggio: '90 mg (1 cpr)', modo: 'A stomaco pieno una volta al giorno per riacutizzazioni dolorose', cpr: 20, ora: '13:30', fascia: 'Pranzo', indicazione: 'Antinfiammatorio selettivo COX-2 per artrite, spondilite e osteoartrosi severa.' },
-  { nome: 'Fedivelle 25.000 UI', principio: 'Colecalciferolo (Vitamina D3)', dosaggio: '25.000 UI (1 capsula molle)', modo: 'Dose periodica (solitamente mensile o settimanale) durante il pasto', cpr: 4, ora: '13:00', fascia: 'Pranzo', indicazione: 'Trattamento e profilassi dell\'ipovitaminosi D e osteoporosi senile.' },
-  { nome: 'Fedivelle 20.000 UI', principio: 'Colecalciferolo (Vitamina D3)', dosaggio: '20.000 UI (1 capsula molle)', modo: 'Dose periodica a pranzo con acqua', cpr: 4, ora: '13:00', fascia: 'Pranzo', indicazione: 'Integrazione di colecalciferolo per la salute ossea.' },
+  { nome: 'Fedivelle 25.000 UI', principio: 'Colecalciferolo (Vitamina D3)', dosaggio: '25.000 UI (1 capsula molle)', modo: 'Dose periodica (solitamente mensile o settimanale) durante il pasto', cpr: 4, ora: '13:00', fascia: 'Pranzo', indicazione: 'Trattamento e profilassi dell\'ipovitaminosi D e osteoporosi senile.', cadenzaTipo: 'mensile' },
+  { nome: 'Fedivelle 20.000 UI', principio: 'Colecalciferolo (Vitamina D3)', dosaggio: '20.000 UI (1 capsula molle)', modo: 'Dose periodica settimanale a pranzo con acqua', cpr: 4, ora: '13:00', fascia: 'Pranzo', indicazione: 'Integrazione di colecalciferolo per la salute ossea.', cadenzaTipo: 'settimanale' },
   { nome: 'Sivastin 20 mg', principio: 'Simvastatina', dosaggio: '20 mg (1 cpr)', modo: 'La sera dopo cena con acqua', cpr: 28, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina ipocolesterolemizzante per il controllo della dislipidemia.' },
   { nome: 'Diamicron 60 mg RM', principio: 'Gliclazide', dosaggio: '60 mg (1 cpr rilascio modificato)', modo: 'A colazione, deglutire intera senza masticare', cpr: 30, ora: '08:00', fascia: 'Mattina (Colazione)', indicazione: 'Sulfanilurea a rilascio modificato per il diabete tipo 2.' },
   { nome: 'Torvast 20 mg', principio: 'Atorvastatina', dosaggio: '20 mg (1 cpr)', modo: 'La sera dopo cena (Statina / Controllo Colesterolo e placche aterosclerotiche)', cpr: 30, ora: '21:00', fascia: 'Sera (Cena)', indicazione: 'Statina ipolipemizzante: abbassa il colesterolo LDL e stabilizza le placche aterosclerotiche.' },
@@ -7965,7 +7965,7 @@ const DB_FARMACI_COMUNI = [
   { nome: 'Eutirox 50 mcg', principio: 'Levotiroxina sodica', dosaggio: '50 mcg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima della colazione', cpr: 50, ora: '07:00', fascia: 'Mattina (Digiuno)', indicazione: 'Ormone tiroideo sostitutivo per il trattamento dell\'ipotiroidismo.' },
   { nome: 'Eutirox 75 mcg', principio: 'Levotiroxina sodica', dosaggio: '75 mcg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima della colazione', cpr: 50, ora: '07:00', fascia: 'Mattina (Digiuno)', indicazione: 'Terapia ormonale sostitutiva della funzionalità tiroidea.' },
   { nome: 'Eutirox 100 mcg', principio: 'Levotiroxina sodica', dosaggio: '100 mcg (1 cpr)', modo: 'Al mattino a digiuno 30 min prima della colazione', cpr: 50, ora: '07:00', fascia: 'Mattina (Digiuno)', indicazione: 'Ormone tiroideo sintetico per ipotiroidismo e soppressione TSH.' },
-  { nome: 'Dibase 25.000 UI', principio: 'Colecalciferolo (Vitamina D3)', dosaggio: '25.000 UI (1 flaconcino)', modo: 'Durante il pasto (1 o 2 volte al mese secondo prescrizione)', cpr: 2, ora: '13:00', fascia: 'Pranzo', indicazione: 'Prevenzione e trattamento della carenza di Vitamina D, osteoporosi e salute ossea.' },
+  { nome: 'Dibase 25.000 UI', principio: 'Colecalciferolo (Vitamina D3)', dosaggio: '25.000 UI (1 flaconcino)', modo: 'Durante il pasto (il 15 e 30 del mese o mensile secondo prescrizione)', cpr: 2, ora: '13:00', fascia: 'Pranzo', indicazione: 'Prevenzione e trattamento della carenza di Vitamina D, osteoporosi e salute ossea.', cadenzaTipo: 'quindicinale_15_30' },
   { nome: 'Folina 5 mg', principio: 'Acido folico', dosaggio: '5 mg (1 cps)', modo: 'Al mattino prima dei pasti', cpr: 20, ora: '08:00', fascia: 'Mattina (Digiuno)', indicazione: 'Vitamina B9 essenziale per la sintesi dei globuli rossi e il trattamento delle anemie megaloblastiche.' },
   { nome: 'Sideral Forte', principio: 'Ferro Sucrosomiale + Vitamina C', dosaggio: '1 capsula al giorno', modo: 'In qualsiasi momento della giornata con acqua', cpr: 20, ora: '13:00', fascia: 'Pranzo', indicazione: 'Integrazione ad alta tollerabilità gastrica per carenza di ferro e sideropenia.' },
 
@@ -10465,6 +10465,30 @@ function applicaFarmacoDaScanner(nomeEsatto, targetModal, datiArricchiti) {
     if (elScatola && cprFinali) elScatola.value = cprFinali;
     if (elScorta && cprFinali) elScorta.value = cprFinali;
     if (elHeaderNome) elHeaderNome.textContent = nomeFinale;
+
+    // Rileva e imposta automaticamente la cadenza periodica (settimanale, mensile, ecc.)
+    const elCad = document.getElementById('edit-farm-cadenza');
+    if (elCad) {
+      var cadAuto = f.cadenzaTipo;
+      var strModo = ((f.modo || '') + ' ' + (f.dosaggio || '') + ' ' + (f.nome || '') + ' ' + (f.principio || '')).toLowerCase();
+      if (!cadAuto) {
+        if (strModo.includes('settimanale') || strModo.includes('20.000') || strModo.includes('20000') || strModo.includes('alendronat') || strModo.includes('fosamax') || strModo.includes('actonel')) {
+          cadAuto = 'settimanale';
+        } else if (strModo.includes('15') && (strModo.includes('dibase') || strModo.includes('quindicinale'))) {
+          cadAuto = 'quindicinale_15_30';
+        } else if (strModo.includes('mensile') || strModo.includes('25.000') || strModo.includes('50.000')) {
+          cadAuto = 'mensile';
+        } else if (strModo.includes('bisogno') || (f.fascia && f.fascia.includes('Bisogno'))) {
+          cadAuto = 'bisogno';
+        }
+      }
+      if (cadAuto) {
+        elCad.value = cadAuto;
+      }
+      if (typeof gestisciCambioCadenzaFarmaco === 'function') {
+        gestisciCambioCadenzaFarmaco();
+      }
+    }
 
     // Aggiorna anche l'orario e la fascia della 1ª somministrazione nella scheda posologica
     if (f.ora || f.fascia) {
