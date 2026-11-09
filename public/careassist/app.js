@@ -18728,20 +18728,22 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
       if (es.rigaVuota) {
         if (!es.nome || es.nome.trim().length === 0) {
           // Riga vuota con puntini (esattamente come nel prestampato!)
-          return '<div class="item-prestampato riga-vuota" onclick="compilaRigaVuotaModulo(\'' + es.id + '\')" style="display:flex; align-items:center; gap:6px; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; color:#94a3b8; transition:all 0.15s ease;" title="Riga libera del prestampato: clicca per scrivere">' +
-            '<div style="width:14px; height:14px; border:1.5px solid #94a3b8; border-radius:3px; background:#fff; flex-shrink:0;"></div>' +
-            '<span style="letter-spacing:1px; font-family:monospace; font-size:10px; color:#cbd5e1; flex:1; overflow:hidden; white-space:nowrap;">...................................................</span>' +
-            '<span style="font-size:9.5px; color:#0284c7; font-weight:700; flex-shrink:0; opacity:0.8;">✏️ Scrivi</span>' +
+          return '<div class="item-prestampato riga-vuota item-prestampato-vuoto" onclick="compilaRigaVuotaModulo(\'' + es.id + '\')" style="display:flex; align-items:center; gap:6px; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; color:#94a3b8; transition:all 0.15s ease;" title="Riga libera del prestampato: clicca per scrivere">' +
+            '<div class="item-prestampato-inner" style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
+            '<div class="item-prestampato-cb-fake" style="width:14px; height:14px; border:1.5px solid #94a3b8; border-radius:3px; background:#fff; flex-shrink:0;"></div>' +
+            '<span class="item-prestampato-nome item-prestampato-puntini" style="letter-spacing:1px; font-family:monospace; font-size:10px; color:#cbd5e1; flex:1; overflow:hidden; white-space:nowrap;">...................................................</span>' +
+            '</div>' +
+            '<span class="item-prestampato-action-btn" style="font-size:9.5px; color:#0284c7; font-weight:700; flex-shrink:0; opacity:0.8;">✏️ Scrivi</span>' +
             '</div>';
         } else {
           // Riga compilata con testo manoscritto (es. PRELIEVO 96101)
           var badgeCodice = es.codicePrestazione ? (' <span style="background:#0284c7; color:#fff; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px;">' + es.codicePrestazione + '</span>') : '';
-          return '<div class="item-prestampato" onclick="compilaRigaVuotaModulo(\'' + es.id + '\')" style="display:flex; align-items:center; justify-content:space-between; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; background:#f0fdf4; border:1px solid #86efac;" title="Scritto a mano su riga libera - Clicca per modificare o cancellare">' +
-            '<div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
-            '<input type="checkbox" checked onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')" style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;">' +
-            '<span style="font-weight:900; color:#0369a1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">✍️ ' + es.nome + badgeCodice + '</span>' +
+          return '<div class="item-prestampato item-prestampato-custom" onclick="compilaRigaVuotaModulo(\'' + es.id + '\')" style="display:flex; align-items:center; justify-content:space-between; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; background:#f0fdf4; border:1px solid #86efac;" title="Scritto a mano su riga libera - Clicca per modificare o cancellare">' +
+            '<div class="item-prestampato-inner" style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
+            '<input type="checkbox" checked class="item-prestampato-cb" onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')" style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;">' +
+            '<span class="item-prestampato-nome" style="font-weight:900; color:#0369a1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">✍️ ' + es.nome + badgeCodice + '</span>' +
             '</div>' +
-            '<span style="font-size:9px; color:#64748b; font-weight:700; flex-shrink:0;">✏️ Modifica</span>' +
+            '<span class="item-prestampato-action-btn" style="font-size:9px; color:#64748b; font-weight:700; flex-shrink:0;">✏️ Modifica</span>' +
             '</div>';
         }
       }
@@ -18794,30 +18796,31 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
         }
       }
 
-      return '<div class="item-prestampato" onclick="toggleSpuntaEsameModulo(\'' + es.id + '\')" style="display:flex; align-items:center; justify-content:space-between; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; ' + bgStyle + ' ' + borderStyle + ' transition:all 0.15s ease;" title="' + (isSpuntato ? 'Contrassegnato sul foglio - Clicca per deselezionare' : 'Non contrassegnato - Clicca per spuntare') + '">' +
-        '<div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
-        '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;" onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')">' +
-        '<span style="color:' + (isSpuntato ? '#0f172a' : '#475569') + '; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + es.nome + '</span>' +
+      var extraItemClass = isPennarello ? ' item-pennarello' : (isSpuntato ? ' item-spuntato' : '');
+      return '<div class="item-prestampato' + extraItemClass + '" onclick="toggleSpuntaEsameModulo(\'' + es.id + '\')" style="display:flex; align-items:center; justify-content:space-between; padding:3px 6px; border-radius:5px; margin-bottom:2px; font-size:12px; cursor:pointer; ' + bgStyle + ' ' + borderStyle + ' transition:all 0.15s ease;" title="' + (isSpuntato ? 'Contrassegnato sul foglio - Clicca per deselezionare' : 'Non contrassegnato - Clicca per spuntare') + '">' +
+        '<div class="item-prestampato-inner" style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
+        '<input type="checkbox" ' + (isSpuntato ? 'checked' : '') + ' class="item-prestampato-cb" style="width:14px; height:14px; accent-color:#0284c7; cursor:pointer; flex-shrink:0;" onclick="event.stopPropagation(); toggleSpuntaEsameModulo(\'' + es.id + '\')">' +
+        '<span class="item-prestampato-nome" style="color:' + (isSpuntato ? '#0f172a' : '#475569') + '; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + es.nome + '</span>' +
         puntiniHtml +
         badgeCod +
         pugliaSaluteBtn +
         '</div>' +
-        '<div style="flex-shrink:0; margin-left:6px;">' + miniStato + '</div>' +
+        '<div class="item-prestampato-stato" style="flex-shrink:0; margin-left:6px;">' + miniStato + '</div>' +
         '</div>';
     }).join('');
 
-    return '<div style="margin-bottom:14px;">' +
-      '<div style="font-size:11.5px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.4px; border-bottom:2px solid #0284c7; padding-bottom:3px; margin-bottom:6px; display:flex; align-items:center; gap:5px;">' +
+    return '<div class="sezione-prestampato" style="margin-bottom:14px;">' +
+      '<div class="sezione-prestampato-header" style="font-size:11.5px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.4px; border-bottom:2px solid #0284c7; padding-bottom:3px; margin-bottom:6px; display:flex; align-items:center; gap:5px;">' +
       '<span>' + icona + '</span> <span>' + titolo + '</span>' +
       '</div>' +
-      '<div style="display:flex; flex-direction:column;">' +
+      '<div class="sezione-prestampato-items" style="display:flex; flex-direction:column;">' +
       itemsHtml +
       '</div>' +
       '</div>';
   }
 
   // Barra di comando con FILTRO A TENDINA + LINK DIRETTO PUGLIA SALUTE CUP ONLINE
-  var toolbarToggle = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 14px; background:#f8fafc; border-radius:10px; margin-bottom:14px; border:1.5px solid #cbd5e1; box-shadow:0 2px 6px rgba(0,0,0,0.03);">' +
+  var toolbarToggle = '<div class="prestampato-toolbar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 14px; background:#f8fafc; border-radius:10px; margin-bottom:14px; border:1.5px solid #cbd5e1; box-shadow:0 2px 6px rgba(0,0,0,0.03);">' +
     '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
     '<div style="display:flex; align-items:center; gap:6px;">' +
     '<span style="font-size:12px; font-weight:900; color:#0f172a;">🔽 Filtro Rapido:</span>' +
@@ -18853,27 +18856,27 @@ function buildPrestampatoColonneHtml(esami, esamiSpuntati) {
     '</div>' +
     '</div>';
 
-  return toolbarToggle + '<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; background:#ffffff; border-radius:12px; padding:4px;">' +
+  return toolbarToggle + '<div class="prestampato-4colonne-grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; background:#ffffff; border-radius:12px; padding:4px;">' +
     // COLONNA 1
-    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
+    '<div class="colonna-prestampato colonna-1" style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
     renderSezione('ESAMI GENERALI', col1_generali, '🩸') +
     renderSezione('BATTERIOLOGIA E PARASS.', col1_batterio, '🧫') +
     '</div>' +
 
     // COLONNA 2
-    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
+    '<div class="colonna-prestampato colonna-2" style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
     renderSezione('FEGATO', col2_fegato, '🧬') +
     '</div>' +
 
     // COLONNA 3
-    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
+    '<div class="colonna-prestampato colonna-3" style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
     renderSezione('ESAMI RADIOLOGICI', col3_radiologici, '☢️') +
     renderSezione('ESAMI STRUMENTALI', col3_strumentali, '📸') +
     renderSezione('ALTRI', col3_altri, '📑') +
     '</div>' +
 
     // COLONNA 4
-    '<div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
+    '<div class="colonna-prestampato colonna-4" style="background:#fafafa; border:1px solid #e2e8f0; border-radius:10px; padding:10px 8px;">' +
     renderSezione('ESAMI IMMUNOLOGICI', col4_immunologici, '🛡️') +
     renderSezione('SIEROLOGIA', col4_sierologia, '🧪') +
     '</div>' +
@@ -20242,7 +20245,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
         <div class="card" id="sezione-modulo-prestampato-card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:2px solid #0284c7; border-radius:16px; background:#ffffff; width:100%; margin-top:20px;">
         
         <!-- HEADER DELLA SCHEDA CON SELETTORE VISTA -->
-        <div class="card-header" style="background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-bottom:1.5px solid #cbd5e1; border-radius:16px 16px 0 0; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div class="card-header prestampato-card-header" style="background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-bottom:1.5px solid #cbd5e1; border-radius:16px 16px 0 0; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
             <div style="font-size:16px; font-weight:900; color:#0f172a; display:flex; align-items:center; gap:8px;">
               <span>📑</span> Modulo Prestampato Ufficiale Policlinico di Bari
@@ -20251,10 +20254,10 @@ function renderEpatologiaInfettiviCiro(container, p) {
           </div>
           <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
             <button type="button" class="btn btn-sm" onclick="impostaTipoVistaModulo('colonne')" style="font-size:11.5px; font-weight:800; border-radius:8px; padding:6px 12px; cursor:pointer; background:${_vistaModuloTipo === 'colonne' ? '#0284c7' : '#ffffff'}; color:${_vistaModuloTipo === 'colonne' ? '#ffffff' : '#334155'}; border:1.5px solid ${_vistaModuloTipo === 'colonne' ? '#0284c7' : '#cbd5e1'};">
-              📄 Vista a 4 Colonne (Prestampato)
+              📄 Vista Colonne (Foglio)
             </button>
             <button type="button" class="btn btn-sm" onclick="impostaTipoVistaModulo('tabella')" style="font-size:11.5px; font-weight:800; border-radius:8px; padding:6px 12px; cursor:pointer; background:${_vistaModuloTipo === 'tabella' ? '#0284c7' : '#ffffff'}; color:${_vistaModuloTipo === 'tabella' ? '#ffffff' : '#334155'}; border:1.5px solid ${_vistaModuloTipo === 'tabella' ? '#0284c7' : '#cbd5e1'};">
-              📋 Vista Tabella Dettagli
+              📋 Vista Tabella
             </button>
             <button type="button" class="btn btn-sm" onclick="aggiungiNuovoEsamePersonalizzato()" style="font-size:11.5px; font-weight:800; border-radius:8px; padding:6px 12px; cursor:pointer; background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; display:inline-flex; align-items:center; gap:4px;">
               ➕ Aggiungi Esame
@@ -20266,7 +20269,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
         </div>
 
         <!-- BANNER GUIDA PENNARELLO POLICLINICO -->
-        <div style="background:#f0f9ff; border-bottom:1px solid #bae6fd; padding:12px 20px; display:flex; align-items:center; gap:12px;">
+        <div class="prestampato-guida-banner" style="background:#f0f9ff; border-bottom:1px solid #bae6fd; padding:12px 20px; display:flex; align-items:center; gap:12px;">
           <div style="font-size:24px;">🖊️</div>
           <div style="font-size:12px; color:#0369a1; line-height:1.45;">
             <b>Legenda Prescrittiva dal Prestampato dell\'Ambulatorio Infettivi:</b><br>
@@ -20276,7 +20279,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
         </div>
 
         <!-- BARRA FILTRI RAPIDI & RICERCA NEL MODULO -->
-        <div style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div class="prestampato-filtri-bar" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
             <span style="font-size:11.5px; font-weight:800; color:#475569; margin-right:4px;">Mostra:</span>
             <button type="button" class="btn btn-sm" onclick="impostaFiltroModuloEpatologia('tutti')" style="background:${_filtroModuloEpatologia === 'tutti' ? '#0284c7' : '#ffffff'}; color:${_filtroModuloEpatologia === 'tutti' ? '#ffffff' : '#334155'}; border:1.5px solid ${_filtroModuloEpatologia === 'tutti' ? '#0284c7' : '#cbd5e1'}; font-size:11px; font-weight:800; padding:5px 12px; border-radius:6px; cursor:pointer;">
@@ -20299,10 +20302,10 @@ function renderEpatologiaInfettiviCiro(container, p) {
 
         ${_vistaModuloTipo === 'colonne' ? `
           <!-- CORPO FEDELE AL PRESTAMPATO ORIGINALE (4 COLONNE) -->
-          <div style="padding:16px 18px; background:#f8fafc;">
+          <div class="prestampato-corpo-wrapper" style="padding:16px 18px; background:#f8fafc;">
             
             <!-- INTESTAZIONE CARTACEA ORIGINALE -->
-            <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div class="prestampato-intestazione-box" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
               <div>
                 <div style="font-size:10.5px; font-weight:800; color:#0369a1; text-transform:uppercase;">REGIONE PUGLIA &bull; POLICLINICO DI BARI CONSORZIALE</div>
                 <div style="font-size:13px; font-weight:900; color:#0f172a;">UNITÀ OPERATIVA MALATTIE INFETTIVE UNIVERSITARIA</div>
@@ -20318,7 +20321,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
             ${buildPrestampatoColonneHtml(esami, esamiSpuntati)}
 
             <!-- PIEDE DELLA SCHEDA CARTACEA CON PRESCRIZIONE VISITA, NRE E RECAPITI -->
-            <div style="margin-top:14px; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div class="prestampato-piede-box" style="margin-top:14px; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
               <div style="font-size:12px; color:#1e293b; line-height:1.5;">
                 📅 <b>Tornare a controllo il:</b> <span style="font-size:13.5px; font-weight:900; color:#0284c7; background:#e0f2fe; padding:2px 8px; border-radius:6px;">22-3-2027</span><br>
                 📜 <b>Visita Infettivologica di Controllo:</b> Ricetta NRE <b style="color:#059669; font-family:monospace; background:#ecfdf5; padding:2px 6px; border-radius:4px; border:1px solid #a7f3d0; cursor:pointer;" onclick="apriDocumentiPianoVisitaOriginali('ricetta_visita')" title="Clicca per aprire la ricetta elettronica originale">160A24681622429</b> (Dr. Michele Milella - Esenzione 016)<br>

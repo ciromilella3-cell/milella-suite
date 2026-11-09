@@ -9491,6 +9491,318 @@ main, .main-content, .dashboard-container {
   }
 }
 
+/* ==========================================================================
+   MODULO PRESTAMPATO MALATTIE INFETTIVE - RESPONSIVE PC / TABLET / SMARTPHONE
+   ========================================================================== */
+.prestampato-4colonne-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.colonna-prestampato {
+  background: #fafafa;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 8px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.item-prestampato {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 6px;
+  border-radius: 5px;
+  margin-bottom: 2px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.item-prestampato:hover {
+  filter: brightness(0.97);
+}
+
+.item-prestampato.item-spuntato {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+}
+
+.item-prestampato.item-pennarello {
+  background: linear-gradient(90deg, #cffafe 0%, #e0f2fe 100%) !important;
+  border: 1.5px solid #06b6d4 !important;
+  box-shadow: 0 1px 4px rgba(6, 182, 212, 0.25);
+}
+
+/* TABLET (769px - 1024px): 2 Colonne ampie */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .prestampato-4colonne-grid,
+  #tab-epatologia div[style*="repeat(4, 1fr)"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+}
+
+/* SMARTPHONE (<= 768px): DISPOSIZIONE 100% FLUIDA ADATTATA AL TOUCH E AL CELLULARE */
+@media (max-width: 768px) {
+  /* Griglia 4 colonne convertita in sequenza verticale full-width a 1 colonna */
+  .prestampato-4colonne-grid,
+  #tab-epatologia div[style*="repeat(4, 1fr)"],
+  #tab-epatologia .prestampato-4colonne-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .colonna-prestampato {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 12px 10px !important;
+    margin-bottom: 6px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  /* Intestazione categorie nel modulo (es. ESAMI GENERALI, FEGATO, ecc.) */
+  .sezione-prestampato-header {
+    font-size: 13px !important;
+    padding-bottom: 5px !important;
+    margin-bottom: 8px !important;
+    border-bottom: 2.5px solid #0284c7 !important;
+  }
+
+  /* Singola riga esame: altezza touch minima da 42px per facilitare il tocco */
+  .item-prestampato {
+    min-height: 42px !important;
+    padding: 7px 10px !important;
+    margin-bottom: 6px !important;
+    border-radius: 8px !important;
+    font-size: 13.5px !important;
+    align-items: center !important;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+  }
+
+  .item-prestampato.item-spuntato {
+    background: #f0fdf4 !important;
+    border: 1.5px solid #86efac !important;
+  }
+
+  .item-prestampato.item-pennarello {
+    background: linear-gradient(90deg, #ecfeff 0%, #e0f2fe 100%) !important;
+    border: 1.5px solid #0284c7 !important;
+  }
+
+  /* Testo dell'esame: MAI PIÙ TRONCATO su smartphone! Spazio libero per andare a capo */
+  .item-prestampato-inner,
+  .item-prestampato > div:first-child {
+    white-space: normal !important;
+    overflow: visible !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    flex: 1 1 auto !important;
+    align-items: center !important;
+  }
+
+  .item-prestampato-nome,
+  .item-prestampato span[style*="overflow:hidden"] {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-break: break-word !important;
+    font-size: 13.5px !important;
+    line-height: 1.35 !important;
+    flex: 1 1 auto !important;
+  }
+
+  /* Checkbox ingrandita a 20x20px per il dito */
+  .item-prestampato-cb,
+  .item-prestampato input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    cursor: pointer !important;
+    margin-right: 4px !important;
+    accent-color: #0284c7 !important;
+  }
+
+  .item-prestampato-cb-fake {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+  }
+
+  .item-prestampato-stato {
+    margin-left: 8px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .item-prestampato-stato span {
+    font-size: 11px !important;
+    padding: 3px 8px !important;
+    border-radius: 6px !important;
+    background: #f1f5f9;
+  }
+
+  /* Barra Toolbar / Filtro Rapido su cellulare */
+  .prestampato-toolbar {
+    padding: 10px 12px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .prestampato-toolbar > div {
+    width: 100% !important;
+    justify-content: stretch !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  #select-filtro-categoria {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 13px !important;
+    padding: 8px 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  .prestampato-toolbar button {
+    flex: 1 1 calc(50% - 6px) !important;
+    padding: 8px 10px !important;
+    font-size: 11.5px !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  /* Card generale del prestampato su cellulare */
+  #sezione-modulo-prestampato-card {
+    border-radius: 12px !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .prestampato-card-header {
+    padding: 12px 14px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .prestampato-card-header > div:last-child {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .prestampato-card-header button {
+    flex: 1 1 calc(50% - 6px) !important;
+    font-size: 11.5px !important;
+    padding: 8px 10px !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  .prestampato-guida-banner {
+    padding: 10px 12px !important;
+    font-size: 11.5px !important;
+  }
+
+  .prestampato-filtri-bar {
+    padding: 10px 12px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .prestampato-filtri-bar > div:first-child {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .prestampato-filtri-bar > div:first-child button {
+    flex: 1 1 calc(50% - 6px) !important;
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  .prestampato-filtri-bar input[type="text"] {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+
+  .prestampato-corpo-wrapper {
+    padding: 10px 8px !important;
+  }
+
+  .prestampato-intestazione-box {
+    padding: 10px 12px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  .prestampato-intestazione-box > div:last-child {
+    text-align: left !important;
+    border-top: 1px dashed #cbd5e1 !important;
+    padding-top: 6px !important;
+    margin-top: 4px !important;
+  }
+
+  .prestampato-piede-box {
+    padding: 10px 12px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .prestampato-piede-box > div:last-child {
+    align-items: stretch !important;
+    width: 100% !important;
+  }
+
+  .prestampato-piede-box > div:last-child > div {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .prestampato-piede-box button {
+    flex: 1 1 calc(50% - 6px) !important;
+    text-align: center !important;
+    justify-content: center !important;
+    padding: 8px 10px !important;
+  }
+}
+
 /* STAMPA PULITA A4 DEL MODULO PRESTAMPATO (ISOLAMENTO TOTALE) */
 @media print {
   body.printing-prestampato * {
@@ -9512,7 +9824,19 @@ main, .main-content, .dashboard-container {
     background: #ffffff !important;
   }
   body.printing-prestampato #sezione-modulo-prestampato-card .card-header button,
-  body.printing-prestampato #sezione-modulo-prestampato-card input[type="text"] {
+  body.printing-prestampato #sezione-modulo-prestampato-card input[type="text"],
+  body.printing-prestampato .prestampato-toolbar,
+  body.printing-prestampato .prestampato-filtri-bar {
     display: none !important;
+  }
+  body.printing-prestampato .prestampato-4colonne-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+  }
+  body.printing-prestampato .colonna-prestampato {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 6px 4px !important;
   }
 }
