@@ -3025,7 +3025,7 @@ function renderPazientiSelector() {
                 <span class="badge clinica-zoom-item" style="${avatarInfo.badgeColore} font-size:11.5px; font-weight:800; padding:3px 9px; border-radius:8px; cursor:pointer;" title="Genere assistito: ${avatarInfo.labelGenere}">
                   ${avatarInfo.simboloGenere} ${avatarInfo.isFemmina ? 'Donna' : 'Uomo'}
                 </span>
-                <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer; font-size:11.5px; padding:3px 9px; border-radius:8px;" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h) per prevenzione lesioni da decubito.' : 'Paziente deambulante in modo autonomo o assistito.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
+                <span class="badge clinica-zoom-item ${activeP.allettato ? 'badge-danger' : 'badge-primary'}" style="cursor:pointer; font-size:11.5px; padding:3px 9px; border-radius:8px;" onclick="toggleStatoAllettatoPaziente('${activeP.id}')" title="Clicca per attivare/disattivare stato Allettato/Deambulante" onmouseenter="mostraLenteClinica('Stato Motorio Assistito', '${activeP.allettato ? 'Paziente allettato con protocollo di rotazione posturale obbligatoria ogni 2 ore (q2h). Clicca per disattivare.' : 'Paziente deambulante in modo autonomo o assistito. Clicca per attivare stato allettato.'}', '🛏️')" onmouseleave="nascondiLenteClinica()">
                   ${activeP.allettato ? '🛏️ Allettato (q2h)' : '🚶 Deambulante'}
                 </span>
                 <span class="badge badge-warning clinica-zoom-item" style="font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px; padding:3px 9px; border-radius:8px;" onclick="apriModificaAnagrafica()" title="Tocca per aprire e modificare cartella anagrafica e data di nascita" onmouseenter="mostraLenteClinica('Anagrafica Assistito', 'Data di Nascita: ${dataNascitaFmt} (Anno ${annoNascita || '--'}, ${eta} anni)', '🎂')" onmouseleave="nascondiLenteClinica()">
@@ -11967,8 +11967,8 @@ function aggiornaOrologioPosturale() {
   const cardOrologioMobile = document.getElementById('mobile-card-orologio-posturale');
   const tileCute = document.getElementById('tile-ispezione-cute');
 
-  // GESTIONE PAZIENTE ALLETTATO (es. Aldo):
-  const isAllettato = !!(p.allettato || (p.id === 'paz_aldo') || (p.nome && p.nome.toLowerCase().includes('aldo')));
+  // GESTIONE PAZIENTE ALLETTATO (Dinamica per qualsiasi paziente, non solo Aldo):
+  const isAllettato = !!p.allettato;
   if (!isAllettato) {
     if (cardOrologio) cardOrologio.style.display = 'none';
     if (cardOrologioMobile) cardOrologioMobile.style.display = 'none';
@@ -11976,7 +11976,7 @@ function aggiornaOrologioPosturale() {
     ultimoSuonoScadutoTimestamp = 0;
     return;
   } else {
-    // PAZIENTE ALLETTATO (es. Aldo): Mostra e attiva regolarmente sia su desktop che su smartphone
+    // PAZIENTE ALLETTATO: Mostra card sia su desktop che su smartphone
     if (cardOrologio) cardOrologio.style.display = 'block';
     if (cardOrologioMobile) cardOrologioMobile.style.display = 'block';
     if (tileCute) tileCute.style.display = 'flex';
@@ -12056,6 +12056,26 @@ function aggiornaOrologioPosturale() {
   let idBtnSuggerito = '';
 
   const posAttualeLower = (last.posizione || '').toLowerCase();
+  const isFuoriLetto = posAttualeLower.includes('poltrona') || posAttualeLower.includes('fuori letto');
+  const timerAttivo = (p.posturaTimerAttivo !== false) && !isFuoriLetto;
+
+  // Riferimenti Pulsante Toggle Timer (Desktop & Mobile)
+  const btnTimer = document.getElementById('btn-toggle-timer-postura');
+  const mBtnTimer = document.getElementById('mobile-btn-toggle-timer-postura');
+  const btnTimerText = timerAttivo ? '⏱️ Timer: ON' : '⏸️ Timer: OFF';
+  if (btnTimer) {
+    btnTimer.textContent = btnTimerText;
+    btnTimer.style.background = timerAttivo ? '#e0f2fe' : '#fef3c7';
+    btnTimer.style.color = timerAttivo ? '#0284c7' : '#b45309';
+    btnTimer.style.borderColor = timerAttivo ? '#7dd3fc' : '#fcd34d';
+  }
+  if (mBtnTimer) {
+    mBtnTimer.textContent = btnTimerText;
+    mBtnTimer.style.background = timerAttivo ? '#e0f2fe' : '#fef3c7';
+    mBtnTimer.style.color = timerAttivo ? '#0284c7' : '#b45309';
+    mBtnTimer.style.borderColor = timerAttivo ? '#7dd3fc' : '#fcd34d';
+  }
+
   if (posAttualeLower.includes('supino')) {
     if (prev && prev.posizione.toLowerCase().includes('destro')) {
       posSuggerita = 'Fianco Sinistro (inclinato 30°)';
@@ -12077,16 +12097,21 @@ function aggiornaOrologioPosturale() {
 
   // Evidenzia pulsanti attivi e suggeriti (sia Desktop che Mobile)
   document.querySelectorAll('.postura-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent.toLowerCase().includes(last.posizione.slice(0, 5).toLowerCase()));
+    const bTxt = (btn.textContent || '').toLowerCase();
+    if (isFuoriLetto) {
+      btn.classList.toggle('active', bTxt.includes('poltrona') || bTxt.includes('fuori letto'));
+    } else {
+      btn.classList.toggle('active', !bTxt.includes('poltrona') && !bTxt.includes('fuori letto') && bTxt.includes(last.posizione.slice(0, 5).toLowerCase()));
+    }
     btn.classList.remove('suggerita');
   });
 
   const btnSuggerito = document.getElementById(idBtnSuggerito);
-  if (btnSuggerito && !btnSuggerito.classList.contains('active')) {
+  if (btnSuggerito && !btnSuggerito.classList.contains('active') && timerAttivo) {
     btnSuggerito.classList.add('suggerita');
   }
   const mBtnSuggerito = document.getElementById('mobile-' + idBtnSuggerito);
-  if (mBtnSuggerito && !mBtnSuggerito.classList.contains('active')) {
+  if (mBtnSuggerito && !mBtnSuggerito.classList.contains('active') && timerAttivo) {
     mBtnSuggerito.classList.add('suggerita');
   }
 
@@ -12095,6 +12120,44 @@ function aggiornaOrologioPosturale() {
   if (suggBox) suggBox.innerHTML = suggHtml;
   const mSuggBox = document.getElementById('mobile-postura-suggerimento-testo');
   if (mSuggBox) mSuggBox.innerHTML = suggHtml;
+
+  // SE IL TIMER E' DISATTIVATO O IL PAZIENTE E' FUORI LETTO / IN POLTRONA:
+  if (!timerAttivo) {
+    ultimoSuonoScadutoTimestamp = 0;
+    const badgePausedHtml = isFuoriLetto
+      ? `🪑 Paziente Fuori Letto (In Poltrona da ${trascorsoStr}) &bull; Timer q2h Sospeso`
+      : `⏸️ Timer Posturale Sospeso (In posizione da ${trascorsoStr})`;
+
+    if (timerBadge) {
+      timerBadge.className = 'badge badge-warning';
+      timerBadge.innerHTML = badgePausedHtml;
+    }
+    if (mTimerBadge) {
+      mTimerBadge.className = 'badge badge-warning';
+      mTimerBadge.innerHTML = badgePausedHtml;
+    }
+
+    const circlePausedHtml = `
+      <div style="display:flex; flex-direction:column; align-items:center; gap:1px; line-height:1.1;">
+        <span style="font-size:11px; font-weight:800; font-family:monospace; color:#b45309;">${isFuoriLetto ? 'POLTRONA' : 'PAUSA'}</span>
+        <span style="font-size:8px; font-weight:800; color:#d97706; letter-spacing:0.5px;">SOSPESO</span>
+      </div>`;
+
+    [circle, mCircle].forEach(c => {
+      if (c) c.className = 'postura-status-circle warning';
+    });
+    [circleIcon, mCircleIcon].forEach(ci => {
+      if (ci) ci.textContent = isFuoriLetto ? '🪑' : '⏸️';
+    });
+    [circleLabel, mCircleLabel].forEach(cl => {
+      if (cl) cl.innerHTML = circlePausedHtml;
+    });
+
+    const suggPausedHtml = `<span>Paziente attualmente <b>${isFuoriLetto ? 'fuori letto / in poltrona' : 'con timer postura disattivato'}</b>. Quando torna a letto, tocca una posizione (es. <b>Supino</b> o <b>Fianco</b>) per riattivare la rotazione q2h.</span>`;
+    if (suggBox) suggBox.innerHTML = suggPausedHtml;
+    if (mSuggBox) mSuggBox.innerHTML = suggPausedHtml;
+    return;
+  }
 
   if (remSec <= 0) {
     const overSec = Math.abs(remSec);
@@ -12203,20 +12266,95 @@ function cambioPosturaRapido(nuovaPosizione) {
   // Interrompe immediatamente il loop sonoro di allarme
   ultimoSuonoScadutoTimestamp = 0;
 
+  const isFuoriLetto = (nuovaPosizione || '').toLowerCase().includes('poltrona') || (nuovaPosizione || '').toLowerCase().includes('fuori letto');
+  if (isFuoriLetto) {
+    p.posturaTimerAttivo = false;
+  } else {
+    p.posturaTimerAttivo = true;
+  }
+
   const entry = {
     id: 'log_' + Date.now(),
     tipo: 'postura',
     timestamp: new Date().toISOString(),
     posizione: nuovaPosizione,
-    cute: 'Integra e rosea (Normale)',
+    cute: isFuoriLetto ? 'Paziente mobilizzato fuori letto (in poltrona)' : 'Integra e rosea (Normale)',
     operatore: 'Operatore OSS / Famiglia'
   };
 
+  if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
   p.registrazioni.push(entry);
   saveDb();
   if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40, 60, 40]);
-  showToast(`Postura aggiornata: "${nuovaPosizione}"! Allarme arrestato e timer q2h azzerato.`);
+  if (isFuoriLetto) {
+    showToast(`🪑 Paziente in poltrona/fuori letto. Conteggio q2h sospeso finché non torna a letto.`, 'info');
+  } else {
+    showToast(`Postura aggiornata: "${nuovaPosizione}"! Timer q2h riavviato.`, 'success');
+  }
+  aggiornaOrologioPosturale();
 }
+
+function toggleTimerPostura() {
+  const p = getActivePaziente();
+  if (!p) return;
+
+  const logsPostura = (p.registrazioni || []).filter(r => r.tipo === 'postura').sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  const last = logsPostura[0];
+  const isFuoriLetto = last && ((last.posizione || '').toLowerCase().includes('poltrona') || (last.posizione || '').toLowerCase().includes('fuori letto'));
+
+  if (p.posturaTimerAttivo === false || isFuoriLetto) {
+    p.posturaTimerAttivo = true;
+    if (isFuoriLetto) {
+      if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+      p.registrazioni.push({
+        id: 'log_' + Date.now(),
+        tipo: 'postura',
+        timestamp: new Date().toISOString(),
+        posizione: 'Supino (Schiena a letto)',
+        cute: 'Integra e rosea (Rientro a letto)',
+        operatore: 'Operatore CareAssist'
+      });
+    }
+    showToast('⏱️ Conteggio Orologio Posturale RIATTIVATO. Timer 2 ore in funzione.', 'success');
+  } else {
+    p.posturaTimerAttivo = false;
+    ultimoSuonoScadutoTimestamp = 0;
+    showToast('⏸️ Conteggio Orologio Posturale SOSPESO (Paziente temporaneamente non a letto).', 'info');
+  }
+  saveDb();
+  aggiornaOrologioPosturale();
+}
+
+function toggleStatoAllettatoPaziente(pazId) {
+  const p = pazId ? (AppData.pazienti || []).find(x => x.id === pazId) : getActivePaziente();
+  if (!p) return;
+
+  p.allettato = !p.allettato;
+  if (p.allettato) {
+    p.posturaTimerAttivo = true;
+    if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+    p.registrazioni.push({
+      id: 'log_' + Date.now(),
+      tipo: 'postura',
+      timestamp: new Date().toISOString(),
+      posizione: 'Supino (Schiena a letto)',
+      cute: 'Integra e rosea (Iniziale)',
+      operatore: 'Operatore CareAssist'
+    });
+    showToast(`🛌 Stato per ${p.nome}: Paziente ALLETTATO. Orologio Posturale q2h attivato!`, 'success');
+  } else {
+    p.posturaTimerAttivo = false;
+    ultimoSuonoScadutoTimestamp = 0;
+    showToast(`🚶 Stato per ${p.nome}: Paziente DEAMBULANTE. Orologio Posturale disattivato.`, 'info');
+  }
+  saveDb();
+  aggiornaOrologioPosturale();
+  if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
+  if (typeof renderTerapie === 'function') renderTerapie();
+}
+
+window.toggleTimerPostura = toggleTimerPostura;
+window.toggleStatoAllettatoPaziente = toggleStatoAllettatoPaziente;
 
 // 2. BILANCIO IDRICO GIORNALIERO (RSA HYDRATION)
 function aggiornaIdratazioneUI() {
@@ -24978,8 +25116,11 @@ function renderMobileNativeView(terapie, p) {
       '<span style="font-size:15.5px; font-weight:900; color:#0f172a; line-height:1.25;">' + pulitoNome + '</span>' +
       '<span style="color:#059669; font-size:14px; font-weight:900;" title="Verificato">✓</span>' +
       '</div>' +
-      '<div style="font-size:12px; color:#64748b; font-weight:600; margin-top:2px; line-height:1.2;">' +
-      eta + ' anni • ' + (p.allettato ? 'Allettato' : 'Deambulante') +
+      '<div style="font-size:12px; color:#64748b; font-weight:600; margin-top:2px; line-height:1.2; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
+      '<span>' + eta + ' anni</span> • ' +
+      '<button type="button" onclick="event.stopPropagation(); toggleStatoAllettatoPaziente(\'' + p.id + '\');" style="background:' + (p.allettato ? '#fef2f2' : '#f0fdf4') + '; color:' + (p.allettato ? '#dc2626' : '#166534') + '; border:1.5px solid ' + (p.allettato ? '#fca5a5' : '#86efac') + '; border-radius:999px; padding:2px 8px; font-size:11px; font-weight:800; cursor:pointer;" title="Tocca per attivare o disattivare lo stato Allettato/Deambulante">' +
+      (p.allettato ? '🛌 Allettato (Tocca per disattivare)' : '🚶 Deambulante (Tocca per attivare)') +
+      '</button>' +
       '</div>' +
       pillsPatologieHtml +
       '<div style="font-size:11.5px; color:#059669; font-weight:800; margin-top:4px;">' +
