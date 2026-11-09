@@ -11855,6 +11855,7 @@ function salvaNuovaVisita(e) {
   e.preventDefault();
   const p = getActivePaziente();
   if (!p) return;
+  if (!Array.isArray(p.visite)) p.visite = [];
   const v = {
     id: Date.now(),
     data: document.getElementById('vis-data').value,
@@ -11868,6 +11869,10 @@ function salvaNuovaVisita(e) {
   saveDb();
   if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
   if (typeof renderTerapie === 'function') renderTerapie();
+  if (typeof renderVisite === 'function') renderVisite();
+  if (typeof showToast === 'function') {
+    showToast('📅 Visita per ' + (p.nome || 'assistito') + ' salvata con successo!');
+  }
 }
 
 // Backup & Reset Multi-Paziente
