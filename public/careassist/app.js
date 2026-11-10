@@ -3686,6 +3686,8 @@ function cestinoRipristina(id) {
   AppData._cestino = lista.filter(function (x) { return x.id !== id; });
   saveDb();
   renderCestino();
+  if (typeof renderDiarioMobile === 'function') renderDiarioMobile();
+  if (typeof renderDiario === 'function') renderDiario();
   showToast(messaggio + ' ↩️');
 }
 
@@ -27778,6 +27780,11 @@ function renderMobileNativeView(terapie, p) {
       '<span style="font-size:15px;">✏️</span> <span>Modifica Dati</span>' +
       '</button>' +
       '</div>' +
+      '<!-- RIGA 4: CESTINO & RIPRISTINO ACCESSIBILE DA SMARTPHONE -->' +
+      '<button type="button" onclick="event.stopPropagation(); apriModalCestino()" style="min-height:40px; background:#fff1f2; color:#be123c; border:1.5px solid #fecdd3; border-radius:12px; padding:6px 12px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 1px 3px rgba(190,18,60,0.08);">' +
+      '<span style="font-size:15px;">♻️</span> <span>Cestino &amp; Ripristino (Elementi Eliminati)</span>' +
+      '<span class="cestino-count-badge" style="display:none; background:#be123c; color:#ffffff; font-size:10px; font-weight:900; padding:1px 6px; border-radius:10px;">0</span>' +
+      '</button>' +
       '</div>' +
       '</div>' +
       '<!-- PULSANTI VOCALI MOBILI SIMMETRICI (TOUCH TARGET 48PX) -->' +

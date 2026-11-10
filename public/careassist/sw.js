@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v306-modifica-cancella-registrazioni';
+const CACHE_NAME = 'careassist-pro-v307-cestino-mobile';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
