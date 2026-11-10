@@ -7630,24 +7630,25 @@ async function eliminaLog(id) {
   let ok = false;
   try {
     ok = await customConfirm(
-      'Elimina Annotazione',
-      'Vuoi eliminare questa annotazione dal diario clinico?' + CESTINO_AVVISO,
+      'Elimina Registrazione',
+      'Vuoi eliminare questa registrazione dal diario clinico?' + CESTINO_AVVISO,
       '🗑️',
       'Sposta nel Cestino'
     );
   } catch (e) {
-    ok = confirm('Vuoi eliminare questa annotazione dal diario clinico?');
+    ok = confirm('Vuoi eliminare questa registrazione dal diario clinico?');
   }
 
   if (ok) {
-    const rec = (p.registrazioni || []).find(r => String(r.id) === String(id));
+    const rec = (p.registrazioni || []).find(r => String(r.id) === String(id) || String(r.timestamp) === String(id));
     if (rec && typeof cestinoAggiungi === 'function') {
-      cestinoAggiungi('annotazione', 'Annotazione del diario', (rec.desc || rec.tipo || '').toString().slice(0, 140), [rec], p);
+      cestinoAggiungi('annotazione', 'Annotazione del diario', (rec.testo || rec.desc || rec.tipo || '').toString().slice(0, 140), [rec], p);
     }
-    p.registrazioni = (p.registrazioni || []).filter(r => String(r.id) !== String(id));
+    p.registrazioni = (p.registrazioni || []).filter(r => String(r.id) !== String(id) && String(r.timestamp) !== String(id));
     saveDb();
     renderDiario();
-    if (typeof showToast === 'function') showToast('Annotazione spostata nel Cestino. 🗑️');
+    if (typeof renderDiarioMobile === 'function') renderDiarioMobile();
+    if (typeof showToast === 'function') showToast('Registrazione spostata nel Cestino. 🗑️');
   }
 }
 window.eliminaLog = eliminaLog;
@@ -7945,7 +7946,7 @@ function openModal(id) {
 
     // Inietta o aggiorna in automatico l'indicazione chiara del paziente attivo
     const p = getActivePaziente();
-    if (p && id !== 'modal-nuovo-paziente' && id !== 'modal-report-whatsapp' && id !== 'modal-scheda-118' && id !== 'modal-modifica-farmaco' && id !== 'modal-laboratorio-scotti' && id !== 'modal-archivio-storico-controlli') {
+    if (p && id !== 'modal-nuovo-paziente' && id !== 'modal-report-whatsapp' && id !== 'modal-scheda-118' && id !== 'modal-modifica-farmaco' && id !== 'modal-laboratorio-scotti' && id !== 'modal-archivio-storico-controlli' && id !== 'modal-diario-mobile' && id !== 'modal-modifica-diario-item') {
       const header = el.querySelector('.modal-header');
       if (header) {
         // Cerca o crea il badge del paziente all'interno di .modal-title (layout a 2 righe pulito, zero sovrapposizioni)
@@ -17773,6 +17774,39 @@ function fermaRegistrazioneConsegna() {
     }
   }, 250);
 }
+window.fermaRegistrazioneConsegna = fermaRegistrazioneConsegna;
+
+function cancellaAudioERipeti() {
+  _consegnaAudioChunks = [];
+  _consegnaAudioBlobUrl = null;
+  _consegnaAudioBase64 = null;
+  _consegnaFinalTranscript = '';
+
+  const player = document.getElementById('consegna-audio-player');
+  const box = document.getElementById('consegna-audio-player-box');
+  const txtArea = document.getElementById('consegna-trascrizione-testo');
+  const statusLabel = document.getElementById('consegna-status-label');
+  const wave = document.getElementById('consegna-soundwave');
+  const micBtn = document.getElementById('mic-record-btn');
+
+  if (player) player.src = '';
+  if (box) box.style.display = 'none';
+  if (txtArea) txtArea.value = '';
+  if (wave) wave.classList.remove('active');
+  if (micBtn) micBtn.classList.remove('recording');
+  if (statusLabel) {
+    statusLabel.style.color = '#4f46e5';
+    statusLabel.textContent = 'Tocca il microfono e parla liberamente';
+  }
+
+  const chipsContainer = document.getElementById('consegna-parametri-chips');
+  const paramBox = document.getElementById('consegna-parametri-box');
+  if (chipsContainer) chipsContainer.innerHTML = '';
+  if (paramBox) paramBox.style.display = 'none';
+
+  if (typeof showToast === 'function') showToast('🔄 Audio cancellato: puoi registrare nuovamente.');
+}
+window.cancellaAudioERipeti = cancellaAudioERipeti;
 
 // Analizzatore intelligente parametri clinici dal parlato
 function analizzaEdEstraiParametriConsegna(testo) {
@@ -30272,9 +30306,10 @@ function renderDiarioMobile() {
   }
 
   let html = '';
-  filtrata.forEach(r => {
+  filtrata.forEach((r, idx) => {
     const d = new Date(r.timestamp);
-    const dataFmt = d.toLocaleDateString('it-IT') + ' ore ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    const dataFmt = isNaN(d.getTime()) ? (r.timestamp || '--') : (d.toLocaleDateString('it-IT') + ' ore ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+    if (!r.id) r.id = 'reg_' + (isNaN(d.getTime()) ? (Date.now() + '_' + idx) : d.getTime());
 
     if (r.tipo === 'consegna_vocale') {
       const audioPlayerHtml = r.audioData ? `
@@ -30295,11 +30330,19 @@ function renderDiarioMobile() {
           </div>
           ${r.parametriEstratti ? `<div style="margin-top:6px; display:flex; gap:4px; flex-wrap:wrap;">${r.parametriEstratti}</div>` : ''}
           ${audioPlayerHtml}
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0; font-size:12px; color:#64748b;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:1px dashed #e2e8f0; font-size:12px; color:#64748b; flex-wrap:wrap; gap:6px;">
             <span>✍️ <b>${r.operatore || 'Operatore OSS'}</b></span>
-            <a href="https://wa.me/?text=${encodeURIComponent('🎙️ Consegna del ' + dataFmt + ' per ' + p.nome + ': ' + (r.testo || ''))}" target="_blank" style="background:#ecfdf5; color:#047857; border:1.5px solid #a7f3d0; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; gap:4px; min-height:34px;">
-              💬 Invia WhatsApp
-            </a>
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+              <button type="button" onclick="apriModificaRegistrazioneDiario('${r.id}')" style="background:#eff6ff; color:#1d4ed8; border:1.5px solid #bfdbfe; border-radius:8px; padding:6px 11px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; min-height:36px;">
+                ✏️ Modifica
+              </button>
+              <button type="button" onclick="eliminaLog('${r.id}')" style="background:#fef2f2; color:#b91c1c; border:1.5px solid #fecaca; border-radius:8px; padding:6px 11px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; min-height:36px;">
+                🗑️ Elimina
+              </button>
+              <a href="https://wa.me/?text=${encodeURIComponent('🎙️ Consegna del ' + dataFmt + ' per ' + p.nome + ': ' + (r.testo || ''))}" target="_blank" style="background:#ecfdf5; color:#047857; border:1.5px solid #a7f3d0; border-radius:8px; padding:6px 11px; font-size:12px; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; gap:4px; min-height:36px;">
+                💬 Invia WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       `;
@@ -30322,6 +30365,12 @@ function renderDiarioMobile() {
             ${r.farmaco || 'Farmaco'} ${r.dosaggio ? `<span style="color:#0284c7;">(${r.dosaggio})</span>` : ''}
           </div>
           ${r.motivo ? `<div style="font-size:11px; color:#b91c1c; margin-top:2px;">Motivo: ${r.motivo}</div>` : ''}
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px dashed ${border}; font-size:11.5px; color:#64748b;">
+            <span>✍️ <b>${r.operatore || 'Caregiver'}</b></span>
+            <button type="button" onclick="eliminaLog('${r.id}')" style="background:#ffffff; color:#b91c1c; border:1.5px solid #fecaca; border-radius:6px; padding:4px 8px; font-size:11.5px; font-weight:800; cursor:pointer;">
+              🗑️ Elimina
+            </button>
+          </div>
         </div>
       `;
     } else {
@@ -30334,6 +30383,17 @@ function renderDiarioMobile() {
           <div style="font-size:12px; color:#1e293b; line-height:1.35;">
             ${r.desc || (r.pa_max ? `PA: ${r.pa_max}/${r.pa_min} mmHg | FC: ${r.fc || '--'} bpm | SpO2: ${r.spo2 || '--'}% | Temp: ${r.temp || '--'}°C` : (r.note || r.testo || 'Registrazione clinica'))}
           </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0; font-size:11.5px; color:#64748b;">
+            <span>✍️ <b>${r.operatore || 'Caregiver'}</b></span>
+            <div style="display:flex; gap:6px;">
+              <button type="button" onclick="apriModificaRegistrazioneDiario('${r.id}')" style="background:#eff6ff; color:#1d4ed8; border:1.5px solid #bfdbfe; border-radius:6px; padding:4px 8px; font-size:11.5px; font-weight:800; cursor:pointer;">
+                ✏️ Modifica
+              </button>
+              <button type="button" onclick="eliminaLog('${r.id}')" style="background:#fef2f2; color:#b91c1c; border:1.5px solid #fecaca; border-radius:6px; padding:4px 8px; font-size:11.5px; font-weight:800; cursor:pointer;">
+                🗑️ Elimina
+              </button>
+            </div>
+          </div>
         </div>
       `;
     }
@@ -30342,3 +30402,92 @@ function renderDiarioMobile() {
   container.innerHTML = html;
 }
 window.renderDiarioMobile = renderDiarioMobile;
+
+// ==========================================
+// FUNZIONI MODIFICA REGISTRAZIONE DIARIO (MOBILE & DESKTOP)
+// ==========================================
+function apriModificaRegistrazioneDiario(id) {
+  const p = getActivePaziente();
+  if (!p) return;
+  const reg = (p.registrazioni || []).find(r => String(r.id) === String(id) || String(r.timestamp) === String(id));
+  if (!reg) {
+    if (typeof showToast === 'function') showToast('Registrazione non trovata.', 'warning');
+    return;
+  }
+
+  const d = new Date(reg.timestamp);
+  const dataFmt = isNaN(d.getTime()) ? (reg.timestamp || '--') : (d.toLocaleDateString('it-IT') + ' ore ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+
+  const idEl = document.getElementById('edit-diario-id');
+  const tsEl = document.getElementById('edit-diario-timestamp');
+  const opEl = document.getElementById('edit-diario-operatore');
+  const txtEl = document.getElementById('edit-diario-testo');
+  const audioBox = document.getElementById('edit-diario-audio-box');
+  const audioPlayer = document.getElementById('edit-diario-audio-player');
+
+  if (idEl) idEl.value = reg.id || reg.timestamp;
+  if (tsEl) tsEl.value = dataFmt;
+  if (opEl) opEl.value = reg.operatore || 'Operatore OSS / Familiare';
+  if (txtEl) txtEl.value = reg.testo || reg.desc || reg.note || '';
+
+  if (audioBox && audioPlayer) {
+    if (reg.audioData) {
+      audioPlayer.src = reg.audioData;
+      audioBox.style.display = 'flex';
+    } else {
+      audioPlayer.src = '';
+      audioBox.style.display = 'none';
+    }
+  }
+
+  openModal('modal-modifica-diario-item');
+}
+window.apriModificaRegistrazioneDiario = apriModificaRegistrazioneDiario;
+
+function rimuoviAudioDaRegistrazioneModifica() {
+  const idEl = document.getElementById('edit-diario-id');
+  if (!idEl || !idEl.value) return;
+  const p = getActivePaziente();
+  if (!p) return;
+  const reg = (p.registrazioni || []).find(r => String(r.id) === String(idEl.value) || String(r.timestamp) === String(idEl.value));
+  if (reg) {
+    reg.audioData = null;
+    const audioBox = document.getElementById('edit-diario-audio-box');
+    const audioPlayer = document.getElementById('edit-diario-audio-player');
+    if (audioBox) audioBox.style.display = 'none';
+    if (audioPlayer) audioPlayer.src = '';
+    if (typeof showToast === 'function') showToast('Traccia vocale rimossa. Il testo è mantenuto.');
+  }
+}
+window.rimuoviAudioDaRegistrazioneModifica = rimuoviAudioDaRegistrazioneModifica;
+
+function salvaModificaDiarioItem() {
+  const idEl = document.getElementById('edit-diario-id');
+  if (!idEl || !idEl.value) return;
+  const p = getActivePaziente();
+  if (!p) return;
+  const reg = (p.registrazioni || []).find(r => String(r.id) === String(idEl.value) || String(r.timestamp) === String(idEl.value));
+  if (!reg) return;
+
+  const opEl = document.getElementById('edit-diario-operatore');
+  const txtEl = document.getElementById('edit-diario-testo');
+
+  if (opEl) reg.operatore = opEl.value.trim() || 'Operatore OSS / Familiare';
+  if (txtEl) {
+    const val = txtEl.value.trim();
+    if (reg.tipo === 'consegna_vocale' || reg.tipo === 'consegna') {
+      reg.testo = val;
+    } else {
+      reg.testo = val;
+      reg.desc = val;
+      reg.note = val;
+    }
+  }
+
+  saveDb();
+  if (typeof renderDiarioMobile === 'function') renderDiarioMobile();
+  if (typeof renderDiario === 'function') renderDiario();
+  closeModal('modal-modifica-diario-item');
+  if (typeof showToast === 'function') showToast('✅ Registrazione modificata con successo!');
+}
+window.salvaModificaDiarioItem = salvaModificaDiarioItem;
