@@ -23778,6 +23778,41 @@ var GUIDE_CONTESTUALI = {
       '<b>☑️ Seleziona Tutti</b>: consente la gestione e l\'archiviazione massiva di più eventi contemporaneamente.'
     ],
     utilita: '<b>Tracciabilità trasparente e passaggio consegne istantaneo</b>: fornisce all\'operatore che subentra o al medico un quadro immediato delle ultime ore con validità documentale.'
+  },
+  'patologie-diagnosi': {
+    icona: '🩺',
+    titolo: 'Quadro Diagnosi Cliniche & Terapie Farmacologiche Associate',
+    sottotitolo: 'Correlazione formale tra diagnosi medica accertata e piano terapeutico attivo',
+    scopo: 'Stabilisce la corrispondenza univoca tra ogni patologia formalizzata dal medico e i farmaci somministrati all\'assistito, garantendo razionalità terapeutica e controllo delle indicazioni cliniche.',
+    comeSiUsa: [
+      '<b>➕ Aggiungi Patologia</b>: inserisci una nuova diagnosi con il relativo stato clinico (attiva, cronica, silente o guarita).',
+      '<b>✨ Deduci con AI dai Farmaci</b>: l\'algoritmo di intelligenza artificiale esamina i principi attivi somministrati ed estrae automaticamente le patologie correlate (es. Triatec &rarr; Ipertensione arteriosa).',
+      '<b>Verifica Associazioni Farmacologiche</b>: visualizza per ogni riga i farmaci dedicati e il loro orario di assunzione.'
+    ],
+    utilita: '<b>Trasparenza diagnostico-terapeutica assoluta</b>: permette a medici specialisti, operatori ADI e familiari di comprendere esattamente la ragione clinica di ciascun medicinale in terapia.'
+  },
+  'patologie-ausili': {
+    icona: '📦',
+    titolo: 'Ausili & Presidi Sanitari Registrati',
+    sottotitolo: 'Dispositivi medici, protesica e presidi autorizzati dall\'ASL',
+    scopo: 'Censisce gli ausili terapeutici e posturali in dotazione all\'assistito (es. letto articolato a manovella/elettrico, materasso antidecubito a pressione alternata, carrozzina, sollevatore, presidi per incontinenza, sensori glicemia).',
+    comeSiUsa: [
+      'Visualizza i dispositivi salvavita e posturali registrati nella cartella dell\'assistito.',
+      'Fornisce indicazioni operative immediate per l\'igiene, la movimentazione in sicurezza e la prevenzione delle lesioni da decubito.',
+      'Permette di verificare la necessità di rinnovo fornitura trimestrale o semestrale presso l\'ASL di competenza.'
+    ],
+    utilita: '<b>Sicurezza e tutela dell\'assistito e dell\'operatore</b>: assicura l\'utilizzo corretto dei presidi prescritti ed evita rischi da movimentazione carichi o traumi posturali.'
+  },
+  'patologie-riferimenti': {
+    icona: '🩺',
+    titolo: 'Riferimenti Medici & Territoriali di Rete',
+    sottotitolo: 'Rete di prossimità sanitaria e sociale dell\'assistito',
+    scopo: 'Mantiene a portata di mano i recapiti telefonici diretti del Medico Curante (MMG), del Caregiver familiare primario e della Farmacia territoriale incaricata.',
+    comeSiUsa: [
+      '<b>Chiamata Telefonica con 1 Click</b>: tocca il numero telefonico per avviare subito la chiamata senza digitare.',
+      '<b>Coordinamento Interprofessionale</b>: facilita il contatto tempestivo tra l\'operatore domiciliare e il medico in caso di comparsa di nuovi sintomi o variazioni terapeutiche.'
+    ],
+    utilita: '<b>Reperibilità a latenza zero</b>: in caso di urgenza o necessità di chiarimento terapeutico non si perde tempo a reperire i contatti chiave.'
   }
 };
 
@@ -27212,6 +27247,9 @@ function renderPatologieTab(p) {
           '</div>' +
         '</div>' +
         '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+          '<button type="button" onclick="mostraGuidaContestuale(\'patologie-diagnosi\')" style="background:#eff6ff; color:#0284c7; border:1.5px solid #7dd3fc; border-radius:8px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="A cosa serve il Quadro Diagnosi Cliniche">' +
+            '<span>💡</span> <span>A cosa serve</span>' +
+          '</button>' +
           '<button type="button" onclick="aggiungiPatologiaRapida()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">' +
             '<span>➕</span> <span>Aggiungi Patologia</span>' +
           '</button>' +
@@ -27242,8 +27280,13 @@ function renderPatologieTab(p) {
     '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">' +
       '<!-- CARD AUSILI -->' +
       '<div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:18px; background:#ffffff;">' +
-        '<div style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:10px; display:flex; align-items:center; gap:8px;">' +
-          '<span>📦</span> <span>Ausili &amp; Presidi Sanitari Registrati</span>' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;">' +
+          '<div style="font-size:14px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
+            '<span>📦</span> <span>Ausili &amp; Presidi Sanitari Registrati</span>' +
+          '</div>' +
+          '<button type="button" onclick="mostraGuidaContestuale(\'patologie-ausili\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono gli Ausili registrati">' +
+            '<span>💡</span> <span>A cosa serve</span>' +
+          '</button>' +
         '</div>' +
         '<div style="display:flex; flex-wrap:wrap; gap:8px;">' +
           ausiliHtml +
@@ -27252,8 +27295,13 @@ function renderPatologieTab(p) {
 
       '<!-- CARD CONTATTI CURANTI -->' +
       '<div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:18px; background:#ffffff;">' +
-        '<div style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:12px; display:flex; align-items:center; gap:8px;">' +
-          '<span>🩺</span> <span>Riferimenti Medici &amp; Territoriali</span>' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px;">' +
+          '<div style="font-size:14px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
+            '<span>🩺</span> <span>Riferimenti Medici &amp; Territoriali</span>' +
+          '</div>' +
+          '<button type="button" onclick="mostraGuidaContestuale(\'patologie-riferimenti\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono i riferimenti di rete">' +
+            '<span>💡</span> <span>A cosa serve</span>' +
+          '</button>' +
         '</div>' +
         '<div style="display:flex; flex-direction:column; gap:8px; font-size:12.5px;">' +
           '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed #e2e8f0;">' +
