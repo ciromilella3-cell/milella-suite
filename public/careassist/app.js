@@ -21725,6 +21725,9 @@ function renderSchedaSpecialisticaRosa(container, p) {
 
       <!-- AZIONI RAPIDE PER ROSA -->
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; position:relative; z-index:2;">
+        <button type="button" class="btn" onclick="mostraGuidaContestuale('glicemia')" style="background:#eff6ff; color:#0284c7; border:1.5px solid #7dd3fc; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
+          💡 A cosa serve
+        </button>
         <button type="button" class="btn" onclick="richiediTutteRicetteAlMedicoMMG()" style="background:#10b981; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
           ✉️ Invia Richiesta alla Dr.ssa Potenza
         </button>
@@ -23632,6 +23635,18 @@ var GUIDE_CONTESTUALI = {
       '<b>Pulsanti Secondari (Salta, +Scatola, Dettagli)</b>: registra una mancata assunzione motivata, carica velocemente una nuova confezione o consulta la scheda tecnica.'
     ],
     utilita: '<b>Guida operativa senza stress</b>: l\'assistente sa sempre con certezza matematica quale farmaco dare e a che ora, senza dover fare calcoli a mente.'
+  },
+  'allarme-ritardi': {
+    icona: '🔔',
+    titolo: 'Allerta Terapie in Ritardo Multi-Paziente',
+    sottotitolo: 'Sistema sentinella di sicurezza acustica e visiva su tutti gli assistiti',
+    scopo: 'Sorveglia in tempo reale gli orari di somministrazione di tutti i pazienti. Se una prescrizione supera la finestra oraria consentita, fa scattare l\'allarme acustico e visivo per scongiurare dimenticanze o ritardi critici.',
+    comeSiUsa: [
+      '<b>Visualizza Pazienti in Ritardo</b>: tocca la riga del paziente segnalato per aprire subito la sua scheda e somministrare il farmaco.',
+      '<b>Controllo Suoneria ("Attiva Suono")</b>: abilita o silenzia il segnale sonoro ripetuto a intervalli regolari.',
+      '<b>Presa in Carico</b>: premi "Ho Preso in Carico / Chiudi Allarme" per confermare l\'avvenuta presa in carico e resettare l\'avviso.'
+    ],
+    utilita: '<b>Tolleranza zero errori e continuità protetta</b>: garantisce che nessun farmaco salvavita rimanga dimenticato durante i passaggi di consegne o nei momenti di maggior carico di lavoro.'
   },
   'dashboard': {
     icona: '📊',
@@ -26933,7 +26948,10 @@ function apriAmbulatorioSpecialisticoMobile() {
       bar.innerHTML = '<button type="button" onclick="navigaMobileTab(\'oggi\')" style="background:#0284c7; color:#fff; border:none; border-radius:10px; padding:7px 12px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">' +
         '<span>⬅️</span> <span>Torna a Oggi</span>' +
         '</button>' +
-        '<div style="display:flex; gap:6px;">' +
+        '<div style="display:flex; gap:6px; align-items:center;">' +
+        '<button type="button" onclick="mostraGuidaContestuale(\'glicemia\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:10px; padding:7px 11px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+        '<span>💡</span> <span>A cosa serve</span>' +
+        '</button>' +
         '<button type="button" onclick="openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:10px; padding:7px 12px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
         '<span>📅</span> <span>+ Visita</span>' +
         '</button>' +
