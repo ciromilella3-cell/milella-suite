@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v298-scheda-visita-intelligente-ai';
+const CACHE_NAME = 'careassist-pro-v299-pulsanti-visita-immediati';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

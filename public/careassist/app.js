@@ -2587,7 +2587,7 @@ function renderPazientiSelector() {
         ${av.emoji} ${pulito} (${eta} anni)
       </option>
     `;
-  }).join('');
+  }).join('') + '<div style="margin-top:12px; text-align:center;"><button type="button" onclick="chiudiModalSchedaClinicaMobile(); openModal(\'modal-visita\');" style="width:100%; background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; padding:11px 14px; border-radius:12px; font-size:13px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 3px 10px rgba(5,150,105,0.25);"><span style="font-size:16px;">➕</span> <span>Pianifica Nuova Visita Specialistica</span></button></div>';
 
   if (lista.length === 1) {
     select.style.pointerEvents = 'none';
@@ -27594,8 +27594,8 @@ function renderMobileNativeView(terapie, p) {
       '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(21,128,61,0.15);" title="Visualizza tutte le visite specialistiche">' +
       '<span>📋 Visite (' + (p.visite ? p.visite.length : 0) + ')</span>' +
       '</button>' +
-      '<button type="button" onclick="event.stopPropagation(); openModal(\'modal-visita\')" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(5,150,105,0.15);">' +
-      '<span>📅 + Visita</span>' +
+      '<button type="button" onclick="event.stopPropagation(); openModal(\'modal-visita\')" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; border-radius:8px; padding:5px 11px; font-size:11.5px; font-weight:900; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(5,150,105,0.3);">' +
+      '<span>📅 <b>+ Inserisci Visita</b></span>' +
       '</button>' +
       '<button type="button" onclick="event.stopPropagation(); apriGuidaLettoManovella()" style="background:#fefce8; color:#854d0e; border:1px solid #fde047; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(133,77,14,0.1);">' +
       '<span>📘 Guida Letto</span>' +
@@ -27665,8 +27665,8 @@ function renderMobileNativeView(terapie, p) {
           '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:2px;" title="Vedi tutte le visite dell\'assistito">' +
           '<span>📋 Elenco</span>' +
           '</button>' +
-          '<button type="button" onclick="openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:8px; padding:5px 8px; font-size:10.5px; font-weight:800; cursor:pointer;">' +
-          '+ Visita' +
+          '<button type="button" onclick="openModal(\'modal-visita\')" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#fff; border:none; border-radius:8px; padding:6px 11px; font-size:11px; font-weight:900; cursor:pointer; display:inline-flex; align-items:center; gap:3px; box-shadow:0 2px 6px rgba(5,150,105,0.3);">' +
+          '<span>➕</span> <span>Inserisci Visita</span>' +
           '</button>' +
           '</div>' +
           '</div>';

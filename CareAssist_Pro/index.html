@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=298">
+  <link rel="stylesheet" href="style.css?v=299">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -2646,12 +2646,15 @@
       </div>
 
       <!-- FOOTER AZIONI RAPIDE -->
-      <div class="modal-footer" style="background:#ffffff; border-top:1px solid #e2e8f0; padding:10px 14px; display:flex; gap:10px; align-items:center;">
-        <button type="button" class="btn btn-outline" onclick="chiudiModalSchedaClinicaMobile()" style="flex:0 0 90px; padding:9px 12px; font-weight:700; border-radius:10px;">
+      <div class="modal-footer" style="background:#ffffff; border-top:1px solid #e2e8f0; padding:10px 14px; display:flex; gap:8px; align-items:center;">
+        <button type="button" class="btn btn-outline" onclick="chiudiModalSchedaClinicaMobile()" style="flex:0 0 75px; padding:9px 10px; font-weight:700; border-radius:10px;">
           Chiudi
         </button>
-        <button type="button" class="btn btn-primary" onclick="chiudiModalSchedaClinicaMobile(); apriModificaAnagrafica();" style="flex:1; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:13px; border-radius:10px; padding:10px 14px; border:none; display:flex; align-items:center; justify-content:center; gap:6px;">
-          <span>✏️ Modifica Cartella</span>
+        <button type="button" onclick="chiudiModalSchedaClinicaMobile(); openModal('modal-visita');" style="flex:1.2; background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:900; font-size:12.5px; border-radius:10px; padding:10px 12px; border:none; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 2px 8px rgba(5,150,105,0.3); cursor:pointer;">
+          <span style="font-size:15px;">➕</span> <span>Inserisci Visita</span>
+        </button>
+        <button type="button" class="btn btn-primary" onclick="chiudiModalSchedaClinicaMobile(); apriModificaAnagrafica();" style="flex:1; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12px; border-radius:10px; padding:10px 8px; border:none; display:flex; align-items:center; justify-content:center; gap:5px; cursor:pointer;">
+          <span>✏️ Modifica</span>
         </button>
       </div>
 
@@ -4730,11 +4733,11 @@
       </div>
 
       <!-- FOOTER -->
-      <div class="modal-footer" style="padding:10px 16px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-        <div style="font-size:11.5px; color:#64748b; font-weight:600;">
-          💡 Tocca <b>Modifica</b> o <b>Posticipa</b> per gestire la singola prestazione
-        </div>
-        <button type="button" class="btn btn-outline" onclick="chiudiModalElencoVisite()" style="padding:6px 16px; font-size:12px; font-weight:700; border-radius:8px;">Chiudi</button>
+      <div class="modal-footer" style="padding:10px 16px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+        <button type="button" onclick="chiudiModalElencoVisite(); openModal('modal-visita');" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; padding:8px 16px; border-radius:10px; font-weight:900; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(5,150,105,0.25);">
+          <span>➕</span> <span>Inserisci Nuova Visita Specialistica</span>
+        </button>
+        <button type="button" class="btn btn-outline" onclick="chiudiModalElencoVisite()" style="padding:7px 18px; font-size:12px; font-weight:700; border-radius:8px;">Chiudi</button>
       </div>
 
     </div>
@@ -7933,7 +7936,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=298"></script>
+  <script src="app.js?v=299"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7944,7 +7947,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=298', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=299', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
