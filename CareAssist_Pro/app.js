@@ -2945,7 +2945,10 @@ function renderPazientiSelector() {
         <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; background:#eff6ff; border:1px solid #93c5fd; border-radius:12px; padding:10px 12px; align-items:center;">
           <div style="width:100%; font-size:11.5px; font-weight:800; color:#1e40af; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center;">
             <span style="display:flex; align-items:center; gap:6px;"><span>🛡️</span> AUSILI & PROTOCOLLI SANITARI ATTIVI:</span>
-            <button type="button" class="btn btn-outline" style="background:#ffffff; color:#0284c7; border-color:#93c5fd; font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:6px; cursor:pointer;" onclick="apriModalAggiungiAusilio()" title="Aggiungi un nuovo ausilio a questo assistito">➕ Aggiungi Ausilio</button>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('patologie-ausili')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:6px; padding:3px 10px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono gli Ausili e Protocolli Sanitari">💡 A cosa serve</button>
+              <button type="button" class="btn btn-outline" style="background:#ffffff; color:#0284c7; border-color:#93c5fd; font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:6px; cursor:pointer;" onclick="apriModalAggiungiAusilio()" title="Aggiungi un nuovo ausilio a questo assistito">➕ Aggiungi Ausilio</button>
+            </div>
           </div>
           ${items}
         </div>
@@ -2956,7 +2959,10 @@ function renderPazientiSelector() {
           <div style="font-size:12px; color:#64748b; font-weight:600; display:flex; align-items:center; gap:6px;">
             <span>🛡️</span> Nessun ausilio o presidio registrato per questo assistito.
           </div>
-          <button type="button" class="btn btn-outline" style="background:#ffffff; color:#0284c7; border-color:#93c5fd; font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:6px; cursor:pointer;" onclick="apriModalAggiungiAusilio()" title="Aggiungi un ausilio sanitario">➕ Aggiungi Ausilio</button>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('patologie-ausili')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:6px; padding:3px 10px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono gli Ausili e Protocolli Sanitari">💡 A cosa serve</button>
+            <button type="button" class="btn btn-outline" style="background:#ffffff; color:#0284c7; border-color:#93c5fd; font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:6px; cursor:pointer;" onclick="apriModalAggiungiAusilio()" title="Aggiungi un ausilio sanitario">➕ Aggiungi Ausilio</button>
+          </div>
         </div>
       `;
     }
