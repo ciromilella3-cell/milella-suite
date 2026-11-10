@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v297-cup-basilicata-navigatore-visite';
+const CACHE_NAME = 'careassist-pro-v298-scheda-visita-intelligente-ai';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

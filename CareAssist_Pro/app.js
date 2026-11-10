@@ -7877,6 +7877,9 @@ function apriModificaVisita(id) {
   if (motEl) motEl.value = v.motivo || '';
   if (prepEl) prepEl.value = v.preparazione || '';
   if (docEl) docEl.value = v.documenti || "Tessera Sanitaria, Documento d'Identità, Esenzione Ticket, Piano Terapeutico";
+  if (typeof controllaConflittiVisita === "function") {
+    setTimeout(controllaConflittiVisita, 30);
+  }
 }
 window.apriModificaVisita = apriModificaVisita;
 
@@ -7960,6 +7963,17 @@ function openModal(id) {
     }
 
     if (id === 'modal-visita') {
+      var ocrSt = document.getElementById('vis-ocr-status'); if (ocrSt) ocrSt.style.display = 'none';
+      var aiBox = document.getElementById('vis-box-suggerimenti-ai'); if (aiBox) aiBox.style.display = 'none';
+      var ocrIn = document.getElementById('vis-ocr-input'); if (ocrIn) ocrIn.value = '';
+      var patEl = getActivePaziente();
+      if (patEl && patEl.allettato && !window._inModificaVisita) {
+        var trEl = document.getElementById('vis-trasporto');
+        if (trEl) trEl.value = 'Ambulanza / Trasporto Sanitario';
+      }
+      if (typeof controllaConflittiVisita === 'function') {
+        setTimeout(controllaConflittiVisita, 40);
+      }
       const editIdEl = document.getElementById('vis-edit-id');
       const titleEl = document.getElementById('modal-visita-title');
       const btnEl = document.getElementById('btn-salva-visita');
@@ -12324,6 +12338,503 @@ function posticipaRapidoVisita(id) {
   if (motSpostEl) motSpostEl.focus();
 }
 window.posticipaRapidoVisita = posticipaRapidoVisita;
+
+// ==========================================
+// ASSISTENTE CLINICO INTELLIGENTE PER VISITE (AI & SMART TOOLS)
+// ==========================================
+
+function analizzaRicettaOCR(event) {
+  var file = event && event.target && event.target.files ? event.target.files[0] : null;
+  if (!file) return;
+
+  var statusEl = document.getElementById('vis-ocr-status');
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = '<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> Inizializzazione motore OCR (Tesseract AI)...';
+  }
+
+  if (typeof Tesseract === 'undefined') {
+    if (statusEl) {
+      statusEl.style.display = 'block';
+      statusEl.innerHTML = '⚠️ Modulo OCR non caricato dalla rete. Compila manualmente i campi o verifica la connessione.';
+    }
+    if (typeof showToast === 'function') showToast('⚠️ OCR non disponibile offline - compila manualmente');
+    return;
+  }
+
+  Tesseract.recognize(
+    file,
+    'ita',
+    {
+      logger: function(m) {
+        if (statusEl && m.status === 'recognizing text') {
+          var pct = Math.round((m.progress || 0) * 100);
+          statusEl.innerHTML = '<span style="display:inline-block; animation:spin 1s linear infinite;">🔍</span> Lettura ricetta medica AI in corso: <b>' + pct + '%</b>';
+        }
+      }
+    }
+  ).then(function(result) {
+    var text = (result && result.data && result.data.text) ? result.data.text : '';
+    if (statusEl) {
+      statusEl.innerHTML = '✅ Ricetta letta con successo! Estrazione dati clinici in corso...';
+      setTimeout(function() {
+        statusEl.style.display = 'none';
+      }, 3500);
+    }
+    interpretaTestoRicettaECompila(text);
+  }).catch(function(err) {
+    console.error('Errore OCR Ricetta:', err);
+    if (statusEl) {
+      statusEl.innerHTML = '⚠️ Impossibile decifrare l\'immagine: ' + (err.message || 'Errore di lettura');
+    }
+    if (typeof showToast === 'function') showToast('⚠️ Errore lettura ricetta');
+  });
+}
+window.analizzaRicettaOCR = analizzaRicettaOCR;
+
+function interpretaTestoRicettaECompila(text) {
+  if (!text) return;
+  var raw = text;
+  var upper = text.toUpperCase();
+
+  // 1. Estrazione Codice NRE (15 caratteri alfanumerici dematerializzata es. 1700A0123456789 o 15 cifre)
+  var nreMatch = raw.match(/\b([0-9]{2}[0-9A-Z]{3}[0-9]{10}|[0-9]{15})\b/i);
+  if (nreMatch) {
+    var nreEl = document.getElementById('vis-nre');
+    var impEl = document.getElementById('vis-impegnativa');
+    if (nreEl) nreEl.value = nreMatch[1].toUpperCase();
+    if (impEl) impEl.value = 'Ricetta NRE Presente';
+  }
+
+  // 2. Estrazione Priorità (U, B, D, P)
+  var prioEl = document.getElementById('vis-priorita');
+  if (prioEl) {
+    if (/\bPRIORIT[AÀ]?\s*[:\s]?\s*U\b/i.test(upper) || /\bURGENTE\b/i.test(upper) || /\bCLASSE\s*U\b/i.test(upper)) {
+      prioEl.value = 'U - Urgente (72 ore)';
+    } else if (/\bPRIORIT[AÀ]?\s*[:\s]?\s*B\b/i.test(upper) || /\bBREVE\b/i.test(upper) || /\bCLASSE\s*B\b/i.test(upper)) {
+      prioEl.value = 'B - Breve (10 gg)';
+    } else if (/\bPRIORIT[AÀ]?\s*[:\s]?\s*D\b/i.test(upper) || /\bDIFFERIBILE\b/i.test(upper) || /\bCLASSE\s*D\b/i.test(upper)) {
+      prioEl.value = 'D - Differibile (30/60 gg)';
+    } else if (/\bPRIORIT[AÀ]?\s*[:\s]?\s*P\b/i.test(upper) || /\bPROGRAMMABILE\b/i.test(upper) || /\bPROGRAMMATA\b/i.test(upper) || /\bCLASSE\s*P\b/i.test(upper)) {
+      prioEl.value = 'P - Programmata (180 gg)';
+    }
+  }
+
+  // 3. Estrazione Specialità e Prestazione Clinica
+  var medEl = document.getElementById('vis-medico');
+  var motEl = document.getElementById('vis-motivo');
+  var strEl = document.getElementById('vis-tipo-struttura');
+  var telEl = document.getElementById('vis-telefono');
+  var luogoEl = document.getElementById('vis-luogo');
+  var percEl = document.getElementById('vis-percorso');
+  var prepEl = document.getElementById('vis-preparazione');
+  var docEl = document.getElementById('vis-documenti');
+
+  if (upper.includes('NEUROLOG') || upper.includes('PARKINSON') || upper.includes('TREMOR')) {
+    if (medEl) medEl.value = 'Specialista Neurologo / ASP San Carlo Potenza';
+    if (motEl) motEl.value = 'Visita Neurologica di controllo, valutazione morbo di Parkinson & rinnovo piano terapeutico Sinemet';
+    if (strEl) strEl.value = 'Ospedale Pubblico / Policlinico';
+    if (telEl) telEl.value = '800 814 814';
+    if (luogoEl) luogoEl.value = 'A.O.R. Ospedale San Carlo - Padiglione B, U.O. Neurologia, Via Potito Petrone, 85100 Potenza (PZ)';
+    if (percEl) percEl.value = 'Da Corleto Perticara: SS92 verso Laurenzana/Anzi, raccordo Potenza Centro -> Ospedale San Carlo (~50 km, circa 55 min). Parcheggio visitatori Via Potito Petrone.';
+    if (prepEl) prepEl.value = 'Portare documentazione neurologica precedente, diario motorio tremori ed elenco farmaci in uso';
+  } else if (upper.includes('DIABET') || upper.includes('GLICEM') || upper.includes('XULTOPHY') || upper.includes('GLUCOMEN')) {
+    if (medEl) medEl.value = 'Diabetologia / CAD Territoriale ASP Basilicata';
+    if (motEl) motEl.value = 'Controllo Glicemico periodico, rinnovo piano terapeutico insulina Xultophy e prescrizione sensori GlucoMen areo';
+    if (strEl) strEl.value = 'ASL / Poliambulatorio CUP';
+    if (telEl) telEl.value = '800 814 814';
+    if (luogoEl) luogoEl.value = 'CAD Territoriale ASP Basilicata - Distretto Sanitario Villa d\'Agri';
+    if (percEl) percEl.value = 'Da Corleto Perticara: SP103 Fondovalle Agri verso Marsicovetere (~35 km, 35 min).';
+    if (prepEl) prepEl.value = 'Portare diario glicemie scaricato da glucometro, ultime analisi sangue (HbA1c) e tessera sanitaria';
+  } else if (upper.includes('CARDIO') || upper.includes('ECG') || upper.includes('ECOCARDIO') || upper.includes('SCOMPENSO') || upper.includes('PRESSIONE')) {
+    if (medEl) medEl.value = 'Cardiologia Clinica & Scompenso / Ospedale San Carlo';
+    if (motEl) motEl.value = 'Visita Cardiologica con ECG di controllo, valutazione cardiopatia ipertensiva e terapia diuretica';
+    if (strEl) strEl.value = 'Ospedale Pubblico / Policlinico';
+    if (telEl) telEl.value = '800 814 814';
+    if (luogoEl) luogoEl.value = 'A.O.R. Ospedale San Carlo - Cardiologia, Via Potito Petrone, 85100 Potenza (PZ)';
+    if (percEl) percEl.value = 'Da Corleto Perticara: SS92 verso Potenza (~50 km, 55 min).';
+    if (prepEl) prepEl.value = 'Portare ECG precedenti e diario pressione arteriosa misurata mattina e sera';
+  } else if (upper.includes('OCULIST') || upper.includes('FONDO OCULARE') || upper.includes('RETINOPATIA') || upper.includes('VISTA')) {
+    if (medEl) medEl.value = 'Oculistica Territoriale / Ambulatorio ASP';
+    if (motEl) motEl.value = 'Esame del Fondo Oculare per screening retinopatia diabetica';
+    if (strEl) strEl.value = 'ASL / Poliambulatorio CUP';
+    if (telEl) telEl.value = '800 814 814';
+    if (prepEl) prepEl.value = 'Verranno instillate gocce per midriasi (dilatazione pupilla): non guidare dopo la visita, presentarsi con accompagnatore';
+  } else if (upper.includes('INFETTIV') || upper.includes('EPATIT') || upper.includes('HIV')) {
+    if (medEl) medEl.value = 'Malattie Infettive / Centro Territoriale Potenza';
+    if (motEl) motEl.value = 'Visita Infettivologica di controllo e monitoraggio ematochimico';
+    if (strEl) strEl.value = 'Ospedale Pubblico / Policlinico';
+    if (telEl) telEl.value = '800 814 814';
+    if (prepEl) prepEl.value = 'Portare ultimi esami ematochimici e cariche virali recenti';
+  } else if (upper.includes('PRELIEVO') || upper.includes('SANGUE') || upper.includes('EMOCROMO') || upper.includes('ANALISI')) {
+    if (medEl) medEl.value = 'Infermiere ADI / Prelievo Sangue Domiciliare';
+    if (motEl) motEl.value = 'Prelievo ematico domiciliare: Emocromo, Glicata HbA1c, Elettroliti, Creatinina, Azotemia';
+    if (strEl) strEl.value = 'ASL / Poliambulatorio CUP';
+    if (telEl) telEl.value = '800 814 814';
+    if (prepEl) prepEl.value = 'Rigido digiuno dalla mezzanotte. Bere solo acqua naturale. Sospendere farmaci mattutini fino a dopo il prelievo.';
+  } else {
+    if (medEl && !medEl.value) medEl.value = 'Specialista Medico / ASP Basilicata';
+    if (motEl && !motEl.value) motEl.value = 'Visita specialistica e accertamento clinico da ricetta medica';
+    if (telEl && !telEl.value) telEl.value = '800 814 814';
+  }
+
+  // 4. Esenzione
+  if (docEl) {
+    if (upper.includes('048') || upper.includes('013') || upper.includes('C01') || upper.includes('ESENZ')) {
+      docEl.value = "Tessera Sanitaria, Documento d'Identità, Codice Esenzione Ticket, Ricetta NRE";
+    }
+  }
+
+  controllaConflittiVisita();
+
+  if (typeof showToast === 'function') {
+    showToast('✨ Dati estratti da ricetta medica e compilati con successo!');
+  }
+}
+window.interpretaTestoRicettaECompila = interpretaTestoRicettaECompila;
+
+function suggerisciVisiteDaQuadroClinico() {
+  var p = getActivePaziente();
+  if (!p) {
+    if (typeof showToast === 'function') showToast('⚠️ Nessun paziente selezionato');
+    return;
+  }
+
+  var container = document.getElementById('vis-lista-suggerimenti-ai');
+  var box = document.getElementById('vis-box-suggerimenti-ai');
+  if (!container || !box) return;
+
+  var patologieStr = (p.patologie || []).map(function(x) { return (x.nome || x.patologia || x || '').toString().toLowerCase(); }).join(' ');
+  var farmaciStr = (p.terapie || []).map(function(x) { return (x.farmaco || x.nome || x || '').toString().toLowerCase(); }).join(' ');
+  var quadroCompleto = patologieStr + ' ' + farmaciStr;
+
+  var suggerimenti = [];
+
+  // Diabete
+  if (quadroCompleto.includes('diabet') || quadroCompleto.includes('xultophy') || quadroCompleto.includes('diamicron') || quadroCompleto.includes('forxiga')) {
+    suggerimenti.push({
+      titolo: 'Diabetologia CAD: Controllo Periodico & Rinnovo Piani',
+      motivoClinico: 'Assistito con Diabete tipo 2 in terapia con Xultophy/Forxiga',
+      medico: 'Diabetologia / CAD Territoriale ASP Basilicata',
+      motivo: 'Visita Diabetologica di controllo, rinnovo piano terapeutico Xultophy e prescrizione sensori GlucoMen',
+      struttura: 'ASL / Poliambulatorio CUP',
+      telefono: '800 814 814',
+      prep: 'Portare diario glicemie scaricato da sensore GlucoMen areo e ultimi esami HbA1c',
+      doc: 'Tessera Sanitaria, Ricetta NRE, Piano Terapeutico scaduto, Esenzione 013',
+      luogo: 'Distretto Sanitario Villa d\'Agri - Ambulatorio Diabetologia',
+      percorso: 'Da Corleto Perticara: SP103 verso Villa d\'Agri (~35 km, 35 min)',
+      priorita: 'P - Programmata (180 gg)',
+      badge: '🩸 Diabete',
+      badgeColor: '#dc2626'
+    });
+
+    suggerimenti.push({
+      titolo: 'Fondo Oculare Annuale (Screening Retinopatia)',
+      motivoClinico: 'Controllo preventivo complicanze microvascolari del diabete',
+      medico: 'Oculistica Territoriale / Ambulatorio ASP',
+      motivo: 'Esame del Fondo Oculare bilaterale per screening retinopatia diabetica',
+      struttura: 'ASL / Poliambulatorio CUP',
+      telefono: '800 814 814',
+      prep: 'Accompagnatore obbligatorio per guida (instillazione collirio midriatico)',
+      doc: 'Tessera Sanitaria, Ricetta NRE, Esenzione 013',
+      luogo: 'Poliambulatorio Territoriale ASP Basilicata',
+      percorso: 'Raggiungibile in auto con accompagnatore',
+      priorita: 'D - Differibile (30/60 gg)',
+      badge: '👁️ Oculistica',
+      badgeColor: '#0284c7'
+    });
+  }
+
+  // Parkinson
+  if (quadroCompleto.includes('parkinson') || quadroCompleto.includes('sinemet') || quadroCompleto.includes('tremor')) {
+    suggerimenti.push({
+      titolo: 'Neurologia San Carlo Potenza: Monitoraggio Parkinson & Sinemet',
+      motivoClinico: 'Assistito con morbo di Parkinson in terapia dopaminergica (Sinemet)',
+      medico: 'Specialista Neurologo / ASP San Carlo Potenza',
+      motivo: 'Visita Neurologica di controllo, valutazione fluttuazioni motorie e rinnovo piano terapeutico Sinemet',
+      struttura: 'Ospedale Pubblico / Policlinico',
+      telefono: '800 814 814',
+      prep: 'Portare documentazione neurologica precedente, diario motorio tremori ed elenco farmaci',
+      doc: 'Tessera Sanitaria, Documento d\'Identità, Esenzione 048/013, Ricetta NRE',
+      luogo: 'A.O.R. Ospedale San Carlo - Padiglione B, U.O. Neurologia, Via Potito Petrone, 85100 Potenza (PZ)',
+      percorso: 'Da Corleto Perticara: SS92 verso Laurenzana/Anzi, raccordo Potenza Centro -> Ospedale San Carlo (~50 km, circa 55 min). Parcheggio visitatori Via Potito Petrone.',
+      priorita: 'P - Programmata (180 gg)',
+      badge: '🧠 Neurologia',
+      badgeColor: '#7c3aed'
+    });
+  }
+
+  // Cardiologia / Scompenso
+  if (quadroCompleto.includes('cardio') || quadroCompleto.includes('scompenso') || quadroCompleto.includes('ipertens') || quadroCompleto.includes('lasix') || quadroCompleto.includes('congescor') || quadroCompleto.includes('triatec')) {
+    suggerimenti.push({
+      titolo: 'Cardiologia & ECG: Controllo Scompenso Cardiaco & Terapie',
+      motivoClinico: 'Cardiopatia ipertensiva e terapia con diuretico d\'ansa (Lasix) e antipertensivi',
+      medico: 'Cardiologia Clinica & Scompenso / Ospedale Villa d\'Agri o San Carlo',
+      motivo: 'Visita Cardiologica con elettrocardiogramma (ECG) di controllo periodico e verifica compenso emodinamico',
+      struttura: 'Ospedale Pubblico / Policlinico',
+      telefono: '800 814 814',
+      prep: 'Portare ECG precedenti e diario monitoraggio pressione arteriosa',
+      doc: 'Tessera Sanitaria, Ricetta NRE, Esenzione Ticket 048/013',
+      luogo: 'Ospedale di Villa d\'Agri - Ambulatorio Cardiologia',
+      percorso: 'Da Corleto Perticara: SP103 / Fondovalle dell\'Agri verso Villa d\'Agri (~35 km, 35 min)',
+      priorita: 'D - Differibile (30/60 gg)',
+      badge: '❤️ Cardiologia',
+      badgeColor: '#e11d48'
+    });
+  }
+
+  // Prelievo Domiciliare ADI
+  suggerimenti.push({
+    titolo: 'Prelievo Sangue & Controllo Ematochimico Domiciliare / ADI',
+    motivoClinico: 'Monitoraggio semestrale: Elettroliti per Lasix, Funzione Renale, Glicata, Emocromo',
+    medico: 'Infermiere ADI / Prelievo Domiciliare ASP',
+    motivo: 'Prelievo ematico di controllo: Emocromo, Glicemia, HbA1c, Sodio, Potassio, Creatinina, Azotemia, Acido Urico',
+    struttura: 'ASL / Poliambulatorio CUP',
+    telefono: '800 814 814',
+    prep: 'Rigido digiuno dalla mezzanotte. Bere solo acqua. Assumere farmaci del mattino subito dopo il prelievo.',
+    doc: 'Ricetta NRE medico curante (Dr.ssa Carolina Potenza), Tessera Sanitaria',
+    luogo: 'A domicilio dell\'assistito (Corleto Perticara)',
+    percorso: 'Servizio infermieristico territoriale domiciliare ADI Distretto Villa d\'Agri',
+    priorita: 'B - Breve (10 gg)',
+    badge: '💉 Prelievo ADI',
+    badgeColor: '#059669'
+  });
+
+  // MMG Curante Rinnovo Ausili
+  suggerimenti.push({
+    titolo: 'MMG Curante: Rinnovo Piani Ausili (Pants Serenity / Sensori Glicemia)',
+    motivoClinico: 'Prescrizione continuativa ausili assorbenti e dispositivi glicemici',
+    medico: 'Dr.ssa Carolina Potenza (MMG Curante)',
+    motivo: 'Rinnovo ricetta / rifornimento ASL per mutandina assorbente PANTS Serenity e sensori GlucoMen areo',
+    struttura: 'Medico di Medicina Generale (MMG)',
+    telefono: '0971 963111',
+    prep: 'Portare codice utente ASP fornitura ausili e tessera sanitaria',
+    doc: 'Tessera Sanitaria, Documentazione fornitura precedente',
+    luogo: 'Ambulatorio MMG Corleto Perticara',
+    percorso: 'Ambulatorio comunale Corleto Perticara',
+    priorita: 'P - Programmata (180 gg)',
+    badge: '🩺 MMG Curante',
+    badgeColor: '#d97706'
+  });
+
+  var html = '';
+  suggerimenti.forEach(function(s, idx) {
+    html += '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:9px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">' +
+      '<div style="flex:1; min-width:200px;">' +
+        '<div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">' +
+          '<span style="font-size:10px; background:' + s.badgeColor + '; color:#ffffff; padding:1px 6px; border-radius:4px; font-weight:800;">' + s.badge + '</span>' +
+          '<b style="font-size:12px; color:#0f172a;">' + s.titolo + '</b>' +
+        '</div>' +
+        '<div style="font-size:11px; color:#475569; line-height:1.3;">' + s.motivoClinico + '</div>' +
+      '</div>' +
+      '<button type="button" onclick="applicaControlloSuggeritoAI(' + idx + ')" style="background:#15803d; color:#ffffff; border:none; border-radius:8px; padding:6px 12px; font-size:11px; font-weight:800; cursor:pointer; box-shadow:0 1px 3px rgba(21,128,61,0.2); white-space:nowrap;">' +
+        '⚡ Applica (1-Tap)' +
+      '</button>' +
+    '</div>';
+  });
+
+  window._cacheSuggerimentiAI = suggerimenti;
+  container.innerHTML = html;
+  box.style.display = 'block';
+  if (typeof showToast === 'function') showToast('🧠 Trovati ' + suggerimenti.length + ' controlli raccomandati');
+}
+window.suggerisciVisiteDaQuadroClinico = suggerisciVisiteDaQuadroClinico;
+
+function applicaControlloSuggeritoAI(index) {
+  var list = window._cacheSuggerimentiAI || [];
+  var s = list[index];
+  if (!s) return;
+
+  var medEl = document.getElementById('vis-medico');
+  var motEl = document.getElementById('vis-motivo');
+  var strEl = document.getElementById('vis-tipo-struttura');
+  var telEl = document.getElementById('vis-telefono');
+  var prepEl = document.getElementById('vis-preparazione');
+  var docEl = document.getElementById('vis-documenti');
+  var luogoEl = document.getElementById('vis-luogo');
+  var percEl = document.getElementById('vis-percorso');
+  var prioEl = document.getElementById('vis-priorita');
+  var traspEl = document.getElementById('vis-trasporto');
+
+  if (medEl) medEl.value = s.medico;
+  if (motEl) motEl.value = s.motivo;
+  if (strEl) strEl.value = s.struttura;
+  if (telEl) telEl.value = s.telefono;
+  if (prepEl) prepEl.value = s.prep;
+  if (docEl) docEl.value = s.doc;
+  if (luogoEl) luogoEl.value = s.luogo;
+  if (percEl) percEl.value = s.percorso;
+  if (prioEl && s.priorita) prioEl.value = s.priorita;
+
+  var p = getActivePaziente();
+  if (p && p.allettato && traspEl) {
+    traspEl.value = 'Ambulanza / Trasporto Sanitario';
+  } else if (traspEl && !traspEl.value) {
+    traspEl.value = 'Auto propria con accompagnatore';
+  }
+
+  var box = document.getElementById('vis-box-suggerimenti-ai');
+  if (box) box.style.display = 'none';
+
+  controllaConflittiVisita();
+
+  if (typeof showToast === 'function') {
+    showToast('✅ Dati compilati: ' + s.titolo);
+  }
+}
+window.applicaControlloSuggeritoAI = applicaControlloSuggeritoAI;
+
+function controllaConflittiVisita() {
+  var alertBox = document.getElementById('vis-safety-alert');
+  if (!alertBox) return;
+
+  var p = getActivePaziente();
+  if (!p) {
+    alertBox.style.display = 'none';
+    return;
+  }
+
+  var dataVal = (document.getElementById('vis-data')?.value || '').slice(0, 10);
+  var statoVal = document.getElementById('vis-stato')?.value || 'In programma';
+  var prepVal = (document.getElementById('vis-preparazione')?.value || '').toLowerCase();
+  var editId = (document.getElementById('vis-edit-id')?.value || '').trim();
+  var traspVal = document.getElementById('vis-trasporto')?.value || '';
+
+  if (statoVal === 'Eseguita' || statoVal === 'Disdetta') {
+    alertBox.style.display = 'none';
+    return;
+  }
+
+  var warnings = [];
+
+  // 1. Controllo sovrapposizione data/orario con altre visite
+  if (dataVal && Array.isArray(p.visite)) {
+    var visiteStessoGiorno = p.visite.filter(function(v) {
+      if (String(v.id) === String(editId)) return false;
+      var vStato = v.statoVisita || (v.fatto ? 'Eseguita' : 'In programma');
+      if (vStato === 'Eseguita' || vStato === 'Disdetta') return false;
+      return (v.data || '').slice(0, 10) === dataVal;
+    });
+
+    if (visiteStessoGiorno.length > 0) {
+      var dFmt = dataVal.split('-').reverse().join('/');
+      var medStr = visiteStessoGiorno.map(function(v) { return (v.medico || 'Visita') + ' (ore ' + (v.ora || '--:--') + ')'; }).join(', ');
+      warnings.push('⚠️ <b>Conflitto Appuntamenti:</b> Il paziente ha già ' + (visiteStessoGiorno.length === 1 ? 'un\'altra visita' : 'altre visite') + ' lo stesso giorno (<b>' + dFmt + '</b>): ' + medStr + '. Verificare che gli orari e i tragitti non si accavallino.');
+    }
+  }
+
+  // 2. Controllo Digiuno e Terapie del Mattino
+  var isDigiuno = prepVal.includes('digiun') || prepVal.includes('sangue') || prepVal.includes('preliev') || prepVal.includes('glicat');
+  if (isDigiuno) {
+    warnings.push('⚠️ <b>Allerta Terapie del Mattino (Digiuno richiesto):</b> La prestazione richiede digiuno. Ricordarsi di <u>sospendere temporaneamente</u> i farmaci del mattino (es. Lasix, Xultophy, Sinemet, Triatec) e portarli con sé per assumerli <i>subito dopo</i> il prelievo/controllo clinico.');
+  }
+
+  // 3. Controllo Paziente Allettato / Mobilità
+  if (p.allettato && (!traspVal.toLowerCase().includes('ambulanza') && !traspVal.toLowerCase().includes('sanitario'))) {
+    warnings.push('ℹ️ <b>Mobilità Assistito:</b> L\'assistito risulta allettato/non deambulante. Verificare la prenotazione tempestiva di <b>Ambulanza</b> o trasporto sanitario protetto.');
+  }
+
+  if (warnings.length > 0) {
+    alertBox.style.display = 'block';
+    alertBox.innerHTML = '<div style="font-weight:800; font-size:11.5px; margin-bottom:4px; display:flex; align-items:center; gap:5px;"><span>🛡️</span> <span>Controlli di Sicurezza Clinica Attivi:</span></div>' +
+      warnings.map(function(w) { return '<div style="margin-top:4px;">' + w + '</div>'; }).join('');
+  } else {
+    alertBox.style.display = 'none';
+    alertBox.innerHTML = '';
+  }
+}
+window.controllaConflittiVisita = controllaConflittiVisita;
+
+function inviaPromemoriaWhatsAppVisita() {
+  var p = getActivePaziente();
+  var nomePaz = p ? (p.nome + ' ' + (p.cognome || '')).trim() : 'Assistito';
+
+  var dataVal = document.getElementById('vis-data')?.value || '';
+  var oraVal = document.getElementById('vis-ora')?.value || '';
+  var medicoVal = document.getElementById('vis-medico')?.value || 'Visita Specialistica';
+  var tipoStrVal = document.getElementById('vis-tipo-struttura')?.value || '';
+  var luogoVal = document.getElementById('vis-luogo')?.value || '';
+  var telVal = document.getElementById('vis-telefono')?.value || '800 814 814';
+  var nreVal = document.getElementById('vis-nre')?.value || '';
+  var prioVal = document.getElementById('vis-priorita')?.value || '';
+  var prepVal = document.getElementById('vis-preparazione')?.value || '';
+  var docVal = document.getElementById('vis-documenti')?.value || '';
+  var percVal = document.getElementById('vis-percorso')?.value || '';
+
+  var dataFmt = dataVal ? dataVal.split('-').reverse().join('/') : 'Data da definire';
+
+  var destMaps = luogoVal || percVal || 'Azienda Ospedaliera Regionale San Carlo Potenza Via Potito Petrone';
+  var mapsUrl = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(destMaps);
+
+  var msg = '🏥 *PROMEMORIA VISITA SPECIALISTICA - CAREASSIST PRO*\n\n' +
+    '👤 *Assistito:* ' + nomePaz + '\n' +
+    '📅 *Data & Ora:* ' + dataFmt + ' alle ore ' + (oraVal || '10:00') + '\n' +
+    '👨‍⚕️ *Specialista / Servizio:* ' + medicoVal + '\n' +
+    (tipoStrVal ? ('🏛️ *Struttura:* ' + tipoStrVal + '\n') : '') +
+    (luogoVal ? ('📍 *Sede / Luogo:* ' + luogoVal + '\n') : '') +
+    '📞 *CUP / Recapito:* ' + telVal + '\n' +
+    (nreVal ? ('🎫 *Codice NRE Ricetta:* ' + nreVal + '\n') : '') +
+    (prioVal ? ('⚡ *Priorità:* ' + prioVal + '\n') : '') +
+    (prepVal ? ('📋 *Istruzioni / Preparazione:* ' + prepVal + '\n') : '') +
+    (docVal ? ('🪪 *Documenti da portare:* ' + docVal + '\n') : '') +
+    (percVal ? ('🚗 *Come raggiungere:* ' + percVal + '\n') : '') +
+    '🗺️ *Navigatore GPS Google Maps:* ' + mapsUrl + '\n\n' +
+    'Inviato tramite CareAssist Pro';
+
+  var numTel = (p && (p.moglieCellulare || p.cellulare || '')) ? String(p.moglieCellulare || p.cellulare).replace(/[\s\-\(\)\/\+]/g, '') : '';
+  if (numTel && !numTel.startsWith('39')) numTel = '39' + numTel;
+
+  var waUrl = numTel ? ('https://api.whatsapp.com/send?phone=' + numTel + '&text=' + encodeURIComponent(msg)) : ('https://api.whatsapp.com/send?text=' + encodeURIComponent(msg));
+  window.open(waUrl, '_blank');
+}
+window.inviaPromemoriaWhatsAppVisita = inviaPromemoriaWhatsAppVisita;
+
+function leggiPromemoriaVocaleVisita() {
+  if (!('speechSynthesis' in window)) {
+    if (typeof showToast === 'function') showToast('⚠️ Sintesi vocale non supportata in questo browser');
+    return;
+  }
+
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    if (typeof showToast === 'function') showToast('⏹️ Voce interrotta');
+    return;
+  }
+
+  var p = getActivePaziente();
+  var nomePaz = p ? (p.nome + ' ' + (p.cognome || '')).trim() : 'l\'assistito';
+
+  var dataVal = document.getElementById('vis-data')?.value || '';
+  var oraVal = document.getElementById('vis-ora')?.value || '';
+  var medicoVal = document.getElementById('vis-medico')?.value || 'visita specialistica';
+  var luogoVal = document.getElementById('vis-luogo')?.value || '';
+  var prepVal = document.getElementById('vis-preparazione')?.value || '';
+
+  var dataFmt = '';
+  if (dataVal) {
+    var parts = dataVal.split('-');
+    if (parts.length === 3) {
+      dataFmt = parts[2] + '/' + parts[1] + '/' + parts[0];
+    }
+  }
+
+  var testo = 'Promemoria visita specialistica per ' + nomePaz + '. ' +
+    'Visita con ' + medicoVal + ', ' +
+    (dataFmt ? ('programmata per il giorno ' + dataFmt + ' alle ore ' + (oraVal || '10:00') + '. ') : '') +
+    (luogoVal ? ('Presso ' + luogoVal + '. ') : '') +
+    (prepVal ? ('Attenzione per la preparazione: ' + prepVal + '. ') : '') +
+    'Ricordati di portare la tessera sanitaria e la documentazione clinica precedente.';
+
+  var utter = new SpeechSynthesisUtterance(testo);
+  utter.lang = 'it-IT';
+  utter.rate = 0.95;
+  utter.pitch = 1.0;
+
+  window.speechSynthesis.speak(utter);
+  if (typeof showToast === 'function') showToast('🗣️ Riproduzione promemoria vocale...');
+}
+window.leggiPromemoriaVocaleVisita = leggiPromemoriaVocaleVisita;
+
 
 function salvaNuovaVisita(e) {
   e.preventDefault();

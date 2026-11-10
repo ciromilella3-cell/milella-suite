@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=297">
+  <link rel="stylesheet" href="style.css?v=298">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -4414,6 +4414,66 @@
         <input type="hidden" id="vis-edit-id" value="">
         <div class="modal-body" style="padding: 16px 18px; overflow-y: auto; max-height: 75vh; display: flex; flex-direction: column; gap: 14px; background: #f8fafc;">
 
+          <!-- ASSISTENTE CLINICO INTELLIGENTE (AI & SMART TOOLS) -->
+          <div style="background:linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); border:1.5px solid #7dd3fc; border-radius:14px; padding:12px 14px; box-shadow:0 2px 8px rgba(2,132,199,0.08);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:4px;">
+              <div style="font-size:12px; font-weight:900; color:#0369a1; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+                <span>⚡</span> <span>Assistente Clinico Intelligente (AI)</span>
+              </div>
+              <span style="font-size:10px; background:#0284c7; color:#ffffff; padding:2px 8px; border-radius:6px; font-weight:800; letter-spacing:0.3px;">AUTO-COMPILAZIONE</span>
+            </div>
+            
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:6px;">
+              <!-- 1. OCR RICETTA -->
+              <label for="vis-ocr-input" style="background:#ffffff; color:#0369a1; border:1.5px solid #93c5fd; border-radius:10px; padding:8px 8px; font-size:11px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; box-shadow:0 1px 3px rgba(0,0,0,0.04); text-align:center; margin:0;" title="Scatta o carica una foto della ricetta per compilare i campi automaticamente">
+                <span style="font-size:16px;">📷</span>
+                <span>Scansiona Ricetta (OCR)</span>
+              </label>
+              <input type="file" id="vis-ocr-input" accept="image/*" capture="environment" style="display:none;" onchange="analizzaRicettaOCR(event)">
+
+              <!-- 2. DEDUCI DA PATOLOGIE -->
+              <button type="button" onclick="suggerisciVisiteDaQuadroClinico()" style="background:#ffffff; color:#15803d; border:1.5px solid #86efac; border-radius:10px; padding:8px 8px; font-size:11px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; box-shadow:0 1px 3px rgba(0,0,0,0.04); text-align:center;" title="Mostra controlli raccomandati in base a diagnosi e farmaci attivi">
+                <span style="font-size:16px;">🧠</span>
+                <span>Deduci da Patologie</span>
+              </button>
+
+              <!-- 3. CONDIVIDI WHATSAPP -->
+              <button type="button" onclick="inviaPromemoriaWhatsAppVisita()" style="background:#ffffff; color:#047857; border:1.5px solid #a7f3d0; border-radius:10px; padding:8px 8px; font-size:11px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; box-shadow:0 1px 3px rgba(0,0,0,0.04); text-align:center;" title="Invia promemoria completo con link GPS al Caregiver o MMG">
+                <span style="font-size:16px;">📲</span>
+                <span>Condividi WhatsApp</span>
+              </button>
+
+              <!-- 4. VOCALE ASSISTITO -->
+              <button type="button" onclick="leggiPromemoriaVocaleVisita()" style="background:#ffffff; color:#6d28d9; border:1.5px solid #c4b5fd; border-radius:10px; padding:8px 8px; font-size:11px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; box-shadow:0 1px 3px rgba(0,0,0,0.04); text-align:center;" title="Ascolta a voce il riassunto dell'appuntamento">
+                <span style="font-size:16px;">🗣️</span>
+                <span>Promemoria Vocale</span>
+              </button>
+            </div>
+
+            <!-- STATO PROGRESSO OCR (DINAMICO) -->
+            <div id="vis-ocr-status" style="display:none; margin-top:8px; font-size:11.5px; font-weight:700; color:#0284c7; background:#ffffff; border-radius:8px; padding:7px 10px; border:1px dashed #38bdf8;">
+              <span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> Elaborazione immagine ricetta medica con AI OCR in corso...
+            </div>
+
+            <!-- BOX CONTROLLI SUGGERITI DA DIAGNOSI (DINAMICO) -->
+            <div id="vis-box-suggerimenti-ai" style="display:none; margin-top:10px; background:#ffffff; border:1.5px solid #86efac; border-radius:12px; padding:10px 12px; box-shadow:0 2px 6px rgba(22,101,52,0.08);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div style="font-size:11.5px; font-weight:800; color:#15803d; display:flex; align-items:center; gap:5px;">
+                  <span>🎯</span> <span>Controlli Clinici Raccomandati per l'Assistito:</span>
+                </div>
+                <button type="button" onclick="document.getElementById('vis-box-suggerimenti-ai').style.display='none'" style="background:none; border:none; color:#64748b; font-size:13px; font-weight:800; cursor:pointer;">✕</button>
+              </div>
+              <div id="vis-lista-suggerimenti-ai" style="display:flex; flex-direction:column; gap:6px;">
+                <!-- Popolato dinamicamente da suggerisciVisiteDaQuadroClinico -->
+              </div>
+            </div>
+
+            <!-- SAFETY ALERT CONFLITTO TERAPIE / DATE (DINAMICO) -->
+            <div id="vis-safety-alert" style="display:none; margin-top:8px; background:#fff1f2; border:1.5px solid #fecdd3; border-radius:10px; padding:8px 10px; font-size:11.5px; color:#9f1239; line-height:1.35;">
+              <!-- Popolato dinamicamente da controllaConflittiVisita -->
+            </div>
+          </div>
+
           <!-- 1. DATA, ORARIO & STATO APPUNTAMENTO -->
           <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
             <div style="font-size:11.5px; font-weight:800; color:#0369a1; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:5px;">
@@ -4422,15 +4482,15 @@
             <div class="vis-grid-programmazione" style="display:grid; grid-template-columns:1.35fr 1fr 1.65fr; gap:10px;">
               <div class="form-group" style="margin:0;">
                 <label class="form-label" style="font-size:11px; font-weight:800; color:#334155;">Data Appuntamento *</label>
-                <input type="date" class="form-control" id="vis-data" min="2020-01-01" max="2035-12-31" required style="font-size:13.5px; font-weight:700; height:38px; color:#0f172a; padding:6px 8px; width:100%; box-sizing:border-box;">
+                <input type="date" class="form-control" id="vis-data" min="2020-01-01" max="2035-12-31" required onchange="controllaConflittiVisita()" style="font-size:13.5px; font-weight:700; height:38px; color:#0f172a; padding:6px 8px; width:100%; box-sizing:border-box;">
               </div>
               <div class="form-group" style="margin:0;">
                 <label class="form-label" style="font-size:11px; font-weight:800; color:#334155;">Orario *</label>
-                <input type="time" class="form-control" id="vis-ora" value="10:00" required style="font-size:13.5px; font-weight:700; height:38px; color:#0f172a; padding:6px 8px; width:100%; box-sizing:border-box;">
+                <input type="time" class="form-control" id="vis-ora" value="10:00" required onchange="controllaConflittiVisita()" style="font-size:13.5px; font-weight:700; height:38px; color:#0f172a; padding:6px 8px; width:100%; box-sizing:border-box;">
               </div>
               <div class="form-group vis-group-stato" style="margin:0;">
                 <label class="form-label" style="font-size:11px; font-weight:800; color:#334155;">Stato Visita</label>
-                <select class="form-control" id="vis-stato" onchange="gestisciCambioStatoVisita(this.value)" style="font-size:12.5px; font-weight:800; height:38px; color:#0f172a; padding:6px 8px; width:100%; box-sizing:border-box;">
+                <select class="form-control" id="vis-stato" onchange="gestisciCambioStatoVisita(this.value); controllaConflittiVisita();" style="font-size:12.5px; font-weight:800; height:38px; color:#0f172a; padding:6px 8px; width:100%; box-sizing:border-box;">
                   <option value="In programma">⏳ In programma</option>
                   <option value="Posticipata / Spostata">🔄 Posticipata / Spostata</option>
                   <option value="In attesa">⚠️ In attesa di ricetta/CUP</option>
@@ -4609,7 +4669,7 @@
                 <button type="button" onclick="aggiungiPreparazioneRapida('🩸 Esami del sangue recenti richiesti')" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:3px 7px; font-size:10.5px; font-weight:700; cursor:pointer;">🩸 Esami sangue recenti</button>
                 <button type="button" onclick="document.getElementById('vis-preparazione').value = 'Nessuna preparazione speciale richiesta';" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; border-radius:6px; padding:3px 7px; font-size:10.5px; font-weight:700; cursor:pointer;">🩺 Nessuna preparazione</button>
               </div>
-              <input type="text" class="form-control" id="vis-preparazione" placeholder="Es. Digiuno da 8 ore prima dell'esame, sospendere anticoagulante col medico">
+              <input type="text" class="form-control" id="vis-preparazione" placeholder="Es. Digiuno da 8 ore prima dell'esame, sospendere anticoagulante col medico" oninput="controllaConflittiVisita()" onchange="controllaConflittiVisita()">
             </div>
 
             <div class="form-group" style="margin:0;">
@@ -4619,8 +4679,13 @@
           </div>
 
         </div>
-        <div class="modal-footer" style="padding:12px 18px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-          <button type="button" class="btn btn-outline" onclick="closeModal('modal-visita')">Annulla</button>
+        <div class="modal-footer" style="padding:12px 18px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button type="button" class="btn btn-outline" onclick="closeModal('modal-visita')" style="padding:7px 14px; font-size:12px; font-weight:700;">Annulla</button>
+            <button type="button" onclick="inviaPromemoriaWhatsAppVisita()" style="background:#ecfdf5; color:#047857; border:1px solid #86efac; border-radius:8px; padding:7px 11px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Condividi promemoria su WhatsApp al familiare">
+              <span>📲</span> <span>WhatsApp</span>
+            </button>
+          </div>
           <button type="submit" class="btn btn-primary" id="btn-salva-visita" style="font-weight:800; font-size:13px; padding:8px 18px; border-radius:8px;">💾 Salva Appuntamento</button>
         </div>
       </form>
@@ -7868,7 +7933,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=297"></script>
+  <script src="app.js?v=298"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7879,7 +7944,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=297', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=298', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
