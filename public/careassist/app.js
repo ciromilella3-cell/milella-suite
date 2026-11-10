@@ -1824,6 +1824,30 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     }
   }
 
+  // Sincronizzazione automatica visita Ospedale San Carlo Potenza: CUP Basilicata 800 814 814 + Navigatore & Percorso SS92
+  if (Array.isArray(AppData.pazienti)) {
+    AppData.pazienti.forEach(function (pt) {
+      if (Array.isArray(pt.visite)) {
+        pt.visite.forEach(function (v) {
+          if (String(v.id) === '1794288476947' || ((v.data === '2027-04-08' || v.ora === '10:20') && (v.medico || '').toLowerCase().includes('san carlo'))) {
+            v.medico = 'Specialista Neurologo / ASP San Carlo Potenza';
+            v.tipoStruttura = 'Ospedale Pubblico / Policlinico';
+            v.luogo = 'A.O.R. Ospedale San Carlo - Padiglione B, U.O. Neurologia, Via Potito Petrone, 85100 Potenza (PZ)';
+            v.telefono = '800 814 814';
+            v.motivo = 'Visita Neurologica di controllo, valutazione parkinsonismo & rinnovo piano terapeutico Sinemet';
+            v.comeRaggiungere = 'Da Corleto Perticara: SS92 verso Laurenzana/Anzi, raccordo Potenza Centro fino a Ospedale San Carlo (~50 km, circa 55 min). Parcheggio visitatori ingresso principale Via Potito Petrone.';
+            v.mapsUrl = 'https://www.google.com/maps/dir/?api=1&destination=Azienda+Ospedaliera+Regionale+San+Carlo+Potenza+Via+Potito+Petrone';
+            v.trasporto = 'Auto propria con accompagnatore familiare (Maria Carmela)';
+            v.impegnativa = 'Ricetta NRE Presente';
+            v.priorita = 'P - Programmata (180 gg)';
+            v.preparazione = 'Portare documentazione neurologica precedente, diario motorio tremori ed elenco farmaci in uso (Sinemet)';
+            v.documenti = 'Tessera Sanitaria, Documento d\'Identità, Esenzione Ticket 048/013, Ricetta NRE';
+          }
+        });
+      }
+    });
+  }
+
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
 }
 
@@ -7822,6 +7846,7 @@ function apriModificaVisita(id) {
   const motEl = document.getElementById('vis-motivo');
   const prepEl = document.getElementById('vis-preparazione');
   const docEl = document.getElementById('vis-documenti');
+  const percEl = document.getElementById('vis-percorso');
 
   if (editIdEl) editIdEl.value = v.id;
   if (titleEl) titleEl.innerHTML = '✏️ Modifica Visita o Prestazione';
@@ -7842,6 +7867,7 @@ function apriModificaVisita(id) {
   if (strEl) strEl.value = v.tipoStruttura || 'ASL / Poliambulatorio CUP';
   if (luogoEl) luogoEl.value = v.luogo || '';
   if (telEl) telEl.value = v.telefono || '';
+  if (percEl) percEl.value = v.comeRaggiungere || '';
 
   if (impEl) impEl.value = v.impegnativa || 'Ricetta NRE Presente';
   if (nreEl) nreEl.value = v.codiceNre || '';
@@ -7882,6 +7908,7 @@ function openModal(id) {
       const motEl = document.getElementById('vis-motivo');
       const prepEl = document.getElementById('vis-preparazione');
       const docEl = document.getElementById('vis-documenti');
+      const percEl = document.getElementById('vis-percorso');
 
       if (editIdEl) editIdEl.value = '';
       if (titleEl) titleEl.innerHTML = '📅 Pianifica Visita o Prestazione';
@@ -7898,6 +7925,7 @@ function openModal(id) {
       if (strEl) strEl.value = 'ASL / Poliambulatorio CUP';
       if (luogoEl) luogoEl.value = '';
       if (telEl) telEl.value = '';
+      if (percEl) percEl.value = '';
       if (impEl) impEl.value = 'Ricetta NRE Presente';
       if (nreEl) nreEl.value = '';
       if (prioEl) prioEl.value = 'P - Programmata (180 gg)';
@@ -12140,21 +12168,123 @@ function impostaPresetVisita(medico, motivo) {
 }
 window.impostaPresetVisita = impostaPresetVisita;
 
-function impostaPresetVisitaCompleto(medico, motivo, tipoStruttura, telefono, preparazione, documenti) {
+function impostaPresetVisitaCompleto(medico, motivo, tipoStruttura, telefono, preparazione, documenti, luogo, comeRaggiungere) {
   var medEl = document.getElementById('vis-medico');
   var motEl = document.getElementById('vis-motivo');
   var strEl = document.getElementById('vis-tipo-struttura');
   var telEl = document.getElementById('vis-telefono');
   var prepEl = document.getElementById('vis-preparazione');
   var docEl = document.getElementById('vis-documenti');
+  var luogoEl = document.getElementById('vis-luogo');
+  var percEl = document.getElementById('vis-percorso');
   if (medEl && medico) medEl.value = medico;
   if (motEl && motivo) motEl.value = motivo;
   if (strEl && tipoStruttura) strEl.value = tipoStruttura;
   if (telEl && telefono !== undefined) telEl.value = telefono;
   if (prepEl && preparazione) prepEl.value = preparazione;
   if (docEl && documenti) docEl.value = documenti;
+  if (luogoEl && luogo) luogoEl.value = luogo;
+  if (percEl && comeRaggiungere) percEl.value = comeRaggiungere;
 }
 window.impostaPresetVisitaCompleto = impostaPresetVisitaCompleto;
+
+function impostaCUPNumero() {
+  var telEl = document.getElementById('vis-telefono');
+  if (telEl) telEl.value = '800 814 814';
+  if (typeof showToast === 'function') showToast('📞 Inserito Numero Verde CUP Basilicata: 800 814 814');
+}
+window.impostaCUPNumero = impostaCUPNumero;
+
+function impostaPresetCUPBasilicata() {
+  impostaPresetVisitaCompleto(
+    'Specialista Ambulatoriale / CUP Basilicata',
+    'Visita specialistica programmata tramite CUP',
+    'ASL / Poliambulatorio CUP',
+    '800 814 814',
+    'Presentarsi 15 minuti prima con ricevuta di prenotazione',
+    'Tessera Sanitaria, Ricetta NRE, Esenzione Ticket',
+    'Poliambulatorio Territoriale ASP Basilicata',
+    'Raggiungibile in auto con parcheggio ASL o navetta sanitaria'
+  );
+  if (typeof showToast === 'function') showToast('📞 Compilati dati CUP Basilicata (800 814 814)');
+}
+window.impostaPresetCUPBasilicata = impostaPresetCUPBasilicata;
+
+function impostaPresetSanCarloPotenza() {
+  impostaPresetVisitaCompleto(
+    'A.O.R. Ospedale San Carlo Potenza',
+    'Visita specialistica ospedaliera / Controllo clinico',
+    'Ospedale Pubblico / Policlinico',
+    '800 814 814',
+    'Portare documentazione clinica precedente e tessera sanitaria',
+    'Tessera Sanitaria, Documento d\'Identità, Ricetta NRE',
+    'A.O.R. Ospedale San Carlo, Via Potito Petrone, 85100 Potenza (PZ)',
+    'Da Corleto Perticara: SS92 verso Laurenzana/Anzi, raccordo Potenza Centro -> Ospedale San Carlo (~50 km, circa 55 min). Parcheggio visitatori Via Potito Petrone.'
+  );
+  if (typeof showToast === 'function') showToast('🏥 Compilati dati A.O.R. San Carlo Potenza & percorso SS92');
+}
+window.impostaPresetSanCarloPotenza = impostaPresetSanCarloPotenza;
+
+function impostaPresetNeurologiaSanCarlo() {
+  impostaPresetVisitaCompleto(
+    'Specialista Neurologo / ASP San Carlo Potenza',
+    'Visita Neurologica di controllo, valutazione parkinsonismo & rinnovo piano terapeutico Sinemet',
+    'Ospedale Pubblico / Policlinico',
+    '800 814 814',
+    'Portare documentazione neurologica precedente, diario motorio e referti recenti',
+    'Tessera Sanitaria, Documento d\'Identità, Esenzione 048/013, Ricetta NRE',
+    'A.O.R. Ospedale San Carlo - Padiglione B, U.O. Neurologia, Via Potito Petrone, 85100 Potenza (PZ)',
+    'Da Corleto Perticara: SS92 verso Laurenzana/Anzi, raccordo Potenza Centro -> Ospedale San Carlo (~50 km, circa 55 min). Parcheggio visitatori Via Potito Petrone.'
+  );
+  var traspEl = document.getElementById('vis-trasporto');
+  if (traspEl) traspEl.value = 'Auto propria con accompagnatore familiare (Maria Carmela)';
+  if (typeof showToast === 'function') showToast('🧠 Compilati dati Neurologia San Carlo + CUP + Percorso');
+}
+window.impostaPresetNeurologiaSanCarlo = impostaPresetNeurologiaSanCarlo;
+
+function impostaPresetVillaDAgri() {
+  impostaPresetVisitaCompleto(
+    'Poliambulatorio Ospedale Villa d\'Agri',
+    'Visita specialistica e controlli strumentali',
+    'Ospedale Pubblico / Policlinico',
+    '800 814 814',
+    'Nessuna preparazione speciale richiesta',
+    'Tessera Sanitaria, Documento d\'Identità, Ricetta NRE',
+    'Ospedale di Villa d\'Agri, Via Ospedale, Marsicovetere (PZ)',
+    'Da Corleto Perticara: SP103 / Fondovalle dell\'Agri verso Marsicovetere (~35 km, circa 35 min).'
+  );
+  if (typeof showToast === 'function') showToast('🏥 Compilati dati Ospedale Villa d\'Agri & CUP');
+}
+window.impostaPresetVillaDAgri = impostaPresetVillaDAgri;
+
+function impostaPercorsoRapido(tipo) {
+  var percEl = document.getElementById('vis-percorso');
+  if (!percEl) return;
+  if (tipo === 'san-carlo') {
+    percEl.value = "Da Corleto Perticara: SS92 verso Laurenzana/Anzi, raccordo Potenza Centro -> Ospedale San Carlo (~50 km, circa 55 min). Parcheggio visitatori ingresso principale Via Potito Petrone.";
+  } else if (tipo === 'villa-agri') {
+    percEl.value = "Da Corleto Perticara: SP103 / Fondovalle dell'Agri verso Marsicovetere Ospedale Villa d'Agri (~35 km, circa 35 min).";
+  } else if (tipo === 'navetta') {
+    percEl.value = "Richiesta navetta trasporto sanitario assistito / ambulanza non urgente tramite servizio territoriale.";
+  }
+}
+window.impostaPercorsoRapido = impostaPercorsoRapido;
+
+function apriNavigatoreDaInput() {
+  var luogo = (document.getElementById('vis-luogo')?.value || '').trim();
+  var percorso = (document.getElementById('vis-percorso')?.value || '').trim();
+  var dest = luogo || percorso || 'Azienda Ospedaliera Regionale San Carlo Potenza Via Potito Petrone';
+  var url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(dest);
+  window.open(url, '_blank');
+}
+window.apriNavigatoreDaInput = apriNavigatoreDaInput;
+
+function apriNavigatoreVisita(destinazione) {
+  var dest = (destinazione || '').trim() || 'Azienda Ospedaliera Regionale San Carlo Potenza Via Potito Petrone';
+  var url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(dest);
+  window.open(url, '_blank');
+}
+window.apriNavigatoreVisita = apriNavigatoreVisita;
 
 function aggiungiPreparazioneRapida(testo) {
   var prepEl = document.getElementById('vis-preparazione');
@@ -12218,6 +12348,8 @@ function salvaNuovaVisita(e) {
   const motivoVal = (document.getElementById('vis-motivo')?.value || '').trim();
   const preparazioneVal = (document.getElementById('vis-preparazione')?.value || '').trim();
   const documentiVal = (document.getElementById('vis-documenti')?.value || '').trim();
+  const percorsoVal = (document.getElementById('vis-percorso')?.value || '').trim();
+  const mapsUrlVal = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(luogoVal || percorsoVal || 'Azienda Ospedaliera Regionale San Carlo Potenza Via Potito Petrone');
 
   const isFatto = statoVisitaVal === 'Eseguita';
 
@@ -12236,6 +12368,8 @@ function salvaNuovaVisita(e) {
         tipoStruttura: tipoStrutturaVal,
         luogo: luogoVal,
         telefono: telefonoVal,
+        comeRaggiungere: percorsoVal,
+        mapsUrl: mapsUrlVal,
         impegnativa: impegnativaVal,
         codiceNre: codiceNreVal,
         priorita: prioritaVal,
@@ -12261,6 +12395,8 @@ function salvaNuovaVisita(e) {
       tipoStruttura: tipoStrutturaVal,
       luogo: luogoVal,
       telefono: telefonoVal,
+      comeRaggiungere: percorsoVal,
+      mapsUrl: mapsUrlVal,
       impegnativa: impegnativaVal,
       codiceNre: codiceNreVal,
       priorita: prioritaVal,
@@ -27551,11 +27687,24 @@ function apriModalSchedaClinicaMobile(pazId) {
                   </div>
                 ` : ''}
 
-                ${v.telefono ? `
-                  <div style="margin-top:6px;">
-                    <a href="tel:${v.telefono.replace(/\s+/g, '')}" style="display:inline-flex; align-items:center; gap:5px; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:6px; padding:3px 9px; font-size:11px; font-weight:800; text-decoration:none;">
-                      <span>📞</span> <span>Chiama: ${v.telefono}</span>
-                    </a>
+                ${(v.luogo || v.comeRaggiungere || v.telefono) ? `
+                  <div style="margin-top:7px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                    ${v.telefono ? `
+                      <a href="tel:${v.telefono.replace(/[\s\(\)\/-]/g, '')}" style="display:inline-flex; align-items:center; gap:5px; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:7px; padding:4px 9px; font-size:11px; font-weight:800; text-decoration:none; box-shadow:0 1px 3px rgba(5,150,105,0.1);">
+                        <span>📞</span> <span>Chiama: <b>${v.telefono}</b></span>
+                      </a>
+                    ` : ''}
+                    ${(v.luogo || v.comeRaggiungere) ? `
+                      <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(v.luogo || v.comeRaggiungere || 'Azienda Ospedaliera Regionale San Carlo Potenza Via Potito Petrone')}" target="_blank" style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; color:#1d4ed8; border:1px solid #93c5fd; border-radius:7px; padding:4px 9px; font-size:11px; font-weight:800; text-decoration:none; box-shadow:0 1px 3px rgba(29,78,216,0.1);">
+                        <span>🗺️</span> <span>Navigatore Maps ➔</span>
+                      </a>
+                    ` : ''}
+                  </div>
+                ` : ''}
+
+                ${v.comeRaggiungere ? `
+                  <div style="margin-top:6px; background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:6px 9px; font-size:11px; color:#14532d; line-height:1.35;">
+                    🚗 <b>Come Raggiungere:</b> ${v.comeRaggiungere}
                   </div>
                 ` : ''}
               </div>
@@ -27821,11 +27970,24 @@ function renderElencoVisiteBody() {
               </div>
             ` : ''}
 
-            ${v.telefono ? `
-              <div style="margin-top:7px;">
-                <a href="tel:${v.telefono.replace(/\s+/g, '')}" style="display:inline-flex; align-items:center; gap:5px; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:7px; padding:4px 10px; font-size:11.5px; font-weight:800; text-decoration:none; box-shadow:0 1px 3px rgba(5,150,105,0.1);">
-                  <span>📞</span> <span>Chiama: <b>${v.telefono}</b></span>
-                </a>
+            ${(v.luogo || v.comeRaggiungere || v.telefono) ? `
+              <div style="margin-top:7px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                ${v.telefono ? `
+                  <a href="tel:${v.telefono.replace(/[\s\(\)\/-]/g, '')}" style="display:inline-flex; align-items:center; gap:5px; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:7px; padding:4px 10px; font-size:11.5px; font-weight:800; text-decoration:none; box-shadow:0 1px 3px rgba(5,150,105,0.1);">
+                    <span>📞</span> <span>Chiama CUP / Medico: <b>${v.telefono}</b></span>
+                  </a>
+                ` : ''}
+                ${(v.luogo || v.comeRaggiungere) ? `
+                  <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(v.luogo || v.comeRaggiungere || 'Azienda Ospedaliera Regionale San Carlo Potenza Via Potito Petrone')}" target="_blank" style="display:inline-flex; align-items:center; gap:5px; background:#eff6ff; color:#1d4ed8; border:1px solid #93c5fd; border-radius:7px; padding:4px 10px; font-size:11.5px; font-weight:800; text-decoration:none; box-shadow:0 1px 3px rgba(29,78,216,0.1);">
+                    <span>🗺️</span> <span>Come Raggiungere (Navigatore Maps) ➔</span>
+                  </a>
+                ` : ''}
+              </div>
+            ` : ''}
+
+            ${v.comeRaggiungere ? `
+              <div style="margin-top:7px; background:#f0fdf4; border:1.5px solid #86efac; border-radius:8px; padding:7px 10px; font-size:11.5px; color:#14532d; line-height:1.4;">
+                🚗 <b>Come Raggiungere:</b> ${v.comeRaggiungere}
               </div>
             ` : ''}
 

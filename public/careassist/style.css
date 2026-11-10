@@ -10061,5 +10061,33 @@ button[onclick*="mostraGuidaContestuale"],
     white-space: nowrap !important;
     flex-shrink: 0 !important;
   }
+
+  /* MODAL VISITA RESPONSIVE MOBILE - NESSUN DATO TAGLIATO */
+  #modal-visita .modal-card {
+    width: 98% !important;
+    max-height: 94vh !important;
+    border-radius: 16px !important;
+  }
+  #modal-visita-title {
+    font-size: 14.5px !important;
+    line-height: 1.25 !important;
+    font-weight: 800 !important;
+  }
+  .vis-grid-programmazione {
+    grid-template-columns: 1.4fr 1fr !important;
+    gap: 8px !important;
+  }
+  .vis-grid-programmazione .vis-group-stato {
+    grid-column: 1 / -1 !important;
+  }
+  #modal-visita input[type="date"],
+  #modal-visita input[type="time"],
+  #modal-visita select,
+  #modal-visita input[type="text"],
+  #modal-visita input[type="tel"] {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+  }
 }
 

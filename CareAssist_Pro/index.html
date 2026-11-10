@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=296">
+  <link rel="stylesheet" href="style.css?v=297">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -4419,18 +4419,18 @@
             <div style="font-size:11.5px; font-weight:800; color:#0369a1; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:5px;">
               <span>📅</span> <span>1. Programmazione &amp; Stato Visita</span>
             </div>
-            <div class="form-row" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px;">
+            <div class="vis-grid-programmazione" style="display:grid; grid-template-columns:1.35fr 1fr 1.65fr; gap:10px;">
               <div class="form-group" style="margin:0;">
-                <label class="form-label" style="font-size:11px; font-weight:700;">Data Appuntamento *</label>
-                <input type="date" class="form-control" id="vis-data" min="2020-01-01" max="2035-12-31" required>
+                <label class="form-label" style="font-size:11px; font-weight:800; color:#334155;">Data Appuntamento *</label>
+                <input type="date" class="form-control" id="vis-data" min="2020-01-01" max="2035-12-31" required style="font-size:13.5px; font-weight:700; height:38px; color:#0f172a; padding:6px 8px; width:100%; box-sizing:border-box;">
               </div>
               <div class="form-group" style="margin:0;">
-                <label class="form-label" style="font-size:11px; font-weight:700;">Orario *</label>
-                <input type="time" class="form-control" id="vis-ora" value="10:00" required>
+                <label class="form-label" style="font-size:11px; font-weight:800; color:#334155;">Orario *</label>
+                <input type="time" class="form-control" id="vis-ora" value="10:00" required style="font-size:13.5px; font-weight:700; height:38px; color:#0f172a; padding:6px 8px; width:100%; box-sizing:border-box;">
               </div>
-              <div class="form-group" style="margin:0;">
-                <label class="form-label" style="font-size:11px; font-weight:700;">Stato Visita</label>
-                <select class="form-control" id="vis-stato" onchange="gestisciCambioStatoVisita(this.value)">
+              <div class="form-group vis-group-stato" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:800; color:#334155;">Stato Visita</label>
+                <select class="form-control" id="vis-stato" onchange="gestisciCambioStatoVisita(this.value)" style="font-size:12.5px; font-weight:800; height:38px; color:#0f172a; padding:6px 8px; width:100%; box-sizing:border-box;">
                   <option value="In programma">⏳ In programma</option>
                   <option value="Posticipata / Spostata">🔄 Posticipata / Spostata</option>
                   <option value="In attesa">⚠️ In attesa di ricetta/CUP</option>
@@ -4467,22 +4467,31 @@
             <div style="margin-bottom:10px;">
               <label class="form-label" style="font-size:10.5px; color:#64748b; font-weight:800; text-transform:uppercase;">⚡ Suggerimenti Rapidi (1 Tap per compilare):</label>
               <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
-                <button type="button" onclick="impostaPresetVisitaCompleto('Dr.ssa Carolina Potenza / MMG', 'Rinnovo ricette e richiesta piano terapeutico', 'Studio Medico / MMG', '0971 963 221', 'Nessuna preparazione speciale', 'Tessera Sanitaria, Esenzione 048/013')" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                <button type="button" onclick="impostaPresetCUPBasilicata()" style="background:#f0fdf4; color:#166534; border:1.5px solid #86efac; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(22,101,52,0.12);">
+                  <span>📞</span> <span>CUP Basilicata: 800 814 814</span>
+                </button>
+                <button type="button" onclick="impostaPresetSanCarloPotenza()" style="background:#eff6ff; color:#1d4ed8; border:1.5px solid #93c5fd; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(29,78,216,0.12);">
+                  <span>🏥</span> <span>AOR San Carlo Potenza</span>
+                </button>
+                <button type="button" onclick="impostaPresetNeurologiaSanCarlo()" style="background:#fdf2f8; color:#be185d; border:1.5px solid #fbcfe8; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                  <span>🧠</span> <span>Neurologia San Carlo Potenza</span>
+                </button>
+                <button type="button" onclick="impostaPresetVillaDAgri()" style="background:#fefce8; color:#854d0e; border:1.5px solid #fde047; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                  <span>🏥</span> <span>Ospedale Villa d'Agri</span>
+                </button>
+                <button type="button" onclick="impostaPresetVisitaCompleto('Dr.ssa Carolina Potenza / MMG', 'Rinnovo ricette e richiesta piano terapeutico', 'Studio Medico / MMG', '0971 963 221', 'Nessuna preparazione speciale', 'Tessera Sanitaria, Esenzione 048/013', 'Sarconi / Moliterno', '')" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
                   🩺 MMG (Piano Terapeutico)
                 </button>
-                <button type="button" onclick="impostaPresetVisitaCompleto('Ambulatorio Diabetologia / CAD', 'Controllo Diabetologico, profilo glicemico &amp; rinnovo piano Xultophy', 'ASL / Poliambulatorio CUP', '0975 312111', 'Digiuno da 8 ore, portare glucometro e sensori', 'Impegnativa NRE con codice esenzione')" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                <button type="button" onclick="impostaPresetVisitaCompleto('Ambulatorio Diabetologia / CAD', 'Controllo Diabetologico, profilo glicemico &amp; rinnovo piano Xultophy', 'ASL / Poliambulatorio CUP', '800 814 814', 'Digiuno da 8 ore, portare glucometro e sensori', 'Impegnativa NRE con codice esenzione', 'Poliambulatorio Villa d\'Agri', 'Da Corleto Perticara SP103')" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
                   🩸 Diabetologia CAD
                 </button>
-                <button type="button" onclick="impostaPresetVisitaCompleto('Specialista Cardiologo / Ospedale', 'Controllo cardiologico, ECG &amp; monitoraggio pressione Triatec', 'Ospedale Pubblico / Policlinico', '0975 312200', 'Portare ECG precedenti e diario pressorio', 'Impegnativa MMG (Priorità B/D)')" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                <button type="button" onclick="impostaPresetVisitaCompleto('Specialista Cardiologo / Ospedale', 'Controllo cardiologico, ECG &amp; monitoraggio pressione Triatec', 'Ospedale Pubblico / Policlinico', '0975 312200', 'Portare ECG precedenti e diario pressorio', 'Impegnativa MMG (Priorità B/D)', 'Ospedale Villa d\'Agri', 'SP103 verso Marsicovetere')" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
                   ❤️ Cardiologia
                 </button>
-                <button type="button" onclick="impostaPresetVisitaCompleto('Specialista Neurologo / ASP', 'Visita Neurologica di controllo, valutazione parkinsonismo &amp; piano Sinemet', 'ASL / Poliambulatorio CUP', '', 'Nessuna preparazione', 'Documentazione neurologica precedente')" style="background:#fdf2f8; color:#be185d; border:1px solid #fbcfe8; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
-                  🧠 Neurologia
-                </button>
-                <button type="button" onclick="impostaPresetVisitaCompleto('Clinica Malattie Infettive Policlinico Bari', 'Visita Infettivologica di controllo HBV &amp; esami sangue', 'Ospedale Pubblico / Policlinico', '080 559 1111', 'Digiuno da 10 ore per prelievo virale', 'Impegnativa NRE, referti HBV DNA precedenti')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                <button type="button" onclick="impostaPresetVisitaCompleto('Clinica Malattie Infettive Policlinico Bari', 'Visita Infettivologica di controllo HBV &amp; esami sangue', 'Ospedale Pubblico / Policlinico', '080 559 1111', 'Digiuno da 10 ore per prelievo virale', 'Impegnativa NRE, referti HBV DNA precedenti', 'Policlinico di Bari - Piazza G. Cesare 11', 'Raccordo autostradale verso Bari')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
                   🔬 Malattie Infettive
                 </button>
-                <button type="button" onclick="impostaPresetVisitaCompleto('Infermiere Domiciliare ADI', 'Prelievo ematico domiciliare / Controllo parametri e piaghe', 'Domicilio Assistito (ADI)', '338 000 0000', 'Digiuno da mezzanotte', 'Fustelle e impegnative cartacee pronte')" style="background:#fefce8; color:#a16207; border:1px solid #fde047; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                <button type="button" onclick="impostaPresetVisitaCompleto('Infermiere Domiciliare ADI', 'Prelievo ematico domiciliare / Controllo parametri e piaghe', 'Domicilio Assistito (ADI)', '338 000 0000', 'Digiuno da mezzanotte', 'Fustelle e impegnative cartacee pronte', 'Domicilio dell\'assistito', '')" style="background:#fefce8; color:#a16207; border:1px solid #fde047; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
                   💉 Prelievo / ADI Domicilio
                 </button>
               </div>
@@ -4491,11 +4500,11 @@
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
               <div class="form-group" style="margin:0;">
                 <label class="form-label" style="font-size:11px; font-weight:700;">Medico o Servizio Specialista *</label>
-                <input type="text" class="form-control" id="vis-medico" placeholder="Es. Dott. Rossi / Diabetologo CAD" required>
+                <input type="text" class="form-control" id="vis-medico" placeholder="Es. Specialista Neurologo / ASP San Carlo Potenza" required style="font-size:13px; font-weight:700;">
               </div>
               <div class="form-group" style="margin:0;">
                 <label class="form-label" style="font-size:11px; font-weight:700;">Presso Struttura (ASL o Privato) *</label>
-                <select class="form-control" id="vis-tipo-struttura">
+                <select class="form-control" id="vis-tipo-struttura" style="font-size:12.5px; font-weight:700;">
                   <option value="ASL / Poliambulatorio CUP">🏛️ ASL / Distretto Sanitario / Poliambulatorio CUP</option>
                   <option value="Ospedale Pubblico / Policlinico">🏥 Ospedale Pubblico / Policlinico</option>
                   <option value="Studio Privato / Intramoenia">🏢 Studio Privato / Intramoenia / Convenzionato</option>
@@ -4508,11 +4517,30 @@
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:10px;">
               <div class="form-group" style="margin:0;">
                 <label class="form-label" style="font-size:11px; font-weight:700;">Sede / Indirizzo / Reparto</label>
-                <input type="text" class="form-control" id="vis-luogo" placeholder="Es. Ospedale Villa d'Agri - Padiglione B, Stanza 3">
+                <input type="text" class="form-control" id="vis-luogo" placeholder="Es. A.O.R. San Carlo - Padiglione B, U.O. Neurologia, Potenza" style="font-size:12.5px;">
               </div>
               <div class="form-group" style="margin:0;">
-                <label class="form-label" style="font-size:11px; font-weight:700;">📞 Numero Telefonico (CUP / Medico / Reparto)</label>
-                <input type="tel" class="form-control" id="vis-telefono" placeholder="Es. 0975 312111 o cellulare medico">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                  <label class="form-label" style="font-size:11px; font-weight:700; margin:0;">📞 Numero Telefonico (CUP / Medico)</label>
+                  <button type="button" onclick="impostaCUPNumero()" style="background:#f0fdf4; color:#166534; border:1px solid #86efac; border-radius:4px; padding:1px 6px; font-size:10px; font-weight:800; cursor:pointer;" title="Inserisci 800 814 814">CUP: 800 814 814</button>
+                </div>
+                <input type="tel" class="form-control" id="vis-telefono" placeholder="Es. 800 814 814 (CUP) o cellulare medico" style="font-size:13px; font-weight:700;">
+              </div>
+            </div>
+
+            <!-- COME RAGGIUNGERE L'APPUNTAMENTO & NAVIGATORE MAPS -->
+            <div class="form-group" style="margin-top:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
+                <label class="form-label" style="font-size:11px; font-weight:800; color:#0369a1; margin:0;">🚗 Come Raggiungere l'Appuntamento (Indicazioni Stradali &amp; Navigatore)</label>
+                <button type="button" onclick="apriNavigatoreDaInput()" style="background:#eff6ff; color:#1d4ed8; border:1px solid #93c5fd; border-radius:6px; padding:3px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(29,78,216,0.1);" title="Avvia navigatore Google Maps">
+                  <span>🗺️</span> <span>Navigatore Maps ➔</span>
+                </button>
+              </div>
+              <input type="text" class="form-control" id="vis-percorso" placeholder="Es. Da Corleto: SS92 verso Potenza Ospedale San Carlo (~50 km, 55 min). Parcheggio Via Potito Petrone." style="font-size:12.5px; color:#0f172a;">
+              <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:5px;">
+                <button type="button" onclick="impostaPercorsoRapido('san-carlo')" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:2px 7px; font-size:10px; font-weight:700; cursor:pointer;">🏥 Percorso San Carlo Potenza (SS92)</button>
+                <button type="button" onclick="impostaPercorsoRapido('villa-agri')" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:2px 7px; font-size:10px; font-weight:700; cursor:pointer;">🏥 Percorso Villa d'Agri (SP103)</button>
+                <button type="button" onclick="impostaPercorsoRapido('navetta')" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:2px 7px; font-size:10px; font-weight:700; cursor:pointer;">🚑 Richiesta Navetta / Mezzo Sanitario</button>
               </div>
             </div>
           </div>
@@ -7840,7 +7868,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=296"></script>
+  <script src="app.js?v=297"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7851,7 +7879,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=296', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=297', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
