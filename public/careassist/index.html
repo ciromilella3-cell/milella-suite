@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=301">
+  <link rel="stylesheet" href="style.css?v=302">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -4415,10 +4415,9 @@
     <div class="modal-card" style="max-width: 680px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 1.5px solid #cbd5e1;">
       <div class="modal-header" style="background: linear-gradient(135deg, #091e3a 0%, #1e3a8a 55%, #0284c7 100%); color: #ffffff; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.15);">
         <div class="modal-title" id="modal-visita-title" style="color:#ffffff; font-weight:800; font-size:16px; min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📅 Pianifica Visita o Prestazione</div>
-        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-          <button type="button" class="btn btn-outline" onclick="chiudiModalVisitaEApriElenco()" style="border-color:rgba(255,255,255,0.45) !important; color:#ffffff !important; background:rgba(255,255,255,0.2) !important; font-weight:800 !important; font-size:11.5px !important; padding:4px 10px !important; border-radius:8px !important; white-space:nowrap !important; display:inline-flex; align-items:center; gap:5px; cursor:pointer;" title="Visualizza l'elenco di tutti gli appuntamenti per verificare o modificare"><span>📋</span> <span>Elenco Visite (<span id="modal-visita-count-visite">0</span>)</span></button>
+        <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
           <button type="button" class="btn btn-outline btn-guida-contestuale" onclick="mostraGuidaContestuale('pianifica-visita')" style="border-color:rgba(255,255,255,0.4) !important; color:#ffffff !important; background:rgba(255,255,255,0.18) !important; font-weight:800 !important; font-size:11px !important; padding:4px 8px !important; border-radius:8px !important; white-space:nowrap !important; flex-shrink:0 !important; width:auto !important; height:auto !important;" title="A cosa serve la Pianificazione Visite">💡 A cosa serve</button>
-          <button type="button" class="btn btn-outline" onclick="closeModal('modal-visita')" style="color:#ffffff; border:1px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.15); width:34px; height:34px; min-width:34px; border-radius:50%; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0; flex-shrink:0; cursor:pointer;">✕</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-visita')" style="color:#ffffff; border:1px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.15); width:32px; height:32px; min-width:32px; border-radius:50%; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0; flex-shrink:0; cursor:pointer;">✕</button>
         </div>
       </div>
       <form onsubmit="salvaNuovaVisita(event)">
@@ -4432,7 +4431,7 @@
                 <span>📂</span> <span>VERIFICA O MODIFICA UN APPUNTAMENTO ESISTENTE:</span>
               </div>
               <button type="button" onclick="chiudiModalVisitaEApriElenco()" style="background:#0284c7; color:#ffffff; border:none; padding:4px 10px; border-radius:7px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.2);">
-                <span>📋</span> <span>Mostra Tutto in Elenco ➔</span>
+                <span>📋</span> <span>Mostra Tutto in Elenco (<span id="modal-visita-count-visite">0</span>) ➔</span>
               </button>
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
@@ -7962,7 +7961,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=301"></script>
+  <script src="app.js?v=302"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7973,7 +7972,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=301', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=302', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
