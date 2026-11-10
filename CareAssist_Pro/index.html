@@ -731,10 +731,16 @@
 
         <!-- CARD 1: OROLOGIO POSTURALE & PREVENZIONE PIAGHE (Q2H) -->
         <div class="rsa-card" id="card-orologio-posturale">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:6px;">
             <div
               style="font-family:'Outfit',sans-serif; font-weight:800; font-size:16px; color:#0f172a; display:flex; align-items:center; gap:8px;">
               <span>🔄</span> <span>Orologio Posturale & Antidecubito (q2h)</span>
+              <button type="button" class="btn btn-outline"
+                onclick="mostraGuidaContestuale('modal-orologio-posturale')"
+                style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:2px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"
+                title="A cosa serve l'Orologio Posturale">
+                <span>💡</span> <span>A cosa serve</span>
+              </button>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
               <button type="button" id="btn-toggle-timer-postura" class="btn btn-outline"
@@ -799,10 +805,16 @@
 
         <!-- CARD 2: BILANCIO IDRICO GIORNALIERO (IDRATAZIONE RAPIDA) -->
         <div class="rsa-card" id="card-idratazione">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
             <div
               style="font-family:'Outfit',sans-serif; font-weight:800; font-size:16px; color:#0f172a; display:flex; align-items:center; gap:8px;">
               <span>💧</span> <span>Bilancio Idratazione Oggi</span>
+              <button type="button" class="btn btn-outline"
+                onclick="mostraGuidaContestuale('dashboard-idratazione')"
+                style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:2px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"
+                title="A cosa serve il Bilancio Idratazione">
+                <span>💡</span> <span>A cosa serve</span>
+              </button>
             </div>
             <div style="font-weight:800; font-size:13px; color:#0284c7;" id="hydration-counter">0 / 1200 ml</div>
           </div>
@@ -840,10 +852,16 @@
 
         <!-- CARD 3: REGISTRO NUTRIZIONE & PASTI GIORNALIERI (DISFAGIA & APPETITO) -->
         <div class="rsa-card" id="card-nutrizione-pasti">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:6px;">
             <div
               style="font-family:'Outfit',sans-serif; font-weight:800; font-size:16px; color:#0f172a; display:flex; align-items:center; gap:8px;">
               <span>🍲</span> <span>Nutrizione & Pasti Oggi</span>
+              <button type="button" class="btn btn-outline"
+                onclick="mostraGuidaContestuale('dashboard-nutrizione')"
+                style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:2px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"
+                title="A cosa serve il Registro Nutrizione & Pasti">
+                <span>💡</span> <span>A cosa serve</span>
+              </button>
             </div>
             <span class="badge" id="nutrizione-status-badge"
               style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-weight:700;">Controllo
@@ -881,6 +899,14 @@
       </div>
 
       <!-- QUICK ACTION TILES (AZIONI RAPIDE OSS & RSA) -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin:16px 0 8px; padding:0 4px; flex-wrap:wrap; gap:8px;">
+        <div style="font-family:'Outfit',sans-serif; font-size:14px; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:6px;">
+          <span>⚡</span> <span>Azioni Rapide & Moduli Operativi OSS</span>
+        </div>
+        <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('dashboard-azioni-rapide')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:3px 10px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono le Azioni Rapide">
+          <span>💡</span> <span>A cosa serve</span>
+        </button>
+      </div>
       <div class="quick-tiles">
         <div class="tile" id="tile-cartella-patologie"
           onmouseenter="mostraLenteClinica('CARTELLA CLINICA &amp; PATOLOGIE ATTIVE', 'Quadro clinico completo dell assistito: diagnosi mediche, patologie croniche, allergie salvavita, farmaci correlati, contatti curanti e anamnesi.', '🩺', () => vaiACartellaPatologie(), 'Apri Cartella Clinica')"
@@ -4631,8 +4657,16 @@
               insulina e appuntamenti</p>
           </div>
         </div>
-        <button class="modal-close" style="color:#fff;"
-          onclick="fermaVoceBriefing(); closeModal('modal-briefing-vocale')">&times;</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('modal-briefing-vocale')"
+            style="background:rgba(255,255,255,0.15); color:#ffffff; border:1px solid rgba(255,255,255,0.5); border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"
+            title="A cosa serve il Briefing Vocale AI">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
+          <button class="modal-close" style="color:#fff;"
+            onclick="fermaVoceBriefing(); closeModal('modal-briefing-vocale')">&times;</button>
+        </div>
       </div>
       <div class="modal-body" style="padding: 20px;">
         <div id="briefing-vocale-body"></div>
@@ -6559,8 +6593,16 @@
               automaticamente</div>
           </div>
         </div>
-        <button type="button" onclick="closeModal('modal-kit-cartaceo')"
-          style="background:rgba(255,255,255,0.2); border:2px solid rgba(255,255,255,0.7); color:#fff; font-size:16px; font-weight:900; width:32px; height:32px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('kit-cartaceo-a4')"
+            style="background:rgba(255,255,255,0.18); color:#ffffff; border:1px solid rgba(255,255,255,0.5); border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"
+            title="A cosa serve il Kit Cartaceo A4">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
+          <button type="button" onclick="closeModal('modal-kit-cartaceo')"
+            style="background:rgba(255,255,255,0.2); border:2px solid rgba(255,255,255,0.7); color:#fff; font-size:16px; font-weight:900; width:32px; height:32px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">✕</button>
+        </div>
       </div>
 
       <div class="modal-body" style="padding:22px;">
@@ -7602,7 +7644,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=292"></script>
+  <script src="app.js?v=293"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7613,7 +7655,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=292', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=293', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

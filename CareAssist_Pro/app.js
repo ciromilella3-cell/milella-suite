@@ -2984,9 +2984,14 @@ function renderPazientiSelector() {
       patologieHtml = `
         <div class="patologie-container" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:8px;">
           <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:4px;">
-            <span style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.3px;">
-              Diagnosi & Quadro Clinico (${totale}):
-            </span>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.3px;">
+                Diagnosi & Quadro Clinico (${totale}):
+              </span>
+              <button type="button" onclick="mostraGuidaContestuale('cartella-quadro-clinico')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:10px; padding:2px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve il Quadro Diagnosi">
+                💡 A cosa serve
+              </button>
+            </div>
             <div style="display:flex; align-items:center; gap:6px;">
               <button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci()" style="font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:10px; background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; cursor:pointer;" title="Ricalcola le diagnosi cliniche esaminando i farmaci attivi">
                 ✨ Aggiorna dai Farmaci
@@ -3008,8 +3013,11 @@ function renderPazientiSelector() {
       patologieHtml = `
         <div class="patologie-container" style="background:#f0f9ff; border:1.5px dashed #38bdf8; border-radius:12px; padding:10px 14px; margin-top:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
           <div>
-            <div style="font-size:12px; font-weight:800; color:#0369a1; display:flex; align-items:center; gap:5px;">
+            <div style="font-size:12px; font-weight:800; color:#0369a1; display:flex; align-items:center; gap:6px;">
               <span>🩺</span> <span>Diagnosi clinica da formalizzare</span>
+              <button type="button" onclick="mostraGuidaContestuale('cartella-quadro-clinico')" style="background:#ffffff; color:#0284c7; border:1px solid #7dd3fc; border-radius:10px; padding:2px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve il Quadro Diagnosi">
+                💡 A cosa serve
+              </button>
             </div>
             <div style="font-size:11px; color:#475569; margin-top:2px;">
               ${numFarmaci > 0 ? `Rilevati <b>${numFarmaci} farmaci</b> in cartella: puoi dedurre automaticamente il quadro clinico con 1 tap.` : 'Nessuna patologia o diagnosi clinica attualmente inserita.'}
@@ -21788,11 +21796,14 @@ function renderSchedaSpecialisticaRosa(container, p) {
     </div>
 
     <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
-      <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
         <div>
           <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Monitoraggio Diabetologico & Cardiovascolare - Rosa C.</div>
           <div style="font-size:12px; color:#64748b;">Sorveglianza: Emoglobina Glicata &bull; Xultophy &bull; Forxiga &bull; Pressione Triatec &bull; Ausili</div>
         </div>
+        <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('protocollo-diabetologia')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve la Tabella Monitoraggio">
+          <span>💡</span> <span>A cosa serve</span>
+        </button>
       </div>
 
       <div class="table-responsive">
@@ -24038,6 +24049,102 @@ var GUIDE_CONTESTUALI = {
       'L\'ausilio compare immediatamente nella cartella clinica e nel dossier A4.'
     ],
     utilita: '<b>Gestione patrimoniale e adeguatezza dell\'assistenza</b>: garantisce che i dispositivi prescritti siano presenti ed efficienti al domicilio.'
+  },
+  'cartella-quadro-clinico': {
+    icona: '🩺',
+    titolo: 'Quadro Diagnosi & Patologie Croniche',
+    sottotitolo: 'Mappatura patologica e correlazione con le terapie farmacologiche',
+    scopo: 'Fornisce il quadro sinottico di tutte le patologie cliniche attive dell\'assistito, consentendo di associare a colpo d\'occhio ciascuna malattia ai farmaci salvavita prescritti.',
+    comeSiUsa: [
+      'Tocca qualsiasi chip patologia per visualizzare i dettagli clinici e le terapie associate.',
+      'Usa il pulsante "✨ Deduci Diagnosi da Farmaci (AI)" per ricavare in automatico le patologie dai principi attivi prescritti.',
+      'Aggiungi o modifica patologie con i pulsanti rapidi dedicati.'
+    ],
+    utilita: '<b>Sicurezza clinica e trasparenza</b>: previene errori prescrittivi, supporta medici curanti e specialisti con una visione d\'insieme istantanea del carico patologico.'
+  },
+  'dashboard-idratazione': {
+    icona: '💧',
+    titolo: 'Bilancio Idrico Giornaliero',
+    sottotitolo: 'Monitoraggio dell\'apporto idrico per prevenire disidratazione e stipsi',
+    scopo: 'Registra l\'assunzione di liquidi (acqua, tè, tisane, acqua gelificata per disfagici) per raggiungere l\'obiettivo giornaliero raccomandato (tipicamente 1.200 - 1.500 ml).',
+    comeSiUsa: [
+      'Tocca i pulsanti rapidi (+150 ml Bicchiere, +200 ml Tè, +100 ml Gel) ogni volta che l\'assistito beve.',
+      'La barra di avanzamento e i bicchieri grafici si riempiono in tempo reale.',
+      'A fine giornata o al cambio data, il contatore si azzera o può essere resettato col tasto Reset.'
+    ],
+    utilita: '<b>Prevenzione primaria disidratazione nell\'anziano</b>: riduce il rischio di insufficienza renale acuta, ipotensione ortostatica, delirium e lesioni da pressione.'
+  },
+  'dashboard-nutrizione': {
+    icona: '🍲',
+    titolo: 'Registro Nutrizione & Pasti Quotidiani',
+    sottotitolo: 'Sorveglianza dell\'appetito, disfagia e assunzione dei pasti',
+    scopo: 'Traccia la quantità di cibo assunta ad ogni pasto (Pranzo, Cena, Colazione/Snack) per monitorare lo stato nutrizionale e rilevare tempestivamente inappetenza o disfagia.',
+    comeSiUsa: [
+      'Seleziona il tipo di pasto (🍽️ Pranzo, 🥣 Cena, ☕ Snack).',
+      'Registra con 1 tap la quota assunta: 🟢 Tutto (100%), 🟡 Metà (50%), 🟠 Poco (25%) o 🔴 Rifiuto (0%).',
+      'Lo stato dell\'ultimo pasto rimane sempre visibile in dashboard per l\'operatore del turno successivo.'
+    ],
+    utilita: '<b>Sorveglianza nutrizionale e sarcopenia</b>: individua cali ponderali precoci e consente modifiche della consistenza del cibo o integrazioni proteico-caloriche.'
+  },
+  'dashboard-azioni-rapide': {
+    icona: '⚡',
+    titolo: 'Azioni Rapide & Moduli Operativi OSS',
+    sottotitolo: 'Accesso istantaneo con 1 clic a tutti gli strumenti socio-sanitari',
+    scopo: 'Raggruppa le tessere interattive per l\'operatività quotidiana bedside: registrazione evacuazioni, parametri vitali, glicemia, rotazione posturale, pasti, rischio cadute e consegna.',
+    comeSiUsa: [
+      'Tocca una qualsiasi mattonella (es. Segna Alvo, Febbre & Pressione, Scala di Braden) per aprire immediatamente il rispettivo modulo di registrazione.',
+      'Passa il mouse sopra la tessera (su desktop) per visualizzare l\'anteprima clinica ingrandita (Lente Clinica).',
+      'I dati registrati vengono storicizzati all\'istante sia nella cartella locale sia sul cloud.'
+    ],
+    utilita: '<b>Rapidità bedside e zero dispersione di tempo</b>: l\'OSS esegue la registrazione in meno di 5 secondi senza dover navigare complessi sottomenu.'
+  },
+  'kit-cartaceo-a4': {
+    icona: '🖨️',
+    titolo: 'Kit Clinico Cartaceo A4 per Domicilio',
+    sottotitolo: '5 Schede sanitarie pronte per la stampa e la cartellina cartacea',
+    scopo: 'Genera documenti A4 ad alta leggibilità impaginati professionalmente per il comodino dell\'assistito o il raccoglitore domiciliare ad uso di Medici di Base, 118 e familiari.',
+    comeSiUsa: [
+      'Seleziona la scheda da stampare: Scheda Terapie Farmacologiche, Foglio Orologio Posturale q2h, Monitoraggio Parametri Vitali, Piano Emergenza 112 o Guida Letto/Oss.',
+      'Clicca su "Stampa A4" per aprire l\'anteprima di stampa del browser con impaginazione ottimizzata.',
+      'Per gli assistiti deambulanti, le schede non pertinenti (es. foglio posture allettato) vengono disattivate automaticamente.'
+    ],
+    utilita: '<b>Continuità assistenziale carta-digitale</b>: garantisce che medici di continuità assistenziale o sanitari del 118 trovino al domicilio informazioni scritte, chiare e certificate.'
+  },
+  'protocollo-diabetologia': {
+    icona: '🩸',
+    titolo: 'Tabella Monitoraggio Diabetologico & Cardio',
+    sottotitolo: 'Sorveglianza specialistica CAD, emoglobina glicata e scadenze esami',
+    scopo: 'Monitora la roadmap diagnostico-terapeutica del diabete e del rischio cardiovascolare dell\'assistito (esami di laboratorio, visite diabetologiche, rinnovo piani terapeutici e fornitura ausili).',
+    comeSiUsa: [
+      'Verifica lo stato di ciascun esame (Richiesta MMG, Prenotazione CAD/CUP, Referto allegato).',
+      'Controlla le scadenze dei piani terapeutici e delle forniture (sensori glicemia, aghi, farmaci innovativi).',
+      'Spunta gli esami effettuati per aggiornare automaticamente la barra di avanzamento clinico.'
+    ],
+    utilita: '<b>Zero ritardi nei rinnovi terapeutici</b>: evita che l\'assistito rimanga sprovvisto di insulina, sensori o farmaci soggetti a piano specialistico CAD/ASL.'
+  },
+  'modal-briefing-vocale': {
+    icona: '🎙️',
+    titolo: 'Assistente Vocale Mattutino (Briefing AI)',
+    sottotitolo: 'Riepilogo vocale sintetizzato all\'avvio del turno',
+    scopo: 'Fornisce un briefing parlato naturale in italiano su tutte le priorità della giornata: orari delle prossime somministrazioni, farmaci critici, avvisi scorte e appuntamenti specialistici.',
+    comeSiUsa: [
+      'Clicca su "Riascolta Assistito" per ascoltare il riepilogo del paziente selezionato.',
+      'Clicca su "Briefing Tutti i 4 Assistiti" per una panoramica vocale completa dell\'intero reparto o carico assistenziale.',
+      'Usa il tasto "Ferma Voce" per interrompere la lettura vocale in qualsiasi momento.'
+    ],
+    utilita: '<b>Consapevolezza immediata a inizio turno</b>: permette all\'operatore o al familiare di memorizzare le urgenze prima ancora di entrare nella stanza dell\'assistito.'
+  },
+  'modal-orologio-posturale': {
+    icona: '🔄',
+    titolo: 'Orologio Posturale & Prevenzione Piaghe (q2h)',
+    sottotitolo: 'Cadenzamento rotazione decubiti ogni 2 ore per pazienti allettati',
+    scopo: 'Scandisce la rotazione posturale obbligatoria (Supino, Fianco Destro 30°, Fianco Sinistro 30°, Semiseduto) per scaricare le prominenze ossee e azzerare il rischio di lesioni da pressione.',
+    comeSiUsa: [
+      'Tocca la postura applicata (es. Fianco Dx, Supino, Fianco Sx) ad ogni cambio per resettare il timer delle 2 ore.',
+      'Il cerchio di stato visualizza il tempo rimanente e si colora di verde (OK), arancione (in scadenza) o rosso (ritardo).',
+      'Il tasto "Timer ON/OFF" permette di sospendere il conteggio quando il paziente è alzato in poltrona o deambulante.'
+    ],
+    utilita: '<b>Prevenzione piaghe certificata</b>: riduce del 90% l\'insorgenza di ulcere da decubito e certifica l\'avvenuta mobilizzazione per la tutela dell\'équipe.'
   }
 };
 
@@ -27308,8 +27415,13 @@ function renderQuadroClinicoDashboard(p) {
 
     '<!-- SEZIONE CHIP PATOLOGIE -->' +
     '<div style="margin-top:6px;">' +
-      '<div style="font-size:12px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">' +
-        '<span>Quadro Patologie &amp; Diagnosi Attive (' + patList.length + ')</span>' +
+      '<div style="font-size:12px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">' +
+        '<div style="display:flex; align-items:center; gap:8px;">' +
+          '<span>Quadro Patologie &amp; Diagnosi Attive (' + patList.length + ')</span>' +
+          '<button type="button" onclick="mostraGuidaContestuale(\'cartella-quadro-clinico\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:2px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve il Quadro Diagnosi">' +
+            '<span>💡</span> <span>A cosa serve</span>' +
+          '</button>' +
+        '</div>' +
         '<span style="font-size:11px; font-weight:700; color:#64748b; text-transform:none;">Tocca una diagnosi per aprire la scheda e vedere i farmaci prescritti</span>' +
       '</div>' +
       '<div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">' +
