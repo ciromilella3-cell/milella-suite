@@ -2653,7 +2653,12 @@ function renderPazientiSelector() {
             <span style="font-size:16px;">👥</span>
             <span>Caregiver & Famiglia</span>
           </div>
-          <span class="caregiver-name-val">${activeP.moglieNome}</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button type="button" onclick="mostraGuidaContestuale('madre-caregiver')" class="btn" style="background:#ffffff; color:#475569; border:1px solid #cbd5e1; font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve il riferimento Caregiver">
+              <span>💡</span> <span>A cosa serve</span>
+            </button>
+            <span class="caregiver-name-val">${activeP.moglieNome}</span>
+          </div>
         </div>
         <div class="caregiver-body-row">
           ${activeP.moglieTel ? `
@@ -2706,12 +2711,17 @@ function renderPazientiSelector() {
               <span style="font-size:11px; color:#a16207; font-weight:600;">Medico Curante di Medicina Generale</span>
             </div>
           </div>
-          ${infoStudio.testoOggi ? `
-            <div class="medico-status-pill ${infoStudio.isOpenNow ? 'open-now-pulse' : ''}" style="background:${infoStudio.badgeBg}; color:${infoStudio.badgeColore}; border:1px solid ${infoStudio.badgeBorder};" title="${infoStudio.orarioOggi || 'Orario studio medico'}">
-              <span style="font-size:11px; line-height:1;">${infoStudio.badgeIcona}</span> 
-              <span>${infoStudio.testoOggi}</span>
-            </div>
-          ` : ''}
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <button type="button" onclick="event.stopPropagation(); mostraGuidaContestuale('madre-medico')" class="btn" style="background:#ffffff; color:#854d0e; border:1px solid #fde047; font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve la scheda del Medico Curante">
+              <span>💡</span> <span>A cosa serve</span>
+            </button>
+            ${infoStudio.testoOggi ? `
+              <div class="medico-status-pill ${infoStudio.isOpenNow ? 'open-now-pulse' : ''}" style="background:${infoStudio.badgeBg}; color:${infoStudio.badgeColore}; border:1px solid ${infoStudio.badgeBorder};" title="${infoStudio.orarioOggi || 'Orario studio medico'}">
+                <span style="font-size:11px; line-height:1;">${infoStudio.badgeIcona}</span> 
+                <span>${infoStudio.testoOggi}</span>
+              </div>
+            ` : ''}
+          </div>
         </div>
 
         <!-- LISTA CONTATTI ORDINATA MEDICO -->
@@ -2816,9 +2826,14 @@ function renderPazientiSelector() {
               <span style="font-size:11px; color:#15803d; font-weight:600;">Punto di Ritiro Farmaci e Presidi</span>
             </div>
           </div>
-          <div class="farmacia-status-pill" style="background:#dcfce7; color:#166534; border:1px solid #86efac;">
-            <span style="font-size:11px; line-height:1;">📦</span>
-            <span>Ritiro Rapido</span>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <button type="button" onclick="event.stopPropagation(); mostraGuidaContestuale('madre-farmacia')" class="btn" style="background:#ffffff; color:#166534; border:1px solid #86efac; font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve la scheda della Farmacia Territoriale">
+              <span>💡</span> <span>A cosa serve</span>
+            </button>
+            <div class="farmacia-status-pill" style="background:#dcfce7; color:#166534; border:1px solid #86efac;">
+              <span style="font-size:11px; line-height:1;">📦</span>
+              <span>Ritiro Rapido</span>
+            </div>
           </div>
         </div>
 
@@ -3088,6 +3103,9 @@ function renderPazientiSelector() {
           
           <!-- LIVE STATUS & DATA OGGI (INTEGRATO IN ALTO A DESTRA CON STILE DISCRETO) -->
           <div class="hero-status-group">
+            <button type="button" onclick="mostraGuidaContestuale('maschera-madre')" class="btn" style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; font-size:11.5px; font-weight:800; padding:4px 10px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 1px 3px rgba(0,0,0,0.05);" title="A cosa serve e come si utilizza la Scheda Madre dell'Assistito">
+              <span style="font-size:13px;">💡</span> <span>A cosa serve questa scheda</span>
+            </button>
             <span class="hero-status-pill date-pill">
               📅 <b>${dataOggiStr}</b>
             </span>
@@ -3098,6 +3116,12 @@ function renderPazientiSelector() {
         </div>
 
         <!-- RIGA 2: RECAPITI DOMICILIO & TELEFONI (GRIGLIA BILANCIATA A 2 CARD PIENE - NO LINEE VUOTE) -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; padding:0 2px;">
+          <span style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">📍 Contatti &amp; Reperibilità Domiciliare</span>
+          <button type="button" onclick="mostraGuidaContestuale('madre-contatti')" class="btn" style="background:#ffffff; color:#0284c7; border:1px solid #bae6fd; font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono i recapiti e la navigazione GPS">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
+        </div>
         <div class="patient-contacts-card">
           ${ind}
           ${tel}
@@ -3160,8 +3184,13 @@ function renderPazientiSelector() {
             </div>
 
           </div>
-          <div style="font-size:12px; color:#64748b; font-weight:600; display:flex; align-items:center; gap:6px;">
-            <span>🛡️</span> <span>Cartella Clinica &bull; CareAssist Pro</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button type="button" onclick="mostraGuidaContestuale('madre-comandi')" class="btn" style="background:#ffffff; color:#4f46e5; border:1px solid #c7d2fe; font-size:11px; font-weight:700; padding:3px 9px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono la Scheda 112, la Consegna Turno e il Report WhatsApp">
+              <span>💡</span> <span>A cosa servono i comandi</span>
+            </button>
+            <div style="font-size:12px; color:#64748b; font-weight:600; display:flex; align-items:center; gap:6px;">
+              <span>🛡️</span> <span>Cartella Clinica &bull; CareAssist Pro</span>
+            </div>
           </div>
         </div>
 
@@ -23639,6 +23668,79 @@ var GUIDE_CONTESTUALI = {
       'Aggiungi eventuali istruzioni speciali (es. "digiuno per prelievo", "preparare impegnativa").'
     ],
     utilita: '<b>Compilazione in meno di 10 secondi</b> senza errori di digitazione.'
+  },
+  'maschera-madre': {
+    icona: '👤',
+    titolo: 'Maschera Madre • Cartella Anagrafica & Presa in Carico',
+    sottotitolo: 'Cabina di regia e fascicolo anagrafico-clinico permanente dell\'assistito',
+    scopo: 'Questa è la <b>scheda madre identificativa</b> dell\'assistito, visibile in qualsiasi momento in cima a tutte le sezioni di lavoro. Raccoglie in un unico colpo d\'occhio i dati demografici, l\'età, lo stato motorio (deambulante o allettato con protocollo posturale q2h), le allergie salvavita, i contatti di reperibilità immediata, il caregiver familiare e i riferimenti sanitari territoriali (Medico MMG e Farmacia).',
+    comeSiUsa: [
+      '<b>Verifica a Colpo d\'Occhio lo Stato Clinico</b>: i badge mostrano immediatamente se l\'assistito è deambulante o allettato (a rischio piaghe da decubito), l\'anno di nascita e l\'eventuale presenza di allergie farmacologiche critiche.',
+      '<b>Utilizza i Settori Operativi</b>: ogni settore della scheda risponde a un\'esigenza specifica (Contatti &amp; GPS, Comandi Salvavita 112, Famiglia/Caregiver, Orari Ambulatorio Medico e Farmacia).',
+      '<b>Cambia Assistito in 1 Secondo</b>: usa il selettore a discesa in alto a sinistra per caricare istantaneamente la cartella di qualsiasi altro paziente in carico.'
+    ],
+    utilita: '<b>Eliminazione totale dei tempi morti</b>. Qualsiasi operatore, medico o sostituto prenda in carico il paziente non deve cercare numeri o indirizzi su fogli volanti: ogni dato vitale per la sicurezza della persona è sempre a portata di mano in meno di 2 secondi.'
+  },
+  'madre-contatti': {
+    icona: '📍',
+    titolo: 'Settore: Residenza, Recapiti Telefonici & Navigazione GPS',
+    sottotitolo: 'Raggiungibilità e reperibilità immediata al domicilio dell\'assistito',
+    scopo: 'Fornisce l\'indirizzo esatto dell\'abitazione e i canali di comunicazione diretta con l\'assistito (telefono fisso di casa e cellulare personale).',
+    comeSiUsa: [
+      '<b>Avvia Navigatore GPS (Tasto 🧭 Naviga)</b>: con 1 tap apre Google Maps impostando automaticamente il percorso guidato fino al portone di casa dell\'assistito.',
+      '<b>Chiamata Rapida (Tasto 📞)</b>: avvia subito la telefonata senza dover cercare o digitare il numero sulla tastiera.',
+      '<b>Messaggistica WhatsApp &amp; SMS (Tasti 💬 / ✉️)</b>: apre direttamente la chat WhatsApp o l\'invio SMS con il numero già impostato.'
+    ],
+    utilita: '<b>Tempestività di soccorso e accesso</b>. Fondamentale per i nuovi operatori o sostituti che devono raggiungere il domicilio per la prima volta senza rischiare di perdersi o arrivare in ritardo.'
+  },
+  'madre-comandi': {
+    icona: '⚡',
+    titolo: 'Settore: Barra Comandi Clinici & Strumenti Rapidi',
+    sottotitolo: 'Quattro comandi ad alta frequenza per soccorso, consegne e comunicazione famiglia',
+    scopo: 'Raggruppa le 4 operazioni più critiche e frequenti della giornata assistenziale in pulsanti di grandi dimensioni e ad alto contrasto visivo.',
+    comeSiUsa: [
+      '<b>🚨 Scheda 112</b>: genera istantaneamente il passaporto clinico d\'emergenza da mostrare o consegnare ai sanitari dell\'ambulanza del 118 (con patologie, allergie e farmaci salvavita).',
+      '<b>🎙️ Consegna Turno</b>: consente all\'OSS di registrare la nota vocale di passaggio consegne con trascrizione automatica tramite Intelligenza Artificiale.',
+      '<b>📲 Report Famiglia WA</b>: compone un messaggio riassuntivo automatico con le terapie assunte e lo stato generale del paziente, pronto per essere inviato ai parenti su WhatsApp.',
+      '<b>✏️ Modifica</b>: apre la maschera di modifica anagrafica per aggiornare numeri, indirizzi o dettagli clinici.'
+    ],
+    utilita: '<b>Efficienza operativa e tutela medico-legale</b>. Trasforma passaggi complessi in automatismi da 5 secondi, garantendo che le famiglie siano sempre informate e che i soccorsi del 118 abbiano dati certi.'
+  },
+  'madre-caregiver': {
+    icona: '👥',
+    titolo: 'Settore: Riferimento Caregiver & Famiglia',
+    sottotitolo: 'Identificazione del familiare responsabile e alleanza assistenziale domiciliare',
+    scopo: 'Indica il familiare di riferimento (es. figlia, coniuge o amministratore di sostegno) autorizzato per le comunicazioni socio-sanitarie e la gestione della persona.',
+    comeSiUsa: [
+      'Visualizza nome, grado di parentela e recapito telefonico prioritario del familiare delegato.',
+      'Usa i pulsanti rapidi (📞 Chiama, ✉️ SMS, 💬 WhatsApp) per contattare immediatamente il parente in caso di necessità o imprevisti.',
+      'Consulta le note specifiche del caregiver su preferenze o abitudini dell\'assistito.'
+    ],
+    utilita: '<b>Coinvolgimento attivo della famiglia</b>. Rafforza la continuità assistenziale garantendo che vi sia sempre un punto di contatto affidabile in caso di decisioni urgenti.'
+  },
+  'madre-medico': {
+    icona: '🩺',
+    titolo: 'Settore: Medico Curante (MMG) & Ambulatorio Live',
+    sottotitolo: 'Integrazione in tempo reale con lo studio del Medico di Medicina Generale',
+    scopo: 'Offre una connessione diretta e intelligente con il Medico di Famiglia prescrittore.',
+    comeSiUsa: [
+      '<b>Stato Ambulatorio Live</b>: il sistema calcola in tempo reale se lo studio medico è <b>Aperto o Chiuso adesso</b>, indicando l\'orario esatto di apertura e la sede attiva del giorno (sarconi/moliterno).',
+      '<b>Navigazione alla Sede Attiva</b>: con 1 tap calcola l\'itinerario verso lo studio aperto.',
+      '<b>Canali di Contatto Multipli</b>: chiama al telefono fisso dello studio, contatta il cellulare/WhatsApp del medico oppure invia Email o PEC formale per richieste ricette.'
+    ],
+    utilita: '<b>Zero viaggi a vuoto</b>. L\'operatore o il familiare sa esattamente a che ora il medico riceve e dove recarsi prima di uscire di casa.'
+  },
+  'madre-farmacia': {
+    icona: '💊',
+    titolo: 'Settore: Presidio Farmaceutico Territoriale',
+    sottotitolo: 'Punto di riferimento per il ritiro dei farmaci con ricetta NRE e fornitura ausili',
+    scopo: 'Identifica la farmacia territoriale assegnata o concordata con l\'assistito per la dispensazione dei farmaci salvavita e dei presidi per diabetici o incontinenza.',
+    comeSiUsa: [
+      'Visualizza nome, indirizzo e recapito telefonico diretto della farmacia.',
+      'Usa il tasto <i>"Naviga"</i> per raggiungere la sede con Google Maps.',
+      'Usa la chiamata o WhatsApp per richiedere la disponibilità dei medicinali o inoltrare i codici ricetta NRE prima di passare per il ritiro.'
+    ],
+    utilita: '<b>Filiera del farmaco protetta</b>: evita interruzioni di terapia assicurando che le preparazioni o i farmaci speciali siano pronti per tempo al bancone.'
   }
 };
 

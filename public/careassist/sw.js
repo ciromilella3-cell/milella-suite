@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v284-guida-contestuale-maschere';
+const CACHE_NAME = 'careassist-pro-v285-guida-maschera-madre';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
