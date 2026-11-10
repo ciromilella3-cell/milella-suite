@@ -24209,7 +24209,7 @@ window._calcolaDatiScortaERichiesta = function (t, tutteTerapie) {
 
   let urgenzaRichiesta = 'regolare'; // 'urgente', 'imminente', 'regolare'
   let badgeRichiesta = '';
-  let bgBadge = '#dcfce7';
+  let bgBadge = '#f0fdf4';
   let colorBadge = '#166534';
   let borderBadge = '#86efac';
 
@@ -24222,10 +24222,10 @@ window._calcolaDatiScortaERichiesta = function (t, tutteTerapie) {
   } else if (ggAutonomia <= preavviso) {
     urgenzaRichiesta = 'urgente';
     badgeRichiesta = `⚠️ RICHIEDERE SUBITO (Entro ${dataRichiestaStr})`;
-    bgBadge = '#fef2f2';
-    colorBadge = '#b91c1c';
+    bgBadge = '#fee2e2';
+    colorBadge = '#991b1b';
     borderBadge = '#f87171';
-  } else if (ggAllaRichiesta <= 7) {
+  } else if (ggAutonomia <= 15 || ggAllaRichiesta <= 7) {
     urgenzaRichiesta = 'imminente';
     badgeRichiesta = `🟡 Richiesta entro il ${dataRichiestaStr}`;
     bgBadge = '#fef9c3';
@@ -24235,8 +24235,30 @@ window._calcolaDatiScortaERichiesta = function (t, tutteTerapie) {
     urgenzaRichiesta = 'regolare';
     badgeRichiesta = `🟢 Richiesta MMG: ${dataRichiestaStr}`;
     bgBadge = '#f0fdf4';
-    colorBadge = '#15803d';
-    borderBadge = '#bbf7d0';
+    colorBadge = '#166534';
+    borderBadge = '#86efac';
+  }
+
+  let bgAutonomia = '#f0fdf4';
+  let colorAutonomia = '#166534';
+  let borderAutonomia = '#86efac';
+  let colorGiacenza = '#1e293b';
+
+  if (urgenzaRichiesta === 'urgente') {
+    bgAutonomia = '#fee2e2';
+    colorAutonomia = '#991b1b';
+    borderAutonomia = '#f87171';
+    colorGiacenza = '#dc2626';
+  } else if (urgenzaRichiesta === 'imminente') {
+    bgAutonomia = '#fef9c3';
+    colorAutonomia = '#854d0e';
+    borderAutonomia = '#fde047';
+    colorGiacenza = '#b45309';
+  } else {
+    bgAutonomia = '#f0fdf4';
+    colorAutonomia = '#166534';
+    borderAutonomia = '#86efac';
+    colorGiacenza = '#1e293b';
   }
 
   return {
@@ -24250,7 +24272,11 @@ window._calcolaDatiScortaERichiesta = function (t, tutteTerapie) {
     badgeRichiesta,
     bgBadge,
     colorBadge,
-    borderBadge
+    borderBadge,
+    bgAutonomia,
+    colorAutonomia,
+    borderAutonomia,
+    colorGiacenza
   };
 };
 
@@ -24361,7 +24387,7 @@ window.generaHtmlPianoTerapeutico = function (p) {
             
             <!-- BADGE SCORTA E DATA RICHIESTA DIRETTAMENTE VISIBILI SU SMARTPHONE -->
             <div style="margin-top:5px; font-size:7.5pt; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
-              <span style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:2px 6px; border-radius:4px; font-weight:800;">
+              <span style="background:${info.bgAutonomia}; color:${info.colorAutonomia}; border:1px solid ${info.borderAutonomia}; padding:2px 6px; border-radius:4px; font-weight:800;">
                 📦 Scorta: <b>${info.scortaNum} ${info.unita}</b> (~${info.ggAutonomia} gg)
               </span>
               <span style="background:${info.bgBadge}; color:${info.colorBadge}; border:1px solid ${info.borderBadge}; padding:2px 6px; border-radius:4px; font-weight:800;">
@@ -24382,11 +24408,13 @@ window.generaHtmlPianoTerapeutico = function (p) {
 
           <!-- 5. SCORTA COMPLETA & CALENDARIO RICHIESTA MEDICO -->
           <td style="padding:8px 6px; vertical-align:middle; text-align:center; border-right:1px solid #cbd5e1; width:110px; min-width:110px; font-size:8pt; line-height:1.25;">
-            <div style="font-weight:900; color:${info.urgenzaRichiesta === 'urgente' ? '#dc2626' : '#0369a1'}; font-size:9pt;">
+            <div style="font-weight:900; color:${info.colorGiacenza}; font-size:9pt;">
               ${info.scortaNum} ${info.unita}
             </div>
-            <div style="font-size:7pt; color:#64748b; font-weight:700;">
-              ~${info.ggAutonomia} gg autonomia
+            <div style="margin-top:2px;">
+              <span style="background:${info.bgAutonomia}; color:${info.colorAutonomia}; border:1px solid ${info.borderAutonomia}; padding:1px 5px; border-radius:4px; font-size:7pt; font-weight:800; display:inline-block;">
+                ~${info.ggAutonomia} gg autonomia
+              </span>
             </div>
             <div style="margin-top:3px; font-size:7pt; font-weight:800; padding:2px 4px; border-radius:3px; background:${info.bgBadge}; color:${info.colorBadge}; border:1px solid ${info.borderBadge};">
               ${info.badgeRichiesta}
@@ -24440,23 +24468,27 @@ window.generaHtmlPianoTerapeutico = function (p) {
           <div>${item.farmaco}</div>
           <div style="font-size:7.5pt; color:#64748b; font-weight:600;">${item.principio} &bull; ${item.dosaggio}</div>
         </td>
-        <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-weight:900; color:${item.info.urgenzaRichiesta === 'urgente' ? '#dc2626' : '#1e293b'};">
+        <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-weight:900; color:${item.info.colorGiacenza}; font-size:8.5pt;">
           ${item.info.scortaNum} ${item.info.unita}
         </td>
-        <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-weight:800; color:#0369a1;">
-          ~${item.info.ggAutonomia} gg
+        <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0;">
+          <span style="background:${item.info.bgAutonomia}; color:${item.info.colorAutonomia}; border:1px solid ${item.info.borderAutonomia}; padding:3px 8px; border-radius:6px; font-weight:900; font-size:8pt; display:inline-block; white-space:nowrap;">
+            ~${item.info.ggAutonomia} gg
+          </span>
         </td>
         <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-weight:900;">
-          <span style="background:${item.info.bgBadge}; color:${item.info.colorBadge}; border:1px solid ${item.info.borderBadge}; padding:2px 6px; border-radius:4px; font-size:7.5pt;">
+          <span style="background:${item.info.bgBadge}; color:${item.info.colorBadge}; border:1px solid ${item.info.borderBadge}; padding:2px 6px; border-radius:4px; font-size:7.5pt; display:inline-block; white-space:nowrap;">
             ${item.info.dataRichiestaStr}
           </span>
           <div style="font-size:6.5pt; color:#64748b; margin-top:2px;">(Preavviso ${item.info.preavviso} gg)</div>
         </td>
-        <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-weight:700; color:#64748b; font-size:8pt;">
+        <td style="padding:6px 8px; vertical-align:middle; text-align:center; border-right:1px solid #e2e8f0; font-weight:700; color:#64748b; font-size:8pt; white-space:nowrap;">
           ${item.info.dataFineStr}
         </td>
-        <td style="padding:6px 8px; vertical-align:middle; text-align:center; font-size:7.5pt; font-weight:800; color:${item.info.urgenzaRichiesta === 'urgente' ? '#b91c1c' : '#15803d'};">
-          ${item.info.urgenzaRichiesta === 'urgente' ? '🔴 RICHIEDERE ORA' : (item.info.urgenzaRichiesta === 'imminente' ? '🟡 IN SCADENZA' : '🟢 REGOLARE')}
+        <td style="padding:6px 8px; vertical-align:middle; text-align:center; white-space:nowrap;">
+          <span style="background:${item.info.bgBadge}; color:${item.info.colorBadge}; border:1px solid ${item.info.borderBadge}; padding:2px 7px; border-radius:4px; font-size:7.5pt; font-weight:900; display:inline-block;">
+            ${item.info.urgenzaRichiesta === 'urgente' ? '🔴 RICHIEDERE ORA' : (item.info.urgenzaRichiesta === 'imminente' ? '🟡 IN SCADENZA' : '🟢 REGOLARE')}
+          </span>
         </td>
       </tr>
     `;
