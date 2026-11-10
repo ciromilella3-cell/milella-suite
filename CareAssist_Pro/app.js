@@ -23609,6 +23609,30 @@ var GUIDE_CONTESTUALI = {
     ],
     utilita: '<b>Massima accessibilità in mobilità</b>: funziona anche offline in garage o scantinati dove non c\'è campo telefonico.'
   },
+  'mobile-paziente': {
+    icona: '👤',
+    titolo: 'Scheda Assistito &amp; Cabina di Regia Mobile',
+    sottotitolo: 'Sintesi dell\'assistito in carico, stato motorio e accessi rapidi da smartphone',
+    scopo: 'È la scheda identificativa in cima alla schermata principale del cellulare. Mostra in un unico colpo d\'occhio il paziente attivo, l\'età, lo stato di mobilità (deambulante o allettato q2h), le diagnosi principali, il contatore delle terapie completate e i collegamenti rapidi.',
+    comeSiUsa: [
+      '<b>Cambia Assistito (Tasto "👥 Cambia ▾")</b>: tocca per selezionare un altro paziente e caricare istantaneamente la sua cartella.',
+      '<b>Cambia Stato Motorio (Pillola Deambulante/Allettato)</b>: tocca per passare da Deambulante ad Allettato, attivando i protocolli e i promemoria di rotazione posturale.',
+      '<b>Tasti Rapidi</b>: tocca "📋 Scheda Clinica" per i dettagli completi, "📅 + Visita" per pianificare un controllo, "📘 Guida Letto" per le posture o "✏️ Modifica Dati" per aggiornare numeri e indirizzi.'
+    ],
+    utilita: '<b>Tutto sotto controllo con il pollice</b>: l\'operatore ha una visione d\'insieme istantanea senza perdersi in menu annidati.'
+  },
+  'mobile-somministrazione': {
+    icona: '⏰',
+    titolo: 'Prossima Terapia &amp; Azione Prioritaria',
+    sottotitolo: 'Card intelligente che scandisce le somministrazioni e allerta sui ritardi',
+    scopo: 'Mette costantemente in evidenza la terapia o il farmaco che deve essere somministrato in questo momento o nell\'orario imminente, evidenziando in rosso vivo gli eventuali ritardi.',
+    comeSiUsa: [
+      '<b>Registra Assunzione Ora (Tasto Verde/Rosso)</b>: con un solo tocco confermi la somministrazione e aggiorni le scorte residue in magazzino.',
+      '<b>Istruzioni Pasto / Modo d\'Uso</b>: leggi le avvertenze su assunzione a digiuno, durante i pasti o con acqua.',
+      '<b>Pulsanti Secondari (Salta, +Scatola, Dettagli)</b>: registra una mancata assunzione motivata, carica velocemente una nuova confezione o consulta la scheda tecnica.'
+    ],
+    utilita: '<b>Guida operativa senza stress</b>: l\'assistente sa sempre con certezza matematica quale farmaco dare e a che ora, senza dover fare calcoli a mente.'
+  },
   'dashboard': {
     icona: '📊',
     titolo: 'Cruscotto Operativo &amp; Indicatori Assistenziali',
@@ -26540,6 +26564,9 @@ function renderMobileNativeView(terapie, p) {
       '✅ ' + nFatti + ' di ' + nTerapie + ' terapie assunte oggi' +
       '</div>' +
       '<div style="display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap;">' +
+      '<button type="button" onclick="event.stopPropagation(); mostraGuidaContestuale(\'mobile-paziente\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px; box-shadow:0 1px 3px rgba(22,101,52,0.12);">' +
+      '<span>💡 A cosa serve</span>' +
+      '</button>' +
       '<button type="button" onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
       '<span>📋 Scheda Clinica ➜</span>' +
       '</button>' +
@@ -26555,9 +26582,12 @@ function renderMobileNativeView(terapie, p) {
       '</div>' +
       '</div>' +
       '</div>' +
-      '<div style="flex-shrink:0;">' +
+      '<div style="flex-shrink:0; display:flex; flex-direction:column; gap:6px; align-items:flex-end;">' +
       '<button type="button" onclick="apriSwitchPazienteRapido()" style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:14px; padding:8px 10px; font-size:11.5px; font-weight:800; color:#0284c7; display:flex; align-items:center; gap:4px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.04);">' +
       '<span>👥 Cambia</span> <span>▾</span>' +
+      '</button>' +
+      '<button type="button" onclick="event.stopPropagation(); mostraGuidaContestuale(\'mobile-paziente\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:10px; padding:4px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
+      '<span>💡 Guida</span>' +
       '</button>' +
       '</div>' +
       '</div>' +
@@ -26590,6 +26620,9 @@ function renderMobileNativeView(terapie, p) {
           '</div>' +
           '</div>' +
           '<div style="display:flex; flex-direction:column; gap:4px; flex-shrink:0;">' +
+          '<button type="button" onclick="event.stopPropagation(); mostraGuidaContestuale(\'dashboard-visite\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:3px 7px; font-size:10px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:2px;">' +
+          '<span>💡 Guida</span>' +
+          '</button>' +
           '<button type="button" onclick="openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:8px; padding:6px 10px; font-size:11px; font-weight:800; cursor:pointer;">' +
           '+ Visita' +
           '</button>' +
@@ -26644,7 +26677,12 @@ function renderMobileNativeView(terapie, p) {
           : '';
 
         heroContainer.innerHTML =
-          '<div class="mobile-hero-badge badge-urgent">' + badgeRitardoTesto + '</div>' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
+          '<div class="mobile-hero-badge badge-urgent" style="margin:0;">' + badgeRitardoTesto + '</div>' +
+          '<button type="button" onclick="mostraGuidaContestuale(\'mobile-somministrazione\')" style="background:#ffffff; color:#dc2626; border:1px solid #fca5a5; border-radius:8px; padding:3px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
+          '<span>💡 A cosa serve</span>' +
+          '</button>' +
+          '</div>' +
           '<div class="mobile-hero-title">' + nextT.farmaco + '</div>' +
           '<div class="mobile-hero-sub">Orario previsto: <b>' + nextT.ora + '</b> (' + (nextT.fascia || 'Oggi') + ') • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b> • Scorta: <b>' + (nextTInfo ? (nextTInfo.scortaNum + ' ' + nextTInfo.unita + ' (~' + nextTInfo.ggAutonomia + ' gg)') : (nextT.scorta || 0)) + '</b></div>' +
           heroAssimilazioneHtml +
@@ -26671,7 +26709,12 @@ function renderMobileNativeView(terapie, p) {
           : '';
 
         heroContainer.innerHTML =
-          '<div class="mobile-hero-badge badge-ready">' + labelOrario + '</div>' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
+          '<div class="mobile-hero-badge badge-ready" style="margin:0;">' + labelOrario + '</div>' +
+          '<button type="button" onclick="mostraGuidaContestuale(\'mobile-somministrazione\')" style="background:#ffffff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:3px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
+          '<span>💡 A cosa serve</span>' +
+          '</button>' +
+          '</div>' +
           '<div class="mobile-hero-title">' + nextT.farmaco + '</div>' +
           '<div class="mobile-hero-sub">' + (nextT.fascia || 'Oggi') + ' • Dose: <b>' + (nextT.dosaggio || '1 dose') + '</b> • Scorta: <b>' + (nextTInfo ? (nextTInfo.scortaNum + ' ' + nextTInfo.unita + ' (~' + nextTInfo.ggAutonomia + ' gg)') : (nextT.scorta || 0)) + '</b></div>' +
           heroAssimilazioneHtml +
