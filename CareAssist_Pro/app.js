@@ -27624,6 +27624,14 @@ function renderMobileNativeView(terapie, p) {
       '<span style="font-size:15px;">🎙️</span> <span>Briefing Vocale</span>' +
       '</button>' +
       '</div>' +
+      '<!-- BANNER HERO INSERISCI VISITA SPECIALISTICA -->' +
+      '<div style="margin:0 0 10px 0;">' +
+      '<button type="button" onclick="openModal(\'modal-visita\')" style="width:100%; background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:900; font-size:13.5px; padding:12px 14px; border-radius:14px; border:2px solid #34d399; box-shadow:0 3px 10px rgba(5,150,105,0.3); display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;">' +
+      '<span style="font-size:19px;">📅</span>' +
+      '<span>➕ INSERISCI VISITA SPECIALISTICA</span>' +
+      '<span style="font-size:10px; background:#ffffff; color:#047857; padding:2px 7px; border-radius:6px; font-weight:900; letter-spacing:0.3px;">AI SMART</span>' +
+      '</button>' +
+      '</div>' +
       (() => {
         var tutteVisite = p.visite || [];
         var visiteInProgramma = tutteVisite.filter(function (v) { return !v.fatto && v.statoVisita !== 'Eseguita' && v.statoVisita !== 'Disdetta'; });

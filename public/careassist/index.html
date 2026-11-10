@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=299">
+  <link rel="stylesheet" href="style.css?v=300">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -504,6 +504,13 @@
     <button class="nav-tab" data-target="tab-diario"
       style="font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px;">📋 Storico Diario</button>
   </nav>
+
+  <!-- BOTTONE FLOTTANTE (FAB) VISITA SPECIALISTICA: SEMPRE VISIBILE SU CELLULARE E PC -->
+  <button type="button" id="fab-nuova-visita" onclick="openModal('modal-visita')" style="position:fixed; bottom:74px; right:14px; z-index:9999999; background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:2px solid #34d399; border-radius:30px; padding:11px 18px; font-weight:900; font-size:13.5px; display:flex; align-items:center; gap:7px; box-shadow:0 4px 18px rgba(5,150,105,0.5); cursor:pointer; transition:transform 0.15s ease;" title="Inserisci Nuova Visita Specialistica">
+    <span style="font-size:20px; line-height:1;">📅</span>
+    <span>➕ INSERISCI VISITA</span>
+  </button>
+  
 
   <!-- BARRA STICKY CONTESTO ASSISTITO (SEMPRE VISIBILE ANCHE DURANTE LO SCROLL) -->
   <div id="sticky-patient-bar" class="sticky-patient-bar">
@@ -4404,7 +4411,7 @@
   </div>
 
   <!-- MODAL 5: AGGIUNGI / MODIFICA VISITA SPECIALISTICA PRO -->
-  <div class="modal-overlay" id="modal-visita">
+  <div class="modal-overlay" id="modal-visita" style="z-index: 20000500 !important;">
     <div class="modal-card" style="max-width: 680px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 1.5px solid #cbd5e1;">
       <div class="modal-header" style="background: linear-gradient(135deg, #091e3a 0%, #1e3a8a 55%, #0284c7 100%); color: #ffffff; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.15);">
         <div class="modal-title" id="modal-visita-title" style="color:#ffffff; font-weight:800; font-size:16px; min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📅 Pianifica Visita o Prestazione</div>
@@ -7936,7 +7943,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=299"></script>
+  <script src="app.js?v=300"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7947,7 +7954,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=299', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=300', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
