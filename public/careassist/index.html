@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=280">
+  <link rel="stylesheet" href="style.css?v=294">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -2495,9 +2495,9 @@
             <div id="scm-nome" style="font-size:12px; font-weight:700; color:#93c5fd; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">--</div>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" onclick="mostraGuidaContestuale('mobile')" style="background:rgba(255,255,255,0.2); color:#ffffff; border:1px solid rgba(255,255,255,0.4); border-radius:8px; padding:5px 9px; font-size:11px; font-weight:800; cursor:pointer;" title="Guida operativa e utilità">💡 A cosa serve</button>
-          <button type="button" class="btn btn-outline" onclick="chiudiModalSchedaClinicaMobile()" style="color:#ffffff; border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.1); width:34px; height:34px; min-width:34px; border-radius:50%; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer;">✕</button>
+        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+          <button type="button" class="btn-guida-contestuale" onclick="mostraGuidaContestuale('mobile')" style="background:rgba(255,255,255,0.2) !important; color:#ffffff !important; border:1px solid rgba(255,255,255,0.4) !important; border-radius:8px !important; padding:4px 8px !important; font-size:11px !important; font-weight:800 !important; cursor:pointer !important; white-space:nowrap !important; flex-shrink:0 !important; width:auto !important; height:auto !important;" title="Guida operativa e utilità">💡 A cosa serve</button>
+          <button type="button" class="btn btn-outline" onclick="chiudiModalSchedaClinicaMobile()" style="color:#ffffff; border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.1); width:34px; height:34px; min-width:34px; border-radius:50%; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; flex-shrink:0;">✕</button>
         </div>
       </div>
 
@@ -4389,11 +4389,11 @@
   <!-- MODAL 5: AGGIUNGI / MODIFICA VISITA -->
   <div class="modal-overlay" id="modal-visita">
     <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-title" id="modal-visita-title">📅 Pianifica Visita o Prestazione</div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('pianifica-visita')" style="border-color:#38bdf8; color:#0284c7; font-weight:800; font-size:11.5px; padding:4px 9px; border-radius:8px;">💡 A cosa serve</button>
-          <button class="btn btn-outline" onclick="closeModal('modal-visita')">✕</button>
+      <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div class="modal-title" id="modal-visita-title" style="min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📅 Pianifica Visita o Prestazione</div>
+        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+          <button type="button" class="btn btn-outline btn-guida-contestuale" onclick="mostraGuidaContestuale('pianifica-visita')" style="border-color:#38bdf8 !important; color:#0284c7 !important; font-weight:800 !important; font-size:11px !important; padding:4px 8px !important; border-radius:8px !important; white-space:nowrap !important; flex-shrink:0 !important; width:auto !important; height:auto !important;">💡 A cosa serve</button>
+          <button class="btn btn-outline" onclick="closeModal('modal-visita')" style="width:34px; height:34px; min-width:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0; flex-shrink:0;">✕</button>
         </div>
       </div>
       <form onsubmit="salvaNuovaVisita(event)">
@@ -6517,15 +6517,15 @@
               Globale Multi-Paziente &bull; Segnale acustico attivo</p>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" class="btn btn-outline"
+        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+          <button type="button" class="btn btn-outline btn-guida-contestuale"
             onclick="mostraGuidaContestuale('allarme-ritardi')"
-            style="background:rgba(255,255,255,0.25) !important; border:1px solid rgba(255,255,255,0.5) !important; color:#ffffff !important; font-size:11.5px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;"
+            style="background:rgba(255,255,255,0.25) !important; border:1px solid rgba(255,255,255,0.5) !important; color:#ffffff !important; font-size:11px !important; font-weight:800 !important; padding:4px 8px !important; border-radius:8px !important; cursor:pointer !important; white-space:nowrap !important; flex-shrink:0 !important; width:auto !important; height:auto !important;"
             title="A cosa serve l'Allarme Terapie in Ritardo">
             💡 A cosa serve
           </button>
           <button type="button" onclick="chiudiAllarmeTerapieGlobali()" title="Chiudi Allarme (Silenzia)"
-            style="background:rgba(255,255,255,0.25) !important; border:2px solid rgba(255,255,255,0.8) !important; color:#ffffff !important; font-size:18px; font-weight:900; line-height:1; width:36px; height:36px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; box-shadow:0 2px 8px rgba(0,0,0,0.25);">✕</button>
+            style="background:rgba(255,255,255,0.25) !important; border:2px solid rgba(255,255,255,0.8) !important; color:#ffffff !important; font-size:18px !important; font-weight:900 !important; line-height:1; width:36px !important; height:36px !important; border-radius:50% !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; cursor:pointer !important; transition:all 0.2s ease; box-shadow:0 2px 8px rgba(0,0,0,0.25); flex-shrink:0 !important;">✕</button>
         </div>
       </div>
 
@@ -7644,7 +7644,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=293"></script>
+  <script src="app.js?v=294"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7655,7 +7655,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=293', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=294', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

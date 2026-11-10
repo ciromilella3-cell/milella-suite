@@ -1986,7 +1986,7 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
   letter-spacing: 0.2px !important;
 }
 
-#modal-allarme-terapie .modal-header button {
+#modal-allarme-terapie .modal-header button:not([onclick*="mostraGuidaContestuale"]) {
   width: 38px !important;
   height: 38px !important;
   min-width: 38px !important;
@@ -2005,7 +2005,7 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
   justify-content: center !important;
 }
 
-#modal-allarme-terapie .modal-header button:hover {
+#modal-allarme-terapie .modal-header button:not([onclick*="mostraGuidaContestuale"]):hover {
   background: #ffffff !important;
   color: #be123c !important;
   transform: scale(1.08) !important;
@@ -3236,8 +3236,8 @@ textarea.form-control {
     text-overflow: ellipsis !important;
     max-width: 100% !important;
   }
-  .modal-header .btn-outline,
-  .modal-header button {
+  .modal-header .btn-outline:not([onclick*="mostraGuidaContestuale"]):not(.pt-action-pill):not(.btn-guida-contestuale),
+  .modal-header button:not([onclick*="mostraGuidaContestuale"]):not(.pt-action-pill):not(.btn-guida-contestuale):not([style*="display:flex; flex-direction:column"]) {
     flex-shrink: 0 !important;
     width: 36px !important;
     height: 36px !important;
@@ -3410,7 +3410,7 @@ textarea.form-control {
     font-weight: 600 !important;
     margin: 2px 0 0 0 !important;
   }
-  #modal-allarme-terapie .modal-header button {
+  #modal-allarme-terapie .modal-header button:not([onclick*="mostraGuidaContestuale"]):not(.btn-guida-contestuale) {
     width: 36px !important;
     height: 36px !important;
     min-width: 36px !important;
@@ -9964,5 +9964,61 @@ main, .main-content, .dashboard-container {
     background: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
     padding: 6px 4px !important;
+  }
+}
+
+/* ==========================================================================
+   PROTEZIONE GLOBALE PULSANTE "A COSA SERVE" (GUIDA CONTESTUALE)
+   Impedisce qualunque compressione, distorsione circolare o testo a capo su mobile
+   ========================================================================== */
+.btn-guida-contestuale,
+button[onclick*="mostraGuidaContestuale"],
+.modal-header button[onclick*="mostraGuidaContestuale"],
+.modal-header .btn-outline[onclick*="mostraGuidaContestuale"],
+#modal-allarme-terapie .modal-header button[onclick*="mostraGuidaContestuale"] {
+  width: auto !important;
+  min-width: fit-content !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 28px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  border-radius: 8px !important;
+  padding: 4px 10px !important;
+  font-size: 11.5px !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  box-sizing: border-box !important;
+  letter-spacing: 0.2px !important;
+  text-transform: none !important;
+}
+
+@media (max-width: 600px) {
+  .btn-guida-contestuale,
+  button[onclick*="mostraGuidaContestuale"],
+  .modal-header button[onclick*="mostraGuidaContestuale"],
+  .modal-header .btn-outline[onclick*="mostraGuidaContestuale"],
+  #modal-allarme-terapie .modal-header button[onclick*="mostraGuidaContestuale"] {
+    padding: 3px 8px !important;
+    font-size: 11px !important;
+    gap: 4px !important;
+    min-height: 26px !important;
+  }
+  
+  /* Garantisce che i titoli nei modal header su mobile non schiaccino i pulsanti a destra */
+  .modal-header > div:first-child,
+  .modal-header > .modal-title,
+  #modal-allarme-terapie .modal-header > div:first-child {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+  
+  .modal-header > div:last-child,
+  #modal-allarme-terapie .modal-header > div:last-child {
+    flex-shrink: 0 !important;
   }
 }
