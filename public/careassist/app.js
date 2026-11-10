@@ -23517,6 +23517,185 @@ window.fermaVoceBriefing = fermaVoceBriefing;
 
 
 // ==========================================================================
+// 💡 SISTEMA DI GUIDA CONTESTUALE DINAMICA & UTILITÀ CLINICO-GESTIONALE
+// ==========================================================================
+var GUIDE_CONTESTUALI = {
+  'piano-terapeutico': {
+    icona: '📋',
+    titolo: 'Piano Terapeutico A4 &amp; Quadro Fabbisogno MMG',
+    sottotitolo: 'Fascicolo clinico ufficiale per la cartella cartacea domiciliare e prescrizione al Medico Curante',
+    scopo: 'Questa schermata genera il <b>fascicolo terapeutico completo e convalidato</b> dell\'assistito secondo gli standard di farmacovigilanza territoriale. Serve a unificare in un unico foglio ufficiale tutti i farmaci prescritti, gli orari precisi di assunzione, le modalità operative per gli operatori (con casella per la firma OSS a ogni turno) e il calendario matematico di riordino per il Medico di Medicina Generale (MMG).',
+    comeSiUsa: [
+      '<b>Consulta il Cronoprogramma Giornaliero</b>: i farmaci sono posizionati all\'orario esatto con badge grafici ad alta leggibilità per le dosi (es. 1 cpr intera, mezza dose, unità di insulina).',
+      '<b>Monitora il Quadro Fabbisogno Scorte</b>: i farmaci sono classificati con codici colore di sicurezza clinica (🔴 Richiedere Subito ≤7 gg, 🟡 In Scadenza ≤15 gg, 🟢 Regolari >15 gg) per sapere esattamente quando inviare la richiesta di ricetta.',
+      '<b>Invia o Stampa con 1 Click</b>: usa il pulsante <i>"Stampa / Salva in PDF"</i> per stampare il foglio per il comodino del paziente, oppure <i>"WhatsApp"</i> ed <i>"Email"</i> per inoltrare la richiesta direttamente al Medico Curante o alla Farmacia.'
+    ],
+    utilita: '<b>Azzeramento del rischio di interruzione terapeutica</b>. Nei pazienti cronici (diabetici, parkinsoniani, cardiopatici) rimanere senza farmaci comporta crisi e ricoveri ospedalieri evitabili. Il sistema calcola matematicamente il consumo giornaliero e avvisa con 7-15 giorni di anticipo prima dell\'esaurimento.'
+  },
+  'patologie': {
+    icona: '🩺',
+    titolo: 'Cartella Clinica &amp; Quadro Diagnosi Patologie',
+    sottotitolo: 'Mappatura nosologica dell\'assistito e correlazione automatica con le terapie assunte',
+    scopo: 'Fornisce il <b>quadro clinico globale</b> dell\'assistito. A differenza delle banali liste di farmaci, questa sezione spiega con chiarezza <i>perché</i> il paziente assume ciascuna medicina, collegando direttamente ogni patologia diagnosticata ai farmaci corrispondenti.',
+    comeSiUsa: [
+      '<b>Esamina il Quadro di Sintesi Clinica</b>: visualizza le patologie attive con il livello di gravità (Alta, Media, Cronica) e la data di prima diagnosi.',
+      '<b>Verifica l\'Incrocio Farmaci-Patologie (Cross-Referencing)</b>: nella tabella ogni riga mostra la patologia affiancata ai farmaci assunti dal paziente che ne costituiscono la cura specifica.',
+      '<b>Sfrutta la Deduzione Automatica (AI Clinica)</b>: se aggiungi nuovi farmaci, il pulsante <i>"Deduci Diagnosi dai Farmaci"</i> aggiorna in 1 secondo l\'elenco delle patologie corrispondenti.'
+    ],
+    utilita: '<b>Visione clinica immediata per qualsiasi medico o sostituto</b>. Quando un nuovo medico o un infermiere ADI accede al domicilio, non deve decifrare fogli sparsi: in 3 secondi comprende le patologie primarie e i farmaci associati.'
+  },
+  'terapie': {
+    icona: '💊',
+    titolo: 'Gestione Terapie Farmacologiche &amp; Somministrazioni',
+    sottotitolo: 'Registro operativo giornaliero per OSS, Infermieri e Caregiver con scarico scorte automatico',
+    scopo: 'È il cuore operativo della giornata. Permette di registrare in tempo reale l\'avvenuta assunzione dei farmaci, evitando doppie somministrazioni o dimenticanze pericolose.',
+    comeSiUsa: [
+      '<b>Filtra per Fascia Oraria</b>: seleziona Mattina, Pranzo, Pomeriggio, Sera, Notte o SOS per concentrarti solo sui farmaci del momento.',
+      '<b>Riconoscimento Visivo della Dose</b>: le pillole colorate mostrano chiaramente quante compresse prendere (🌕 1 cpr, 🌓 mezza dose, 💉 insulina sottocute).',
+      '<b>Spunta con 1 Tap</b>: clicca su <i>"✓ Fatto"</i>. L\'orario viene registrato e la giacenza residua della scatola viene scalata istantaneamente.'
+    ],
+    utilita: '<b>Rischio Clinico Zero</b>. Nei passaggi di consegne tra colleghi del mattino e del pomeriggio non ci sono dubbi su cosa è stato somministrato e cosa resta da dare.'
+  },
+  'visite': {
+    icona: '📅',
+    titolo: 'Calendario Visite Domiciliari &amp; Prestazioni ADI',
+    sottotitolo: 'Agenda integrata per specialistica, controlli MMG, accessi infermieristici e rinnovo piani',
+    scopo: 'Coordina tutte le figure sanitarie che ruotano attorno al paziente (MMG, Diabetologo, Neurologo, Infermiere ADI, Fisioterapista, fornitura ausili).',
+    comeSiUsa: [
+      '<b>Consulta gli Appuntamenti in Ordine Cronologico</b>: data, orario, specialista e motivazione dell\'accesso domiciliare.',
+      '<b>Spunta le Prestazioni Eseguite</b>: premi <i>"✓ Fatto"</i> per archiviare la visita.',
+      '<b>Modifica Rapida senza Cancellare</b>: premi <b>"✏️ Modifica"</b> per cambiare data, ora o medico in caso di imprevisti o rinvii.'
+    ],
+    utilita: '<b>Nessuna scadenza o visita burocratica dimenticata</b>. Garantisce il rispetto dei tempi per il rinnovo dei piani terapeutici ASL (es. sensori diabete, assorbenza, farmaci a piano limitativo).'
+  },
+  'mobile': {
+    icona: '📱',
+    titolo: 'Scheda Clinica Mobile &amp; Accesso Touch Domiciliare',
+    sottotitolo: 'Interfaccia ultra-rapida ottimizzata per lo smartphone dell\'operatore sul campo',
+    scopo: 'Pensata per l\'utilizzo immediato con una sola mano mentre si entra nel domicilio del paziente o durante un\'emergenza per strada.',
+    comeSiUsa: [
+      '<b>Navigatore GPS con 1 Tap</b>: premi il tasto Maps per avviare il percorso fino all\'indirizzo dell\'assistito.',
+      '<b>Chiamata Rapida al Medico o Caregiver</b>: clicca sul numero per telefonare all\'istante senza cercare in rubrica.',
+      '<b>Quadro Allergie &amp; Patologie Immediato</b>: allarmi rossi ben visibili prima di somministrare qualsiasi sostanza.'
+    ],
+    utilita: '<b>Massima accessibilità in mobilità</b>: funziona anche offline in garage o scantinati dove non c\'è campo telefonico.'
+  },
+  'dashboard': {
+    icona: '📊',
+    titolo: 'Cruscotto Operativo &amp; Indicatori Assistenziali',
+    sottotitolo: 'Panoramica a colpo d\'occhio di salute, emergenze e carichi di lavoro',
+    scopo: 'È la cabina di regia che accoglie l\'operatore all\'accesso. Riassume in pochi secondi tutto ciò che richiede attenzione immediata per il paziente.',
+    comeSiUsa: [
+      '<b>Controlla i Banner di Allerta in Cima</b>: avvisi immediati per farmaci esauriti, alvo bloccato da &gt;48h o forniture ASL in scadenza.',
+      '<b>Usa i Quick Tiles Rapidi</b>: tessere interattive per saltare direttamente a Terapie, Patologie, Visite o Diario Clinico.',
+      '<b>Cambia Assistito in 1 Secondo</b>: usa il selettore paziente per passare tra gli assistiti in carico.'
+    ],
+    utilita: '<b>Riduzione dei tempi di presa in carico</b> all\'inizio di ogni turno di servizio.'
+  },
+  'glicemia': {
+    icona: '🩸',
+    titolo: 'Diario Glicemico &amp; Profilo CAD / Insulina',
+    sottotitolo: 'Monitoraggio continuativo per pazienti diabetici e prevenzione ipo/iperglicemie',
+    scopo: 'Registra e analizza i valori di glicemia capillare (rilevati con sensori o digitopuntura) correlandoli ai pasti e alle dosi di insulina somministrate.',
+    comeSiUsa: [
+      'Registra il valore in mg/dl associandolo al momento (Digiuno, Pre-Pranzo, Post-Pranzo, Sera).',
+      'Il sistema calcola la media settimanale e segnala allarmi rossi per valori &lt;70 o &gt;200 mg/dl.',
+      'Stampa il <i>Foglio Glicemie A4</i> per il controllo periodico con il Centro Antidiabetico (CAD).'
+    ],
+    utilita: '<b>Supporto alle decisioni terapeutiche dello specialista</b> diabetologo con trend glicemici oggettivi.'
+  },
+  'diario': {
+    icona: '📋',
+    titolo: 'Cartella Clinica Domiciliare &amp; Storico Eventi',
+    sottotitolo: 'Registro cronologico di tutte le attività socio-sanitarie e consegne OSS',
+    scopo: 'Costituisce il registro legale e clinico degli interventi svolti al domicilio: parametri vitali, alvo, cambi postura, medicazioni e note di turno.',
+    comeSiUsa: [
+      'Ogni evento registrato viene archiviato con data, ora esatta e nome dell\'operatore.',
+      'Filtra per tipologia di evento o assistito per ricostruire l\'evoluzione clinica.',
+      'Esporta o stampa lo storico delle consegne in caso di passaggio all\'ospedale o visita peritale.'
+    ],
+    utilita: '<b>Tracciabilità medico-legale e tutela degli operatori</b> contro contestazioni o omissioni.'
+  },
+  'nuovo-farmaco': {
+    icona: '➕',
+    titolo: 'Compilazione Guidata Terapia &amp; Allerte Scorte',
+    sottotitolo: 'Inserimento standardizzato di farmaci orali, iniettabili e presidi speciali',
+    scopo: 'Garantisce che ogni prescrizione terapeutica contenga tutti i dati essenziali: principio attivo, posologia, orari, cadenza e giacenza di sicurezza.',
+    comeSiUsa: [
+      'Inserisci nome commerciale e principio attivo (fondamentale per la sostituibilità con equivalenti).',
+      'Definisci la posologia e se il farmaco è classificato <b>112 Salvavita</b>.',
+      'Imposta la scorta attuale e i giorni di preavviso desiderati per la richiesta ricetta (default 7 gg per compresse, 15 gg per penne insulina).'
+    ],
+    utilita: '<b>Standardizzazione del dato clinico</b>: elimina le prescrizioni vaghe o ambigue (es. "prendere al bisogno").'
+  },
+  'pianifica-visita': {
+    icona: '📅',
+    titolo: 'Pianificazione Visite &amp; Prestazioni Sanitarie',
+    sottotitolo: 'Creazione e modifica veloce di accessi medici e infermieristici',
+    scopo: 'Consente di registrare o modificare un controllo specialistico con un set di suggerimenti pre-impostati per i casi territoriali più frequenti.',
+    comeSiUsa: [
+      'Seleziona data e ora della visita.',
+      '<b>Usa i Suggerimenti Rapidi (1 Tap)</b>: MMG, Neurologia, Diabetologia, Malattie Infettive, Cardiologia, Prelievo ADI.',
+      'Aggiungi eventuali istruzioni speciali (es. "digiuno per prelievo", "preparare impegnativa").'
+    ],
+    utilita: '<b>Compilazione in meno di 10 secondi</b> senza errori di digitazione.'
+  }
+};
+
+function mostraGuidaContestuale(chiave) {
+  var g = GUIDE_CONTESTUALI[chiave];
+  if (!g) return;
+
+  var modal = document.getElementById('modal-guida-contestuale');
+  var iconaEl = document.getElementById('mgc-icona');
+  var titoloEl = document.getElementById('mgc-titolo');
+  var corpoEl = document.getElementById('mgc-corpo');
+  if (!modal || !corpoEl) return;
+
+  if (iconaEl) iconaEl.innerHTML = g.icona;
+  if (titoloEl) titoloEl.innerHTML = g.titolo;
+
+  var passiHtml = '';
+  if (Array.isArray(g.comeSiUsa)) {
+    passiHtml = g.comeSiUsa.map(function(p, idx) {
+      return '<div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:10px;">' +
+        '<div style="background:#0284c7; color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; flex-shrink:0; margin-top:2px;">' + (idx + 1) + '</div>' +
+        '<div style="font-size:13px; color:#1e293b; line-height:1.45;">' + p + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  corpoEl.innerHTML = 
+    '<div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid #0284c7; border-radius:10px; padding:12px 14px; margin-bottom:16px;">' +
+      '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#0369a1; letter-spacing:0.5px; margin-bottom:3px;">' +
+        '🎯 A cosa serve (Scopo Clinico &amp; Gestionale)' +
+      '</div>' +
+      '<div style="font-size:13.5px; color:#1e293b; line-height:1.5;">' +
+        g.scopo +
+      '</div>' +
+    '</div>' +
+
+    '<div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:14px 16px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">' +
+      '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#475569; letter-spacing:0.5px; margin-bottom:12px; display:flex; align-items:center; gap:6px;">' +
+        '<span>🛠️</span> <span>Come si usa (Passi Operativi)</span>' +
+      '</div>' +
+      passiHtml +
+    '</div>' +
+
+    '<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid #16a34a; border-radius:10px; padding:12px 14px;">' +
+      '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#15803d; letter-spacing:0.5px; margin-bottom:3px; display:flex; align-items:center; gap:6px;">' +
+        '<span>💡</span> <span>Perché fa la differenza (Valore per la Struttura)</span>' +
+      '</div>' +
+      '<div style="font-size:13px; color:#166534; line-height:1.45;">' +
+        g.utilita +
+      '</div>' +
+    '</div>';
+
+  openModal('modal-guida-contestuale');
+}
+window.mostraGuidaContestuale = mostraGuidaContestuale;
+
+// ==========================================================================
 // 💡 CENTRO "PER SAPERNE DI PIÙ" & TEST LIVE ALERT PC ↔ CELLULARE
 // ==========================================================================
 var _ultimoAlertTestVistoTs = 0;
@@ -26866,6 +27045,9 @@ function renderPatologieTab(p) {
           '</div>' +
         '</div>' +
         '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+          '<button type="button" class="btn" onclick="mostraGuidaContestuale(\'patologie\')" style="background:rgba(255,255,255,0.22); color:#ffffff; font-weight:800; font-size:13px; padding:9px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.45); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Guida all\'uso e utilità clinica">' +
+            '<span>💡</span> <span>A cosa serve</span>' +
+          '</button>' +
           '<button type="button" class="btn" onclick="apriModalDossierClinico()" style="background:#ffffff; color:#0369a1; font-weight:800; font-size:13px; padding:9px 16px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(0,0,0,0.15);">' +
             '<span>📄</span> <span>Dossier A4 Ospedaliero</span>' +
           '</button>' +
