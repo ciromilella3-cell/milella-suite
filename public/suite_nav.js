@@ -244,8 +244,6 @@
   function navigateWithTransition(url) {
     triggerHaptic(20);
     window.location.href = url;
-  }, 700);
-    }, 120);
   }
 
   // 5. GESTIONE AZIONE "INDIETRO" INTELLIGENTE E MULTILIVELLO
@@ -672,3 +670,4 @@
     mount();
   }
 })();
+

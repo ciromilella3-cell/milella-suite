@@ -4974,6 +4974,9 @@ function initTabs() {
       tab.classList.add('active');
       const targetEl = document.getElementById(target);
       if (targetEl) targetEl.style.display = 'block';
+      if (target === 'tab-patologie') {
+        if (typeof renderPatologieTab === 'function') renderPatologieTab();
+      }
       if (target === 'tab-epatologia') {
         if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
       }
@@ -13962,6 +13965,14 @@ function renderAll() {
   checkAlvoAlarm();
   checkFarmaciScorteAlert();
   checkAusiliScadenzeAlert();
+  var pAttivo = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (typeof renderQuadroClinicoDashboard === 'function') renderQuadroClinicoDashboard(pAttivo);
+  if (typeof renderPatologieTab === 'function') {
+    var tabPatEl = document.getElementById('tab-patologie');
+    if (tabPatEl && (tabPatEl.style.display === 'block' || tabPatEl.style.display === 'flex')) {
+      renderPatologieTab(pAttivo);
+    }
+  }
   aggiornaOrologioPosturale();
   aggiornaIdratazioneUI();
   if (typeof aggiornaWidgetNutrizione === 'function') aggiornaWidgetNutrizione();
@@ -26423,6 +26434,441 @@ function chiudiModalSchedaClinicaMobile() {
   if (modal) modal.style.display = 'none';
 }
 window.chiudiModalSchedaClinicaMobile = chiudiModalSchedaClinicaMobile;
+
+// ==============================================================================
+// GESTIONE QUADRO CLINICO, CARTELLA & PATOLOGIE (DESKTOP & MOBILE)
+// ==============================================================================
+
+function vaiACartellaPatologie() {
+  if (window.innerWidth <= 768 && typeof apriModalSchedaClinicaMobile === 'function') {
+    apriModalSchedaClinicaMobile();
+  } else {
+    var tabBtn = document.querySelector('.nav-tab[data-target="tab-patologie"]');
+    if (tabBtn) {
+      tabBtn.click();
+    } else if (typeof apriModalSchedaClinicaMobile === 'function') {
+      apriModalSchedaClinicaMobile();
+    }
+  }
+}
+window.vaiACartellaPatologie = vaiACartellaPatologie;
+
+function getFarmaciPerPatologia(p, patNome) {
+  if (!p || !Array.isArray(p.terapie)) return [];
+  var pLower = (patNome || '').toLowerCase();
+  var matchMap = [
+    { keys: ['diabete', 'glicem', 'insulin'], drugs: ['xultophy', 'diamicron', 'gliclazide', 'forxiga', 'metformin', 'insulina', 'jardiance', 'januvia', 'ozempic', 'rybelsus', 'synjardy'] },
+    { keys: ['ipertens', 'cardiopat', 'press'], drugs: ['ramipril', 'triatec', 'congescor', 'bisoprolol', 'cardicor', 'norvasc', 'amlodipin', 'enalapril', 'losartan', 'valsartan', 'nebivolol', 'carvedilol'] },
+    { keys: ['scompens', 'edem', 'diuret'], drugs: ['lasix', 'furosemid', 'torasemid', 'aldactone', 'spironolattone'] },
+    { keys: ['trombo', 'aterotromb', 'antiaggreg', 'anticoag'], drugs: ['clopidogrel', 'averelix', 'plavix', 'cardioaspirin', 'aspirin', 'eliquis', 'xarelto', 'lixiana', 'coumadin', 'sintrom'] },
+    { keys: ['parkinson', 'extrapiramid'], drugs: ['sinemet', 'levodopa', 'carbidopa', 'madopar', 'pramipexol', 'mirapexin', 'ropinirol'] },
+    { keys: ['gotta', 'iperuricem', 'acido urico'], drugs: ['adenuric', 'febuxostat', 'allopurinol', 'zyloric', 'colchicin'] },
+    { keys: ['artros', 'dolor', 'artrit'], drugs: ['arcoxia', 'etoricoxib', 'celebrex', 'tachipirin', 'paracetamol', 'contramal', 'tramadol', 'oki', 'brufen'] },
+    { keys: ['gastro', 'refluss', 'gastrit', 'stomaco'], drugs: ['pantoprazol', 'pantorc', 'peptazol', 'omeprazol', 'lansoprazol', 'esomeprazol', 'gaviscon'] },
+    { keys: ['vitamin', 'osteoporos', 'osteopen'], drugs: ['dibase', 'fedivelle', 'annister', 'colecalciferol', 'vitamina d'] },
+    { keys: ['prostat', 'ipb', 'minzion'], drugs: ['silodyx', 'silodosin', 'omnic', 'tamsulosin', 'avodart', 'dutasterid'] },
+    { keys: ['epiless', 'comiz', 'neurologic', 'convuls'], drugs: ['vimpat', 'lacosamid', 'keppra', 'levetiracetam', 'depakin', 'tegretol'] },
+    { keys: ['sonno', 'agitaz', 'ansia', 'comportament'], drugs: ['quetiapin', 'seroquel', 'delorazepam', 'en', 'tavor', 'lorazepam', 'xanax', 'zolpidem'] },
+    { keys: ['epatit', 'fegato', 'hbv', 'antiviral'], drugs: ['entecavir', 'baraclude', 'tenofovir', 'vemlidy'] },
+    { keys: ['lipid', 'colesterol', 'dislipid'], drugs: ['sivastin', 'simvastatin', 'atorvastatin', 'torvast', 'rosuvastatin', 'crestor'] },
+    { keys: ['osas', 'apnee'], drugs: ['cpap'] },
+    { keys: ['decubit', 'allettat', 'piagh', 'braden'], drugs: ['materassino', 'rotazione', 'crema'] }
+  ];
+
+  var matchedDrugs = [];
+  matchMap.forEach(function(m) {
+    var matchKey = m.keys.some(function(k) { return pLower.includes(k); });
+    if (matchKey) {
+      p.terapie.forEach(function(t) {
+        var tName = (t.farmaco || '').toLowerCase();
+        var tInd = (t.indicazione || '').toLowerCase();
+        if (m.drugs.some(function(d) { return tName.includes(d) || tInd.includes(d); })) {
+          if (!matchedDrugs.some(function(x) { return x.id === t.id; })) {
+            matchedDrugs.push(t);
+          }
+        }
+      });
+    }
+  });
+
+  return matchedDrugs;
+}
+window.getFarmaciPerPatologia = getFarmaciPerPatologia;
+
+function renderQuadroClinicoDashboard(p) {
+  var container = document.getElementById('dashboard-quadro-clinico-container');
+  if (!container) return;
+  if (!p) p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) {
+    container.innerHTML = '';
+    return;
+  }
+
+  var pulitoNome = (p.nome || 'Assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+  var eta = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || '--');
+  var avInfo = (typeof getDettagliAvatarPaziente === 'function') ? getDettagliAvatarPaziente(p) : { emoji: '👤', isFemmina: false };
+  var patList = Array.isArray(p.patologie) ? p.patologie : (typeof p.patologie === 'string' ? [p.patologie] : (p.diagnosi ? p.diagnosi.split(' • ') : []));
+  var isAllettato = !!p.allettato;
+  var allergie = (p.allergie || '').trim();
+  var haAllergie = allergie && !allergie.toLowerCase().includes('nessun') && allergie !== '-' && allergie !== '';
+
+  var mNome = p.medicoNome || p.medico || 'Dott. Curante MMG';
+  var mTel = p.medicoTel || p.telMedico || p.medicoTelStudio || '';
+  var cgNome = p.moglieNome || p.caregiverNome || 'Familiare / Caregiver';
+
+  var chipsHtml = '';
+  if (patList.length > 0) {
+    chipsHtml = patList.map(function(pt, idx) {
+      var correlati = getFarmaciPerPatologia(p, pt);
+      var farmaciCount = correlati.length;
+      return '<span onclick="vaiACartellaPatologie()" style="background:#ffffff; color:#0369a1; border:1.5px solid #7dd3fc; border-radius:10px; padding:6px 12px; font-size:12px; font-weight:800; display:inline-flex; align-items:center; gap:6px; cursor:pointer; box-shadow:0 1px 3px rgba(2,132,199,0.1); transition:all 0.2s;" onmouseover="this.style.background=\'#e0f2fe\'" onmouseout="this.style.background=\'#ffffff\'" title="Tocca per vedere la scheda e i farmaci associati">' +
+        '<span>🩺</span> <span>' + pt + '</span>' +
+        (farmaciCount > 0 ? '<span style="background:#dbeafe; color:#1e40af; font-size:10.5px; padding:1px 6px; border-radius:6px; font-weight:900;" title="' + farmaciCount + ' farmaci attivi prescritti">💊 ' + farmaciCount + '</span>' : '<span style="background:#f1f5f9; color:#475569; font-size:10px; padding:1px 5px; border-radius:6px; font-weight:800;">Attiva</span>') +
+      '</span>';
+    }).join(' ');
+  } else {
+    chipsHtml = '<div style="background:#f0f9ff; border:1.5px dashed #38bdf8; border-radius:12px; padding:10px 14px; display:inline-flex; align-items:center; gap:12px; flex-wrap:wrap;">' +
+      '<span style="font-size:12.5px; font-weight:700; color:#0369a1;">Nessuna patologia formalizzata registrata.</span>' +
+      '<button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci();" style="background:#0284c7; color:#fff; border:none; padding:6px 14px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;">✨ Deduci Diagnosi dai Farmaci (AI)</button>' +
+    '</div>';
+  }
+
+  var allergiaHtml = '';
+  if (haAllergie) {
+    allergiaHtml = '<div style="background:#fef2f2; border:2px solid #ef4444; border-radius:12px; padding:9px 14px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 2px 8px rgba(239,68,68,0.15);">' +
+      '<div style="display:flex; align-items:center; gap:10px;">' +
+        '<span style="font-size:22px;">🚫</span>' +
+        '<div>' +
+          '<div style="color:#991b1b; font-weight:900; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">⚠️ SEGNALAZIONE ALLERGIA SALVAVITA: ' + allergie + '</div>' +
+          '<div style="font-size:11px; color:#b91c1c; font-weight:700;">Prestare massima cautela prima di qualsiasi somministrazione o prescrizione.</div>' +
+        '</div>' +
+      '</div>' +
+      '<span style="background:#dc2626; color:#ffffff; font-weight:900; font-size:10.5px; padding:3px 8px; border-radius:6px; text-transform:uppercase; flex-shrink:0;">Critico</span>' +
+    '</div>';
+  } else {
+    allergiaHtml = '<div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:10px; padding:6px 12px; margin-bottom:12px; display:inline-flex; align-items:center; gap:8px;">' +
+      '<span style="font-size:16px;">🛡️</span>' +
+      '<span style="color:#166534; font-size:12px; font-weight:700;">Nessuna allergia farmacologica nota riferita (NKDA)</span>' +
+    '</div>';
+  }
+
+  container.innerHTML = '<div class="card" style="border:2px solid #7dd3fc; background:linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%); border-radius:18px; padding:18px 22px; margin-bottom:20px; box-shadow:0 4px 20px rgba(2,132,199,0.1);">' +
+    '<!-- TOP BAR CARD -->' +
+    '<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:12px;">' +
+      '<div style="display:flex; align-items:center; gap:14px;">' +
+        '<div style="width:52px; height:52px; border-radius:50%; background:#e0f2fe; border:2.5px solid #0284c7; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; box-shadow:0 2px 8px rgba(2,132,199,0.2);">' +
+          avInfo.emoji +
+        '</div>' +
+        '<div>' +
+          '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+            '<span style="font-size:18px; font-weight:900; color:#0f172a; letter-spacing:-0.3px;">' + pulitoNome + '</span>' +
+            '<span style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-size:12px; font-weight:800; padding:2px 8px; border-radius:6px;">' + eta + ' anni</span>' +
+            '<span style="background:' + (isAllettato ? '#fef2f2' : '#f0fdf4') + '; color:' + (isAllettato ? '#dc2626' : '#166534') + '; border:1.5px solid ' + (isAllettato ? '#fca5a5' : '#86efac') + '; font-size:11.5px; font-weight:800; padding:2px 9px; border-radius:6px;">' +
+              (isAllettato ? '🛌 Allettato (q2h)' : '🚶 Deambulante') +
+            '</span>' +
+          '</div>' +
+          '<div style="font-size:12px; color:#64748b; font-weight:600; margin-top:3px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
+            '<span>📍 ' + (p.indirizzo || 'Domicilio') + '</span>' +
+            (mNome ? '<span>🩺 MMG: <b>' + mNome + '</b></span>' : '') +
+            (cgNome ? '<span>👥 Caregiver: <b>' + cgNome + '</b></span>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+        '<button type="button" class="btn" onclick="vaiACartellaPatologie()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:8px 16px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(2,132,199,0.3);">' +
+          '<span>🩺</span> <span>Cartella Clinica &amp; Patologie ➜</span>' +
+        '</button>' +
+        '<button type="button" class="btn btn-outline" onclick="apriModalDossierClinico()" style="font-size:12px; font-weight:800; padding:7px 12px; border-radius:10px;" title="Stampa Dossier Clinico Ospedaliero A4">' +
+          '<span>📄</span> <span>Dossier A4</span>' +
+        '</button>' +
+      '</div>' +
+    '</div>' +
+
+    '<!-- ALLERGIE BOX -->' +
+    allergiaHtml +
+
+    '<!-- SEZIONE CHIP PATOLOGIE -->' +
+    '<div style="margin-top:6px;">' +
+      '<div style="font-size:12px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">' +
+        '<span>Quadro Patologie &amp; Diagnosi Attive (' + patList.length + ')</span>' +
+        '<span style="font-size:11px; font-weight:700; color:#64748b; text-transform:none;">Tocca una diagnosi per aprire la scheda e vedere i farmaci prescritti</span>' +
+      '</div>' +
+      '<div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">' +
+        chipsHtml +
+      '</div>' +
+    '</div>' +
+
+    '<!-- BARRA AZIONI RAPIDE IN BASSO -->' +
+    '<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:14px; padding-top:12px; border-top:1px dashed #cbd5e1; font-size:12px;">' +
+      '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+        '<button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci();" style="background:#f0f9ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+          '<span>✨ Deduci Diagnosi da Farmaci (AI)</span>' +
+        '</button>' +
+        '<button type="button" onclick="aggiungiPatologiaRapida();" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+          '<span>➕ Aggiungi Patologia</span>' +
+        '</button>' +
+        '<button type="button" onclick="apriModificaAnagrafica();" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+          '<span>✏️ Modifica Dati</span>' +
+        '</button>' +
+      '</div>' +
+      '<div style="color:#64748b; font-weight:700; font-size:11.5px;">' +
+        'Totale terapie farmacologiche attive: <b style="color:#0284c7;">' + (p.terapie || []).length + '</b>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+window.renderQuadroClinicoDashboard = renderQuadroClinicoDashboard;
+
+function renderPatologieTab(p) {
+  var container = document.getElementById('tab-patologie-container');
+  if (!container) return;
+  if (!p) p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) {
+    container.innerHTML = '<div style="padding:40px; text-align:center; color:#64748b;">Nessun assistito selezionato.</div>';
+    return;
+  }
+
+  var pulitoNome = (p.nome || 'Assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+  var eta = (typeof calcolaAnniDaData === 'function') ? calcolaAnniDaData(p.dataNascita) : (p.eta || '--');
+  var avInfo = (typeof getDettagliAvatarPaziente === 'function') ? getDettagliAvatarPaziente(p) : { emoji: '👤', isFemmina: false };
+  var patList = Array.isArray(p.patologie) ? p.patologie : (typeof p.patologie === 'string' ? [p.patologie] : (p.diagnosi ? p.diagnosi.split(' • ') : []));
+  var isAllettato = !!p.allettato;
+  var allergie = (p.allergie || '').trim();
+  var haAllergie = allergie && !allergie.toLowerCase().includes('nessun') && allergie !== '-' && allergie !== '';
+
+  var mNome = p.medicoNome || p.medico || 'Dott. Curante MMG';
+  var mTel = p.medicoTel || p.telMedico || p.medicoTelStudio || '';
+  var cgNome = p.moglieNome || p.caregiverNome || 'Familiare / Caregiver';
+  var cgTel = p.moglieCellulare || p.caregiverCellulare || '';
+  var fNome = p.farmaciaDiRiferimento || 'Farmacia Territoriale';
+  var fTel = p.farmaciaTelefono || '';
+
+  // Tabella Incrociata: Patologie ↔ Farmaci
+  var rowsHtml = '';
+  if (patList.length > 0) {
+    rowsHtml = patList.map(function(pt, idx) {
+      var correlati = getFarmaciPerPatologia(p, pt);
+      var farmaciBadgeHtml = '';
+      if (correlati.length > 0) {
+        farmaciBadgeHtml = correlati.map(function(t) {
+          return '<span style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:7px; padding:3px 8px; font-size:11.5px; font-weight:800; display:inline-flex; align-items:center; gap:4px; margin:2px;">' +
+            '💊 <b>' + t.farmaco + '</b>' + (t.ora ? ' (' + t.ora + ')' : '') + (t.dose ? ' &bull; ' + t.dose : '') +
+          '</span>';
+        }).join(' ');
+      } else {
+        farmaciBadgeHtml = '<span style="color:#64748b; font-size:11.5px; font-style:italic;">Nessun farmaco specifico o monitoraggio non farmacologico</span>';
+      }
+
+      return '<tr style="border-bottom:1px solid #e2e8f0;">' +
+        '<td style="padding:12px 14px; vertical-align:top;">' +
+          '<div style="font-size:13.5px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
+            '<span style="font-size:18px;">🩺</span>' +
+            '<span>' + pt + '</span>' +
+          '</div>' +
+        '</td>' +
+        '<td style="padding:12px 14px; vertical-align:top;">' +
+          '<div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">' +
+            farmaciBadgeHtml +
+          '</div>' +
+        '</td>' +
+        '<td style="padding:12px 14px; vertical-align:top; width:130px;">' +
+          '<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; border-radius:6px; padding:3px 8px; font-size:11px; font-weight:800; display:inline-block;">🟢 Attiva / In cura</span>' +
+        '</td>' +
+        '<td style="padding:12px 14px; vertical-align:top; width:60px; text-align:center;">' +
+          '<button type="button" onclick="eliminaPatologiaSingola(' + idx + ');" style="background:#fee2e2; color:#b91c1c; border:none; border-radius:6px; padding:4px 8px; font-size:11px; font-weight:800; cursor:pointer;" title="Rimuovi patologia">✕</button>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+  } else {
+    rowsHtml = '<tr><td colspan="4" style="padding:24px; text-align:center; color:#64748b; font-size:13px;">' +
+      'Nessuna patologia formalizzata registrata per questo assistito.<br>' +
+      '<button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci();" style="margin-top:10px; background:#0284c7; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;">' +
+        '✨ Deduci Diagnosi dai Farmaci (AI)' +
+      '</button>' +
+    '</td></tr>';
+  }
+
+  // Ausili attivi
+  var ausiliHtml = '';
+  if (Array.isArray(p.ausili) && p.ausili.length > 0) {
+    ausiliHtml = p.ausili.map(function(a) {
+      return '<div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:8px 12px; display:inline-flex; align-items:center; gap:8px;">' +
+        '<span style="font-size:18px;">📦</span>' +
+        '<div>' +
+          '<div style="font-size:12px; font-weight:800; color:#0f172a;">' + (a.nome || a.tipo || 'Ausilio') + '</div>' +
+          (a.note ? '<div style="font-size:10.5px; color:#64748b;">' + a.note + '</div>' : '') +
+        '</div>' +
+      '</div>';
+    }).join(' ');
+  } else {
+    ausiliHtml = '<span style="color:#64748b; font-size:12px; font-style:italic;">Nessun ausilio sanitario o presidio ASL registrato</span>';
+  }
+
+  var allergiaBanner = '';
+  if (haAllergie) {
+    allergiaBanner = '<div style="background:#fef2f2; border:2px solid #ef4444; border-radius:14px; padding:12px 18px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:0 3px 10px rgba(239,68,68,0.15);">' +
+      '<div style="display:flex; align-items:center; gap:12px;">' +
+        '<span style="font-size:28px;">🚫</span>' +
+        '<div>' +
+          '<div style="color:#991b1b; font-weight:900; font-size:14px; text-transform:uppercase; letter-spacing:0.5px;">⚠️ ALLERGIA FARMACOLOGICA ACCERTATA: ' + allergie + '</div>' +
+          '<div style="font-size:12px; color:#b91c1c; font-weight:600; margin-top:2px;">Segnalazione critica per medici prescrittori, infermieri e operatori sociosanitari (OSS).</div>' +
+        '</div>' +
+      '</div>' +
+      '<span style="background:#dc2626; color:#ffffff; font-weight:900; font-size:11px; padding:4px 10px; border-radius:8px; text-transform:uppercase;">Sicurezza Paziente</span>' +
+    '</div>';
+  } else {
+    allergiaBanner = '<div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:10px 16px; margin-bottom:16px; display:inline-flex; align-items:center; gap:10px;">' +
+      '<span style="font-size:20px;">🛡️</span>' +
+      '<div>' +
+        '<span style="color:#166534; font-size:13px; font-weight:800;">Nessuna allergia farmacologica nota riferita (NKDA)</span>' +
+        '<div style="font-size:11px; color:#15803d;">Quadro anamnestico negativo per reazioni avverse a farmaci note.</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  container.innerHTML = '<div style="max-width:1200px; margin:0 auto; padding-bottom:30px;">' +
+    '<!-- TESTATA CLINICA SCHEDA -->' +
+    '<div style="background:linear-gradient(135deg, #091e3a 0%, #1e3a8a 60%, #0284c7 100%); border-radius:18px; padding:22px 26px; color:#ffffff; margin-bottom:20px; box-shadow:0 8px 30px rgba(2,132,199,0.25); border:1.5px solid #38bdf8;">' +
+      '<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">' +
+        '<div style="display:flex; align-items:center; gap:16px;">' +
+          '<div style="width:68px; height:68px; border-radius:50%; background:rgba(255,255,255,0.15); border:3px solid #7dd3fc; display:flex; align-items:center; justify-content:center; font-size:36px; flex-shrink:0;">' +
+            avInfo.emoji +
+          '</div>' +
+          '<div>' +
+            '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+              '<span style="background:#38bdf8; color:#0c4a6e; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase;">CARTELLA CLINICA &amp; QUADRO PATOLOGIE</span>' +
+              '<span style="background:rgba(255,255,255,0.2); color:#ffffff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">' + (p.sesso === 'F' ? 'Donna 👩' : 'Uomo 👨') + ' (' + eta + ' ANNI)</span>' +
+              '<span style="background:' + (isAllettato ? '#ef4444' : '#10b981') + '; color:#ffffff; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px;">' + (isAllettato ? '🛌 Allettato (q2h)' : '🚶 Deambulante') + '</span>' +
+            '</div>' +
+            '<h1 style="font-size:26px; font-weight:900; margin:6px 0 2px 0; color:#ffffff; letter-spacing:-0.5px;">' + pulitoNome + '</h1>' +
+            '<div style="font-size:13px; color:#bae6fd; font-weight:500;">' +
+              'Nato il: <b>' + (p.dataNascita || '--') + '</b> &bull; Residenza: <b>' + (p.indirizzo || 'Domicilio') + '</b>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+          '<button type="button" class="btn" onclick="apriModalDossierClinico()" style="background:#ffffff; color:#0369a1; font-weight:800; font-size:13px; padding:9px 16px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(0,0,0,0.15);">' +
+            '<span>📄</span> <span>Dossier A4 Ospedaliero</span>' +
+          '</button>' +
+          '<button type="button" class="btn btn-outline" onclick="apriModificaAnagrafica()" style="color:#ffffff; border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.1); font-weight:800; font-size:13px; padding:9px 16px; border-radius:10px;">' +
+            '<span>✏️</span> <span>Modifica Dati</span>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<!-- ALLERGIE SALVAVITA -->' +
+    allergiaBanner +
+
+    '<!-- CARD TABELLA PATOLOGIE & TERAPIE CORRELATE -->' +
+    '<div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:20px; margin-bottom:20px; box-shadow:0 3px 14px rgba(0,0,0,0.04); background:#ffffff;">' +
+      '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">' +
+        '<div>' +
+          '<div style="font-size:16px; font-weight:900; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
+            '<span>🩺</span> <span>Quadro Diagnosi Cliniche &amp; Terapie Farmacologiche Associate</span>' +
+          '</div>' +
+          '<div style="font-size:12px; color:#64748b; margin-top:2px;">' +
+            'Associazione diretta tra patologia formalizzata e piano terapeutico attivo somministrato.' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+          '<button type="button" onclick="aggiungiPatologiaRapida()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">' +
+            '<span>➕</span> <span>Aggiungi Patologia</span>' +
+          '</button>' +
+          '<button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci()" style="background:#f0f9ff; color:#0284c7; border:1.5px solid #7dd3fc; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">' +
+            '<span>✨ Deduci con AI dai Farmaci</span>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="table-responsive">' +
+        '<table class="custom-table" style="width:100%; border-collapse:collapse;">' +
+          '<thead>' +
+            '<tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0; text-align:left;">' +
+              '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569;">Patologia / Diagnosi Clinica</th>' +
+              '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569;">Farmaci Prescritti Associati</th>' +
+              '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569;">Stato</th>' +
+              '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569; text-align:center;">Azioni</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' +
+            rowsHtml +
+          '</tbody>' +
+        '</table>' +
+      '</div>' +
+    '</div>' +
+
+    '<!-- GRID AUSILI & CONTATTI CLINICI -->' +
+    '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">' +
+      '<!-- CARD AUSILI -->' +
+      '<div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:18px; background:#ffffff;">' +
+        '<div style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:10px; display:flex; align-items:center; gap:8px;">' +
+          '<span>📦</span> <span>Ausili &amp; Presidi Sanitari Registrati</span>' +
+        '</div>' +
+        '<div style="display:flex; flex-wrap:wrap; gap:8px;">' +
+          ausiliHtml +
+        '</div>' +
+      '</div>' +
+
+      '<!-- CARD CONTATTI CURANTI -->' +
+      '<div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:18px; background:#ffffff;">' +
+        '<div style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:12px; display:flex; align-items:center; gap:8px;">' +
+          '<span>🩺</span> <span>Riferimenti Medici &amp; Territoriali</span>' +
+        '</div>' +
+        '<div style="display:flex; flex-direction:column; gap:8px; font-size:12.5px;">' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed #e2e8f0;">' +
+            '<div><b>MMG:</b> ' + mNome + '</div>' +
+            '<div>' + (mTel ? '<a href="tel:' + mTel.replace(/[^0-9+]/g, '') + '" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ' + mTel + '</a>' : '<span style="color:#94a3b8;">--</span>') + '</div>' +
+          '</div>' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed #e2e8f0;">' +
+            '<div><b>Caregiver:</b> ' + cgNome + '</div>' +
+            '<div>' + (cgTel ? '<a href="tel:' + cgTel.replace(/[^0-9+]/g, '') + '" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ' + cgTel + '</a>' : '<span style="color:#94a3b8;">--</span>') + '</div>' +
+          '</div>' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0;">' +
+            '<div><b>Farmacia:</b> ' + fNome + '</div>' +
+            '<div>' + (fTel ? '<a href="tel:' + fTel.replace(/[^0-9+]/g, '') + '" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ' + fTel + '</a>' : '<span style="color:#94a3b8;">--</span>') + '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+window.renderPatologieTab = renderPatologieTab;
+
+function aggiungiPatologiaRapida() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+  var nuova = prompt('Inserisci la nuova Patologia o Diagnosi per ' + p.nome + ':\n(Es. Ipertensione arteriosa, Glaucoma, Diabete, ecc.)');
+  if (nuova && nuova.trim()) {
+    nuova = nuova.trim();
+    if (!Array.isArray(p.patologie)) p.patologie = [];
+    if (!p.patologie.includes(nuova)) {
+      p.patologie.push(nuova);
+      p.diagnosi = p.patologie.join(' • ');
+      if (typeof saveDb === 'function') saveDb();
+      if (typeof showToast === 'function') showToast('✅ Patologia "' + nuova + '" registrata!', 'success');
+      if (typeof renderAll === 'function') renderAll();
+      if (typeof renderPatologieTab === 'function') renderPatologieTab(p);
+    }
+  }
+}
+window.aggiungiPatologiaRapida = aggiungiPatologiaRapida;
+
+function eliminaPatologiaSingola(idx) {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p || !Array.isArray(p.patologie)) return;
+  var patNome = p.patologie[idx];
+  if (confirm('Vuoi rimuovere la patologia "' + patNome + '" dalla cartella di ' + p.nome + '?')) {
+    p.patologie.splice(idx, 1);
+    p.diagnosi = p.patologie.join(' • ');
+    if (typeof saveDb === 'function') saveDb();
+    if (typeof showToast === 'function') showToast('Patologia rimossa.', 'info');
+    if (typeof renderAll === 'function') renderAll();
+    if (typeof renderPatologieTab === 'function') renderPatologieTab(p);
+  }
+}
+window.eliminaPatologiaSingola = eliminaPatologiaSingola;
+
 
 function apriScannerMobileUnClick() {
   var camInput = document.getElementById('scan-carico-camera') || document.getElementById('scan-farm-camera');
