@@ -1750,6 +1750,12 @@
           <span>👤</span> <span>Crea Nuova Cartella Assistito</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('nuovo-paziente')"
+            style="background:rgba(255,255,255,0.2); color:#ffffff; border:1px solid rgba(255,255,255,0.4); padding:5px 10px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;"
+            title="A cosa serve la Creazione Cartella Assistito">
+            💡 A cosa serve
+          </button>
           <button type="button" onclick="azzeraFormNuovoPaziente()"
             style="background:#0284c7; color:#ffffff; border:1px solid #38bdf8; padding:5px 12px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3); transition:all 0.15s;"
             onmouseover="this.style.background='#0369a1'" onmouseout="this.style.background='#0284c7'"
@@ -2038,8 +2044,16 @@
         <div class="modal-title" style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; flex:1; min-width:0;">
           <span style="font-size:16.5px; font-weight:800; color:#ffffff; line-height:1.2;">✏️ Modifica Cartella Assistito</span>
         </div>
-        <button type="button" class="btn btn-outline btn-close-modal"
-          onclick="closeModal('modal-modifica-anagrafica')">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('modifica-anagrafica')"
+            style="background:rgba(255,255,255,0.2); color:#ffffff; border:1px solid rgba(255,255,255,0.4); padding:5px 10px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;"
+            title="A cosa serve la Modifica Cartella">
+            💡 A cosa serve
+          </button>
+          <button type="button" class="btn btn-outline btn-close-modal"
+            onclick="closeModal('modal-modifica-anagrafica')">✕</button>
+        </div>
       </div>
       <form onsubmit="salvaModificaAnagrafica(event)">
         <div class="modal-body modal-body-pro">
@@ -2617,7 +2631,15 @@
             <div style="font-size:11.5px; font-weight:700; opacity:0.95;">Letto a Manovella, Ausili &amp; Gestione Allettamento</div>
           </div>
         </div>
-        <button type="button" class="btn btn-outline" onclick="chiudiGuidaLettoManovella()" style="color:#ffffff; border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.15); width:34px; height:34px; min-width:34px; border-radius:50%; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer;">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('letto-manovella')"
+            style="background:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.45); color:#ffffff; font-size:12px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;"
+            title="A cosa serve la Guida Letto a Manovella">
+            💡 A cosa serve
+          </button>
+          <button type="button" class="btn btn-outline" onclick="chiudiGuidaLettoManovella()" style="color:#ffffff; border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.15); width:34px; height:34px; min-width:34px; border-radius:50%; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer;">✕</button>
+        </div>
       </div>
 
       <!-- BODY -->
@@ -2700,7 +2722,10 @@
     <div class="modal-card" style="max-width: 500px;">
       <div class="modal-header">
         <div class="modal-title">🛡️ Aggiungi Ausilio o Presidio Sanitario</div>
-        <button class="btn btn-outline" onclick="closeModal('modal-aggiungi-ausilio')">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('modal-ausilio')" style="border-color:#38bdf8; color:#0284c7; font-weight:800; font-size:11.5px; padding:4px 9px; border-radius:8px; cursor:pointer;" title="A cosa serve il censimento Ausili">💡 A cosa serve</button>
+          <button class="btn btn-outline" onclick="closeModal('modal-aggiungi-ausilio')">✕</button>
+        </div>
       </div>
       <form id="form-nuovo-ausilio" onsubmit="salvaNuovoAusilio(event)">
         <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
@@ -2782,7 +2807,10 @@
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-title">💩 Registra Evacuazione (Alvo)</div>
-        <button class="btn btn-outline" onclick="closeModal('modal-alvo')">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('modal-alvo')" style="border-color:#38bdf8; color:#0284c7; font-weight:800; font-size:11.5px; padding:4px 9px; border-radius:8px; cursor:pointer;" title="A cosa serve il monitoraggio Alvo">💡 A cosa serve</button>
+          <button class="btn btn-outline" onclick="closeModal('modal-alvo')">✕</button>
+        </div>
       </div>
       <form onsubmit="salvaAlvo(event)">
         <div class="modal-body">
@@ -2824,7 +2852,10 @@
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-title">❤️ Registra Parametri Vitali & Febbre</div>
-        <button class="btn btn-outline" onclick="closeModal('modal-parametri')">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('modal-parametri')" style="border-color:#38bdf8; color:#0284c7; font-weight:800; font-size:11.5px; padding:4px 9px; border-radius:8px; cursor:pointer;" title="A cosa serve la rilevazione dei Parametri Vitali">💡 A cosa serve</button>
+          <button class="btn btn-outline" onclick="closeModal('modal-parametri')">✕</button>
+        </div>
       </div>
       <form onsubmit="salvaParametri(event)">
         <div class="modal-body">
@@ -2879,7 +2910,10 @@
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-title">🔄 Registra Cambio Postura (Rotazione 2h)</div>
-        <button class="btn btn-outline" onclick="closeModal('modal-postura')">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('modal-postura')" style="border-color:#38bdf8; color:#0284c7; font-weight:800; font-size:11.5px; padding:4px 9px; border-radius:8px; cursor:pointer;" title="A cosa serve la rotazione Posturale">💡 A cosa serve</button>
+          <button class="btn btn-outline" onclick="closeModal('modal-postura')">✕</button>
+        </div>
       </div>
       <form onsubmit="salvaPostura(event)">
         <div class="modal-body">
@@ -6915,8 +6949,16 @@
             <div class="subtitle-118-sub">Dati salvavita prioritari per Pronto Soccorso &amp; NUE 112</div>
           </div>
         </div>
-        <button type="button" class="btn-close-118-pro" onclick="closeModal('modal-scheda-118')"
-          title="Chiudi Scheda 112" aria-label="Chiudi">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('scheda-112')"
+            style="background:rgba(255,255,255,0.25); color:#ffffff; border:1px solid rgba(255,255,255,0.45); padding:5px 10px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;"
+            title="A cosa serve la Scheda 112">
+            💡 A cosa serve
+          </button>
+          <button type="button" class="btn-close-118-pro" onclick="closeModal('modal-scheda-118')"
+            title="Chiudi Scheda 112" aria-label="Chiudi">✕</button>
+        </div>
       </div>
 
       <div class="scheda-118-body body-118-pro" id="scheda-118-content-body">
@@ -7034,7 +7076,13 @@
             </div>
           </div>
         </div>
-        <div class="header-wa-right">
+        <div class="header-wa-right" style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('report-whatsapp')"
+            style="background:rgba(255,255,255,0.25); color:#ffffff; border:1px solid rgba(255,255,255,0.45); padding:5px 10px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;"
+            title="A cosa serve il Report Giornaliero WhatsApp">
+            💡 A cosa serve
+          </button>
           <button type="button" class="btn-close-wa-pro" onclick="closeModal('modal-report-whatsapp')"
             title="Chiudi Report WhatsApp" aria-label="Chiudi">✕</button>
         </div>
@@ -7153,8 +7201,16 @@
               clinici</div>
           </div>
         </div>
-        <button type="button" class="btn-close-modal" onclick="chiudiModalConsegnaVocale()"
-          style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:32px; height:32px; font-size:16px; font-weight:800; cursor:pointer;">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('consegna-vocale')"
+            style="background:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.45); color:#ffffff; font-size:12px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;"
+            title="A cosa serve il Passaggio Consegne Vocale Smart">
+            💡 A cosa serve
+          </button>
+          <button type="button" class="btn-close-modal" onclick="chiudiModalConsegnaVocale()"
+            style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:32px; height:32px; font-size:16px; font-weight:800; cursor:pointer;">✕</button>
+        </div>
       </div>
 
       <div class="modal-body" style="padding:16px; background:#f8fafc; max-height:calc(85vh - 130px); overflow-y:auto;">
@@ -7256,8 +7312,16 @@
             <div style="font-size:12px; color:#fecaca;">Guida ragionata e Chiamata 118 Immediata</div>
           </div>
         </div>
-        <button type="button" class="btn-close-modal" onclick="closeModal('modal-sos-pronto-soccorso')"
-          style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:32px; height:32px; font-size:16px; font-weight:800; cursor:pointer;">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('sos-pronto-soccorso')"
+            style="background:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.45); color:#ffffff; font-size:12px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;"
+            title="A cosa serve la Guida SOS Emergenze">
+            💡 A cosa serve
+          </button>
+          <button type="button" class="btn-close-modal" onclick="closeModal('modal-sos-pronto-soccorso')"
+            style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:32px; height:32px; font-size:16px; font-weight:800; cursor:pointer;">✕</button>
+        </div>
       </div>
 
       <div class="modal-body" style="padding:14px; background:#fffafb; max-height:calc(85vh - 130px); overflow-y:auto;">
@@ -7328,8 +7392,16 @@
               avverse</div>
           </div>
         </div>
-        <button type="button" class="btn-close-modal" onclick="closeModal('modal-interazioni-farmaci')"
-          style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:32px; height:32px; font-size:16px; font-weight:800; cursor:pointer;">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('interazioni-farmaci')"
+            style="background:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.45); color:#ffffff; font-size:12px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;"
+            title="A cosa serve la Verifica Interazioni Terapie">
+            💡 A cosa serve
+          </button>
+          <button type="button" class="btn-close-modal" onclick="closeModal('modal-interazioni-farmaci')"
+            style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:32px; height:32px; font-size:16px; font-weight:800; cursor:pointer;">✕</button>
+        </div>
       </div>
 
       <div class="modal-body" style="padding:16px; background:#f8fafc; max-height:calc(85vh - 130px); overflow-y:auto;">
@@ -7510,7 +7582,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=288"></script>
+  <script src="app.js?v=289"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7521,7 +7593,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=288', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=289', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
@@ -7796,6 +7868,12 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 10px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('dossier-ospedaliero')"
+            style="background:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.45); color:#ffffff; font-size:12px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;"
+            title="A cosa serve il Dossier Clinico Ospedaliero">
+            💡 A cosa serve
+          </button>
           <!-- Selettore Paziente nel Dossier -->
           <div style="display: flex; align-items: center; gap: 6px;">
             <label style="font-size: 11.5px; font-weight: 700; color: #ffffff;">Assistito:</label>
@@ -8731,10 +8809,18 @@
             </div>
           </div>
         </div>
-        <button type="button" onclick="chiudiModalSafetyCheckOspedaliero()"
-          style="background:rgba(255,255,255,0.15); border:none; color:#ffffff; font-size:20px; width:36px; height:36px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-          ✕
-        </button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('safety-check')"
+            style="background:rgba(255,255,255,0.2); color:#ffffff; border:1px solid rgba(255,255,255,0.4); font-size:11.5px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;"
+            title="A cosa serve il Safety Check Ospedaliero">
+            💡 A cosa serve
+          </button>
+          <button type="button" onclick="chiudiModalSafetyCheckOspedaliero()"
+            style="background:rgba(255,255,255,0.15); border:none; color:#ffffff; font-size:20px; width:36px; height:36px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            ✕
+          </button>
+        </div>
       </div>
 
       <!-- CORPO CONTROLLI DI SICUREZZA -->
@@ -8885,7 +8971,15 @@
             <div id="mfr-sottotitolo-paziente" style="font-size:12px; color:#a7f3d0; font-weight:600;">Controllo preventivo scorte per l'assistito attivo</div>
           </div>
         </div>
-        <button type="button" onclick="chiudiModalFabbisognoRicette()" style="background:rgba(255,255,255,0.15); border:none; color:#ffffff; width:34px; height:34px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline"
+            onclick="mostraGuidaContestuale('fabbisogno-ricette')"
+            style="background:rgba(255,255,255,0.2); color:#ffffff; border:1px solid rgba(255,255,255,0.4); padding:5px 10px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;"
+            title="A cosa serve il Fabbisogno Farmaci & Ricette MMG">
+            💡 A cosa serve
+          </button>
+          <button type="button" onclick="chiudiModalFabbisognoRicette()" style="background:rgba(255,255,255,0.15); border:none; color:#ffffff; width:34px; height:34px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+        </div>
       </div>
 
       <!-- MODAL BODY SCROLLABILE -->

@@ -23813,6 +23813,186 @@ var GUIDE_CONTESTUALI = {
       '<b>Coordinamento Interprofessionale</b>: facilita il contatto tempestivo tra l\'operatore domiciliare e il medico in caso di comparsa di nuovi sintomi o variazioni terapeutiche.'
     ],
     utilita: '<b>Reperibilità a latenza zero</b>: in caso di urgenza o necessità di chiarimento terapeutico non si perde tempo a reperire i contatti chiave.'
+  },
+  'safety-check': {
+    icona: '🛡️',
+    titolo: 'Safety Check Ospedaliero (5 Regole Bedside)',
+    sottotitolo: 'Convalida di sicurezza prima della somministrazione al letto dell\'assistito',
+    scopo: 'Applica il protocollo clinico internazionale delle <b>5G (5 Giusti)</b>: Paziente Giusto, Farmaco Giusto, Dosaggio Giusto, Via Giusta, Orario Giusto. Elimina il rischio di errore umano o scambio di compressa.',
+    comeSiUsa: [
+      '<b>Conferma Visiva Blister/Penna</b>: confronta la forma e il milligrammo della scatola con la prescrizione.',
+      '<b>Spunta la Casella di Convalida</b>: clicca sulla casella di controllo per sbloccare il tasto verde di somministrazione sicura.',
+      '<b>Riconoscimento Ottico (Tasto "Inquadra Pillola")</b>: se hai un dubbio visivo sulla capsula, inquadrala con la fotocamera per il confronto AI.'
+    ],
+    utilita: '<b>Protezione medico-legale e azzeramento errori</b>: garantisce che ogni farmaco critico venga somministrato solo dopo verifica cosciente da parte dell\'operatore.'
+  },
+  'nuovo-paziente': {
+    icona: '👤',
+    titolo: 'Crea Nuova Cartella Assistito',
+    sottotitolo: 'Presa in carico iniziale e anagrafica socio-sanitaria domiciliare',
+    scopo: 'Registra un nuovo paziente nel database della struttura con dati demografici completi, indirizzo con coordinate GPS, mobilità (deambulante/allettato), caregiver e presidi sanitari.',
+    comeSiUsa: [
+      '<b>Compila i Dati Anagrafici</b>: inserisci nome, cognome, data di nascita e residenza (fondamentale per il navigatore GPS).',
+      '<b>Indica Mobilità &amp; Allergie</b>: segnala lo stato motorio e qualsiasi allergia a farmaci o alimenti.',
+      '<b>Seleziona Patologie Preimpostate</b>: tocca i tag rapidi (Ipertensione, Diabete, Cardiopatia, Disfagia) per impostare subito la diagnosi clinica.'
+    ],
+    utilita: '<b>Presa in carico istantanea</b>: genera una cartella clinica completa e fruibile su USB, computer e smartphone in meno di 2 minuti.'
+  },
+  'modifica-anagrafica': {
+    icona: '✏️',
+    titolo: 'Modifica Cartella Assistito',
+    sottotitolo: 'Aggiornamento continuo di recapiti, condizioni cliniche e riferimenti',
+    scopo: 'Consente di aggiornare qualsiasi informazione anagrafica, recapito telefonico, medico curante, farmacia o stato motorio della persona assistita.',
+    comeSiUsa: [
+      'Aggiorna numeri di telefono o indirizzo in caso di cambio domicilio temporaneo o nuova reperibilità.',
+      'Modifica lo stato di allettamento per attivare o disattivare i protocolli orari di rotazione posturale.',
+      'Usa il banner smart AI per dedurre diagnosi aggiornate partendo dai nuovi farmaci caricati.'
+    ],
+    utilita: '<b>Cartella sempre allineata alla realtà clinica</b>: garantisce che tutto il team operi su dati costantemente validati e affidabili.'
+  },
+  'fabbisogno-ricette': {
+    icona: '📋',
+    titolo: 'Il Lunedì delle Ricette • Fabbisogno & WhatsApp MMG',
+    sottotitolo: 'Monitoraggio preventivo scorte farmaci e richiesta ricette al Medico Curante',
+    scopo: 'Calcola le giacenze residue di tutte le compresse, fiale o gocce e programma in anticipo la richiesta delle ricette elettroniche (NRE) al Medico di Famiglia prima che i farmaci finiscano.',
+    comeSiUsa: [
+      '<b>Codici Colore di Urgenza</b>: Rosso (esaurimento immediato), Giallo (esaurimento entro 7-15 gg), Verde (scorta regolare).',
+      '<b>Modalità Festività &amp; Ponti</b>: attiva il toggle per estendere il preavviso durante ferie o chiusure prolungate dello studio medico.',
+      '<b>Invia Richiesta WhatsApp MMG</b>: con 1 tap genera il messaggio formale già formattato con nome paziente, Codice Fiscale e lista confezioni da prescrivere.'
+    ],
+    utilita: '<b>Zero interruzioni di terapia</b>: elimina il panico da farmaco esaurito nel weekend o nei festivi, tutelando la salute dell\'assistito.'
+  },
+  'scheda-112': {
+    icona: '🚨',
+    titolo: 'Scheda Clinica Emergenza 112 (NUE) • Salva-Vita',
+    sottotitolo: 'Passaporto clinico prioritario per soccorsi d\'urgenza e Pronto Soccorso',
+    scopo: 'Raccoglie su un unico foglio ad altissimo contrasto i dati vitali indispensabili per i medici dell\'ambulanza del 118: patologie attive, allergie farmacologiche, terapie in corso, codice fiscale e recapito caregiver.',
+    comeSiUsa: [
+      '<b>Mostra a Schermo ai Sanitari</b>: fai leggere la schermata direttamente al personale del 118 appena giunto al domicilio.',
+      '<b>Stampa Rapida Cartacea</b>: usa il tasto stampa per consegnare una copia cartacea da allegare alla barella durante il trasporto in ospedale.',
+      '<b>Chiamata Rapida NUE 112</b>: tasto rosso gigante per comporre subito il Numero Unico Europeo delle Emergenze.'
+    ],
+    utilita: '<b>Chiarezza assoluta nei momenti critici</b>: riduce i tempi di triage e previene la somministrazione errata di farmaci controindicati da parte dei soccorritori.'
+  },
+  'report-whatsapp': {
+    icona: '💬',
+    titolo: 'Report Giornaliero Famiglia WhatsApp',
+    sottotitolo: 'Sintesi trasparente del turno di assistenza inviata ai parenti',
+    scopo: 'Compone automaticamente un messaggio WhatsApp chiaro, professionale ed esaustivo che riassume lo stato generale dell\'assistito, i farmaci regolarmente assunti, i pasti e le attività svolte durante il turno.',
+    comeSiUsa: [
+      '<b>Seleziona il Destinatario</b>: scegli il familiare primario (figlia, coniuge o amministratore).',
+      '<b>Verifica l\'Anteprima</b>: il messaggio include orari dei farmaci presi, parametri rilevati ed eventuali note sull\'umore.',
+      '<b>Tocca "Invia su WhatsApp"</b>: apre direttamente l\'app con il messaggio già pronto da spedire.'
+    ],
+    utilita: '<b>Fiducia totale con la famiglia</b>: rassicura i parenti lontani, documenta il lavoro scrupoloso dell\'assistente ed evita decine di telefonate ripetitive.'
+  },
+  'consegna-vocale': {
+    icona: '🎙️',
+    titolo: 'Passaggio Consegne Vocale Smart (AI)',
+    sottotitolo: 'Registrazione vocale con trascrizione intelligente e rilevamento parametri',
+    scopo: 'Permette all\'operatore a fine turno di dettare a voce le consegne. L\'Intelligenza Artificiale trascrive il parlato ed estrae automaticamente valori clinici (es. pressione, glicemia, alvo).',
+    comeSiUsa: [
+      '<b>Tocca il Microfono</b>: parla liberamente raccontando com\'è andato il turno e le condizioni dell\'assistito.',
+      '<b>Trascrizione Istantanea</b>: rileggi il testo trascritto e correggi se necessario.',
+      '<b>Salva nelle Consegne</b>: il testo viene inserito nel diario socio-sanitario e sarà letto dall\'operatore del turno successivo.'
+    ],
+    utilita: '<b>Velocità e accuratezza</b>: compilare la consegna a voce richiede meno di 30 secondi e garantisce che nessun dettaglio importante venga tralasciato.'
+  },
+  'sos-pronto-soccorso': {
+    icona: '🚨',
+    titolo: 'SOS & Pronto Soccorso Domiciliare',
+    sottotitolo: 'Protocolli operativi di emergenza per cadute, malori o alterazioni vitali',
+    scopo: 'Fornisce all\'operatore e ai familiari le linee guida comportamentali da seguire immediatamente in caso di caduta a terra, soffocamento, crisi ipertensiva, dolore toracico o perdita di coscienza.',
+    comeSiUsa: [
+      '<b>Segui i Passi dell\'Algoritmo</b>: valuta coscienza, respiro e presenza di traumi prima di muovere l\'assistito.',
+      '<b>Chiamata Immediata 112</b>: pulsante prioritario per collegarsi alla centrale operativa.',
+      '<b>Istruzioni Specifiche per Sintomo</b>: consulta le schede dedicate per gestione cadute e manovre di primo soccorso.'
+    ],
+    utilita: '<b>Controllo dello stress ed efficacia d\'intervento</b>: guida passo-passo chi assiste la persona senza panico e nel rispetto dei protocolli sanitari.'
+  },
+  'interazioni-farmaci': {
+    icona: '🧪',
+    titolo: 'Verifica Interazioni Terapie & Occhio Clinico',
+    sottotitolo: 'Analisi automatica sovrapposizioni e controindicazioni farmacologiche',
+    scopo: 'Scansiona l\'intero piano terapeutico attivo confrontando i principi attivi assunti per rilevare interazioni pericolose, sovradosaggi o incompatibilità d\'orario.',
+    comeSiUsa: [
+      'Visualizza la matrice delle interazioni rilevate classificate per gravità (Lieve, Moderata, Severa).',
+      'Leggi le raccomandazioni cliniche sulle finestre orarie (es. distanziare antiacidi dai farmaci per la tiroide).',
+      'Esporta il report per sottoporlo al Medico Curante o allo specialista.'
+    ],
+    utilita: '<b>Prevenzione di eventi avversi da politerapia</b>: indispensabile per pazienti anziani che assumono più di 5 farmaci contemporaneamente.'
+  },
+  'letto-manovella': {
+    icona: '🛏️',
+    titolo: 'Guida Letto a Manovella & Posture Allettamento',
+    sottotitolo: 'Istruzioni operative per familiari e assistenti sulla gestione della postura',
+    scopo: 'Guida illustrata all\'uso corretto delle manovelle del letto ortopedico articolato (alzatesta, alzagambe, piano bacino) per prevenire complicanze respiratorie e lesioni da decubito.',
+    comeSiUsa: [
+      '<b>Posizione Pasto &amp; Terapia (Fowler 45°-60°)</b>: come sollevare lo schienale per evitare il soffocamento e la polmonite ab ingestis.',
+      '<b>Posizione Anti-Scivolamento</b>: come inclinare la pediera delle ginocchia prima di sollevare il tronco.',
+      '<b>Rotazione Posturale</b>: tecniche per girare il paziente sul fianco a 30° senza sforzi per la schiena dell\'operatore.'
+    ],
+    utilita: '<b>Prevenzione lesioni cutanee e tutela ergonomica</b>: salvaguarda la cute fragile dell\'anziano e la colonna vertebrale di chi lo accudisce.'
+  },
+  'dossier-ospedaliero': {
+    icona: '📋',
+    titolo: 'Dossier Clinico Ospedaliero A4 "Tutto-in-Uno"',
+    sottotitolo: 'Fascicolo cartaceo completo per ricoveri, visite specialistiche o RSA',
+    scopo: 'Genera una cartella clinica impaginata e stampabile in formato A4 ufficiale con anagrafica, diagnosi, piano terapeutico dettagliato, parametri recenti e contatti di rete.',
+    comeSiUsa: [
+      '<b>Seleziona l\'Assistito</b>: visualizza l\'anteprima completa del fascicolo.',
+      '<b>Stampa o Salva in PDF</b>: con 1 click ottieni il documento pronto da consegnare al medico ospedaliero.',
+      '<b>Include QR Code di Verifica</b>: permette al reparto ospedaliero di consultare i dati aggiornati in mobilità.'
+    ],
+    utilita: '<b>Continuità ospedale-territorio impeccabile</b>: il paziente arriva in ospedale con una documentazione ineccepibile, degna di una clinica d\'eccellenza.'
+  },
+  'modal-alvo': {
+    icona: '💩',
+    titolo: 'Registrazione Evacuazione (Alvo) & Bristol',
+    sottotitolo: 'Monitoraggio dell\'alvo e prevenzione fecalomi nell\'assistito',
+    scopo: 'Registra frequenza, consistenza (Scala di Bristol) ed eventuale uso di clismi o lassativi, prevenendo il blocco intestinale e i fecalomi, frequenti negli anziani allettati.',
+    comeSiUsa: [
+      'Seleziona la consistenza secondo la scala clinica (normale, caprina/stipsi, morbida, diarrea).',
+      'Indica se l\'evacuazione è stata spontanea o indotta da microclisma/lassativo.',
+      'Registra data, ora e operatore che ha curato l\'igiene.'
+    ],
+    utilita: '<b>Allerta precoce per stipsi prolungata</b>: allerta l\'equipe se il paziente non evacua da oltre 48-72 ore.'
+  },
+  'modal-parametri': {
+    icona: '❤️',
+    titolo: 'Registrazione Parametri Vitali & Febbre',
+    sottotitolo: 'Monitoraggio cardio-respiratorio, temperatura e glicemia domiciliare',
+    scopo: 'Rileva e traccia i parametri vitali essenziali: Pressione Arteriosa (Sistolica/Diastolica), Frequenza Cardiaca, Saturazione O2, Temperatura e Glicemia capillare.',
+    comeSiUsa: [
+      'Inserisci i valori rilevati dagli strumenti domiciliari (sfigmomanometro, pulsossimetro, termometro, glucometro).',
+      'Il sistema evidenzia automaticamente valori fuori scala con codice colore di allerta.',
+      'I dati vengono memorizzati e alimentano i grafici storici della cartella.'
+    ],
+    utilita: '<b>Rilevazione tempestiva dei peggioramenti</b>: consente al medico di intervenire prima che un\'anomalia si trasformi in urgenza ospedaliera.'
+  },
+  'modal-postura': {
+    icona: '🔄',
+    titolo: 'Registrazione Cambio Postura (Rotazione 2h)',
+    sottotitolo: 'Protocollo di prevenzione piaghe da decubito e lesioni da pressione',
+    scopo: 'Documenta la rotazione oraria della posizione dell\'assistito allettato (Supino, Fianco Destro a 30°, Fianco Sinistro a 30°, Seduto in poltrona) nel rispetto della Scala di Braden.',
+    comeSiUsa: [
+      'Indica la nuova posizione assunta con data e ora.',
+      'Controlla e annota lo stato della cute sulle prominenze ossee (sacro, trocanteri, talloni).',
+      'Imposta il promemoria per la successiva rotazione tra 2 ore.'
+    ],
+    utilita: '<b>Tutela cutanea e certificazione dell\'assistenza</b>: riduce del 90% il rischio di lesioni da pressione e tutela legalmente l\'operatore che dimostra l\'adempimento del protocollo posturale.'
+  },
+  'modal-ausilio': {
+    icona: '🛡️',
+    titolo: 'Aggiungi Ausilio o Presidio Sanitario',
+    sottotitolo: 'Censimento dispositivi protesici e ausiliari domiciliari ASL',
+    scopo: 'Aggiunge un presidio sanitario in dotazione all\'assistito specificando tipologia (antidecubito, letto, ausili assorbenti, sensori) e note d\'uso.',
+    comeSiUsa: [
+      'Seleziona il tipo di ausilio (es. Letto ortopedico, Materasso ad aria, Sedia a rotelle, Deambulatore).',
+      'Specifica note sulla manutenzione, fornitura o scadenze per la sostituzione periodica.',
+      'L\'ausilio compare immediatamente nella cartella clinica e nel dossier A4.'
+    ],
+    utilita: '<b>Gestione patrimoniale e adeguatezza dell\'assistenza</b>: garantisce che i dispositivi prescritti siano presenti ed efficienti al domicilio.'
   }
 };
 
