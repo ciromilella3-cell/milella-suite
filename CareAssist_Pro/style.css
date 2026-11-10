@@ -10010,15 +10010,56 @@ button[onclick*="mostraGuidaContestuale"],
   }
   
   /* Garantisce che i titoli nei modal header su mobile non schiaccino i pulsanti a destra */
+  .modal-header {
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+  }
+  
   .modal-header > div:first-child,
   .modal-header > .modal-title,
   #modal-allarme-terapie .modal-header > div:first-child {
     min-width: 0 !important;
     flex: 1 1 auto !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
   
   .modal-header > div:last-child,
   #modal-allarme-terapie .modal-header > div:last-child {
     flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
   }
 }
+
+/* ==========================================================================
+   MODAL ELENCO VISITE & PRESTAZIONI SPECIALISTICHE (RESPONSIVE TOUCH & DESKTOP)
+   ========================================================================== */
+#modal-elenco-visite .visita-card-completa {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+#modal-elenco-visite .visita-card-completa:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+}
+@media (max-width: 600px) {
+  #modal-elenco-visite .modal-card {
+    width: 98% !important;
+    max-height: 94vh !important;
+    border-radius: 16px !important;
+  }
+  #mev-filtri-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: nowrap !important;
+    padding-bottom: 2px !important;
+    width: 100% !important;
+  }
+  #mev-filtri-container button {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+}
+

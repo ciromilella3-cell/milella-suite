@@ -7759,6 +7759,10 @@ function toggleVisita(id) {
     saveDb();
     if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
     if (typeof renderVisite === 'function') renderVisite();
+    var modalMev = document.getElementById('modal-elenco-visite');
+    if (modalMev && modalMev.style.display === 'flex' && typeof renderElencoVisiteBody === 'function') {
+      renderElencoVisiteBody();
+    }
     if (typeof showToast === 'function') showToast(v.fatto ? 'Visita segnata come Eseguita! ✓' : 'Visita riaperta in programma ⏳');
   }
 }
@@ -7780,6 +7784,10 @@ async function eliminaVisita(id) {
     saveDb();
     if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
     if (typeof renderVisite === 'function') renderVisite();
+    var modalMev = document.getElementById('modal-elenco-visite');
+    if (modalMev && modalMev.style.display === 'flex' && typeof renderElencoVisiteBody === 'function') {
+      renderElencoVisiteBody();
+    }
     showToast('Appuntamento spostato nel Cestino. 📅');
   }
 }
@@ -7821,7 +7829,7 @@ function apriModificaVisita(id) {
 
   if (dateEl) dateEl.value = v.data ? v.data.slice(0, 10) : '';
   if (oraEl) oraEl.value = v.ora || '10:00';
-  
+
   const st = v.statoVisita || (v.fatto ? 'Eseguita' : 'In programma');
   if (statoEl) {
     statoEl.value = st;
@@ -12286,6 +12294,11 @@ function salvaNuovaVisita(e) {
   if (modalScm && modalScm.style.display === 'flex' && typeof apriModalSchedaClinicaMobile === 'function') {
     apriModalSchedaClinicaMobile(p.id);
   }
+  // Se l'elenco completo visite è aperto, aggiornalo all'istante
+  var modalMev = document.getElementById('modal-elenco-visite');
+  if (modalMev && modalMev.style.display === 'flex' && typeof renderElencoVisiteBody === 'function') {
+    renderElencoVisiteBody();
+  }
   if (typeof showToast === 'function') {
     showToast(isModifica ? '✏️ Visita modificata con successo!' : '📅 Visita per ' + (p.nome || 'assistito') + ' salvata con successo!');
   }
@@ -13030,11 +13043,11 @@ function toggleAudioGuidaLettoManovella() {
   utter.lang = 'it-IT';
   utter.rate = 0.95;
   utter.pitch = 1.0;
-  utter.onend = function() {
+  utter.onend = function () {
     _isGuidaAudioPlaying = false;
     if (txtBtn) txtBtn.textContent = 'Ascolta a Voce';
   };
-  utter.onerror = function() {
+  utter.onerror = function () {
     _isGuidaAudioPlaying = false;
     if (txtBtn) txtBtn.textContent = 'Ascolta a Voce';
   };
@@ -19739,7 +19752,7 @@ function apriPrestampatoInfettiviDiretto() {
   var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
   // Se non è selezionato Ciro, seleziona automaticamente Ciro Milella
   if (!p || !pazHaDiagnosiMalattieInfettive(p)) {
-    var ciro = (AppData.pazienti || []).find(function(x) { return (x.nome || '').toLowerCase().includes('ciro'); });
+    var ciro = (AppData.pazienti || []).find(function (x) { return (x.nome || '').toLowerCase().includes('ciro'); });
     if (ciro && typeof cambiaPaziente === 'function') {
       cambiaPaziente(ciro.id);
     }
@@ -19754,7 +19767,7 @@ function apriPrestampatoInfettiviDiretto() {
     if (tabBtn) {
       tabBtn.click();
     } else {
-      document.querySelectorAll('.tab-content').forEach(function(c) { c.style.display = 'none'; });
+      document.querySelectorAll('.tab-content').forEach(function (c) { c.style.display = 'none'; });
       var tabSection = document.getElementById('tab-epatologia');
       if (tabSection) {
         tabSection.style.display = 'block';
@@ -24090,6 +24103,19 @@ var GUIDE_CONTESTUALI = {
     ],
     utilita: '<b>Reperibilità a latenza zero</b>: in caso di urgenza o necessità di chiarimento terapeutico non si perde tempo a reperire i contatti chiave.'
   },
+  'elenco-visite': {
+    icona: '📋',
+    titolo: 'Elenco Visite & Prestazioni Specialistiche',
+    sottotitolo: 'Scadenzario clinico completo, filtri per stato e gestione appuntamenti',
+    scopo: 'Raggruppa e monitora l\'intero quadro delle visite specialistiche ed esami diagnostici dell\'assistito, consentendo di visualizzare controlli in programma, visite posticipate o già eseguite.',
+    comeSiUsa: [
+      '<b>Filtra per Stato</b>: tocca i tab (In programma, Posticipate, Eseguite) per filtrare istantaneamente l\'elenco.',
+      '<b>Chiamata Rapida al Medico o Struttura</b>: tocca il numero telefonico per avviare la chiamata con 1 click.',
+      '<b>Azioni Dirette</b>: tocca "Posticipa" per registrare un rinvio con data precedente, "Modifica" per aggiornare i dettagli, o "✓ Fatta" per confermare l\'avvenuta esecuzione.',
+      '<b>Nuova Visita</b>: clicca sul pulsante "+ Pianifica Visita" per aggiungere un nuovo controllo specialistico.'
+    ],
+    utilita: '<b>Continuità assistenziale senza smarrimenti</b>: evita ritardi nei controlli salvavita, nei rinnovi dei piani terapeutici ASL e negli accertamenti strumentali.'
+  },
   'safety-check': {
     icona: '🛡️',
     titolo: 'Safety Check Ospedaliero (5 Regole Bedside)',
@@ -24383,38 +24409,38 @@ function mostraGuidaContestuale(chiave) {
 
   var passiHtml = '';
   if (Array.isArray(g.comeSiUsa)) {
-    passiHtml = g.comeSiUsa.map(function(p, idx) {
+    passiHtml = g.comeSiUsa.map(function (p, idx) {
       return '<div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:10px;">' +
         '<div style="background:#0284c7; color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; flex-shrink:0; margin-top:2px;">' + (idx + 1) + '</div>' +
         '<div style="font-size:13px; color:#1e293b; line-height:1.45;">' + p + '</div>' +
-      '</div>';
+        '</div>';
     }).join('');
   }
 
-  corpoEl.innerHTML = 
+  corpoEl.innerHTML =
     '<div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid #0284c7; border-radius:10px; padding:12px 14px; margin-bottom:16px;">' +
-      '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#0369a1; letter-spacing:0.5px; margin-bottom:3px;">' +
-        '🎯 A cosa serve (Scopo Clinico &amp; Gestionale)' +
-      '</div>' +
-      '<div style="font-size:13.5px; color:#1e293b; line-height:1.5;">' +
-        g.scopo +
-      '</div>' +
+    '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#0369a1; letter-spacing:0.5px; margin-bottom:3px;">' +
+    '🎯 A cosa serve (Scopo Clinico &amp; Gestionale)' +
+    '</div>' +
+    '<div style="font-size:13.5px; color:#1e293b; line-height:1.5;">' +
+    g.scopo +
+    '</div>' +
     '</div>' +
 
     '<div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:14px 16px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">' +
-      '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#475569; letter-spacing:0.5px; margin-bottom:12px; display:flex; align-items:center; gap:6px;">' +
-        '<span>🛠️</span> <span>Come si usa (Passi Operativi)</span>' +
-      '</div>' +
-      passiHtml +
+    '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#475569; letter-spacing:0.5px; margin-bottom:12px; display:flex; align-items:center; gap:6px;">' +
+    '<span>🛠️</span> <span>Come si usa (Passi Operativi)</span>' +
+    '</div>' +
+    passiHtml +
     '</div>' +
 
     '<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid #16a34a; border-radius:10px; padding:12px 14px;">' +
-      '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#15803d; letter-spacing:0.5px; margin-bottom:3px; display:flex; align-items:center; gap:6px;">' +
-        '<span>💡</span> <span>Perché fa la differenza (Valore per la Struttura)</span>' +
-      '</div>' +
-      '<div style="font-size:13px; color:#166534; line-height:1.45;">' +
-        g.utilita +
-      '</div>' +
+    '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#15803d; letter-spacing:0.5px; margin-bottom:3px; display:flex; align-items:center; gap:6px;">' +
+    '<span>💡</span> <span>Perché fa la differenza (Valore per la Struttura)</span>' +
+    '</div>' +
+    '<div style="font-size:13px; color:#166534; line-height:1.45;">' +
+    g.utilita +
+    '</div>' +
     '</div>';
 
   openModal('modal-guida-contestuale');
@@ -25074,9 +25100,9 @@ window._pazientePianoTerapeuticoCorrente = null;
 // Helper unificato per calcolare scorta residua, giorni di autonomia e data prevista richiesta ricetta al Medico
 window._calcolaDatiScortaERichiesta = function (t, tutteTerapie) {
   const isPenna = (typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t)) ||
-                  (t.tipoFormulazione === 'penna') ||
-                  ((t.farmaco || t.nome || '').toLowerCase().includes('penna'));
-  
+    (t.tipoFormulazione === 'penna') ||
+    ((t.farmaco || t.nome || '').toLowerCase().includes('penna'));
+
   let scortaNum = 0;
   let unita = isPenna ? 'penne' : 'cpr';
 
@@ -25095,17 +25121,17 @@ window._calcolaDatiScortaERichiesta = function (t, tutteTerapie) {
   }
 
   const oggi = new Date();
-  
+
   // Data stimata fine scorta (esaurimento totale)
   const dtFine = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate());
   dtFine.setDate(dtFine.getDate() + (ggAutonomia > 0 ? ggAutonomia : 0));
-  const dataFineStr = ggAutonomia > 0 
+  const dataFineStr = ggAutonomia > 0
     ? dtFine.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' })
     : 'ESAURITO OGGI';
 
   // Preavviso di sicurezza per richiesta ricetta al MMG (default: 7 gg per compresse, 15 gg per penne)
   const preavviso = Math.min(30, Math.max(1, parseInt(t.giorniAlert) || (isPenna ? 15 : 7)));
-  
+
   // Giorni mancanti fino alla data consigliata per richiedere la ricetta
   const ggAllaRichiesta = Math.max(0, ggAutonomia - preavviso);
   const dtRichiesta = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate());
@@ -25249,7 +25275,7 @@ window.generaHtmlPianoTerapeutico = function (p) {
       const istruzioni = t.modo || t.note || t.istruzioni || t.indicazione || 'Assumere secondo prescrizione medica';
       const isSalvavita = t.salvavita || t.critico || t.is112 || (nomeFarmaco.toLowerCase().includes('salvavita'));
       const isSos = t.alBisogno || t.sos || (t.fascia && t.fascia.toLowerCase().includes('bisogno'));
-      
+
       // Calcolo dati scorta e data richiesta ricetta
       const info = window._calcolaDatiScortaERichiesta(t, terapie);
 
@@ -25278,17 +25304,17 @@ window.generaHtmlPianoTerapeutico = function (p) {
               Principio: <i style="font-style:italic;">${principio}</i>
             </div>
             ${(() => {
-              if (t.cadenzaTipo === 'alterni') return '<div style="font-size:7pt; color:#d97706; font-weight:800; margin-top:2px;">🔄 Somministrazione a giorni alterni</div>';
-              if (t.cadenzaTipo === 'settimanale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">📅 Settimanale (' + ((typeof formattaGiornoSettimana === 'function') ? formattaGiornoSettimana(t.cadenzaGiornoSettimana || 1) : 'Lunedì') + ')</div>';
-              if (t.cadenzaTipo === 'quindicinale_15_30') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">📅 Ogni 15 giorni (il 15 e 30)</div>';
-              if (t.cadenzaTipo === 'mensile') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Mensile (il ' + (t.cadenzaGiornoMese === 'fine' ? 'fine mese' : (t.cadenzaGiornoMese ? (t.cadenzaGiornoMese + '°') : '1°')) + ')</div>';
-              if (t.cadenzaTipo === 'bimestrale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Bimestrale (ogni 2 mesi)</div>';
-              if (t.cadenzaTipo === 'trimestrale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Trimestrale (ogni 3 mesi)</div>';
-              if (t.cadenzaTipo === 'semestrale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Semestrale (ogni 6 mesi)</div>';
-              if (t.cadenzaTipo === 'annuale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Annuale (' + (t.cadenzaGiornoAnnuale || '1') + '/' + (t.cadenzaMeseAnnuale || '1') + ')</div>';
-              if (t.cadenzaTipo === 'bisogno') return '<div style="font-size:7pt; color:#b45309; font-weight:800; margin-top:2px;">🚨 Al bisogno (SOS)</div>';
-              return '';
-            })()}
+          if (t.cadenzaTipo === 'alterni') return '<div style="font-size:7pt; color:#d97706; font-weight:800; margin-top:2px;">🔄 Somministrazione a giorni alterni</div>';
+          if (t.cadenzaTipo === 'settimanale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">📅 Settimanale (' + ((typeof formattaGiornoSettimana === 'function') ? formattaGiornoSettimana(t.cadenzaGiornoSettimana || 1) : 'Lunedì') + ')</div>';
+          if (t.cadenzaTipo === 'quindicinale_15_30') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">📅 Ogni 15 giorni (il 15 e 30)</div>';
+          if (t.cadenzaTipo === 'mensile') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Mensile (il ' + (t.cadenzaGiornoMese === 'fine' ? 'fine mese' : (t.cadenzaGiornoMese ? (t.cadenzaGiornoMese + '°') : '1°')) + ')</div>';
+          if (t.cadenzaTipo === 'bimestrale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Bimestrale (ogni 2 mesi)</div>';
+          if (t.cadenzaTipo === 'trimestrale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Trimestrale (ogni 3 mesi)</div>';
+          if (t.cadenzaTipo === 'semestrale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Semestrale (ogni 6 mesi)</div>';
+          if (t.cadenzaTipo === 'annuale') return '<div style="font-size:7pt; color:#0284c7; font-weight:800; margin-top:2px;">🗓️ Annuale (' + (t.cadenzaGiornoAnnuale || '1') + '/' + (t.cadenzaMeseAnnuale || '1') + ')</div>';
+          if (t.cadenzaTipo === 'bisogno') return '<div style="font-size:7pt; color:#b45309; font-weight:800; margin-top:2px;">🚨 Al bisogno (SOS)</div>';
+          return '';
+        })()}
             
             <!-- BADGE SCORTA E DATA RICHIESTA DIRETTAMENTE VISIBILI SU SMARTPHONE -->
             <div style="margin-top:5px; font-size:7.5pt; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
@@ -25410,15 +25436,15 @@ window.generaHtmlPianoTerapeutico = function (p) {
         </div>
         <div style="padding:5px 8px;">
           ${lista.map(item => {
-            const nf = item.farmaco || item.nome || item.nomeFarmaco || 'Farmaco';
-            const dos = item.dosaggio || item.dose || '';
-            return `
+      const nf = item.farmaco || item.nome || item.nomeFarmaco || 'Farmaco';
+      const dos = item.dosaggio || item.dose || '';
+      return `
               <div style="padding:3px 0; border-bottom:1px dashed #f1f5f9; display:flex; justify-content:space-between; align-items:center; gap:4px;">
                 <span style="font-weight:700; color:#1e293b;">${item.ora ? item.ora + ' &bull; ' : ''}${nf}</span>
                 <span style="color:#64748b; font-size:7.5pt; white-space:nowrap;">${dos}</span>
               </div>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       </div>
     `;
@@ -26882,13 +26908,13 @@ function renderMobileNativeView(terapie, p) {
           return '<span onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\');" style="background:#eff6ff; color:#0369a1; border:1px solid #bfdbfe; border-radius:7px; padding:2px 7px; font-size:10.5px; font-weight:700; max-width:210px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;" title="' + pt.replace(/"/g, '&quot;') + '">🩺 ' + pt + '</span>';
         }).join('') +
         (patList.length > 3 ? '<span onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\');" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:7px; padding:2px 6px; font-size:10px; font-weight:800; cursor:pointer;">+' + (patList.length - 3) + ' altre</span>' : '') +
-      '</div>';
+        '</div>';
     } else {
       pillsPatologieHtml = '<div style="margin-top:5px;">' +
         '<button type="button" onclick="event.stopPropagation(); applicaDiagnosiAutomaticheDaFarmaci();" style="background:#f0f9ff; color:#0284c7; border:1.5px dashed #7dd3fc; border-radius:8px; padding:3px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
         '<span>✨ Deduci Diagnosi dai Farmaci (AI)</span>' +
         '</button>' +
-      '</div>';
+        '</div>';
     }
 
     activeCard.innerHTML = '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:18px; padding:12px 14px; margin:0 0 10px 0; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; box-shadow:0 3px 10px rgba(0,0,0,0.05);">' +
@@ -26917,6 +26943,9 @@ function renderMobileNativeView(terapie, p) {
       '</button>' +
       '<button type="button" onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
       '<span>📋 Scheda Clinica ➜</span>' +
+      '</button>' +
+      '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(21,128,61,0.15);" title="Visualizza tutte le visite specialistiche">' +
+      '<span>📋 Visite (' + (p.visite ? p.visite.length : 0) + ')</span>' +
       '</button>' +
       '<button type="button" onclick="event.stopPropagation(); openModal(\'modal-visita\')" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(5,150,105,0.15);">' +
       '<span>📅 + Visita</span>' +
@@ -26949,16 +26978,34 @@ function renderMobileNativeView(terapie, p) {
       '</button>' +
       '</div>' +
       (() => {
-        var visiteInProgramma = (p.visite || []).filter(function (v) { return !v.fatto; });
-        if (visiteInProgramma.length === 0) return '';
+        var tutteVisite = p.visite || [];
+        var visiteInProgramma = tutteVisite.filter(function (v) { return !v.fatto && v.statoVisita !== 'Eseguita' && v.statoVisita !== 'Disdetta'; });
+        if (visiteInProgramma.length === 0) {
+          if (tutteVisite.length === 0) return '';
+          return '<div style="background:#ffffff; border:1.5px dashed #cbd5e1; border-radius:14px; padding:10px 12px; margin:0 0 12px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">' +
+            '<div onclick="apriElencoCompletoVisite(\'' + p.id + '\')" style="flex:1; min-width:0; cursor:pointer;" title="Tocca per vedere l\'elenco storico delle visite">' +
+            '<div style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; display:flex; align-items:center; gap:4px;">' +
+            '<span>📅 Visite Specialistiche</span>' +
+            '<span style="background:#e2e8f0; color:#334155; padding:1px 6px; border-radius:8px; font-size:10px; font-weight:700;">' + tutteVisite.length + ' registrate</span>' +
+            '</div>' +
+            '<div style="font-size:12px; color:#475569; margin-top:2px; font-weight:600;">' +
+            'Nessuna visita imminente &bull; Tocca per consultare l\'archivio' +
+            '</div>' +
+            '</div>' +
+            '<div style="display:flex; gap:6px; flex-shrink:0;">' +
+            '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:5px 8px; font-size:11px; font-weight:800; cursor:pointer;">📋 Elenco</button>' +
+            '<button type="button" onclick="event.stopPropagation(); openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:8px; padding:5px 9px; font-size:11px; font-weight:800; cursor:pointer;">+ Visita</button>' +
+            '</div>' +
+            '</div>';
+        }
         visiteInProgramma.sort(function (a, b) { return new Date(a.data) - new Date(b.data); });
         var pv = visiteInProgramma[0];
         var dFmt = (pv.data && pv.data.length >= 10) ? (pv.data.slice(8, 10) + '/' + pv.data.slice(5, 7) + '/' + pv.data.slice(0, 4)) : pv.data;
         return '<div style="background:#ffffff; border:1.5px solid #059669; border-radius:14px; padding:10px 12px; margin:0 0 12px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 2px 8px rgba(5,150,105,0.08);">' +
-          '<div onclick="apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="flex:1; min-width:0; cursor:pointer;" title="Tocca per entrare nella Cartella Clinica e vedere tutti gli appuntamenti">' +
-          '<div style="font-size:11px; font-weight:800; color:#059669; text-transform:uppercase; display:flex; align-items:center; gap:4px;">' +
+          '<div onclick="apriElencoCompletoVisite(\'' + p.id + '\')" style="flex:1; min-width:0; cursor:pointer;" title="Tocca per aprire l\'elenco completo delle visite">' +
+          '<div style="font-size:11px; font-weight:800; color:#059669; text-transform:uppercase; display:flex; align-items:center; gap:4px; flex-wrap:wrap;">' +
           '<span>📅 Prossimo Appuntamento Specialistico</span>' +
-          (visiteInProgramma.length > 1 ? '<span style="background:#dcfce7; color:#15803d; padding:1px 6px; border-radius:10px; font-size:10px; font-weight:800;">+' + (visiteInProgramma.length - 1) + ' altri</span>' : '') +
+          (visiteInProgramma.length > 1 ? '<span onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#dcfce7; color:#15803d; padding:1px 6px; border-radius:10px; font-size:10px; font-weight:800; cursor:pointer;">+' + (visiteInProgramma.length - 1) + ' altri</span>' : '') +
           '</div>' +
           '<div style="font-size:13.5px; font-weight:900; color:#0f172a; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
           dFmt + (pv.ora ? ' ore ' + pv.ora : '') + ' &bull; <b>' + (pv.medico || 'Specialista') + '</b>' +
@@ -26968,10 +27015,10 @@ function renderMobileNativeView(terapie, p) {
           '</div>' +
           '</div>' +
           '<div style="display:flex; flex-direction:column; gap:4px; flex-shrink:0;">' +
-          '<button type="button" onclick="event.stopPropagation(); mostraGuidaContestuale(\'dashboard-visite\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:3px 7px; font-size:10px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:2px;">' +
-          '<span>💡 Guida</span>' +
+          '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:2px;" title="Vedi tutte le visite dell\'assistito">' +
+          '<span>📋 Elenco</span>' +
           '</button>' +
-          '<button type="button" onclick="openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:8px; padding:6px 10px; font-size:11px; font-weight:800; cursor:pointer;">' +
+          '<button type="button" onclick="openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:8px; padding:5px 8px; font-size:10.5px; font-weight:800; cursor:pointer;">' +
           '+ Visita' +
           '</button>' +
           '</div>' +
@@ -27126,8 +27173,8 @@ function renderMobileNativeView(terapie, p) {
           var bgRich = isUrg ? '#fef2f2' : (isImm ? '#fefce8' : '#eff6ff');
           var borderRich = isUrg ? '#f87171' : (isImm ? '#fde047' : '#bae6fd');
           var colorRich = isUrg ? '#991b1b' : (isImm ? '#854d0e' : '#1e40af');
-          var badgeUrgenza = isUrg 
-            ? '<span style="background:#dc2626; color:#ffffff; font-size:9.5px; padding:2px 6px; border-radius:4px; font-weight:900; letter-spacing:0.3px; margin-left:3px;">🚨 RICHIEDERE SUBITO</span>' 
+          var badgeUrgenza = isUrg
+            ? '<span style="background:#dc2626; color:#ffffff; font-size:9.5px; padding:2px 6px; border-radius:4px; font-weight:900; letter-spacing:0.3px; margin-left:3px;">🚨 RICHIEDERE SUBITO</span>'
             : (isImm ? '<span style="background:#eab308; color:#ffffff; font-size:9.5px; padding:2px 6px; border-radius:4px; font-weight:900; letter-spacing:0.3px; margin-left:3px;">⚠️ IMMINENTE</span>' : '');
 
           richiestaHtml = '<div class="mobile-card-richiesta-box" style="margin-top:7px; padding:6px 10px; border-radius:10px; background:' + bgRich + '; border:1.5px solid ' + borderRich + '; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">' +
@@ -27549,6 +27596,268 @@ function chiudiModalSchedaClinicaMobile() {
 window.chiudiModalSchedaClinicaMobile = chiudiModalSchedaClinicaMobile;
 
 // ==============================================================================
+// GESTIONE DEDICATA: ELENCO COMPLETO VISITE & PRESTAZIONI SPECIALISTICHE
+// ==============================================================================
+let _mevPazienteIdCorrente = null;
+let _mevFiltroCorrente = 'tutte';
+
+function apriElencoCompletoVisite(pazienteId, filtroIniziale) {
+  const pId = pazienteId || (typeof AppData !== 'undefined' && AppData.pazienteSelezionatoId) || (typeof PazienteAttivo !== 'undefined' && PazienteAttivo && PazienteAttivo.id) || (AppData && AppData.pazienti && AppData.pazienti[0] && AppData.pazienti[0].id);
+  _mevPazienteIdCorrente = pId;
+  _mevFiltroCorrente = filtroIniziale || 'tutte';
+
+  const modal = document.getElementById('modal-elenco-visite');
+  if (!modal) return;
+
+  const p = (AppData.pazienti || []).find(x => x.id === pId) || (AppData.pazienti && AppData.pazienti[0]);
+  if (!p) {
+    if (typeof showToast === 'function') showToast('Nessun assistito selezionato.');
+    return;
+  }
+
+  const vList = Array.isArray(p.visite) ? p.visite : [];
+  const sottotitoloEl = document.getElementById('mev-sottotitolo');
+  if (sottotitoloEl) {
+    sottotitoloEl.textContent = `${p.nome} • ${vList.length} ${vList.length === 1 ? 'visita registrata' : 'visite registrate'}`;
+  }
+
+  // Aggiorna contatori filtri
+  const cTutte = vList.length;
+  const cProg = vList.filter(v => !v.fatto && v.statoVisita !== 'Eseguita' && v.statoVisita !== 'Disdetta').length;
+  const cPost = vList.filter(v => v.statoVisita === 'Posticipata / Spostata').length;
+  const cEseg = vList.filter(v => v.fatto || v.statoVisita === 'Eseguita').length;
+
+  const elTutte = document.getElementById('mev-count-tutte');
+  const elProg = document.getElementById('mev-count-programma');
+  const elPost = document.getElementById('mev-count-posticipate');
+  const elEseg = document.getElementById('mev-count-eseguite');
+  if (elTutte) elTutte.textContent = cTutte;
+  if (elProg) elProg.textContent = cProg;
+  if (elPost) elPost.textContent = cPost;
+  if (elEseg) elEseg.textContent = cEseg;
+
+  filtraElencoVisite(_mevFiltroCorrente);
+
+  modal.style.display = 'flex';
+}
+window.apriElencoCompletoVisite = apriElencoCompletoVisite;
+
+function chiudiModalElencoVisite() {
+  const modal = document.getElementById('modal-elenco-visite');
+  if (modal) modal.style.display = 'none';
+}
+window.chiudiModalElencoVisite = chiudiModalElencoVisite;
+
+function filtraElencoVisite(filtro) {
+  _mevFiltroCorrente = filtro || 'tutte';
+
+  const btnTutte = document.getElementById('mev-filtro-tutte');
+  const btnProg = document.getElementById('mev-filtro-programma');
+  const btnPost = document.getElementById('mev-filtro-posticipate');
+  const btnEseg = document.getElementById('mev-filtro-eseguite');
+
+  const btnMap = {
+    'tutte': { el: btnTutte, bg: '#0284c7', text: '#ffffff', border: '#0284c7' },
+    'programma': { el: btnProg, bg: '#0284c7', text: '#ffffff', border: '#0284c7' },
+    'posticipate': { el: btnPost, bg: '#d97706', text: '#ffffff', border: '#d97706' },
+    'eseguite': { el: btnEseg, bg: '#16a34a', text: '#ffffff', border: '#16a34a' }
+  };
+
+  [btnTutte, btnProg, btnPost, btnEseg].forEach(b => {
+    if (b) {
+      b.style.background = '#ffffff';
+      b.style.color = '#334155';
+      b.style.border = '1px solid #cbd5e1';
+      b.style.fontWeight = '700';
+    }
+  });
+
+  const activeCfg = btnMap[_mevFiltroCorrente];
+  if (activeCfg && activeCfg.el) {
+    activeCfg.el.style.background = activeCfg.bg;
+    activeCfg.el.style.color = activeCfg.text;
+    activeCfg.el.style.border = '1px solid ' + activeCfg.border;
+    activeCfg.el.style.fontWeight = '800';
+  }
+
+  renderElencoVisiteBody();
+}
+window.filtraElencoVisite = filtraElencoVisite;
+
+function renderElencoVisiteBody() {
+  const corpoEl = document.getElementById('mev-corpo-lista');
+  if (!corpoEl) return;
+
+  const p = (AppData.pazienti || []).find(x => x.id === _mevPazienteIdCorrente) || (AppData.pazienti && AppData.pazienti[0]);
+  if (!p) {
+    corpoEl.innerHTML = '<div style="padding:20px; text-align:center; color:#64748b;">Nessun dato assistito disponibile.</div>';
+    return;
+  }
+
+  const vList = Array.isArray(p.visite) ? p.visite : [];
+
+  // Aggiorna anche contatori header filtri
+  const cTutte = vList.length;
+  const cProg = vList.filter(v => !v.fatto && v.statoVisita !== 'Eseguita' && v.statoVisita !== 'Disdetta').length;
+  const cPost = vList.filter(v => v.statoVisita === 'Posticipata / Spostata').length;
+  const cEseg = vList.filter(v => v.fatto || v.statoVisita === 'Eseguita').length;
+
+  const elTutte = document.getElementById('mev-count-tutte');
+  const elProg = document.getElementById('mev-count-programma');
+  const elPost = document.getElementById('mev-count-posticipate');
+  const elEseg = document.getElementById('mev-count-eseguite');
+  if (elTutte) elTutte.textContent = cTutte;
+  if (elProg) elProg.textContent = cProg;
+  if (elPost) elPost.textContent = cPost;
+  if (elEseg) elEseg.textContent = cEseg;
+
+  let filtrata = [];
+  if (_mevFiltroCorrente === 'programma') {
+    filtrata = vList.filter(v => !v.fatto && v.statoVisita !== 'Eseguita' && v.statoVisita !== 'Disdetta');
+  } else if (_mevFiltroCorrente === 'posticipate') {
+    filtrata = vList.filter(v => v.statoVisita === 'Posticipata / Spostata');
+  } else if (_mevFiltroCorrente === 'eseguite') {
+    filtrata = vList.filter(v => v.fatto || v.statoVisita === 'Eseguita');
+  } else {
+    filtrata = [...vList];
+  }
+
+  if (filtrata.length === 0) {
+    let emptyMsg = 'Nessuna visita o prestazione registrata.';
+    if (_mevFiltroCorrente === 'programma') emptyMsg = 'Nessun appuntamento in programma al momento.';
+    if (_mevFiltroCorrente === 'posticipate') emptyMsg = 'Nessuna visita risulta al momento posticipata o spostata.';
+    if (_mevFiltroCorrente === 'eseguite') emptyMsg = 'Nessuna visita risulta ancora contrassegnata come eseguita.';
+
+    corpoEl.innerHTML = `
+      <div style="background:#ffffff; border:1.5px dashed #cbd5e1; border-radius:14px; padding:32px 16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+        <div style="font-size:36px; margin-bottom:8px;">📅</div>
+        <div style="font-size:14px; font-weight:800; color:#1e293b;">${emptyMsg}</div>
+        <div style="font-size:12px; color:#64748b; margin-top:4px;">Pianifica un nuovo appuntamento specialistico o controllo domiciliare.</div>
+        <button type="button" onclick="chiudiModalElencoVisite(); openModal('modal-visita');" style="margin-top:14px; background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; padding:8px 16px; border-radius:10px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(5,150,105,0.3);">
+          <span>➕</span> <span>Pianifica Visita Specialistica</span>
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  // Ordina: prima le non eseguite per data crescente, poi le eseguite per data decrescente
+  filtrata.sort((a, b) => {
+    const aFatto = a.fatto || a.statoVisita === 'Eseguita';
+    const bFatto = b.fatto || b.statoVisita === 'Eseguita';
+    if (aFatto !== bFatto) return aFatto ? 1 : -1;
+    return new Date(a.data) - new Date(b.data);
+  });
+
+  corpoEl.innerHTML = filtrata.map(v => {
+    const dStr = (v.data && v.data.length >= 10) ? (v.data.slice(8, 10) + '/' + v.data.slice(5, 7) + '/' + v.data.slice(0, 4)) : (v.data || '--');
+    const isFatto = v.fatto || v.statoVisita === 'Eseguita';
+    const isPosticipata = v.statoVisita === 'Posticipata / Spostata';
+    const isDisdetta = v.statoVisita === 'Disdetta';
+
+    let badgeStato = '';
+    if (isFatto) {
+      badgeStato = '<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px; flex-shrink:0;">✓ Eseguita</span>';
+    } else if (isPosticipata) {
+      badgeStato = '<span style="background:#fef3c7; color:#b45309; border:1px solid #fde047; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px; flex-shrink:0;">🔄 Posticipata</span>';
+    } else if (isDisdetta) {
+      badgeStato = '<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px; flex-shrink:0;">❌ Disdetta</span>';
+    } else {
+      badgeStato = '<span style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:6px; flex-shrink:0;">⏳ In programma</span>';
+    }
+
+    return `
+      <div class="visita-card-completa" style="background:${isFatto ? '#f0fdf4' : (isPosticipata ? '#fffbeb' : '#ffffff')}; border:1.5px solid ${isFatto ? '#86efac' : (isPosticipata ? '#fde047' : '#cbd5e1')}; border-radius:14px; padding:13px 15px; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+          <div style="flex:1; min-width:0;">
+            
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <span style="font-size:14px; font-weight:900; color:#0f172a; line-height:1.25;">
+                📅 ${dStr} ${v.ora ? `<span style="color:#0284c7; font-weight:800;">ore ${v.ora}</span>` : ''}
+              </span>
+              ${badgeStato}
+              ${v.priorita && v.priorita.includes('U - Urgente') ? '<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:1px 6px; border-radius:4px;">🔴 URGENTE 72H</span>' : ''}
+              ${v.priorita && v.priorita.includes('B - Breve') ? '<span style="background:#ffedd5; color:#c2410c; border:1px solid #fdba74; font-size:9.5px; font-weight:800; padding:1px 6px; border-radius:4px;">🟠 BREVE 10GG</span>' : ''}
+            </div>
+
+            <div style="font-size:13.5px; font-weight:800; color:#0369a1; margin-top:4px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <span>🩺 ${v.medico || 'Specialista'}</span>
+              ${v.tipoStruttura ? `<span style="background:#f1f5f9; color:#475569; font-size:10px; font-weight:700; padding:1px 6px; border-radius:6px; border:1px solid #cbd5e1;">${v.tipoStruttura}</span>` : ''}
+            </div>
+
+            ${v.luogo ? `
+              <div style="font-size:11.5px; color:#64748b; margin-top:2px;">
+                📍 <b>Sede:</b> ${v.luogo}
+              </div>
+            ` : ''}
+
+            <div style="font-size:12.5px; color:#1e293b; margin-top:5px; line-height:1.35; font-weight:600;">
+              🎯 <b>Motivo / Prestazione:</b> ${v.motivo || 'Controllo specialistico'}
+            </div>
+
+            ${isPosticipata ? `
+              <div style="margin-top:6px; background:#fef3c7; border:1px solid #fde047; border-radius:8px; padding:6px 9px; font-size:11px; color:#78350f;">
+                <b>🔄 Visita Posticipata:</b> Data originaria: <b>${v.dataPrecedente || '--'}</b>
+                ${v.motivoSpostamento ? ` &bull; Motivo rinvio: <em>${v.motivoSpostamento}</em>` : ''}
+              </div>
+            ` : ''}
+
+            ${v.impegnativa || v.codiceNre ? `
+              <div style="margin-top:6px; font-size:11px; color:#047857; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span>📑 <b>Impegnativa:</b> ${v.impegnativa || 'Presente'}</span>
+                ${v.codiceNre ? `<span style="background:#ecfdf5; border:1px solid #a7f3d0; padding:1px 6px; border-radius:4px; font-weight:700; font-family:monospace;">NRE: ${v.codiceNre}</span>` : ''}
+              </div>
+            ` : ''}
+
+            ${v.trasporto && !v.trasporto.includes('Nessun') ? `
+              <div style="margin-top:4px; font-size:11px; color:#1e40af;">
+                🚑 <b>Logistica:</b> ${v.trasporto}
+              </div>
+            ` : ''}
+
+            ${v.preparazione && v.preparazione !== 'Nessuna preparazione speciale richiesta' ? `
+              <div style="margin-top:6px; background:#fff1f2; border:1px solid #fecdd3; border-radius:8px; padding:6px 9px; font-size:11px; color:#9f1239;">
+                <b>⚠️ Preparazione richiesta:</b> ${v.preparazione}
+              </div>
+            ` : ''}
+
+            ${v.telefono ? `
+              <div style="margin-top:7px;">
+                <a href="tel:${v.telefono.replace(/\s+/g, '')}" style="display:inline-flex; align-items:center; gap:5px; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:7px; padding:4px 10px; font-size:11.5px; font-weight:800; text-decoration:none; box-shadow:0 1px 3px rgba(5,150,105,0.1);">
+                  <span>📞</span> <span>Chiama: <b>${v.telefono}</b></span>
+                </a>
+              </div>
+            ` : ''}
+
+          </div>
+        </div>
+
+        <!-- BARRA AZIONI OPERATIVE VISITA -->
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:10px; padding-top:9px; border-top:1px dashed #cbd5e1; flex-wrap:wrap;">
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" onclick="event.stopPropagation(); posticipaRapidoVisita(${v.id}); apriElencoCompletoVisite('${p.id}', '${_mevFiltroCorrente}');" style="background:#fffbeb; color:#92400e; border:1px solid #fde047; border-radius:7px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer;" title="Posticipa o sposta la data della visita">
+              🔄 Posticipa
+            </button>
+            <button type="button" onclick="event.stopPropagation(); chiudiModalElencoVisite(); apriModificaVisita(${v.id});" style="background:#eff6ff; color:#0284c7; border:1px solid #bfdbfe; border-radius:7px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer;" title="Modifica tutti i dati dell'appuntamento">
+              ✏️ Modifica
+            </button>
+          </div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button type="button" onclick="event.stopPropagation(); toggleVisita(${v.id}); apriElencoCompletoVisite('${p.id}', '${_mevFiltroCorrente}'); if (typeof apriModalSchedaClinicaMobile === 'function') { const sm = document.getElementById('modal-scheda-clinica-mobile'); if (sm && sm.style.display !== 'none') apriModalSchedaClinicaMobile('${p.id}'); }" style="background:${isFatto ? '#f1f5f9' : '#059669'}; color:${isFatto ? '#475569' : '#ffffff'}; border:none; border-radius:7px; padding:5px 12px; font-size:11.5px; font-weight:800; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.1);">
+              ${isFatto ? '↩️ Riapri' : '✓ Fatta'}
+            </button>
+            <button type="button" onclick="event.stopPropagation(); eliminaVisita(${v.id}); apriElencoCompletoVisite('${p.id}', '${_mevFiltroCorrente}');" style="background:#fee2e2; color:#b91c1c; border:none; border-radius:7px; padding:5px 9px; font-size:11.5px; font-weight:800; cursor:pointer;" title="Elimina appuntamento definitivamente">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+window.renderElencoVisiteBody = renderElencoVisiteBody;
+
+// ==============================================================================
 // GESTIONE QUADRO CLINICO, CARTELLA & PATOLOGIE (DESKTOP & MOBILE)
 // ==============================================================================
 
@@ -27589,14 +27898,14 @@ function getFarmaciPerPatologia(p, patNome) {
   ];
 
   var matchedDrugs = [];
-  matchMap.forEach(function(m) {
-    var matchKey = m.keys.some(function(k) { return pLower.includes(k); });
+  matchMap.forEach(function (m) {
+    var matchKey = m.keys.some(function (k) { return pLower.includes(k); });
     if (matchKey) {
-      p.terapie.forEach(function(t) {
+      p.terapie.forEach(function (t) {
         var tName = (t.farmaco || '').toLowerCase();
         var tInd = (t.indicazione || '').toLowerCase();
-        if (m.drugs.some(function(d) { return tName.includes(d) || tInd.includes(d); })) {
-          if (!matchedDrugs.some(function(x) { return x.id === t.id; })) {
+        if (m.drugs.some(function (d) { return tName.includes(d) || tInd.includes(d); })) {
+          if (!matchedDrugs.some(function (x) { return x.id === t.id; })) {
             matchedDrugs.push(t);
           }
         }
@@ -27631,70 +27940,70 @@ function renderQuadroClinicoDashboard(p) {
 
   var chipsHtml = '';
   if (patList.length > 0) {
-    chipsHtml = patList.map(function(pt, idx) {
+    chipsHtml = patList.map(function (pt, idx) {
       var correlati = getFarmaciPerPatologia(p, pt);
       var farmaciCount = correlati.length;
       return '<span onclick="vaiACartellaPatologie()" style="background:#ffffff; color:#0369a1; border:1.5px solid #7dd3fc; border-radius:10px; padding:6px 12px; font-size:12px; font-weight:800; display:inline-flex; align-items:center; gap:6px; cursor:pointer; box-shadow:0 1px 3px rgba(2,132,199,0.1); transition:all 0.2s;" onmouseover="this.style.background=\'#e0f2fe\'" onmouseout="this.style.background=\'#ffffff\'" title="Tocca per vedere la scheda e i farmaci associati">' +
         '<span>🩺</span> <span>' + pt + '</span>' +
         (farmaciCount > 0 ? '<span style="background:#dbeafe; color:#1e40af; font-size:10.5px; padding:1px 6px; border-radius:6px; font-weight:900;" title="' + farmaciCount + ' farmaci attivi prescritti">💊 ' + farmaciCount + '</span>' : '<span style="background:#f1f5f9; color:#475569; font-size:10px; padding:1px 5px; border-radius:6px; font-weight:800;">Attiva</span>') +
-      '</span>';
+        '</span>';
     }).join(' ');
   } else {
     chipsHtml = '<div style="background:#f0f9ff; border:1.5px dashed #38bdf8; border-radius:12px; padding:10px 14px; display:inline-flex; align-items:center; gap:12px; flex-wrap:wrap;">' +
       '<span style="font-size:12.5px; font-weight:700; color:#0369a1;">Nessuna patologia formalizzata registrata.</span>' +
       '<button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci();" style="background:#0284c7; color:#fff; border:none; padding:6px 14px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;">✨ Deduci Diagnosi dai Farmaci (AI)</button>' +
-    '</div>';
+      '</div>';
   }
 
   var allergiaHtml = '';
   if (haAllergie) {
     allergiaHtml = '<div style="background:#fef2f2; border:2px solid #ef4444; border-radius:12px; padding:9px 14px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 2px 8px rgba(239,68,68,0.15);">' +
       '<div style="display:flex; align-items:center; gap:10px;">' +
-        '<span style="font-size:22px;">🚫</span>' +
-        '<div>' +
-          '<div style="color:#991b1b; font-weight:900; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">⚠️ SEGNALAZIONE ALLERGIA SALVAVITA: ' + allergie + '</div>' +
-          '<div style="font-size:11px; color:#b91c1c; font-weight:700;">Prestare massima cautela prima di qualsiasi somministrazione o prescrizione.</div>' +
-        '</div>' +
+      '<span style="font-size:22px;">🚫</span>' +
+      '<div>' +
+      '<div style="color:#991b1b; font-weight:900; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">⚠️ SEGNALAZIONE ALLERGIA SALVAVITA: ' + allergie + '</div>' +
+      '<div style="font-size:11px; color:#b91c1c; font-weight:700;">Prestare massima cautela prima di qualsiasi somministrazione o prescrizione.</div>' +
+      '</div>' +
       '</div>' +
       '<span style="background:#dc2626; color:#ffffff; font-weight:900; font-size:10.5px; padding:3px 8px; border-radius:6px; text-transform:uppercase; flex-shrink:0;">Critico</span>' +
-    '</div>';
+      '</div>';
   } else {
     allergiaHtml = '<div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:10px; padding:6px 12px; margin-bottom:12px; display:inline-flex; align-items:center; gap:8px;">' +
       '<span style="font-size:16px;">🛡️</span>' +
       '<span style="color:#166534; font-size:12px; font-weight:700;">Nessuna allergia farmacologica nota riferita (NKDA)</span>' +
-    '</div>';
+      '</div>';
   }
 
   container.innerHTML = '<div class="card" style="border:2px solid #7dd3fc; background:linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%); border-radius:18px; padding:18px 22px; margin-bottom:20px; box-shadow:0 4px 20px rgba(2,132,199,0.1);">' +
     '<!-- TOP BAR CARD -->' +
     '<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:12px;">' +
-      '<div style="display:flex; align-items:center; gap:14px;">' +
-        '<div style="width:52px; height:52px; border-radius:50%; background:#e0f2fe; border:2.5px solid #0284c7; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; box-shadow:0 2px 8px rgba(2,132,199,0.2);">' +
-          avInfo.emoji +
-        '</div>' +
-        '<div>' +
-          '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
-            '<span style="font-size:18px; font-weight:900; color:#0f172a; letter-spacing:-0.3px;">' + pulitoNome + '</span>' +
-            '<span style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-size:12px; font-weight:800; padding:2px 8px; border-radius:6px;">' + eta + ' anni</span>' +
-            '<span style="background:' + (isAllettato ? '#fef2f2' : '#f0fdf4') + '; color:' + (isAllettato ? '#dc2626' : '#166534') + '; border:1.5px solid ' + (isAllettato ? '#fca5a5' : '#86efac') + '; font-size:11.5px; font-weight:800; padding:2px 9px; border-radius:6px;">' +
-              (isAllettato ? '🛌 Allettato (q2h)' : '🚶 Deambulante') +
-            '</span>' +
-          '</div>' +
-          '<div style="font-size:12px; color:#64748b; font-weight:600; margin-top:3px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
-            '<span>📍 ' + (p.indirizzo || 'Domicilio') + '</span>' +
-            (mNome ? '<span>🩺 MMG: <b>' + mNome + '</b></span>' : '') +
-            (cgNome ? '<span>👥 Caregiver: <b>' + cgNome + '</b></span>' : '') +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
-        '<button type="button" class="btn" onclick="vaiACartellaPatologie()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:8px 16px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(2,132,199,0.3);">' +
-          '<span>🩺</span> <span>Cartella Clinica &amp; Patologie ➜</span>' +
-        '</button>' +
-        '<button type="button" class="btn btn-outline" onclick="apriModalDossierClinico()" style="font-size:12px; font-weight:800; padding:7px 12px; border-radius:10px;" title="Stampa Dossier Clinico Ospedaliero A4">' +
-          '<span>📄</span> <span>Dossier A4</span>' +
-        '</button>' +
-      '</div>' +
+    '<div style="display:flex; align-items:center; gap:14px;">' +
+    '<div style="width:52px; height:52px; border-radius:50%; background:#e0f2fe; border:2.5px solid #0284c7; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; box-shadow:0 2px 8px rgba(2,132,199,0.2);">' +
+    avInfo.emoji +
+    '</div>' +
+    '<div>' +
+    '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+    '<span style="font-size:18px; font-weight:900; color:#0f172a; letter-spacing:-0.3px;">' + pulitoNome + '</span>' +
+    '<span style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-size:12px; font-weight:800; padding:2px 8px; border-radius:6px;">' + eta + ' anni</span>' +
+    '<span style="background:' + (isAllettato ? '#fef2f2' : '#f0fdf4') + '; color:' + (isAllettato ? '#dc2626' : '#166534') + '; border:1.5px solid ' + (isAllettato ? '#fca5a5' : '#86efac') + '; font-size:11.5px; font-weight:800; padding:2px 9px; border-radius:6px;">' +
+    (isAllettato ? '🛌 Allettato (q2h)' : '🚶 Deambulante') +
+    '</span>' +
+    '</div>' +
+    '<div style="font-size:12px; color:#64748b; font-weight:600; margin-top:3px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
+    '<span>📍 ' + (p.indirizzo || 'Domicilio') + '</span>' +
+    (mNome ? '<span>🩺 MMG: <b>' + mNome + '</b></span>' : '') +
+    (cgNome ? '<span>👥 Caregiver: <b>' + cgNome + '</b></span>' : '') +
+    '</div>' +
+    '</div>' +
+    '</div>' +
+    '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+    '<button type="button" class="btn" onclick="vaiACartellaPatologie()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:8px 16px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(2,132,199,0.3);">' +
+    '<span>🩺</span> <span>Cartella Clinica &amp; Patologie ➜</span>' +
+    '</button>' +
+    '<button type="button" class="btn btn-outline" onclick="apriModalDossierClinico()" style="font-size:12px; font-weight:800; padding:7px 12px; border-radius:10px;" title="Stampa Dossier Clinico Ospedaliero A4">' +
+    '<span>📄</span> <span>Dossier A4</span>' +
+    '</button>' +
+    '</div>' +
     '</div>' +
 
     '<!-- ALLERGIE BOX -->' +
@@ -27702,38 +28011,38 @@ function renderQuadroClinicoDashboard(p) {
 
     '<!-- SEZIONE CHIP PATOLOGIE -->' +
     '<div style="margin-top:6px;">' +
-      '<div style="font-size:12px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">' +
-        '<div style="display:flex; align-items:center; gap:8px;">' +
-          '<span>Quadro Patologie &amp; Diagnosi Attive (' + patList.length + ')</span>' +
-          '<button type="button" onclick="mostraGuidaContestuale(\'cartella-quadro-clinico\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:2px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve il Quadro Diagnosi">' +
-            '<span>💡</span> <span>A cosa serve</span>' +
-          '</button>' +
-        '</div>' +
-        '<span style="font-size:11px; font-weight:700; color:#64748b; text-transform:none;">Tocca una diagnosi per aprire la scheda e vedere i farmaci prescritti</span>' +
-      '</div>' +
-      '<div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">' +
-        chipsHtml +
-      '</div>' +
+    '<div style="font-size:12px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">' +
+    '<div style="display:flex; align-items:center; gap:8px;">' +
+    '<span>Quadro Patologie &amp; Diagnosi Attive (' + patList.length + ')</span>' +
+    '<button type="button" onclick="mostraGuidaContestuale(\'cartella-quadro-clinico\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:2px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve il Quadro Diagnosi">' +
+    '<span>💡</span> <span>A cosa serve</span>' +
+    '</button>' +
+    '</div>' +
+    '<span style="font-size:11px; font-weight:700; color:#64748b; text-transform:none;">Tocca una diagnosi per aprire la scheda e vedere i farmaci prescritti</span>' +
+    '</div>' +
+    '<div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">' +
+    chipsHtml +
+    '</div>' +
     '</div>' +
 
     '<!-- BARRA AZIONI RAPIDE IN BASSO -->' +
     '<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:14px; padding-top:12px; border-top:1px dashed #cbd5e1; font-size:12px;">' +
-      '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
-        '<button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci();" style="background:#f0f9ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
-          '<span>✨ Deduci Diagnosi da Farmaci (AI)</span>' +
-        '</button>' +
-        '<button type="button" onclick="aggiungiPatologiaRapida();" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
-          '<span>➕ Aggiungi Patologia</span>' +
-        '</button>' +
-        '<button type="button" onclick="apriModificaAnagrafica();" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
-          '<span>✏️ Modifica Dati</span>' +
-        '</button>' +
-      '</div>' +
-      '<div style="color:#64748b; font-weight:700; font-size:11.5px;">' +
-        'Totale terapie farmacologiche attive: <b style="color:#0284c7;">' + (p.terapie || []).length + '</b>' +
-      '</div>' +
+    '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+    '<button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci();" style="background:#f0f9ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+    '<span>✨ Deduci Diagnosi da Farmaci (AI)</span>' +
+    '</button>' +
+    '<button type="button" onclick="aggiungiPatologiaRapida();" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+    '<span>➕ Aggiungi Patologia</span>' +
+    '</button>' +
+    '<button type="button" onclick="apriModificaAnagrafica();" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+    '<span>✏️ Modifica Dati</span>' +
+    '</button>' +
     '</div>' +
-  '</div>';
+    '<div style="color:#64748b; font-weight:700; font-size:11.5px;">' +
+    'Totale terapie farmacologiche attive: <b style="color:#0284c7;">' + (p.terapie || []).length + '</b>' +
+    '</div>' +
+    '</div>' +
+    '</div>';
 }
 window.renderQuadroClinicoDashboard = renderQuadroClinicoDashboard;
 
@@ -27764,14 +28073,14 @@ function renderPatologieTab(p) {
   // Tabella Incrociata: Patologie ↔ Farmaci
   var rowsHtml = '';
   if (patList.length > 0) {
-    rowsHtml = patList.map(function(pt, idx) {
+    rowsHtml = patList.map(function (pt, idx) {
       var correlati = getFarmaciPerPatologia(p, pt);
       var farmaciBadgeHtml = '';
       if (correlati.length > 0) {
-        farmaciBadgeHtml = correlati.map(function(t) {
+        farmaciBadgeHtml = correlati.map(function (t) {
           return '<span style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:7px; padding:3px 8px; font-size:11.5px; font-weight:800; display:inline-flex; align-items:center; gap:4px; margin:2px;">' +
             '💊 <b>' + t.farmaco + '</b>' + (t.ora ? ' (' + t.ora + ')' : '') + (t.dose ? ' &bull; ' + t.dose : '') +
-          '</span>';
+            '</span>';
         }).join(' ');
       } else {
         farmaciBadgeHtml = '<span style="color:#64748b; font-size:11.5px; font-style:italic;">Nessun farmaco specifico o monitoraggio non farmacologico</span>';
@@ -27779,44 +28088,44 @@ function renderPatologieTab(p) {
 
       return '<tr style="border-bottom:1px solid #e2e8f0;">' +
         '<td style="padding:12px 14px; vertical-align:top;">' +
-          '<div style="font-size:13.5px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
-            '<span style="font-size:18px;">🩺</span>' +
-            '<span>' + pt + '</span>' +
-          '</div>' +
+        '<div style="font-size:13.5px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
+        '<span style="font-size:18px;">🩺</span>' +
+        '<span>' + pt + '</span>' +
+        '</div>' +
         '</td>' +
         '<td style="padding:12px 14px; vertical-align:top;">' +
-          '<div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">' +
-            farmaciBadgeHtml +
-          '</div>' +
+        '<div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">' +
+        farmaciBadgeHtml +
+        '</div>' +
         '</td>' +
         '<td style="padding:12px 14px; vertical-align:top; width:130px;">' +
-          '<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; border-radius:6px; padding:3px 8px; font-size:11px; font-weight:800; display:inline-block;">🟢 Attiva / In cura</span>' +
+        '<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; border-radius:6px; padding:3px 8px; font-size:11px; font-weight:800; display:inline-block;">🟢 Attiva / In cura</span>' +
         '</td>' +
         '<td style="padding:12px 14px; vertical-align:top; width:60px; text-align:center;">' +
-          '<button type="button" onclick="eliminaPatologiaSingola(' + idx + ');" style="background:#fee2e2; color:#b91c1c; border:none; border-radius:6px; padding:4px 8px; font-size:11px; font-weight:800; cursor:pointer;" title="Rimuovi patologia">✕</button>' +
+        '<button type="button" onclick="eliminaPatologiaSingola(' + idx + ');" style="background:#fee2e2; color:#b91c1c; border:none; border-radius:6px; padding:4px 8px; font-size:11px; font-weight:800; cursor:pointer;" title="Rimuovi patologia">✕</button>' +
         '</td>' +
-      '</tr>';
+        '</tr>';
     }).join('');
   } else {
     rowsHtml = '<tr><td colspan="4" style="padding:24px; text-align:center; color:#64748b; font-size:13px;">' +
       'Nessuna patologia formalizzata registrata per questo assistito.<br>' +
       '<button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci();" style="margin-top:10px; background:#0284c7; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;">' +
-        '✨ Deduci Diagnosi dai Farmaci (AI)' +
+      '✨ Deduci Diagnosi dai Farmaci (AI)' +
       '</button>' +
-    '</td></tr>';
+      '</td></tr>';
   }
 
   // Ausili attivi
   var ausiliHtml = '';
   if (Array.isArray(p.ausili) && p.ausili.length > 0) {
-    ausiliHtml = p.ausili.map(function(a) {
+    ausiliHtml = p.ausili.map(function (a) {
       return '<div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:8px 12px; display:inline-flex; align-items:center; gap:8px;">' +
         '<span style="font-size:18px;">📦</span>' +
         '<div>' +
-          '<div style="font-size:12px; font-weight:800; color:#0f172a;">' + (a.nome || a.tipo || 'Ausilio') + '</div>' +
-          (a.note ? '<div style="font-size:10.5px; color:#64748b;">' + a.note + '</div>' : '') +
+        '<div style="font-size:12px; font-weight:800; color:#0f172a;">' + (a.nome || a.tipo || 'Ausilio') + '</div>' +
+        (a.note ? '<div style="font-size:10.5px; color:#64748b;">' + a.note + '</div>' : '') +
         '</div>' +
-      '</div>';
+        '</div>';
     }).join(' ');
   } else {
     ausiliHtml = '<span style="color:#64748b; font-size:12px; font-style:italic;">Nessun ausilio sanitario o presidio ASL registrato</span>';
@@ -27826,56 +28135,56 @@ function renderPatologieTab(p) {
   if (haAllergie) {
     allergiaBanner = '<div style="background:#fef2f2; border:2px solid #ef4444; border-radius:14px; padding:12px 18px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:0 3px 10px rgba(239,68,68,0.15);">' +
       '<div style="display:flex; align-items:center; gap:12px;">' +
-        '<span style="font-size:28px;">🚫</span>' +
-        '<div>' +
-          '<div style="color:#991b1b; font-weight:900; font-size:14px; text-transform:uppercase; letter-spacing:0.5px;">⚠️ ALLERGIA FARMACOLOGICA ACCERTATA: ' + allergie + '</div>' +
-          '<div style="font-size:12px; color:#b91c1c; font-weight:600; margin-top:2px;">Segnalazione critica per medici prescrittori, infermieri e operatori sociosanitari (OSS).</div>' +
-        '</div>' +
+      '<span style="font-size:28px;">🚫</span>' +
+      '<div>' +
+      '<div style="color:#991b1b; font-weight:900; font-size:14px; text-transform:uppercase; letter-spacing:0.5px;">⚠️ ALLERGIA FARMACOLOGICA ACCERTATA: ' + allergie + '</div>' +
+      '<div style="font-size:12px; color:#b91c1c; font-weight:600; margin-top:2px;">Segnalazione critica per medici prescrittori, infermieri e operatori sociosanitari (OSS).</div>' +
+      '</div>' +
       '</div>' +
       '<span style="background:#dc2626; color:#ffffff; font-weight:900; font-size:11px; padding:4px 10px; border-radius:8px; text-transform:uppercase;">Sicurezza Paziente</span>' +
-    '</div>';
+      '</div>';
   } else {
     allergiaBanner = '<div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:10px 16px; margin-bottom:16px; display:inline-flex; align-items:center; gap:10px;">' +
       '<span style="font-size:20px;">🛡️</span>' +
       '<div>' +
-        '<span style="color:#166534; font-size:13px; font-weight:800;">Nessuna allergia farmacologica nota riferita (NKDA)</span>' +
-        '<div style="font-size:11px; color:#15803d;">Quadro anamnestico negativo per reazioni avverse a farmaci note.</div>' +
+      '<span style="color:#166534; font-size:13px; font-weight:800;">Nessuna allergia farmacologica nota riferita (NKDA)</span>' +
+      '<div style="font-size:11px; color:#15803d;">Quadro anamnestico negativo per reazioni avverse a farmaci note.</div>' +
       '</div>' +
-    '</div>';
+      '</div>';
   }
 
   container.innerHTML = '<div style="max-width:1200px; margin:0 auto; padding-bottom:30px;">' +
     '<!-- TESTATA CLINICA SCHEDA -->' +
     '<div style="background:linear-gradient(135deg, #091e3a 0%, #1e3a8a 60%, #0284c7 100%); border-radius:18px; padding:22px 26px; color:#ffffff; margin-bottom:20px; box-shadow:0 8px 30px rgba(2,132,199,0.25); border:1.5px solid #38bdf8;">' +
-      '<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">' +
-        '<div style="display:flex; align-items:center; gap:16px;">' +
-          '<div style="width:68px; height:68px; border-radius:50%; background:rgba(255,255,255,0.15); border:3px solid #7dd3fc; display:flex; align-items:center; justify-content:center; font-size:36px; flex-shrink:0;">' +
-            avInfo.emoji +
-          '</div>' +
-          '<div>' +
-            '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
-              '<span style="background:#38bdf8; color:#0c4a6e; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase;">CARTELLA CLINICA &amp; QUADRO PATOLOGIE</span>' +
-              '<span style="background:rgba(255,255,255,0.2); color:#ffffff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">' + (p.sesso === 'F' ? 'Donna 👩' : 'Uomo 👨') + ' (' + eta + ' ANNI)</span>' +
-              '<span style="background:' + (isAllettato ? '#ef4444' : '#10b981') + '; color:#ffffff; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px;">' + (isAllettato ? '🛌 Allettato (q2h)' : '🚶 Deambulante') + '</span>' +
-            '</div>' +
-            '<h1 style="font-size:26px; font-weight:900; margin:6px 0 2px 0; color:#ffffff; letter-spacing:-0.5px;">' + pulitoNome + '</h1>' +
-            '<div style="font-size:13px; color:#bae6fd; font-weight:500;">' +
-              'Nato il: <b>' + (p.dataNascita || '--') + '</b> &bull; Residenza: <b>' + (p.indirizzo || 'Domicilio') + '</b>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
-          '<button type="button" class="btn" onclick="mostraGuidaContestuale(\'patologie\')" style="background:rgba(255,255,255,0.22); color:#ffffff; font-weight:800; font-size:13px; padding:9px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.45); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Guida all\'uso e utilità clinica">' +
-            '<span>💡</span> <span>A cosa serve</span>' +
-          '</button>' +
-          '<button type="button" class="btn" onclick="apriModalDossierClinico()" style="background:#ffffff; color:#0369a1; font-weight:800; font-size:13px; padding:9px 16px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(0,0,0,0.15);">' +
-            '<span>📄</span> <span>Dossier A4 Ospedaliero</span>' +
-          '</button>' +
-          '<button type="button" class="btn btn-outline" onclick="apriModificaAnagrafica()" style="color:#ffffff; border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.1); font-weight:800; font-size:13px; padding:9px 16px; border-radius:10px;">' +
-            '<span>✏️</span> <span>Modifica Dati</span>' +
-          '</button>' +
-        '</div>' +
-      '</div>' +
+    '<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">' +
+    '<div style="display:flex; align-items:center; gap:16px;">' +
+    '<div style="width:68px; height:68px; border-radius:50%; background:rgba(255,255,255,0.15); border:3px solid #7dd3fc; display:flex; align-items:center; justify-content:center; font-size:36px; flex-shrink:0;">' +
+    avInfo.emoji +
+    '</div>' +
+    '<div>' +
+    '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+    '<span style="background:#38bdf8; color:#0c4a6e; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase;">CARTELLA CLINICA &amp; QUADRO PATOLOGIE</span>' +
+    '<span style="background:rgba(255,255,255,0.2); color:#ffffff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">' + (p.sesso === 'F' ? 'Donna 👩' : 'Uomo 👨') + ' (' + eta + ' ANNI)</span>' +
+    '<span style="background:' + (isAllettato ? '#ef4444' : '#10b981') + '; color:#ffffff; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px;">' + (isAllettato ? '🛌 Allettato (q2h)' : '🚶 Deambulante') + '</span>' +
+    '</div>' +
+    '<h1 style="font-size:26px; font-weight:900; margin:6px 0 2px 0; color:#ffffff; letter-spacing:-0.5px;">' + pulitoNome + '</h1>' +
+    '<div style="font-size:13px; color:#bae6fd; font-weight:500;">' +
+    'Nato il: <b>' + (p.dataNascita || '--') + '</b> &bull; Residenza: <b>' + (p.indirizzo || 'Domicilio') + '</b>' +
+    '</div>' +
+    '</div>' +
+    '</div>' +
+    '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+    '<button type="button" class="btn" onclick="mostraGuidaContestuale(\'patologie\')" style="background:rgba(255,255,255,0.22); color:#ffffff; font-weight:800; font-size:13px; padding:9px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.45); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Guida all\'uso e utilità clinica">' +
+    '<span>💡</span> <span>A cosa serve</span>' +
+    '</button>' +
+    '<button type="button" class="btn" onclick="apriModalDossierClinico()" style="background:#ffffff; color:#0369a1; font-weight:800; font-size:13px; padding:9px 16px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(0,0,0,0.15);">' +
+    '<span>📄</span> <span>Dossier A4 Ospedaliero</span>' +
+    '</button>' +
+    '<button type="button" class="btn btn-outline" onclick="apriModificaAnagrafica()" style="color:#ffffff; border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.1); font-weight:800; font-size:13px; padding:9px 16px; border-radius:10px;">' +
+    '<span>✏️</span> <span>Modifica Dati</span>' +
+    '</button>' +
+    '</div>' +
+    '</div>' +
     '</div>' +
 
     '<!-- ALLERGIE SALVAVITA -->' +
@@ -27883,89 +28192,89 @@ function renderPatologieTab(p) {
 
     '<!-- CARD TABELLA PATOLOGIE & TERAPIE CORRELATE -->' +
     '<div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:20px; margin-bottom:20px; box-shadow:0 3px 14px rgba(0,0,0,0.04); background:#ffffff;">' +
-      '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">' +
-        '<div>' +
-          '<div style="font-size:16px; font-weight:900; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
-            '<span>🩺</span> <span>Quadro Diagnosi Cliniche &amp; Terapie Farmacologiche Associate</span>' +
-          '</div>' +
-          '<div style="font-size:12px; color:#64748b; margin-top:2px;">' +
-            'Associazione diretta tra patologia formalizzata e piano terapeutico attivo somministrato.' +
-          '</div>' +
-        '</div>' +
-        '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
-          '<button type="button" onclick="mostraGuidaContestuale(\'patologie-diagnosi\')" style="background:#eff6ff; color:#0284c7; border:1.5px solid #7dd3fc; border-radius:8px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="A cosa serve il Quadro Diagnosi Cliniche">' +
-            '<span>💡</span> <span>A cosa serve</span>' +
-          '</button>' +
-          '<button type="button" onclick="aggiungiPatologiaRapida()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">' +
-            '<span>➕</span> <span>Aggiungi Patologia</span>' +
-          '</button>' +
-          '<button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci()" style="background:#f0f9ff; color:#0284c7; border:1.5px solid #7dd3fc; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">' +
-            '<span>✨ Deduci con AI dai Farmaci</span>' +
-          '</button>' +
-        '</div>' +
-      '</div>' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">' +
+    '<div>' +
+    '<div style="font-size:16px; font-weight:900; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
+    '<span>🩺</span> <span>Quadro Diagnosi Cliniche &amp; Terapie Farmacologiche Associate</span>' +
+    '</div>' +
+    '<div style="font-size:12px; color:#64748b; margin-top:2px;">' +
+    'Associazione diretta tra patologia formalizzata e piano terapeutico attivo somministrato.' +
+    '</div>' +
+    '</div>' +
+    '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+    '<button type="button" onclick="mostraGuidaContestuale(\'patologie-diagnosi\')" style="background:#eff6ff; color:#0284c7; border:1.5px solid #7dd3fc; border-radius:8px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="A cosa serve il Quadro Diagnosi Cliniche">' +
+    '<span>💡</span> <span>A cosa serve</span>' +
+    '</button>' +
+    '<button type="button" onclick="aggiungiPatologiaRapida()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">' +
+    '<span>➕</span> <span>Aggiungi Patologia</span>' +
+    '</button>' +
+    '<button type="button" onclick="applicaDiagnosiAutomaticheDaFarmaci()" style="background:#f0f9ff; color:#0284c7; border:1.5px solid #7dd3fc; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">' +
+    '<span>✨ Deduci con AI dai Farmaci</span>' +
+    '</button>' +
+    '</div>' +
+    '</div>' +
 
-      '<div class="table-responsive">' +
-        '<table class="custom-table" style="width:100%; border-collapse:collapse;">' +
-          '<thead>' +
-            '<tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0; text-align:left;">' +
-              '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569;">Patologia / Diagnosi Clinica</th>' +
-              '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569;">Farmaci Prescritti Associati</th>' +
-              '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569;">Stato</th>' +
-              '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569; text-align:center;">Azioni</th>' +
-            '</tr>' +
-          '</thead>' +
-          '<tbody>' +
-            rowsHtml +
-          '</tbody>' +
-        '</table>' +
-      '</div>' +
+    '<div class="table-responsive">' +
+    '<table class="custom-table" style="width:100%; border-collapse:collapse;">' +
+    '<thead>' +
+    '<tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0; text-align:left;">' +
+    '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569;">Patologia / Diagnosi Clinica</th>' +
+    '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569;">Farmaci Prescritti Associati</th>' +
+    '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569;">Stato</th>' +
+    '<th style="padding:10px 14px; font-size:12px; font-weight:800; color:#475569; text-align:center;">Azioni</th>' +
+    '</tr>' +
+    '</thead>' +
+    '<tbody>' +
+    rowsHtml +
+    '</tbody>' +
+    '</table>' +
+    '</div>' +
     '</div>' +
 
     '<!-- GRID AUSILI & CONTATTI CLINICI -->' +
     '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">' +
-      '<!-- CARD AUSILI -->' +
-      '<div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:18px; background:#ffffff;">' +
-        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;">' +
-          '<div style="font-size:14px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
-            '<span>📦</span> <span>Ausili &amp; Presidi Sanitari Registrati</span>' +
-          '</div>' +
-          '<button type="button" onclick="mostraGuidaContestuale(\'patologie-ausili\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono gli Ausili registrati">' +
-            '<span>💡</span> <span>A cosa serve</span>' +
-          '</button>' +
-        '</div>' +
-        '<div style="display:flex; flex-wrap:wrap; gap:8px;">' +
-          ausiliHtml +
-        '</div>' +
-      '</div>' +
-
-      '<!-- CARD CONTATTI CURANTI -->' +
-      '<div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:18px; background:#ffffff;">' +
-        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px;">' +
-          '<div style="font-size:14px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
-            '<span>🩺</span> <span>Riferimenti Medici &amp; Territoriali</span>' +
-          '</div>' +
-          '<button type="button" onclick="mostraGuidaContestuale(\'patologie-riferimenti\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono i riferimenti di rete">' +
-            '<span>💡</span> <span>A cosa serve</span>' +
-          '</button>' +
-        '</div>' +
-        '<div style="display:flex; flex-direction:column; gap:8px; font-size:12.5px;">' +
-          '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed #e2e8f0;">' +
-            '<div><b>MMG:</b> ' + mNome + '</div>' +
-            '<div>' + (mTel ? '<a href="tel:' + mTel.replace(/[^0-9+]/g, '') + '" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ' + mTel + '</a>' : '<span style="color:#94a3b8;">--</span>') + '</div>' +
-          '</div>' +
-          '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed #e2e8f0;">' +
-            '<div><b>Caregiver:</b> ' + cgNome + '</div>' +
-            '<div>' + (cgTel ? '<a href="tel:' + cgTel.replace(/[^0-9+]/g, '') + '" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ' + cgTel + '</a>' : '<span style="color:#94a3b8;">--</span>') + '</div>' +
-          '</div>' +
-          '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0;">' +
-            '<div><b>Farmacia:</b> ' + fNome + '</div>' +
-            '<div>' + (fTel ? '<a href="tel:' + fTel.replace(/[^0-9+]/g, '') + '" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ' + fTel + '</a>' : '<span style="color:#94a3b8;">--</span>') + '</div>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
+    '<!-- CARD AUSILI -->' +
+    '<div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:18px; background:#ffffff;">' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;">' +
+    '<div style="font-size:14px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
+    '<span>📦</span> <span>Ausili &amp; Presidi Sanitari Registrati</span>' +
     '</div>' +
-  '</div>';
+    '<button type="button" onclick="mostraGuidaContestuale(\'patologie-ausili\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono gli Ausili registrati">' +
+    '<span>💡</span> <span>A cosa serve</span>' +
+    '</button>' +
+    '</div>' +
+    '<div style="display:flex; flex-wrap:wrap; gap:8px;">' +
+    ausiliHtml +
+    '</div>' +
+    '</div>' +
+
+    '<!-- CARD CONTATTI CURANTI -->' +
+    '<div class="card" style="border:1.5px solid #cbd5e1; border-radius:16px; padding:18px; background:#ffffff;">' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px;">' +
+    '<div style="font-size:14px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">' +
+    '<span>🩺</span> <span>Riferimenti Medici &amp; Territoriali</span>' +
+    '</div>' +
+    '<button type="button" onclick="mostraGuidaContestuale(\'patologie-riferimenti\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono i riferimenti di rete">' +
+    '<span>💡</span> <span>A cosa serve</span>' +
+    '</button>' +
+    '</div>' +
+    '<div style="display:flex; flex-direction:column; gap:8px; font-size:12.5px;">' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed #e2e8f0;">' +
+    '<div><b>MMG:</b> ' + mNome + '</div>' +
+    '<div>' + (mTel ? '<a href="tel:' + mTel.replace(/[^0-9+]/g, '') + '" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ' + mTel + '</a>' : '<span style="color:#94a3b8;">--</span>') + '</div>' +
+    '</div>' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed #e2e8f0;">' +
+    '<div><b>Caregiver:</b> ' + cgNome + '</div>' +
+    '<div>' + (cgTel ? '<a href="tel:' + cgTel.replace(/[^0-9+]/g, '') + '" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ' + cgTel + '</a>' : '<span style="color:#94a3b8;">--</span>') + '</div>' +
+    '</div>' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0;">' +
+    '<div><b>Farmacia:</b> ' + fNome + '</div>' +
+    '<div>' + (fTel ? '<a href="tel:' + fTel.replace(/[^0-9+]/g, '') + '" style="color:#0284c7; font-weight:800; text-decoration:none;">📞 ' + fTel + '</a>' : '<span style="color:#94a3b8;">--</span>') + '</div>' +
+    '</div>' +
+    '</div>' +
+    '</div>' +
+    '</div>' +
+    '</div>';
 }
 window.renderPatologieTab = renderPatologieTab;
 
@@ -28839,7 +29148,7 @@ function renderizzaContenutoFabbisogno(p) {
   listaVisualizzata.forEach(function (item, idx) {
     var card = document.createElement('div');
     card.id = 'mfr-card-farmaco-' + idx;
-    
+
     var borderClr = '#cbd5e1';
     var bgCard = '#ffffff';
     var badgeTag = '';
@@ -28866,32 +29175,32 @@ function renderizzaContenutoFabbisogno(p) {
 
     card.style.cssText = 'background:' + bgCard + '; border:1.5px solid ' + borderClr + '; border-radius:12px; padding:12px 14px; box-shadow:0 1px 4px rgba(0,0,0,0.03); transition:all 0.15s ease;';
 
-    card.innerHTML = 
+    card.innerHTML =
       '<div style="width:100%; display:flex; flex-direction:column; gap:6px;">' +
-        '<div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">' +
-          '<label style="display:flex; align-items:center; gap:10px; cursor:pointer; flex:1; margin:0;">' +
-            '<input type="checkbox" id="mfr-check-' + idx + '" class="mfr-farmaco-checkbox" ' + (item.selezionato ? 'checked' : '') + ' onchange="rigeneraTestoFabbisogno()" style="width:20px; height:20px; cursor:pointer; accent-color:#059669; flex-shrink:0;">' +
-            '<div>' +
-              '<span style="font-size:14.5px; font-weight:900; color:#0f172a;">' + item.farmaco + '</span>' +
-              (item.dosaggio ? ' <span style="font-size:12px; font-weight:700; color:#475569;">(' + item.dosaggio + ')</span>' : '') +
-            '</div>' +
-          '</label>' +
-          '<div>' + badgeTag + '</div>' +
-        '</div>' +
-        ((item.principio || item.modo) ? 
-          ('<div style="font-size:12px; color:#64748b; padding-left:30px; line-height:1.35;">' +
-            (item.principio ? 'Principio: <b style="color:#334155;">' + item.principio + '</b> · ' : '') +
-            (item.modo ? '<i>' + item.modo + '</i>' : '') +
+      '<div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">' +
+      '<label style="display:flex; align-items:center; gap:10px; cursor:pointer; flex:1; margin:0;">' +
+      '<input type="checkbox" id="mfr-check-' + idx + '" class="mfr-farmaco-checkbox" ' + (item.selezionato ? 'checked' : '') + ' onchange="rigeneraTestoFabbisogno()" style="width:20px; height:20px; cursor:pointer; accent-color:#059669; flex-shrink:0;">' +
+      '<div>' +
+      '<span style="font-size:14.5px; font-weight:900; color:#0f172a;">' + item.farmaco + '</span>' +
+      (item.dosaggio ? ' <span style="font-size:12px; font-weight:700; color:#475569;">(' + item.dosaggio + ')</span>' : '') +
+      '</div>' +
+      '</label>' +
+      '<div>' + badgeTag + '</div>' +
+      '</div>' +
+      ((item.principio || item.modo) ?
+        ('<div style="font-size:12px; color:#64748b; padding-left:30px; line-height:1.35;">' +
+          (item.principio ? 'Principio: <b style="color:#334155;">' + item.principio + '</b> · ' : '') +
+          (item.modo ? '<i>' + item.modo + '</i>' : '') +
           '</div>') : '') +
-        '<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:4px; padding-top:6px; border-top:1px dashed #e2e8f0; padding-left:30px;">' +
-          '<div style="font-size:12px; color:#475569;">' +
-            'Scorta: <b style="color:#0f172a; font-size:13px;">' + item.scorta + ' ' + item.unita + '</b> (~<b>' + item.ggAutonomia + ' gg</b>) · Fine: <b>' + item.dataFineStr + '</b>' +
-          '</div>' +
-          '<div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:3px 8px; display:inline-flex; align-items:center; gap:6px;">' +
-            '<span style="font-size:11px; font-weight:800; color:#64748b;">Scatole:</span>' +
-            '<input type="number" id="mfr-scatole-' + idx + '" min="1" max="10" value="' + item.scatoleConsigliate + '" onchange="rigeneraTestoFabbisogno()" style="width:38px; border:none; text-align:center; font-size:13px; font-weight:900; color:#0f172a; outline:none;">' +
-          '</div>' +
-        '</div>' +
+      '<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:4px; padding-top:6px; border-top:1px dashed #e2e8f0; padding-left:30px;">' +
+      '<div style="font-size:12px; color:#475569;">' +
+      'Scorta: <b style="color:#0f172a; font-size:13px;">' + item.scorta + ' ' + item.unita + '</b> (~<b>' + item.ggAutonomia + ' gg</b>) · Fine: <b>' + item.dataFineStr + '</b>' +
+      '</div>' +
+      '<div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:3px 8px; display:inline-flex; align-items:center; gap:6px;">' +
+      '<span style="font-size:11px; font-weight:800; color:#64748b;">Scatole:</span>' +
+      '<input type="number" id="mfr-scatole-' + idx + '" min="1" max="10" value="' + item.scatoleConsigliate + '" onchange="rigeneraTestoFabbisogno()" style="width:38px; border:none; text-align:center; font-size:13px; font-weight:900; color:#0f172a; outline:none;">' +
+      '</div>' +
+      '</div>' +
       '</div>';
 
     card.dataset.farmacoIdx = idx;

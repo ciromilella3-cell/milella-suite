@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=295">
+  <link rel="stylesheet" href="style.css?v=296">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -1095,6 +1095,12 @@
                 style="background:#eff6ff; color:#0369a1; border:1.5px solid #7dd3fc; font-weight:800; font-size:11.5px; padding:4px 9px; border-radius:8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;"
                 title="A cosa serve la sezione Appuntamenti e Controlli Imminenti">
                 <span>💡</span> <span>A cosa serve</span>
+              </button>
+              <button type="button" class="btn btn-outline"
+                onclick="apriElencoCompletoVisite()"
+                style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; font-weight:800; font-size:11.5px; padding:4px 10px; border-radius:8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;"
+                title="Visualizza tutte le visite specialistiche dell'assistito">
+                <span>📋</span> <span>Tutte le visite ➔</span>
               </button>
               <button class="btn btn-outline" onclick="openModal('modal-visita')">+ Aggiungi</button>
             </div>
@@ -2505,16 +2511,21 @@
       <div class="modal-body" style="padding:14px 16px; overflow-y:auto; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; gap:12px; background:#f8fafc;">
 
         <!-- ACCESSO RAPIDO SPECIALISTICA & VISITE -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div style="display:grid; grid-template-columns:1fr 1.15fr 1fr; gap:6px;">
           <button type="button" onclick="chiudiModalSchedaClinicaMobile(); apriAmbulatorioSpecialisticoMobile();"
-            style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12px; padding:10px 8px; border-radius:12px; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; box-shadow:0 2px 8px rgba(2,132,199,0.3); text-align:center;">
-            <span style="font-size:20px;">🩺</span>
-            <span>Ambulatorio &amp; Esami</span>
+            style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:11.5px; padding:10px 4px; border-radius:12px; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; box-shadow:0 2px 8px rgba(2,132,199,0.3); text-align:center;">
+            <span style="font-size:18px;">🩺</span>
+            <span>Ambulatorio</span>
+          </button>
+          <button type="button" onclick="chiudiModalSchedaClinicaMobile(); apriElencoCompletoVisite();"
+            style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; font-weight:800; font-size:11.5px; padding:10px 4px; border-radius:12px; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; box-shadow:0 2px 8px rgba(79,70,229,0.3); text-align:center;">
+            <span style="font-size:18px;">📋</span>
+            <span>Elenco Visite</span>
           </button>
           <button type="button" onclick="chiudiModalSchedaClinicaMobile(); openModal('modal-visita');"
-            style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:800; font-size:12px; padding:10px 8px; border-radius:12px; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; box-shadow:0 2px 8px rgba(5,150,105,0.3); text-align:center;">
-            <span style="font-size:20px;">📅</span>
-            <span>Pianifica Visita</span>
+            style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:800; font-size:11.5px; padding:10px 4px; border-radius:12px; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; box-shadow:0 2px 8px rgba(5,150,105,0.3); text-align:center;">
+            <span style="font-size:18px;">📅</span>
+            <span>+ Visita</span>
           </button>
         </div>
 
@@ -2590,6 +2601,9 @@
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
               <button type="button" onclick="mostraGuidaContestuale('dashboard-visite')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:6px; padding:2px 7px; font-size:10px; font-weight:800; cursor:pointer;" title="A cosa servono le Visite">💡 Guida</button>
+              <button type="button" onclick="chiudiModalSchedaClinicaMobile(); apriElencoCompletoVisite();" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Vedi tutte le visite in una schermata completa">
+                <span>📋</span> <span>Elenco ➔</span>
+              </button>
               <button type="button" onclick="openModal('modal-visita')" style="background:#059669; color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 4px rgba(5,150,105,0.25);">
                 <span>➕</span> <span>Nuova Visita</span>
               </button>
@@ -4582,6 +4596,54 @@
           <button type="submit" class="btn btn-primary" id="btn-salva-visita" style="font-weight:800; font-size:13px; padding:8px 18px; border-radius:8px;">💾 Salva Appuntamento</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL 5B: ELENCO COMPLETO VISITE & PRESTAZIONI SPECIALISTICHE (GESTIONE TOTALE & FILTRI RAPIDI) -->
+  <div class="modal-overlay" id="modal-elenco-visite" style="display:none; z-index:20000040; position:fixed; inset:0; background:rgba(15,23,42,0.78); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:12px;">
+    <div class="modal-card" style="max-width:760px; width:100%; max-height:92vh; display:flex; flex-direction:column; border-radius:18px; overflow:hidden; box-shadow:0 25px 70px rgba(0,0,0,0.35); border:1.5px solid #cbd5e1; background:#ffffff;">
+      
+      <!-- HEADER CLINICO ELENCO VISITE -->
+      <div class="modal-header" style="background:linear-gradient(135deg, #091e3a 0%, #1e3a8a 55%, #0284c7 100%); color:#ffffff; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:1px solid rgba(255,255,255,0.15);">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1 1 auto; overflow:hidden;">
+          <span style="font-size:24px; line-height:1; flex-shrink:0;">📋</span>
+          <div style="min-width:0;">
+            <div class="modal-title" style="color:#ffffff; font-weight:800; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Elenco Visite Specialistiche</div>
+            <div id="mev-sottotitolo" style="font-size:12px; font-weight:600; color:#bfdbfe; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">--</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+          <button type="button" class="btn btn-outline btn-guida-contestuale" onclick="mostraGuidaContestuale('elenco-visite')" style="border-color:rgba(255,255,255,0.4) !important; color:#ffffff !important; background:rgba(255,255,255,0.18) !important; font-weight:800 !important; font-size:11px !important; padding:4px 8px !important; border-radius:8px !important; white-space:nowrap !important; flex-shrink:0 !important; width:auto !important; height:auto !important;" title="A cosa serve l'Elenco Visite">💡 A cosa serve</button>
+          <button type="button" class="btn btn-outline" onclick="chiudiModalElencoVisite()" style="color:#ffffff; border:1px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.15); width:34px; height:34px; min-width:34px; border-radius:50%; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0; flex-shrink:0; cursor:pointer;">✕</button>
+        </div>
+      </div>
+
+      <!-- BARRA FILTRI & AZIONI RAPIDE -->
+      <div style="background:#f8fafc; border-bottom:1px solid #e2e8f0; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;" id="mev-filtri-container">
+          <button type="button" id="mev-filtro-tutte" onclick="filtraElencoVisite('tutte')" style="background:#0284c7; color:#ffffff; border:1px solid #0284c7; font-weight:800; font-size:11.5px; padding:5px 10px; border-radius:8px; cursor:pointer;">Tutte (<span id="mev-count-tutte">0</span>)</button>
+          <button type="button" id="mev-filtro-programma" onclick="filtraElencoVisite('programma')" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-weight:700; font-size:11.5px; padding:5px 10px; border-radius:8px; cursor:pointer;">⏳ In programma (<span id="mev-count-programma">0</span>)</button>
+          <button type="button" id="mev-filtro-posticipate" onclick="filtraElencoVisite('posticipate')" style="background:#ffffff; color:#b45309; border:1px solid #cbd5e1; font-weight:700; font-size:11.5px; padding:5px 10px; border-radius:8px; cursor:pointer;">🔄 Posticipate (<span id="mev-count-posticipate">0</span>)</button>
+          <button type="button" id="mev-filtro-eseguite" onclick="filtraElencoVisite('eseguite')" style="background:#ffffff; color:#15803d; border:1px solid #cbd5e1; font-weight:700; font-size:11.5px; padding:5px 10px; border-radius:8px; cursor:pointer;">✅ Eseguite (<span id="mev-count-eseguite">0</span>)</button>
+        </div>
+        <button type="button" onclick="chiudiModalElencoVisite(); openModal('modal-visita');" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; padding:6px 12px; border-radius:8px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(5,150,105,0.25); white-space:nowrap;">
+          <span>➕</span> <span>Pianifica Visita</span>
+        </button>
+      </div>
+
+      <!-- BODY: LISTA DELLE VISITE -->
+      <div class="modal-body" id="mev-corpo-lista" style="padding:14px 16px; overflow-y:auto; -webkit-overflow-scrolling:touch; max-height:68vh; background:#f1f5f9; display:flex; flex-direction:column; gap:10px;">
+        <!-- Inserite dinamicamente da renderElencoVisiteBody -->
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer" style="padding:10px 16px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:11.5px; color:#64748b; font-weight:600;">
+          💡 Tocca <b>Modifica</b> o <b>Posticipa</b> per gestire la singola prestazione
+        </div>
+        <button type="button" class="btn btn-outline" onclick="chiudiModalElencoVisite()" style="padding:6px 16px; font-size:12px; font-weight:700; border-radius:8px;">Chiudi</button>
+      </div>
+
     </div>
   </div>
 
@@ -7778,7 +7840,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=295"></script>
+  <script src="app.js?v=296"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7789,7 +7851,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=295', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=296', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
