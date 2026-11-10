@@ -17603,6 +17603,22 @@ function apriModalConsegnaVocale() {
 }
 window.apriModalConsegnaVocale = apriModalConsegnaVocale;
 
+function inserisciTemplateConsegna(frase) {
+  var txtArea = document.getElementById('consegna-trascrizione-testo');
+  if (!txtArea) return;
+  var curr = txtArea.value.trim();
+  if (curr) {
+    txtArea.value = curr + ' ' + frase;
+  } else {
+    txtArea.value = frase;
+  }
+  if (typeof analizzaEdEstraiParametriConsegna === 'function') {
+    analizzaEdEstraiParametriConsegna(txtArea.value);
+  }
+}
+window.inserisciTemplateConsegna = inserisciTemplateConsegna;
+
+
 function chiudiModalConsegnaVocale() {
   if (_consegnaIsRecording) {
     fermaRegistrazioneConsegna();
@@ -17620,6 +17636,8 @@ function toggleRegistrazioneConsegnaVocale() {
 }
 window.toggleRegistrazioneConsegnaVocale = toggleRegistrazioneConsegnaVocale;
 
+let _consegnaFinalTranscript = '';
+
 async function avviaRegistrazioneConsegna() {
   const micBtn = document.getElementById('mic-record-btn');
   const statusLabel = document.getElementById('consegna-status-label');
@@ -17629,6 +17647,7 @@ async function avviaRegistrazioneConsegna() {
   _consegnaAudioChunks = [];
   _consegnaAudioBlobUrl = null;
   _consegnaAudioBase64 = null;
+  _consegnaFinalTranscript = '';
 
   // 1. Avvia Speech Recognition
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -17638,20 +17657,42 @@ async function avviaRegistrazioneConsegna() {
       _consegnaSpeechRec.lang = 'it-IT';
       _consegnaSpeechRec.continuous = true;
       _consegnaSpeechRec.interimResults = true;
+      _consegnaSpeechRec.maxAlternatives = 1;
 
       _consegnaSpeechRec.onresult = function (ev) {
-        let fullTranscript = '';
-        for (let i = 0; i < ev.results.length; i++) {
-          fullTranscript += ev.results[i][0].transcript + ' ';
+        let interim = '';
+        for (let i = ev.resultIndex; i < ev.results.length; ++i) {
+          const piece = ev.results[i][0].transcript;
+          if (ev.results[i].isFinal) {
+            _consegnaFinalTranscript += piece + ' ';
+          } else {
+            interim += piece;
+          }
         }
+        const full = (_consegnaFinalTranscript + ' ' + interim).trim();
         if (txtArea) {
-          txtArea.value = fullTranscript.trim();
+          txtArea.value = full;
         }
-        analizzaEdEstraiParametriConsegna(fullTranscript);
+        analizzaEdEstraiParametriConsegna(full);
       };
 
       _consegnaSpeechRec.onerror = function (err) {
-        console.warn('[Consegna Vocale] Errore SpeechRec:', err);
+        console.warn('[Consegna Vocale] Errore SpeechRec:', err.error);
+        if (statusLabel) {
+          if (err.error === 'network') {
+            statusLabel.style.color = '#d97706';
+            statusLabel.textContent = '⚠️ Trascrizione cloud temporaneamente non attiva: l\'audio viene registrato e salvato.';
+          } else if (err.error === 'not-allowed') {
+            statusLabel.style.color = '#dc2626';
+            statusLabel.textContent = '⚠️ Permesso microfono per trascrizione non autorizzato nel browser.';
+          }
+        }
+      };
+
+      _consegnaSpeechRec.onend = function () {
+        if (_consegnaIsRecording) {
+          try { _consegnaSpeechRec.start(); } catch (e) { }
+        }
       };
 
       _consegnaSpeechRec.start();
@@ -17660,7 +17701,7 @@ async function avviaRegistrazioneConsegna() {
     }
   }
 
-  // 2. Avvia MediaRecorder per catturare l'audio reale (se supportato)
+  // 2. Avvia MediaRecorder per catturare l'audio reale
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -17677,19 +17718,17 @@ async function avviaRegistrazioneConsegna() {
           player.src = _consegnaAudioBlobUrl;
           box.style.display = 'flex';
         }
-        // Crea anche Data URI base64 compatto se possibile
         const reader = new FileReader();
         reader.onloadend = function () {
           _consegnaAudioBase64 = reader.result;
         };
         reader.readAsDataURL(audioBlob);
 
-        // Ferma le tracce del microfono
         stream.getTracks().forEach(t => t.stop());
       };
       _consegnaMediaRecorder.start();
     } catch (eMedia) {
-      console.warn('[Consegna Vocale] getUserMedia non consentito o non supportato:', eMedia);
+      console.warn('[Consegna Vocale] getUserMedia non consentito:', eMedia);
     }
   }
 
@@ -17709,6 +17748,8 @@ function fermaRegistrazioneConsegna() {
   const wave = document.getElementById('consegna-soundwave');
   const txtArea = document.getElementById('consegna-trascrizione-testo');
 
+  _consegnaIsRecording = false;
+
   if (_consegnaSpeechRec) {
     try { _consegnaSpeechRec.stop(); } catch (e) { }
   }
@@ -17716,17 +17757,20 @@ function fermaRegistrazioneConsegna() {
     try { _consegnaMediaRecorder.stop(); } catch (e) { }
   }
 
-  _consegnaIsRecording = false;
   if (micBtn) micBtn.classList.remove('recording');
   if (wave) wave.classList.remove('active');
-  if (statusLabel) {
-    statusLabel.style.color = '#059669';
-    statusLabel.textContent = '✅ Registrazione completata! Puoi modificare il testo o salvare.';
-  }
 
-  if (txtArea && txtArea.value) {
-    analizzaEdEstraiParametriConsegna(txtArea.value);
-  }
+  setTimeout(function() {
+    if (txtArea && !txtArea.value.trim() && (_consegnaAudioBlobUrl || (_consegnaAudioChunks && _consegnaAudioChunks.length > 0) || _consegnaAudioBase64)) {
+      const nowTime = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      txtArea.value = '🎙️ Nota Vocale registrata alle ' + nowTime + ' (Audio allegato)';
+      analizzaEdEstraiParametriConsegna(txtArea.value);
+    }
+    if (statusLabel) {
+      statusLabel.style.color = '#059669';
+      statusLabel.textContent = '✅ Registrazione completata! Puoi modificare il testo o cliccare Salva nel Diario.';
+    }
+  }, 250);
 }
 
 // Analizzatore intelligente parametri clinici dal parlato
@@ -17854,12 +17898,18 @@ function salvaConsegnaVocaleNelDiario() {
   if (!p) return;
   const elTxt = document.getElementById('consegna-trascrizione-testo');
   const elOp = document.getElementById('consegna-operatore-nome');
-  const testo = elTxt ? elTxt.value.trim() : '';
+  let testo = elTxt ? elTxt.value.trim() : '';
   const op = elOp ? elOp.value.trim() : 'Operatore OSS / Familiare';
 
   if (!testo) {
-    showToast('Nessun testo registrato da salvare nel diario.', 'warning');
-    return;
+    if (_consegnaAudioBlobUrl || (_consegnaAudioChunks && _consegnaAudioChunks.length > 0) || _consegnaAudioBase64) {
+      const nowTime = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      testo = '🎙️ Consegna vocale registrata alle ' + nowTime + ' (' + op + ')';
+      if (elTxt) elTxt.value = testo;
+    } else {
+      showToast('⚠️ Registra un messaggio vocale o scrivi una nota prima di salvare.', 'warning');
+      return;
+    }
   }
 
   const now = new Date();
@@ -17908,12 +17958,18 @@ function inviaConsegnaSuWhatsApp() {
   if (!p) return;
   const elTxt = document.getElementById('consegna-trascrizione-testo');
   const elOp = document.getElementById('consegna-operatore-nome');
-  const testo = elTxt ? elTxt.value.trim() : '';
+  let testo = elTxt ? elTxt.value.trim() : '';
   const op = elOp ? elOp.value.trim() : 'Operatore OSS / Familiare';
 
   if (!testo) {
-    showToast('Registra prima la consegna da condividere.', 'warning');
-    return;
+    if (_consegnaAudioBlobUrl || (_consegnaAudioChunks && _consegnaAudioChunks.length > 0) || _consegnaAudioBase64) {
+      const nowTime = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      testo = '🎙️ Consegna vocale registrata alle ' + nowTime + ' (' + op + ')';
+      if (elTxt) elTxt.value = testo;
+    } else {
+      showToast('⚠️ Registra prima la consegna da condividere.', 'warning');
+      return;
+    }
   }
 
   const dStr = new Date().toLocaleDateString('it-IT');
