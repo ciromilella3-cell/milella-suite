@@ -7479,6 +7479,7 @@ async function eliminaAnnotazioniSelezionate(scope) {
     p.registrazioni = (p.registrazioni || []).filter(r => !idsToDelete.has(String(r.id)));
     saveDb();
     renderDiario();
+  if (typeof renderDiarioMobile === 'function') renderDiarioMobile();
     if (typeof showToast === 'function') {
       showToast(`${count} annotazion${count === 1 ? 'e eliminata' : 'i eliminate'} con successo! 🗑️`);
     }
@@ -27706,6 +27707,9 @@ function renderMobileNativeView(terapie, p) {
       '<button type="button" onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
       '<span>📋 Scheda Clinica ➜</span>' +
       '</button>' +
+      '<button type="button" onclick="event.stopPropagation(); apriModalDiarioMobile()" style="background:#ede9fe; color:#4338ca; border:1px solid #c7d2fe; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(67,56,202,0.15);" title="Visualizza lo Storico Diario e le Consegne OSS">' +
+      '<span>📋 Diario Storico</span>' +
+      '</button>' +
       '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(21,128,61,0.15);" title="Visualizza tutte le visite specialistiche">' +
       '<span>📋 Visite (' + (p.visite ? p.visite.length : 0) + ')</span>' +
       '</button>' +
@@ -30189,3 +30193,140 @@ window.stampaFabbisognoA4 = function () {
   win.document.write('</body></html>');
   win.document.close();
 };
+
+// ==========================================
+// MODAL DIARIO STORICO & CONSEGNE VOCALI MOBILE
+// ==========================================
+let _mdmFiltroCorrente = 'tutti';
+
+function apriModalDiarioMobile(filtro) {
+  _mdmFiltroCorrente = filtro || 'tutti';
+  const p = getActivePaziente();
+  if (!p) {
+    if (typeof showToast === 'function') showToast('Seleziona prima un assistito.', 'warning');
+    return;
+  }
+  const badgeEl = document.getElementById('mdm-paziente-badge');
+  if (badgeEl) badgeEl.textContent = '👤 Assistito: ' + p.nome;
+
+  renderDiarioMobile();
+  openModal('modal-diario-mobile');
+}
+window.apriModalDiarioMobile = apriModalDiarioMobile;
+
+function filtraDiarioMobile(filtro) {
+  _mdmFiltroCorrente = filtro;
+  const btnTutti = document.getElementById('mdm-filtro-tutti');
+  const btnConsegne = document.getElementById('mdm-filtro-consegne');
+  const btnFarmaci = document.getElementById('mdm-filtro-farmaci');
+  const btnParametri = document.getElementById('mdm-filtro-parametri');
+
+  if (btnTutti) { btnTutti.style.background = (filtro === 'tutti') ? '#0284c7' : '#ffffff'; btnTutti.style.color = (filtro === 'tutti') ? '#fff' : '#334155'; }
+  if (btnConsegne) { btnConsegne.style.background = (filtro === 'consegna_vocale') ? '#4338ca' : '#ffffff'; btnConsegne.style.color = (filtro === 'consegna_vocale') ? '#fff' : '#4338ca'; }
+  if (btnFarmaci) { btnFarmaci.style.background = (filtro === 'farmaci') ? '#059669' : '#ffffff'; btnFarmaci.style.color = (filtro === 'farmaci') ? '#fff' : '#059669'; }
+  if (btnParametri) { btnParametri.style.background = (filtro === 'parametri') ? '#be123c' : '#ffffff'; btnParametri.style.color = (filtro === 'parametri') ? '#fff' : '#be123c'; }
+
+  renderDiarioMobile();
+}
+window.filtraDiarioMobile = filtraDiarioMobile;
+
+function renderDiarioMobile() {
+  const container = document.getElementById('mdm-lista-eventi');
+  if (!container) return;
+
+  const p = getActivePaziente();
+  if (!p) return;
+
+  const list = [...(p.registrazioni || [])].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  let filtrata = list;
+  if (_mdmFiltroCorrente === 'consegna_vocale') {
+    filtrata = list.filter(r => r.tipo === 'consegna_vocale' || r.tipo === 'consegna');
+  } else if (_mdmFiltroCorrente === 'farmaci') {
+    filtrata = list.filter(r => r.tipo && r.tipo.startsWith('farmaco'));
+  } else if (_mdmFiltroCorrente === 'parametri') {
+    filtrata = list.filter(r => r.tipo === 'parametri' || r.tipo === 'alvo' || r.tipo === 'postura');
+  }
+
+  if (filtrata.length === 0) {
+    container.innerHTML = `
+      <div style="background:#ffffff; border:1.5px dashed #cbd5e1; border-radius:14px; padding:32px 16px; text-align:center; color:#64748b;">
+        <div style="font-size:36px; margin-bottom:8px;">📋</div>
+        <div style="font-size:14px; font-weight:800; color:#1e293b;">Nessuna registrazione presente per questo filtro.</div>
+        <div style="font-size:12px; margin-top:4px; color:#64748b;">Tocca Nuova Consegna OSS in basso per registrare un messaggio.</div>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  filtrata.forEach(r => {
+    const d = new Date(r.timestamp);
+    const dataFmt = d.toLocaleDateString('it-IT') + ' ore ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+    if (r.tipo === 'consegna_vocale') {
+      const audioPlayerHtml = r.audioData ? `
+        <div style="margin-top:8px; background:#ede9fe; border:1px solid #c7d2fe; border-radius:10px; padding:7px 10px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+          <span style="font-size:11.5px; font-weight:800; color:#4338ca;">🔊 Ascolta Registrazione:</span>
+          <audio controls src="${r.audioData}" style="height:32px; max-width:210px;"></audio>
+        </div>
+      ` : '';
+
+      html += `
+        <div style="background:#ffffff; border:1.5px solid #818cf8; border-radius:14px; padding:12px 14px; box-shadow:0 2px 6px rgba(79,70,229,0.08);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:4px;">
+            <span style="background:#e0e7ff; color:#3730a3; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px;">🎙️ CONSEGNA VOCALE OSS</span>
+            <span style="font-size:11.5px; color:#64748b; font-weight:700;">🕒 ${dataFmt}</span>
+          </div>
+          <div style="font-size:13px; color:#1e293b; font-weight:700; line-height:1.4; margin-top:4px;">
+            "${r.testo || 'Consegna registrata'}"
+          </div>
+          ${r.parametriEstratti ? `<div style="margin-top:6px; display:flex; gap:4px; flex-wrap:wrap;">${r.parametriEstratti}</div>` : ''}
+          ${audioPlayerHtml}
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0; font-size:11px; color:#64748b;">
+            <span>✍️ <b>${r.operatore || 'Operatore OSS'}</b></span>
+            <a href="https://wa.me/?text=${encodeURIComponent('🎙️ Consegna del ' + dataFmt + ' per ' + p.nome + ': ' + (r.testo || ''))}" target="_blank" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:6px; padding:3px 8px; font-weight:800; text-decoration:none;">
+              💬 Invia WhatsApp
+            </a>
+          </div>
+        </div>
+      `;
+    } else if (r.tipo && r.tipo.startsWith('farmaco')) {
+      const isRitardo = r.tipo === 'farmaco_ritardo';
+      const isSaltato = r.tipo === 'farmaco_saltato';
+      const bg = isSaltato ? '#fef2f2' : (isRitardo ? '#fffbeb' : '#f0fdf4');
+      const border = isSaltato ? '#fca5a5' : (isRitardo ? '#fde047' : '#86efac');
+      const icon = isSaltato ? '❌' : (isRitardo ? '⚠️' : '💊');
+      const badgeTxt = isSaltato ? 'TERAPIA NON ASSUNTA' : (isRitardo ? 'ASSUNTA IN RITARDO' : 'TERAPIA ASSUNTA');
+      const badgeCol = isSaltato ? '#991b1b' : (isRitardo ? '#854d0e' : '#15803d');
+
+      html += `
+        <div style="background:${bg}; border:1.5px solid ${border}; border-radius:12px; padding:10px 12px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span style="font-size:10.5px; font-weight:900; color:${badgeCol};">${icon} ${badgeTxt}</span>
+            <span style="font-size:11px; color:#64748b; font-weight:700;">${dataFmt}</span>
+          </div>
+          <div style="font-size:13px; font-weight:800; color:#0f172a;">
+            ${r.farmaco || 'Farmaco'} ${r.dosaggio ? `<span style="color:#0284c7;">(${r.dosaggio})</span>` : ''}
+          </div>
+          ${r.motivo ? `<div style="font-size:11px; color:#b91c1c; margin-top:2px;">Motivo: ${r.motivo}</div>` : ''}
+        </div>
+      `;
+    } else {
+      html += `
+        <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:12px; padding:10px 12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span style="font-size:11px; font-weight:800; color:#0369a1; text-transform:uppercase;">📊 ${r.tipo || 'Attività'}</span>
+            <span style="font-size:11px; color:#64748b; font-weight:700;">${dataFmt}</span>
+          </div>
+          <div style="font-size:12px; color:#1e293b; line-height:1.35;">
+            ${r.desc || (r.pa_max ? `PA: ${r.pa_max}/${r.pa_min} mmHg | FC: ${r.fc || '--'} bpm | SpO2: ${r.spo2 || '--'}% | Temp: ${r.temp || '--'}°C` : (r.note || r.testo || 'Registrazione clinica'))}
+          </div>
+        </div>
+      `;
+    }
+  });
+
+  container.innerHTML = html;
+}
+window.renderDiarioMobile = renderDiarioMobile;
