@@ -7636,11 +7636,14 @@ function renderVisite() {
       <td><b>${v.medico}</b></td>
       <td>${v.motivo}</td>
       <td><span class="badge ${v.fatto ? 'badge-success' : 'badge-warning'}">${v.fatto ? 'Eseguita' : 'In attesa'}</span></td>
-      <td>
-        <button class="btn ${v.fatto ? 'btn-outline' : 'btn-success'}" style="padding:4px 8px; font-size:11px;" onclick="toggleVisita(${v.id})">
+      <td style="white-space:nowrap;">
+        <button class="btn btn-outline" style="padding:4px 8px; font-size:11px; margin-right:4px; border-color:#38bdf8; color:#0284c7; font-weight:800;" onclick="apriModificaVisita(${v.id})" title="Modifica data, orario, medico o motivo">
+          ✏️ Modifica
+        </button>
+        <button class="btn ${v.fatto ? 'btn-outline' : 'btn-success'}" style="padding:4px 8px; font-size:11px; margin-right:4px;" onclick="toggleVisita(${v.id})">
           ${v.fatto ? 'Riapri' : '✓ Fatto'}
         </button>
-        <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="eliminaVisita(${v.id})">🗑️</button>
+        <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="eliminaVisita(${v.id})" title="Sposta nel Cestino">🗑️</button>
       </td>
     </tr>
   `).join('');
@@ -7660,7 +7663,7 @@ function renderVisite() {
 function toggleVisita(id) {
   const p = getActivePaziente();
   if (!p) return;
-  const v = (p.visite || []).find(item => item.id === id);
+  const v = (p.visite || []).find(item => String(item.id) === String(id));
   if (v) {
     v.fatto = !v.fatto;
     saveDb();
@@ -7673,7 +7676,7 @@ function toggleVisita(id) {
 async function eliminaVisita(id) {
   const p = getActivePaziente();
   if (!p) return;
-  const v = (p.visite || []).find(x => x.id === id);
+  const v = (p.visite || []).find(x => String(x.id) === String(id));
   if (!v) return;
   const ok = await customConfirm(
     'Elimina Appuntamento',
@@ -7683,13 +7686,46 @@ async function eliminaVisita(id) {
   );
   if (ok) {
     cestinoAggiungi('visita', (v.medico || 'Visita') + (v.motivo ? ' - ' + v.motivo : ''), (v.data ? new Date(v.data).toLocaleDateString('it-IT') : '') + (v.ora ? ' ore ' + v.ora : ''), v, p);
-    p.visite = p.visite.filter(x => x.id !== id);
+    p.visite = p.visite.filter(x => String(x.id) !== String(id));
     saveDb();
     if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
     if (typeof renderVisite === 'function') renderVisite();
     showToast('Appuntamento spostato nel Cestino. 📅');
   }
 }
+
+function apriModificaVisita(id) {
+  const p = getActivePaziente();
+  if (!p || !p.visite) return;
+  const v = p.visite.find(x => String(x.id) === String(id));
+  if (!v) {
+    if (typeof showToast === 'function') showToast('⚠️ Visita non trovata');
+    return;
+  }
+  window._inModificaVisita = true;
+  openModal('modal-visita');
+
+  const editIdEl = document.getElementById('vis-edit-id');
+  const titleEl = document.getElementById('modal-visita-title');
+  const btnEl = document.getElementById('btn-salva-visita');
+  const dateEl = document.getElementById('vis-data');
+  const oraEl = document.getElementById('vis-ora');
+  const medEl = document.getElementById('vis-medico');
+  const motEl = document.getElementById('vis-motivo');
+
+  if (editIdEl) editIdEl.value = v.id;
+  if (titleEl) titleEl.innerHTML = '✏️ Modifica Visita o Prestazione';
+  if (btnEl) btnEl.innerHTML = '💾 Salva Modifiche';
+
+  if (dateEl) {
+    var dVal = v.data ? v.data.slice(0, 10) : '';
+    dateEl.value = dVal;
+  }
+  if (oraEl) oraEl.value = v.ora || '10:00';
+  if (medEl) medEl.value = v.medico || '';
+  if (motEl) motEl.value = v.motivo || '';
+}
+window.apriModificaVisita = apriModificaVisita;
 
 // Gestione Modali
 function openModal(id) {
@@ -7723,10 +7759,25 @@ function openModal(id) {
     }
 
     if (id === 'modal-visita') {
-      const visDateEl = document.getElementById('vis-data');
-      if (visDateEl && !visDateEl.value) {
-        visDateEl.value = new Date().toISOString().slice(0, 10);
+      const editIdEl = document.getElementById('vis-edit-id');
+      const titleEl = document.getElementById('modal-visita-title');
+      const btnEl = document.getElementById('btn-salva-visita');
+      if (!window._inModificaVisita) {
+        if (editIdEl) editIdEl.value = '';
+        if (titleEl) titleEl.innerHTML = '📅 Pianifica Visita o Prestazione';
+        if (btnEl) btnEl.innerHTML = 'Salva Appuntamento';
+        const visMedEl = document.getElementById('vis-medico');
+        const visMotEl = document.getElementById('vis-motivo');
+        const visOraEl = document.getElementById('vis-ora');
+        if (visMedEl) visMedEl.value = '';
+        if (visMotEl) visMotEl.value = '';
+        if (visOraEl) visOraEl.value = '10:00';
+        const visDateEl = document.getElementById('vis-data');
+        if (visDateEl) {
+          visDateEl.value = new Date().toISOString().slice(0, 10);
+        }
       }
+      window._inModificaVisita = false;
     }
 
     if (id === 'modal-nuovo-paziente') {
@@ -11921,15 +11972,48 @@ function salvaNuovaVisita(e) {
   const p = getActivePaziente();
   if (!p) return;
   if (!Array.isArray(p.visite)) p.visite = [];
-  const v = {
-    id: Date.now(),
-    data: document.getElementById('vis-data').value,
-    ora: document.getElementById('vis-ora').value,
-    medico: document.getElementById('vis-medico').value,
-    motivo: document.getElementById('vis-motivo').value,
-    fatto: false
-  };
-  p.visite.push(v);
+
+  const editId = (document.getElementById('vis-edit-id')?.value || '').trim();
+  const dataVal = document.getElementById('vis-data')?.value || '';
+  const oraVal = document.getElementById('vis-ora')?.value || '10:00';
+  const medicoVal = (document.getElementById('vis-medico')?.value || '').trim();
+  const motivoVal = (document.getElementById('vis-motivo')?.value || '').trim();
+
+  let isModifica = false;
+  if (editId) {
+    const existingIndex = p.visite.findIndex(x => String(x.id) === String(editId));
+    if (existingIndex !== -1) {
+      p.visite[existingIndex].data = dataVal;
+      p.visite[existingIndex].ora = oraVal;
+      p.visite[existingIndex].medico = medicoVal;
+      p.visite[existingIndex].motivo = motivoVal;
+      isModifica = true;
+    }
+  }
+
+  if (!isModifica) {
+    const v = {
+      id: Date.now(),
+      data: dataVal,
+      ora: oraVal,
+      medico: medicoVal,
+      motivo: motivoVal,
+      fatto: false
+    };
+    p.visite.push(v);
+  }
+
+  // Ordina cronologicamente le visite
+  if (p.visite && p.visite.length > 1) {
+    p.visite.sort((a, b) => {
+      const ta = (a.data || '') + ' ' + (a.ora || '');
+      const tb = (b.data || '') + ' ' + (b.ora || '');
+      return ta.localeCompare(tb);
+    });
+  }
+
+  const editIdEl = document.getElementById('vis-edit-id');
+  if (editIdEl) editIdEl.value = '';
   closeModal('modal-visita');
   saveDb();
   if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
@@ -11941,7 +12025,7 @@ function salvaNuovaVisita(e) {
     apriModalSchedaClinicaMobile(p.id);
   }
   if (typeof showToast === 'function') {
-    showToast('📅 Visita per ' + (p.nome || 'assistito') + ' salvata con successo!');
+    showToast(isModifica ? '✏️ Visita modificata con successo!' : '📅 Visita per ' + (p.nome || 'assistito') + ' salvata con successo!');
   }
 }
 
@@ -26412,6 +26496,9 @@ function apriModalSchedaClinicaMobile(pazId) {
               </span>
             </div>
             <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0;">
+              <button type="button" onclick="event.stopPropagation(); apriModificaVisita(${v.id});" style="background:#eff6ff; color:#0284c7; border:1px solid #bfdbfe; border-radius:6px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer;" title="Modifica appuntamento">
+                ✏️ Modifica
+              </button>
               <button type="button" onclick="event.stopPropagation(); toggleVisita(${v.id}); apriModalSchedaClinicaMobile('${p.id}');" style="background:${isFatto ? '#f1f5f9' : '#059669'}; color:${isFatto ? '#475569' : '#ffffff'}; border:none; border-radius:6px; padding:4px 10px; font-size:11px; font-weight:800; cursor:pointer;">
                 ${isFatto ? '↩️ Riapri' : '✓ Segna come Fatta'}
               </button>
