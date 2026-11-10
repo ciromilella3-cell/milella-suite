@@ -279,6 +279,25 @@
         <button class="btn btn-header-utility btn-installa-pwa" id="btn-installa-pwa-header" onclick="apriGuidaInstallazionePWA()" title="Installa CareAssist come App sul tuo telefono o PC" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-weight:800; border:none; box-shadow:0 2px 6px rgba(16,185,129,0.3); display:inline-flex; align-items:center; gap:6px;">
           <span>📲</span> <span>Installa App</span>
         </button>
+        <button class="btn btn-header-utility btn-cestino-windows" id="header-btn-cestino-desktop"
+          onclick="apriModalCestino()"
+          title="Cestino di Windows: visualizza ed elimina o ripristina file, registrazioni e dati">
+          <svg width="18" height="18" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+            <path d="M12 14 L15.5 40.5 C15.8 42.5 17.5 44 19.5 44 L28.5 44 C30.5 44 32.2 42.5 32.5 40.5 L36 14 Z" fill="url(#winTrashGradHdr)" stroke="#0284c7" stroke-width="1.5"/>
+            <line x1="17" y1="18" x2="19" y2="40" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="24" y1="18" x2="24" y2="40" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="31" y1="18" x2="29" y2="40" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="24" cy="14" rx="12.5" ry="4" fill="#ffffff" stroke="#0284c7" stroke-width="1.5"/>
+            <defs>
+              <linearGradient id="winTrashGradHdr" x1="12" y1="14" x2="36" y2="44" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#38bdf8"/>
+                <stop offset="1" stop-color="#0284c7"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Cestino</span>
+          <span class="cestino-count-badge" style="background:#0284c7; color:#fff; font-size:11px; padding:1px 6px; border-radius:10px; font-weight:800; display:none;">0</span>
+        </button>
         <button class="btn btn-header-utility btn-menu-home" onclick="window.location.href='/launcher.html'"
           title="Torna al Portale Aziendale">
           <span>🏠</span> <span>Torna al Menu</span>
@@ -715,7 +734,42 @@
       <div style="font-size:12px; color:#64748b; font-weight:700;">
         📍 Centro Operativo Assistenziale Territoriale
       </div>
-      <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('dashboard')" style="background:#eff6ff; color:#0369a1; border:1.5px solid #7dd3fc; font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Guida all'uso del Cruscotto e utilità gestionale">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <!-- ICONA CESTINO STILE WINDOWS (PRIMA PAGINA PC) -->
+        <div class="win-desktop-trash-btn" onclick="apriModalCestino()" ondblclick="apriModalCestino()"
+          title="Cestino di Windows: Fai clic per aprire il cestino e recuperare note, registrazioni o dati eliminati">
+          <div style="position:relative; width:28px; height:28px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="24" cy="43" rx="13" ry="3" fill="rgba(0,0,0,0.2)"/>
+              <path d="M12 14 L15.5 40 C15.8 42 17.5 43.5 19.5 43.5 L28.5 43.5 C30.5 43.5 32.2 42 32.5 40 L36 14 Z" fill="url(#winTrashGradDash)" stroke="#0284c7" stroke-width="1.3"/>
+              <line x1="17" y1="18" x2="19" y2="39" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+              <line x1="21.5" y1="18" x2="22.5" y2="39" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" stroke-linecap="round"/>
+              <line x1="26.5" y1="18" x2="25.5" y2="39" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" stroke-linecap="round"/>
+              <line x1="31" y1="18" x2="29" y2="39" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="24" cy="28" r="5" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6 3" opacity="0.95"/>
+              <ellipse cx="24" cy="14" rx="12.5" ry="3.8" fill="url(#winRimGradDash)" stroke="#0284c7" stroke-width="1.3"/>
+              <ellipse cx="24" cy="14" rx="9.5" ry="2.3" fill="#0369a1" opacity="0.35"/>
+              <defs>
+                <linearGradient id="winTrashGradDash" x1="12" y1="14" x2="36" y2="44" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#38bdf8"/>
+                  <stop offset="0.45" stop-color="#0284c7"/>
+                  <stop offset="1" stop-color="#0369a1"/>
+                </linearGradient>
+                <linearGradient id="winRimGradDash" x1="11.5" y1="10" x2="36.5" y2="18" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#ffffff"/>
+                  <stop offset="0.5" stop-color="#bae6fd"/>
+                  <stop offset="1" stop-color="#38bdf8"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="cestino-count-badge" style="position:absolute; top:-6px; right:-8px; background:#ef4444; color:#ffffff; font-size:10px; font-weight:900; padding:1px 5px; border-radius:10px; box-shadow:0 2px 4px rgba(239,68,68,0.4); display:none;">0</span>
+          </div>
+          <div style="display:flex; flex-direction:column; line-height:1.1;">
+            <span style="font-family:'Segoe UI', sans-serif; font-size:12.5px; font-weight:800; color:#0369a1;">Cestino di Windows</span>
+            <span style="font-size:10.5px; font-weight:600; color:#64748b;">Recupero Dati</span>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('dashboard')" style="background:#eff6ff; color:#0369a1; border:1.5px solid #7dd3fc; font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Guida all'uso del Cruscotto e utilità gestionale">
         <span>💡</span> <span>A cosa serve questa schermata</span>
       </button>
     </div>
@@ -9686,6 +9740,36 @@
     </div>
   </div>
 
+  <!-- ICONA CESTINO WINDOWS FLOTTANTE SU PC / DESKTOP -->
+  <div id="win-desktop-floating-trash" class="win-desktop-floating-trash" onclick="apriModalCestino()" ondblclick="apriModalCestino()" title="Cestino di Windows: Fai clic o doppio clic per aprire">
+    <div class="win-desktop-icon-art">
+      <svg width="38" height="38" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="24" cy="43" rx="14" ry="3.5" fill="rgba(0,0,0,0.25)"/>
+        <path d="M12 14 L15.5 40.5 C15.8 42.5 17.5 44 19.5 44 L28.5 44 C30.5 44 32.2 42.5 32.5 40.5 L36 14 Z" fill="url(#winTrashGradFl)" stroke="#0284c7" stroke-width="1.3"/>
+        <line x1="17" y1="18" x2="19" y2="40" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="21.5" y1="18" x2="22.5" y2="40" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="26.5" y1="18" x2="25.5" y2="40" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="31" y1="18" x2="29" y2="40" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="24" cy="28" r="6" stroke="#ffffff" stroke-width="1.6" stroke-dasharray="7 3.5" opacity="0.95"/>
+        <ellipse cx="24" cy="14" rx="12.5" ry="4" fill="url(#winRimGradFl)" stroke="#0284c7" stroke-width="1.3"/>
+        <ellipse cx="24" cy="14" rx="9.8" ry="2.6" fill="#0369a1" opacity="0.35"/>
+        <defs>
+          <linearGradient id="winTrashGradFl" x1="12" y1="14" x2="36" y2="44" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#38bdf8"/>
+            <stop offset="0.45" stop-color="#0284c7"/>
+            <stop offset="1" stop-color="#0369a1"/>
+          </linearGradient>
+          <linearGradient id="winRimGradFl" x1="11.5" y1="10" x2="36.5" y2="18" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#ffffff"/>
+            <stop offset="0.5" stop-color="#bae6fd"/>
+            <stop offset="1" stop-color="#38bdf8"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="cestino-count-badge" style="position:absolute; top:-4px; right:-6px; background:#ef4444; color:#ffffff; font-size:10px; font-weight:900; padding:1px 5px; border-radius:10px; box-shadow:0 2px 4px rgba(239,68,68,0.4); display:none;">0</span>
+    </div>
+    <div class="win-desktop-icon-label">Cestino</div>
+  </div>
 </body>
 
 </html>

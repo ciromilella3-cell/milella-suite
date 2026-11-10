@@ -30498,3 +30498,14 @@ function salvaModificaDiarioItem() {
   if (typeof showToast === 'function') showToast('✅ Registrazione modificata con successo!');
 }
 window.salvaModificaDiarioItem = salvaModificaDiarioItem;
+
+// Inizializzazione rapida Cestino di Windows & supporto apertura diretta da launcher (?open=cestino)
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
+    if (window.location.search.includes('open=cestino') || window.location.hash === '#cestino') {
+      if (typeof apriModalCestino === 'function') apriModalCestino();
+    }
+  }, 400);
+});
+
