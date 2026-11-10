@@ -7877,6 +7877,9 @@ function apriModificaVisita(id) {
   if (motEl) motEl.value = v.motivo || '';
   if (prepEl) prepEl.value = v.preparazione || '';
   if (docEl) docEl.value = v.documenti || "Tessera Sanitaria, Documento d'Identità, Esenzione Ticket, Piano Terapeutico";
+  if (typeof popolaSelettoreVisiteEsistenti === 'function') {
+    popolaSelettoreVisiteEsistenti(v.id);
+  }
   if (typeof controllaConflittiVisita === "function") {
     setTimeout(controllaConflittiVisita, 30);
   }
@@ -7963,6 +7966,9 @@ function openModal(id) {
     }
 
     if (id === 'modal-visita') {
+      if (typeof popolaSelettoreVisiteEsistenti === 'function') {
+        popolaSelettoreVisiteEsistenti('');
+      }
       var ocrSt = document.getElementById('vis-ocr-status'); if (ocrSt) ocrSt.style.display = 'none';
       var aiBox = document.getElementById('vis-box-suggerimenti-ai'); if (aiBox) aiBox.style.display = 'none';
       var ocrIn = document.getElementById('vis-ocr-input'); if (ocrIn) ocrIn.value = '';
@@ -12744,6 +12750,59 @@ function controllaConflittiVisita() {
   }
 }
 window.controllaConflittiVisita = controllaConflittiVisita;
+
+// ==========================================
+// FUNZIONI DI VERIFICA & SELEZIONE VISITE ESISTENTI IN MODALE
+// ==========================================
+
+function popolaSelettoreVisiteEsistenti(selectedId) {
+  var selectEl = document.getElementById('vis-selettore-esistenti');
+  var countEl = document.getElementById('modal-visita-count-visite');
+  var p = getActivePaziente();
+  if (!p) return;
+
+  var vList = Array.isArray(p.visite) ? p.visite : [];
+  if (countEl) countEl.textContent = vList.length;
+  if (!selectEl) return;
+
+  var vSorted = [...vList].sort(function(a, b) { return new Date(a.data) - new Date(b.data); });
+
+  var optionsHtml = '<option value="">➕ Nuova Visita (Modulo Vuoto per nuova prenotazione)</option>';
+  vSorted.forEach(function(v) {
+    var dFmt = (v.data && v.data.length >= 10) ? (v.data.slice(8, 10) + '/' + v.data.slice(5, 7) + '/' + v.data.slice(0, 4)) : (v.data || '--');
+    var oraFmt = v.ora ? (' ore ' + v.ora) : '';
+    var med = v.medico || 'Visita Specialistica';
+    var st = v.statoVisita || (v.fatto ? '✅ Eseguita' : '⏳ In programma');
+    if (st === 'Posticipata / Spostata') st = '🔄 Posticipata';
+
+    var isSel = String(v.id) === String(selectedId) ? ' selected' : '';
+    optionsHtml += '<option value="' + v.id + '"' + isSel + '>📅 ' + dFmt + oraFmt + ' • ' + med + ' [' + st + ']</option>';
+  });
+
+  selectEl.innerHTML = optionsHtml;
+}
+window.popolaSelettoreVisiteEsistenti = popolaSelettoreVisiteEsistenti;
+
+function caricaVisitaInModaleDaSelect(visId) {
+  if (!visId) {
+    // Ritorna a nuova visita vuota
+    window._inModificaVisita = false;
+    openModal('modal-visita');
+    return;
+  }
+  apriModificaVisita(visId);
+}
+window.caricaVisitaInModaleDaSelect = caricaVisitaInModaleDaSelect;
+
+function chiudiModalVisitaEApriElenco() {
+  closeModal('modal-visita');
+  var p = getActivePaziente();
+  if (typeof apriElencoCompletoVisite === 'function') {
+    apriElencoCompletoVisite(p ? p.id : null);
+  }
+}
+window.chiudiModalVisitaEApriElenco = chiudiModalVisitaEApriElenco;
+
 
 function inviaPromemoriaWhatsAppVisita() {
   var p = getActivePaziente();
