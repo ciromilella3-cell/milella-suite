@@ -27680,69 +27680,81 @@ function renderMobileNativeView(terapie, p) {
         '</div>';
     }
 
-    activeCard.innerHTML = '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:18px; padding:12px 14px; margin:0 0 10px 0; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; box-shadow:0 3px 10px rgba(0,0,0,0.05);">' +
-      '<div onclick="apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="display:flex; align-items:flex-start; gap:12px; flex:1; min-width:0; cursor:pointer;" title="Tocca per entrare nella Cartella Clinica Completa">' +
-      '<div style="width:48px; height:48px; border-radius:50%; background:' + avatarBg + '; border:2.5px solid ' + avatarBorder + '; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.08); margin-top:2px;">' +
+    activeCard.innerHTML = '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:20px; padding:14px; margin:0 0 12px 0; box-shadow:0 3px 12px rgba(0,0,0,0.06);">' +
+      '<!-- HEADER ASSISTITO -->' +
+      '<div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">' +
+      '<div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">' +
+      '<div style="width:52px; height:52px; border-radius:50%; background:' + avatarBg + '; border:2.5px solid ' + avatarBorder + '; display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.08);">' +
       avatarEmoji +
       '</div>' +
       '<div style="flex:1; min-width:0;">' +
       '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
-      '<span style="font-size:15.5px; font-weight:900; color:#0f172a; line-height:1.25;">' + pulitoNome + '</span>' +
-      '<span style="color:#059669; font-size:14px; font-weight:900;" title="Verificato">✓</span>' +
+      '<span style="font-size:16px; font-weight:900; color:#0f172a; line-height:1.25;">' + pulitoNome + '</span>' +
+      '<span style="color:#059669; font-size:15px; font-weight:900;" title="Verificato">✓</span>' +
       '</div>' +
-      '<div style="font-size:12px; color:#64748b; font-weight:600; margin-top:2px; line-height:1.2; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' +
-      '<span>' + eta + ' anni</span> • ' +
-      '<button type="button" onclick="event.stopPropagation(); toggleStatoAllettatoPaziente(\'' + p.id + '\');" style="background:' + (p.allettato ? '#fef2f2' : '#f0fdf4') + '; color:' + (p.allettato ? '#dc2626' : '#166534') + '; border:1.5px solid ' + (p.allettato ? '#fca5a5' : '#86efac') + '; border-radius:999px; padding:2px 8px; font-size:11px; font-weight:800; cursor:pointer;" title="Tocca per attivare o disattivare lo stato Allettato/Deambulante">' +
-      (p.allettato ? '🛌 Allettato (Tocca per disattivare)' : '🚶 Deambulante (Tocca per attivare)') +
-      '</button>' +
-      '</div>' +
-      pillsPatologieHtml +
-      '<div style="font-size:11.5px; color:#059669; font-weight:800; margin-top:4px;">' +
-      '✅ ' + nFatti + ' di ' + nTerapie + ' terapie assunte oggi' +
-      '</div>' +
-      '<div style="display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap;">' +
-      '<button type="button" onclick="event.stopPropagation(); mostraGuidaContestuale(\'mobile-paziente\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px; box-shadow:0 1px 3px rgba(22,101,52,0.12);">' +
-      '<span>💡 A cosa serve</span>' +
-      '</button>' +
-      '<button type="button" onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.15);">' +
-      '<span>📋 Scheda Clinica ➜</span>' +
-      '</button>' +
-      '<button type="button" onclick="event.stopPropagation(); apriModalDiarioMobile()" style="background:#ede9fe; color:#4338ca; border:1px solid #c7d2fe; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(67,56,202,0.15);" title="Visualizza lo Storico Diario e le Consegne OSS">' +
-      '<span>📋 Diario Storico</span>' +
-      '</button>' +
-      '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(21,128,61,0.15);" title="Visualizza tutte le visite specialistiche">' +
-      '<span>📋 Visite (' + (p.visite ? p.visite.length : 0) + ')</span>' +
-      '</button>' +
-      '<button type="button" onclick="event.stopPropagation(); openModal(\'modal-visita\')" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; border-radius:8px; padding:5px 11px; font-size:11.5px; font-weight:900; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(5,150,105,0.3);">' +
-      '<span>📅 <b>+ Inserisci Visita</b></span>' +
-      '</button>' +
-      '<button type="button" onclick="event.stopPropagation(); apriGuidaLettoManovella()" style="background:#fefce8; color:#854d0e; border:1px solid #fde047; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(133,77,14,0.1);">' +
-      '<span>📘 Guida Letto</span>' +
-      '</button>' +
-      '<button type="button" onclick="event.stopPropagation(); apriModificaAnagrafica()" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
-      '<span>✏️ Modifica Dati</span>' +
+      '<div style="font-size:12px; color:#64748b; font-weight:600; margin-top:3px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+      '<span>' + eta + ' anni</span>' +
+      '<button type="button" onclick="event.stopPropagation(); toggleStatoAllettatoPaziente(\'' + p.id + '\');" style="background:' + (p.allettato ? '#fef2f2' : '#f0fdf4') + '; color:' + (p.allettato ? '#dc2626' : '#166534') + '; border:1.5px solid ' + (p.allettato ? '#fca5a5' : '#86efac') + '; border-radius:12px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer; min-height:30px; display:inline-flex; align-items:center; gap:4px;" title="Tocca per cambiare stato">' +
+      (p.allettato ? '🛌 Allettato' : '🚶 Deambulante') +
       '</button>' +
       '</div>' +
       '</div>' +
       '</div>' +
-      '<div style="flex-shrink:0; display:flex; flex-direction:column; gap:6px; align-items:flex-end;">' +
-      '<button type="button" onclick="apriSwitchPazienteRapido()" style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:14px; padding:8px 10px; font-size:11.5px; font-weight:800; color:#0284c7; display:flex; align-items:center; gap:4px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.04);">' +
+      '<!-- TASTI IN ALTO A DESTRA -->' +
+      '<div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end; flex-shrink:0;">' +
+      '<button type="button" onclick="apriSwitchPazienteRapido()" style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:7px 11px; font-size:12px; font-weight:800; color:#0284c7; display:inline-flex; align-items:center; gap:4px; cursor:pointer; min-height:36px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">' +
       '<span>👥 Cambia</span> <span>▾</span>' +
       '</button>' +
-      '<button type="button" onclick="event.stopPropagation(); mostraGuidaContestuale(\'mobile-paziente\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:10px; padding:4px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
+      '<button type="button" onclick="event.stopPropagation(); mostraGuidaContestuale(\'mobile-paziente\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:10px; padding:4px 8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
       '<span>💡 Guida</span>' +
       '</button>' +
       '</div>' +
       '</div>' +
-      '<!-- Pulsanti Vocali Mobili Simmetrici 50% / 50% (Zero overflow!) -->' +
-      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 0 10px 0;">' +
-      '<button type="button" onclick="apriModalConsegnaVocale()" style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; font-weight:800; font-size:12px; padding:9px 10px; border-radius:12px; border:none; box-shadow:0 2px 6px rgba(79,70,229,0.25); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">' +
-      '<span style="font-size:15px;">🗣️</span> <span>Consegna OSS</span>' +
+      pillsPatologieHtml +
+      '<div style="margin-top:8px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:7px 12px; display:flex; align-items:center; justify-content:space-between; font-size:12.5px; font-weight:800; color:#166534;">' +
+      '<span>✅ ' + nFatti + ' di ' + nTerapie + ' terapie assunte oggi</span>' +
+      '<span style="font-size:11px; color:#15803d; background:#dcfce7; padding:2px 7px; border-radius:6px; font-weight:900;">' + Math.round((nTerapie > 0 ? (nFatti / nTerapie) * 100 : 100)) + '%</span>' +
+      '</div>' +
+      '<!-- GRIGLIA PULSANTI TOUCH-FRIENDLY AD ALTA USABILITÀ (MIN 46PX ALTEZZA, DISTANZIATI, ZERO ERRORI) -->' +
+      '<div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">' +
+      '<!-- RIGA 1: SCHEDA CLINICA + DIARIO STORICO -->' +
+      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">' +
+      '<button type="button" onclick="event.stopPropagation(); apriModalSchedaClinicaMobile(\'' + p.id + '\')" style="min-height:46px; background:#eff6ff; color:#1d4ed8; border:1.5px solid #93c5fd; border-radius:12px; padding:8px 10px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 1px 3px rgba(29,78,216,0.12);">' +
+      '<span style="font-size:16px;">📋</span> <span>Scheda Clinica</span>' +
       '</button>' +
-      '<button type="button" onclick="avviaBriefingVocaleAssistitoDemo()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12px; padding:9px 10px; border-radius:12px; border:none; box-shadow:0 2px 6px rgba(2,132,199,0.25); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">' +
-      '<span style="font-size:15px;">🎙️</span> <span>Briefing Vocale</span>' +
+      '<button type="button" onclick="event.stopPropagation(); apriModalDiarioMobile()" style="min-height:46px; background:#f5f3ff; color:#4338ca; border:1.5px solid #c4b5fd; border-radius:12px; padding:8px 10px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 1px 3px rgba(67,56,202,0.12);" title="Apri Diario Storico e Consegne OSS">' +
+      '<span style="font-size:16px;">📖</span> <span>Diario Storico</span>' +
       '</button>' +
       '</div>' +
+      '<!-- RIGA 2: VISITE + NUOVA VISITA -->' +
+      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">' +
+      '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="min-height:46px; background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; border-radius:12px; padding:8px 10px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 1px 3px rgba(21,128,61,0.12);">' +
+      '<span style="font-size:16px;">🩺</span> <span>Visite (' + (p.visite ? p.visite.length : 0) + ')</span>' +
+      '</button>' +
+      '<button type="button" onclick="event.stopPropagation(); openModal(\'modal-visita\')" style="min-height:46px; background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; border-radius:12px; padding:8px 10px; font-size:12.5px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 2px 6px rgba(5,150,105,0.25);">' +
+      '<span style="font-size:16px;">➕</span> <span>Nuova Visita</span>' +
+      '</button>' +
+      '</div>' +
+      '<!-- RIGA 3: GUIDA LETTO + MODIFICA DATI -->' +
+      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">' +
+      '<button type="button" onclick="event.stopPropagation(); apriGuidaLettoManovella()" style="min-height:42px; background:#fefce8; color:#854d0e; border:1px solid #fde047; border-radius:12px; padding:6px 10px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;">' +
+      '<span style="font-size:15px;">🛏️</span> <span>Guida Letto</span>' +
+      '</button>' +
+      '<button type="button" onclick="event.stopPropagation(); apriModificaAnagrafica()" style="min-height:42px; background:#f8fafc; color:#475569; border:1px solid #cbd5e1; border-radius:12px; padding:6px 10px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;">' +
+      '<span style="font-size:15px;">✏️</span> <span>Modifica Dati</span>' +
+      '</button>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<!-- PULSANTI VOCALI MOBILI SIMMETRICI (TOUCH TARGET 48PX) -->' +
+      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 0 10px 0;">' +
+      '<button type="button" onclick="apriModalConsegnaVocale()" style="min-height:48px; background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; font-weight:800; font-size:13px; padding:10px 12px; border-radius:14px; border:none; box-shadow:0 3px 8px rgba(79,70,229,0.25); display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer;">' +
+      '<span style="font-size:18px;">🗣️</span> <span>Consegna OSS</span>' +
+      '</button>' +
+      '<button type="button" onclick="avviaBriefingVocaleAssistitoDemo()" style="min-height:48px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:13px; padding:10px 12px; border-radius:14px; border:none; box-shadow:0 3px 8px rgba(2,132,199,0.25); display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer;">' +
+      '<span style="font-size:18px;">🎙️</span> <span>Briefing Vocale</span>' +
+      '</button>' +
+      '</div>' + +
       '<!-- BANNER HERO INSERISCI VISITA SPECIALISTICA -->' +
       '<div style="margin:0 0 10px 0;">' +
       '<button type="button" onclick="openModal(\'modal-visita\')" style="width:100%; background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:900; font-size:13.5px; padding:12px 14px; border-radius:14px; border:2px solid #34d399; box-shadow:0 3px 10px rgba(5,150,105,0.3); display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;">' +
@@ -27766,34 +27778,34 @@ function renderMobileNativeView(terapie, p) {
             'Nessuna visita imminente &bull; Tocca per consultare l\'archivio' +
             '</div>' +
             '</div>' +
-            '<div style="display:flex; gap:6px; flex-shrink:0;">' +
-            '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:5px 8px; font-size:11px; font-weight:800; cursor:pointer;">📋 Elenco</button>' +
-            '<button type="button" onclick="event.stopPropagation(); openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:8px; padding:5px 9px; font-size:11px; font-weight:800; cursor:pointer;">+ Visita</button>' +
+            '<div style="display:flex; gap:8px; flex-shrink:0;">' +
+            '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; border-radius:10px; padding:8px 12px; font-size:12px; font-weight:800; cursor:pointer; min-height:36px; display:inline-flex; align-items:center; gap:4px;">📋 Elenco</button>' +
+            '<button type="button" onclick="event.stopPropagation(); openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:10px; padding:8px 12px; font-size:12px; font-weight:800; cursor:pointer; min-height:36px; display:inline-flex; align-items:center; gap:4px;">+ Visita</button>' +
             '</div>' +
             '</div>';
         }
         visiteInProgramma.sort(function (a, b) { return new Date(a.data) - new Date(b.data); });
         var pv = visiteInProgramma[0];
         var dFmt = (pv.data && pv.data.length >= 10) ? (pv.data.slice(8, 10) + '/' + pv.data.slice(5, 7) + '/' + pv.data.slice(0, 4)) : pv.data;
-        return '<div style="background:#ffffff; border:1.5px solid #059669; border-radius:14px; padding:10px 12px; margin:0 0 12px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 2px 8px rgba(5,150,105,0.08);">' +
+        return '<div style="background:#ffffff; border:1.5px solid #059669; border-radius:16px; padding:12px 14px; margin:0 0 12px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 2px 8px rgba(5,150,105,0.08);">' +
           '<div onclick="apriElencoCompletoVisite(\'' + p.id + '\')" style="flex:1; min-width:0; cursor:pointer;" title="Tocca per aprire l\'elenco completo delle visite">' +
           '<div style="font-size:11px; font-weight:800; color:#059669; text-transform:uppercase; display:flex; align-items:center; gap:4px; flex-wrap:wrap;">' +
           '<span>📅 Prossimo Appuntamento Specialistico</span>' +
           (visiteInProgramma.length > 1 ? '<span onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#dcfce7; color:#15803d; padding:1px 6px; border-radius:10px; font-size:10px; font-weight:800; cursor:pointer;">+' + (visiteInProgramma.length - 1) + ' altri</span>' : '') +
           '</div>' +
-          '<div style="font-size:13.5px; font-weight:900; color:#0f172a; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+          '<div style="font-size:14px; font-weight:900; color:#0f172a; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
           dFmt + (pv.ora ? ' ore ' + pv.ora : '') + ' &bull; <b>' + (pv.medico || 'Specialista') + '</b>' +
           '</div>' +
-          '<div style="font-size:11.5px; color:#475569; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+          '<div style="font-size:12px; color:#475569; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
           (pv.motivo || 'Visita specialistica / Controllo periodico') +
           '</div>' +
           '</div>' +
-          '<div style="display:flex; flex-direction:column; gap:4px; flex-shrink:0;">' +
-          '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:2px;" title="Vedi tutte le visite dell\'assistito">' +
+          '<div style="display:flex; flex-direction:column; gap:6px; flex-shrink:0;">' +
+          '<button type="button" onclick="event.stopPropagation(); apriElencoCompletoVisite(\'' + p.id + '\')" style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; border-radius:10px; padding:7px 11px; font-size:11.5px; font-weight:800; cursor:pointer; min-height:36px; display:inline-flex; align-items:center; justify-content:center; gap:3px;" title="Vedi tutte le visite dell\'assistito">' +
           '<span>📋 Elenco</span>' +
           '</button>' +
-          '<button type="button" onclick="openModal(\'modal-visita\')" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#fff; border:none; border-radius:8px; padding:6px 11px; font-size:11px; font-weight:900; cursor:pointer; display:inline-flex; align-items:center; gap:3px; box-shadow:0 2px 6px rgba(5,150,105,0.3);">' +
-          '<span>➕</span> <span>Inserisci Visita</span>' +
+          '<button type="button" onclick="openModal(\'modal-visita\')" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#fff; border:none; border-radius:10px; padding:7px 11px; font-size:11.5px; font-weight:900; cursor:pointer; min-height:36px; display:inline-flex; align-items:center; gap:3px; box-shadow:0 2px 6px rgba(5,150,105,0.3);">' +
+          '<span>➕ Inserisci</span>' +
           '</button>' +
           '</div>' +
           '</div>';
@@ -30283,9 +30295,9 @@ function renderDiarioMobile() {
           </div>
           ${r.parametriEstratti ? `<div style="margin-top:6px; display:flex; gap:4px; flex-wrap:wrap;">${r.parametriEstratti}</div>` : ''}
           ${audioPlayerHtml}
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0; font-size:11px; color:#64748b;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0; font-size:12px; color:#64748b;">
             <span>✍️ <b>${r.operatore || 'Operatore OSS'}</b></span>
-            <a href="https://wa.me/?text=${encodeURIComponent('🎙️ Consegna del ' + dataFmt + ' per ' + p.nome + ': ' + (r.testo || ''))}" target="_blank" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:6px; padding:3px 8px; font-weight:800; text-decoration:none;">
+            <a href="https://wa.me/?text=${encodeURIComponent('🎙️ Consegna del ' + dataFmt + ' per ' + p.nome + ': ' + (r.testo || ''))}" target="_blank" style="background:#ecfdf5; color:#047857; border:1.5px solid #a7f3d0; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; gap:4px; min-height:34px;">
               💬 Invia WhatsApp
             </a>
           </div>
