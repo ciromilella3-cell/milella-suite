@@ -23741,6 +23741,43 @@ var GUIDE_CONTESTUALI = {
       'Usa la chiamata o WhatsApp per richiedere la disponibilità dei medicinali o inoltrare i codici ricetta NRE prima di passare per il ritiro.'
     ],
     utilita: '<b>Filiera del farmaco protetta</b>: evita interruzioni di terapia assicurando che le preparazioni o i farmaci speciali siano pronti per tempo al bancone.'
+  },
+  'dashboard-farmaci': {
+    icona: '💊',
+    titolo: 'Farmaci della Giornata • Cronoprogramma Terapie',
+    sottotitolo: 'Riepilogo e registrazione rapida delle somministrazioni giornaliere',
+    scopo: 'Presenta l\'elenco ordinato cronologicamente di tutte le terapie farmacologiche previste per la giornata odierna, con orario, dosaggio e stato di somministrazione in tempo reale.',
+    comeSiUsa: [
+      '<b>Conferma Assunzione Rapida (Tasto "Fatto")</b>: con 1 tap registri l\'avvenuta somministrazione all\'orario stabilito senza dover aprire schede complesse.',
+      '<b>🚨 Simula Allarme Terapia</b>: testa istantaneamente la suoneria e la comparsa dell\'allarme visivo per verificare il comportamento in caso di ritardo.',
+      '<b>🔔 Notifiche & Audio</b>: abilita i permessi del browser per suonare e notificare a schermo bloccato su smartphone o tablet.',
+      '<b>Tutti i farmaci &rarr;</b>: rimanda direttamente alla scheda clinica completa con lo scadenziario settimanale e le giacenze.'
+    ],
+    utilita: '<b>Sicurezza farmacologica assoluta</b>: evita doppie somministrazioni o dimenticanze critiche nei farmaci salvavita e scandisce il ritmo del turno assistenziale.'
+  },
+  'dashboard-visite': {
+    icona: '📅',
+    titolo: 'Appuntamenti e Controlli Imminenti',
+    sottotitolo: 'Scadenziario delle visite specialistiche, esami ematochimici e rinnovi ADI',
+    scopo: 'Mantiene sempre in primo piano le scadenze sanitarie più urgenti (visite cardiologiche, controlli neurologici, diabetologici, consegne ausili o rinnovi piano terapeutico ASL).',
+    comeSiUsa: [
+      '<b>+ Aggiungi</b>: apre il modulo rapido per registrare un nuovo appuntamento specialistico o controllo domiciliare.',
+      '<b>Consultazione Data e Specialista</b>: visualizza chi eseguirà il controllo, la data/ora e la motivazione clinica.',
+      '<b>Registrazione Esito</b>: permette di aggiornare lo stato e memorizzare le indicazioni fornite dal medico specialista.'
+    ],
+    utilita: '<b>Pianificazione perfetta e continuità assistenziale</b>: garantisce che le visite periodiche di controllo e i rinnovi burocratici non scadano mai, allertando per tempo familiari e operatori.'
+  },
+  'dashboard-annotazioni': {
+    icona: '📝',
+    titolo: 'Ultime Annotazioni Socio-Sanitarie & Registro Eventi',
+    sottotitolo: 'Feed cronologico in tempo reale di parametri vitali, alvo, posture e avvisi operativi',
+    scopo: 'Raccoglie il diario degli eventi registrati dagli OSS e dai sanitari durante la giornata: misurazione parametri vitali (pressione, saturazione, temperatura), monitoraggio alvo, cambi di postura q2h e avvisi di sistema.',
+    comeSiUsa: [
+      '<b>Lettura del Feed</b>: scorri le annotazioni recenti con orario esatto, tipo di evento e firma dell\'operatore che ha effettuato l\'azione.',
+      '<b>🧹 Cancella Avvisi Ritardo</b>: rimuove dallo storico visivo le segnalazioni temporali di ritardo già gestite o simulate.',
+      '<b>☑️ Seleziona Tutti</b>: consente la gestione e l\'archiviazione massiva di più eventi contemporaneamente.'
+    ],
+    utilita: '<b>Tracciabilità trasparente e passaggio consegne istantaneo</b>: fornisce all\'operatore che subentra o al medico un quadro immediato delle ultime ore con validità documentale.'
   }
 };
 

@@ -1019,6 +1019,12 @@
               </div>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" class="btn btn-outline"
+                onclick="mostraGuidaContestuale('dashboard-farmaci')"
+                style="background:#eff6ff; color:#0369a1; border:1.5px solid #7dd3fc; font-weight:800; font-size:11.5px; padding:4px 9px; border-radius:8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;"
+                title="A cosa serve la sezione Farmaci della Giornata">
+                <span>💡</span> <span>A cosa serve</span>
+              </button>
               <button class="btn btn-outline"
                 style="border-color:#ef4444; color:#dc2626; background:#fff5f5; font-size:11.5px; padding:4px 10px;"
                 onclick="simulaAllarmeTerapieTest()"
@@ -1057,7 +1063,15 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title">📅 Appuntamenti e Controlli Imminenti</div>
-            <button class="btn btn-outline" onclick="openModal('modal-visita')">+ Aggiungi</button>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" class="btn btn-outline"
+                onclick="mostraGuidaContestuale('dashboard-visite')"
+                style="background:#eff6ff; color:#0369a1; border:1.5px solid #7dd3fc; font-weight:800; font-size:11.5px; padding:4px 9px; border-radius:8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;"
+                title="A cosa serve la sezione Appuntamenti e Controlli Imminenti">
+                <span>💡</span> <span>A cosa serve</span>
+              </button>
+              <button class="btn btn-outline" onclick="openModal('modal-visita')">+ Aggiungi</button>
+            </div>
           </div>
           <div class="table-responsive">
             <table class="custom-table">
@@ -1082,9 +1096,17 @@
       <div class="card">
         <div class="card-header"
           style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div>
-            <div class="card-title" style="margin-bottom:2px;">📝 Ultime Annotazioni Socio-Sanitarie</div>
-            <span style="font-size:12px; color:var(--text-muted);">Parametri, Alvo, Posture registrate</span>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div>
+              <div class="card-title" style="margin-bottom:2px;">📝 Ultime Annotazioni Socio-Sanitarie</div>
+              <span style="font-size:12px; color:var(--text-muted);">Parametri, Alvo, Posture registrate</span>
+            </div>
+            <button type="button" class="btn btn-outline"
+              onclick="mostraGuidaContestuale('dashboard-annotazioni')"
+              style="background:#eff6ff; color:#0369a1; border:1.5px solid #7dd3fc; font-weight:800; font-size:11.5px; padding:4px 9px; border-radius:8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;"
+              title="A cosa serve la sezione Ultime Annotazioni Socio-Sanitarie">
+              <span>💡</span> <span>A cosa serve</span>
+            </button>
           </div>
           <div class="diario-bulk-toolbar" id="diario-bulk-toolbar">
             <button type="button" class="btn btn-sm" id="btn-diario-svuota-ritardi" onclick="svuotaRitardiFarmaci()"
@@ -7470,7 +7492,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=285"></script>
+  <script src="app.js?v=286"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7481,7 +7503,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=285', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=286', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
