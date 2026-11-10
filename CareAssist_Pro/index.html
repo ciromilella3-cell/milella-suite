@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=294">
+  <link rel="stylesheet" href="style.css?v=295">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -4386,66 +4386,200 @@
     </div>
   </div>
 
-  <!-- MODAL 5: AGGIUNGI / MODIFICA VISITA -->
+  <!-- MODAL 5: AGGIUNGI / MODIFICA VISITA SPECIALISTICA PRO -->
   <div class="modal-overlay" id="modal-visita">
-    <div class="modal-card">
-      <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-        <div class="modal-title" id="modal-visita-title" style="min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📅 Pianifica Visita o Prestazione</div>
+    <div class="modal-card" style="max-width: 680px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 1.5px solid #cbd5e1;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #091e3a 0%, #1e3a8a 55%, #0284c7 100%); color: #ffffff; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+        <div class="modal-title" id="modal-visita-title" style="color:#ffffff; font-weight:800; font-size:16px; min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📅 Pianifica Visita o Prestazione</div>
         <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-          <button type="button" class="btn btn-outline btn-guida-contestuale" onclick="mostraGuidaContestuale('pianifica-visita')" style="border-color:#38bdf8 !important; color:#0284c7 !important; font-weight:800 !important; font-size:11px !important; padding:4px 8px !important; border-radius:8px !important; white-space:nowrap !important; flex-shrink:0 !important; width:auto !important; height:auto !important;">💡 A cosa serve</button>
-          <button class="btn btn-outline" onclick="closeModal('modal-visita')" style="width:34px; height:34px; min-width:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0; flex-shrink:0;">✕</button>
+          <button type="button" class="btn btn-outline btn-guida-contestuale" onclick="mostraGuidaContestuale('pianifica-visita')" style="border-color:rgba(255,255,255,0.4) !important; color:#ffffff !important; background:rgba(255,255,255,0.18) !important; font-weight:800 !important; font-size:11px !important; padding:4px 8px !important; border-radius:8px !important; white-space:nowrap !important; flex-shrink:0 !important; width:auto !important; height:auto !important;" title="A cosa serve la Pianificazione Visite">💡 A cosa serve</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-visita')" style="color:#ffffff; border:1px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.15); width:34px; height:34px; min-width:34px; border-radius:50%; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0; flex-shrink:0; cursor:pointer;">✕</button>
         </div>
       </div>
       <form onsubmit="salvaNuovaVisita(event)">
         <input type="hidden" id="vis-edit-id" value="">
-        <div class="modal-body">
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Data Appuntamento</label>
-              <input type="date" class="form-control" id="vis-data" min="2020-01-01" max="2035-12-31" required>
+        <div class="modal-body" style="padding: 16px 18px; overflow-y: auto; max-height: 75vh; display: flex; flex-direction: column; gap: 14px; background: #f8fafc;">
+
+          <!-- 1. DATA, ORARIO & STATO APPUNTAMENTO -->
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size:11.5px; font-weight:800; color:#0369a1; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:5px;">
+              <span>📅</span> <span>1. Programmazione &amp; Stato Visita</span>
             </div>
-            <div class="form-group">
-              <label class="form-label">Orario</label>
-              <input type="time" class="form-control" id="vis-ora" value="10:00" required>
+            <div class="form-row" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">Data Appuntamento *</label>
+                <input type="date" class="form-control" id="vis-data" min="2020-01-01" max="2035-12-31" required>
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">Orario *</label>
+                <input type="time" class="form-control" id="vis-ora" value="10:00" required>
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">Stato Visita</label>
+                <select class="form-control" id="vis-stato" onchange="gestisciCambioStatoVisita(this.value)">
+                  <option value="In programma">⏳ In programma</option>
+                  <option value="Posticipata / Spostata">🔄 Posticipata / Spostata</option>
+                  <option value="In attesa">⚠️ In attesa di ricetta/CUP</option>
+                  <option value="Eseguita">✅ Eseguita / Refertata</option>
+                  <option value="Disdetta">❌ Disdetta / Annullata</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- SETTORE DINAMICO: VISITA POSTICIPATA / SPOSTATA -->
+            <div id="vis-box-spostamento" style="display:none; margin-top:10px; background:#fffbeb; border:1.5px solid #fde047; border-radius:10px; padding:10px 12px;">
+              <div style="font-size:12px; font-weight:800; color:#854d0e; display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                <span>🔄</span> <span>Dettagli Rinvio / Visita Posticipata:</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:8px;">
+                <div>
+                  <label style="font-size:10.5px; font-weight:700; color:#713f12; display:block; margin-bottom:3px;">Data Iniziale (Originaria)</label>
+                  <input type="date" class="form-control" id="vis-data-precedente" style="background:#ffffff; font-size:12px;">
+                </div>
+                <div>
+                  <label style="font-size:10.5px; font-weight:700; color:#713f12; display:block; margin-bottom:3px;">Motivo Rinvio / Spostamento</label>
+                  <input type="text" class="form-control" id="vis-motivo-spostamento" placeholder="Es. Febbre assistito, indisponibilità medico, rinvio CUP" style="background:#ffffff; font-size:12px;">
+                </div>
+              </div>
             </div>
           </div>
-          <div class="form-group" style="margin-bottom:12px;">
-            <label class="form-label" style="font-size:11px; color:#64748b; font-weight:800; text-transform:uppercase;">⚡ Suggerimenti Rapidi (1 Tap per compilare):</label>
-            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
-              <button type="button" onclick="impostaPresetVisita('Dr.ssa Carolina Potenza / MMG', 'Rinnovo ricette e richiesta piano terapeutico')" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
-                🩺 MMG (Piano Terapeutico)
-              </button>
-              <button type="button" onclick="impostaPresetVisita('Specialista Neurologo / ASP', 'Visita Neurologica di controllo, valutazione parkinsonismo & rinnovo piano terapeutico')" style="background:#fdf2f8; color:#be185d; border:1px solid #fbcfe8; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
-                🧠 Visita Neurologica
-              </button>
-              <button type="button" onclick="impostaPresetVisita('Ambulatorio Diabetologia / CAD', 'Controllo Diabetologico, profilo glicemico & piano Xultophy')" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
-                🩸 Diabetologia
-              </button>
-              <button type="button" onclick="impostaPresetVisita('Clinica Malattie Infettive Policlinico Bari', 'Visita Infettivologica di controllo HBV & esami sangue')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
-                🔬 Malattie Infettive
-              </button>
-              <button type="button" onclick="impostaPresetVisita('Specialista Cardiologo', 'Controllo cardiologico, ECG & monitoraggio pressione')" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
-                ❤️ Visita Cardiologica
-              </button>
-              <button type="button" onclick="impostaPresetVisita('Infermiere Domiciliare ADI', 'Prelievo ematico domiciliare / Controllo parametri')" style="background:#fefce8; color:#a16207; border:1px solid #fde047; border-radius:8px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer;">
-                💉 Prelievo / ADI
-              </button>
+
+          <!-- 2. SPECIALISTA, STRUTTURA & RECAPITI TELEFONICI -->
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size:11.5px; font-weight:800; color:#0369a1; text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:5px;">
+              <span>🩺</span> <span>2. Specialista, Struttura &amp; Recapiti Telefonici</span>
+            </div>
+            
+            <div style="margin-bottom:10px;">
+              <label class="form-label" style="font-size:10.5px; color:#64748b; font-weight:800; text-transform:uppercase;">⚡ Suggerimenti Rapidi (1 Tap per compilare):</label>
+              <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
+                <button type="button" onclick="impostaPresetVisitaCompleto('Dr.ssa Carolina Potenza / MMG', 'Rinnovo ricette e richiesta piano terapeutico', 'Studio Medico / MMG', '0971 963 221', 'Nessuna preparazione speciale', 'Tessera Sanitaria, Esenzione 048/013')" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                  🩺 MMG (Piano Terapeutico)
+                </button>
+                <button type="button" onclick="impostaPresetVisitaCompleto('Ambulatorio Diabetologia / CAD', 'Controllo Diabetologico, profilo glicemico &amp; rinnovo piano Xultophy', 'ASL / Poliambulatorio CUP', '0975 312111', 'Digiuno da 8 ore, portare glucometro e sensori', 'Impegnativa NRE con codice esenzione')" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                  🩸 Diabetologia CAD
+                </button>
+                <button type="button" onclick="impostaPresetVisitaCompleto('Specialista Cardiologo / Ospedale', 'Controllo cardiologico, ECG &amp; monitoraggio pressione Triatec', 'Ospedale Pubblico / Policlinico', '0975 312200', 'Portare ECG precedenti e diario pressorio', 'Impegnativa MMG (Priorità B/D)')" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                  ❤️ Cardiologia
+                </button>
+                <button type="button" onclick="impostaPresetVisitaCompleto('Specialista Neurologo / ASP', 'Visita Neurologica di controllo, valutazione parkinsonismo &amp; piano Sinemet', 'ASL / Poliambulatorio CUP', '', 'Nessuna preparazione', 'Documentazione neurologica precedente')" style="background:#fdf2f8; color:#be185d; border:1px solid #fbcfe8; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                  🧠 Neurologia
+                </button>
+                <button type="button" onclick="impostaPresetVisitaCompleto('Clinica Malattie Infettive Policlinico Bari', 'Visita Infettivologica di controllo HBV &amp; esami sangue', 'Ospedale Pubblico / Policlinico', '080 559 1111', 'Digiuno da 10 ore per prelievo virale', 'Impegnativa NRE, referti HBV DNA precedenti')" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                  🔬 Malattie Infettive
+                </button>
+                <button type="button" onclick="impostaPresetVisitaCompleto('Infermiere Domiciliare ADI', 'Prelievo ematico domiciliare / Controllo parametri e piaghe', 'Domicilio Assistito (ADI)', '338 000 0000', 'Digiuno da mezzanotte', 'Fustelle e impegnative cartacee pronte')" style="background:#fefce8; color:#a16207; border:1px solid #fde047; border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+                  💉 Prelievo / ADI Domicilio
+                </button>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">Medico o Servizio Specialista *</label>
+                <input type="text" class="form-control" id="vis-medico" placeholder="Es. Dott. Rossi / Diabetologo CAD" required>
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">Presso Struttura (ASL o Privato) *</label>
+                <select class="form-control" id="vis-tipo-struttura">
+                  <option value="ASL / Poliambulatorio CUP">🏛️ ASL / Distretto Sanitario / Poliambulatorio CUP</option>
+                  <option value="Ospedale Pubblico / Policlinico">🏥 Ospedale Pubblico / Policlinico</option>
+                  <option value="Studio Privato / Intramoenia">🏢 Studio Privato / Intramoenia / Convenzionato</option>
+                  <option value="Domicilio Assistito (ADI)">🏠 Domicilio Assistito (ADI / Visita Domiciliare)</option>
+                  <option value="Laboratorio Analisi / Centro Prelievi">🔬 Laboratorio Analisi / Centro Prelievi</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:10px;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">Sede / Indirizzo / Reparto</label>
+                <input type="text" class="form-control" id="vis-luogo" placeholder="Es. Ospedale Villa d'Agri - Padiglione B, Stanza 3">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">📞 Numero Telefonico (CUP / Medico / Reparto)</label>
+                <input type="tel" class="form-control" id="vis-telefono" placeholder="Es. 0975 312111 o cellulare medico">
+              </div>
             </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Medico o Servizio (es. Infermiere ADI, Geriatra)</label>
-            <input type="text" class="form-control" id="vis-medico"
-              placeholder="Es. Medico di Base, Cardiologo Domiciliare" required>
+
+          <!-- 3. CONDIZIONI CLINICHE, IMPEGNATIVA, PRIORITÀ & TRASPORTO -->
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size:11.5px; font-weight:800; color:#0369a1; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:5px;">
+              <span>📋</span> <span>3. Condizioni Specialistiche, Impegnativa &amp; Logistica</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">Impegnativa MMG / Ricetta</label>
+                <select class="form-control" id="vis-impegnativa">
+                  <option value="Ricetta NRE Presente">✅ Ricetta NRE Presente</option>
+                  <option value="Da richiedere al Medico di Base">📝 Da richiedere al Medico Curante</option>
+                  <option value="Non necessaria (Privato)">🚫 Non necessaria (Visita Privata)</option>
+                  <option value="Fustelle / Ricetta Rossa">📑 Ricetta Cartacea / Fustelle</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">Codice Ricetta Elettronica (NRE)</label>
+                <input type="text" class="form-control" id="vis-nre" placeholder="Es. 1700A0123456789">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">Priorità Accesso Sanitario</label>
+                <select class="form-control" id="vis-priorita">
+                  <option value="P - Programmata (180 gg)">🟢 P - Programmata (entro 180 gg)</option>
+                  <option value="D - Differibile (30-60 gg)">🟡 D - Differibile (entro 30-60 gg)</option>
+                  <option value="B - Breve (10 gg)">🟠 B - Breve (entro 10 gg)</option>
+                  <option value="U - Urgente (72 ore)">🔴 U - Urgente (entro 72 ore)</option>
+                  <option value="Controllo Ordinario / Privata">⚪ Ordinaria / Libera Professione</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" style="font-size:11px; font-weight:700;">Modalità Trasporto / Logistica</label>
+                <select class="form-control" id="vis-trasporto">
+                  <option value="Autonomo / Deambulante">🚶 Autonomo / Deambulante</option>
+                  <option value="Accompagnato in auto">🚗 Accompagnato in auto da familiare</option>
+                  <option value="Ambulanza / Trasporto Sanitario">🚑 Ambulanza / Trasporto Protetto</option>
+                  <option value="Lettoambulanza (allettato)">🛏️ Lettoambulanza (allettato)</option>
+                  <option value="Nessun trasporto (a domicilio)">🏠 A domicilio (Nessun trasporto)</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Motivo o Istruzioni (Cosa preparare)</label>
-            <input type="text" class="form-control" id="vis-motivo"
-              placeholder="Es. Prelievo sangue / Controllo piaga sacrale" required>
+
+          <!-- 4. MOTIVO CLINICO, PREPARAZIONE & DOCUMENTI -->
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size:11.5px; font-weight:800; color:#0369a1; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:5px;">
+              <span>⚠️</span> <span>4. Motivo Clinico, Preparazione Paziente &amp; Documenti</span>
+            </div>
+
+            <div class="form-group" style="margin-bottom:10px;">
+              <label class="form-label" style="font-size:11px; font-weight:700;">Motivo della Visita o Prestazione *</label>
+              <input type="text" class="form-control" id="vis-motivo" placeholder="Es. Controllo glicemia e rinnovo piano Xultophy" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom:10px;">
+              <label class="form-label" style="font-size:11px; font-weight:700;">Preparazione Richiesta (Tocca per aggiungere al volo):</label>
+              <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:6px;">
+                <button type="button" onclick="aggiungiPreparazioneRapida('☕ Digiuno da 8-12 ore')" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:3px 7px; font-size:10.5px; font-weight:700; cursor:pointer;">☕ Digiuno 8-12h</button>
+                <button type="button" onclick="aggiungiPreparazioneRapida('💧 Vescica piena')" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:3px 7px; font-size:10.5px; font-weight:700; cursor:pointer;">💧 Vescica piena</button>
+                <button type="button" onclick="aggiungiPreparazioneRapida('💊 Sospensione farmaci concordata')" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:3px 7px; font-size:10.5px; font-weight:700; cursor:pointer;">💊 Sospendi farmaci</button>
+                <button type="button" onclick="aggiungiPreparazioneRapida('📁 Portare referti ed esami precedenti')" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:3px 7px; font-size:10.5px; font-weight:700; cursor:pointer;">📁 Porta esami precedenti</button>
+                <button type="button" onclick="aggiungiPreparazioneRapida('🩸 Esami del sangue recenti richiesti')" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:3px 7px; font-size:10.5px; font-weight:700; cursor:pointer;">🩸 Esami sangue recenti</button>
+                <button type="button" onclick="document.getElementById('vis-preparazione').value = 'Nessuna preparazione speciale richiesta';" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; border-radius:6px; padding:3px 7px; font-size:10.5px; font-weight:700; cursor:pointer;">🩺 Nessuna preparazione</button>
+              </div>
+              <input type="text" class="form-control" id="vis-preparazione" placeholder="Es. Digiuno da 8 ore prima dell'esame, sospendere anticoagulante col medico">
+            </div>
+
+            <div class="form-group" style="margin:0;">
+              <label class="form-label" style="font-size:11px; font-weight:700;">Documenti da portare</label>
+              <input type="text" class="form-control" id="vis-documenti" value="Tessera Sanitaria, Documento d'Identità, Esenzione Ticket, Piano Terapeutico" placeholder="Documenti sanitari necessari">
+            </div>
           </div>
+
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" style="padding:12px 18px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
           <button type="button" class="btn btn-outline" onclick="closeModal('modal-visita')">Annulla</button>
-          <button type="submit" class="btn btn-primary" id="btn-salva-visita">Salva Appuntamento</button>
+          <button type="submit" class="btn btn-primary" id="btn-salva-visita" style="font-weight:800; font-size:13px; padding:8px 18px; border-radius:8px;">💾 Salva Appuntamento</button>
         </div>
       </form>
     </div>
@@ -7644,7 +7778,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=294"></script>
+  <script src="app.js?v=295"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -7655,7 +7789,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=294', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=295', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

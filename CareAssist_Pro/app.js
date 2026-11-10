@@ -7673,33 +7673,80 @@ function renderVisite() {
     return;
   }
 
-  container.innerHTML = p.visite.map(v => `
-    <tr>
-      <td><b>${new Date(v.data).toLocaleDateString('it-IT')}</b> ore ${v.ora}</td>
-      <td><b>${v.medico}</b></td>
-      <td>${v.motivo}</td>
-      <td><span class="badge ${v.fatto ? 'badge-success' : 'badge-warning'}">${v.fatto ? 'Eseguita' : 'In attesa'}</span></td>
-      <td style="white-space:nowrap;">
-        <button class="btn btn-outline" style="padding:4px 8px; font-size:11px; margin-right:4px; border-color:#38bdf8; color:#0284c7; font-weight:800;" onclick="apriModificaVisita(${v.id})" title="Modifica data, orario, medico o motivo">
-          ✏️ Modifica
-        </button>
-        <button class="btn ${v.fatto ? 'btn-outline' : 'btn-success'}" style="padding:4px 8px; font-size:11px; margin-right:4px;" onclick="toggleVisita(${v.id})">
-          ${v.fatto ? 'Riapri' : '✓ Fatto'}
-        </button>
-        <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="eliminaVisita(${v.id})" title="Sposta nel Cestino">🗑️</button>
-      </td>
-    </tr>
-  `).join('');
+  container.innerHTML = p.visite.map(v => {
+    const isFatto = v.fatto || v.statoVisita === 'Eseguita';
+    const isPosticipata = v.statoVisita === 'Posticipata / Spostata';
+    const isDisdetta = v.statoVisita === 'Disdetta';
+
+    let badgeStato = '';
+    if (isFatto) {
+      badgeStato = '<span class="badge badge-success">✓ Eseguita</span>';
+    } else if (isPosticipata) {
+      badgeStato = '<span class="badge badge-warning" style="background:#fef3c7; color:#b45309; border:1px solid #fde047;">🔄 Posticipata</span>';
+    } else if (isDisdetta) {
+      badgeStato = '<span class="badge badge-danger">❌ Disdetta</span>';
+    } else {
+      badgeStato = '<span class="badge badge-warning">⏳ In attesa</span>';
+    }
+
+    const dStr = (v.data && v.data.length >= 10) ? (v.data.slice(8, 10) + '/' + v.data.slice(5, 7) + '/' + v.data.slice(0, 4)) : v.data;
+
+    return `
+      <tr style="background:${isPosticipata ? '#fffbeb' : ''};">
+        <td>
+          <b>${dStr}</b> ore ${v.ora || '10:00'}
+          ${isPosticipata ? `<div style="font-size:10.5px; color:#b45309; margin-top:2px;">🔄 Ex: <b>${v.dataPrecedente || '--'}</b></div>` : ''}
+        </td>
+        <td>
+          <div style="font-weight:800; color:#0f172a;">${v.medico || 'Specialista'}</div>
+          ${v.tipoStruttura ? `<div style="font-size:11px; color:#0369a1; font-weight:700;">${v.tipoStruttura}</div>` : ''}
+          ${v.luogo ? `<div style="font-size:10.5px; color:#64748b;">📍 ${v.luogo}</div>` : ''}
+          ${v.telefono ? `<div style="font-size:11px; margin-top:2px;"><a href="tel:${v.telefono.replace(/\s+/g, '')}" style="color:#059669; font-weight:800; text-decoration:none;">📞 ${v.telefono}</a></div>` : ''}
+        </td>
+        <td>
+          <div style="font-weight:700; color:#1e293b;">${v.motivo || 'Controllo periodico'}</div>
+          ${v.impegnativa ? `<div style="font-size:11px; color:#047857; margin-top:2px;">📑 ${v.impegnativa}${v.codiceNre ? ' (' + v.codiceNre + ')' : ''}</div>` : ''}
+          ${v.preparazione && v.preparazione !== 'Nessuna preparazione speciale richiesta' ? `<div style="font-size:11px; color:#be123c; background:#ffe4e6; padding:2px 6px; border-radius:4px; display:inline-block; margin-top:3px; font-weight:700;">⚠️ ${v.preparazione}</div>` : ''}
+          ${v.trasporto && !v.trasporto.includes('Nessun') ? `<div style="font-size:10.5px; color:#475569; margin-top:2px;">🚑 ${v.trasporto}</div>` : ''}
+        </td>
+        <td>${badgeStato}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-outline" style="padding:4px 8px; font-size:11px; margin-right:4px; border-color:#fde047; color:#854d0e; font-weight:800; background:#fffbeb;" onclick="posticipaRapidoVisita(${v.id})" title="Posticipa o sposta la data della visita">
+            🔄 Posticipa
+          </button>
+          <button class="btn btn-outline" style="padding:4px 8px; font-size:11px; margin-right:4px; border-color:#38bdf8; color:#0284c7; font-weight:800;" onclick="apriModificaVisita(${v.id})" title="Modifica tutti i campi della visita">
+            ✏️ Modifica
+          </button>
+          <button class="btn ${isFatto ? 'btn-outline' : 'btn-success'}" style="padding:4px 8px; font-size:11px; margin-right:4px;" onclick="toggleVisita(${v.id})">
+            ${isFatto ? 'Riapri' : '✓ Fatto'}
+          </button>
+          <button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="eliminaVisita(${v.id})" title="Sposta nel Cestino">🗑️</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
 
   if (preview) {
-    preview.innerHTML = p.visite.slice(0, 4).map(v => `
-      <tr>
-        <td><b>${new Date(v.data).toLocaleDateString('it-IT')}</b></td>
-        <td><b>${v.medico}</b></td>
-        <td>${v.motivo}</td>
-        <td><span class="badge ${v.fatto ? 'badge-success' : 'badge-warning'}">${v.fatto ? 'Fatto' : 'In attesa'}</span></td>
-      </tr>
-    `).join('');
+    preview.innerHTML = p.visite.slice(0, 4).map(v => {
+      const isFatto = v.fatto || v.statoVisita === 'Eseguita';
+      const isPosticipata = v.statoVisita === 'Posticipata / Spostata';
+      const dStr = (v.data && v.data.length >= 10) ? (v.data.slice(8, 10) + '/' + v.data.slice(5, 7) + '/' + v.data.slice(0, 4)) : v.data;
+      return `
+        <tr style="background:${isPosticipata ? '#fffbeb' : ''};">
+          <td>
+            <b>${dStr}</b>
+            ${isPosticipata ? '<div style="font-size:9.5px; color:#b45309; font-weight:800;">🔄 Posticipata</div>' : ''}
+          </td>
+          <td>
+            <b>${v.medico}</b>
+            ${v.tipoStruttura ? `<div style="font-size:10px; color:#64748b;">${v.tipoStruttura}</div>` : ''}
+            ${v.telefono ? `<div style="font-size:10px; color:#059669; font-weight:700;">📞 ${v.telefono}</div>` : ''}
+          </td>
+          <td>${v.motivo}</td>
+          <td><span class="badge ${isFatto ? 'badge-success' : (isPosticipata ? 'badge-warning' : 'badge-warning')}">${isFatto ? 'Fatto' : (isPosticipata ? 'Posticipata' : 'In attesa')}</span></td>
+        </tr>
+      `;
+    }).join('');
   }
 }
 
@@ -7753,20 +7800,49 @@ function apriModificaVisita(id) {
   const btnEl = document.getElementById('btn-salva-visita');
   const dateEl = document.getElementById('vis-data');
   const oraEl = document.getElementById('vis-ora');
+  const statoEl = document.getElementById('vis-stato');
+  const dataPrecEl = document.getElementById('vis-data-precedente');
+  const motSpostEl = document.getElementById('vis-motivo-spostamento');
   const medEl = document.getElementById('vis-medico');
+  const strEl = document.getElementById('vis-tipo-struttura');
+  const luogoEl = document.getElementById('vis-luogo');
+  const telEl = document.getElementById('vis-telefono');
+  const impEl = document.getElementById('vis-impegnativa');
+  const nreEl = document.getElementById('vis-nre');
+  const prioEl = document.getElementById('vis-priorita');
+  const traspEl = document.getElementById('vis-trasporto');
   const motEl = document.getElementById('vis-motivo');
+  const prepEl = document.getElementById('vis-preparazione');
+  const docEl = document.getElementById('vis-documenti');
 
   if (editIdEl) editIdEl.value = v.id;
   if (titleEl) titleEl.innerHTML = '✏️ Modifica Visita o Prestazione';
   if (btnEl) btnEl.innerHTML = '💾 Salva Modifiche';
 
-  if (dateEl) {
-    var dVal = v.data ? v.data.slice(0, 10) : '';
-    dateEl.value = dVal;
-  }
+  if (dateEl) dateEl.value = v.data ? v.data.slice(0, 10) : '';
   if (oraEl) oraEl.value = v.ora || '10:00';
+  
+  const st = v.statoVisita || (v.fatto ? 'Eseguita' : 'In programma');
+  if (statoEl) {
+    statoEl.value = st;
+    gestisciCambioStatoVisita(st);
+  }
+  if (dataPrecEl) dataPrecEl.value = v.dataPrecedente || '';
+  if (motSpostEl) motSpostEl.value = v.motivoSpostamento || '';
+
   if (medEl) medEl.value = v.medico || '';
+  if (strEl) strEl.value = v.tipoStruttura || 'ASL / Poliambulatorio CUP';
+  if (luogoEl) luogoEl.value = v.luogo || '';
+  if (telEl) telEl.value = v.telefono || '';
+
+  if (impEl) impEl.value = v.impegnativa || 'Ricetta NRE Presente';
+  if (nreEl) nreEl.value = v.codiceNre || '';
+  if (prioEl) prioEl.value = v.priorita || 'P - Programmata (180 gg)';
+  if (traspEl) traspEl.value = v.trasporto || 'Autonomo / Deambulante';
+
   if (motEl) motEl.value = v.motivo || '';
+  if (prepEl) prepEl.value = v.preparazione || '';
+  if (docEl) docEl.value = v.documenti || "Tessera Sanitaria, Documento d'Identità, Esenzione Ticket, Piano Terapeutico";
 }
 window.apriModificaVisita = apriModificaVisita;
 
@@ -7777,6 +7853,52 @@ function openModal(id) {
   if (el) {
     el.classList.add('active');
     el.style.display = 'flex';
+
+    if (id === 'modal-visita' && !window._inModificaVisita) {
+      const editIdEl = document.getElementById('vis-edit-id');
+      const titleEl = document.getElementById('modal-visita-title');
+      const btnEl = document.getElementById('btn-salva-visita');
+      const dateEl = document.getElementById('vis-data');
+      const oraEl = document.getElementById('vis-ora');
+      const statoEl = document.getElementById('vis-stato');
+      const dataPrecEl = document.getElementById('vis-data-precedente');
+      const motSpostEl = document.getElementById('vis-motivo-spostamento');
+      const medEl = document.getElementById('vis-medico');
+      const strEl = document.getElementById('vis-tipo-struttura');
+      const luogoEl = document.getElementById('vis-luogo');
+      const telEl = document.getElementById('vis-telefono');
+      const impEl = document.getElementById('vis-impegnativa');
+      const nreEl = document.getElementById('vis-nre');
+      const prioEl = document.getElementById('vis-priorita');
+      const traspEl = document.getElementById('vis-trasporto');
+      const motEl = document.getElementById('vis-motivo');
+      const prepEl = document.getElementById('vis-preparazione');
+      const docEl = document.getElementById('vis-documenti');
+
+      if (editIdEl) editIdEl.value = '';
+      if (titleEl) titleEl.innerHTML = '📅 Pianifica Visita o Prestazione';
+      if (btnEl) btnEl.innerHTML = '💾 Salva Appuntamento';
+      if (dateEl) dateEl.value = new Date().toISOString().slice(0, 10);
+      if (oraEl) oraEl.value = '10:00';
+      if (statoEl) {
+        statoEl.value = 'In programma';
+        gestisciCambioStatoVisita('In programma');
+      }
+      if (dataPrecEl) dataPrecEl.value = '';
+      if (motSpostEl) motSpostEl.value = '';
+      if (medEl) medEl.value = '';
+      if (strEl) strEl.value = 'ASL / Poliambulatorio CUP';
+      if (luogoEl) luogoEl.value = '';
+      if (telEl) telEl.value = '';
+      if (impEl) impEl.value = 'Ricetta NRE Presente';
+      if (nreEl) nreEl.value = '';
+      if (prioEl) prioEl.value = 'P - Programmata (180 gg)';
+      if (traspEl) traspEl.value = 'Autonomo / Deambulante';
+      if (motEl) motEl.value = '';
+      if (prepEl) prepEl.value = '';
+      if (docEl) docEl.value = "Tessera Sanitaria, Documento d'Identità, Esenzione Ticket, Piano Terapeutico";
+    }
+    window._inModificaVisita = false;
 
     // Inietta o aggiorna in automatico l'indicazione chiara del paziente attivo
     const p = getActivePaziente();
@@ -12010,6 +12132,61 @@ function impostaPresetVisita(medico, motivo) {
 }
 window.impostaPresetVisita = impostaPresetVisita;
 
+function impostaPresetVisitaCompleto(medico, motivo, tipoStruttura, telefono, preparazione, documenti) {
+  var medEl = document.getElementById('vis-medico');
+  var motEl = document.getElementById('vis-motivo');
+  var strEl = document.getElementById('vis-tipo-struttura');
+  var telEl = document.getElementById('vis-telefono');
+  var prepEl = document.getElementById('vis-preparazione');
+  var docEl = document.getElementById('vis-documenti');
+  if (medEl && medico) medEl.value = medico;
+  if (motEl && motivo) motEl.value = motivo;
+  if (strEl && tipoStruttura) strEl.value = tipoStruttura;
+  if (telEl && telefono !== undefined) telEl.value = telefono;
+  if (prepEl && preparazione) prepEl.value = preparazione;
+  if (docEl && documenti) docEl.value = documenti;
+}
+window.impostaPresetVisitaCompleto = impostaPresetVisitaCompleto;
+
+function aggiungiPreparazioneRapida(testo) {
+  var prepEl = document.getElementById('vis-preparazione');
+  if (!prepEl) return;
+  var curr = prepEl.value.trim();
+  if (!curr || curr === 'Nessuna preparazione speciale richiesta' || curr === 'Nessuna preparazione richiesta') {
+    prepEl.value = testo;
+  } else if (!curr.includes(testo)) {
+    prepEl.value = curr + '; ' + testo;
+  }
+}
+window.aggiungiPreparazioneRapida = aggiungiPreparazioneRapida;
+
+function gestisciCambioStatoVisita(stato) {
+  var box = document.getElementById('vis-box-spostamento');
+  if (!box) return;
+  if (stato === 'Posticipata / Spostata') {
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
+}
+window.gestisciCambioStatoVisita = gestisciCambioStatoVisita;
+
+function posticipaRapidoVisita(id) {
+  apriModificaVisita(id);
+  var statoEl = document.getElementById('vis-stato');
+  var dataEl = document.getElementById('vis-data');
+  var dataPrecEl = document.getElementById('vis-data-precedente');
+  var box = document.getElementById('vis-box-spostamento');
+  if (statoEl) statoEl.value = 'Posticipata / Spostata';
+  if (box) box.style.display = 'block';
+  if (dataEl && dataPrecEl && !dataPrecEl.value) {
+    dataPrecEl.value = dataEl.value;
+  }
+  var motSpostEl = document.getElementById('vis-motivo-spostamento');
+  if (motSpostEl) motSpostEl.focus();
+}
+window.posticipaRapidoVisita = posticipaRapidoVisita;
+
 function salvaNuovaVisita(e) {
   e.preventDefault();
   const p = getActivePaziente();
@@ -12019,17 +12196,47 @@ function salvaNuovaVisita(e) {
   const editId = (document.getElementById('vis-edit-id')?.value || '').trim();
   const dataVal = document.getElementById('vis-data')?.value || '';
   const oraVal = document.getElementById('vis-ora')?.value || '10:00';
+  const statoVisitaVal = document.getElementById('vis-stato')?.value || 'In programma';
+  const dataPrecedenteVal = (document.getElementById('vis-data-precedente')?.value || '').trim();
+  const motivoSpostamentoVal = (document.getElementById('vis-motivo-spostamento')?.value || '').trim();
   const medicoVal = (document.getElementById('vis-medico')?.value || '').trim();
+  const tipoStrutturaVal = document.getElementById('vis-tipo-struttura')?.value || 'ASL / Poliambulatorio CUP';
+  const luogoVal = (document.getElementById('vis-luogo')?.value || '').trim();
+  const telefonoVal = (document.getElementById('vis-telefono')?.value || '').trim();
+  const impegnativaVal = document.getElementById('vis-impegnativa')?.value || 'Ricetta NRE Presente';
+  const codiceNreVal = (document.getElementById('vis-nre')?.value || '').trim();
+  const prioritaVal = document.getElementById('vis-priorita')?.value || 'P - Programmata (180 gg)';
+  const trasportoVal = document.getElementById('vis-trasporto')?.value || 'Autonomo / Deambulante';
   const motivoVal = (document.getElementById('vis-motivo')?.value || '').trim();
+  const preparazioneVal = (document.getElementById('vis-preparazione')?.value || '').trim();
+  const documentiVal = (document.getElementById('vis-documenti')?.value || '').trim();
+
+  const isFatto = statoVisitaVal === 'Eseguita';
 
   let isModifica = false;
   if (editId) {
     const existingIndex = p.visite.findIndex(x => String(x.id) === String(editId));
     if (existingIndex !== -1) {
-      p.visite[existingIndex].data = dataVal;
-      p.visite[existingIndex].ora = oraVal;
-      p.visite[existingIndex].medico = medicoVal;
-      p.visite[existingIndex].motivo = motivoVal;
+      p.visite[existingIndex] = {
+        ...p.visite[existingIndex],
+        data: dataVal,
+        ora: oraVal,
+        statoVisita: statoVisitaVal,
+        dataPrecedente: dataPrecedenteVal,
+        motivoSpostamento: motivoSpostamentoVal,
+        medico: medicoVal,
+        tipoStruttura: tipoStrutturaVal,
+        luogo: luogoVal,
+        telefono: telefonoVal,
+        impegnativa: impegnativaVal,
+        codiceNre: codiceNreVal,
+        priorita: prioritaVal,
+        trasporto: trasportoVal,
+        motivo: motivoVal,
+        preparazione: preparazioneVal,
+        documenti: documentiVal,
+        fatto: isFatto
+      };
       isModifica = true;
     }
   }
@@ -12039,9 +12246,21 @@ function salvaNuovaVisita(e) {
       id: Date.now(),
       data: dataVal,
       ora: oraVal,
+      statoVisita: statoVisitaVal,
+      dataPrecedente: dataPrecedenteVal,
+      motivoSpostamento: motivoSpostamentoVal,
       medico: medicoVal,
+      tipoStruttura: tipoStrutturaVal,
+      luogo: luogoVal,
+      telefono: telefonoVal,
+      impegnativa: impegnativaVal,
+      codiceNre: codiceNreVal,
+      priorita: prioritaVal,
+      trasporto: trasportoVal,
       motivo: motivoVal,
-      fatto: false
+      preparazione: preparazioneVal,
+      documenti: documentiVal,
+      fatto: isFatto
     };
     p.visite.push(v);
   }
@@ -23715,15 +23934,16 @@ var GUIDE_CONTESTUALI = {
   },
   'pianifica-visita': {
     icona: '📅',
-    titolo: 'Pianificazione Visite &amp; Prestazioni Sanitarie',
-    sottotitolo: 'Creazione e modifica veloce di accessi medici e infermieristici',
-    scopo: 'Consente di registrare o modificare un controllo specialistico con un set di suggerimenti pre-impostati per i casi territoriali più frequenti.',
+    titolo: 'Pianificazione Visite & Prestazioni Specialistiche',
+    sottotitolo: 'Gestione accessi medici, ASL/privato, condizioni cliniche e rinvii',
+    scopo: 'Pianifica in modo completo e dettagliato visite specialistiche territoriali, accessi ospedalieri, visite private o prestazioni infermieristiche domiciliari (ADI), tracciando ogni condizione preparatoria e logistica.',
     comeSiUsa: [
-      'Seleziona data e ora della visita.',
-      '<b>Usa i Suggerimenti Rapidi (1 Tap)</b>: MMG, Neurologia, Diabetologia, Malattie Infettive, Cardiologia, Prelievo ADI.',
-      'Aggiungi eventuali istruzioni speciali (es. "digiuno per prelievo", "preparare impegnativa").'
+      '<b>Programmazione & Rinvii</b>: imposta data, ora e stato. Se la visita viene spostata, attiva lo stato "Posticipata / Spostata" per memorizzare data iniziale e motivo.',
+      '<b>Struttura & Recapito Telefonico</b>: specifica se la visita avviene presso ASL/CUP, Ospedale pubblico, Studio privato o a Domicilio, con numero telefonico per contatti rapidi a 1 tap.',
+      '<b>Condizioni & Impegnativa</b>: traccia codice NRE ricetta elettronica, priorità nazionale (U-72h, B-10gg, D-30/60gg, P-180gg) e modalità trasporto (ambulanza o lettoambulanza per pazienti allettati).',
+      '<b>Preparazione & Documenti</b>: aggiungi al volo digiuno (8-12h), vescica piena, sospensione farmaci concordata, esenzione ticket e documenti da portare.'
     ],
-    utilita: '<b>Compilazione in meno di 10 secondi</b> senza errori di digitazione.'
+    utilita: '<b>Zero imprevisti alle visite specialistiche</b>: assicura che il paziente arrivi con l\'esatta preparazione clinica, i documenti corretti, il trasporto idoneo e il contatto telefonico sempre a portata di mano.'
   },
   'maschera-madre': {
     icona: '👤',
@@ -27215,35 +27435,102 @@ function apriModalSchedaClinicaMobile(pazId) {
       const vSorted = [...vList].sort((a, b) => new Date(a.data) - new Date(b.data));
       visiteListEl.innerHTML = vSorted.map(v => {
         const dStr = (v.data && v.data.length >= 10) ? (v.data.slice(8, 10) + '/' + v.data.slice(5, 7) + '/' + v.data.slice(0, 4)) : v.data;
-        const isFatto = !!v.fatto;
+        const isFatto = v.fatto || v.statoVisita === 'Eseguita';
+        const isPosticipata = v.statoVisita === 'Posticipata / Spostata';
+        const isDisdetta = v.statoVisita === 'Disdetta';
+
+        let badgeStato = '';
+        if (isFatto) {
+          badgeStato = '<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size:10px; font-weight:800; padding:2px 7px; border-radius:6px; flex-shrink:0;">✓ Eseguita</span>';
+        } else if (isPosticipata) {
+          badgeStato = '<span style="background:#fef3c7; color:#b45309; border:1px solid #fde047; font-size:10px; font-weight:800; padding:2px 7px; border-radius:6px; flex-shrink:0;">🔄 Posticipata</span>';
+        } else if (isDisdetta) {
+          badgeStato = '<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:10px; font-weight:800; padding:2px 7px; border-radius:6px; flex-shrink:0;">❌ Disdetta</span>';
+        } else {
+          badgeStato = '<span style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; font-size:10px; font-weight:800; padding:2px 7px; border-radius:6px; flex-shrink:0;">⏳ In programma</span>';
+        }
+
         return `
-          <div style="background:${isFatto ? '#f0fdf4' : '#ffffff'}; border:1.5px solid ${isFatto ? '#86efac' : '#e2e8f0'}; border-radius:12px; padding:10px 12px; margin-bottom:8px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <div style="background:${isFatto ? '#f0fdf4' : (isPosticipata ? '#fffbeb' : '#ffffff')}; border:1.5px solid ${isFatto ? '#86efac' : (isPosticipata ? '#fde047' : '#e2e8f0')}; border-radius:14px; padding:12px 14px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
               <div style="flex:1; min-width:0;">
-                <div style="font-size:13px; font-weight:900; color:#0f172a; line-height:1.25;">
-                  📅 ${dStr} ${v.ora ? `<span style="color:#0284c7; font-weight:800;">ore ${v.ora}</span>` : ''}
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                  <span style="font-size:13.5px; font-weight:900; color:#0f172a; line-height:1.25;">
+                    📅 ${dStr} ${v.ora ? `<span style="color:#0284c7; font-weight:800;">ore ${v.ora}</span>` : ''}
+                  </span>
+                  ${badgeStato}
+                  ${v.priorita && v.priorita.includes('U - Urgente') ? '<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:1px 5px; border-radius:4px;">🔴 URGENTE 72H</span>' : ''}
+                  ${v.priorita && v.priorita.includes('B - Breve') ? '<span style="background:#ffedd5; color:#c2410c; border:1px solid #fdba74; font-size:9.5px; font-weight:800; padding:1px 5px; border-radius:4px;">🟠 BREVE 10GG</span>' : ''}
                 </div>
-                <div style="font-size:12px; font-weight:800; color:#0369a1; margin-top:2px;">
-                  🩺 ${v.medico || 'Specialista'}
+                
+                <div style="font-size:13px; font-weight:800; color:#0369a1; margin-top:3px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                  <span>🩺 ${v.medico || 'Specialista'}</span>
+                  ${v.tipoStruttura ? `<span style="background:#f1f5f9; color:#475569; font-size:10px; font-weight:700; padding:1px 6px; border-radius:6px; border:1px solid #cbd5e1;">${v.tipoStruttura}</span>` : ''}
                 </div>
-                <div style="font-size:11.5px; color:#475569; margin-top:3px; line-height:1.35;">
-                  ${v.motivo || 'Visita periodica / Controllo specialistico'}
+
+                ${v.luogo ? `
+                  <div style="font-size:11px; color:#64748b; margin-top:2px;">
+                    📍 <b>Sede:</b> ${v.luogo}
+                  </div>
+                ` : ''}
+
+                <div style="font-size:12px; color:#334155; margin-top:4px; line-height:1.35; font-weight:600;">
+                  🎯 <b>Motivo:</b> ${v.motivo || 'Controllo specialistico'}
                 </div>
+
+                ${isPosticipata ? `
+                  <div style="margin-top:6px; background:#fef3c7; border:1px solid #fde047; border-radius:8px; padding:6px 9px; font-size:11px; color:#78350f;">
+                    <b>🔄 Visita Posticipata:</b> Data originaria: <b>${v.dataPrecedente || '--'}</b>
+                    ${v.motivoSpostamento ? ` &bull; Motivo rinvio: <em>${v.motivoSpostamento}</em>` : ''}
+                  </div>
+                ` : ''}
+
+                ${v.impegnativa || v.codiceNre ? `
+                  <div style="margin-top:5px; font-size:11px; color:#047857; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                    <span>📑 <b>Impegnativa:</b> ${v.impegnativa || 'Presente'}</span>
+                    ${v.codiceNre ? `<span style="background:#ecfdf5; border:1px solid #a7f3d0; padding:1px 5px; border-radius:4px; font-weight:700; font-family:monospace;">NRE: ${v.codiceNre}</span>` : ''}
+                  </div>
+                ` : ''}
+
+                ${v.trasporto && !v.trasporto.includes('Nessun') ? `
+                  <div style="margin-top:3px; font-size:11px; color:#1e40af;">
+                    🚑 <b>Logistica:</b> ${v.trasporto}
+                  </div>
+                ` : ''}
+
+                ${v.preparazione && v.preparazione !== 'Nessuna preparazione speciale richiesta' ? `
+                  <div style="margin-top:6px; background:#fff1f2; border:1px solid #fecdd3; border-radius:8px; padding:6px 9px; font-size:11px; color:#9f1239;">
+                    <b>⚠️ Preparazione richiesta:</b> ${v.preparazione}
+                  </div>
+                ` : ''}
+
+                ${v.telefono ? `
+                  <div style="margin-top:6px;">
+                    <a href="tel:${v.telefono.replace(/\s+/g, '')}" style="display:inline-flex; align-items:center; gap:5px; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:6px; padding:3px 9px; font-size:11px; font-weight:800; text-decoration:none;">
+                      <span>📞</span> <span>Chiama: ${v.telefono}</span>
+                    </a>
+                  </div>
+                ` : ''}
               </div>
-              <span style="background:${isFatto ? '#dcfce7' : '#fef3c7'}; color:${isFatto ? '#15803d' : '#b45309'}; border:1px solid ${isFatto ? '#86efac' : '#fde047'}; font-size:10px; font-weight:800; padding:2px 7px; border-radius:6px; flex-shrink:0;">
-                ${isFatto ? '✓ Eseguita' : '⏳ In programma'}
-              </span>
             </div>
-            <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-top:8px; padding-top:6px; border-top:1px dashed #e2e8f0;">
-              <button type="button" onclick="event.stopPropagation(); apriModificaVisita(${v.id});" style="background:#eff6ff; color:#0284c7; border:1px solid #bfdbfe; border-radius:6px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer;" title="Modifica appuntamento">
-                ✏️ Modifica
-              </button>
-              <button type="button" onclick="event.stopPropagation(); toggleVisita(${v.id}); apriModalSchedaClinicaMobile('${p.id}');" style="background:${isFatto ? '#f1f5f9' : '#059669'}; color:${isFatto ? '#475569' : '#ffffff'}; border:none; border-radius:6px; padding:4px 10px; font-size:11px; font-weight:800; cursor:pointer;">
-                ${isFatto ? '↩️ Riapri' : '✓ Segna come Fatta'}
-              </button>
-              <button type="button" onclick="event.stopPropagation(); eliminaVisita(${v.id}); apriModalSchedaClinicaMobile('${p.id}');" style="background:#fee2e2; color:#b91c1c; border:none; border-radius:6px; padding:4px 8px; font-size:11px; font-weight:800; cursor:pointer;" title="Elimina appuntamento">
-                🗑️
-              </button>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:10px; padding-top:8px; border-top:1px dashed #cbd5e1; flex-wrap:wrap;">
+              <div style="display:flex; gap:6px;">
+                <button type="button" onclick="event.stopPropagation(); posticipaRapidoVisita(${v.id});" style="background:#fffbeb; color:#92400e; border:1px solid #fde047; border-radius:6px; padding:4px 8px; font-size:11px; font-weight:800; cursor:pointer;" title="Posticipa o sposta la data della visita">
+                  🔄 Posticipa
+                </button>
+                <button type="button" onclick="event.stopPropagation(); apriModificaVisita(${v.id});" style="background:#eff6ff; color:#0284c7; border:1px solid #bfdbfe; border-radius:6px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer;" title="Modifica tutti i dati">
+                  ✏️ Modifica
+                </button>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button type="button" onclick="event.stopPropagation(); toggleVisita(${v.id}); apriModalSchedaClinicaMobile('${p.id}');" style="background:${isFatto ? '#f1f5f9' : '#059669'}; color:${isFatto ? '#475569' : '#ffffff'}; border:none; border-radius:6px; padding:4px 10px; font-size:11px; font-weight:800; cursor:pointer;">
+                  ${isFatto ? '↩️ Riapri' : '✓ Fatta'}
+                </button>
+                <button type="button" onclick="event.stopPropagation(); eliminaVisita(${v.id}); apriModalSchedaClinicaMobile('${p.id}');" style="background:#fee2e2; color:#b91c1c; border:none; border-radius:6px; padding:4px 8px; font-size:11px; font-weight:800; cursor:pointer;" title="Elimina appuntamento">
+                  🗑️
+                </button>
+              </div>
             </div>
           </div>
         `;
