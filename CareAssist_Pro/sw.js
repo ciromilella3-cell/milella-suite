@@ -1,12 +1,12 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v316-patient-reference-always-visible';
+const CACHE_NAME = 'careassist-pro-v317-sync-terapie-realtime-fix';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './turni.html',
   './style.css',
   './style.css?v=118',
-  './app.js?v=118',
+  './app.js?v=317',
   './app.js',
   './turnario_admin.js',
   './turnario_admin.js?v=2',

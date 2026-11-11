@@ -1368,9 +1368,11 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       var dibase = angelaEx.terapie.find(function (item) { return (item.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0; });
       if (dibase) {
         dibase.cadenzaTipo = 'quindicinale_15_30';
-        dibase.fascia = 'Mattina (Dose Periodica)';
-        dibase.ora = '10:00';
-        if (dibase.modo.indexOf('15 e il 30') < 0) {
+        if (!dibase.ora) {
+          dibase.ora = '10:00';
+          dibase.fascia = 'Mattina (Dose Periodica)';
+        }
+        if ((dibase.modo || '').indexOf('15 e il 30') < 0) {
           dibase.modo = 'Assunzione orale periodica con un po\' di cibo grasso [Ogni 15 giorni: il 15 e il 30 del mese]';
         }
       }
@@ -1777,8 +1779,6 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       },
       ultimaDoseSomministrata: 1
     });
-    AppData.lastModified = Date.now();
-    localStorage.setItem('careassist_pending_sync', 'true');
     console.log('Terapia di Ciro Milella ripristinata con successo (Entecavir Sandoz 0,5 mg).');
   }
 
@@ -1904,19 +1904,31 @@ function showSyncToast(msg, isSuccess) {
   }, 3200);
 }
 
-function saveDb() {
+function saveDb(forceBeforeInitialSync) {
   var currUser = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Admin';
   var currRole = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
   var pAttivo = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
 
-  AppData.lastModified = Date.now();
+  // Se la sincronizzazione iniziale dal Cloud non è ancora terminata e non è un salvataggio forzato dall'utente,
+  // salva solo nella cache locale senza sovrascrivere il timestamp Cloud con dati potenzialmente vecchi.
+  if (!window._initialSyncDone && !forceBeforeInitialSync) {
+    try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
+    renderAll();
+    return;
+  }
+
+  var nowTs = Date.now();
+  AppData.lastModified = nowTs;
+  if (pAttivo) {
+    pAttivo.lastModified = nowTs;
+  }
   AppData.lastModifiedDevice = (window.innerWidth <= 900) ? 'smartphone' : 'pc';
   AppData.lastModifiedBy = {
     nome: currUser,
     ruolo: currRole,
     paziente: pAttivo ? (pAttivo.nome || 'Rosa Annunziata') : '',
     ora: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
-    timestamp: Date.now()
+    timestamp: nowTs
   };
 
   localStorage.setItem(DB_KEY, JSON.stringify(AppData));
@@ -1930,28 +1942,38 @@ function saveDb() {
   // Flag per indicare modifiche in sospeso se offline
   localStorage.setItem('careassist_pending_sync', 'true');
 
-  // Sincronizzazione automatica bidirezionale verso il server locale
+  // Sincronizzazione automatica bidirezionale verso Cloud Render e server locale
   inviaModificheAlServer();
+}
+
+const CAREASSIST_CLOUD_MASTER_URL = 'https://milella-suite.onrender.com';
+
+function isLocalOrFileOrigin() {
+  try {
+    if (!window.location) return true;
+    var proto = window.location.protocol;
+    var host = window.location.hostname || '';
+    return proto === 'file:' || host === 'localhost' || host === '127.0.0.1' || /^192\.168\./.test(host) || /^10\./.test(host);
+  } catch (e) {
+    return true;
+  }
 }
 
 function getCareAssistSyncBase() {
   try {
-    if (window.location && window.location.protocol === 'file:') {
-      return 'https://milella-suite.onrender.com';
-    }
-    if (window.location && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || /^192\.168\./.test(window.location.hostname))) {
-      return window.location.origin;
+    if (isLocalOrFileOrigin()) {
+      return CAREASSIST_CLOUD_MASTER_URL;
     }
     return ''; // Relativo sul Cloud Render
   } catch (e) {
-    return 'https://milella-suite.onrender.com';
+    return CAREASSIST_CLOUD_MASTER_URL;
   }
 }
 
 function inviaModificheAlServer(onSuccess) {
   try {
     var primaryBase = getCareAssistSyncBase();
-    var syncUrl = primaryBase ? (primaryBase + '/api/save-db') : '/api/save-db';
+    var cloudSyncUrl = primaryBase ? (primaryBase + '/api/save-db') : '/api/save-db';
 
     var sendData = JSON.stringify(AppData);
 
@@ -1961,7 +1983,17 @@ function inviaModificheAlServer(onSuccess) {
     var pin = localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_user_pin');
     if (pin) reqHeaders['x-pin'] = pin;
 
-    fetch(syncUrl, {
+    // Se siamo su PC locale (localhost / file), aggiorna in parallelo anche l'eventuale server locale su porta 3000
+    if (isLocalOrFileOrigin()) {
+      fetch('http://127.0.0.1:3000/api/save-db', {
+        method: 'POST',
+        headers: reqHeaders,
+        body: sendData,
+        cache: 'no-store'
+      }).catch(function () { });
+    }
+
+    fetch(cloudSyncUrl, {
       method: 'POST',
       headers: reqHeaders,
       body: sendData,
@@ -1971,30 +2003,22 @@ function inviaModificheAlServer(onSuccess) {
       return res.json();
     }).then(function (data) {
       localStorage.removeItem('careassist_pending_sync');
+      aggiornaBadgeStatoSync(true);
       if (onSuccess) onSuccess(data);
     }).catch(function () {
-      // Se il Cloud o la connessione primaria fallisce, prova con il server locale su porta 3000
+      // Se il Cloud fallisce, prova con il server locale su porta 3000
       fetch('http://127.0.0.1:3000/api/save-db', {
         method: 'POST',
         headers: reqHeaders,
         body: sendData,
         cache: 'no-store'
-      }).then(function (r) { return r.json(); }).then(function (data) {
-        localStorage.removeItem('careassist_pending_sync');
+      }).then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }).then(function (data) {
         if (onSuccess) onSuccess(data);
       }).catch(function () {
-        // Fallback finale Wi-Fi locale
-        fetch('http://192.168.1.5:3000/api/save-db', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: sendData,
-          cache: 'no-store'
-        }).then(function (r) { return r.json(); }).then(function (data) {
-          localStorage.removeItem('careassist_pending_sync');
-          if (onSuccess) onSuccess(data);
-        }).catch(function () {
-          console.log('Server Cloud/Locale non raggiungibile: modifiche conservate in locale per il prossimo allineamento.');
-        });
+        console.log('Server Cloud/Locale non raggiungibile: modifiche conservate in locale per il prossimo allineamento.');
       });
     });
   } catch (e) {
@@ -2018,6 +2042,20 @@ function sincronizzaDbDalServer(callback) {
           if (sp.id === 'paz_aldo' || (sp.nome && (sp.nome === 'Aldo Z.' || sp.nome.startsWith('Aldo Z')))) { sp.nome = 'Aldo Zamparino'; sp.dataNascita = '1935-01-06'; }
           if (sp.id === 'paz_angela' || (sp.nome && (sp.nome === 'Angela M.' || sp.nome.startsWith('Angela M')))) sp.nome = 'Angela Mazzicone';
           if (sp.id === 'paz_rosa' || (sp.nome && (sp.nome === 'Rosa C.' || sp.nome.startsWith('Rosa C')))) sp.nome = 'Rosa Annunziata Cavalcante';
+          // Deduplica eventuali log di escalation Stadio 3 ripetuti nello stesso giorno per lo stesso farmaco
+          if (Array.isArray(sp.registrazioni)) {
+            var seenEsc = new Set();
+            sp.registrazioni = sp.registrazioni.filter(function (r) {
+              if (r && r.id && String(r.id).startsWith('esc_')) {
+                var dayPart = (r.timestamp || '').slice(0, 10);
+                var m = (r.testo || '').match(/il farmaco "([^"]+)"/);
+                var key = dayPart + '_' + (m ? m[1] : (r.testo || ''));
+                if (seenEsc.has(key)) return false;
+                seenEsc.add(key);
+              }
+              return true;
+            });
+          }
         });
       }
       if (serverData && serverData.pazienti && serverData.pazienti.length > 0) {
@@ -2050,9 +2088,35 @@ function sincronizzaDbDalServer(callback) {
           }
         });
 
+        // Verifica se ci sono differenze reali nelle terapie (orari, fattoOggi, saltatoOggi, scorta) tra server e locale
+        var hasTherapyDiffOnServer = false;
+        if (!isPendingSync) {
+          try {
+            (serverData.pazienti || []).forEach(function (sp) {
+              var lp = (AppData.pazienti || []).find(function (x) { return x.id === sp.id; });
+              if (lp && JSON.stringify(sp.terapie || []) !== JSON.stringify(lp.terapie || [])) {
+                hasTherapyDiffOnServer = true;
+              }
+            });
+          } catch (eDiff) { }
+        }
+
         // Caso 1: Lo Smartphone o PC locale ha modifiche più recenti fatte offline
         if (isPendingSync && localTime > serverTime) {
           console.log('Rilevate modifiche offline sul dispositivo più recenti del server. Invio al Cloud...');
+          // Preserva eventuali modifiche più recenti fatte sul server per ALTRI pazienti
+          (serverData.pazienti || []).forEach(function (sp) {
+            var lpIdx = (AppData.pazienti || []).findIndex(function (x) { return x.id === sp.id; });
+            if (lpIdx >= 0) {
+              var lp = AppData.pazienti[lpIdx];
+              var spMod = Number(sp.lastModified) || 0;
+              var lpMod = Number(lp.lastModified) || 0;
+              if (spMod > lpMod) {
+                AppData.pazienti[lpIdx] = sp;
+                addedFromServer = true;
+              }
+            }
+          });
           if (addedFromServer) {
             localStorage.setItem(DB_KEY, JSON.stringify(AppData));
             renderAll();
@@ -2061,10 +2125,22 @@ function sincronizzaDbDalServer(callback) {
             showSyncToast('Cloud aggiornato con le ultime modifiche!', true);
           });
         }
-        // Caso 2: Il Server Cloud ha dati più recenti o profili aggiuntivi (es. smartphone stamattina)
-        else if (serverTime > localTime || addedFromServer) {
+        // Caso 2: Il Server Cloud ha dati più recenti o differenze nelle terapie
+        else if (serverTime > localTime || addedFromServer || hasTherapyDiffOnServer) {
           console.log('Rilevate modifiche più recenti sul Cloud. Aggiornamento interfaccia...');
           var prevActiveId = AppData.activePazienteId;
+          // Se il dispositivo aveva modifiche in sospeso su uno specifico paziente più recenti di quelle del server, preservale
+          if (isPendingSync) {
+            (AppData.pazienti || []).forEach(function (lp) {
+              var spIdx = (serverData.pazienti || []).findIndex(function (x) { return x.id === lp.id; });
+              if (spIdx >= 0) {
+                var sp = serverData.pazienti[spIdx];
+                if ((Number(lp.lastModified) || 0) > (Number(sp.lastModified) || 0)) {
+                  serverData.pazienti[spIdx] = lp;
+                }
+              }
+            });
+          }
           AppData = serverData;
           if (prevActiveId && AppData.pazienti.some(function (p) { return p.id === prevActiveId; })) {
             AppData.activePazienteId = prevActiveId;
@@ -2072,6 +2148,12 @@ function sincronizzaDbDalServer(callback) {
           localStorage.setItem(DB_KEY, JSON.stringify(AppData));
           localStorage.removeItem('careassist_pending_sync');
           renderAll();
+          try {
+            allarmeTerapieSnoozeFinoA = 0;
+            if (typeof controllaTerapieGlobaliTuttiPazienti === 'function') {
+              controllaTerapieGlobaliTuttiPazienti();
+            }
+          } catch (eAl) { }
           var modBy = serverData.lastModifiedBy || {};
           var devFrom = serverData.lastModifiedDevice;
           var chi = modBy.nome || 'Operatore';
@@ -2093,7 +2175,7 @@ function sincronizzaDbDalServer(callback) {
             b.innerHTML = '<div style="display:flex; align-items:center; gap:10px;">' +
               '<span style="font-size:24px;">📱</span>' +
               '<div>' +
-              '<div style="font-size:13px; font-weight:900; color:#38bdf8;">Aggiornamento Ricevuto da Cellulare (' + ora + ')</div>' +
+              '<div style="font-size:13px; font-weight:900; color:#38bdf8;">Aggiornamento Ricevuto (' + ora + ')</div>' +
               '<div style="font-size:12px; font-weight:700; color:#e2e8f0;">' + (pazNome ? ('Assistito: <b>' + pazNome + '</b>') : 'Dati aggiornati') + '</div>' +
               '</div>' +
               '</div>' +
@@ -2115,6 +2197,8 @@ function sincronizzaDbDalServer(callback) {
         // Aggiorna badge visivo di sincronizzazione
         aggiornaBadgeStatoSync(true);
         if (callback) callback(true);
+      } else {
+        if (callback) callback(false);
       }
       _isSyncingInProgress = false;
     };
@@ -2136,22 +2220,21 @@ function sincronizzaDbDalServer(callback) {
       .catch(function () {
         // Fallback secondario su server locale porta 3000
         fetch('http://127.0.0.1:3000/api/get-db?_t=' + Date.now(), { cache: 'no-store' })
-          .then(function (r) { return r.json(); })
+          .then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+          })
           .then(function (data) { reconcileData(data); })
           .catch(function () {
-            // Fallback terziario su IP Wi-Fi
-            fetch('http://192.168.1.5:3000/api/get-db?_t=' + Date.now(), { cache: 'no-store' })
-              .then(function (r) { return r.json(); })
-              .then(function (data) { reconcileData(data); })
-              .catch(function () {
-                _isSyncingInProgress = false;
-                aggiornaBadgeStatoSync(false);
-              });
+            _isSyncingInProgress = false;
+            aggiornaBadgeStatoSync(false);
+            if (callback) callback(false);
           });
       });
   } catch (e) {
     _isSyncingInProgress = false;
     aggiornaBadgeStatoSync(false);
+    if (callback) callback(false);
     console.warn('Get-db sync error:', e);
   }
 }
@@ -3959,9 +4042,9 @@ function cambiaPaziente(pazId) {
   }
 
   try {
-    saveDb();
+    localStorage.setItem(DB_KEY, JSON.stringify(AppData));
   } catch (eSave) {
-    console.warn('saveDb error:', eSave);
+    console.warn('localStorage save error:', eSave);
   }
 
   try {
@@ -5474,7 +5557,7 @@ function renderTerapie() {
       t.quantitaQuota = 1;
       delete t.penneScorta; delete t.unitaPerPenna; delete t.unitaDoseDie; delete t.kitGlicemiaAssociato;
       if (typeof t.scorta === 'number' && t.scorta % 1 !== 0) t.scorta = Math.round(t.scorta);
-      if (typeof saveDb === 'function') { setTimeout(function () { try { saveDb(); } catch (e) { } }, 300); }
+      try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
     }
   });
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
@@ -6104,6 +6187,7 @@ function suonaChimeInsistenteElegante() {
 // Funzione globale che analizza i pazienti accessibili per rilevare chi ha terapie in ritardo
 function controllaTerapieGlobaliTuttiPazienti() {
   aggiornaStickyPatientBar(); // sync sticky pill
+  if (!window._initialSyncDone) return;
   if (!AppData || !AppData.pazienti) return;
 
   const adessoMs = Date.now();
@@ -6243,7 +6327,8 @@ function controllaTerapieGlobaliTuttiPazienti() {
   } else {
     // Nessun ritardo attivo
     allarmeTerapieAttivo = false;
-    if (!modalAllarmeApertoManualmente && modalAllarme && modalAllarme.classList.contains('active')) {
+    modalAllarmeApertoManualmente = false;
+    if (modalAllarme && modalAllarme.classList.contains('active')) {
       modalAllarme.classList.remove('active');
     }
   }
@@ -11731,19 +11816,28 @@ async function salvaCambiaOrarioRapido() {
     if (!t) return;
     var vecchioOrario = t.ora;
     t.ora = nuovoOrario;
+    t.ultimaModificaTimestamp = Date.now();
+    p.lastModified = Date.now();
     if (typeof deduciFasciaDaOrario === 'function') {
       t.fascia = deduciFasciaDaOrario(nuovoOrario);
+    }
+    if (typeof verificaStatoOrarioFarmaco === 'function' && verificaStatoOrarioFarmaco(nuovoOrario).futuro) {
+      t.saltatoOggi = false;
     }
     // Ordina terapie
     if (typeof comparaOrariTerapie === 'function') {
       p.terapie.sort(comparaOrariTerapie);
     }
     chiudiCambiaOrarioRapido();
+    allarmeTerapieSnoozeFinoA = 0;
+    ultimoSuonoFarmacoRitardo = 0;
+    _ultimoMinutoNotificatoTerapia = '';
     if (typeof salvaStatoCareAssistStorage === 'function') await salvaStatoCareAssistStorage();
-    if (typeof saveDb === 'function') saveDb();
-    if (typeof renderMobileNativeView === 'function') renderMobileNativeView();
+    if (typeof saveDb === 'function') saveDb(true);
+    if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
     if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
     if (typeof renderTerapie === 'function') renderTerapie();
+    if (typeof controllaTerapieGlobaliTuttiPazienti === 'function') controllaTerapieGlobaliTuttiPazienti();
     if (typeof showToast === 'function') showToast('🕒 Orario aggiornato: ' + t.farmaco + ' spostato alle ' + nuovoOrario);
   } catch (e) {
     console.error('Errore salvaCambiaOrarioRapido:', e);
@@ -12001,15 +12095,24 @@ async function sffApplicaDeltaOrario(deltaMinuti) {
   var hStr = (newH < 10 ? '0' : '') + newH;
   var mStr = (newM < 10 ? '0' : '') + newM;
   t.ora = hStr + ':' + mStr;
+  t.ultimaModificaTimestamp = Date.now();
+  p.lastModified = Date.now();
   if (typeof deduciFasciaDaOrario === 'function') {
     t.fascia = deduciFasciaDaOrario(t.ora);
+  }
+  if (typeof verificaStatoOrarioFarmaco === 'function' && verificaStatoOrarioFarmaco(t.ora).futuro) {
+    t.saltatoOggi = false;
   }
   if (typeof comparaOrariTerapie === 'function') {
     p.terapie.sort(comparaOrariTerapie);
   }
-  if (typeof saveDb === 'function') saveDb();
+  allarmeTerapieSnoozeFinoA = 0;
+  ultimoSuonoFarmacoRitardo = 0;
+  _ultimoMinutoNotificatoTerapia = '';
+  if (typeof saveDb === 'function') saveDb(true);
   if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
   if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+  if (typeof controllaTerapieGlobaliTuttiPazienti === 'function') controllaTerapieGlobaliTuttiPazienti();
   if (typeof showToast === 'function') showToast('🕒 Orario spostato alle ' + t.ora);
   apriSchedaFarmacoFullscreen(_currentSchedaFarmacoId);
 }
@@ -12078,7 +12181,6 @@ function salvaModificaFarmaco(e) {
     var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
     return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
   });
-  var eraStatoAssuntoOggi = vecchieDosiFarmaco.some(function (item) { return item.fattoOggi === true; });
 
   // Rimuovi le vecchie dosi per rigenerarle con la nuova scorta
   p.terapie = p.terapie.filter(function (item) {
@@ -12101,15 +12203,14 @@ function salvaModificaFarmaco(e) {
       var quotaLabel = (quotaVal === 0.5) ? '½ cpr' : (quotaVal === 1 ? '1 cpr' : (quotaVal === 1.5 ? '1½ cpr' : quotaVal + ' cpr'));
       var farmacoNomeFinal = (totalDosi > 1) ? (cleanNome + ' (' + (idx + 1) + 'ª dose: ' + quotaLabel + ' - ore ' + oraVal + ')') : cleanNome;
 
-      // Preservazione assunzione nel ramo fallback
-      var fallbackFattoOggi = eraStatoAssuntoOggi;
-      if (!fallbackFattoOggi && typeof verificaStatoOrarioFarmaco === 'function') {
-        var chkF = verificaStatoOrarioFarmaco(oraVal);
-        if (chkF && chkF.orarioPassato) fallbackFattoOggi = true;
+      var vecchiaDose = vecchieDosiFarmaco[idx] || vecchieDosiFarmaco.find(function (vd) { return vd.ora === oraVal; }) || null;
+      var fallbackFattoOggi = !!(vecchiaDose && vecchiaDose.fattoOggi === true);
+      if (vecchiaDose && vecchiaDose.ora !== oraVal && typeof verificaStatoOrarioFarmaco === 'function' && verificaStatoOrarioFarmaco(oraVal).futuro) {
+        fallbackFattoOggi = false;
       }
 
       p.terapie.push({
-        id: Date.now() + idx * 311,
+        id: (vecchiaDose && vecchiaDose.id) ? vecchiaDose.id : (Date.now() + idx * 311),
         ora: oraVal,
         fascia: fasciaVal,
         farmaco: farmacoNomeFinal,
@@ -12127,6 +12228,8 @@ function salvaModificaFarmaco(e) {
         cadenzaMeseAnnuale: cadMeseAnnuale,
         cadenzaGiornoAnnuale: cadGiornoAnnuale,
         fattoOggi: fallbackFattoOggi,
+        saltatoOggi: false,
+        ultimaModificaTimestamp: Date.now(),
         tipoFormulazione: (window._currentFormatoModal === 'penna') ? 'penna' : 'compressa',
         ultimaModificaClinica: ultimaMod
       });
@@ -12150,19 +12253,15 @@ function salvaModificaFarmaco(e) {
       var pUnitaTot = isFormatoPenna ? (parseInt(document.getElementById('edit-penna-unita-totali') ? document.getElementById('edit-penna-unita-totali').value : 300) || 300) : 300;
       var pScatola = isFormatoPenna ? (parseInt(document.getElementById('edit-penna-per-scatola') ? document.getElementById('edit-penna-per-scatola').value : 3) || 3) : cprPerScatola;
 
-      // PRESERVAZIONE INTELLIGENTE STATO ASSUNZIONE OGGI:
-      var eraGiaFattoOggi = eraStatoAssuntoOggi;
-      try {
-        if (!eraGiaFattoOggi && typeof verificaStatoOrarioFarmaco === 'function') {
-          var chkO = verificaStatoOrarioFarmaco(oraVal);
-          if (chkO && chkO.orarioPassato) {
-            eraGiaFattoOggi = true; // L'orario (es. 07:00) è già passato oggi: la dose si considera già assunta!
-          }
-        }
-      } catch (e) { }
+      // PRESERVAZIONE FEDELE STATO ASSUNZIONE OGGI PER SINGOLA DOSE:
+      var vecchiaDose = vecchieDosiFarmaco[idx] || vecchieDosiFarmaco.find(function (vd) { return vd.ora === oraVal; }) || null;
+      var eraGiaFattoOggi = !!(vecchiaDose && vecchiaDose.fattoOggi === true);
+      if (vecchiaDose && vecchiaDose.ora !== oraVal && typeof verificaStatoOrarioFarmaco === 'function' && verificaStatoOrarioFarmaco(oraVal).futuro) {
+        eraGiaFattoOggi = false;
+      }
 
       p.terapie.push({
-        id: Date.now() + idx * 311,
+        id: (vecchiaDose && vecchiaDose.id) ? vecchiaDose.id : (Date.now() + idx * 311),
         ora: oraVal,
         fascia: fasciaVal,
         farmaco: farmacoNomeFinal,
@@ -12180,6 +12279,8 @@ function salvaModificaFarmaco(e) {
         cadenzaMeseAnnuale: cadMeseAnnuale,
         cadenzaGiornoAnnuale: cadGiornoAnnuale,
         fattoOggi: eraGiaFattoOggi,
+        saltatoOggi: false,
+        ultimaModificaTimestamp: Date.now(),
         tipoFormulazione: isFormatoPenna ? 'penna' : 'compressa',
         penneScorta: pScorta,
         unitaDoseDie: pDoseDie,
@@ -12200,12 +12301,13 @@ function salvaModificaFarmaco(e) {
 
   // 3. Ordina cronologicamente le terapie secondo il ciclo clinico
   p.terapie.sort(comparaOrariTerapie);
+  p.lastModified = Date.now();
 
   closeModal('modal-modifica-farmaco');
   allarmeTerapieSnoozeFinoA = 0; // Azzera qualsiasi pausa snooze appena cambi l'orario di un farmaco!
   ultimoSuonoFarmacoRitardo = 0;
   _ultimoMinutoNotificatoTerapia = '';
-  saveDb();
+  saveDb(true);
   if (typeof renderMobileNativeView === 'function') {
     try { renderMobileNativeView(p.terapie, p); } catch (e) { }
   }
@@ -15161,12 +15263,6 @@ function renderAll() {
       if (p.id === 'paz_angela' || (p.nome && (p.nome === 'Angela M.' || p.nome.startsWith('Angela M')))) p.nome = 'Angela Mazzicone';
       if (p.id === 'paz_rosa' || (p.nome && (p.nome === 'Rosa C.' || p.nome.startsWith('Rosa C')))) {
         p.nome = 'Rosa Annunziata Cavalcante';
-        (p.terapie || []).forEach(function (t) {
-          if ((t.farmaco || '').toUpperCase().indexOf('XULTOPHY') >= 0) {
-            t.ora = '17:30';
-            t.fascia = 'Pomeriggio';
-          }
-        });
       }
     });
   }
@@ -15891,6 +15987,7 @@ if (!window._smartStudioTimerStarted) {
 // Rintocco Sonoro Discreto all'Orario Esatto di Somministrazione (Soft Chime)
 let _ultimoMinutoNotificatoTerapia = '';
 function verificaRintoccoOrarioTerapiaAttuale() {
+  if (!window._initialSyncDone) return;
   const p = getActivePaziente();
   if (!p || !p.terapie) return;
 
@@ -15942,6 +16039,7 @@ function verificaRintoccoOrarioTerapiaAttuale() {
 
 const _escalationNotificataMap = {};
 function controllaEscalationTerapieNonAssunte(p, now) {
+  if (!window._initialSyncDone) return;
   if (!p || !Array.isArray(p.terapie)) return;
   const oggiKey = now.toISOString().slice(0, 10);
   const minAttuali = now.getHours() * 60 + now.getMinutes();
@@ -15967,12 +16065,15 @@ function controllaEscalationTerapieNonAssunte(p, now) {
     // STADIO 3: Oltre 20 minuti di mancata presa in carico -> Volume 95% + Traccia automatica nel Diario Consegne + Alert Coordinatore
     if (ritardoMin >= 20 && ritardoMin <= 180 && !_escalationNotificataMap[baseKey + '_st3']) {
       _escalationNotificataMap[baseKey + '_st3'] = true;
+      p.registrazioni = p.registrazioni || [];
+      const giaRegistratoOggi = p.registrazioni.some(r => r && r.id && String(r.id).startsWith('esc_') && (r.timestamp || '').startsWith(oggiKey) && (r.testo || '').includes(t.farmaco));
+      if (giaRegistratoOggi) return;
+
       fetch('/api/forza-volume-70?min=0.95', { method: 'POST' }).catch(() => { });
       suonaSegnaleDolce();
       const opTurno = localStorage.getItem('milella_user_nome') || 'Operatore in turno';
       const oraLog = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
-      p.registrazioni = p.registrazioni || [];
       p.registrazioni.unshift({
         id: 'esc_' + Date.now(),
         timestamp: now.toISOString(),
@@ -19516,7 +19617,7 @@ function getArchivioStoricoControlliPaziente(paziente) {
         ]
       }
     ];
-    saveDb();
+    try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
   }
   return p.archivioControlliInfettivi;
 }
@@ -19986,7 +20087,7 @@ function getEpatologiaDatiPaziente() {
       medicoSpecialista: 'Prof.ssa Annalisa Saracino - Clinica Malattie Infettive Policlinico Bari',
       esami: JSON.parse(JSON.stringify(PROTOCOLLO_EPATOLOGIA_BASE))
     };
-    saveDb();
+    try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
   }
   return p.epatologiaFollowUp;
 }
@@ -21019,7 +21120,7 @@ function getSchedaCronicaAttivaPaziente() {
       emailCentro: proto.emailCentro,
       esami: initialEsami
     };
-    saveDb();
+    try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
   }
 
   sincronizzaEsamiPennarelloAmbulatorio(p.cartelleCroniche[_specialitaAttivaCronica]);
@@ -21802,7 +21903,7 @@ function getPianoTerapeuticoAttivo(paziente) {
       };
       var tCiro = (p.terapie || []).find(function (item) { return (item.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
       if (tCiro) tCiro.scorta = 40;
-      saveDb();
+      try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
     }
     return p.pianoTerapeuticoDpc;
   }
@@ -21835,7 +21936,7 @@ function getPianoTerapeuticoAttivo(paziente) {
           { data: "2026-10-02", scatole: 2, puntoRitiro: "Farmacia Comunale Centrale", note: "3° Ritiro Penne" }
         ]
       };
-      saveDb();
+      try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
     }
     return p.pianoTerapeuticoDpc;
   }
@@ -21868,7 +21969,7 @@ function getPianoTerapeuticoAttivo(paziente) {
           { data: "2026-09-08", scatole: 3, puntoRitiro: "Farmacia Macario", note: "3° Tranche" }
         ]
       };
-      saveDb();
+      try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
     }
     return p.pianoTerapeuticoDpc;
   }
@@ -21901,7 +22002,7 @@ function getPianoTerapeuticoAttivo(paziente) {
           { data: "2026-08-01", scatole: 5, puntoRitiro: "Farmacia Macario", note: "3° Fornitura" }
         ]
       };
-      saveDb();
+      try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
     }
     return p.pianoTerapeuticoDpc;
   }
@@ -21931,7 +22032,7 @@ function getPianoTerapeuticoAttivo(paziente) {
         { data: new Date().toISOString().slice(0, 10), scatole: 3, puntoRitiro: p.farmaciaDiRiferimento || "Farmacia", note: "Fornitura iniziale" }
       ]
     };
-    saveDb();
+    try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
   }
 
   return p.pianoTerapeuticoDpc;
@@ -22475,7 +22576,7 @@ function getSchedaSpecialisticaAldo(p) {
       centroRiferimento: 'Distretto Socio-Sanitario Bari & ADI Domiciliare',
       esami: JSON.parse(JSON.stringify(ESAMI_ALDO_DEFAULT))
     };
-    saveDb();
+    try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
   }
   return p.schedaNeurologicaCardio;
 }
@@ -22489,7 +22590,7 @@ function getSchedaSpecialisticaAngela(p) {
       centroRiferimento: 'Cardiologia Territoriale ASL Bari',
       esami: JSON.parse(JSON.stringify(ESAMI_ANGELA_DEFAULT))
     };
-    saveDb();
+    try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
   }
   return p.schedaCardioMetabolica;
 }
@@ -22860,7 +22961,7 @@ function getSchedaSpecialisticaRosa(p) {
       centroRiferimento: 'CAD Territoriale / ASP Basilicata (Corleto Perticara)',
       esami: JSON.parse(JSON.stringify(ESAMI_ROSA_DEFAULT))
     };
-    saveDb();
+    try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
   }
   return p.schedaDiabetoCardio;
 }
@@ -27370,9 +27471,14 @@ function salvaTuttoInventarioRapido() {
       const modoInp = row.querySelector('.inv-rapido-modo');
 
       if (oraInp && oraInp.value) {
+        const oldOra = t.ora;
         t.ora = oraInp.value;
+        t.ultimaModificaTimestamp = Date.now();
         if (typeof deduciFasciaDaOrario === 'function') {
           t.fascia = deduciFasciaDaOrario(t.ora);
+        }
+        if (oldOra !== t.ora && typeof verificaStatoOrarioFarmaco === 'function' && verificaStatoOrarioFarmaco(t.ora).futuro) {
+          t.saltatoOggi = false;
         }
       }
       if (doseInp && doseInp.value !== undefined) {
@@ -27393,8 +27499,13 @@ function salvaTuttoInventarioRapido() {
   if (typeof comparaOrariTerapie === 'function') {
     p.terapie.sort(comparaOrariTerapie);
   }
-  saveDb();
+  p.lastModified = Date.now();
+  allarmeTerapieSnoozeFinoA = 0;
+  ultimoSuonoFarmacoRitardo = 0;
+  _ultimoMinutoNotificatoTerapia = '';
+  saveDb(true);
   if (typeof renderAll === 'function') renderAll();
+  if (typeof controllaTerapieGlobaliTuttiPazienti === 'function') controllaTerapieGlobaliTuttiPazienti();
   chiudiModalInventarioRapido();
   showToast(`🎉 Piano Terapeutico salvato con successo! Aggiornati ${modificate} farmaci per ${p.nome}.`, 'success');
 }

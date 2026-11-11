@@ -40,7 +40,7 @@
     if (targetPaziente && targetPaziente.id !== AppData.activePazienteId) {
       console.log('🔄 Sincronizzazione Paziente Suite:', targetPaziente.nome);
       AppData.activePazienteId = targetPaziente.id;
-      if (typeof saveDb === 'function') saveDb();
+      try { localStorage.setItem('careassist_pro_db_v2', JSON.stringify(AppData)); } catch(e) {}
       if (typeof renderAll === 'function') renderAll();
     }
 
@@ -67,7 +67,7 @@
       originalCambiaPaziente(pazId);
     } else {
       AppData.activePazienteId = pazId;
-      if (typeof saveDb === 'function') saveDb();
+      try { localStorage.setItem('careassist_pro_db_v2', JSON.stringify(AppData)); } catch(e) {}
       if (typeof renderAll === 'function') renderAll();
     }
     salvaRiferimentoCondiviso();

@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // SUITE MILELLA - 1-CLICK SMART IMPORT & ANAGRAFE CONDIVISA
 // Permette di importare con 1 clic qualsiasi soggetto presente nell'ecosistema
 // (es. Maria Carmela Stoppelli da Progetto Salute in CareAssist Pro o in Ambulatorio)
@@ -112,7 +112,11 @@ function garantisciPazientiNelContestoLocale() {
   });
 
   if (modificato) {
-    if (typeof saveDb === 'function') saveDb();
+    if (window._initialSyncDone && typeof saveDb === 'function') {
+      saveDb();
+    } else {
+      try { localStorage.setItem('careassist_pro_db_v2', JSON.stringify(AppData)); } catch(e) {}
+    }
     if (typeof renderAll === 'function') renderAll();
     if (typeof renderizzaGrigliaPazientiAsl === 'function') renderizzaGrigliaPazientiAsl();
   }
@@ -138,7 +142,7 @@ function popolaSelettoreImportSuite() {
       <div style="display:flex; align-items:center; background:#ffffff; border:1.5px solid #0284c7; border-radius:10px; padding:2px 10px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
         <span style="font-size:15px; margin-right:8px; color:#64748b;">🔍</span>
         <input type="text" id="careassist-suite-search-input" 
-               placeholder="Cerca per Nome, Anno o Telefono (es. Rosa, 1938, Z.)..." 
+               placeholder="Cerca per Nome, Anno o Telefono (es. Rosa, 1938, Zamparino)..." 
                autocomplete="off"
                onfocus="mostraDropdownCareAssistSuite(true)" 
                oninput="filtraPazientiCareAssistSuite(this.value)"

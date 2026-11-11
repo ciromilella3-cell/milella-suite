@@ -112,7 +112,11 @@ function garantisciPazientiNelContestoLocale() {
   });
 
   if (modificato) {
-    if (typeof saveDb === 'function') saveDb();
+    if (window._initialSyncDone && typeof saveDb === 'function') {
+      saveDb();
+    } else {
+      try { localStorage.setItem('careassist_pro_db_v2', JSON.stringify(AppData)); } catch(e) {}
+    }
     if (typeof renderAll === 'function') renderAll();
     if (typeof renderizzaGrigliaPazientiAsl === 'function') renderizzaGrigliaPazientiAsl();
   }
