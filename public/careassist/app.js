@@ -2672,15 +2672,19 @@ function renderPazientiSelector() {
     // 4. CAREGIVER & FAMIGLIA (CARD DEDICATA MODERNA ED ELEGANTE)
     const moglie = activeP.moglieNome ? `
       <div class="caregiver-card-modern">
-        <div class="caregiver-header-row">
-          <div class="caregiver-badge-title">
+        <div class="caregiver-header-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div class="caregiver-badge-title" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <span style="font-size:16px;">👥</span>
-            <span>Caregiver & Famiglia</span>
+            <span>Caregiver &amp; Famiglia</span>
+            <span style="background:#e0f2fe; color:#0369a1; border:1.5px solid #38bdf8; border-radius:20px; padding:2px 10px; font-size:11.5px; font-weight:800;">
+              👤 Assistito in carico: <b>${activeP.nome}</b> (${eta} anni)
+            </span>
           </div>
-          <div style="display:flex; align-items:center; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <button type="button" onclick="mostraGuidaContestuale('madre-caregiver')" class="btn" style="background:#ffffff; color:#475569; border:1px solid #cbd5e1; font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve il riferimento Caregiver">
               <span>💡</span> <span>A cosa serve</span>
             </button>
+            <span style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase;">Familiare di riferimento:</span>
             <span class="caregiver-name-val">${activeP.moglieNome}</span>
           </div>
         </div>
@@ -2967,8 +2971,11 @@ function renderPazientiSelector() {
 
       ausiliBadge = `
         <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; background:#eff6ff; border:1px solid #93c5fd; border-radius:12px; padding:10px 12px; align-items:center;">
-          <div style="width:100%; font-size:11.5px; font-weight:800; color:#1e40af; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center;">
-            <span style="display:flex; align-items:center; gap:6px;"><span>🛡️</span> AUSILI & PROTOCOLLI SANITARI ATTIVI:</span>
+          <div style="width:100%; font-size:11.5px; font-weight:800; color:#1e40af; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span>🛡️ AUSILI &amp; PROTOCOLLI SANITARI ATTIVI</span>
+              <span style="background:#0284c7; color:#ffffff; border-radius:20px; padding:2px 10px; font-size:11px; font-weight:800; text-transform:none;">👤 Paziente: <b>${activeP.nome}</b></span>
+            </span>
             <div style="display:flex; align-items:center; gap:6px;">
               <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('patologie-ausili')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:6px; padding:3px 10px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono gli Ausili e Protocolli Sanitari">💡 A cosa serve</button>
               <button type="button" class="btn btn-outline" style="background:#ffffff; color:#0284c7; border-color:#93c5fd; font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:6px; cursor:pointer;" onclick="apriModalAggiungiAusilio()" title="Aggiungi un nuovo ausilio a questo assistito">➕ Aggiungi Ausilio</button>
@@ -3154,8 +3161,13 @@ function renderPazientiSelector() {
         </div>
 
         <!-- RIGA 2: RECAPITI DOMICILIO & TELEFONI (GRIGLIA BILANCIATA A 2 CARD PIENE - NO LINEE VUOTE) -->
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; padding:0 2px;">
-          <span style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">📍 Contatti &amp; Reperibilità Domiciliare</span>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; padding:0 2px; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">📍 Contatti &amp; Reperibilità Domiciliare</span>
+            <span onclick="apriSwitchPazienteRapido()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border-radius:20px; padding:2px 11px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.25);" title="Paziente attualmente in carico (clicca per cambiare)">
+              <span>👤</span> <span>PAZIENTE: <b>${activeP.nome}</b> (${eta} anni)</span>
+            </span>
+          </div>
           <button type="button" onclick="mostraGuidaContestuale('madre-contatti')" class="btn" style="background:#ffffff; color:#0284c7; border:1px solid #bae6fd; font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono i recapiti e la navigazione GPS">
             <span>💡</span> <span>A cosa serve</span>
           </button>
@@ -3232,12 +3244,12 @@ function renderPazientiSelector() {
             </div>
 
           </div>
-          <div style="display:flex; align-items:center; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <button type="button" onclick="mostraGuidaContestuale('madre-comandi')" class="btn" style="background:#ffffff; color:#4f46e5; border:1px solid #c7d2fe; font-size:11px; font-weight:700; padding:3px 9px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa servono la Scheda 112, la Consegna Turno e il Report WhatsApp">
               <span>💡</span> <span>A cosa servono i comandi</span>
             </button>
-            <div style="font-size:12px; color:#64748b; font-weight:600; display:flex; align-items:center; gap:6px;">
-              <span>🛡️</span> <span>Cartella Clinica &bull; CareAssist Pro</span>
+            <div onclick="apriSwitchPazienteRapido()" style="background:#e0f2fe; border:1.5px solid #38bdf8; color:#0369a1; padding:3px 12px; border-radius:20px; font-size:12px; font-weight:800; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Stai operando sulla cartella di ${activeP.nome} (clicca per cambiare assistito)">
+              <span>👤</span> <span>Paziente in carico: <b style="color:#0f172a; text-transform:uppercase;">${activeP.nome}</b> (${eta} anni)</span>
             </div>
           </div>
         </div>
@@ -3259,6 +3271,7 @@ function renderPazientiSelector() {
         ${allergieBanner}
       </div>
     `;
+    if (typeof aggiornaStickyPatientBar === 'function') aggiornaStickyPatientBar();
   }
 }
 
@@ -17183,6 +17196,10 @@ function aggiornaStickyPatientBar() {
     elSub.textContent = `${eta} anni${annoStr} (${dataNascitaFmt}) • ${avInfo.simboloGenere} ${stanza}Cartella Attiva`;
   }
 
+  document.querySelectorAll('.badge-paziente-contestuale').forEach(el => {
+    el.innerHTML = `${avInfo.emoji} <span>Paziente: <b>${pulitoNome}</b> (${eta}a)</span>`;
+  });
+
   if (elAlertPill && elAlertCount) {
     const ritardiAttivi = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo);
     if (ritardiAttivi.length > 0) {
@@ -17208,17 +17225,20 @@ window.toggleTuttePatologie = function (btn) {
   if (window._stickyPatientScrollInit) return;
   window._stickyPatientScrollInit = true;
 
-  window.addEventListener('scroll', function () {
+  function handleStickyScroll() {
     const bar = document.getElementById('sticky-patient-bar');
     if (!bar) return;
-    // Appare morbidamente solo quando si scende sotto i 140px (dopo l'intestazione hero)
-    if (window.scrollY > 80) {
+    const sy = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    if (sy > 55) {
       if (typeof aggiornaStickyPatientBar === 'function') aggiornaStickyPatientBar();
       bar.classList.add('is-sticky-active');
     } else {
       bar.classList.remove('is-sticky-active');
     }
-  }, { passive: true });
+  }
+
+  window.addEventListener('scroll', handleStickyScroll, { passive: true });
+  document.addEventListener('scroll', handleStickyScroll, { passive: true, capture: true });
 })();
 
 function apriSwitchPazienteRapido() {
