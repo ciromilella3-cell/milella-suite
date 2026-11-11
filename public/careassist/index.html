@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=304">
+  <link rel="stylesheet" href="style.css?v=311">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -223,6 +223,24 @@
     <div class="header-main-bar">
       <!-- BRAND & OROLOGIO CLINICO IN TEMPO REALE -->
       <div class="header-left">
+        <!-- BOTTONE CESTINO WINDOWS MOBILE (1-TOUCH) -->
+        <button type="button" id="mobile-header-cestino-btn" class="mobile-header-cestino-btn" onclick="apriModalCestino()" title="Cestino di Windows: visualizza ed elimina o ripristina file, registrazioni e dati">
+          <svg width="18" height="18" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+            <path d="M12 14 L15.5 40.5 C15.8 42.5 17.5 44 19.5 44 L28.5 44 C30.5 44 32.2 42.5 32.5 40.5 L36 14 Z" fill="url(#winTrashGradHdrMobTop)" stroke="#0284c7" stroke-width="1.5"/>
+            <line x1="17" y1="18" x2="19" y2="40" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="24" y1="18" x2="24" y2="40" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="31" y1="18" x2="29" y2="40" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="24" cy="14" rx="12.5" ry="4" fill="#ffffff" stroke="#0284c7" stroke-width="1.5"/>
+            <defs>
+              <linearGradient id="winTrashGradHdrMobTop" x1="12" y1="14" x2="36" y2="44" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#38bdf8"/>
+                <stop offset="1" stop-color="#0284c7"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="mhdr-label" style="font-family:'Segoe UI', system-ui, sans-serif; font-weight:800;">Cestino</span>
+          <span class="cestino-count-badge" style="background:#0284c7; color:#fff; font-size:10px; font-weight:900; padding:1px 5px; border-radius:10px; display:none;">0</span>
+        </button>
         <!-- BOTTONE ALLERTA RITARDI MOBILE (1-TOUCH) -->
         <button type="button" id="mobile-header-ritardi-btn" class="mobile-header-ritardi-btn" onclick="apriAllarmiTerapieManuale()" title="Allerta Terapie in Ritardo Multi-Paziente">
           <span class="mhdr-icon">🚨</span>
@@ -450,17 +468,24 @@
         <!-- MENU TENDINA STILE WHATSAPP (3 PUNTINI ⋮) PER GLI STRUMENTI SECONDARI -->
         <div style="position:relative; display:inline-block;" id="menu-oss-top-container">
           <button type="button" onclick="toggleMenuOSSTop(event)" id="btn-menu-oss-top"
-            style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#ffffff; width:36px; height:36px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.15s ease;"
-            title="Altri registri e cruscotti">
-            <span style="font-size:20px; font-weight:900; line-height:1; letter-spacing:1px;">⋮</span>
+            style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.28); color:#ffffff; height:34px; padding:0 12px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; font-size:12px; font-weight:800; transition:all 0.15s ease;"
+            title="Altri registri, cruscotti e stampe">
+            <span style="font-size:18px; font-weight:900; line-height:1;">⋮</span>
+            <span>Registri &amp; Stampe</span>
           </button>
 
           <div id="dropdown-menu-oss-top" class="dropdown-menu-oss-top-box"
-            style="display:none; position:absolute; right:0; top:44px; z-index:999999; background:#ffffff; min-width:270px; border-radius:16px; box-shadow:0 15px 35px rgba(0,0,0,0.3); border:1.5px solid #cbd5e1; padding:8px 0; animation:menuDropAnim 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+            style="display:none; position:absolute; right:0; top:42px; z-index:999999; background:#ffffff; min-width:270px; border-radius:16px; box-shadow:0 15px 35px rgba(0,0,0,0.3); border:1.5px solid #cbd5e1; padding:8px 0; animation:menuDropAnim 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
             <div
               style="padding:6px 16px; font-size:10.5px; font-weight:900; color:#94a3b8; text-transform:uppercase; border-bottom:1px solid #f1f5f9;">
               Registri &amp; Collegamenti Suite
             </div>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalCestino();"
+              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0369a1; background:#f0f9ff; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #e0f2fe;"
+              onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f0f9ff'">
+              <span>♻️</span> <span>Cestino &amp; Ripristino Dati</span>
+              <span class="cestino-count-badge" style="display:none; background:#0284c7; color:#fff; border-radius:10px; padding:1px 6px; font-size:10.5px; margin-left:auto;">0</span>
+            </a>
             <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriRegistroSanitarioAsl();"
               style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;"
               onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
@@ -588,6 +613,50 @@
   <!-- VISTA PRINCIPALE APP MOBILE (ZERO SFORZO - STILE APPLE SALUTE / WHATSAPP) -->
   <!-- ========================================================================= -->
   <div id="careassist-native-mobile-container" class="mobile-only-app-container">
+    <!-- ICONA & BARRA CESTINO DI WINDOWS SU SMARTPHONE (PRIMA PAGINA) -->
+    <div id="mobile-first-page-win-trash-bar" class="mobile-win-trash-card" onclick="apriModalCestino()"
+      style="margin:4px 14px 12px 14px; padding:10px 14px; background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border:1.8px solid #38bdf8; border-radius:16px; display:flex; align-items:center; justify-content:space-between; gap:10px; cursor:pointer; box-shadow:0 3px 12px rgba(2,132,199,0.18);">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="position:relative; width:34px; height:34px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg width="34" height="34" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="24" cy="43" rx="13" ry="3" fill="rgba(0,0,0,0.2)"/>
+            <path d="M12 14 L15.5 40 C15.8 42 17.5 43.5 19.5 43.5 L28.5 43.5 C30.5 43.5 32.2 42 32.5 40 L36 14 Z" fill="url(#winTrashGradDashMob1)" stroke="#0284c7" stroke-width="1.3"/>
+            <line x1="17" y1="18" x2="19" y2="39" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="21.5" y1="18" x2="22.5" y2="39" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="26.5" y1="18" x2="25.5" y2="39" stroke="rgba(255,255,255,0.45)" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="31" y1="18" x2="29" y2="39" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="24" cy="28" r="5" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6 3" opacity="0.95"/>
+            <ellipse cx="24" cy="14" rx="12.5" ry="3.8" fill="url(#winRimGradDashMob1)" stroke="#0284c7" stroke-width="1.3"/>
+            <ellipse cx="24" cy="14" rx="9.5" ry="2.3" fill="#0369a1" opacity="0.35"/>
+            <defs>
+              <linearGradient id="winTrashGradDashMob1" x1="12" y1="14" x2="36" y2="44" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#38bdf8"/>
+                <stop offset="0.45" stop-color="#0284c7"/>
+                <stop offset="1" stop-color="#0369a1"/>
+              </linearGradient>
+              <linearGradient id="winRimGradDashMob1" x1="11.5" y1="10" x2="36.5" y2="18" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#ffffff"/>
+                <stop offset="0.5" stop-color="#bae6fd"/>
+                <stop offset="1" stop-color="#38bdf8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="cestino-count-badge" style="position:absolute; top:-4px; right:-6px; background:#ef4444; color:#ffffff; font-size:10px; font-weight:900; padding:1px 5px; border-radius:10px; box-shadow:0 2px 4px rgba(239,68,68,0.4); display:none;">0</span>
+        </div>
+        <div>
+          <div style="font-family:'Segoe UI', system-ui, sans-serif; font-size:13.5px; font-weight:900; color:#0369a1; line-height:1.2;">
+            Cestino di Windows
+          </div>
+          <div style="font-size:11px; font-weight:700; color:#0284c7;">
+            Recupero Dati &amp; File Eliminati
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span class="cestino-count-badge" style="background:#0284c7; color:#fff; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:900; display:none;">0</span>
+        <span style="background:#0284c7; color:#ffffff; font-size:11px; font-weight:900; padding:6px 12px; border-radius:10px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">Apri ➔</span>
+      </div>
+    </div>
     <!-- Carosello Orizzontale Assistiti a Portata di Pollice -->
     <!-- Card Assistito Attivo (Stile WhatsApp Canali) -->
     <div id="mobile-active-patient-card" class="mobile-active-patient-card"></div>
@@ -1613,6 +1682,7 @@
               <span>🗑️</span>
               <span>Elimina Selezionati (<b id="full-selected-count">0</b>)</span>
             </button>
+            </div>
           </div>
         </div>
         <div class="table-responsive">
@@ -2194,6 +2264,7 @@
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button" onclick="apriModalCestino()" style="background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.35); color:#fff; border-radius:8px; padding:4px 8px; font-size:11.5px; font-weight:800; cursor:pointer;" title="Visualizza Cestino">♻️ Cestino</button>
           <button type="button" onclick="closeModal('modal-modifica-diario-item')" style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:50%; width:30px; height:30px; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+        </div>
       </div>
       <div class="modal-body" style="padding:16px; background:#f8fafc; display:flex; flex-direction:column; gap:12px;">
         <input type="hidden" id="edit-diario-id">
@@ -3421,7 +3492,7 @@
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-          <button type="button" onclick="mostraGuidaContestuale('nuovo-farmaco')"
+          <button type="button" onclick="apriModalCestino()"
             style="background:rgba(255,255,255,0.2) !important; color:#ffffff !important; border:1px solid rgba(255,255,255,0.4) !important; padding:6px 10px !important; border-radius:8px !important; font-size:11.5px !important; font-weight:800 !important; cursor:pointer; height:34px !important; display:inline-flex; align-items:center; gap:3px;"
             title="Visualizza Cestino">
             ♻️ Cestino
@@ -4440,10 +4511,12 @@
             </div>
           </div>
         </div>
-        <button type="button" class="modal-close"
-          style="color:#ffffff !important; font-size:22px; width:34px; height:34px; border-radius:8px; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.35); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s;"
-          onclick="closeModal('modal-glicemia')" title="Chiudi finestra">✕</button>
-        <button type="button" onclick="apriModalCestino()" style="background:rgba(255,255,255,0.2); color:#fff; border:1px solid rgba(255,255,255,0.35); font-weight:800; font-size:11.5px; padding:5px 9px; border-radius:8px; cursor:pointer; margin-right:6px;" title="Visualizza Cestino">♻️ Cestino</button>
+        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+          <button type="button" onclick="apriModalCestino()" style="background:rgba(255,255,255,0.2); color:#fff; border:1px solid rgba(255,255,255,0.35); font-weight:800; font-size:11.5px; padding:5px 9px; border-radius:8px; cursor:pointer;" title="Visualizza Cestino">♻️ Cestino</button>
+          <button type="button" class="modal-close"
+            style="color:#ffffff !important; font-size:22px; width:34px; height:34px; border-radius:8px; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.35); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s;"
+            onclick="closeModal('modal-glicemia')" title="Chiudi finestra">✕</button>
+        </div>
       </div>
       <form onsubmit="salvaGlicemiaDedicata(event)">
         <div class="modal-body">
@@ -5202,13 +5275,35 @@
   </div>
 
   <!-- CESTINO & RIPRISTINO -->
-  <div class="modal-overlay" id="modal-cestino" style="display:none; z-index:20000350; position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:12px;">
+  <div class="modal-overlay" id="modal-cestino" style="display:none; z-index:25000350; position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:12px;" onclick="if(event.target===this) closeModal('modal-cestino')">
     <div class="modal-card cestino-card" style="max-width:680px; width:100%; max-height:90vh; border-radius:18px; overflow:hidden; background:#ffffff; box-shadow:0 24px 70px rgba(0,0,0,0.4); border:1.5px solid #cbd5e1; display:flex; flex-direction:column;">
       <div class="modal-header cestino-header" style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color:#ffffff; padding:13px 16px; display:flex; align-items:center; justify-content:space-between;">
         <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:26px;">♻️</span>
+          <div style="position:relative; width:30px; height:30px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="24" cy="43" rx="13" ry="3" fill="rgba(0,0,0,0.2)"/>
+              <path d="M12 14 L15.5 40 C15.8 42 17.5 43.5 19.5 43.5 L28.5 43.5 C30.5 43.5 32.2 42 32.5 40 L36 14 Z" fill="url(#winTrashGradModalHdr)" stroke="#0284c7" stroke-width="1.3"/>
+              <line x1="17" y1="18" x2="19" y2="39" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+              <line x1="24" y1="18" x2="24" y2="39" stroke="rgba(255,255,255,0.5)" stroke-width="1.8" stroke-linecap="round"/>
+              <line x1="31" y1="18" x2="29" y2="39" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="24" cy="28" r="5" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6 3" opacity="0.95"/>
+              <ellipse cx="24" cy="14" rx="12.5" ry="3.8" fill="url(#winRimGradModalHdr)" stroke="#0284c7" stroke-width="1.3"/>
+              <defs>
+                <linearGradient id="winTrashGradModalHdr" x1="12" y1="14" x2="36" y2="44" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#38bdf8"/>
+                  <stop offset="0.45" stop-color="#0284c7"/>
+                  <stop offset="1" stop-color="#0369a1"/>
+                </linearGradient>
+                <linearGradient id="winRimGradModalHdr" x1="11.5" y1="10" x2="36.5" y2="18" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#ffffff"/>
+                  <stop offset="0.5" stop-color="#bae6fd"/>
+                  <stop offset="1" stop-color="#38bdf8"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
           <div>
-            <h3 style="margin:0; font-size:16px; font-weight:800; color:#fff;">Cestino &amp; Ripristino</h3>
+            <h3 style="margin:0; font-size:16px; font-weight:800; color:#fff; font-family:'Segoe UI', system-ui, sans-serif;">Cestino di Windows</h3>
             <p style="margin:2px 0 0; font-size:11.5px; opacity:.85; color:#cbd5e1;">Ciò che elimini resta recuperabile per 60 giorni</p>
           </div>
         </div>
@@ -5220,7 +5315,7 @@
       <div class="modal-footer" style="padding:12px 16px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
         <span style="font-size:11.5px; color:#64748b;">⏳ Dopo 60 giorni gli elementi vengono eliminati per sempre.</span>
         <div style="display:flex; gap:8px; align-items:center;">
-          <button class="btn btn-outline" id="cestino-btn-svuota"
+          <button type="button" class="btn btn-outline" id="cestino-btn-svuota"
             style="color:#b91c1c; border-color:#fca5a5; background:#fef2f2; display:none; padding:8px 14px; border-radius:10px; font-weight:800;" onclick="cestinoSvuota()">🧹 Svuota Cestino</button>
           <button type="button" class="btn btn-outline" onclick="closeModal('modal-cestino')" style="padding:8px 16px; border-radius:10px; font-weight:700;">Chiudi</button>
         </div>
@@ -5228,7 +5323,7 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="modal-custom-confirm" style="z-index: 10000005;">
+  <div class="modal-overlay" id="modal-custom-confirm" style="z-index: 999999999 !important;">
     <div class="modal-card"
       style="max-width: 440px; text-align: center; border-radius: 20px; box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.4); position: relative;">
       <button type="button" class="btn btn-outline" id="confirm-modal-x-btn"
@@ -7101,8 +7196,9 @@
           <button type="button" class="btn btn-danger"
             style="background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%); padding:10px 22px; font-size:13.5px; font-weight:800; border-radius:12px; box-shadow:0 4px 14px rgba(220,38,38,0.35); border:none; color:#ffffff; cursor:pointer;"
             onclick="chiudiAllarmeTerapieGlobali()">
-          🔕 Ho Preso In Carico / Chiudi Allarme
-        </button>
+            🔕 Ho Preso In Carico / Chiudi Allarme
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -8175,7 +8271,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=304"></script>
+  <script src="app.js?v=311"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -8186,7 +8282,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=304', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=310', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
@@ -9378,15 +9474,16 @@
           </button>
         </div>
 
-        <button type="button" onclick="salvaTuttoInventarioRapido()"
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
           <button type="button" onclick="apriModalCestino()"
-          style="background:#f0fdf4; border:1.5px solid #86efac; color:#166534; padding:13px 18px; border-radius:14px; font-weight:800; font-size:14px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Visualizza Cestino & Ripristino">
-          <span>♻️</span> Cestino
-        </button>
-        <button type="button" onclick="salvaTutteModificheInventarioRapido()"
-          style="background:linear-gradient(135deg, #16a34a 0%, #15803d 100%); color:#ffffff; border:none; padding:13px 30px; border-radius:14px; font-weight:900; font-size:15.5px; cursor:pointer; box-shadow:0 5px 16px rgba(22,163,74,0.35); display:inline-flex; align-items:center; gap:8px;">
-          <span style="font-size:19px;">💾</span> Salva Modifiche Piano &amp; Orari
-        </button>
+            style="background:#f0fdf4; border:1.5px solid #86efac; color:#166534; padding:13px 18px; border-radius:14px; font-weight:800; font-size:14px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Visualizza Cestino & Ripristino">
+            <span>♻️</span> Cestino
+          </button>
+          <button type="button" onclick="salvaTuttoInventarioRapido()"
+            style="background:linear-gradient(135deg, #16a34a 0%, #15803d 100%); color:#ffffff; border:none; padding:13px 30px; border-radius:14px; font-weight:900; font-size:15.5px; cursor:pointer; box-shadow:0 5px 16px rgba(22,163,74,0.35); display:inline-flex; align-items:center; gap:8px;">
+            <span style="font-size:19px;">💾</span> Salva Modifiche Piano &amp; Orari
+          </button>
+        </div>
 
       </div>
 

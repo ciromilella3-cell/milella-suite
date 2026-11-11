@@ -2587,7 +2587,7 @@ function renderPazientiSelector() {
         ${av.emoji} ${pulito} (${eta} anni)
       </option>
     `;
-  }).join('') + '<div style="margin-top:12px; text-align:center;"><button type="button" onclick="chiudiModalSchedaClinicaMobile(); openModal(\'modal-visita\');" style="width:100%; background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; padding:11px 14px; border-radius:12px; font-size:13px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 3px 10px rgba(5,150,105,0.25);"><span style="font-size:16px;">➕</span> <span>Pianifica Nuova Visita Specialistica</span></button></div>';
+  }).join('');
 
   if (lista.length === 1) {
     select.style.pointerEvents = 'none';
@@ -3512,39 +3512,79 @@ window.eseguiAzioneLenteClinica = eseguiAzioneLenteClinica;
 function customConfirm(titolo, testo, icona = '💊', okLabel) {
   return new Promise((resolve) => {
     const modal = document.getElementById('modal-custom-confirm');
-    document.getElementById('confirm-modal-title').textContent = titolo;
-    document.getElementById('confirm-modal-text').textContent = testo;
-    document.getElementById('confirm-modal-icon').textContent = icona;
-
+    if (!modal) {
+      return resolve(window.confirm((titolo ? titolo + '\n\n' : '') + (testo || 'Confermi?')));
+    }
+    if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+    const titleEl = document.getElementById('confirm-modal-title');
+    const textEl = document.getElementById('confirm-modal-text');
+    const iconEl = document.getElementById('confirm-modal-icon');
     const btnOk = document.getElementById('confirm-modal-ok');
     const btnCancel = document.getElementById('confirm-modal-cancel');
     const btnX = document.getElementById('confirm-modal-x-btn');
-    btnOk.textContent = okLabel || 'Conferma';
 
+    if (titleEl) titleEl.textContent = titolo || 'Conferma Azione';
+    if (textEl) textEl.textContent = testo || 'Sei sicuro di voler procedere?';
+    if (iconEl) iconEl.textContent = icona || '💊';
+    if (btnOk) btnOk.textContent = okLabel || 'Conferma';
+
+    modal.style.zIndex = '999999999';
     modal.classList.add('active');
     modal.style.display = 'flex';
 
-    const handleOk = () => {
-      cleanup();
-      resolve(true);
-    };
-
-    const handleCancel = () => {
-      cleanup();
-      resolve(false);
-    };
+    let resolved = false;
 
     const cleanup = () => {
       modal.classList.remove('active');
       modal.style.display = 'none';
-      btnOk.removeEventListener('click', handleOk);
-      btnCancel.removeEventListener('click', handleCancel);
+      if (btnOk) btnOk.removeEventListener('click', handleOk);
+      if (btnCancel) btnCancel.removeEventListener('click', handleCancel);
       if (btnX) btnX.removeEventListener('click', handleCancel);
+      modal.removeEventListener('click', handleBackdrop);
+      window.removeEventListener('keydown', handleKey);
     };
 
-    btnOk.addEventListener('click', handleOk);
-    btnCancel.addEventListener('click', handleCancel);
+    const handleOk = (ev) => {
+      if (ev) ev.stopPropagation();
+      if (resolved) return;
+      resolved = true;
+      cleanup();
+      resolve(true);
+    };
+
+    const handleCancel = (ev) => {
+      if (ev) ev.stopPropagation();
+      if (resolved) return;
+      resolved = true;
+      cleanup();
+      resolve(false);
+    };
+
+    const handleBackdrop = (ev) => {
+      if (ev.target === modal) {
+        if (resolved) return;
+        resolved = true;
+        cleanup();
+        resolve(false);
+      }
+    };
+
+    const handleKey = (ev) => {
+      if (ev.key === 'Escape') {
+        if (resolved) return;
+        resolved = true;
+        cleanup();
+        resolve(false);
+      }
+    };
+
+    if (btnOk) btnOk.addEventListener('click', handleOk);
+    if (btnCancel) btnCancel.addEventListener('click', handleCancel);
     if (btnX) btnX.addEventListener('click', handleCancel);
+    modal.addEventListener('click', handleBackdrop);
+    window.addEventListener('keydown', handleKey);
   });
 }
 
@@ -3579,8 +3619,9 @@ function cestinoPulisciScaduti() {
 function cestinoAggiungi(tipo, etichetta, dettaglio, item, paz) {
   try {
     AppData._cestino = Array.isArray(AppData._cestino) ? AppData._cestino : [];
+    const entryId = 'cst_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
     AppData._cestino.unshift({
-      id: 'cst_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+      id: entryId,
       tipo: tipo,
       etichetta: etichetta || '',
       dettaglio: dettaglio || '',
@@ -3592,7 +3633,12 @@ function cestinoAggiungi(tipo, etichetta, dettaglio, item, paz) {
     });
     cestinoPulisciScaduti();
     if (AppData._cestino.length > CESTINO_MAX) AppData._cestino.length = CESTINO_MAX;
-  } catch (e) { console.warn('Cestino: impossibile archiviare', e); }
+    if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
+    return entryId;
+  } catch (e) {
+    console.warn('Cestino: impossibile archiviare', e);
+    return null;
+  }
 }
 
 function cestinoAggiornaBadge() {
@@ -3604,9 +3650,24 @@ function cestinoAggiornaBadge() {
 }
 
 function apriModalCestino() {
-  cestinoPulisciScaduti();
-  renderCestino();
-  openModal('modal-cestino');
+  try {
+    if (typeof chiudiMenuStrumenti === 'function') chiudiMenuStrumenti();
+    if (typeof chiudiMenuOSSTop === 'function') chiudiMenuOSSTop();
+    cestinoPulisciScaduti();
+    const m = document.getElementById('modal-cestino');
+    if (m && m.parentElement !== document.body) {
+      document.body.appendChild(m);
+    }
+    renderCestino();
+    openModal('modal-cestino');
+    if (m) {
+      m.style.zIndex = '25000350';
+      m.classList.add('active');
+      m.style.display = 'flex';
+    }
+  } catch (err) {
+    console.error('Errore durante apertura Cestino:', err);
+  }
 }
 
 function renderCestino() {
@@ -3617,17 +3678,18 @@ function renderCestino() {
   const btnSvuota = document.getElementById('cestino-btn-svuota');
   if (btnSvuota) btnSvuota.style.display = lista.length ? 'inline-flex' : 'none';
   if (!lista.length) {
-    box.innerHTML = '<div class="cestino-vuoto"><div style="font-size:42px;">✨</div><b>Il Cestino è vuoto</b><span>Tutto ciò che elimini compare qui e resta recuperabile per ' + CESTINO_GIORNI + ' giorni.</span></div>';
+    box.innerHTML = '<div class="cestino-vuoto"><div style="font-size:42px;">✨</div><b>Il Cestino è vuoto</b><span>Tutto ciò che elimini (farmaci, visite, note, cartelle) compare qui e resta recuperabile per ' + CESTINO_GIORNI + ' giorni.</span></div>';
     return;
   }
   box.innerHTML = lista.map(function (e) {
-    const t = CESTINO_TIPI[e.tipo] || { icona: '🗂️', nome: e.tipo };
-    const giorniRimasti = Math.max(0, Math.ceil((e.ts + CESTINO_GIORNI * 86400000 - Date.now()) / 86400000));
-    const quando = new Date(e.ts).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const t = CESTINO_TIPI[e.tipo] || { icona: '🗂️', nome: e.tipo || 'Elemento' };
+    const ts = e.ts || Date.now();
+    const giorniRimasti = Math.max(0, Math.ceil((ts + CESTINO_GIORNI * 86400000 - Date.now()) / 86400000));
+    const quando = new Date(ts).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
     return '<div class="cestino-item">' +
       '<div class="cestino-item-ico">' + t.icona + '</div>' +
       '<div class="cestino-item-body">' +
-      '<div class="cestino-item-titolo">' + cestinoEsc(e.etichetta) + '</div>' +
+      '<div class="cestino-item-titolo">' + cestinoEsc(e.etichetta || 'Elemento eliminato') + '</div>' +
       '<div class="cestino-item-meta"><span class="cestino-tag">' + cestinoEsc(t.nome) + '</span>' +
       (e.pazienteNome && e.tipo !== 'paziente' ? '<span>👤 ' + cestinoEsc(e.pazienteNome) + '</span>' : '') +
       '<span>🕒 ' + quando + '</span>' +
@@ -3635,92 +3697,139 @@ function renderCestino() {
       (e.dettaglio ? '<div class="cestino-item-dett">' + cestinoEsc(e.dettaglio) + '</div>' : '') +
       '</div>' +
       '<div class="cestino-item-azioni">' +
-      '<button class="btn cestino-btn-ripristina" onclick="cestinoRipristina(\'' + e.id + '\')">↩️ Ripristina</button>' +
-      '<button class="btn cestino-btn-elimina" onclick="cestinoEliminaDefinitivo(\'' + e.id + '\')" title="Elimina per sempre">✖</button>' +
+      '<button type="button" class="btn cestino-btn-ripristina" onclick="cestinoRipristina(\'' + e.id + '\')">↩️ Ripristina</button>' +
+      '<button type="button" class="btn cestino-btn-elimina" onclick="cestinoEliminaDefinitivo(\'' + e.id + '\')" title="Elimina per sempre">✖</button>' +
       '</div></div>';
   }).join('');
 }
 
 function cestinoRipristina(id) {
-  const lista = AppData._cestino || [];
-  const e = lista.find(function (x) { return x.id === id; });
-  if (!e) return;
-  const item = JSON.parse(JSON.stringify(e.item));
-  let messaggio = '';
+  try {
+    const lista = (AppData && Array.isArray(AppData._cestino)) ? AppData._cestino : [];
+    const e = lista.find(function (x) { return x.id === id; });
+    if (!e) return;
+    const item = JSON.parse(JSON.stringify(e.item));
+    let messaggio = '';
 
-  if (e.tipo === 'paziente') {
-    if (AppData.pazienti.some(function (p) { return p.id === item.id; })) {
-      showToast('Questa cartella è già presente.', 'warning');
+    if (e.tipo === 'paziente') {
+      if (AppData.pazienti.some(function (p) { return p.id === item.id; })) {
+        showToast('Questa cartella è già presente.', 'warning');
+      } else {
+        AppData.pazienti.push(item);
+        AppData._deletedPazienti = (AppData._deletedPazienti || []).filter(function (x) { return x !== item.id; });
+      }
+      messaggio = 'Cartella di "' + item.nome + '" ripristinata con tutti i dati.';
     } else {
-      AppData.pazienti.push(item);
-      AppData._deletedPazienti = (AppData._deletedPazienti || []).filter(function (x) { return x !== item.id; });
+      const p = (AppData.pazienti || []).find(function (x) { return x.id === e.pazienteId; }) || (typeof getActivePaziente === 'function' ? getActivePaziente() : null);
+      if (!p) {
+        showToast('La cartella di ' + (e.pazienteNome || 'questo assistito') + ' non esiste più: ripristina prima la cartella dal Cestino.', 'warning');
+        return;
+      }
+      if (e.tipo === 'terapia') {
+        p.terapie = p.terapie || [];
+        if (p.terapie.some(function (t) { return t.id === item.id; })) item.id = Date.now();
+        p.terapie.push(item);
+      } else if (e.tipo === 'visita') {
+        p.visite = p.visite || [];
+        if (p.visite.some(function (v) { return v.id === item.id; })) item.id = Date.now();
+        p.visite.push(item);
+      } else if (e.tipo === 'ausilio') {
+        p.ausili = p.ausili || [];
+        p.ausili.push(item);
+      } else if (e.tipo === 'annotazione' || e.tipo === 'glicemia') {
+        p.registrazioni = p.registrazioni || [];
+        const arr = Array.isArray(item) ? item : [item];
+        arr.forEach(function (r) {
+          if (!p.registrazioni.some(function (x) { return String(x.id) === String(r.id); })) p.registrazioni.push(r);
+        });
+      }
+      messaggio = '"' + e.etichetta + '" ripristinato per ' + (p.nome || 'l\'assistito') + '.';
     }
-    messaggio = 'Cartella di "' + item.nome + '" ripristinata con tutti i dati.';
-  } else {
-    const p = AppData.pazienti.find(function (x) { return x.id === e.pazienteId; });
-    if (!p) {
-      showToast('La cartella di ' + (e.pazienteNome || 'questo assistito') + ' non esiste più: ripristina prima la cartella dal Cestino.', 'warning');
-      return;
-    }
-    if (e.tipo === 'terapia') {
-      p.terapie = p.terapie || [];
-      if (p.terapie.some(function (t) { return t.id === item.id; })) item.id = Date.now();
-      p.terapie.push(item);
-    } else if (e.tipo === 'visita') {
-      p.visite = p.visite || [];
-      if (p.visite.some(function (v) { return v.id === item.id; })) item.id = Date.now();
-      p.visite.push(item);
-    } else if (e.tipo === 'ausilio') {
-      p.ausili = p.ausili || [];
-      p.ausili.push(item);
-    } else if (e.tipo === 'annotazione' || e.tipo === 'glicemia') {
-      p.registrazioni = p.registrazioni || [];
-      const arr = Array.isArray(item) ? item : [item];
-      arr.forEach(function (r) {
-        if (!p.registrazioni.some(function (x) { return String(x.id) === String(r.id); })) p.registrazioni.push(r);
-      });
-    }
-    messaggio = '"' + e.etichetta + '" ripristinato per ' + p.nome + '.';
-  }
 
-  AppData._cestino = lista.filter(function (x) { return x.id !== id; });
-  saveDb();
-  renderCestino();
-  if (typeof renderDiarioMobile === 'function') renderDiarioMobile();
-  if (typeof renderDiario === 'function') renderDiario();
-  showToast(messaggio + ' ↩️');
+    AppData._cestino = lista.filter(function (x) { return x.id !== id; });
+    saveDb();
+    renderCestino();
+    if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
+    if (typeof renderAll === 'function') renderAll();
+    if (typeof renderTerapie === 'function') renderTerapie();
+    if (typeof renderVisite === 'function') renderVisite();
+    if (typeof renderDashboard === 'function') renderDashboard();
+    if (typeof renderDiario === 'function') renderDiario();
+    if (typeof renderDiarioMobile === 'function') renderDiarioMobile();
+    if (typeof renderPazientiSelector === 'function') renderPazientiSelector();
+    const curP = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    if (curP && typeof renderMobileNativeView === 'function') renderMobileNativeView(curP.terapie || [], curP);
+    showToast(messaggio + ' ↩️', 'success');
+  } catch (err) {
+    console.error('Errore durante ripristino dal Cestino:', err);
+    showToast('Errore durante il ripristino.', 'danger');
+  }
 }
 
 async function cestinoEliminaDefinitivo(id) {
-  const e = (AppData._cestino || []).find(function (x) { return x.id === id; });
-  if (!e) return;
-  const ok = await customConfirm(
-    'Elimina per sempre',
-    '"' + e.etichetta + '" verrà cancellato DEFINITIVAMENTE e non sarà più recuperabile da nessuna parte.',
-    '⛔',
-    'Elimina per sempre'
-  );
-  if (!ok) return;
-  AppData._cestino = AppData._cestino.filter(function (x) { return x.id !== id; });
-  saveDb();
-  renderCestino();
-  showToast('Elemento eliminato definitivamente.');
+  try {
+    const lista = (AppData && Array.isArray(AppData._cestino)) ? AppData._cestino : [];
+    const e = lista.find(function (x) { return x.id === id; });
+    if (!e) return;
+    let ok = false;
+    try {
+      if (typeof customConfirm === 'function') {
+        ok = await customConfirm(
+          'Elimina per sempre',
+          '"' + e.etichetta + '" verrà cancellato DEFINITIVAMENTE e non sarà più recuperabile.',
+          '⛔',
+          'Elimina per sempre'
+        );
+      } else {
+        ok = confirm('Vuoi eliminare definitivamente "' + e.etichetta + '"? Non sarà più recuperabile.');
+      }
+    } catch (confErr) {
+      ok = confirm('Vuoi eliminare definitivamente "' + e.etichetta + '"? Non sarà più recuperabile.');
+    }
+    if (!ok) return;
+    AppData._cestino = lista.filter(function (x) { return x.id !== id; });
+    saveDb();
+    renderCestino();
+    if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
+    showToast('Elemento eliminato definitivamente.', 'info');
+  } catch (err) {
+    console.error('Errore eliminazione definitiva cestino:', err);
+    showToast('Errore durante l\'eliminazione.', 'danger');
+  }
 }
 
 async function cestinoSvuota() {
-  const n = (AppData._cestino || []).length;
-  if (!n) return;
-  const ok = await customConfirm(
-    'Svuota il Cestino',
-    'Verranno cancellati DEFINITIVAMENTE tutti i ' + n + ' elementi del Cestino. Dopo questa operazione non sarà più possibile recuperarli.',
-    '⛔',
-    'Svuota definitivamente'
-  );
-  if (!ok) return;
-  AppData._cestino = [];
-  saveDb();
-  renderCestino();
-  showToast('Cestino svuotato.');
+  try {
+    const n = (AppData && Array.isArray(AppData._cestino)) ? AppData._cestino.length : 0;
+    if (!n) {
+      showToast('Il Cestino è già vuoto.', 'info');
+      return;
+    }
+    let ok = false;
+    try {
+      if (typeof customConfirm === 'function') {
+        ok = await customConfirm(
+          'Svuota il Cestino',
+          'Verranno cancellati DEFINITIVAMENTE tutti i ' + n + ' elementi del Cestino. Dopo questa operazione non sarà più possibile recuperarli.',
+          '⛔',
+          'Svuota definitivamente'
+        );
+      } else {
+        ok = confirm('Verranno cancellati DEFINITIVAMENTE tutti i ' + n + ' elementi del Cestino. Procedere?');
+      }
+    } catch (confErr) {
+      ok = confirm('Verranno cancellati DEFINITIVAMENTE tutti i ' + n + ' elementi del Cestino. Procedere?');
+    }
+    if (!ok) return;
+    AppData._cestino = [];
+    saveDb();
+    renderCestino();
+    if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
+    showToast('Cestino svuotato con successo.', 'success');
+  } catch (err) {
+    console.error('Errore svuotamento cestino:', err);
+    showToast('Errore svuotamento cestino.', 'danger');
+  }
 }
 window.apriModalCestino = apriModalCestino;
 window.renderCestino = renderCestino;
@@ -7948,7 +8057,7 @@ function openModal(id) {
 
     // Inietta o aggiorna in automatico l'indicazione chiara del paziente attivo
     const p = getActivePaziente();
-    if (p && id !== 'modal-nuovo-paziente' && id !== 'modal-report-whatsapp' && id !== 'modal-scheda-118' && id !== 'modal-modifica-farmaco' && id !== 'modal-laboratorio-scotti' && id !== 'modal-archivio-storico-controlli' && id !== 'modal-diario-mobile' && id !== 'modal-modifica-diario-item') {
+    if (p && id !== 'modal-nuovo-paziente' && id !== 'modal-cestino' && id !== 'modal-report-whatsapp' && id !== 'modal-scheda-118' && id !== 'modal-modifica-farmaco' && id !== 'modal-laboratorio-scotti' && id !== 'modal-archivio-storico-controlli' && id !== 'modal-diario-mobile' && id !== 'modal-modifica-diario-item') {
       const header = el.querySelector('.modal-header');
       if (header) {
         // Cerca o crea il badge del paziente all'interno di .modal-title (layout a 2 righe pulito, zero sovrapposizioni)
@@ -27098,12 +27207,16 @@ function eliminaFarmacoDaInventarioRapido(tid) {
   if (!p || !p.terapie) return;
   const t = p.terapie.find(item => String(item.id) === String(tid));
   const nomeFarm = t ? t.farmaco : 'questo farmaco';
-  if (!confirm(`Sei sicuro di voler rimuovere "${nomeFarm}" dal piano terapeutico?`)) return;
+  if (!confirm(`Sei sicuro di voler rimuovere "${nomeFarm}" dal piano terapeutico? Finirà nel Cestino di Windows e resterà recuperabile per 60 giorni.`)) return;
+  if (t && typeof cestinoAggiungi === 'function') {
+    cestinoAggiungi('terapia', t.farmaco, (t.dosaggio || '') + (t.ora ? ' · ore ' + t.ora : ''), t, p);
+  }
   p.terapie = p.terapie.filter(item => String(item.id) !== String(tid));
   saveDb();
   if (typeof renderAll === 'function') renderAll();
+  if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
   apriModalInventarioRapido();
-  showToast(`Farmaco "${nomeFarm}" rimosso dal piano terapeutico.`, 'info');
+  showToast(`Farmaco "${nomeFarm}" spostato nel Cestino. 🗑️`, 'info');
 }
 window.eliminaFarmacoDaInventarioRapido = eliminaFarmacoDaInventarioRapido;
 
@@ -27780,10 +27893,21 @@ function renderMobileNativeView(terapie, p) {
       '<span style="font-size:15px;">✏️</span> <span>Modifica Dati</span>' +
       '</button>' +
       '</div>' +
-      '<!-- RIGA 4: CESTINO & RIPRISTINO ACCESSIBILE DA SMARTPHONE -->' +
-      '<button type="button" onclick="event.stopPropagation(); apriModalCestino()" style="min-height:40px; background:#fff1f2; color:#be123c; border:1.5px solid #fecdd3; border-radius:12px; padding:6px 12px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 1px 3px rgba(190,18,60,0.08);">' +
-      '<span style="font-size:15px;">♻️</span> <span>Cestino &amp; Ripristino (Elementi Eliminati)</span>' +
-      '<span class="cestino-count-badge" style="display:none; background:#be123c; color:#ffffff; font-size:10px; font-weight:900; padding:1px 6px; border-radius:10px;">0</span>' +
+      '<!-- RIGA 4: CESTINO DI WINDOWS ACCESSIBILE DA SMARTPHONE -->' +
+      '<button type="button" onclick="event.stopPropagation(); apriModalCestino()" style="min-height:44px; background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); color:#0369a1; border:1.8px solid #38bdf8; border-radius:14px; padding:8px 14px; font-size:12.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 2px 8px rgba(2,132,199,0.15);">' +
+      '<span style="display:inline-flex; align-items:center; justify-content:center; position:relative;">' +
+      '<svg width="22" height="22" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+      '<ellipse cx="24" cy="43" rx="13" ry="3" fill="rgba(0,0,0,0.2)"/>' +
+      '<path d="M12 14 L15.5 40 C15.8 42 17.5 43.5 19.5 43.5 L28.5 43.5 C30.5 43.5 32.2 42 32.5 40 L36 14 Z" fill="#0284c7" stroke="#0369a1" stroke-width="1.3"/>' +
+      '<line x1="17" y1="18" x2="19" y2="39" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<line x1="24" y1="18" x2="24" y2="39" stroke="rgba(255,255,255,0.5)" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<line x1="31" y1="18" x2="29" y2="39" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<circle cx="24" cy="28" r="5" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6 3" opacity="0.95"/>' +
+      '<ellipse cx="24" cy="14" rx="12.5" ry="3.8" fill="#38bdf8" stroke="#0284c7" stroke-width="1.3"/>' +
+      '</svg>' +
+      '</span>' +
+      '<span style="font-family:\'Segoe UI\', system-ui, sans-serif; font-weight:900;">Cestino di Windows</span>' +
+      '<span class="cestino-count-badge" style="display:none; background:#0284c7; color:#ffffff; font-size:10px; font-weight:900; padding:2px 7px; border-radius:10px;">0</span>' +
       '</button>' +
       '</div>' +
       '</div>' +
@@ -27795,7 +27919,7 @@ function renderMobileNativeView(terapie, p) {
       '<button type="button" onclick="avviaBriefingVocaleAssistitoDemo()" style="min-height:48px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:13px; padding:10px 12px; border-radius:14px; border:none; box-shadow:0 3px 8px rgba(2,132,199,0.25); display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer;">' +
       '<span style="font-size:18px;">🎙️</span> <span>Briefing Vocale</span>' +
       '</button>' +
-      '</div>' + +
+      '</div>' +
       '<!-- BANNER HERO INSERISCI VISITA SPECIALISTICA -->' +
       '<div style="margin:0 0 10px 0;">' +
       '<button type="button" onclick="openModal(\'modal-visita\')" style="width:100%; background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:900; font-size:13.5px; padding:12px 14px; border-radius:14px; border:2px solid #34d399; box-shadow:0 3px 10px rgba(5,150,105,0.3); display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;">' +
@@ -30499,13 +30623,18 @@ function salvaModificaDiarioItem() {
 }
 window.salvaModificaDiarioItem = salvaModificaDiarioItem;
 
-// Inizializzazione rapida Cestino di Windows & supporto apertura diretta da launcher (?open=cestino)
+// Inizializzazione rapida Cestino di Windows & supporto apertura diretta da launcher (?open=cestino o #cestino)
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(function() {
     if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
     if (window.location.search.includes('open=cestino') || window.location.hash === '#cestino') {
       if (typeof apriModalCestino === 'function') apriModalCestino();
     }
-  }, 400);
+  }, 350);
+});
+window.addEventListener('hashchange', function() {
+  if (window.location.hash === '#cestino' || window.location.hash === '#modal-cestino') {
+    if (typeof apriModalCestino === 'function') apriModalCestino();
+  }
 });
 

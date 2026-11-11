@@ -78,15 +78,21 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 10px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   flex-shrink: 0;
+  min-width: 0;
+}
+
+.mobile-header-cestino-btn {
+  display: none;
 }
 
 .brand {
@@ -172,9 +178,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 1 auto;
-  max-width: 490px;
-  min-width: 180px;
+  flex: 1 1 280px;
+  max-width: 460px;
+  min-width: 220px;
 }
 
 .patient-picker-box {
@@ -187,41 +193,45 @@ body {
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.2);
   border: 1.5px solid #0284c7;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
   transition: all 0.2s ease;
 }
 
 .patient-picker-chip {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   background: #f0f9ff;
-  padding: 4px 8px;
+  padding: 4px 7px;
   border-radius: 8px;
   border: 1px solid #bae6fd;
   flex-shrink: 0;
 }
 
 .patient-picker-icon {
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .patient-picker-label {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
   color: #0369a1;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   white-space: nowrap;
 }
 
 .patient-select-input {
-  flex: 1 1 auto;
-  min-width: 140px;
-  max-width: 215px;
+  flex: 1 1 0%;
+  min-width: 0;
+  max-width: 100%;
   width: 100%;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
   color: #0f172a;
-  padding: 5px 8px;
+  padding: 5px 6px;
   border: 1px solid transparent;
   border-radius: 8px;
   background: #f8fafc;
@@ -231,6 +241,8 @@ body {
   letter-spacing: -0.2px;
   transition: all 0.2s ease;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .patient-select-input:hover {
@@ -247,8 +259,8 @@ body {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
-  font-size: 12px !important;
-  padding: 6px 12px !important;
+  font-size: 11.5px !important;
+  padding: 5px 10px !important;
   border-radius: 8px !important;
   border: none !important;
   cursor: pointer;
@@ -271,7 +283,7 @@ body {
 .header-top-utilities {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
 }
 
@@ -280,13 +292,13 @@ body {
   color: #ffffff !important;
   border: 1px solid rgba(255, 255, 255, 0.22) !important;
   font-weight: 700 !important;
-  font-size: 12.5px !important;
-  padding: 7px 12px !important;
+  font-size: 12px !important;
+  padding: 6px 10px !important;
   border-radius: 9px !important;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   backdrop-filter: blur(6px);
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
@@ -503,6 +515,43 @@ body {
   background: rgba(220, 38, 38, 0.38) !important;
   border-color: rgba(252, 165, 165, 0.6) !important;
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35) !important;
+}
+
+@media (max-width: 1420px) {
+  .brand-sub {
+    display: none;
+  }
+  .brand-title {
+    font-size: 17.5px;
+  }
+  .header-clock-pill {
+    padding: 4px 9px;
+    gap: 6px;
+  }
+  .clock-date-text {
+    font-size: 11.5px;
+  }
+  .btn-header-utility {
+    padding: 6px 9px !important;
+    font-size: 11.5px !important;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 1150px) {
+  .header-main-bar {
+    flex-wrap: wrap;
+    gap: 8px 10px;
+  }
+  .header-center-patient {
+    flex: 1 1 260px;
+    max-width: 100%;
+  }
+  .header-top-utilities {
+    margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
 }
 
 @media (max-width: 960px) {
@@ -1851,7 +1900,7 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
 }
 
 #modal-custom-confirm {
-  z-index: 10000005 !important;
+  z-index: 999999999 !important;
 }
 
 @keyframes fadeIn {
@@ -8104,10 +8153,27 @@ main, .main-content, .dashboard-container {
 /* ==========================================================================
    ALLERTA TERAPIE MULTI-PAZIENTE MOBILE (1-TOUCH HEADER + BOTTONI)
    ========================================================================== */
-.mobile-header-ritardi-btn {
+.mobile-header-ritardi-btn,
+.mobile-header-cestino-btn {
   display: none;
 }
 @media (max-width: 768px) {
+  .mobile-header-cestino-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+    border: 1.5px solid #7dd3fc !important;
+    color: #0369a1 !important;
+    padding: 4px 9px !important;
+    border-radius: 18px !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.2) !important;
+    flex-shrink: 0 !important;
+  }
   .mobile-header-ritardi-btn {
     display: inline-flex !important;
     align-items: center !important;
@@ -10176,11 +10242,37 @@ button[onclick*="mostraGuidaContestuale"],
 }
 @media (max-width: 768px) {
   .win-desktop-floating-trash {
-    bottom: 84px;
-    right: 14px;
-    padding: 6px 8px;
-    transform: scale(0.92);
+    bottom: 84px !important;
+    right: 14px !important;
+    padding: 6px 8px !important;
+    transform: scale(0.92) !important;
+    z-index: 10000000 !important;
+    display: flex !important;
   }
+}
+
+.mobile-win-trash-card {
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-win-trash-card:active {
+  transform: scale(0.98);
+}
+.win-desktop-trash-btn-mobile-hdr {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.18);
+  transition: transform 0.15s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+.win-desktop-trash-btn-mobile-hdr:active {
+  transform: scale(0.92);
 }
 
 
