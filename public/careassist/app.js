@@ -6148,18 +6148,18 @@ function controllaTerapieGlobaliTuttiPazienti() {
           const rMin = check.minutiRitardo % 60;
           const ritardoStr = (check.minutiRitardo === 0) ? 'ADESSO (ORA ESATTA!)' : (rOre > 0 ? `+${rOre}h ${rMin}m` : `+${rMin} min`);
           return `
-            <div class="card-allarme-farmaco-item is-alert-urgent" style="background:linear-gradient(135deg, #ffffff 0%, #fffbfb 100%); border:2px solid #ef4444; border-left:5px solid #dc2626; border-radius:14px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
-              <div style="flex:1; min-width:200px;">
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:3px;">
-                  <span style="background:#fee2e2; color:#991b1b; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; letter-spacing:0.3px;">🕒 ORE ${f.ora}</span>
-                  <span style="font-size:15.5px; font-weight:800; color:#0f172a; letter-spacing:-0.2px;">${f.farmaco}</span>
+            <div class="card-allarme-farmaco-item is-alert-urgent" style="background:linear-gradient(135deg, #ffffff 0%, #fffbfb 100%); border:2px solid #ef4444; border-left:5px solid #dc2626; border-radius:14px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+              <div style="flex:1 1 380px; min-width:240px;">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+                  <span style="background:#fee2e2; color:#991b1b; font-size:11.5px; font-weight:900; padding:2px 8px; border-radius:6px; letter-spacing:0.3px;">🕒 ORE ${f.ora}</span>
+                  <span style="font-size:16px; font-weight:800; color:#0f172a; letter-spacing:-0.2px;">${f.farmaco}</span>
                 </div>
-                <div style="font-size:12px; color:#475569; font-weight:500;">
+                <div style="font-size:12.5px; color:#475569; font-weight:500;">
                   Dosaggio: <b style="color:#0f172a;">${f.dosaggio}</b>
                 </div>
-                ${f.modo ? `<div class="pill-assimilazione-avviso" style="margin-top:4px;"><span>🍽️ Assimilazione / Istruzioni:</span> <b>${f.modo}</b></div>` : ''}
+                ${f.modo ? `<div class="pill-assimilazione-avviso" style="margin-top:6px; display:block; width:100%; box-sizing:border-box; line-height:1.45;"><span style="color:#b45309; font-weight:800; margin-right:4px;">🍽️ Assimilazione / Istruzioni:</span> <b style="color:#78350f;">${f.modo}</b></div>` : ''}
               </div>
-              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; flex-shrink:0;">
                 <span style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:#ffffff !important; font-weight:800; font-size:11.5px; padding:5px 12px; border-radius:20px; box-shadow:0 2px 6px rgba(220,38,38,0.3); letter-spacing:0.3px; display:inline-flex; align-items:center; gap:4px;">
                   <span>⏰</span> ${ritardoStr}
                 </span>
