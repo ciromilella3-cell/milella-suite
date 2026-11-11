@@ -179,9 +179,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1 1 280px;
-  max-width: 460px;
-  min-width: 220px;
+  flex: 2 1 410px;
+  max-width: 560px;
+  min-width: 375px;
 }
 
 .patient-picker-box {
@@ -189,10 +189,10 @@ body {
   align-items: center;
   gap: 6px;
   background: #ffffff;
-  padding: 4px 6px 4px 8px;
-  border-radius: 12px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.2);
-  border: 1.5px solid #0284c7;
+  padding: 4px 6px;
+  border-radius: 13px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(56, 189, 248, 0.45);
+  border: 2px solid #0284c7;
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -205,10 +205,10 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
-  background: #f0f9ff;
-  padding: 4px 7px;
-  border-radius: 8px;
-  border: 1px solid #bae6fd;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  padding: 5px 8px;
+  border-radius: 9px;
+  border: 1px solid #7dd3fc;
   flex-shrink: 0;
 }
 
@@ -217,24 +217,24 @@ body {
 }
 
 .patient-picker-label {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 800;
   color: #0369a1;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.2px;
   white-space: nowrap;
 }
 
 .patient-select-input {
-  flex: 1 1 0%;
-  min-width: 0;
+  flex: 1 1 230px;
+  min-width: 215px;
   max-width: 100%;
   width: 100%;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
   color: #0f172a;
-  padding: 5px 6px;
-  border: 1px solid transparent;
-  border-radius: 8px;
+  padding: 5px 8px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 9px;
   background: #f8fafc;
   outline: none;
   cursor: pointer;
@@ -519,7 +519,7 @@ body {
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35) !important;
 }
 
-@media (max-width: 1420px) {
+@media (max-width: 1850px) {
   .brand-sub {
     display: none;
   }
@@ -529,18 +529,27 @@ body {
   }
 
   .header-clock-pill {
-    padding: 4px 9px;
+    padding: 4px 10px;
     gap: 6px;
   }
 
   .clock-date-text {
-    font-size: 11.5px;
+    font-size: 11px;
+  }
+
+  .patient-picker-label {
+    display: none;
+  }
+
+  .btn-installa-pwa span:nth-child(2),
+  .btn-notifiche span:nth-child(2) {
+    display: none;
   }
 
   .btn-header-utility {
-    padding: 6px 9px !important;
+    padding: 6px 10px !important;
     font-size: 11.5px !important;
-    gap: 4px;
+    gap: 5px;
   }
 }
 
@@ -4251,6 +4260,53 @@ textarea.form-control {
   border-right: 3.5px solid #dc2626 !important;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
+}
+
+@keyframes spotlightControlloPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 3px #2563eb, 0 0 0 7px rgba(37, 99, 235, 0.35), 0 6px 18px rgba(37, 99, 235, 0.5) !important;
+  }
+  50% {
+    transform: scale(1.09);
+    box-shadow: 0 0 0 4px #1d4ed8, 0 0 0 11px rgba(37, 99, 235, 0.55), 0 10px 26px rgba(220, 38, 38, 0.65) !important;
+  }
+}
+
+@keyframes bounceFrecciaClicca {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.controllo-somministra-target {
+  animation: spotlightControlloPulse 0.85s infinite ease-in-out !important;
+  outline: 3px solid #facc15 !important;
+  outline-offset: 2px !important;
+  position: relative !important;
+  z-index: 80 !important;
+}
+
+.badge-indicatore-clicca-qui {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  color: #ffffff !important;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 2px solid #facc15;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.55);
+  margin-bottom: 5px;
+  white-space: nowrap;
+  animation: bounceFrecciaClicca 0.75s infinite ease-in-out;
+  z-index: 85;
 }
 
 
