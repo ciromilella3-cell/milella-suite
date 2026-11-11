@@ -3698,7 +3698,7 @@ function renderCestino() {
       '</div>' +
       '<div class="cestino-item-azioni">' +
       '<button type="button" class="btn cestino-btn-ripristina" onclick="cestinoRipristina(\'' + e.id + '\')">↩️ Ripristina</button>' +
-      '<button type="button" class="btn cestino-btn-elimina" onclick="cestinoEliminaDefinitivo(\'' + e.id + '\')" title="Elimina per sempre">✖</button>' +
+      '<button type="button" class="btn cestino-btn-elimina" onclick="cestinoEliminaDefinitivo(\'' + e.id + '\')" title="Elimina definitivamente questo elemento">🗑️ Elimina definitivamente</button>' +
       '</div></div>';
   }).join('');
 }

@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v312-allarme-terapie-wide';
+const CACHE_NAME = 'careassist-pro-v313-cestino-elimina-visibile';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
