@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=314">
+  <link rel="stylesheet" href="style.css?v=315">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -1047,6 +1047,15 @@
           <div class="tile-sub" style="color:#0284c7;">Diagnosi, Allergie &amp; Anamnesi</div>
         </div>
 
+        <div class="tile" id="tile-visite-specialistiche"
+          onmouseenter="mostraLenteClinica('VISITE SPECIALISTICHE &amp; PRENOTAZIONI CUP', 'Inserisci una nuova visita specialistica o modifica un appuntamento esistente: data, orario, specialista, NRE, preparazione e navigatore Maps.', '📅', () => openModal('modal-visita'), 'Inserisci / Modifica Visita')"
+          onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-visita')"
+          style="border-color:#34d399; background:linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%);">
+          <div class="tile-icon" style="background:#dcfce7; color:#059669;">📅</div>
+          <div class="tile-title" style="color:#065f46;">Visite Specialistiche</div>
+          <div class="tile-sub" style="color:#059669;">Inserisci, Modifica &amp; CUP</div>
+        </div>
+
         <div class="tile"
           onmouseenter="mostraLenteClinica('DIARIO EVACUAZIONE ALVO & MONITORAGGIO', 'Registra evacuazione intestinale, consistenza Bristol, orario e caratteristiche feci per prevenire stipsi da allettamento.', '💩', () => openModal('modal-alvo'), 'Apri Diario Alvo')"
           onmouseleave="nascondiLenteClinica()" onclick="openModal('modal-alvo')">
@@ -1228,11 +1237,15 @@
               </button>
               <button type="button" class="btn btn-outline"
                 onclick="apriElencoCompletoVisite()"
-                style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; font-weight:800; font-size:11.5px; padding:4px 10px; border-radius:8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;"
-                title="Visualizza tutte le visite specialistiche dell'assistito">
+                style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; font-weight:800; font-size:11.5px; padding:5px 10px; border-radius:8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;"
+                title="Visualizza e filtra tutte le visite specialistiche dell'assistito">
                 <span>📋</span> <span>Tutte le visite ➔</span>
               </button>
-              <button class="btn btn-outline" onclick="openModal('modal-visita')">+ Aggiungi</button>
+              <button type="button" class="btn btn-primary" onclick="openModal('modal-visita')"
+                style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:5px; cursor:pointer; box-shadow:0 2px 6px rgba(5,150,105,0.28);"
+                title="Inserisci una nuova visita specialistica o modifica un appuntamento esistente">
+                <span>➕</span> <span>Inserisci / Modifica Visita</span>
+              </button>
             </div>
           </div>
           <div class="table-responsive">
@@ -1243,6 +1256,7 @@
                   <th>Specialista</th>
                   <th>Prestazione</th>
                   <th>Stato</th>
+                  <th>Azioni</th>
                 </tr>
               </thead>
               <tbody id="visite-preview-body">
@@ -1533,11 +1547,16 @@
       <div class="card">
         <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div class="card-title">📅 Calendario Visite Domiciliari & Prestazioni ADI</div>
-          <div style="display:flex; align-items:center; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('visite')" style="background:#eff6ff; color:#0369a1; border:1.5px solid #7dd3fc; font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Guida operativa e utilità clinica">
               <span>💡</span> <span>A cosa serve</span>
             </button>
-            <button class="btn btn-primary" onclick="openModal('modal-visita')">+ Pianifica Visita</button>
+            <button type="button" class="btn btn-outline" onclick="apriElencoCompletoVisite()" style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Apri l'elenco completo con filtri rapidi">
+              <span>📋</span> <span>Elenco &amp; Filtri Visite</span>
+            </button>
+            <button type="button" class="btn btn-primary" onclick="openModal('modal-visita')" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; box-shadow:0 2px 8px rgba(5,150,105,0.3);">
+              <span>➕</span> <span>Inserisci / Modifica Visita Specialistica</span>
+            </button>
           </div>
         </div>
         <div class="table-responsive">
@@ -8266,7 +8285,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=314"></script>
+  <script src="app.js?v=315"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {

@@ -3185,9 +3185,19 @@ function renderPazientiSelector() {
               <span style="font-size:16px;">📲</span> <span>Report Famiglia WA</span>
             </button>
 
+            <!-- TASTO VISITE SPECIALISTICHE: INSERISCI O MODIFICA VISITA -->
+            <button type="button" class="btn" onclick="openModal('modal-visita')" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:900; font-size:13px; padding:8px 16px; border-radius:10px; border:none; box-shadow:0 3px 8px rgba(5,150,105,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Inserisci una nuova visita specialistica o modifica un appuntamento già registrato">
+              <span style="font-size:16px;">📅</span> <span>Inserisci / Modifica Visita</span>
+            </button>
+
+            <!-- TASTO ELENCO VISITE SPECIALISTICHE -->
+            <button type="button" class="btn" onclick="apriElencoCompletoVisite()" style="background:#f0fdf4; color:#15803d; font-weight:800; font-size:12.5px; padding:8px 14px; border-radius:10px; border:1.5px solid #86efac; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Visualizza, filtra e modifica tutte le visite specialistiche dell'assistito">
+              <span style="font-size:15px;">📋</span> <span>Visite (${(activeP.visite || []).length})</span>
+            </button>
+
             <!-- TASTO OSS 4: MODIFICA ANAGRAFICA -->
             <button class="btn" onclick="apriModificaAnagrafica()" style="background:#f1f5f9; color:#334155; font-weight:800; font-size:12.5px; padding:8px 14px; border-radius:10px; border:1.5px solid #cbd5e1; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Modifica dati anagrafici e clinici">
-              <span style="font-size:15px;">✏️</span> <span>Modifica</span>
+              <span style="font-size:15px;">✏️</span> <span>Modifica Anagrafica</span>
             </button>
 
             <!-- MENU TENDINA 3 PUNTINI ⋮ SCHEDA ASSISTITO -->
@@ -7806,7 +7816,7 @@ function renderVisite() {
   if (!p.visite || !p.visite.length) {
     const emptyHtml = '<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:16px;">Nessuna visita o appuntamento in programma.</td></tr>';
     container.innerHTML = emptyHtml;
-    if (preview) preview.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8;">Nessun appuntamento imminente.</td></tr>';
+    if (preview) preview.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">Nessun appuntamento imminente.</td></tr>';
     return;
   }
 
@@ -7871,7 +7881,7 @@ function renderVisite() {
       return `
         <tr style="background:${isPosticipata ? '#fffbeb' : ''};">
           <td>
-            <b>${dStr}</b>
+            <b>${dStr}</b>${v.ora ? `<div style="font-size:11px; color:#0284c7; font-weight:700;">ore ${v.ora}</div>` : ''}
             ${isPosticipata ? '<div style="font-size:9.5px; color:#b45309; font-weight:800;">🔄 Posticipata</div>' : ''}
           </td>
           <td>
@@ -7881,6 +7891,17 @@ function renderVisite() {
           </td>
           <td>${v.motivo}</td>
           <td><span class="badge ${isFatto ? 'badge-success' : (isPosticipata ? 'badge-warning' : 'badge-warning')}">${isFatto ? 'Fatto' : (isPosticipata ? 'Posticipata' : 'In attesa')}</span></td>
+          <td style="white-space:nowrap;">
+            <button type="button" class="btn btn-outline" style="padding:4px 9px; font-size:11.5px; margin-right:4px; border-color:#38bdf8; background:#eff6ff; color:#0284c7; font-weight:800; cursor:pointer;" onclick="apriModificaVisita(${v.id})" title="Modifica tutti i dati della visita specialistica">
+              ✏️ Modifica
+            </button>
+            <button type="button" class="btn btn-outline" style="padding:4px 8px; font-size:11px; margin-right:4px; border-color:#fde047; background:#fffbeb; color:#854d0e; font-weight:800; cursor:pointer;" onclick="posticipaRapidoVisita(${v.id})" title="Posticipa o sposta la data della visita">
+              🔄
+            </button>
+            <button type="button" class="btn btn-outline" style="padding:4px 7px; font-size:11px; cursor:pointer;" onclick="eliminaVisita(${v.id})" title="Sposta nel Cestino">
+              🗑️
+            </button>
+          </td>
         </tr>
       `;
     }).join('');
@@ -8053,7 +8074,6 @@ function openModal(id) {
       if (prepEl) prepEl.value = '';
       if (docEl) docEl.value = "Tessera Sanitaria, Documento d'Identità, Esenzione Ticket, Piano Terapeutico";
     }
-    window._inModificaVisita = false;
 
     // Inietta o aggiorna in automatico l'indicazione chiara del paziente attivo
     const p = getActivePaziente();
@@ -28974,6 +28994,12 @@ function renderQuadroClinicoDashboard(p) {
     '</div>' +
     '</div>' +
     '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+    '<button type="button" class="btn" onclick="openModal(\'modal-visita\')" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:8px 16px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(5,150,105,0.3);" title="Inserisci una nuova visita specialistica o modifica un appuntamento esistente">' +
+    '<span>📅</span> <span>Inserisci / Modifica Visita</span>' +
+    '</button>' +
+    '<button type="button" class="btn" onclick="apriElencoCompletoVisite()" style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; font-weight:800; font-size:12px; padding:7px 12px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Apri l\'elenco di tutte le visite specialistiche">' +
+    '<span>📋</span> <span>Elenco Visite (' + (p.visite || []).length + ')</span>' +
+    '</button>' +
     '<button type="button" class="btn" onclick="vaiACartellaPatologie()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:8px 16px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(2,132,199,0.3);">' +
     '<span>🩺</span> <span>Cartella Clinica &amp; Patologie ➜</span>' +
     '</button>' +
