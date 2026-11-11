@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=313">
+  <link rel="stylesheet" href="style.css?v=314">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -839,8 +839,9 @@
           </div>
         </div>
         <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('dashboard')" style="background:#eff6ff; color:#0369a1; border:1.5px solid #7dd3fc; font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Guida all'uso del Cruscotto e utilità gestionale">
-        <span>💡</span> <span>A cosa serve questa schermata</span>
-      </button>
+          <span>💡</span> <span>A cosa serve questa schermata</span>
+        </button>
+      </div>
     </div>
 
       <!-- ALLARME ALVO INTELLIGENTE -->
@@ -1150,15 +1151,15 @@
           <div class="tile-title" style="color:#0f766e;">Interazioni Farmaci</div>
           <div class="tile-sub" style="color:#0d9488;">Controllo Sovrapposizioni</div>
         </div>
-      </div>
 
-      <div class="tile"
-        onmouseenter="mostraLenteClinica('CARTELLA CARTACEA CLINICA A4', 'Genera e stampa 5 modelli cartacei A4 compilati per il paziente attivo: Farmaci, Emergenza, Registro Posture, Parametri e Guida OSS.', '📑', () => apriModalKitCartaceo(), 'Apri Modelli A4')"
-        onmouseleave="nascondiLenteClinica()" onclick="apriModalKitCartaceo()"
-        style="border-color:#bae6fd; background:#f0f9ff;">
-        <div class="tile-icon" style="background:#e0f2fe; color:#0284c7;">📑</div>
-        <div class="tile-title" style="color:#0369a1;">Kit Cartaceo A4</div>
-        <div class="tile-sub" style="color:#0284c7;">5 Schede Cliniche Paziente</div>
+        <div class="tile"
+          onmouseenter="mostraLenteClinica('CARTELLA CARTACEA CLINICA A4', 'Genera e stampa 5 modelli cartacei A4 compilati per il paziente attivo: Farmaci, Emergenza, Registro Posture, Parametri e Guida OSS.', '📑', () => apriModalKitCartaceo(), 'Apri Modelli A4')"
+          onmouseleave="nascondiLenteClinica()" onclick="apriModalKitCartaceo()"
+          style="border-color:#bae6fd; background:#f0f9ff;">
+          <div class="tile-icon" style="background:#e0f2fe; color:#0284c7;">📑</div>
+          <div class="tile-title" style="color:#0369a1;">Kit Cartaceo A4</div>
+          <div class="tile-sub" style="color:#0284c7;">5 Schede Cliniche Paziente</div>
+        </div>
       </div>
 
       <!-- GRID INFORMATIVA PRINCIPALE -->
@@ -1291,12 +1292,6 @@
               <span>Elimina Selezionati (<b id="diario-selected-count">0</b>)</span>
             </button>
           </div>
-        </div>
-        
-        
-
-          <!-- Timeline Schede Terapie Mobile -->
-          <div id="mobile-terapie-timeline" class="mobile-timeline-cards"></div>
         </div>
 
         <div class="table-fullview-container">
@@ -8271,7 +8266,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=313"></script>
+  <script src="app.js?v=314"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {

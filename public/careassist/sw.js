@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v313-cestino-elimina-visibile';
+const CACHE_NAME = 'careassist-pro-v314-dashboard-grid-fix';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
