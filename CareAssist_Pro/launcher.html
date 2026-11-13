@@ -2201,7 +2201,7 @@
         // Se siamo su Render o online, usa l'URL pubblico esatto, altrimenti la rete locale
         var targetUrl = window.location.origin + '/launcher.html';
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            targetUrl = 'https://milella-suite.onrender.com/launcher.html';
+            targetUrl = 'https://milella-suite-un8j.onrender.com/launcher.html';
         }
         
         var urlElem = document.getElementById('qrTargetUrlText');
@@ -2263,7 +2263,7 @@
     function condividiWhatsApp() {
         var url = window.location.origin + '/launcher.html';
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            url = 'https://milella-suite.onrender.com/launcher.html';
+            url = 'https://milella-suite-un8j.onrender.com/launcher.html';
         }
         var msg = encodeURIComponent("📱 Accedi alla Suite Gestionale C. Milella:\n" + url);
         window.open("https://api.whatsapp.com/send?text=" + msg, "_blank");
@@ -4665,7 +4665,7 @@
             msg += '• 🚗 Flotta: Revisioni e tagliandi monitorati\n• 🛠️ Attrezzi: Inventario verificato e sincronizzato\n• 📦 Logistica: Consegne e ritiri operativi\n\n';
         }
 
-        msg += '🔗 *Accedi al portale:* https://milella-suite.onrender.com/launcher.html';
+        msg += '🔗 *Accedi al portale:* https://milella-suite-un8j.onrender.com/launcher.html';
         const waUrl = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
         window.open(waUrl, '_blank');
     }

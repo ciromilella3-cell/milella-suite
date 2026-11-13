@@ -1,4 +1,4 @@
-// ==============================================================================
+﻿// ==============================================================================
 // SELETTORE ASSISTITI STILE WHATSAPP CANALI (RICERCA & FILTRI ISTANTANEI)
 // ==============================================================================
 var _filtroCategoriaWhatsAppAttivo = 'tutti';
@@ -2063,7 +2063,7 @@ function saveDb(forceBeforeInitialSync, isBackgroundAutoLog) {
   inviaModificheAlServer();
 }
 
-const CAREASSIST_CLOUD_MASTER_URL = 'https://milella-suite.onrender.com';
+const CAREASSIST_CLOUD_MASTER_URL = 'https://milella-suite-un8j.onrender.com';
 
 function isLocalOrFileOrigin() {
   try {
@@ -14945,7 +14945,7 @@ function apriModalSmartphone() {
   // Determina l'URL corretto: se online o su Render usa HTTPS Cloud, altrimenti usa l'origine corrente
   var targetUrl = window.location.origin + '/careassist/';
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    targetUrl = 'https://milella-suite.onrender.com/careassist/';
+    targetUrl = 'https://milella-suite-un8j.onrender.com/careassist/';
   }
 
   // Genera dinamicamente il QR Code con l'indirizzo esatto
