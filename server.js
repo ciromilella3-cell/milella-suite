@@ -1303,6 +1303,33 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/manifest.json', (req, res) => {
+    const host = ((req.headers && req.headers.host) || req.hostname || '').toLowerCase();
+    const isP2 = host.includes('milella-suite-un8j');
+    const manifest = {
+        name: isP2 ? "Suite C. Milella 2 (5GB Attivo)" : "Suite C. Milella 1 (Primario)",
+        short_name: isP2 ? "🟢 Suite 2 (5GB)" : "🔵 Suite 1",
+        description: "Piattaforma Aziendale Unificata C. Milella",
+        start_url: "/launcher.html",
+        scope: "/",
+        display: "standalone",
+        orientation: "any",
+        background_color: "#040914",
+        theme_color: isP2 ? "#10b981" : "#0284c7",
+        icons: [
+            {
+                src: isP2 ? "/suite_mc_p2_green.png" : "/suite_mc_p1_blue.png",
+                sizes: "512x512",
+                type: "image/png",
+                purpose: "any maskable"
+            }
+        ]
+    };
+    res.setHeader('Content-Type', 'application/manifest+json');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.json(manifest);
+});
+
 app.use(express.static(path.join(__dirname, 'public'), { dotfiles: 'deny' }));
 app.use(express.static(__dirname, { dotfiles: 'deny' }));
 

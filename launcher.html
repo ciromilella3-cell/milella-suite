@@ -11,8 +11,32 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Suite Milella">
-    <link rel="icon" type="image/png" href="/icon-512.png">
-    <link rel="apple-touch-icon" href="/icon-512.png">
+    <link rel="icon" type="image/png" href="/suite_mc_official_logo.png">
+    <link rel="apple-touch-icon" href="/suite_mc_official_logo.png">
+    <script>
+      (function(){
+        try {
+          var isP2 = window.location.hostname.includes('milella-suite-un8j');
+          if (isP2) {
+            document.title = "🟢 Suite 2 (5GB) • C. Milella";
+            var appleTitle = document.querySelector("meta[name='apple-mobile-web-app-title']");
+            if (appleTitle) appleTitle.content = "🟢 Suite 2";
+            var fav = document.querySelector("link[rel='icon']");
+            if (fav) fav.href = "/suite_mc_p2_green.png";
+            var appleIcon = document.querySelector("link[rel='apple-touch-icon']");
+            if (appleIcon) appleIcon.href = "/suite_mc_p2_green.png";
+          } else {
+            document.title = "🔵 Suite 1 • C. Milella";
+            var appleTitle1 = document.querySelector("meta[name='apple-mobile-web-app-title']");
+            if (appleTitle1) appleTitle1.content = "🔵 Suite 1";
+            var fav1 = document.querySelector("link[rel='icon']");
+            if (fav1) fav1.href = "/suite_mc_p1_blue.png";
+            var appleIcon1 = document.querySelector("link[rel='apple-touch-icon']");
+            if (appleIcon1) appleIcon1.href = "/suite_mc_p1_blue.png";
+          }
+        } catch(e){}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
