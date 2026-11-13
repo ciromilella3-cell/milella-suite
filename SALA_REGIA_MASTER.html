@@ -540,6 +540,119 @@
             color: #64748b;
             font-size: 12px;
         }
+
+        /* CRUSCOTTO CLINICO ESECUTIVO ONE-LOOK */
+        .patient-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 14px;
+        }
+        @media (max-width: 900px) {
+            .patient-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .patient-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .patient-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .patient-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .patient-avatar-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(2, 132, 199, 0.3));
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .patient-status-indicator {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .psi-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .psi-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        .stat-bar-box {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+        .stat-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+        .stat-progress-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .stat-progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            transition: width 0.5s ease;
+        }
+        .patient-quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-mini-action {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #e2e8f0;
+            padding: 8px 10px;
+            font-size: 11.5px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .btn-mini-action:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(212, 175, 55, 0.4);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -776,6 +889,146 @@
                         </div>
                         <div class="tool-title">Cestino di Ripristino</div>
                         <div class="tool-desc">Visualizza, recupera o elimina definitivamente annotazioni, file e dati archiviati.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEZIONE 5: CRUSCOTTO CLINICO ESECUTIVO "ONE-LOOK" FAMILIARE (COL 12) -->
+            <div class="regia-card col-12">
+                <div class="card-header-row">
+                    <div class="card-title-group">
+                        <div class="card-icon-bubble bubble-emerald">🩺</div>
+                        <div>
+                            <h2>Quadro Clinico Familiare Esecutivo • Monitoraggio H24</h2>
+                            <p>Stato in tempo reale delle terapie, idratazione e parametri dei 3 assistiti</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button onclick="scaricaBackupIstantaneoJSON()" class="btn-action btn-glass" style="font-size:12px; padding:7px 14px;" title="Scarica copia integrale JSON protetta di tutti i pazienti">
+                            <span>💾</span> <span>Backup Istantaneo (1 Clic)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="patient-cards-grid">
+                    <!-- PAZIENTE 1: ANGELA MAZZICONE -->
+                    <div class="patient-card">
+                        <div class="patient-card-header">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div class="patient-avatar-badge">👵</div>
+                                <div>
+                                    <div style="font-size:15px; font-weight:800; color:#fff;">Angela Mazzicone</div>
+                                    <div style="font-size:11px; color:#94a3b8;">Cardiopatia &bull; Terapia Continuativa</div>
+                                </div>
+                            </div>
+                            <span class="patient-status-indicator psi-green">🟢 In Regola</span>
+                        </div>
+
+                        <div class="stat-bar-box">
+                            <div class="stat-bar-label">
+                                <span>Aderenza Terapie Odierne</span>
+                                <span style="color:#34d399;" id="prog-angela-txt">8 Farmaci Attivi</span>
+                            </div>
+                            <div class="stat-progress-track">
+                                <div class="stat-progress-fill" style="width:100%; background:linear-gradient(90deg, #10b981, #059669);"></div>
+                            </div>
+                            <div style="margin-top:6px; font-size:11px; color:#cbd5e1; display:flex; justify-content:space-between;">
+                                <span>💧 Idratazione: 1.200 ml</span>
+                                <span>🕒 Prossima: Ore 20:30</span>
+                            </div>
+                        </div>
+
+                        <div class="patient-quick-actions">
+                            <a href="https://milella-suite-un8j.onrender.com/CareAssist_Pro/index.html?paziente=paz_angela" class="btn-mini-action" style="grid-column: span 2; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; border:none;">
+                                <span>📋</span> <span>Apri Cartella Clinica Angela</span>
+                            </a>
+                            <button onclick="inviaRichiestaRicettaMMG('Angela Mazzicone', 'Cardioaspirina 100 mg, Aplactin 40 mg', '3471265971')" class="btn-mini-action">
+                                <span>📲</span> <span>Ricette WhatsApp</span>
+                            </button>
+                            <a href="https://milella-suite-un8j.onrender.com/CareAssist_Pro/index.html?paziente=paz_angela&stampa=dossier" class="btn-mini-action">
+                                <span>🖨️</span> <span>Dossier A4</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- PAZIENTE 2: ALDO ZAMPARINO -->
+                    <div class="patient-card">
+                        <div class="patient-card-header">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div class="patient-avatar-badge">👴</div>
+                                <div>
+                                    <div style="font-size:15px; font-weight:800; color:#fff;">Aldo Zamparino</div>
+                                    <div style="font-size:11px; color:#94a3b8;">91 anni &bull; Dott. Roberto Scarcia</div>
+                                </div>
+                            </div>
+                            <span class="patient-status-indicator psi-green">🟢 In Regola</span>
+                        </div>
+
+                        <div class="stat-bar-box">
+                            <div class="stat-bar-label">
+                                <span>Aderenza Terapie Odierne</span>
+                                <span style="color:#38bdf8;" id="prog-aldo-txt">7 Farmaci Attivi</span>
+                            </div>
+                            <div class="stat-progress-track">
+                                <div class="stat-progress-fill" style="width:100%; background:linear-gradient(90deg, #0284c7, #38bdf8);"></div>
+                            </div>
+                            <div style="margin-top:6px; font-size:11px; color:#cbd5e1; display:flex; justify-content:space-between;">
+                                <span>💓 PA: 125/80 mmHg</span>
+                                <span>🕒 Prossima: Ore 20:00</span>
+                            </div>
+                        </div>
+
+                        <div class="patient-quick-actions">
+                            <a href="https://milella-suite-un8j.onrender.com/CareAssist_Pro/index.html?paziente=paz_aldo" class="btn-mini-action" style="grid-column: span 2; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; border:none;">
+                                <span>📋</span> <span>Apri Cartella Clinica Aldo</span>
+                            </a>
+                            <button onclick="inviaRichiestaRicettaMMG('Aldo Zamparino', 'Bisoprololo 1,25 mg, Vimpat 100 mg, Silodyx 8 mg', '3471265971')" class="btn-mini-action">
+                                <span>📲</span> <span>Ricette WhatsApp</span>
+                            </button>
+                            <a href="https://milella-suite-un8j.onrender.com/CareAssist_Pro/index.html?paziente=paz_aldo&stampa=dossier" class="btn-mini-action">
+                                <span>🖨️</span> <span>Dossier A4</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- PAZIENTE 3: ROSA ANNUNZIATA CAVALCANTE -->
+                    <div class="patient-card">
+                        <div class="patient-card-header">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div class="patient-avatar-badge">🌸</div>
+                                <div>
+                                    <div style="font-size:15px; font-weight:800; color:#fff;">Rosa A. Cavalcante</div>
+                                    <div style="font-size:11px; color:#94a3b8;">Allettata &bull; Diario Glicemico &amp; Posture</div>
+                                </div>
+                            </div>
+                            <span class="patient-status-indicator psi-amber">🟡 Monitoraggio</span>
+                        </div>
+
+                        <div class="stat-bar-box">
+                            <div class="stat-bar-label">
+                                <span>Terapie &amp; Posture q2h</span>
+                                <span style="color:#fbbf24;" id="prog-rosa-txt">13 Farmaci Attivi</span>
+                            </div>
+                            <div class="stat-progress-track">
+                                <div class="stat-progress-fill" style="width:100%; background:linear-gradient(90deg, #f59e0b, #fbbf24);"></div>
+                            </div>
+                            <div style="margin-top:6px; font-size:11px; color:#cbd5e1; display:flex; justify-content:space-between;">
+                                <span>🩸 Glicemia: 118 mg/dl</span>
+                                <span>🔄 Postura: Decubito DX</span>
+                            </div>
+                        </div>
+
+                        <div class="patient-quick-actions">
+                            <a href="https://milella-suite-un8j.onrender.com/CareAssist_Pro/index.html?paziente=paz_rosa" class="btn-mini-action" style="grid-column: span 2; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; border:none;">
+                                <span>📋</span> <span>Apri Cartella Clinica Rosa</span>
+                            </a>
+                            <a href="https://milella-suite-un8j.onrender.com/CareAssist_Pro/DIARIO_GLICEMICO_ROSA.html" class="btn-mini-action">
+                                <span>🩸</span> <span>Glicemie</span>
+                            </a>
+                            <a href="https://milella-suite-un8j.onrender.com/CareAssist_Pro/index.html?paziente=paz_rosa&stampa=dossier" class="btn-mini-action">
+                                <span>🖨️</span> <span>Dossier A4</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1043,6 +1296,20 @@
                     origin: { y: 0.6 }
                 });
             }
+        }
+
+        // 8. Generatore Rapido Richieste Ricette WhatsApp MMG
+        function inviaRichiestaRicettaMMG(paziente, farmaci, tel) {
+            const testo = `Gentile Dottore, per l'assistito ${paziente} richiedo cortesemente la prescrizione/rinnovo per i seguenti farmaci:\n\n💊 ${farmaci}\n\nGrazie mille e cordiali saluti,\nCiro Milella`;
+            const numClean = (tel || '3471265971').replace(/[^0-9]/g, '');
+            const waPhone = numClean.startsWith('39') ? numClean : ('39' + numClean);
+            const waUrl = `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(testo)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        // 9. Scaricamento Diretto Snapshot Backup JSON
+        function scaricaBackupIstantaneoJSON() {
+            window.location.href = '/api/suite/backup-completo';
         }
 
         // Avvio radar al caricamento

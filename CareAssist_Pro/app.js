@@ -1,4 +1,4 @@
-﻿// ==============================================================================
+// ==============================================================================
 // SELETTORE ASSISTITI STILE WHATSAPP CANALI (RICERCA & FILTRI ISTANTANEI)
 // ==============================================================================
 var _filtroCategoriaWhatsAppAttivo = 'tutti';
@@ -15909,6 +15909,14 @@ window.addEventListener('DOMContentLoaded', () => {
         const btn = document.querySelector('[data-target="tab-' + targetTab + '"]') || document.querySelector('[data-target="' + targetTab + '"]');
         if (btn) btn.click();
       }, 200);
+    }
+    const stampaParam = urlParams.get('stampa');
+    if (stampaParam === 'dossier') {
+      setTimeout(() => { if (typeof apriModalDossierClinico === 'function') apriModalDossierClinico(); }, 600);
+    }
+    const openParam = urlParams.get('open');
+    if (openParam === 'ricette') {
+      setTimeout(() => { if (typeof apriModalFabbisognoRicette === 'function') apriModalFabbisognoRicette(); }, 600);
     }
   } catch (eParam) { }
   initTabs();
