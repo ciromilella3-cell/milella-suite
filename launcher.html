@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -2958,6 +2958,16 @@
         // Verifica hardware biometrico reale del dispositivo (Android Fingerprint / iOS TouchID o FaceID)
         if (window.PublicKeyCredential && window.isSecureContext) {
             try {
+                // Controllo preventivo: il dispositivo dispone fisicamente di sensore biometrico?
+                if (window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
+                    const hasBiometrics = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                    if (!hasBiometrics) {
+                        if (btnBio) btnBio.innerHTML = originalText;
+                        mostraAvvisoEleganteSensoreAssente();
+                        return;
+                    }
+                }
+
                 const rawCredId = localStorage.getItem('milella_bio_cred_id');
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
@@ -3000,10 +3010,7 @@
             } catch(eBio) {
                 console.warn('Verifica biometrica:', eBio);
                 if (btnBio) btnBio.innerHTML = originalText;
-                if (err) {
-                    err.textContent = 'Impronta annullata o non riconosciuta. Usa il tuo PIN.';
-                    err.style.display = 'block';
-                }
+                mostraAvvisoEleganteSensoreAssente();
                 return;
             }
         } else {
@@ -3012,6 +3019,47 @@
             return;
         }
     }
+
+    function mostraAvvisoEleganteSensoreAssente() {
+        const err = document.getElementById('gateErrorMsg');
+        if (err) {
+            err.innerHTML = `
+                <div style="background:rgba(15,23,42,0.95); border:1.5px solid rgba(56,189,248,0.45); border-radius:16px; padding:12px 14px; color:#e0f2fe; text-align:center; font-size:12.5px; line-height:1.45; margin-bottom:12px; box-shadow:0 8px 25px rgba(0,0,0,0.6);">
+                    <div style="font-weight:800; color:#38bdf8; margin-bottom:4px; display:flex; align-items:center; justify-content:center; gap:6px;">
+                        <span>💻</span> <span>POSTAZIONE COMPUTER DESKTOP</span>
+                    </div>
+                    Lo sblocco biometrico con impronta è attivo per <strong>Smartphone e Tablet</strong>.<br>
+                    Su questo PC accedi comodamente digitando il tuo <strong>PIN Personale</strong> qui sotto.
+                </div>
+            `;
+            err.style.display = 'block';
+        }
+        const pin = document.getElementById('inputPinGate');
+        if (pin) {
+            pin.focus();
+            pin.style.borderColor = '#d4af37';
+            pin.style.boxShadow = '0 0 15px rgba(212,175,55,0.4)';
+        }
+    }
+
+    async function adattaPulsanteBiometriaDispositivo() {
+        if (!window.PublicKeyCredential || !window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) return;
+        try {
+            const hasBio = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+            const btnBio = document.getElementById('btnBiometriaGate');
+            if (btnBio && !hasBio) {
+                btnBio.innerHTML = '<span style="font-size:18px;">💻</span> ACCESSO DA PC (USA IL PIN) <span style="font-size:11px; opacity:0.8; font-weight:600;">• Impronta per Mobile</span>';
+                btnBio.style.background = 'rgba(255,255,255,0.06)';
+                btnBio.style.borderColor = 'rgba(212,175,55,0.35)';
+                btnBio.style.color = '#f3e5ab';
+                btnBio.onclick = function() {
+                    const pin = document.getElementById('inputPinGate');
+                    if (pin) pin.focus();
+                };
+            }
+        } catch(e){}
+    }
+    window.addEventListener('DOMContentLoaded', adattaPulsanteBiometriaDispositivo);
 
     async function _vecchia_accediConImpronta_disattivata() {
         const err = document.getElementById('gateErrorMsg');
