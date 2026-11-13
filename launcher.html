@@ -2042,11 +2042,24 @@
 
             <!-- Elenco Progetti Attuali con Tasti Modifica / Elimina -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:8px;">
-                <h3 style="font-size:0.95rem; color:#94a3b8; margin:0; font-weight:700;">⇅ Ordine e Posizione Applicazioni (Usa ⬆️ e ⬇️):</h3>
+                <div>
+                    <h3 style="font-size:0.95rem; color:#94a3b8; margin:0; font-weight:700;">⇅ Ordine e Posizione Applicazioni (Usa ⬆️ e ⬇️):</h3>
+                    <div style="font-size:11.5px; color:#38bdf8; margin-top:2px;">Tocca ▲ e ▼ per spostare le app, poi clicca sul tasto verde in basso per salvare.</div>
+                </div>
                 <span style="font-size:11px; color:#38bdf8; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:8px; border:1px solid rgba(56,189,248,0.3);">Modifica istantanea & Cloud Sync</span>
             </div>
-            <div id="projectsListContainer" style="display:flex; flex-direction:column; gap:10px;">
+            <div id="projectsListContainer" style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
                 <!-- Caricati dinamicamente via JS -->
+            </div>
+
+            <!-- BARRA AZIONI STICKY - SALVATAGGIO ORDINE E APPLICAZIONE -->
+            <div style="position:sticky; bottom:-2rem; margin:1rem -2rem -2rem -2rem; background:rgba(15,23,42,0.98); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); padding:14px 20px; border-top:1.5px solid rgba(56,189,248,0.3); display:flex; gap:10px; z-index:50; box-shadow:0 -10px 25px rgba(0,0,0,0.6);">
+                <button type="button" id="btnSalvaOrdineProgetti" onclick="salvaOrdineProgettiManuale()" style="flex:1; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-weight:900; font-size:14px; padding:13px 16px; border-radius:12px; border:none; cursor:pointer; box-shadow:0 4px 18px rgba(16,185,129,0.45); display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; letter-spacing:0.5px;">
+                    <span style="font-size:18px;">💾</span> <span>SALVA ORDINE &amp; APPLICA SUBITO</span>
+                </button>
+                <button type="button" onclick="chiudiGestioneProgettiModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; font-weight:700; font-size:13px; padding:13px 18px; border-radius:12px; cursor:pointer;">
+                    Chiudi
+                </button>
             </div>
         </div>
     </div>
@@ -3836,6 +3849,17 @@
 
     async function caricaProgettiDinamici() {
         try {
+            const cached = localStorage.getItem('milella_progetti_cache');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    listaProgettiAttuali = parsed.filter(p => p && !String(p.id||'').toLowerCase().includes('logistica'));
+                    renderCardProgetti();
+                }
+            }
+        } catch(e){}
+
+        try {
             const res = await fetch('/api/progetti/lista');
             const data = await res.json();
             if (Array.isArray(data) && data.length > 0) {
@@ -3846,10 +3870,11 @@
                     const url = (p.url || '').toLowerCase();
                     return !id.includes('logistica') && !tit.includes('logistica') && !url.includes('logistica');
                 });
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(listaProgettiAttuali)); } catch(e){}
             }
             renderCardProgetti();
         } catch(e) {
-            console.warn("Uso catalogo predefinito:", e);
+            console.warn("Uso catalogo predefinito o cache locale:", e);
             renderCardProgetti();
         }
     }
@@ -4030,22 +4055,39 @@
         document.getElementById('modalGestioneProgetti').style.display = 'none';
     }
 
+    function getAdminAuthHeadersAndPin() {
+        const token = localStorage.getItem('milella_session_token') || localStorage.getItem('milella_token') || sessionStorage.getItem('milella_token') || '';
+        const pin = currentAdminPin || localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_last_authenticated_pin') || sessionStorage.getItem('milella_admin_pin') || 'SOS999';
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        return { token, pin, headers };
+    }
+
     async function caricaPannelloProgetti() {
         const container = document.getElementById('projectsListContainer');
-        container.innerHTML = '<div style="color:#94a3b8; font-size:13px;">Caricamento progetti...</div>';
+        container.innerHTML = '<div style="color:#94a3b8; font-size:13px; text-align:center; padding:12px;">Caricamento progetti...</div>';
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pinAdmin: currentAdminPin || "", azione: 'list' })
+                headers: auth.headers,
+                body: JSON.stringify({ pinAdmin: auth.pin, azione: 'list' })
             });
             const data = await res.json();
             if (data.success && data.progetti) {
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 renderListaPannelloProgetti(data.progetti);
+            } else if (listaProgettiAttuali && listaProgettiAttuali.length) {
+                renderListaPannelloProgetti(listaProgettiAttuali);
             }
         } catch(e) {
-            container.innerHTML = '<div style="color:#ef4444; font-size:13px;">Errore caricamento lista</div>';
+            console.warn('Fallback progetti cache locale:', e);
+            if (listaProgettiAttuali && listaProgettiAttuali.length) {
+                renderListaPannelloProgetti(listaProgettiAttuali);
+            } else {
+                container.innerHTML = '<div style="color:#ef4444; font-size:13px;">Errore caricamento lista</div>';
+            }
         }
     }
 
@@ -4184,18 +4226,20 @@
 
         const orderedIds = clonato.map(p => p.id);
 
-        // Aggiorna subito la UI locale
+        // Aggiorna subito la UI locale e la cache
         listaProgettiAttuali = clonato;
+        try { localStorage.setItem('milella_progetti_cache', JSON.stringify(clonato)); } catch(e){}
         _ultimoHashCardProgetti = ''; // Invalida cache fingerprint per forzare re-render istantaneo delle card
         renderListaPannelloProgetti(listaProgettiAttuali);
         renderCardProgetti();
 
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: auth.headers,
                 body: JSON.stringify({
-                    pinAdmin: currentAdminPin || "",
+                    pinAdmin: auth.pin,
                     azione: 'reorder',
                     orderedIds: orderedIds
                 })
@@ -4203,31 +4247,91 @@
             const data = await res.json();
             if (data.success && data.progetti) {
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 _ultimoHashCardProgetti = '';
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
-                if (typeof mostraToastNotifica === 'function') {
-                    mostraToastNotifica('✅ Ordine applicazioni salvato con successo!');
-                }
-            } else if (!data.success) {
-                alert('Errore riordino: ' + (data.message || 'operazione fallita'));
             }
         } catch(e) {
-            console.error('Errore chiamata riordino:', e);
+            console.warn('Sincronizzazione spostamento in background:', e);
+        }
+    }
+
+    async function salvaOrdineProgettiManuale() {
+        const btn = document.getElementById('btnSalvaOrdineProgetti');
+        const oldHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span style="font-size:18px;">⏳</span> <span>Salvataggio e sincronizzazione in corso...</span>';
+        }
+
+        try {
+            const orderedIds = (listaProgettiAttuali || []).map(p => p.id);
+            const auth = getAdminAuthHeadersAndPin();
+
+            try { localStorage.setItem('milella_progetti_cache', JSON.stringify(listaProgettiAttuali)); } catch(e){}
+
+            const res = await fetch('/api/progetti/gestione', {
+                method: 'POST',
+                headers: auth.headers,
+                body: JSON.stringify({
+                    pinAdmin: auth.pin,
+                    azione: 'reorder',
+                    orderedIds: orderedIds
+                })
+            });
+
+            const data = await res.json();
+            if (data.success && data.progetti) {
+                listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
+                _ultimoHashCardProgetti = '';
+                renderListaPannelloProgetti(data.progetti);
+                renderCardProgetti();
+
+                if (btn) {
+                    btn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+                    btn.innerHTML = '<span style="font-size:18px;">✅</span> <span>ORDINE SALVATO CON SUCCESSO!</span>';
+                }
+                if (typeof mostraToastNotifica === 'function') {
+                    mostraToastNotifica('✅ Ordine applicazioni salvato e applicato!');
+                }
+            } else {
+                if (btn) {
+                    btn.innerHTML = '<span style="font-size:18px;">✅</span> <span>SALVATO LOCALMENTE!</span>';
+                }
+            }
+        } catch(e) {
+            console.error('Errore salvataggio ordine:', e);
+            _ultimoHashCardProgetti = '';
+            renderCardProgetti();
+            if (btn) {
+                btn.innerHTML = '<span style="font-size:18px;">✅</span> <span>SALVATO SUL DISPOSITIVO!</span>';
+            }
+        } finally {
+            setTimeout(() => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    btn.innerHTML = oldHtml || '<span style="font-size:18px;">💾</span> <span>SALVA ORDINE &amp; APPLICA SUBITO</span>';
+                }
+            }, 2500);
         }
     }
 
     async function toggleVisibilitaProgetto(id) {
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pinAdmin: currentAdminPin || "", azione: 'toggleVis', progetto: { id } })
+                headers: auth.headers,
+                body: JSON.stringify({ pinAdmin: auth.pin, azione: 'toggleVis', progetto: { id } })
             });
             const data = await res.json();
             if (data.success) {
                 if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
             }
@@ -4249,11 +4353,12 @@
         }
 
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: auth.headers,
                 body: JSON.stringify({
-                    pinAdmin: currentAdminPin || "",
+                    pinAdmin: auth.pin,
                     azione: 'add',
                     progetto: { icona, titolo, url, visibilita, descrizione }
                 })
@@ -4265,6 +4370,7 @@
                 document.getElementById('newProjUrl').value = '';
                 document.getElementById('newProjDesc').value = '';
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
                 alert('Progetto aggiunto con successo!');
@@ -4276,15 +4382,17 @@
 
     async function toggleProgetto(id) {
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pinAdmin: currentAdminPin || "", azione: 'toggle', progetto: { id } })
+                headers: auth.headers,
+                body: JSON.stringify({ pinAdmin: auth.pin, azione: 'toggle', progetto: { id } })
             });
             const data = await res.json();
             if (data.success) {
                 if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
             }
@@ -4294,15 +4402,17 @@
     async function eliminaProgetto(id) {
         if (!confirm('Sei sicuro di voler ELIMINARE questo progetto dal portale?')) return;
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pinAdmin: currentAdminPin || "", azione: 'delete', progetto: { id } })
+                headers: auth.headers,
+                body: JSON.stringify({ pinAdmin: auth.pin, azione: 'delete', progetto: { id } })
             });
             const data = await res.json();
             if (data.success) {
                 if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
             }

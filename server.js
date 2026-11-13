@@ -1103,7 +1103,10 @@ app.get('/api/progetti/lista', (req, res) => {
 app.post('/api/progetti/gestione', (req, res) => {
     const { pinAdmin, azione, progetto } = req.body || {};
     const auth = authFromRequest(req);
-    const isAdmin = (auth && auth.ruolo === 'admin') || ((pinAdmin || '').trim().toUpperCase() === PIN_MASTER.toUpperCase());
+    const cleanPin = (pinAdmin || '').trim().toUpperCase();
+    const ops = loadOperatori();
+    const isOpAdmin = cleanPin && ops.some(o => o.attivo && o.ruolo === 'admin' && String(o.codice || '').trim().toUpperCase() === cleanPin);
+    const isAdmin = (auth && auth.ruolo === 'admin') || (cleanPin === PIN_MASTER.toUpperCase()) || isOpAdmin;
     if (!isAdmin) {
         return res.status(403).json({ success: false, message: "Accesso negato: operazione riservata all'amministratore." });
     }
