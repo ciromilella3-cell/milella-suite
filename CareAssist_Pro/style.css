@@ -4857,7 +4857,7 @@ textarea.form-control {
 
 
 #clinica-lente-overlay {
-  display: none;
+  display: none !important;
   position: fixed;
   top: 50%;
   left: 50%;

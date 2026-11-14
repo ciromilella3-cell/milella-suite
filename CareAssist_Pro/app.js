@@ -3025,10 +3025,7 @@ function renderPazientiSelector() {
     const telFissoStudio = (activeP.medicoTelStudio || (activeP.medicoStudio && !activeP.medicoStudio.includes('Sarconi') && !activeP.medicoStudio.includes('Via') ? activeP.medicoStudio : ''));
 
     const medicoBadge = `
-      <div class="clinica-zoom-item medico-card-box"
-           onclick="if(!event.target.closest('a, button')) mostraLenteMedicoCurante()"
-           onmouseenter="mostraLenteMedicoCurante()" 
-           onmouseleave="nascondiLenteClinica(event, false)">
+      <div class="clinica-zoom-item medico-card-box">
         
         <!-- HEADER MEDICO: NOME + MMG + STATO AMBULATORIO OGGI -->
         <div class="medico-header-row">
@@ -3131,6 +3128,21 @@ function renderPazientiSelector() {
               </div>
             </div>
           ` : ''}
+
+          <!-- ORARI AMBULATORI SETTIMANALI INLINE (SENZA POPUP INVASIVO) -->
+          <div style="margin-top:8px; padding-top:6px; border-top:1px dashed #fde047;">
+            <button type="button" onclick="toggleOrariMedicoInline(event)" style="background:#fef9c3; border:1.5px solid #facc15; border-radius:7px; color:#854d0e; font-size:11.5px; font-weight:800; padding:4px 10px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+              <span>🗓️</span> <span id="toggle-orari-medico-btn-lbl">Mostra Orari Settimanali Completi</span> <span id="toggle-orari-medico-arrow">▼</span>
+            </button>
+            <div id="box-orari-medico-inline" style="display:none; margin-top:8px; padding:10px 12px; background:#fffef0; border-radius:10px; border:1.5px solid #fef08a; font-size:12.5px; color:#451a03; line-height:1.5;">
+              <div style="font-weight:800; color:#b45309; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
+                <span>⏰</span> Orari Ricevimento Studio Medico:
+              </div>
+              <div style="color:#78350f; font-weight:600;">
+                ${(infoStudio.orariCompleti || 'Riceve su appuntamento eccetto urgenze').replace(/\n/g, '<br>')}
+              </div>
+            </div>
+          </div>
         </div>
       </div>`;
 
@@ -3140,10 +3152,7 @@ function renderPazientiSelector() {
     const farmTel = activeP.farmaciaTelefono || '';
 
     const farmaciaBadge = `
-      <div class="clinica-zoom-item farmacia-card-box"
-           onclick="if(!event.target.closest('a, button')) mostraLenteFarmacia()"
-           onmouseenter="mostraLenteFarmacia()" 
-           onmouseleave="nascondiLenteClinica(event, false)">
+      <div class="clinica-zoom-item farmacia-card-box">
         
         <!-- HEADER FARMACIA: NOME + TAG + BADGE STATO RITIRO -->
         <div class="farmacia-header-row">
@@ -3580,66 +3589,38 @@ function renderPazientiSelector() {
 
 // Ingrandimento Clinico Centrale ad Alta Leggibilità (Lente HUD al Passaggio Mouse)
 // Helper dedicati per Lente Clinica (chiamata pulita senza HTML inline nell'onmouseenter)
-function mostraLenteMedicoCurante() {
-  const p = getActivePaziente();
-  if (!p) return;
-  const medicoNome = p.medicoNome || p.medico || 'Dott. di Famiglia';
-  const medCell = p.medicoTel || p.telMedico || '';
-  const medEmail = p.medicoEmail || '';
-  const infoStudio = getInfoStudioOggi(p);
-  let sediStudioPulite = p.medicoIndirizzo || '';
-  if (!sediStudioPulite && p.medicoStudio && p.medicoStudio.includes('Sarconi')) {
-    sediStudioPulite = p.medicoStudio;
+function toggleOrariMedicoInline(event) {
+  if (event) {
+    if (event.stopPropagation) event.stopPropagation();
+    if (event.preventDefault) event.preventDefault();
   }
-  const telFissoStudio = (p.medicoTelStudio || (p.medicoStudio && !p.medicoStudio.includes('Sarconi') && !p.medicoStudio.includes('Via') ? p.medicoStudio : ''));
-
-  const html = `
-    <div style="display:flex; flex-direction:column; gap:8px; font-size:15px; color:#f8fafc; font-weight:normal; line-height:1.45;">
-      <div style="font-size:18px; font-weight:800; color:#38bdf8; border-bottom:1px solid rgba(56, 189, 248, 0.3); padding-bottom:4px; display:flex; align-items:center; justify-content:space-between;">
-        <span>🩺 ${medicoNome} <span style="font-size:12px; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px; margin-left:6px;">MMG</span></span>
-      </div>
-      ${infoStudio.testoOggi ? `<div style="background:rgba(34, 197, 94, 0.15); border:1px solid #22c55e; border-radius:8px; padding:6px 12px; color:#86efac; font-weight:700;">⏰ ${infoStudio.testoOggi}</div>` : ''}
-      <div style="display:flex; flex-direction:column; gap:6px; background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:10px;">
-        ${sediStudioPulite ? `<div>📍 <b style="color:#e2e8f0;">Sedi Studi:</b> ${sediStudioPulite}</div>` : ''}
-        ${telFissoStudio ? `<div>☎️ <b style="color:#e2e8f0;">Tel. Studio:</b> <a href="tel:${telFissoStudio.replace(/\s+/g, '')}" style="color:#38bdf8; text-decoration:none; font-weight:700; margin-left:4px;">${telFissoStudio}</a></div>` : ''}
-        ${medCell ? `<div>📱 <b style="color:#e2e8f0;">Cellulare / WhatsApp:</b> <a href="tel:${medCell.replace(/\s+/g, '')}" style="color:#38bdf8; text-decoration:none; font-weight:700; margin-left:4px;">${medCell}</a> <a href="https://wa.me/${medCell.replace(/[^0-9]/g, '')}" target="_blank" style="margin-left:8px; background:#16a34a; color:#fff; padding:3px 8px; border-radius:6px; font-size:11.5px; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:3px;">💬 WhatsApp</a></div>` : ''}
-        ${medEmail ? `<div>✉️ <b style="color:#e2e8f0;">Email:</b> <a href="mailto:${medEmail}" style="color:#38bdf8; text-decoration:none; margin-left:4px;">${medEmail}</a></div>` : ''}
-        ${p.medicoPec ? `<div>🔒 <b style="color:#fde68a;">PEC:</b> <a href="mailto:${p.medicoPec}" style="color:#fde68a; text-decoration:none; margin-left:4px;">${p.medicoPec}</a></div>` : ''}
-      </div>
-      <div style="font-size:13px; color:#94a3b8; background:rgba(255,255,255,0.03); padding:10px 12px; border-radius:10px; border-left:3px solid #38bdf8;">
-        📅 <b style="color:#e2e8f0;">Orari Settimanali Completi:</b><br>
-        <span style="color:#cbd5e1; display:inline-block; margin-top:4px;">${(infoStudio.orariCompleti || 'Riceve su appuntamento eccetto urgenze').replace(/\n/g, '<br>')}</span>
-      </div>
-    </div>
-  `;
-
-  mostraLenteClinica('Dettagli Medico Curante & Orari', html, '🩺');
+  const box = document.getElementById('box-orari-medico-inline');
+  const lbl = document.getElementById('toggle-orari-medico-btn-lbl');
+  const arrow = document.getElementById('toggle-orari-medico-arrow');
+  if (!box) return;
+  if (box.style.display === 'none' || !box.style.display) {
+    box.style.display = 'block';
+    if (lbl) lbl.textContent = 'Nascondi Orari Settimanali';
+    if (arrow) arrow.textContent = '▲';
+  } else {
+    box.style.display = 'none';
+    if (lbl) lbl.textContent = 'Mostra Orari Settimanali Completi';
+    if (arrow) arrow.textContent = '▼';
+  }
 }
+window.toggleOrariMedicoInline = toggleOrariMedicoInline;
+
+function mostraLenteMedicoCurante() {
+  // Richiesta Dr.ssa Potenza: nessun popup modale invasivo, orari integrati direttamente nella scheda paziente
+  toggleOrariMedicoInline();
+}
+window.mostraLenteMedicoCurante = mostraLenteMedicoCurante;
 
 function mostraLenteFarmacia() {
-  const p = getActivePaziente();
-  if (!p) return;
-  const farmNome = p.farmaciaDiRiferimento || 'Farmacia Territoriale';
-  const farmInd = p.farmaciaIndirizzo || 'Corleto Perticara';
-  const farmTel = p.farmaciaTelefono || '';
-
-  const html = `
-    <div style="display:flex; flex-direction:column; gap:8px; font-size:15px; color:#f8fafc; font-weight:normal; line-height:1.45;">
-      <div style="font-size:18px; font-weight:800; color:#4ade80; border-bottom:1px solid rgba(74, 222, 128, 0.3); padding-bottom:4px;">
-        💊 ${farmNome} <span style="font-size:12px; background:#16a34a; color:#fff; padding:2px 6px; border-radius:4px; margin-left:6px;">Ritiro Farmaci</span>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:6px; background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:10px;">
-        ${farmInd ? `<div>📍 <b style="color:#e2e8f0;">Indirizzo Farmacia:</b> ${farmInd}</div>` : ''}
-        ${farmTel ? `<div>📞 <b style="color:#e2e8f0;">Telefono / WhatsApp:</b> <a href="tel:${farmTel.replace(/\s+/g, '')}" style="color:#4ade80; text-decoration:none; font-weight:700; margin-left:4px;">${farmTel}</a></div>` : ''}
-      </div>
-      <div style="font-size:13px; color:#94a3b8; font-style:italic;">
-        Presidio farmaceutico convenzionato per ritiro ricette e dispensazione piano terapeutico.
-      </div>
-    </div>
-  `;
-
-  mostraLenteClinica('Farmacia di Riferimento Assistito', html, '💊');
+  // Disattivato popup invasivo su richiesta del medico
+  return;
 }
+window.mostraLenteFarmacia = mostraLenteFarmacia;
 
 let _isOverTrigger = false;
 let _isOverOverlay = false;
@@ -3647,110 +3628,15 @@ let _lenteHideTimer = null;
 let _currentLenteActionFn = null;
 
 function mostraLenteClinica(titolo, testo, icona = '🩺', actionFn = null, actionLabel = 'Apri Scheda') {
-  _isOverTrigger = true;
-  if (_lenteHideTimer) {
-    clearTimeout(_lenteHideTimer);
-    _lenteHideTimer = null;
-  }
-
+  // Disattivato permanentemente su richiesta del Medico Curante (Dr.ssa Carolina Potenza):
+  // Eliminati tutti i popup invasivi che coprono la schermata e la cartella del paziente.
   const overlay = document.getElementById('clinica-lente-overlay');
-  const txtTitolo = document.getElementById('lente-titolo');
-  const txtCorpo = document.getElementById('lente-testo');
-  const txtIcona = document.getElementById('lente-icona');
-  const btnApri = document.getElementById('btn-apri-lente');
-  const lblApri = document.getElementById('btn-apri-lente-label');
-  const hintBox = document.getElementById('lente-hint');
-
-  if (!overlay || !txtCorpo) return;
-
-  if (!icona || icona === '??' || icona === '?') {
-    icona = '🩺';
+  if (overlay) {
+    overlay.style.display = 'none';
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
   }
-
-  if (txtTitolo) txtTitolo.textContent = titolo || 'Quadro Clinico Assistito';
-  if (txtCorpo) {
-    if (typeof testo === 'string' && (testo.includes('<') || testo.includes('&'))) {
-      txtCorpo.innerHTML = testo;
-      txtCorpo.style.fontSize = '15.5px';
-      txtCorpo.style.fontWeight = '500';
-    } else {
-      const cleanNum = (n) => (n || '').replace(/[^0-9+]/g, '');
-      const waNum = (n) => {
-        const c = cleanNum(n);
-        if (!c) return '';
-        return c.startsWith('39') || c.startsWith('+39') ? c.replace('+', '') : '39' + c;
-      };
-
-      // Riconoscimento intelligente di numeri di telefono (fissi o cellulari)
-      const isTelefono = testo && /^[0-9\s\+\-\.\/]{6,20}$/.test(testo.trim());
-
-      if (isTelefono) {
-        const numPuro = cleanNum(testo);
-        const isCellulare = numPuro.startsWith('3') || numPuro.startsWith('+393') || numPuro.startsWith('00393') || numPuro.length >= 10;
-        txtCorpo.innerHTML = `
-          <div style="font-size:24px; font-weight:900; letter-spacing:0.8px; color:#ffffff; margin-bottom:14px; font-family:'Outfit',monospace;">
-            ${testo}
-          </div>
-          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
-            <a href="tel:${numPuro}" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(16,185,129,0.4); flex:1; justify-content:center;">
-              <span style="font-size:18px;">📞</span> Chiama Ora
-            </a>
-            ${isCellulare ? `
-              <a href="sms:${numPuro}" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(2,132,199,0.4); flex:1; justify-content:center;">
-                <span style="font-size:18px;">✉️</span> Invia SMS
-              </a>
-              <a href="https://api.whatsapp.com/send?phone=${waNum(testo)}" target="_blank" style="background:linear-gradient(135deg, #25d366 0%, #128c7e 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(37,211,102,0.4); flex:1; justify-content:center;">
-                <span style="font-size:18px;">💬</span> WhatsApp
-              </a>
-            ` : `
-              <a href="https://api.whatsapp.com/send?phone=${waNum(testo)}" target="_blank" style="background:linear-gradient(135deg, #25d366 0%, #128c7e 100%); color:#ffffff; font-weight:800; font-size:13.5px; padding:10px 18px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 3px 10px rgba(37,211,102,0.4); flex:1; justify-content:center;">
-                <span style="font-size:18px;">💬</span> WhatsApp
-              </a>
-            `}
-          </div>
-        `;
-      } else {
-        txtCorpo.textContent = testo || '';
-        txtCorpo.style.fontSize = (testo && testo.length > 80) ? '17px' : '20px';
-        txtCorpo.style.fontWeight = '600';
-      }
-    }
-  }
-  if (txtIcona) txtIcona.textContent = icona;
-
-  // Gestione dinamica del pulsante e dell'azione Apri Scheda / Modulo
-  if (actionFn && (typeof actionFn === 'function' || typeof actionFn === 'string')) {
-    _currentLenteActionFn = actionFn;
-    if (btnApri) {
-      btnApri.style.display = 'inline-flex';
-      btnApri.disabled = false;
-      btnApri.setAttribute('aria-hidden', 'false');
-    }
-    if (lblApri) {
-      lblApri.textContent = actionLabel || 'Apri Scheda';
-    }
-    if (hintBox) {
-      hintBox.style.display = 'flex';
-    }
-  } else {
-    _currentLenteActionFn = null;
-    if (btnApri) {
-      btnApri.style.display = 'none';
-      btnApri.setAttribute('aria-hidden', 'true');
-    }
-    if (hintBox) {
-      hintBox.style.display = 'none';
-    }
-  }
-
-  overlay.style.pointerEvents = 'auto';
-  overlay.style.display = 'block';
-
-  requestAnimationFrame(() => {
-    overlay.style.transition = 'opacity 0.16s ease, transform 0.16s ease';
-    overlay.style.opacity = '1';
-    overlay.style.transform = 'translate(-50%, -50%) scale(1)';
-  });
+  return;
 }
 
 function eseguiAzioneLenteClinica(event) {
@@ -3758,59 +3644,16 @@ function eseguiAzioneLenteClinica(event) {
     if (event.preventDefault) event.preventDefault();
     if (event.stopPropagation) event.stopPropagation();
   }
-  const fn = _currentLenteActionFn;
   nascondiLenteClinica(event, true);
-  if (fn) {
-    try {
-      if (typeof fn === 'function') {
-        fn();
-      } else if (typeof fn === 'string') {
-        new Function(fn)();
-      }
-    } catch (err) {
-      console.error('Errore durante esecuzione azione lente clinica:', err);
-    }
-  }
 }
 
 function nascondiLenteClinica(event, immediate = false) {
-  if (event && event.stopPropagation) event.stopPropagation();
-
-  if (immediate) {
-    _isOverTrigger = false;
-    _isOverOverlay = false;
-    if (_lenteHideTimer) {
-      clearTimeout(_lenteHideTimer);
-      _lenteHideTimer = null;
-    }
-    const overlay = document.getElementById('clinica-lente-overlay');
-    if (!overlay) return;
+  const overlay = document.getElementById('clinica-lente-overlay');
+  if (overlay) {
+    overlay.style.display = 'none';
     overlay.style.opacity = '0';
-    overlay.style.transform = 'translate(-50%, -50%) scale(0.95)';
-    setTimeout(() => {
-      if (!_isOverTrigger && !_isOverOverlay) {
-        overlay.style.display = 'none';
-      }
-    }, 150);
-    return;
+    overlay.style.pointerEvents = 'none';
   }
-
-  // Uscita dal mouse: chiudi solo se il cursore non si trova né sul trigger né sulla scheda overlay
-  _isOverTrigger = false;
-  if (_lenteHideTimer) clearTimeout(_lenteHideTimer);
-  _lenteHideTimer = setTimeout(() => {
-    if (!_isOverTrigger && !_isOverOverlay) {
-      const overlay = document.getElementById('clinica-lente-overlay');
-      if (!overlay) return;
-      overlay.style.opacity = '0';
-      overlay.style.transform = 'translate(-50%, -50%) scale(0.95)';
-      setTimeout(() => {
-        if (!_isOverTrigger && !_isOverOverlay) {
-          overlay.style.display = 'none';
-        }
-      }, 150);
-    }
-  }, 400);
 }
 
 // Chiudi HUD lente al tocco o click all'esterno (senza backdrop bloccante)
