@@ -870,10 +870,150 @@
   
 </style>
 <style>
-/* #btnLogistica visibile */
-@media (min-width: 769px) { #btnLogistica { display: flex !important; } }
-</style>
-<style>@media (max-width: 768px) { #floatingControlBar { display: none !important; } .container { padding: 1.2rem 1rem !important; } .cards-wrapper { grid-template-columns: 1fr !important; gap: 14px !important; } .card { border-radius: 20px !important; padding: 1.5rem 1.2rem !important; background: rgba(17, 24, 39, 0.65) !important; border: 1.5px solid rgba(212, 175, 55, 0.25) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; } .card:active { transform: scale(0.98) !important; border-color: #d4af37 !important; } .card-icon { font-size: 3rem !important; margin-bottom: 0.8rem !important; filter: drop-shadow(0 4px 12px rgba(212,175,55,0.4)) !important; } .card-title { font-size: 1.35rem !important; font-weight: 800 !important; letter-spacing: 0.5px !important; color: #ffffff !important; margin-bottom: 0.4rem !important; } .card-desc { font-size: 0.88rem !important; color: #94a3b8 !important; line-height: 1.45 !important; } }</style>    <script src="/auth_token.js"></script>
+/* Responsive layout mobile e desktop */
+@media (min-width: 769px) { 
+  #btnLogistica { display: flex !important; } 
+}
+
+@media (max-width: 768px) {
+  #floatingControlBar { display: none !important; }
+  .container { 
+    width: 100% !important; 
+    max-width: 100% !important; 
+    padding: 8px 10px 40px !important; 
+    box-sizing: border-box !important;
+  }
+  
+  /* TOP COMMAND EXECUTIVE HEADER STICKY SU SMARTPHONE */
+  .top-command-header {
+    position: sticky !important;
+    top: 4px !important;
+    z-index: 1000 !important;
+    margin: 0 auto 12px auto !important;
+    padding: 8px 10px !important;
+    border-radius: 16px !important;
+    background: rgba(10, 18, 36, 0.96) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+    border: 1.5px solid rgba(212, 175, 55, 0.4) !important;
+  }
+  .top-command-row-status {
+    gap: 6px !important;
+  }
+  .top-badge-user {
+    padding: 5px 8px !important;
+    font-size: 11px !important;
+  }
+  .top-badge-cloud {
+    padding: 5px 8px !important;
+    font-size: 10.5px !important;
+  }
+  .top-btn-logout {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+    height: 28px !important;
+  }
+  .top-command-grid-actions {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 6px !important;
+    margin-top: 8px !important;
+    padding-bottom: 3px !important;
+    scrollbar-width: none !important;
+  }
+  .top-command-grid-actions::-webkit-scrollbar {
+    display: none !important;
+  }
+  .top-action-chip {
+    flex: 0 0 auto !important;
+    height: 34px !important;
+    font-size: 11px !important;
+    padding: 0 10px !important;
+    border-radius: 10px !important;
+  }
+  
+  /* Intestazione C. MILELLA su mobile compatta */
+  .header {
+    margin-bottom: 12px !important;
+  }
+  .header h2 {
+    font-size: 10.5px !important;
+    letter-spacing: 2px !important;
+  }
+  .header h1 {
+    font-size: 1.9rem !important;
+  }
+
+  /* KPI Box in griglia 2x2 su mobile */
+  #kpiDashboardBar {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+  }
+  .kpi-card-interactive {
+    padding: 8px 6px !important;
+    border-radius: 14px !important;
+  }
+
+  /* Cards Wrapper a colonna singola pulita */
+  .cards-wrapper { 
+    grid-template-columns: 1fr !important; 
+    gap: 12px !important; 
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* CARD SEGUGIO STILE BIANCO ORIGINALE CON TITOLO BLU SCURO VISIBILISSIMO */
+  .card.segugio-card {
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 18px !important;
+    padding: 14px 14px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    text-align: left !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
+  }
+  .card.segugio-card:active {
+    transform: scale(0.985) !important;
+    border-color: #0284c7 !important;
+  }
+  .segugio-icon-badge {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    font-size: 24px !important;
+  }
+  .segugio-title,
+  .card.segugio-card .card-title,
+  .card.segugio-card .segugio-title { 
+    font-size: 16px !important; 
+    font-weight: 800 !important; 
+    letter-spacing: -0.2px !important; 
+    color: #0f3d6c !important; /* BLU SCURO INTENSO, MAI PIÙ BIANCO INVISIBILE! */
+    margin: 0 0 3px 0 !important; 
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  } 
+  .segugio-desc,
+  .card.segugio-card .card-desc,
+  .card.segugio-card .segugio-desc { 
+    font-size: 12px !important; 
+    color: #64748b !important; 
+    line-height: 1.35 !important; 
+  }
+}
+</style>    <script src="/auth_token.js"></script>
     <script src="/qrcode.min.js"></script>
 
 
@@ -4022,9 +4162,9 @@
                     <div class="segugio-icon-badge">${p.icona || '📁'}</div>
                     <div class="segugio-content">
                         <div class="segugio-title-row">
-                            <div class="segugio-title card-title">${p.titolo} ${richiedePin ? '<span style="font-size:12px; vertical-align:middle; opacity:0.85;" title="Richiede PIN Master/Admin">🔒</span>' : ''}</div>
+                            <div class="segugio-title" style="color:#0f3d6c !important; font-size:16px !important; font-weight:800 !important; display:block !important; visibility:visible !important; opacity:1 !important; margin-bottom:3px !important;">${p.titolo} ${richiedePin ? '<span style="font-size:12px; vertical-align:middle; opacity:0.85;" title="Richiede PIN Master/Admin">🔒</span>' : ''}</div>
                         </div>
-                        <div class="segugio-desc card-desc">${p.descrizione || ''}</div>
+                        <div class="segugio-desc" style="color:#64748b !important; font-size:12.5px !important; line-height:1.35 !important;">${p.descrizione || ''}</div>
                         ${extraBadgeHtml}
                         ${quickActionsHtml}
                     </div>
