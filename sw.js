@@ -1,5 +1,5 @@
-// Service Worker - Suite Gestionale C. Milella (PWA & Offline Support)
-const CACHE_NAME = 'milella-suite-v211';
+// Service Worker - Suite Gestionale C. Milella (PWA & Offline Support - Network First Sempre Aggiornato)
+const CACHE_NAME = 'milella-suite-v215';
 const CORE_ASSETS = [
   '/',
   '/launcher.html',
@@ -33,17 +33,16 @@ self.addEventListener('fetch', (event) => {
   // Non cachare chiamate API dinamiche o MongoDB
   if (url.includes('/api/')) return;
 
+  // Network-First: scarica sempre l'ultima versione live da Render, usa la cache solo se offline!
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
+    fetch(event.request, { cache: 'no-cache' })
+      .then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const toCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, toCache));
         }
         return networkResponse;
-      }).catch(() => cachedResponse);
-
-      return cachedResponse || fetchPromise;
-    })
+      })
+      .catch(() => caches.match(event.request, { ignoreSearch: true }))
   );
 });

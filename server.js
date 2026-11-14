@@ -655,10 +655,10 @@ app.get(['/stanza-regia', '/regia', '/STANZA_REGIA_MASTER.html'], (req, res) => 
 
 app.get('/launcher.html', (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    const p1 = path.join(__dirname, 'public', 'launcher.html');
-    const p2 = path.join(__dirname, 'launcher.html');
-    if (fs.existsSync(p1)) return res.sendFile(p1);
-    if (fs.existsSync(p2)) return res.sendFile(p2);
+    const pRoot = path.join(__dirname, 'launcher.html');
+    const pPub = path.join(__dirname, 'public', 'launcher.html');
+    if (fs.existsSync(pRoot)) return res.sendFile(pRoot);
+    if (fs.existsSync(pPub)) return res.sendFile(pPub);
     res.status(404).send('launcher.html non trovato');
 });
 
