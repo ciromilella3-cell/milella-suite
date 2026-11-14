@@ -5330,8 +5330,24 @@ function initTabs() {
       if (target === 'tab-patologie') {
         if (typeof renderPatologieTab === 'function') renderPatologieTab();
       }
+      if (target === 'tab-visite') {
+        if (typeof renderVisite === 'function') renderVisite();
+      }
+      if (target === 'tab-glicemia') {
+        if (typeof renderDiarioGlicemico === 'function') renderDiarioGlicemico();
+      }
       if (target === 'tab-epatologia') {
         if (typeof renderEpatologiaView === 'function') renderEpatologiaView();
+      }
+      if (target === 'tab-diario') {
+        if (typeof renderDiario === 'function') renderDiario();
+      }
+
+      // Se seleziona un tab operativo (visite, terapie, patologie, ecc.), scrolla per renderlo subito visibile
+      if (target && target !== 'tab-dashboard' && targetEl) {
+        setTimeout(function() {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
       }
     });
   });
@@ -29399,7 +29415,7 @@ let _mevPazienteIdCorrente = null;
 let _mevFiltroCorrente = 'tutte';
 
 function apriElencoCompletoVisite(pazienteId, filtroIniziale) {
-  const pId = pazienteId || (typeof AppData !== 'undefined' && AppData.pazienteSelezionatoId) || (typeof PazienteAttivo !== 'undefined' && PazienteAttivo && PazienteAttivo.id) || (AppData && AppData.pazienti && AppData.pazienti[0] && AppData.pazienti[0].id);
+  const pId = pazienteId || (typeof AppData !== 'undefined' && (AppData.activePazienteId || AppData.pazienteSelezionatoId)) || (typeof PazienteAttivo !== 'undefined' && PazienteAttivo && PazienteAttivo.id) || (AppData && AppData.pazienti && AppData.pazienti[0] && AppData.pazienti[0].id);
   _mevPazienteIdCorrente = pId;
   _mevFiltroCorrente = filtroIniziale || 'tutte';
 
