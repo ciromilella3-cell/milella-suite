@@ -29685,6 +29685,22 @@ function vaiACartellaPatologie() {
 }
 window.vaiACartellaPatologie = vaiACartellaPatologie;
 
+function navigaAProgettoSalute() {
+  if (typeof salvaRiferimentoCondiviso === 'function') salvaRiferimentoCondiviso();
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : (typeof AppData !== 'undefined' && AppData.pazienti ? AppData.pazienti.find(function(x){ return x.id === AppData.activePazienteId; }) : null);
+  var nome = p ? encodeURIComponent(p.nome) : '';
+  window.location.href = '/salute/?profile=' + nome;
+}
+window.navigaAProgettoSalute = navigaAProgettoSalute;
+
+function navigaAdAmbulatorioApp() {
+  if (typeof salvaRiferimentoCondiviso === 'function') salvaRiferimentoCondiviso();
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : (typeof AppData !== 'undefined' && AppData.pazienti ? AppData.pazienti.find(function(x){ return x.id === AppData.activePazienteId; }) : null);
+  var nome = p ? encodeURIComponent(p.nome) : '';
+  window.location.href = '/mednutri/?patient=' + nome;
+}
+window.navigaAdAmbulatorioApp = navigaAdAmbulatorioApp;
+
 function getFarmaciPerPatologia(p, patNome) {
   if (!p || !Array.isArray(p.terapie)) return [];
   var pLower = (patNome || '').toLowerCase();

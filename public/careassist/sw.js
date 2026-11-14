@@ -1,13 +1,14 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v327-orari-inline-no-popup';
+const CACHE_NAME = 'careassist-pro-v328-suite-navigation';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './turni.html',
   './style.css',
   './style.css?v=319',
-  './app.js?v=327',
+  './app.js?v=328',
   './app.js',
+  './suite_bridge.js',
   './turnario_admin.js',
   './turnario_admin.js?v=2',
   './TURNARIO_SETTIMANALE_A4.html',

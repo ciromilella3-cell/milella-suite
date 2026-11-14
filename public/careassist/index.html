@@ -294,6 +294,21 @@
 
       <!-- UTILITY HEADER: MENU APPLICAZIONI & OPZIONI / BACKUP -->
       <div class="header-top-utilities">
+        <!-- COLLEGAMENTI DIRETTI SUITE APPS (NAVIGAZIONE CROSS-APP COME IN PROGETTO SALUTE) -->
+        <button type="button" class="btn btn-header-utility btn-suite-link-salute" onclick="navigaAProgettoSalute()"
+          title="Passa a Progetto Salute & Alimentazione per questo assistito"
+          style="background:linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color:#ffffff !important; font-weight:800 !important; font-size:12px !important; padding:6px 13px !important; border-radius:10px !important; border:1px solid rgba(255,255,255,0.3) !important; box-shadow:0 2px 7px rgba(16,185,129,0.35) !important; display:inline-flex; align-items:center; gap:5px; cursor:pointer; transition:all 0.15s ease;"
+          onmouseover="this.style.transform='translateY(-1px) scale(1.03)';" onmouseout="this.style.transform='none';">
+          <span>🥗</span> <span>Salute</span>
+        </button>
+
+        <button type="button" class="btn btn-header-utility btn-suite-link-ambulatorio" onclick="navigaAdAmbulatorioApp()"
+          title="Passa all'Ambulatorio Medico Nutrizionale per questo assistito"
+          style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; font-weight:800 !important; font-size:12px !important; padding:6px 13px !important; border-radius:10px !important; border:1px solid rgba(255,255,255,0.3) !important; box-shadow:0 2px 7px rgba(2,132,199,0.35) !important; display:inline-flex; align-items:center; gap:5px; cursor:pointer; transition:all 0.15s ease;"
+          onmouseover="this.style.transform='translateY(-1px) scale(1.03)';" onmouseout="this.style.transform='none';">
+          <span>🩺</span> <span>Ambulatorio</span>
+        </button>
+
         <button class="btn btn-header-utility btn-installa-pwa" id="btn-installa-pwa-header" onclick="apriGuidaInstallazionePWA()" title="Installa CareAssist come App sul tuo telefono o PC" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-weight:800; border:none; box-shadow:0 2px 6px rgba(16,185,129,0.3); display:inline-flex; align-items:center; gap:6px;">
           <span>📲</span> <span>Installa App</span>
         </button>
@@ -317,8 +332,10 @@
           <span class="cestino-count-badge" style="background:#0284c7; color:#fff; font-size:11px; padding:1px 6px; border-radius:10px; font-weight:800; display:none;">0</span>
         </button>
         <button class="btn btn-header-utility btn-menu-home" onclick="window.location.href='/launcher.html'"
-          title="Torna al Portale Aziendale">
-          <span>🏠</span> <span>Torna al Menu</span>
+          title="Torna alla Home Suite Milella"
+          style="background:#ffffff !important; color:#0f172a !important; font-weight:800 !important; font-size:12px !important; padding:6px 13px !important; border-radius:10px !important; border:none !important; box-shadow:0 2px 7px rgba(0,0,0,0.2) !important; display:inline-flex; align-items:center; gap:5px; cursor:pointer; transition:all 0.15s ease;"
+          onmouseover="this.style.transform='translateY(-1px) scale(1.03)';" onmouseout="this.style.transform='none';">
+          <span>🏠</span> <span>Home Suite</span>
         </button>
         <button class="btn btn-header-utility btn-notifiche" id="header-btn-notifiche"
           onclick="abilitaNotificheEAudioSmartphone()"
@@ -605,7 +622,7 @@
         style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; border:none; padding:5px 12px; border-radius:8px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
         🩺 <span>Cartella &amp; Patologie</span>
       </button>
-      <button type="button" class="btn-sticky-bridge-med" onclick="navigaAdAmbulatorio()"
+      <button type="button" class="btn-sticky-bridge-med" onclick="navigaAdAmbulatorioApp()"
         title="Apri Ambulatorio per questo assistito"
         style="background:#0284c7; color:#fff; border:none; padding:5px 10px; border-radius:8px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
         🩺 <span>Ambulatorio</span>
@@ -8389,7 +8406,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=327"></script>
+  <script src="app.js?v=328"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -8400,7 +8417,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=327', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=328', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

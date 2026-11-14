@@ -73,6 +73,14 @@
     salvaRiferimentoCondiviso();
   };
 
+  // Navigazione Rapida Diretta verso MedNutri Ambulatorio Medico Nutrizionale
+  window.navigaAdAmbulatorioApp = function() {
+    salvaRiferimentoCondiviso();
+    const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+    const nome = p ? encodeURIComponent(p.nome) : '';
+    window.location.href = '/mednutri/?patient=' + nome;
+  };
+
   // Navigazione Rapida verso Ambulatorio Medico con paziente attivo
   window.navigaAdAmbulatorio = function() {
     salvaRiferimentoCondiviso();
