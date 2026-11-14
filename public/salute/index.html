@@ -958,42 +958,99 @@
 
         <main class="dashboard">
 
-            <!-- TABS INJECTED (STICKY IN ALTO: CON SELETTORE COMPATTO AD ALTA SCALABILITÀ E RICERCA DIRETTA) -->
-            <div class="sticky-profile-header no-print"
-                style="position:-webkit-sticky; position:sticky; top:10px; z-index:9999; background:linear-gradient(135deg, #0b1120 0%, #1e293b 100%); border-radius:18px; padding:10px 16px; margin-bottom:18px; box-shadow:0 8px 25px rgba(0,0,0,0.55); border:1.5px solid #38bdf8; backdrop-filter:blur(10px);">
-                <div
-                    style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                    
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:1.15rem;">🎯</span>
-                        <span style="font-size:0.85rem; text-transform:uppercase; font-weight:800; color:#94a3b8; letter-spacing:0.5px;">Scegli la Persona:</span>
+            <!-- TABS INJECTED (STICKY IN ALTO: COMPATTO, ELEGANTE E RESPONSIVE) -->
+            <style>
+                .sticky-profile-header {
+                    position: -webkit-sticky;
+                    position: sticky;
+                    top: 6px;
+                    z-index: 9999;
+                    background: rgba(11, 17, 32, 0.95);
+                    border-radius: 14px;
+                    padding: 6px 14px;
+                    margin-bottom: 12px;
+                    box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+                    border: 1px solid rgba(56, 189, 248, 0.35);
+                    backdrop-filter: blur(10px);
+                }
+                .sticky-profile-inner {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 8px;
+                    flex-wrap: nowrap;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                    scrollbar-width: none;
+                }
+                .sticky-profile-inner::-webkit-scrollbar {
+                    display: none;
+                }
+                .profile-header-title {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 0.82rem;
+                    text-transform: uppercase;
+                    font-weight: 800;
+                    color: #94a3b8;
+                    letter-spacing: 0.5px;
+                    flex-shrink: 0;
+                }
+                .profile-search-wrap {
+                    position: relative;
+                    min-width: 130px;
+                    max-width: 200px;
+                    flex: 1;
+                    flex-shrink: 1;
+                }
+                @media (max-width: 640px) {
+                    .sticky-profile-header {
+                        padding: 4px 8px;
+                        margin-bottom: 8px;
+                        top: 2px;
+                        border-radius: 10px;
+                    }
+                    .profile-header-label {
+                        display: none !important;
+                    }
+                    .profile-search-wrap {
+                        min-width: 100px;
+                        max-width: 140px;
+                    }
+                    .btn-profile-pill {
+                        padding: 4px 10px !important;
+                        font-size: 0.8rem !important;
+                    }
+                }
+            </style>
+            <div class="sticky-profile-header no-print">
+                <div class="sticky-profile-inner">
+                    <div class="profile-header-title">
+                        <span style="font-size:1.1rem;">🎯</span>
+                        <span class="profile-header-label">Persona:</span>
                     </div>
 
-                    <!-- BARRA DI RICERCA LIVE PAZIENTE (CON FILTRO DIGITATO E SELEZIONE IMMEDIATA) -->
-                    <div style="position:relative; min-width:220px; max-width:300px; flex:1;">
-                        <div style="display:flex; align-items:center; background:rgba(15, 23, 42, 0.85); border:1.5px solid #0284c7; border-radius:20px; padding:3px 12px; box-shadow:0 2px 8px rgba(0,0,0,0.25);">
-                            <span style="font-size:14px; margin-right:6px; color:#38bdf8;">🔍</span>
+                    <!-- CONTENITORE SELEZIONE: CHIPS RAPIDI (Ciro Milella / Maria Carmela) -->
+                    <div id="tabs-bar" style="display:flex; gap:6px; align-items:center; flex-wrap:nowrap; flex-shrink:0;">
+                        <!-- Generato dinamicamente -->
+                    </div>
+
+                    <!-- BARRA DI RICERCA LIVE PAZIENTE (DISCRETA E COMPATTA) -->
+                    <div class="profile-search-wrap">
+                        <div style="display:flex; align-items:center; background:rgba(15, 23, 42, 0.85); border:1px solid #0284c7; border-radius:16px; padding:2px 8px; box-shadow:0 1px 4px rgba(0,0,0,0.2);">
+                            <span style="font-size:11px; margin-right:4px; color:#38bdf8;">🔍</span>
                             <input type="text" id="cerca-paziente-salute-input" 
-                                   placeholder="Cerca paziente..." 
+                                   placeholder="Cerca..." 
                                    autocomplete="off"
                                    onfocus="apriDropdownRicercaSalute(true)"
                                    oninput="filtraPazientiSaluteLive(this.value)"
-                                   style="border:none !important; outline:none !important; width:100%; padding:5px 0; font-size:13px; font-weight:600; color:#f8fafc; background:transparent !important; box-shadow:none !important;">
-                            <button type="button" id="cerca-paziente-salute-clear" onclick="pulisciRicercaPazienteSalute()" style="display:none; background:none; border:none; color:#94a3b8; font-size:14px; cursor:pointer; padding:0 2px;" title="Cancella">✕</button>
+                                   style="border:none !important; outline:none !important; width:100%; padding:3px 0; font-size:11.5px; font-weight:600; color:#f8fafc; background:transparent !important; box-shadow:none !important;">
+                            <button type="button" id="cerca-paziente-salute-clear" onclick="pulisciRicercaPazienteSalute()" style="display:none; background:none; border:none; color:#94a3b8; font-size:12px; cursor:pointer; padding:0 2px;" title="Cancella">✕</button>
                         </div>
                         <!-- RISULTATI DI RICERCA FLOTTANTI -->
-                        <div id="dropdown-ricerca-salute" style="display:none; position:absolute; top:calc(100% + 6px); left:0; right:0; background:#0f172a; border:1.5px solid #38bdf8; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,0.65); max-height:260px; overflow-y:auto; z-index:10000; padding:6px 0;">
+                        <div id="dropdown-ricerca-salute" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; background:#0f172a; border:1px solid #38bdf8; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.65); max-height:240px; overflow-y:auto; z-index:10000; padding:4px 0;">
                         </div>
-                    </div>
-
-                    <!-- CONTENITORE SELEZIONE: CHIPS RAPIDI O DROPDOWN ARCHIVIO SE I PROFILI CRESCONO -->
-                    <div id="tabs-bar" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        <!-- Generato dinamicamente con logica scalabile (max 4 chip + menu a tendina) -->
-                    </div>
-
-                    <div id="active-profile-indicator"
-                        style="font-size:0.88rem; font-weight:800; padding:4px 14px; border-radius:20px; background:rgba(255,255,255,0.08); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); white-space:nowrap;">
-                        👤 Profilo Attivo: ...
                     </div>
                 </div>
             </div>
@@ -1085,6 +1142,17 @@
 
                         localStorage.setItem('profileName_moglie', 'Maria Carmela');
                         localStorage.setItem('profileName_1', 'Maria Carmela');
+
+                        // Pulisci lista health_profiles per rimuovere duplicati di Maria Carmela o orfani
+                        try {
+                            let hp = JSON.parse(localStorage.getItem('health_profiles') || '["marito","moglie"]');
+                            if (Array.isArray(hp)) {
+                                hp = hp.filter(p => p !== '1' && p !== '0' && p !== 'paz_mariacarmela' && p !== 'mariacarmelastoppelli' && p !== 'salute_moglie');
+                                if (!hp.includes('marito')) hp.unshift('marito');
+                                if (!hp.includes('moglie')) hp.push('moglie');
+                                localStorage.setItem('health_profiles', JSON.stringify(hp));
+                            }
+                        } catch(eHp) {}
                     } catch(err) {
                         console.warn('Consolidamento Maria Carmela:', err);
                     }
@@ -1107,12 +1175,41 @@
                     if (!Array.isArray(all)) all = ['marito', 'moglie'];
 
                     all = all.filter(p => p && p !== 'a' && p !== 'salvatoresalva' && p !== 'esempiocompleto' && p !== 'luigiscappa');
-                    if (!all.includes('marito')) all.unshift('marito');
-                    if (!all.includes('moglie')) all.push('moglie');
+
+                    // Deduplica sia per ID normalizzato che per Nome visualizzato (evita categoricamente più bottoni "Maria Carmela")
+                    const result = [];
+                    const seenNames = new Set();
+                    const seenIds = new Set();
+
+                    all.forEach(p => {
+                        if (!p) return;
+                        let normId = p;
+                        const pLower = String(p).toLowerCase();
+                        const dName = (getProfileDisplayName(p) || '').trim();
+                        const dNameLower = dName.toLowerCase();
+
+                        if (pLower === '1' || pLower === 'moglie' || pLower === 'mariacarmelastoppelli' || 
+                            pLower === 'paz_mariacarmela' || (dNameLower.includes('maria') && dNameLower.includes('carmela')) || dNameLower.includes('stoppelli')) {
+                            normId = 'moglie';
+                        } else if (pLower === '0' || pLower === 'marito' || (dNameLower.includes('ciro') && dNameLower.includes('milella'))) {
+                            normId = 'marito';
+                        }
+
+                        if (seenIds.has(normId)) return;
+                        const normDisplay = (getProfileDisplayName(normId) || normId).trim().toLowerCase();
+                        if (seenNames.has(normDisplay)) return;
+
+                        seenIds.add(normId);
+                        seenNames.add(normDisplay);
+                        result.push(normId);
+                    });
+
+                    if (!result.includes('marito')) result.unshift('marito');
+                    if (!result.includes('moglie')) result.push('moglie');
 
                     // Se non admin e ha assegnazioni specifiche, filtra per profili salute abilitati
                     if (role !== 'admin' && rawAllowed && rawAllowed.length > 0 && !rawAllowed.includes('all')) {
-                        let filt = all.filter(p => {
+                        let filt = result.filter(p => {
                             if (rawAllowed.includes(p)) return true;
                             const dName = (getProfileDisplayName(p) || '').toLowerCase();
                             return rawAllowed.some(a => {
@@ -1122,25 +1219,10 @@
                                 return false;
                             });
                         });
-                        all = filt.length > 0 ? filt : (rawAllowed.includes('marito') ? ['marito'] : ['moglie']);
+                        return filt.length > 0 ? filt : (rawAllowed.includes('marito') ? ['marito'] : ['moglie']);
                     }
 
-                    // Deduplica sia per ID che per Nome visualizzato (evita categoricamente due bottoni "Maria Carmela")
-                    const result = [];
-                    const seenNames = new Set();
-                    const seenIds = new Set();
-
-                    all.forEach(p => {
-                        if (!p || seenIds.has(p)) return;
-                        const dName = (getProfileDisplayName(p) || '').trim().toLowerCase();
-                        if (seenNames.has(dName)) return;
-
-                        seenIds.add(p);
-                        seenNames.add(dName);
-                        result.push(p);
-                    });
-
-                    return result.length > 0 ? result : ['moglie'];
+                    return result;
                 }
 
                 window.getVisibleHealthProfiles = getVisibleHealthProfiles;
@@ -1165,28 +1247,29 @@
                     }
 
                     const userRole = localStorage.getItem('milella_last_authenticated_role') || localStorage.getItem('milella_role');
-                    const sogliaTendina = 3;
+                    const sogliaTendina = 4;
                     const usaDropdown = visibleProfiles.length > sogliaTendina;
 
-                    let profiliInPillole = usaDropdown ? visibleProfiles.slice(0, 2) : visibleProfiles;
-                    // Se il profilo attivo non è tra i primi 2, lo aggiungiamo temporaneamente ai chip visibili
+                    let profiliInPillole = usaDropdown ? visibleProfiles.slice(0, 3) : visibleProfiles;
                     if (usaDropdown && !profiliInPillole.includes(activeProfile)) {
-                        profiliInPillole = [activeProfile, ...profiliInPillole.slice(0, 1)];
+                        profiliInPillole = [activeProfile, ...profiliInPillole.slice(0, 2)];
                     }
 
                     profiliInPillole.forEach(prof => {
                         const btn = document.createElement('button');
                         btn.className = 'btn-profile-pill';
-                        btn.style.padding = '8px 16px';
-                        btn.style.borderRadius = '24px';
+                        btn.style.padding = '5px 12px';
+                        btn.style.borderRadius = '18px';
                         btn.style.fontWeight = '700';
-                        btn.style.fontSize = '0.92rem';
+                        btn.style.fontSize = '0.86rem';
                         btn.style.cursor = 'pointer';
                         btn.style.transition = 'all 0.2s ease';
                         btn.style.display = 'inline-flex';
                         btn.style.alignItems = 'center';
-                        btn.style.gap = '6px';
+                        btn.style.gap = '5px';
                         btn.style.border = '1.5px solid transparent';
+                        btn.style.whiteSpace = 'nowrap';
+                        btn.style.flexShrink = '0';
 
                         const isMarito = prof === 'marito';
                         const isMoglie = prof === 'moglie';
@@ -1204,38 +1287,40 @@
                                 btn.style.borderColor = '#a5d6a7';
                             }
                             btn.style.color = '#fff';
-                            btn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+                            btn.style.boxShadow = '0 3px 10px rgba(0,0,0,0.3)';
                         } else {
                             btn.style.background = 'rgba(255,255,255,0.08)';
                             btn.style.color = '#cbd5e1';
                             btn.style.borderColor = 'rgba(255,255,255,0.15)';
                         }
 
-                        btn.innerHTML = '<span>' + profIcon + '</span> <span>' + getProfileDisplayName(prof) + '</span>' + (prof === activeProfile ? ' <span style="font-size:0.7rem; background:rgba(255,255,255,0.25); padding:1px 6px; border-radius:10px; margin-left:3px;">ATTIVO</span>' : '');
+                        btn.innerHTML = '<span>' + profIcon + '</span> <span>' + getProfileDisplayName(prof) + '</span>' + (prof === activeProfile ? ' <span style="font-size:0.68rem; background:rgba(255,255,255,0.25); padding:1px 6px; border-radius:10px; margin-left:3px;">ATTIVO</span>' : '');
                         btn.onclick = () => selezionaProfiloSalute(prof);
                         bar.appendChild(btn);
                     });
 
-                    // SELETTORE A TENDINA COMPATTO PER ARCHIVI GRANDI (5, 50 O 1000 PAZIENTI)
-                    if (usaDropdown) {
+                    // Selettore a tendina compatto solo per profili eccedenti (nessun duplicato)
+                    const altriProfili = visibleProfiles.filter(p => !profiliInPillole.includes(p));
+                    if (usaDropdown && altriProfili.length > 0) {
                         const selectWrap = document.createElement('div');
                         selectWrap.style.display = 'inline-flex';
                         selectWrap.style.alignItems = 'center';
                         selectWrap.style.gap = '4px';
+                        selectWrap.style.flexShrink = '0';
 
                         const select = document.createElement('select');
-                        select.style.padding = '8px 12px';
+                        select.style.padding = '5px 10px';
                         select.style.borderRadius = '12px';
                         select.style.border = '1.5px solid #0284c7';
                         select.style.background = '#0f172a';
                         select.style.color = '#38bdf8';
                         select.style.fontWeight = '700';
-                        select.style.fontSize = '0.88rem';
+                        select.style.fontSize = '0.82rem';
                         select.style.cursor = 'pointer';
                         select.style.outline = 'none';
 
-                        select.innerHTML = `<option value="">📁 Altri Assistiti (${visibleProfiles.length})...</option>` +
-                            visibleProfiles.map(p => {
+                        select.innerHTML = `<option value="">📁 Altri Assistiti (${altriProfili.length})...</option>` +
+                            altriProfili.map(p => {
                                 const sel = p === activeProfile ? 'selected' : '';
                                 return `<option value="${p}" ${sel}>${getProfileDisplayName(p)}</option>`;
                             }).join('');
@@ -1253,12 +1338,14 @@
                         addBtn.className = 'btn-print';
                         addBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
                         addBtn.style.color = '#fff';
-                        addBtn.style.borderRadius = '20px';
+                        addBtn.style.borderRadius = '18px';
                         addBtn.style.border = 'none';
-                        addBtn.style.padding = '7px 14px';
+                        addBtn.style.padding = '5px 10px';
                         addBtn.style.fontWeight = '700';
-                        addBtn.style.fontSize = '0.86rem';
-                        addBtn.style.boxShadow = '0 3px 8px rgba(245,158,11,0.3)';
+                        addBtn.style.fontSize = '0.82rem';
+                        addBtn.style.boxShadow = '0 2px 6px rgba(245,158,11,0.3)';
+                        addBtn.style.whiteSpace = 'nowrap';
+                        addBtn.style.flexShrink = '0';
                         addBtn.innerText = '➕ Nuovo';
                         addBtn.onclick = () => {
                             document.getElementById('new-profile-modal').style.display = 'flex';
@@ -2421,7 +2508,7 @@
         </main>
     </div>
 
-    <script src="script.js?v=3.5"></script>
+    <script src="script.js?v=3.6"></script>
     <div id="toast-notification"
         style="display:none; position:fixed; bottom:30px; right:30px; background:#43a047; color:white; padding:15px 25px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:9999; font-weight:bold; align-items:center; gap:10px; transition: opacity 0.3s ease-in-out;">
         <span id="toast-icon">✨</span>
@@ -2498,9 +2585,9 @@
                     window.location.reload();
                 }
             });
-            navigator.serviceWorker.register('./sw.js?v=29')
+            navigator.serviceWorker.register('./sw.js?v=30')
                 .then(reg => {
-                    console.log('Service Worker Registered v29');
+                    console.log('Service Worker Registered v30');
                     reg.update();
                 });
         }
