@@ -1,7 +1,8 @@
+const SALUTE_CACHE = 'salute-store-v25';
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
-    caches.open('salute-store-v24').then((cache) => cache.addAll([
+    caches.open(SALUTE_CACHE).then((cache) => cache.addAll([
       './index.html',
       './style.css',
       './script.js'
@@ -13,7 +14,7 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keyList) => {
       return Promise.all(keyList.map((key) => {
-        if (key !== 'salute-store-v20') {
+        if (key !== SALUTE_CACHE) {
           return caches.delete(key);
         }
       }));

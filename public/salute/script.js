@@ -8130,11 +8130,13 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
             // NON ricaricare MAI la pagina con window.location.reload() in background
             // per evitare di interrompere l'utente mentre digita o naviga.
             // Aggiorna invece i componenti dinamicamente.
-            if (typeof renderTabs === 'function' && typeof globalProfiles !== 'undefined') {
+            if (typeof renderTabs === 'function') {
                 try {
                     globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
+                    const vis = (typeof getVisibleHealthProfiles === 'function') ? getVisibleHealthProfiles() : globalProfiles;
                     let act = localStorage.getItem('activeProfile');
-                    activeProfile = (act && globalProfiles.includes(act)) ? act : globalProfiles[0];
+                    activeProfile = (act && vis.includes(act)) ? act : vis[0];
+                    window.activeProfile = activeProfile;
                     renderTabs();
                     if (typeof renderProfiles === 'function') renderProfiles();
                 } catch(eR) {}

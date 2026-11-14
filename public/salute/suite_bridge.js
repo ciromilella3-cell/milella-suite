@@ -71,7 +71,11 @@
       if (cambiato) {
         localStorage.setItem('health_profiles', JSON.stringify(hp));
         if (typeof window.globalProfiles !== 'undefined') window.globalProfiles = hp;
-        if (typeof window.visibleProfiles !== 'undefined') window.visibleProfiles = hp;
+        if (typeof getVisibleHealthProfiles === 'function') {
+          window.visibleProfiles = getVisibleHealthProfiles();
+        } else if (typeof window.visibleProfiles !== 'undefined') {
+          window.visibleProfiles = hp;
+        }
         if (typeof renderTabs === 'function') renderTabs();
         if (typeof renderProfiles === 'function') renderProfiles();
       }
