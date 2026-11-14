@@ -1,13 +1,6 @@
-const SALUTE_CACHE = 'salute-store-v27';
+const SALUTE_CACHE = 'salute-store-v28';
 self.addEventListener('install', (e) => {
   self.skipWaiting();
-  e.waitUntil(
-    caches.open(SALUTE_CACHE).then((cache) => cache.addAll([
-      './index.html',
-      './style.css',
-      './script.js'
-    ])),
-  );
 });
 
 self.addEventListener('activate', (e) => {
@@ -18,13 +11,20 @@ self.addEventListener('activate', (e) => {
           return caches.delete(key);
         }
       }));
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+    fetch(e.request)
+      .then((res) => {
+        if (res && res.status === 200 && e.request.method === 'GET' && !e.request.url.includes('/api/')) {
+          const clone = res.clone();
+          caches.open(SALUTE_CACHE).then((cache) => cache.put(e.request, clone));
+        }
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });

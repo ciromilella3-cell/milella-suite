@@ -218,6 +218,9 @@ function logWeight(profile, newWeight) {
 
     const key = `weightLog_${profile}`;
     let log = JSON.parse(localStorage.getItem(key)) || [];
+    if (log.length === 0 && (profile === 'moglie' || profile === '1')) {
+        log = JSON.parse(localStorage.getItem('weightLog_moglie') || localStorage.getItem('weightLog_1') || '[]');
+    }
     const today = new Date().toISOString().split('T')[0];
 
     // Check per coriandoli
@@ -249,6 +252,7 @@ function logWeight(profile, newWeight) {
     calculateStats(profile, newWeight, log);
     drawChart(profile, log, startWeight);
     updateBMI(profile, newWeight);
+    if (typeof window.syncSaluteToCloud === "function") { window.syncSaluteToCloud({ [key]: JSON.stringify(log) }); }
     if (typeof window.syncSaluteToCloud === "function") {
         const payload = { [key]: JSON.stringify(log) };
         if (isMaria) {
@@ -266,6 +270,9 @@ function loadProgress(profile) {
 
     const key = `weightLog_${profile}`;
     let log = JSON.parse(localStorage.getItem(key)) || [];
+    if (log.length === 0 && (profile === 'moglie' || profile === '1')) {
+        log = JSON.parse(localStorage.getItem('weightLog_moglie') || localStorage.getItem('weightLog_1') || '[]');
+    }
 
     let currentWeight = startWeight;
     let lastDate = '';
@@ -451,8 +458,8 @@ function drawChart(profile, log, startWeight) {
                     grid: { color: 'rgba(255,255,255,0.06)' }
                 },
                 y: {
-                    min: Math.min(...data) - 2,
-                    max: Math.max(...data) + 2,
+                    min: (data.length > 0 && isFinite(Math.min(...data))) ? Math.min(...data) - 2 : (startWeight ? startWeight - 5 : 60),
+                    max: (data.length > 0 && isFinite(Math.max(...data))) ? Math.max(...data) + 2 : (startWeight ? startWeight + 5 : 95),
                     ticks: { color: '#94a3b8' },
                     grid: { color: 'rgba(255,255,255,0.06)' }
                 }
@@ -3887,6 +3894,9 @@ window.saveStoricoModal = function () {
 
     const key = `weightLog_${profile}`;
     let log = JSON.parse(localStorage.getItem(key)) || [];
+    if (log.length === 0 && (profile === 'moglie' || profile === '1')) {
+        log = JSON.parse(localStorage.getItem('weightLog_moglie') || localStorage.getItem('weightLog_1') || '[]');
+    }
 
     // Controlla se esiste già una pesata per quella data
     const existingIndex = log.findIndex(entry => entry.date === dateStr);
@@ -3916,6 +3926,7 @@ window.saveStoricoModal = function () {
 
     // Ricarica i progressi per aggiornare grafico e statistiche
     loadProgress(profile);
+    /* saveStoricoModalSync */ if (typeof window.syncSaluteToCloud === "function") { window.syncSaluteToCloud({ [key]: JSON.stringify(log) }); }
     if (typeof window.syncSaluteToCloud === "function") {
         const payload = { [key]: JSON.stringify(log) };
         if (isMaria) {
@@ -3978,6 +3989,9 @@ window.confirmDeleteModal = function () {
     const { profile, label, value } = window._pendingDelete;
     const key = `weightLog_${profile}`;
     let log = JSON.parse(localStorage.getItem(key)) || [];
+    if (log.length === 0 && (profile === 'moglie' || profile === '1')) {
+        log = JSON.parse(localStorage.getItem('weightLog_moglie') || localStorage.getItem('weightLog_1') || '[]');
+    }
 
     const [dd, mm] = label.split('/');
     let foundIndex = -1;
@@ -8146,6 +8160,7 @@ window.pullSaluteFromCloud = async function (forceRefresh) {
                     validProfiles.add('moglie');
                     ['esempiocompleto', 'luigiscappa', 'a', 'salvatoresalva'].forEach(sp => validProfiles.delete(sp));
 
+                    // Rimuovi da localStorage eventuali profili che sono stati eliminati dal Cloud
                     // Consolida qualsiasi pesata prima di pulizie
                     if (typeof window.consolidaProfiliSaluteLocale === 'function') {
                         window.consolidaProfiliSaluteLocale();
@@ -8156,136 +8171,137 @@ window.pullSaluteFromCloud = async function (forceRefresh) {
                         const lk = localStorage.key(i);
                         if (lk && lk.startsWith('profileName_')) {
                             const pid = lk.replace('profileName_', '');
-                            if (pid && !validProfiles.has(pid) && pid !== '1' && !pid.includes('maria') && pid !== 'moglie') {
-                                localStorage.removeItem(lk);
-                                localStorage.removeItem('profileStats_' + pid);
-                                localStorage.removeItem('weightLog_' + pid);
-                                localStorage.removeItem('syncTarget_' + pid);
+                            if (pid && !validProfiles.has(pid)) {
+                                if (pid && !validProfiles.has(pid) && pid !== '1' && !pid.includes('maria') && pid !== 'moglie') {
+                                    localStorage.removeItem(lk);
+                                    localStorage.removeItem('profileStats_' + pid);
+                                    localStorage.removeItem('weightLog_' + pid);
+                                    localStorage.removeItem('syncTarget_' + pid);
+                                }
                             }
                         }
+
+                        const nextStoredArr = Array.from(validProfiles);
+                        const isSameList = localPList.length === nextStoredArr.length && nextStoredArr.every(p => localPList.includes(p));
+                        if (!isSameList) {
+                            localStorage.setItem('health_profiles', JSON.stringify(nextStoredArr));
+                            hasChanges = true;
+                            profilesListChanged = true;
+                        }
+                    }
+                }
+            } catch (ePl) {
+                console.warn('Errore riconciliazione profili:', ePl);
+            }
+
+            localStorage.setItem('profileName_marito', 'Ciro Milella');
+            localStorage.setItem('profileName_moglie', 'Maria Carmela');
+            if (typeof window.consolidaProfiliSaluteLocale === 'function') {
+                window.consolidaProfiliSaluteLocale();
+            }
+
+            if (hasChanges || forceRefresh) {
+                console.log('☁️ Progetto Salute: Dati sincronizzati dal Cloud!');
+
+                // NON ricaricare MAI la pagina con window.location.reload() in background
+                // per evitare di interrompere l'utente mentre digita o naviga.
+                // Aggiorna invece i componenti dinamicamente.
+                if (typeof renderTabs === 'function' && typeof globalProfiles !== 'undefined') {
+                    if (typeof renderTabs === 'function') {
+                        try {
+                            globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
+                            const vis = (typeof getVisibleHealthProfiles === 'function') ? getVisibleHealthProfiles() : globalProfiles;
+                            let act = localStorage.getItem('activeProfile');
+                            activeProfile = (act && globalProfiles.includes(act)) ? act : globalProfiles[0];
+                            activeProfile = (act && vis.includes(act)) ? act : vis[0];
+                            window.activeProfile = activeProfile;
+                            renderTabs();
+                            if (typeof renderProfiles === 'function') renderProfiles();
+                        } catch (eR) { }
                     }
 
-                    const nextStoredArr = Array.from(validProfiles);
-                    const isSameList = localPList.length === nextStoredArr.length && nextStoredArr.every(p => localPList.includes(p));
-                    if (!isSameList) {
-                        localStorage.setItem('health_profiles', JSON.stringify(nextStoredArr));
-                        hasChanges = true;
-                        profilesListChanged = true;
+                    // Se l'utente sta digitando in un campo di input, non sovrascrivere la UI attiva
+                    const activeEl = document.activeElement;
+                    const isUserEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
+                    if (!isUserEditing && typeof loadProgress === 'function') {
+                        (JSON.parse(localStorage.getItem('health_profiles') || '["marito","moglie"]')).forEach(p => loadProgress(p));
                     }
                 }
+                return true;
+            } catch (err) {
+                console.warn('☁️ Pull cloud error:', err);
+                return false;
             }
-        } catch (ePl) {
-            console.warn('Errore riconciliazione profili:', ePl);
-        }
+        };
 
-        localStorage.setItem('profileName_marito', 'Ciro Milella');
-        localStorage.setItem('profileName_moglie', 'Maria Carmela');
-        if (typeof window.consolidaProfiliSaluteLocale === 'function') {
-            window.consolidaProfiliSaluteLocale();
-        }
-
-        if (hasChanges || forceRefresh) {
-            console.log('☁️ Progetto Salute: Dati sincronizzati dal Cloud!');
-
-            // NON ricaricare MAI la pagina con window.location.reload() in background
-            // per evitare di interrompere l'utente mentre digita o naviga.
-            // Aggiorna invece i componenti dinamicamente.
-            if (typeof renderTabs === 'function' && typeof globalProfiles !== 'undefined') {
-                if (typeof renderTabs === 'function') {
-                    try {
-                        globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
-                        const vis = (typeof getVisibleHealthProfiles === 'function') ? getVisibleHealthProfiles() : globalProfiles;
-                        let act = localStorage.getItem('activeProfile');
-                        activeProfile = (act && globalProfiles.includes(act)) ? act : globalProfiles[0];
-                        activeProfile = (act && vis.includes(act)) ? act : vis[0];
-                        window.activeProfile = activeProfile;
-                        renderTabs();
-                        if (typeof renderProfiles === 'function') renderProfiles();
-                    } catch (eR) { }
-                }
-
-                // Se l'utente sta digitando in un campo di input, non sovrascrivere la UI attiva
-                const activeEl = document.activeElement;
-                const isUserEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
-                if (!isUserEditing && typeof loadProgress === 'function') {
-                    (JSON.parse(localStorage.getItem('health_profiles') || '["marito","moglie"]')).forEach(p => loadProgress(p));
-                }
-            }
-            return true;
-        } catch (err) {
-            console.warn('☁️ Pull cloud error:', err);
-            return false;
-        }
-    };
-
-    // Sincronizzazione automatica all'avvio
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => { setTimeout(() => window.pullSaluteFromCloud(false), 500); });
-    } else {
-        setTimeout(() => window.pullSaluteFromCloud(false), 500);
-    }
-
-    // 🔄 Sincronizzazione in tempo reale:
-    // Polling a intervalli regolari (30s) per non stressare il browser né interrompere l'input
-    setInterval(() => {
-        if (!document.hidden && navigator.onLine) {
-            const activeEl = document.activeElement;
-            const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
-            if (!isEditing) {
-                window.pullSaluteFromCloud(false);
-            }
-        }
-    }, 30000);
-
-    // Quando l'utente torna sulla finestra (focus o tab attiva), sincronizza se non sta digitando
-    window.addEventListener('focus', () => {
-        if (navigator.onLine) {
-            const activeEl = document.activeElement;
-            const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
-            if (!isEditing) window.pullSaluteFromCloud(false);
-        }
-    });
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden && navigator.onLine) {
-            const activeEl = document.activeElement;
-            const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
-            if (!isEditing) window.pullSaluteFromCloud(false);
-        }
-    });
-
-    // =========================================================================
-    // 🚀 CONTROLLI PESO SMART & GESTORE STORICO PESI
-    // =========================================================================
-    window.adjustQuickWeight = function (profile, delta) {
-        const input = document.getElementById('weight-' + profile);
-        if (!input) return;
-        let cur = parseFloat(input.value) || 80.0;
-        cur = Math.round((cur + delta) * 10) / 10;
-        if (cur > 0) {
-            input.value = cur.toFixed(1);
-        }
-    };
-
-    window.openWeightHistoryManager = function (profile) {
-        const key = 'weightLog_' + profile;
-        const log = JSON.parse(localStorage.getItem(key)) || [];
-        const profName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(profile) : profile;
-
-        let modal = document.getElementById('weight-history-manager-modal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'weight-history-manager-modal';
-            modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); z-index:99999; display:flex; justify-content:center; align-items:center; padding:15px;';
-            document.body.appendChild(modal);
-        }
-
-        let itemsHtml = '';
-        if (log.length === 0) {
-            itemsHtml = '<p style="color:#94a3b8; text-align:center; padding:20px;">Nessuna pesata registrata.</p>';
+        // Sincronizzazione automatica all'avvio
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => { setTimeout(() => window.pullSaluteFromCloud(false), 500); });
         } else {
-            const sortedLog = [...log].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            sortedLog.forEach((item) => {
-                itemsHtml += `
+            setTimeout(() => window.pullSaluteFromCloud(false), 500);
+        }
+
+        // 🔄 Sincronizzazione in tempo reale:
+        // Polling a intervalli regolari (30s) per non stressare il browser né interrompere l'input
+        setInterval(() => {
+            if (!document.hidden && navigator.onLine) {
+                const activeEl = document.activeElement;
+                const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+                if (!isEditing) {
+                    window.pullSaluteFromCloud(false);
+                }
+            }
+        }, 30000);
+
+        // Quando l'utente torna sulla finestra (focus o tab attiva), sincronizza se non sta digitando
+        window.addEventListener('focus', () => {
+            if (navigator.onLine) {
+                const activeEl = document.activeElement;
+                const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+                if (!isEditing) window.pullSaluteFromCloud(false);
+            }
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && navigator.onLine) {
+                const activeEl = document.activeElement;
+                const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+                if (!isEditing) window.pullSaluteFromCloud(false);
+            }
+        });
+
+        // =========================================================================
+        // 🚀 CONTROLLI PESO SMART & GESTORE STORICO PESI
+        // =========================================================================
+        window.adjustQuickWeight = function (profile, delta) {
+            const input = document.getElementById('weight-' + profile);
+            if (!input) return;
+            let cur = parseFloat(input.value) || 80.0;
+            cur = Math.round((cur + delta) * 10) / 10;
+            if (cur > 0) {
+                input.value = cur.toFixed(1);
+            }
+        };
+
+        window.openWeightHistoryManager = function (profile) {
+            const key = 'weightLog_' + profile;
+            const log = JSON.parse(localStorage.getItem(key)) || [];
+            const profName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(profile) : profile;
+
+            let modal = document.getElementById('weight-history-manager-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'weight-history-manager-modal';
+                modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); z-index:99999; display:flex; justify-content:center; align-items:center; padding:15px;';
+                document.body.appendChild(modal);
+            }
+
+            let itemsHtml = '';
+            if (log.length === 0) {
+                itemsHtml = '<p style="color:#94a3b8; text-align:center; padding:20px;">Nessuna pesata registrata.</p>';
+            } else {
+                const sortedLog = [...log].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                sortedLog.forEach((item) => {
+                    itemsHtml += `
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:8px;">
                     <div>
                         <strong style="font-size:1.05rem; color:#0f172a;">${item.date}</strong>
@@ -8296,10 +8312,10 @@ window.pullSaluteFromCloud = async function (forceRefresh) {
                     </button>
                 </div>
             `;
-            });
-        }
+                });
+            }
 
-        modal.innerHTML = `
+            modal.innerHTML = `
         <div style="background:#ffffff; border-radius:18px; width:100%; max-width:480px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden;">
             <div style="padding:16px 20px; background:linear-gradient(135deg, #0f172a, #1e293b); color:#fff; display:flex; justify-content:space-between; align-items:center;">
                 <h3 style="margin:0; font-size:1.1rem; color:#f8fafc;">📋 Storico Pesi: ${profName}</h3>
@@ -8314,313 +8330,313 @@ window.pullSaluteFromCloud = async function (forceRefresh) {
             </div>
         </div>
     `;
-        modal.style.display = 'flex';
-    };
+            modal.style.display = 'flex';
+        };
 
-    window.deleteWeightEntry = function (profile, dateStr, weightVal) {
-        const msg = weightVal ? `Vuoi davvero cancellare la pesata del ${dateStr} (${weightVal} kg)?` : `Vuoi davvero cancellare la pesata del ${dateStr}?`;
-        if (!confirm(msg)) return;
-        const key = 'weightLog_' + profile;
-        let log = JSON.parse(localStorage.getItem(key)) || [];
-        log = log.filter(item => item && item.date !== dateStr);
-        localStorage.setItem(key, JSON.stringify(log));
-
-        // Registro cancellazione locale e cloud autoritativo
-        const delKey = 'deletedWeights_' + profile;
-        const delList = JSON.parse(localStorage.getItem(delKey) || '[]');
-        if (!delList.includes(dateStr)) {
-            delList.push(dateStr);
-            localStorage.setItem(delKey, JSON.stringify(delList));
-        }
-
-        if (typeof loadProgress === 'function') loadProgress(profile);
-        if (typeof window.refreshDashboardStats === 'function') window.refreshDashboardStats(profile);
-        if (typeof window.syncSaluteToCloud === 'function') {
-            window.syncSaluteToCloud({
-                [key]: JSON.stringify(log),
-                _forceWeightLog: true,
-                _deletedWeights: [{ profile, date: dateStr }]
-            });
-        }
-        window.openWeightHistoryManager(profile);
-        if (typeof showToast === 'function') showToast('Pesata rimossa con successo! 🗑️');
-    };
-
-    // Funzioni di regolazione e salvataggio per la modale di Modifica / Elimina
-    window.adjustEditModalWeight = function (delta) {
-        const input = document.getElementById('edit-modal-weight-input');
-        if (!input) return;
-        let val = parseFloat(input.value) || 80.0;
-        val = Math.round((val + delta) * 10) / 10;
-        if (val > 0) input.value = val.toFixed(1);
-    };
-
-    window.saveEditedWeightFromModal = function () {
-        if (!window._pendingDelete) return;
-        const { profile, label, value } = window._pendingDelete;
-        const input = document.getElementById('edit-modal-weight-input');
-        const newWeight = parseFloat(input.value);
-        if (isNaN(newWeight) || newWeight <= 0) {
-            alert("Inserisci un peso valido!");
-            return;
-        }
-
-        const key = 'weightLog_' + profile;
-        let log = JSON.parse(localStorage.getItem(key)) || [];
-        const [dd, mm] = label.split('/');
-        let foundIndex = -1;
-        for (let i = log.length - 1; i >= 0; i--) {
-            const logParts = log[i].date.split('-');
-            if (logParts[2] === dd && logParts[1] === mm && (value === undefined || Math.abs(log[i].weight - parseFloat(value)) < 0.1 || log[i].weight === value)) {
-                foundIndex = i;
-                break;
-            }
-        }
-        if (foundIndex === -1) {
-            for (let i = log.length - 1; i >= 0; i--) {
-                const logParts = log[i].date.split('-');
-                if (logParts[2] === dd && logParts[1] === mm) {
-                    foundIndex = i;
-                    break;
-                }
-            }
-        }
-
-        if (foundIndex !== -1) {
-            log[foundIndex].weight = newWeight;
+        window.deleteWeightEntry = function (profile, dateStr, weightVal) {
+            const msg = weightVal ? `Vuoi davvero cancellare la pesata del ${dateStr} (${weightVal} kg)?` : `Vuoi davvero cancellare la pesata del ${dateStr}?`;
+            if (!confirm(msg)) return;
+            const key = 'weightLog_' + profile;
+            let log = JSON.parse(localStorage.getItem(key)) || [];
+            log = log.filter(item => item && item.date !== dateStr);
             localStorage.setItem(key, JSON.stringify(log));
-            if (typeof showToast === 'function') showToast("Pesata modificata con successo! 💾");
+
+            // Registro cancellazione locale e cloud autoritativo
+            const delKey = 'deletedWeights_' + profile;
+            const delList = JSON.parse(localStorage.getItem(delKey) || '[]');
+            if (!delList.includes(dateStr)) {
+                delList.push(dateStr);
+                localStorage.setItem(delKey, JSON.stringify(delList));
+            }
+
             if (typeof loadProgress === 'function') loadProgress(profile);
             if (typeof window.refreshDashboardStats === 'function') window.refreshDashboardStats(profile);
             if (typeof window.syncSaluteToCloud === 'function') {
                 window.syncSaluteToCloud({
                     [key]: JSON.stringify(log),
-                    _forceWeightLog: true
+                    _forceWeightLog: true,
+                    _deletedWeights: [{ profile, date: dateStr }]
                 });
             }
-        } else {
-            alert("Impossibile trovare la pesata da modificare.");
-        }
+            window.openWeightHistoryManager(profile);
+            if (typeof showToast === 'function') showToast('Pesata rimossa con successo! 🗑️');
+        };
 
-        closeDeleteModal();
-    };
+        // Funzioni di regolazione e salvataggio per la modale di Modifica / Elimina
+        window.adjustEditModalWeight = function (delta) {
+            const input = document.getElementById('edit-modal-weight-input');
+            if (!input) return;
+            let val = parseFloat(input.value) || 80.0;
+            val = Math.round((val + delta) * 10) / 10;
+            if (val > 0) input.value = val.toFixed(1);
+        };
 
-    // ========================================================
-    // 🔍 VISUALIZZAZIONE IN GRANDE AL TOCCO SUL PUNTO DEL GRAFICO
-    // ========================================================
-    window.showChartPointFocus = function (profile, index) {
-        const chart = charts[profile];
-        if (!chart || !chart.data || !chart.data.labels) return;
-
-        const label = chart.data.labels[index];
-        const dataset = chart.data.datasets[0];
-        if (!dataset || !dataset.data) return;
-        const weight = dataset.data[index];
-
-        const badge = document.getElementById(`chart-focus-badge-${profile}`);
-        const dateEl = document.getElementById(`chart-focus-date-${profile}`);
-        const weightEl = document.getElementById(`chart-focus-weight-${profile}`);
-        const diffEl = document.getElementById(`chart-focus-diff-${profile}`);
-        const manageBtn = document.getElementById(`chart-focus-manage-btn-${profile}`);
-
-        if (!badge || !dateEl || !weightEl || !diffEl) return;
-
-        // Formattazione data
-        dateEl.innerHTML = `📅 Pesata del <b>${label}</b>`;
-        weightEl.innerHTML = `${Number(weight).toFixed(1)} <span style="font-size:1.1rem; color:#94a3b8; font-weight:700;">kg</span>`;
-
-        // Calcolo variazione rispetto alla pesata precedente nel grafico
-        if (index > 0) {
-            const prevWeight = dataset.data[index - 1];
-            const diff = Math.round((weight - prevWeight) * 10) / 10;
-            if (diff < 0) {
-                diffEl.innerHTML = `📉 ${diff.toFixed(1)} kg`;
-                diffEl.style.background = 'rgba(16, 185, 129, 0.2)';
-                diffEl.style.color = '#34d399';
-                diffEl.style.border = '1px solid #059669';
-            } else if (diff > 0) {
-                diffEl.innerHTML = `📈 +${diff.toFixed(1)} kg`;
-                diffEl.style.background = 'rgba(239, 68, 68, 0.2)';
-                diffEl.style.color = '#f87171';
-                diffEl.style.border = '1px solid #dc2626';
-            } else {
-                diffEl.innerHTML = `⚖️ Stabile (0.0 kg)`;
-                diffEl.style.background = 'rgba(148, 163, 184, 0.2)';
-                diffEl.style.color = '#cbd5e1';
-                diffEl.style.border = '1px solid #64748b';
+        window.saveEditedWeightFromModal = function () {
+            if (!window._pendingDelete) return;
+            const { profile, label, value } = window._pendingDelete;
+            const input = document.getElementById('edit-modal-weight-input');
+            const newWeight = parseFloat(input.value);
+            if (isNaN(newWeight) || newWeight <= 0) {
+                alert("Inserisci un peso valido!");
+                return;
             }
-            diffEl.style.display = 'inline-block';
-        } else {
-            diffEl.innerHTML = `🏁 Inizio rilevazione`;
-            diffEl.style.background = 'rgba(56, 189, 248, 0.2)';
-            diffEl.style.color = '#38bdf8';
-            diffEl.style.border = '1px solid #0284c7';
-            diffEl.style.display = 'inline-block';
-        }
 
-        // Configurazione pulsante Gestisci (Modifica / Elimina)
-        if (manageBtn) {
-            manageBtn.onclick = function () {
-                window._pendingDelete = { profile, label, value: weight };
-                const modalText = document.getElementById('delete-modal-text');
-                const modalInput = document.getElementById('edit-modal-weight-input');
-                if (modalText) modalText.innerHTML = `Pesata del <b>${label}</b> (Attuale: <b>${weight} kg</b>)`;
-                if (modalInput) modalInput.value = weight;
-                const modal = document.getElementById('delete-modal');
-                if (modal) modal.style.display = 'flex';
-            };
-        }
-
-        badge.style.display = 'block';
-    };
-
-    window.closeChartFocusBadge = function (profile) {
-        const badge = document.getElementById(`chart-focus-badge-${profile}`);
-        if (badge) badge.style.display = 'none';
-    };
-
-    // Riconfigurazione interattiva su click e tocco per i grafici
-    (function () {
-        function attachChartTouchListeners(profile) {
-            const canvas = document.getElementById(`chart-${profile}`);
-            if (!canvas) return;
-
-            function handlePointer(evt) {
-                const chart = charts[profile];
-                if (!chart) return;
-                const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, true);
-                if (points && points.length > 0) {
-                    const firstPoint = points[0];
-                    window.showChartPointFocus(profile, firstPoint.index);
+            const key = 'weightLog_' + profile;
+            let log = JSON.parse(localStorage.getItem(key)) || [];
+            const [dd, mm] = label.split('/');
+            let foundIndex = -1;
+            for (let i = log.length - 1; i >= 0; i--) {
+                const logParts = log[i].date.split('-');
+                if (logParts[2] === dd && logParts[1] === mm && (value === undefined || Math.abs(log[i].weight - parseFloat(value)) < 0.1 || log[i].weight === value)) {
+                    foundIndex = i;
+                    break;
+                }
+            }
+            if (foundIndex === -1) {
+                for (let i = log.length - 1; i >= 0; i--) {
+                    const logParts = log[i].date.split('-');
+                    if (logParts[2] === dd && logParts[1] === mm) {
+                        foundIndex = i;
+                        break;
+                    }
                 }
             }
 
-            canvas.onclick = handlePointer;
-            // Su mobile touchstart/pointerup garantisce immediata risposta
-            canvas.onpointerup = handlePointer;
-        }
+            if (foundIndex !== -1) {
+                log[foundIndex].weight = newWeight;
+                localStorage.setItem(key, JSON.stringify(log));
+                if (typeof showToast === 'function') showToast("Pesata modificata con successo! 💾");
+                if (typeof loadProgress === 'function') loadProgress(profile);
+                if (typeof window.refreshDashboardStats === 'function') window.refreshDashboardStats(profile);
+                if (typeof window.syncSaluteToCloud === 'function') {
+                    window.syncSaluteToCloud({
+                        [key]: JSON.stringify(log),
+                        _forceWeightLog: true
+                    });
+                }
+            } else {
+                alert("Impossibile trovare la pesata da modificare.");
+            }
 
-        const prevDraw = drawChart;
-        drawChart = function (profile, log, startWeight) {
-            prevDraw(profile, log, startWeight);
-            attachChartTouchListeners(profile);
+            closeDeleteModal();
         };
-    })();
 
-    // ========================================================
-    // 💧 QUICK WATER TAP (AGGIUNGI 1 BICCHIERE IN UN CLIC)
-    // ========================================================
-    window.addQuickWater = function (profile) {
-        if (typeof updateBeverage === 'function') {
-            updateBeverage(profile, 'water', 1);
-        }
-        window.refreshQuickWaterDisplay(profile);
-        if (typeof showToast === 'function') showToast("💧 +1 Bicchiere d'acqua registrato! Ottimo lavoro!");
-    };
+        // ========================================================
+        // 🔍 VISUALIZZAZIONE IN GRANDE AL TOCCO SUL PUNTO DEL GRAFICO
+        // ========================================================
+        window.showChartPointFocus = function (profile, index) {
+            const chart = charts[profile];
+            if (!chart || !chart.data || !chart.data.labels) return;
 
-    window.refreshQuickWaterDisplay = function (profile) {
-        const key = 'waterCount_' + profile;
-        const count = parseInt(localStorage.getItem(key)) || 0;
-        const el = document.getElementById('quick-water-count-' + profile);
-        if (el) {
-            let max = 8;
-            if (typeof getPersonalizedWaterTarget === 'function') {
-                max = getPersonalizedWaterTarget(profile).glasses;
+            const label = chart.data.labels[index];
+            const dataset = chart.data.datasets[0];
+            if (!dataset || !dataset.data) return;
+            const weight = dataset.data[index];
+
+            const badge = document.getElementById(`chart-focus-badge-${profile}`);
+            const dateEl = document.getElementById(`chart-focus-date-${profile}`);
+            const weightEl = document.getElementById(`chart-focus-weight-${profile}`);
+            const diffEl = document.getElementById(`chart-focus-diff-${profile}`);
+            const manageBtn = document.getElementById(`chart-focus-manage-btn-${profile}`);
+
+            if (!badge || !dateEl || !weightEl || !diffEl) return;
+
+            // Formattazione data
+            dateEl.innerHTML = `📅 Pesata del <b>${label}</b>`;
+            weightEl.innerHTML = `${Number(weight).toFixed(1)} <span style="font-size:1.1rem; color:#94a3b8; font-weight:700;">kg</span>`;
+
+            // Calcolo variazione rispetto alla pesata precedente nel grafico
+            if (index > 0) {
+                const prevWeight = dataset.data[index - 1];
+                const diff = Math.round((weight - prevWeight) * 10) / 10;
+                if (diff < 0) {
+                    diffEl.innerHTML = `📉 ${diff.toFixed(1)} kg`;
+                    diffEl.style.background = 'rgba(16, 185, 129, 0.2)';
+                    diffEl.style.color = '#34d399';
+                    diffEl.style.border = '1px solid #059669';
+                } else if (diff > 0) {
+                    diffEl.innerHTML = `📈 +${diff.toFixed(1)} kg`;
+                    diffEl.style.background = 'rgba(239, 68, 68, 0.2)';
+                    diffEl.style.color = '#f87171';
+                    diffEl.style.border = '1px solid #dc2626';
+                } else {
+                    diffEl.innerHTML = `⚖️ Stabile (0.0 kg)`;
+                    diffEl.style.background = 'rgba(148, 163, 184, 0.2)';
+                    diffEl.style.color = '#cbd5e1';
+                    diffEl.style.border = '1px solid #64748b';
+                }
+                diffEl.style.display = 'inline-block';
+            } else {
+                diffEl.innerHTML = `🏁 Inizio rilevazione`;
+                diffEl.style.background = 'rgba(56, 189, 248, 0.2)';
+                diffEl.style.color = '#38bdf8';
+                diffEl.style.border = '1px solid #0284c7';
+                diffEl.style.display = 'inline-block';
             }
-            el.innerHTML = `<b>${count}</b> / ${max} bicchieri (${(count * 0.25).toFixed(1)}L)`;
-        }
-    };
 
-    // ========================================================
-    // 🍽️ VISTA RAPIDA "COSA C'È NEL PIATTO OGGI"
-    // ========================================================
-    window.refreshTodayMealBox = function (profile) {
-        const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
-        const now = new Date();
-        const dayIndex = now.getDay(); // 0 = Domenica, 1 = Lunedì...
-        const dayName = dayNames[dayIndex];
-
-        const titleEl = document.getElementById('today-meal-dayname-' + profile);
-        const lunchEl = document.getElementById('today-lunch-' + profile);
-        const dinnerEl = document.getElementById('today-dinner-' + profile);
-
-        if (titleEl) titleEl.innerText = `Menù di Oggi (${dayName})`;
-
-        const section = document.getElementById('section-' + profile);
-        if (!section) return;
-        const table = section.querySelector('.weekly-table');
-        if (!table) return;
-
-        // Le righe della tabella sono in ordine: Lunedì (0), Martedì (1), ..., Domenica (6)
-        // Se dayIndex è 0 (Domenica), la riga corrispondente è la 6. Altrimenti dayIndex - 1.
-        const tableRowIndex = (dayIndex === 0) ? 6 : (dayIndex - 1);
-        const rows = table.querySelectorAll('tbody tr');
-        if (rows && rows[tableRowIndex]) {
-            const cells = rows[tableRowIndex].querySelectorAll('td');
-            if (cells.length >= 3) {
-                const lunchText = cells[1].innerText.trim() || 'Nessun pranzo indicato';
-                const dinnerText = cells[2].innerText.trim() || 'Nessuna cena indicata';
-                if (lunchEl) lunchEl.innerHTML = lunchText;
-                if (dinnerEl) dinnerEl.innerHTML = dinnerText;
+            // Configurazione pulsante Gestisci (Modifica / Elimina)
+            if (manageBtn) {
+                manageBtn.onclick = function () {
+                    window._pendingDelete = { profile, label, value: weight };
+                    const modalText = document.getElementById('delete-modal-text');
+                    const modalInput = document.getElementById('edit-modal-weight-input');
+                    if (modalText) modalText.innerHTML = `Pesata del <b>${label}</b> (Attuale: <b>${weight} kg</b>)`;
+                    if (modalInput) modalInput.value = weight;
+                    const modal = document.getElementById('delete-modal');
+                    if (modal) modal.style.display = 'flex';
+                };
             }
-        }
-    };
 
-    // ========================================================
-    // 🚀 STIMA INTELLIGENTE DATA TRAGUARDO
-    // ========================================================
-    window.calculateGoalPrediction = function (profile, currentWeight, goalWeight, log) {
-        const el = document.getElementById('goal-prediction-' + profile);
-        if (!el) return;
+            badge.style.display = 'block';
+        };
 
-        if (!log || log.length < 2) {
-            el.innerHTML = `🎯 Inserisci qualche pesata nei prossimi giorni per calcolare la stima del traguardo!`;
-            return;
-        }
+        window.closeChartFocusBadge = function (profile) {
+            const badge = document.getElementById(`chart-focus-badge-${profile}`);
+            if (badge) badge.style.display = 'none';
+        };
 
-        if (currentWeight <= goalWeight) {
-            el.innerHTML = `🏆 <b>Traguardo raggiunto!</b> Sei arrivato/a al tuo peso obiettivo (${goalWeight} kg)! 🎉`;
-            return;
-        }
+        // Riconfigurazione interattiva su click e tocco per i grafici
+        (function () {
+            function attachChartTouchListeners(profile) {
+                const canvas = document.getElementById(`chart-${profile}`);
+                if (!canvas) return;
 
-        // Calcolo velocità di perdita negli ultimi 14-30 giorni
-        const firstLog = log[0];
-        const daysElapsed = Math.max(1, (new Date().getTime() - (firstLog.timestamp || new Date(firstLog.date).getTime())) / (1000 * 60 * 60 * 24));
-        const totalLost = firstLog.weight - currentWeight;
+                function handlePointer(evt) {
+                    const chart = charts[profile];
+                    if (!chart) return;
+                    const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, true);
+                    if (points && points.length > 0) {
+                        const firstPoint = points[0];
+                        window.showChartPointFocus(profile, firstPoint.index);
+                    }
+                }
 
-        if (totalLost <= 0) {
-            el.innerHTML = `🎯 Mancano <b>${(currentWeight - goalWeight).toFixed(1)} kg</b> all'obiettivo. Mantieni la costanza! 💪`;
-            return;
-        }
+                canvas.onclick = handlePointer;
+                // Su mobile touchstart/pointerup garantisce immediata risposta
+                canvas.onpointerup = handlePointer;
+            }
 
-        const ratePerDay = totalLost / daysElapsed; // kg persi al giorno
-        const kgRemaining = currentWeight - goalWeight;
-        const daysNeeded = Math.round(kgRemaining / ratePerDay);
+            const prevDraw = drawChart;
+            drawChart = function (profile, log, startWeight) {
+                prevDraw(profile, log, startWeight);
+                attachChartTouchListeners(profile);
+            };
+        })();
 
-        if (daysNeeded > 0 && daysNeeded < 365 * 2) {
-            const targetDate = new Date();
-            targetDate.setDate(targetDate.getDate() + daysNeeded);
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            const formattedDate = targetDate.toLocaleDateString('it-IT', options);
-            el.innerHTML = `🚀 A questo ritmo (-${(ratePerDay * 7).toFixed(1)} kg/settimana), traguardo stimato: <b>${formattedDate}</b>!`;
-        } else {
-            el.innerHTML = `🎯 Mancano <b>${kgRemaining.toFixed(1)} kg</b> all'obiettivo (${goalWeight} kg). Avanti così!`;
-        }
-    };
-
-    // Intercettiamo loadProgress per aggiornare l'idratazione rapida, il pasto di oggi e la predizione
-    (function () {
-        const origLoadProgress = loadProgress;
-        loadProgress = function (profile) {
-            origLoadProgress(profile);
+        // ========================================================
+        // 💧 QUICK WATER TAP (AGGIUNGI 1 BICCHIERE IN UN CLIC)
+        // ========================================================
+        window.addQuickWater = function (profile) {
+            if (typeof updateBeverage === 'function') {
+                updateBeverage(profile, 'water', 1);
+            }
             window.refreshQuickWaterDisplay(profile);
-            window.refreshTodayMealBox(profile);
-
-            const key = `weightLog_${profile}`;
-            const log = JSON.parse(localStorage.getItem(key)) || [];
-            const curW = log.length > 0 ? log[log.length - 1].weight : parseFloat(document.getElementById('start_' + profile)?.innerText) || 80;
-            const goalW = parseFloat(document.getElementById('goal_' + profile)?.innerText) || 65;
-            window.calculateGoalPrediction(profile, curW, goalW, log);
+            if (typeof showToast === 'function') showToast("💧 +1 Bicchiere d'acqua registrato! Ottimo lavoro!");
         };
-    })();
+
+        window.refreshQuickWaterDisplay = function (profile) {
+            const key = 'waterCount_' + profile;
+            const count = parseInt(localStorage.getItem(key)) || 0;
+            const el = document.getElementById('quick-water-count-' + profile);
+            if (el) {
+                let max = 8;
+                if (typeof getPersonalizedWaterTarget === 'function') {
+                    max = getPersonalizedWaterTarget(profile).glasses;
+                }
+                el.innerHTML = `<b>${count}</b> / ${max} bicchieri (${(count * 0.25).toFixed(1)}L)`;
+            }
+        };
+
+        // ========================================================
+        // 🍽️ VISTA RAPIDA "COSA C'È NEL PIATTO OGGI"
+        // ========================================================
+        window.refreshTodayMealBox = function (profile) {
+            const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+            const now = new Date();
+            const dayIndex = now.getDay(); // 0 = Domenica, 1 = Lunedì...
+            const dayName = dayNames[dayIndex];
+
+            const titleEl = document.getElementById('today-meal-dayname-' + profile);
+            const lunchEl = document.getElementById('today-lunch-' + profile);
+            const dinnerEl = document.getElementById('today-dinner-' + profile);
+
+            if (titleEl) titleEl.innerText = `Menù di Oggi (${dayName})`;
+
+            const section = document.getElementById('section-' + profile);
+            if (!section) return;
+            const table = section.querySelector('.weekly-table');
+            if (!table) return;
+
+            // Le righe della tabella sono in ordine: Lunedì (0), Martedì (1), ..., Domenica (6)
+            // Se dayIndex è 0 (Domenica), la riga corrispondente è la 6. Altrimenti dayIndex - 1.
+            const tableRowIndex = (dayIndex === 0) ? 6 : (dayIndex - 1);
+            const rows = table.querySelectorAll('tbody tr');
+            if (rows && rows[tableRowIndex]) {
+                const cells = rows[tableRowIndex].querySelectorAll('td');
+                if (cells.length >= 3) {
+                    const lunchText = cells[1].innerText.trim() || 'Nessun pranzo indicato';
+                    const dinnerText = cells[2].innerText.trim() || 'Nessuna cena indicata';
+                    if (lunchEl) lunchEl.innerHTML = lunchText;
+                    if (dinnerEl) dinnerEl.innerHTML = dinnerText;
+                }
+            }
+        };
+
+        // ========================================================
+        // 🚀 STIMA INTELLIGENTE DATA TRAGUARDO
+        // ========================================================
+        window.calculateGoalPrediction = function (profile, currentWeight, goalWeight, log) {
+            const el = document.getElementById('goal-prediction-' + profile);
+            if (!el) return;
+
+            if (!log || log.length < 2) {
+                el.innerHTML = `🎯 Inserisci qualche pesata nei prossimi giorni per calcolare la stima del traguardo!`;
+                return;
+            }
+
+            if (currentWeight <= goalWeight) {
+                el.innerHTML = `🏆 <b>Traguardo raggiunto!</b> Sei arrivato/a al tuo peso obiettivo (${goalWeight} kg)! 🎉`;
+                return;
+            }
+
+            // Calcolo velocità di perdita negli ultimi 14-30 giorni
+            const firstLog = log[0];
+            const daysElapsed = Math.max(1, (new Date().getTime() - (firstLog.timestamp || new Date(firstLog.date).getTime())) / (1000 * 60 * 60 * 24));
+            const totalLost = firstLog.weight - currentWeight;
+
+            if (totalLost <= 0) {
+                el.innerHTML = `🎯 Mancano <b>${(currentWeight - goalWeight).toFixed(1)} kg</b> all'obiettivo. Mantieni la costanza! 💪`;
+                return;
+            }
+
+            const ratePerDay = totalLost / daysElapsed; // kg persi al giorno
+            const kgRemaining = currentWeight - goalWeight;
+            const daysNeeded = Math.round(kgRemaining / ratePerDay);
+
+            if (daysNeeded > 0 && daysNeeded < 365 * 2) {
+                const targetDate = new Date();
+                targetDate.setDate(targetDate.getDate() + daysNeeded);
+                const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                const formattedDate = targetDate.toLocaleDateString('it-IT', options);
+                el.innerHTML = `🚀 A questo ritmo (-${(ratePerDay * 7).toFixed(1)} kg/settimana), traguardo stimato: <b>${formattedDate}</b>!`;
+            } else {
+                el.innerHTML = `🎯 Mancano <b>${kgRemaining.toFixed(1)} kg</b> all'obiettivo (${goalWeight} kg). Avanti così!`;
+            }
+        };
+
+        // Intercettiamo loadProgress per aggiornare l'idratazione rapida, il pasto di oggi e la predizione
+        (function () {
+            const origLoadProgress = loadProgress;
+            loadProgress = function (profile) {
+                origLoadProgress(profile);
+                window.refreshQuickWaterDisplay(profile);
+                window.refreshTodayMealBox(profile);
+
+                const key = `weightLog_${profile}`;
+                const log = JSON.parse(localStorage.getItem(key)) || [];
+                const curW = log.length > 0 ? log[log.length - 1].weight : parseFloat(document.getElementById('start_' + profile)?.innerText) || 80;
+                const goalW = parseFloat(document.getElementById('goal_' + profile)?.innerText) || 65;
+                window.calculateGoalPrediction(profile, curW, goalW, log);
+            };
+        })();
 

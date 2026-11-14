@@ -5075,9 +5075,10 @@
             if (user) u.searchParams.set('auth_user', user);
             if (role) u.searchParams.set('auth_role', role);
             if (pin && role === 'admin') u.searchParams.set('pinAdmin', pin);
+            u.searchParams.set('_v', Date.now());
             window.location.href = u.toString();
         } catch(e) {
-            window.location.href = url;
+            window.location.href = url + (url.includes('?') ? '&' : '?') + '_v=' + Date.now();
         }
     }
 

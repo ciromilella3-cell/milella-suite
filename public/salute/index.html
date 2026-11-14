@@ -1398,6 +1398,11 @@
                 function renderProfiles() {
                     visibleProfiles = getVisibleHealthProfiles();
                     window.visibleProfiles = visibleProfiles;
+                    if (!visibleProfiles.includes(activeProfile)) {
+                        activeProfile = visibleProfiles[0] || 'moglie';
+                        window.activeProfile = activeProfile;
+                        localStorage.setItem('activeProfile', activeProfile);
+                    }
                     // Se un profilo non ha ancora la sua scheda nel DOM, rigenera le schede
                     let missing = visibleProfiles.some(prof => !document.getElementById('section-' + prof));
                     if (missing && typeof generateHTMLForAll === 'function') {
@@ -1965,7 +1970,8 @@
         </section>`;
 
                     let allHtml = '';
-                    globalProfiles.forEach(prof => {
+                    const listToGen = Array.from(new Set([...globalProfiles, ...getVisibleHealthProfiles()]));
+                    listToGen.forEach(prof => {
                         let pStats = JSON.parse(localStorage.getItem('profileStats_' + prof)) || {};
                         let emoji = '👤';
                         let isFem = prof.toLowerCase().includes('moglie') || pStats.gender === 'F';
@@ -1979,7 +1985,7 @@
                     });
 
                     container.innerHTML = allHtml;
-                    globalProfiles.forEach(p => {
+                    listToGen.forEach(p => {
                         if (typeof renderPhotos === 'function') renderPhotos(p);
                         if (typeof updateBMI === 'function') updateBMI(p);
                         if (typeof loadFasting === 'function') loadFasting(p);
@@ -2415,7 +2421,7 @@
         </main>
     </div>
 
-    <script src="script.js?v=3.3"></script>
+    <script src="script.js?v=3.4"></script>
     <div id="toast-notification"
         style="display:none; position:fixed; bottom:30px; right:30px; background:#43a047; color:white; padding:15px 25px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:9999; font-weight:bold; align-items:center; gap:10px; transition: opacity 0.3s ease-in-out;">
         <span id="toast-icon">✨</span>
@@ -2492,9 +2498,9 @@
                     window.location.reload();
                 }
             });
-            navigator.serviceWorker.register('./sw.js?v=27')
+            navigator.serviceWorker.register('./sw.js?v=28')
                 .then(reg => {
-                    console.log('Service Worker Registered v27');
+                    console.log('Service Worker Registered v28');
                     reg.update();
                 });
         }
@@ -4323,61 +4329,64 @@
 
         // Funzione Infallibile di Aggiornamento App (Svuota Cache Offline, Service Worker e Ricarica i Dati Ufficiali)
         async function forceUpdateSaluteApp() {
-            if (confirm("Vuoi aggiornare l'applicazione con le ultime modifiche e ricaricare tutti i dati ufficiali?")) {
+            try {
+                // 1. Pulisci Cache Storage
+                if ('caches' in window) {
+                    const keys = await caches.keys();
+                    await Promise.all(keys.map(k => caches.delete(k)));
+                }
+                // 2. Unregister Service Worker
+                if ('serviceWorker' in navigator) {
+                    const regs = await navigator.serviceWorker.getRegistrations();
+                    for (let reg of regs) {
+                        await reg.unregister();
+                    }
+                }
+                // 3. Ricarica dati ufficiali dal Cloud Render / API prima del fallback
                 try {
-                    // 1. Pulisci Cache Storage
-                    if ('caches' in window) {
-                        const keys = await caches.keys();
-                        await Promise.all(keys.map(k => caches.delete(k)));
+                    let r = await fetch('/api/salute/data?t=' + Date.now());
+                    if (!r.ok) r = await fetch('/salute/Backup_Salute/Ripristino_Ufficiale_Ciro_e_MariaCarmela.salute?t=' + Date.now());
+                    const data = await r.json();
+                    for (let k in data) {
+                        localStorage.setItem(k, typeof data[k] === 'object' ? JSON.stringify(data[k]) : data[k]);
                     }
-                    // 2. Unregister Service Worker
-                    if ('serviceWorker' in navigator) {
-                        const regs = await navigator.serviceWorker.getRegistrations();
-                        for (let reg of regs) {
-                            await reg.unregister();
-                        }
-                    }
-                    // 3. Ricarica dati ufficiali dal Cloud Render / API prima del fallback
-                    try {
-                        let r = await fetch('/api/salute/data?t=' + Date.now());
-                        if (!r.ok) r = await fetch('/salute/Backup_Salute/Ripristino_Ufficiale_Ciro_e_MariaCarmela.salute?t=' + Date.now());
-                        const data = await r.json();
-                        for (let k in data) {
-                            localStorage.setItem(k, typeof data[k] === 'object' ? JSON.stringify(data[k]) : data[k]);
-                        }
-                        localStorage.setItem('profileName_marito', 'Ciro Milella');
-                        localStorage.setItem('profileName_moglie', 'Maria Carmela');
-                    } catch (e) { }
-
-                    // Pulizia forzata profili orfani o di test
-                    try {
-                        let pList = ['marito', 'moglie'];
-                        try {
-                            let parsed = JSON.parse(localStorage.getItem('health_profiles') || '[]');
-                            pList = parsed.filter(p => p !== 'a' && p !== 'salvatoresalva' && p !== 'esempiocompleto' && p !== 'luigiscappa');
-                            if (!pList.includes('marito')) pList.unshift('marito');
-                            if (!pList.includes('moglie')) pList.push('moglie');
-                        } catch (e) { }
-                        localStorage.setItem('health_profiles', JSON.stringify(pList));
-                        ['a', 'salvatoresalva', 'esempiocompleto', 'luigiscappa'].forEach(stray => {
-                            localStorage.removeItem('profileName_' + stray);
-                            localStorage.removeItem('profileStats_' + stray);
-                            localStorage.removeItem('weightLog_' + stray);
-                            localStorage.removeItem('menuData_' + stray);
-                            localStorage.removeItem('anamnesi_' + stray);
-                        });
-                        const userRole = localStorage.getItem('milella_last_authenticated_role') || localStorage.getItem('milella_role');
-                        if (userRole === 'admin') {
-                            localStorage.setItem('activeProfile', 'marito');
-                        } else {
-                            localStorage.setItem('activeProfile', 'moglie');
-                        }
-                    } catch (e) { }
+                    localStorage.setItem('profileName_marito', 'Ciro Milella');
+                    localStorage.setItem('profileName_moglie', 'Maria Carmela');
                 } catch (e) { }
 
-                // 4. Forza reload immediato pulito
-                window.location.href = '/salute/?updated=' + Date.now();
-            }
+                // Consolidamento Maria Carmela immediato
+                if (typeof consolidaProfiliSaluteLocale === 'function') {
+                    consolidaProfiliSaluteLocale();
+                }
+
+                // Pulizia forzata profili orfani o di test
+                try {
+                    let pList = ['marito', 'moglie'];
+                    try {
+                        let parsed = JSON.parse(localStorage.getItem('health_profiles') || '[]');
+                        pList = parsed.filter(p => p !== 'a' && p !== 'salvatoresalva' && p !== 'esempiocompleto' && p !== 'luigiscappa');
+                        if (!pList.includes('marito')) pList.unshift('marito');
+                        if (!pList.includes('moglie')) pList.push('moglie');
+                    } catch (e) { }
+                    localStorage.setItem('health_profiles', JSON.stringify(pList));
+                    ['a', 'salvatoresalva', 'esempiocompleto', 'luigiscappa'].forEach(stray => {
+                        localStorage.removeItem('profileName_' + stray);
+                        localStorage.removeItem('profileStats_' + stray);
+                        localStorage.removeItem('weightLog_' + stray);
+                        localStorage.removeItem('menuData_' + stray);
+                        localStorage.removeItem('anamnesi_' + stray);
+                    });
+                    const userRole = localStorage.getItem('milella_last_authenticated_role') || localStorage.getItem('milella_role');
+                    if (userRole === 'admin') {
+                        localStorage.setItem('activeProfile', 'marito');
+                    } else {
+                        localStorage.setItem('activeProfile', 'moglie');
+                    }
+                } catch (e) { }
+            } catch (e) { }
+
+            // 4. Forza reload immediato pulito
+            window.location.href = '/salute/?t=' + Date.now();
         }
     </script>
 
