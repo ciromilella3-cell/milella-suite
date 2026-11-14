@@ -3752,6 +3752,7 @@
               <select class="form-control-compact" id="edit-farm-cadenza" style="font-weight:700; color:#0f172a;"
                 onchange="if(typeof gestisciCambioCadenzaFarmaco==='function') gestisciCambioCadenzaFarmaco(); if(typeof ricalcolaRiepilogoCapsula==='function') ricalcolaRiepilogoCapsula();">
                 <option value="giornaliera">Tutti i giorni (Quotidiana)</option>
+                <option value="giorni_specifici">🗓️ Giorni specifici della settimana (Personalizzata)</option>
                 <option value="alternati">A giorni alterni (Un giorno sì / no)</option>
                 <option value="settimanale">1 volta a settimana (Settimanale)</option>
                 <option value="quindicinale_15_30">Ogni 15 giorni (il 15 e 30 del mese)</option>
@@ -3767,6 +3768,32 @@
             <!-- DETTAGLIO CADENZA PERIODICA (VISIBILE QUANDO NON È QUOTIDIANA) -->
             <div id="box-dettaglio-cadenza" style="display:none; margin-top:8px; padding:10px 12px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px;">
               
+              <!-- Sottosezione Giorni Specifici della Settimana -->
+              <div id="row-cadenza-giorni-specifici" style="display:none; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <label class="form-label-compact" style="color:#0369a1; font-weight:800; margin-bottom:0;">🗓️ Giorni di Assunzione</label>
+                  <span id="cadenza-giorni-riepilogo-badge" class="badge" style="background:#e0f2fe; color:#0369a1; font-size:11px; padding:2px 8px; border-radius:12px; font-weight:800;">7 su 7 gg</span>
+                </div>
+                <!-- 7 Bottoni Interattivi Lun-Dom -->
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin:6px 0;" id="box-giorni-settimana-pills">
+                  <button type="button" class="btn-cadenza-day" data-day="1" onclick="toggleGiornoSpecificoCadenza(1)" style="flex:1; min-width:38px; padding:8px 2px; font-size:12px; font-weight:800; border-radius:8px; border:1.5px solid #0284c7; background:#0284c7; color:#fff; cursor:pointer; text-align:center;">Lun</button>
+                  <button type="button" class="btn-cadenza-day" data-day="2" onclick="toggleGiornoSpecificoCadenza(2)" style="flex:1; min-width:38px; padding:8px 2px; font-size:12px; font-weight:800; border-radius:8px; border:1.5px solid #0284c7; background:#0284c7; color:#fff; cursor:pointer; text-align:center;">Mar</button>
+                  <button type="button" class="btn-cadenza-day" data-day="3" onclick="toggleGiornoSpecificoCadenza(3)" style="flex:1; min-width:38px; padding:8px 2px; font-size:12px; font-weight:800; border-radius:8px; border:1.5px solid #0284c7; background:#0284c7; color:#fff; cursor:pointer; text-align:center;">Mer</button>
+                  <button type="button" class="btn-cadenza-day" data-day="4" onclick="toggleGiornoSpecificoCadenza(4)" style="flex:1; min-width:38px; padding:8px 2px; font-size:12px; font-weight:800; border-radius:8px; border:1.5px solid #0284c7; background:#0284c7; color:#fff; cursor:pointer; text-align:center;">Gio</button>
+                  <button type="button" class="btn-cadenza-day" data-day="5" onclick="toggleGiornoSpecificoCadenza(5)" style="flex:1; min-width:38px; padding:8px 2px; font-size:12px; font-weight:800; border-radius:8px; border:1.5px solid #0284c7; background:#0284c7; color:#fff; cursor:pointer; text-align:center;">Ven</button>
+                  <button type="button" class="btn-cadenza-day" data-day="6" onclick="toggleGiornoSpecificoCadenza(6)" style="flex:1; min-width:38px; padding:8px 2px; font-size:12px; font-weight:800; border-radius:8px; border:1.5px solid #0284c7; background:#0284c7; color:#fff; cursor:pointer; text-align:center;">Sab</button>
+                  <button type="button" class="btn-cadenza-day" data-day="7" onclick="toggleGiornoSpecificoCadenza(7)" style="flex:1; min-width:38px; padding:8px 2px; font-size:12px; font-weight:800; border-radius:8px; border:1.5px solid #0284c7; background:#0284c7; color:#fff; cursor:pointer; text-align:center;">Dom</button>
+                </div>
+                <!-- Scorciatoie veloci -->
+                <div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:4px;">
+                  <button type="button" onclick="impostaPresetGiorniSpecifici('tutti')" style="font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; color:#334155; cursor:pointer;">⚡ Tutti</button>
+                  <button type="button" onclick="impostaPresetGiorniSpecifici('feriali')" style="font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; color:#334155; cursor:pointer;">💼 Lun-Ven</button>
+                  <button type="button" onclick="impostaPresetGiorniSpecifici('alterni')" style="font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; color:#334155; cursor:pointer;">🔀 Alterni (L-M-V-D)</button>
+                  <button type="button" onclick="impostaPresetGiorniSpecifici('weekend')" style="font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; color:#334155; cursor:pointer;">🏖️ Sab-Dom</button>
+                  <button type="button" onclick="impostaPresetGiorniSpecifici('nessuno')" style="font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; border:1px solid #fecaca; background:#fff5f5; color:#dc2626; cursor:pointer;">❌ Azzera</button>
+                </div>
+              </div>
+
               <!-- Sottosezione Settimanale -->
               <div id="row-cadenza-settimanale" style="display:none;">
                 <label class="form-label-compact" style="color:#0369a1; font-weight:800;">📅 Giorno della settimana di assunzione</label>
@@ -8362,7 +8389,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=325"></script>
+  <script src="app.js?v=326"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -8373,7 +8400,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=317', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=326', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

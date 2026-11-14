@@ -5867,6 +5867,15 @@ function renderTerapie() {
               return `<span class="badge badge-warning" style="background:#fef08a; color:#854d0e; font-weight:800; border:1px solid #facc15;">🌟 OGGI TOCCA (Settimanale - ${gNome})!</span> <b>${t.ora}</b>`;
             }
           }
+          if (t.cadenzaTipo === 'giorni_specifici') {
+            const previstaOggi = isTerapiaPrevistaOggi(t);
+            const cNome = (typeof formattaNomeCadenza === 'function') ? formattaNomeCadenza(t.cadenzaTipo, t) : 'Giorni specifici';
+            if (!previstaOggi) {
+              return `<span class="badge" style="background:#e2e8f0; color:#475569; font-weight:700;">📅 ${cNome}</span><br><small style="color:#64748b; font-size:10.5px;">Non prevista oggi</small>`;
+            } else {
+              return `<span class="badge badge-warning" style="background:#fef08a; color:#854d0e; font-weight:800; border:1px solid #facc15;">🌟 OGGI TOCCA (${cNome})!</span> <b>${t.ora}</b>`;
+            }
+          }
           if (['mensile', 'bimestrale', 'trimestrale', 'semestrale', 'annuale'].indexOf(t.cadenzaTipo) >= 0) {
             const previstaOggi = isTerapiaPrevistaOggi(t);
             const cNome = (typeof formattaNomeCadenza === 'function') ? formattaNomeCadenza(t.cadenzaTipo) : t.cadenzaTipo;
@@ -11545,9 +11554,21 @@ function rimuoviDoseExtraRow(idRow) {
 // ============================================================================
 
 // ============================================================================
+// ============================================================================
 // FORMATTAZIONE E GESTIONE CADENZE PERIODICHE FARMACI (SETTIMANALE, MENSILE, ECC.)
 // ============================================================================
-function formattaNomeCadenza(cadenzaTipo) {
+window._capsulaGiorniSpecifici = [1, 2, 3, 4, 5, 6, 7];
+
+function formattaNomeCadenza(cadenzaTipo, t) {
+  if (cadenzaTipo === 'giorni_specifici' || (t && t.cadenzaTipo === 'giorni_specifici')) {
+    var arr = (t && Array.isArray(t.cadenzaGiorniSpecifici)) ? t.cadenzaGiorniSpecifici : (window._capsulaGiorniSpecifici || []);
+    if (!Array.isArray(arr) || arr.length === 0) return 'Giorni specifici (Nessuno)';
+    if (arr.length === 7) return 'Tutti i giorni';
+    var mappaNomi = { 1: 'Lun', 2: 'Mar', 3: 'Mer', 4: 'Gio', 5: 'Ven', 6: 'Sab', 7: 'Dom' };
+    var ordinati = arr.slice().sort(function (a, b) { return a - b; });
+    var etichette = ordinati.map(function (g) { return mappaNomi[g] || g; }).join(', ');
+    return etichette + ' (' + arr.length + ' gg/sett)';
+  }
   switch (cadenzaTipo) {
     case 'alterni': return 'A giorni alterni';
     case 'alternata_mezza_intera': return 'Dose alternata (0,5 / 1 cpr)';
@@ -11559,6 +11580,7 @@ function formattaNomeCadenza(cadenzaTipo) {
     case 'semestrale': return 'Semestrale (ogni 6 mesi)';
     case 'annuale': return 'Annuale (1 volta all\'anno)';
     case 'bisogno': return 'Al bisogno (SOS)';
+    case 'giorni_specifici': return 'Giorni specifici';
     default: return 'Quotidiana';
   }
 }
@@ -11579,9 +11601,87 @@ function formattaGiornoSettimana(g) {
 }
 window.formattaGiornoSettimana = formattaGiornoSettimana;
 
+function aggiornaStilePilloleGiorniSpecifici() {
+  var container = document.getElementById('box-giorni-settimana-pills');
+  if (!container) return;
+  var buttons = container.querySelectorAll('.btn-cadenza-day');
+  var arr = window._capsulaGiorniSpecifici || [];
+  buttons.forEach(function (btn) {
+    var d = parseInt(btn.getAttribute('data-day'));
+    var isActive = arr.indexOf(d) >= 0;
+    if (isActive) {
+      btn.style.background = '#0284c7';
+      btn.style.color = '#ffffff';
+      btn.style.borderColor = '#0284c7';
+      btn.style.boxShadow = '0 2px 4px rgba(2,132,199,0.35)';
+    } else {
+      btn.style.background = '#f1f5f9';
+      btn.style.color = '#64748b';
+      btn.style.borderColor = '#cbd5e1';
+      btn.style.boxShadow = 'none';
+    }
+  });
+
+  var badge = document.getElementById('cadenza-giorni-riepilogo-badge');
+  if (badge) {
+    badge.textContent = arr.length + ' su 7 gg';
+    badge.style.background = arr.length > 0 ? '#e0f2fe' : '#fee2e2';
+    badge.style.color = arr.length > 0 ? '#0369a1' : '#b91c1c';
+  }
+
+  var feedbackTesto = document.getElementById('cadenza-feedback-testo');
+  if (feedbackTesto) {
+    if (arr.length === 0) {
+      feedbackTesto.textContent = '⚠️ Attenzione: nessun giorno selezionato! Clicca sui giorni della settimana.';
+    } else if (arr.length === 7) {
+      feedbackTesto.textContent = 'Si assume tutti i giorni della settimana (7 gg su 7).';
+    } else {
+      var mappa = { 1: 'Lun', 2: 'Mar', 3: 'Mer', 4: 'Gio', 5: 'Ven', 6: 'Sab', 7: 'Dom' };
+      var ord = arr.slice().sort(function (a, b) { return a - b; }).map(function (g) { return mappa[g] || g; });
+      feedbackTesto.textContent = 'Si assume ' + arr.length + ' giorni a settimana: ' + ord.join(', ') + '.';
+    }
+  }
+}
+window.aggiornaStilePilloleGiorniSpecifici = aggiornaStilePilloleGiorniSpecifici;
+
+function toggleGiornoSpecificoCadenza(giornoNum) {
+  var g = parseInt(giornoNum);
+  if (!Array.isArray(window._capsulaGiorniSpecifici)) {
+    window._capsulaGiorniSpecifici = [1, 2, 3, 4, 5, 6, 7];
+  }
+  var idx = window._capsulaGiorniSpecifici.indexOf(g);
+  if (idx >= 0) {
+    window._capsulaGiorniSpecifici.splice(idx, 1);
+  } else {
+    window._capsulaGiorniSpecifici.push(g);
+    window._capsulaGiorniSpecifici.sort(function (a, b) { return a - b; });
+  }
+  aggiornaStilePilloleGiorniSpecifici();
+  if (typeof ricalcolaRiepilogoCapsula === 'function') ricalcolaRiepilogoCapsula();
+}
+window.toggleGiornoSpecificoCadenza = toggleGiornoSpecificoCadenza;
+
+function impostaPresetGiorniSpecifici(preset) {
+  if (preset === 'tutti') {
+    window._capsulaGiorniSpecifici = [1, 2, 3, 4, 5, 6, 7];
+  } else if (preset === 'feriali') {
+    window._capsulaGiorniSpecifici = [1, 2, 3, 4, 5];
+  } else if (preset === 'alterni') {
+    window._capsulaGiorniSpecifici = [1, 3, 5, 7]; // Lun, Mer, Ven, Dom
+  } else if (preset === 'weekend') {
+    window._capsulaGiorniSpecifici = [6, 7];
+  } else if (preset === 'nessuno') {
+    window._capsulaGiorniSpecifici = [];
+  }
+  aggiornaStilePilloleGiorniSpecifici();
+  if (typeof ricalcolaRiepilogoCapsula === 'function') ricalcolaRiepilogoCapsula();
+}
+window.impostaPresetGiorniSpecifici = impostaPresetGiorniSpecifici;
+
 function gestisciCambioCadenzaFarmaco() {
   var elCad = document.getElementById('edit-farm-cadenza');
   var boxDettaglio = document.getElementById('box-dettaglio-cadenza');
+  var rowGiorniSpec = document.getElementById('row-cadenza-giorni-specifici');
   var rowSett = document.getElementById('row-cadenza-settimanale');
   var rowMese = document.getElementById('row-cadenza-mensile');
   var colDataInizio = document.getElementById('col-cadenza-data-inizio');
@@ -11598,12 +11698,16 @@ function gestisciCambioCadenzaFarmaco() {
 
   if (boxDettaglio) boxDettaglio.style.display = 'block';
 
+  if (rowGiorniSpec) rowGiorniSpec.style.display = 'none';
   if (rowSett) rowSett.style.display = 'none';
   if (rowMese) rowMese.style.display = 'none';
   if (colDataInizio) colDataInizio.style.display = 'none';
   if (rowAnnuale) rowAnnuale.style.display = 'none';
 
-  if (val === 'settimanale') {
+  if (val === 'giorni_specifici') {
+    if (rowGiorniSpec) rowGiorniSpec.style.display = 'block';
+    aggiornaStilePilloleGiorniSpecifici();
+  } else if (val === 'settimanale') {
     if (rowSett) rowSett.style.display = 'block';
     if (feedbackTesto) feedbackTesto.textContent = 'Si assume 1 volta a settimana nel giorno prescelto.';
   } else if (val === 'mensile') {
@@ -11638,6 +11742,25 @@ window.gestisciCambioCadenzaFarmaco = gestisciCambioCadenzaFarmaco;
 // ============================================================================
 function calcolaConsumoGiornalieroFarmaco(t) {
   if (!t) return 1;
+  // Se al bisogno, consumo standard indicativo stimato
+  if (t.cadenzaTipo === 'bisogno' || t.fascia === 'Al Bisogno' || t.ora === 'Al Bisogno') {
+    return 0.5;
+  }
+  // Schema alternato: 1/2 cpr un giorno e 1 cpr il giorno dopo -> 1.5 cpr ogni 2 giorni = 0.75 cpr/die
+  if (t.cadenzaTipo === 'alternata_mezza_intera') {
+    return 0.75;
+  }
+  // Giorni alterni standard: 1 dose ogni 2 giorni = 0.5 dose/die
+  if (t.cadenzaTipo === 'alterni') {
+    var q = parseFloat(t.quantitaQuota) || 1;
+    return q / 2;
+  }
+  // Giorni specifici della settimana: quota * (numGiorni / 7)
+  if (t.cadenzaTipo === 'giorni_specifici') {
+    var q = parseFloat(t.quantitaQuota) || 1;
+    var n = (Array.isArray(t.cadenzaGiorniSpecifici) && t.cadenzaGiorniSpecifici.length > 0) ? t.cadenzaGiorniSpecifici.length : 7;
+    return (q * n) / 7;
+  }
   // Se al bisogno, consumo standard indicativo stimato
   if (t.cadenzaTipo === 'bisogno' || t.fascia === 'Al Bisogno' || t.ora === 'Al Bisogno') {
     return 0.5;
@@ -11975,6 +12098,11 @@ function apriModificaFarmaco(farmacoId) {
     }
     if (document.getElementById('edit-farm-giorno-annuale')) {
       document.getElementById('edit-farm-giorno-annuale').value = t.cadenzaGiornoAnnuale || new Date().getDate();
+    }
+    if (Array.isArray(t.cadenzaGiorniSpecifici) && t.cadenzaGiorniSpecifici.length > 0) {
+      window._capsulaGiorniSpecifici = t.cadenzaGiorniSpecifici.slice();
+    } else {
+      window._capsulaGiorniSpecifici = [1, 2, 3, 4, 5, 6, 7];
     }
     if (typeof gestisciCambioCadenzaFarmaco === 'function') {
       gestisciCambioCadenzaFarmaco();
@@ -12482,6 +12610,9 @@ function salvaModificaFarmaco(e) {
   var cadDataInizio = (['bimestrale', 'trimestrale', 'semestrale', 'alterni'].indexOf(cadenza) >= 0) ? (document.getElementById('edit-farm-data-inizio')?.value || new Date().toISOString().slice(0, 10)) : null;
   var cadMeseAnnuale = (cadenza === 'annuale') ? (parseInt(document.getElementById('edit-farm-mese-annuale')?.value) || (new Date().getMonth() + 1)) : null;
   var cadGiornoAnnuale = (cadenza === 'annuale') ? (parseInt(document.getElementById('edit-farm-giorno-annuale')?.value) || new Date().getDate()) : null;
+  var cadGiorniSpecifici = (cadenza === 'giorni_specifici')
+    ? ((Array.isArray(window._capsulaGiorniSpecifici) && window._capsulaGiorniSpecifici.length > 0) ? window._capsulaGiorniSpecifici.slice() : [1, 2, 3, 4, 5, 6, 7])
+    : null;
 
   var fonteTipoEl = document.getElementById('edit-farm-fonte-tipo');
   var medNomeEl = document.getElementById('edit-farm-medico-nome');
@@ -12546,6 +12677,7 @@ function salvaModificaFarmaco(e) {
         scorta: scorta,
         giorniAlert: giorniAlert,
         cadenzaTipo: cadenza,
+        cadenzaGiorniSpecifici: cadGiorniSpecifici,
         cadenzaGiornoSettimana: cadGiornoSettimana,
         cadenzaGiornoMese: cadGiornoMese,
         cadenzaDataInizio: cadDataInizio,
@@ -12597,6 +12729,7 @@ function salvaModificaFarmaco(e) {
         scorta: pScorta,
         giorniAlert: giorniAlert,
         cadenzaTipo: cadenza,
+        cadenzaGiorniSpecifici: cadGiorniSpecifici,
         cadenzaGiornoSettimana: cadGiornoSettimana,
         cadenzaGiornoMese: cadGiornoMese,
         cadenzaDataInizio: cadDataInizio,
@@ -15107,6 +15240,15 @@ function isTerapiaPrevistaPerData(t, dataTarget) {
     return isoDay === targetDay;
   }
 
+  // 1bis. Giorni specifici della settimana (Personalizzata)
+  if (t.cadenzaTipo === 'giorni_specifici') {
+    var dayOfWeek = target.getDay(); // 0 = Dom, 1 = Lun ... 6 = Sab
+    var isoDay = (dayOfWeek === 0) ? 7 : dayOfWeek; // 1 = Lun ... 7 = Dom
+    var arr = Array.isArray(t.cadenzaGiorniSpecifici) ? t.cadenzaGiorniSpecifici : [1, 2, 3, 4, 5, 6, 7];
+    var numArr = arr.map(function (x) { return parseInt(x); });
+    return numArr.indexOf(isoDay) >= 0;
+  }
+
   // 2. Cadenza quindicinale (il 15 e il 30 del mese o ultimo del mese)
   if (t.cadenzaTipo === 'quindicinale_15_30' || ((t.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0 && (t.modo || '').indexOf('15') >= 0)) {
     return (giornoMese === 15 || giornoMese === 30 || giornoMese === ultimoGiornoMese);
@@ -17072,6 +17214,21 @@ function ricalcolaSimulatoreCadenzaOggi() {
       elBadge.style.background = '#dbeafe';
       elBadge.style.color = '#1d4ed8';
     }
+  } else if (cadTipo === 'giorni_specifici') {
+    var dayOfWeek = oggi.getDay();
+    var isoDay = (dayOfWeek === 0) ? 7 : dayOfWeek;
+    var arr = window._capsulaGiorniSpecifici || [1, 2, 3, 4, 5, 6, 7];
+    var toccaSpec = arr.indexOf(isoDay) >= 0;
+    var mappaNomi = { 1: 'Lun', 2: 'Mar', 3: 'Mer', 4: 'Gio', 5: 'Ven', 6: 'Sab', 7: 'Dom' };
+    var giorniStr = arr.slice().sort(function (a, b) { return a - b; }).map(function (g) { return mappaNomi[g] || g; }).join(', ');
+    elTesto.innerHTML = toccaSpec
+      ? ('<b style="color:#15803d;">OGGI È GIORNO DI ASSUNZIONE!</b> (' + (giorniStr || 'Personalizzata') + ')')
+      : ('Oggi <b>NON</b> va assunto. Giorni previsti: ' + (giorniStr || 'Nessuno'));
+    if (elBadge) {
+      elBadge.textContent = toccaSpec ? '✅ SI OGGI' : '❌ NO OGGI';
+      elBadge.style.background = toccaSpec ? '#dcfce7' : '#fee2e2';
+      elBadge.style.color = toccaSpec ? '#15803d' : '#dc2626';
+    }
   } else if (cadTipo === 'settimanale') {
     var dayOfWeek = oggi.getDay();
     var isoDay = (dayOfWeek === 0) ? 7 : dayOfWeek;
@@ -17724,7 +17881,14 @@ function ricalcolaRiepilogoCapsula() {
   var consumoGiornaliero = totCprDie;
   var descCadenza = 'Tutti i giorni';
 
-  if (cadTipo === 'alternati') {
+  if (cadTipo === 'giorni_specifici') {
+    var arr = window._capsulaGiorniSpecifici || [1, 2, 3, 4, 5, 6, 7];
+    var mappaNomi = { 1: 'Lun', 2: 'Mar', 3: 'Mer', 4: 'Gio', 5: 'Ven', 6: 'Sab', 7: 'Dom' };
+    var ord = arr.slice().sort(function (a, b) { return a - b; }).map(function (g) { return mappaNomi[g] || g; });
+    var n = arr.length > 0 ? arr.length : 7;
+    consumoGiornaliero = (totCprDie * n) / 7;
+    descCadenza = 'Giorni specifici (' + (ord.length > 0 ? ord.join(', ') : 'Nessuno') + ' - ' + n + ' gg/sett)';
+  } else if (cadTipo === 'alternati') {
     consumoGiornaliero = totCprDie / 2;
     descCadenza = 'A giorni alterni';
   } else if (cadTipo === 'settimanale') {
@@ -17828,6 +17992,7 @@ function apriMascheraNuovoFarmaco() {
   if (document.getElementById('edit-farm-data-inizio')) document.getElementById('edit-farm-data-inizio').value = (new Date().toISOString().slice(0, 10));
   if (document.getElementById('edit-farm-mese-annuale')) document.getElementById('edit-farm-mese-annuale').value = (new Date().getMonth() + 1);
   if (document.getElementById('edit-farm-giorno-annuale')) document.getElementById('edit-farm-giorno-annuale').value = (new Date().getDate());
+  window._capsulaGiorniSpecifici = [1, 2, 3, 4, 5, 6, 7];
   if (typeof gestisciCambioCadenzaFarmaco === 'function') gestisciCambioCadenzaFarmaco();
 
   // Default: 1 dose al giorno alle 08:00
