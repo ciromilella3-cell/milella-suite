@@ -2421,7 +2421,7 @@
         </main>
     </div>
 
-    <script src="script.js?v=3.4"></script>
+    <script src="script.js?v=3.5"></script>
     <div id="toast-notification"
         style="display:none; position:fixed; bottom:30px; right:30px; background:#43a047; color:white; padding:15px 25px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:9999; font-weight:bold; align-items:center; gap:10px; transition: opacity 0.3s ease-in-out;">
         <span id="toast-icon">✨</span>
@@ -2498,9 +2498,9 @@
                     window.location.reload();
                 }
             });
-            navigator.serviceWorker.register('./sw.js?v=28')
+            navigator.serviceWorker.register('./sw.js?v=29')
                 .then(reg => {
-                    console.log('Service Worker Registered v28');
+                    console.log('Service Worker Registered v29');
                     reg.update();
                 });
         }

@@ -8171,28 +8171,27 @@ window.pullSaluteFromCloud = async function (forceRefresh) {
                         const lk = localStorage.key(i);
                         if (lk && lk.startsWith('profileName_')) {
                             const pid = lk.replace('profileName_', '');
-                            if (pid && !validProfiles.has(pid)) {
-                                if (pid && !validProfiles.has(pid) && pid !== '1' && !pid.includes('maria') && pid !== 'moglie') {
-                                    localStorage.removeItem(lk);
-                                    localStorage.removeItem('profileStats_' + pid);
-                                    localStorage.removeItem('weightLog_' + pid);
-                                    localStorage.removeItem('syncTarget_' + pid);
-                                }
+                            if (pid && !validProfiles.has(pid) && pid !== '1' && !pid.includes('maria') && pid !== 'moglie') {
+                                localStorage.removeItem(lk);
+                                localStorage.removeItem('profileStats_' + pid);
+                                localStorage.removeItem('weightLog_' + pid);
+                                localStorage.removeItem('syncTarget_' + pid);
                             }
                         }
+                    }
 
-                        const nextStoredArr = Array.from(validProfiles);
-                        const isSameList = localPList.length === nextStoredArr.length && nextStoredArr.every(p => localPList.includes(p));
-                        if (!isSameList) {
-                            localStorage.setItem('health_profiles', JSON.stringify(nextStoredArr));
-                            hasChanges = true;
-                            profilesListChanged = true;
-                        }
+                    const nextStoredArr = Array.from(validProfiles);
+                    const isSameList = localPList.length === nextStoredArr.length && nextStoredArr.every(p => localPList.includes(p));
+                    if (!isSameList) {
+                        localStorage.setItem('health_profiles', JSON.stringify(nextStoredArr));
+                        hasChanges = true;
+                        profilesListChanged = true;
                     }
                 }
-            } catch (ePl) {
-                console.warn('Errore riconciliazione profili:', ePl);
             }
+        } catch (ePl) {
+            console.warn('Errore riconciliazione profili:', ePl);
+        }
 
             localStorage.setItem('profileName_marito', 'Ciro Milella');
             localStorage.setItem('profileName_moglie', 'Maria Carmela');
@@ -8228,10 +8227,11 @@ window.pullSaluteFromCloud = async function (forceRefresh) {
                     }
                 }
                 return true;
-            } catch (err) {
-                console.warn('☁️ Pull cloud error:', err);
-                return false;
             }
+        } catch (err) {
+            console.warn('☁️ Pull cloud error:', err);
+            return false;
+        }
         };
 
         // Sincronizzazione automatica all'avvio
