@@ -791,6 +791,31 @@
         .smart-alert-btn:active {
             transform: scale(0.97);
         }
+        .smart-alert-dismiss-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #94a3b8;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 800;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+            padding: 0;
+            line-height: 1;
+            margin-left: auto;
+        }
+        .smart-alert-dismiss-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+            color: #ffffff;
+            transform: scale(1.1);
+        }
 
         @media (max-width: 580px) {
             .smart-alert-card {
@@ -1501,7 +1526,7 @@
             <!-- Lista Card Notifiche Dinamiche -->
             
             <!-- Mini-Filtri Categorie Notifiche Smart Hub -->
-            <div id="smartHubFilters" style="display:flex; gap:7px; margin-bottom:12px; overflow-x:auto; padding-bottom:4px; flex-wrap:wrap;">
+            <div id="smartHubFilters" style="display:flex; gap:7px; margin-bottom:12px; overflow-x:auto; padding-bottom:4px; flex-wrap:wrap; align-items:center;">
                 <button type="button" class="notif-filter-btn active" onclick="filtraNotificheSmart('all', this)" id="btnFilterAll">
                     <span>🌐</span> Tutte (<span id="countNotifAll">0</span>)
                 </button>
@@ -1517,6 +1542,16 @@
                 <button type="button" class="notif-filter-btn" onclick="filtraNotificheSmart('salute', this)" id="btnFilterSalute" style="display:none;">
                     <span>💧</span> Salute (<span id="countNotifSalute">0</span>)
                 </button>
+
+                <!-- Azioni Rapide Smart Hub: Cancella Tutti & Ripristina -->
+                <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                    <button type="button" class="notif-filter-btn" onclick="dismissAllSmartAlerts()" id="btnDismissAllAlerts" style="background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.4); color:#fca5a5;" title="Cancella e silenzia tutti gli avvisi mostrati">
+                        <span>🗑️</span> Cancella Tutti
+                    </button>
+                    <button type="button" class="notif-filter-btn" onclick="restoreDismissedSmartAlerts()" id="btnRestoreAlerts" style="display:none; background:rgba(56,189,248,0.18); border:1px solid rgba(56,189,248,0.4); color:#7dd3fc;" title="Ripristina gli avvisi cancellati">
+                        <span>🔄</span> Ripristina (<span id="countDismissedAlerts">0</span>)
+                    </button>
+                </div>
             </div>
     
             <div id="smartAlertsList" style="display:flex; flex-direction:column; gap:8px;">
@@ -2372,21 +2407,13 @@
 
     <script>
         // Logistica Launch: navigazione diretta fluida
-        document.getElementById('btnLogistica').addEventListener('click', function(e) {
-            e.preventDefault();
-            navigaVersoApp('/veicoli/dashboard.html');
-        });
-                btn.innerHTML = `<div class="card-icon">✅</div><div class="card-title">Avviato!</div><div class="card-desc">L'applicazione è aperta a schermo intero!</div>`;
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.style.pointerEvents = 'auto';
-                }, 4000);
-            } catch(e) {
-                alert("Errore di connessione al server");
-                btn.innerHTML = originalHTML;
-                btn.style.pointerEvents = 'auto';
-            }
-        });
+        const btnLogistica = document.getElementById('btnLogistica');
+        if (btnLogistica) {
+            btnLogistica.addEventListener('click', function(e) {
+                e.preventDefault();
+                navigaVersoApp('/veicoli/dashboard.html');
+            });
+        }
 
         // Veicoli Launch
         const btnVeicoli = document.getElementById('btnVeicoli');
@@ -4707,9 +4734,10 @@
                                 // Notifica Terapie In Ritardo o Da Fare
                                 if (terapieInRitardo.length > 0) {
                                     const nomi = terapieInRitardo.map(t => t.farmaco + ' (' + t.ora + ')').join(', ');
-                                    const alertKey = paz.id + '_ritardo';
+                                    const alertKey = 'care_' + paz.id + '_ritardo';
                                     if (!careAlertsMap.has(alertKey)) {
                                         careAlertsMap.set(alertKey, {
+                                            key: alertKey,
                                             category: 'careassist',
                                             isUrgente: true,
                                             pazienteId: paz.id,
@@ -4726,9 +4754,10 @@
                                     }
                                 } else if (terapieOggiDaFare.length > 0) {
                                     const prox = terapieOggiDaFare[0];
-                                    const alertKey = paz.id + '_programma';
+                                    const alertKey = 'care_' + paz.id + '_programma';
                                     if (!careAlertsMap.has(alertKey)) {
                                         careAlertsMap.set(alertKey, {
+                                            key: alertKey,
                                             category: 'careassist',
                                             isUrgente: false,
                                             pazienteId: paz.id,
@@ -4749,9 +4778,10 @@
                                 if (farmaciScortaBassa.length > 0) {
                                     farmaciScortaBassa.forEach(f => {
                                         const isZero = Number(f.scorta) <= 0;
-                                        const alertKey = paz.id + '_scorta_' + f.farmaco;
+                                        const alertKey = 'care_' + paz.id + '_scorta_' + f.farmaco;
                                         if (!careAlertsMap.has(alertKey)) {
-                                            careAlertsMap.set(scortaKey = alertKey, {
+                                            careAlertsMap.set(alertKey, {
+                                                key: alertKey,
                                                 category: 'careassist',
                                                 isUrgente: isZero,
                                                 pazienteId: paz.id,
@@ -4778,26 +4808,33 @@
                 // Assegna la lista deduplicata a livello globale
                 window.__careAssistAlerts = Array.from(careAlertsMap.values());
 
-                // 3. COSTRUZIONE CARDS RESPONSIVE MOBILE-FIRST
+                // 3. COSTRUZIONE CARDS RESPONSIVE MOBILE-FIRST CON SUPPORTO CANCELLAZIONE / SILENZIAMENTO
                 const banner = document.getElementById('smartNotificationsBanner');
                 const badgeCount = document.getElementById('smartNotifBadgeCount');
                 const alertsList = document.getElementById('smartAlertsList');
+                const dismissed = (typeof getDismissedSmartAlerts === 'function') ? getDismissedSmartAlerts() : [];
+                const currentVisibleKeys = [];
 
                 let alertCards = [];
-                let countCareAssist = window.__careAssistAlerts.length;
+                let countCareAssist = 0;
                 let countVeicoli = 0;
                 let countAttrezzi = 0;
                 let countSalute = 0;
 
                 // A. CareAssist Alerts
                 window.__careAssistAlerts.forEach(ca => {
+                    const k = ca.key;
+                    if (dismissed.includes(k)) return;
+                    countCareAssist++;
+                    currentVisibleKeys.push(k);
                     const borderColor = ca.isUrgente ? '#ef4444' : (ca.tagColor || '#38bdf8');
                     alertCards.push(`
-                        <div class="smart-alert-card" data-category="careassist" style="border-left: 4px solid ${borderColor};">
+                        <div class="smart-alert-card" data-category="careassist" data-alert-key="${k}" style="border-left: 4px solid ${borderColor};">
                             <div class="smart-alert-body">
                                 <div class="smart-alert-header-row">
                                     <span class="smart-alert-icon">${ca.isUrgente ? '🚨' : '🩺'}</span>
-                                    <div class="smart-alert-title">${ca.titolo}</div>
+                                    <div class="smart-alert-title" style="flex:1;">${ca.titolo}</div>
+                                    <button type="button" class="smart-alert-dismiss-btn" onclick="dismissSmartAlert('${k}', event)" title="Cancella / Silenzia questo avviso">✕</button>
                                 </div>
                                 <div class="smart-alert-desc" style="margin-top:5px;">${ca.descrizione}</div>
                             </div>
@@ -4811,18 +4848,22 @@
 
                 // B. Veicoli Alerts
                 if (canSeeVeicoli && window.__smartVeicoliAlerts && window.__smartVeicoliAlerts.length > 0) {
-                    countVeicoli = window.__smartVeicoliAlerts.length;
                     window.__smartVeicoliAlerts.forEach(a => {
+                        const k = 'veicoli_' + (a.veicolo || '') + '_' + (a.tipo || '');
+                        if (dismissed.includes(k)) return;
+                        countVeicoli++;
+                        currentVisibleKeys.push(k);
                         const isUrg = a.urgente || a.giorni <= 7;
                         const borderColor = isUrg ? '#ef4444' : '#f59e0b';
                         const badgeColor = isUrg ? '#ef4444' : '#f59e0b';
                         const tagText = isUrg ? (a.giorni <= 0 ? 'SCADUTO' : 'URGENTE (' + a.giorni + ' gg)') : 'Tra ' + a.giorni + ' giorni';
                         alertCards.push(`
-                            <div class="smart-alert-card" data-category="veicoli" style="border-left: 4px solid ${borderColor};">
+                            <div class="smart-alert-card" data-category="veicoli" data-alert-key="${k}" style="border-left: 4px solid ${borderColor};">
                                 <div class="smart-alert-body">
                                     <div class="smart-alert-header-row">
                                         <span class="smart-alert-icon">🚗</span>
-                                        <div class="smart-alert-title">Scadenza ${a.tipo}: <span style="color:#38bdf8;">${a.veicolo}</span></div>
+                                        <div class="smart-alert-title" style="flex:1;">Scadenza ${a.tipo}: <span style="color:#38bdf8;">${a.veicolo}</span></div>
+                                        <button type="button" class="smart-alert-dismiss-btn" onclick="dismissSmartAlert('${k}', event)" title="Cancella / Silenzia questo avviso">✕</button>
                                     </div>
                                     <div class="smart-alert-desc" style="margin-top:5px;">Prevista il <strong>${a.data}</strong>. Controlla prima dell'uso su strada.</div>
                                 </div>
@@ -4837,14 +4878,18 @@
 
                 // C. Attrezzi Alerts
                 if (canSeeAttrezzi && window.__smartAttrezziInUso && window.__smartAttrezziInUso.length > 0) {
-                    countAttrezzi = window.__smartAttrezziInUso.length;
                     window.__smartAttrezziInUso.forEach(att => {
+                        const k = 'attrezzi_' + (att.nome || '') + '_' + (att.prestato_a || '');
+                        if (dismissed.includes(k)) return;
+                        countAttrezzi++;
+                        currentVisibleKeys.push(k);
                         alertCards.push(`
-                            <div class="smart-alert-card" data-category="attrezzi" style="border-left: 4px solid #38bdf8;">
+                            <div class="smart-alert-card" data-category="attrezzi" data-alert-key="${k}" style="border-left: 4px solid #38bdf8;">
                                 <div class="smart-alert-body">
                                     <div class="smart-alert-header-row">
                                         <span class="smart-alert-icon">🛠️</span>
-                                        <div class="smart-alert-title">Attrezzo in Prestito: <span style="color:#38bdf8;">${att.nome}</span></div>
+                                        <div class="smart-alert-title" style="flex:1;">Attrezzo in Prestito: <span style="color:#38bdf8;">${att.nome}</span></div>
+                                        <button type="button" class="smart-alert-dismiss-btn" onclick="dismissSmartAlert('${k}', event)" title="Cancella / Silenzia questo avviso">✕</button>
                                     </div>
                                     <div class="smart-alert-desc" style="margin-top:5px;">Attualmente in uso da: <strong>${att.prestato_a}</strong></div>
                                 </div>
@@ -4859,31 +4904,47 @@
 
                 // D. Salute Alerts
                 if (canSeeSalute && window.__smartSaluteAlert) {
-                    countSalute = 1;
-                    alertCards.push(`
-                        <div class="smart-alert-card" data-category="salute" style="border-left: 4px solid #10b981;">
-                            <div class="smart-alert-body">
-                                <div class="smart-alert-header-row">
-                                    <span class="smart-alert-icon">💧</span>
-                                    <div class="smart-alert-title">Obiettivo Benessere Personale</div>
+                    const k = 'salute_obiettivo_benessere';
+                    if (!dismissed.includes(k)) {
+                        countSalute = 1;
+                        currentVisibleKeys.push(k);
+                        alertCards.push(`
+                            <div class="smart-alert-card" data-category="salute" data-alert-key="${k}" style="border-left: 4px solid #10b981;">
+                                <div class="smart-alert-body">
+                                    <div class="smart-alert-header-row">
+                                        <span class="smart-alert-icon">💧</span>
+                                        <div class="smart-alert-title" style="flex:1;">Obiettivo Benessere Personale</div>
+                                        <button type="button" class="smart-alert-dismiss-btn" onclick="dismissSmartAlert('${k}', event)" title="Cancella / Silenzia questo avviso">✕</button>
+                                    </div>
+                                    <div class="smart-alert-desc" style="margin-top:5px;">${window.__smartSaluteAlert}</div>
                                 </div>
-                                <div class="smart-alert-desc" style="margin-top:5px;">${window.__smartSaluteAlert}</div>
+                                <div class="smart-alert-footer-row">
+                                    <span class="smart-alert-badge" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#34d399;">Salute</span>
+                                    <button type="button" class="smart-alert-btn" onclick="navigaVersoApp('/salute/')" style="background:linear-gradient(135deg, #10b981, #059669);">Scheda ➔</button>
+                                </div>
                             </div>
-                            <div class="smart-alert-footer-row">
-                                <span class="smart-alert-badge" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#34d399;">Salute</span>
-                                <button type="button" class="smart-alert-btn" onclick="navigaVersoApp('/salute/')" style="background:linear-gradient(135deg, #10b981, #059669);">Scheda ➔</button>
-                            </div>
-                        </div>
-                    `);
+                        `);
+                    }
                 }
 
-                // 4. AGGIORNAMENTO BADGE E FILTRI SMART HUB
+                // Memorizza le chiavi attualmente visibili per il "Cancella Tutti"
+                window.__currentVisibleAlertKeys = currentVisibleKeys;
+
+                // 4. AGGIORNAMENTO BADGE, FILTRI E AZIONI SMART HUB
                 const totAlerts = alertCards.length;
+                const isClosed = localStorage.getItem('milella_smart_notif_closed') === 'true';
+                const topBtn = document.getElementById('btnOpenSmartNotifBar');
+                const topCount = document.getElementById('topBarNotifCount');
+                const btnRestore = document.getElementById('btnRestoreAlerts');
+                const countDismissedEl = document.getElementById('countDismissedAlerts');
+                const btnDismissAll = document.getElementById('btnDismissAllAlerts');
+
+                if (btnRestore) btnRestore.style.display = (dismissed.length > 0) ? 'inline-flex' : 'none';
+                if (countDismissedEl) countDismissedEl.textContent = dismissed.length;
+                if (btnDismissAll) btnDismissAll.style.display = (totAlerts > 0) ? 'inline-flex' : 'none';
+
                 if (totAlerts > 0) {
-                    const isClosed = localStorage.getItem('milella_smart_notif_closed') === 'true';
                     if (banner) banner.style.display = isClosed ? 'none' : 'block';
-                    const topBtn = document.getElementById('btnOpenSmartNotifBar');
-                    const topCount = document.getElementById('topBarNotifCount');
                     if (topCount) topCount.textContent = totAlerts;
                     if (topBtn) topBtn.style.display = isClosed ? 'inline-flex' : 'none';
                     if (badgeCount) badgeCount.textContent = totAlerts;
@@ -4920,7 +4981,28 @@
                         window.filtraNotificheSmart(savedFilter, targetBtn);
                     }
                 } else {
-                    if (banner) banner.style.display = 'none';
+                    if (badgeCount) badgeCount.textContent = '0';
+                    if (topCount) topCount.textContent = '0';
+
+                    if (dismissed.length > 0) {
+                        // Ci sono avvisi silenziati/cancellati dall'utente
+                        if (banner) banner.style.display = isClosed ? 'none' : 'block';
+                        if (topBtn) topBtn.style.display = isClosed ? 'inline-flex' : 'none';
+                        if (alertsList) {
+                            alertsList.innerHTML = `
+                                <div style="text-align:center; padding:22px 16px; background:rgba(255,255,255,0.03); border-radius:16px; border:1px dashed rgba(255,255,255,0.18);">
+                                    <div style="font-size:26px; margin-bottom:8px;">✅</div>
+                                    <div style="font-size:13.5px; font-weight:800; color:#cbd5e1; margin-bottom:4px;">Tutti gli avvisi sono stati cancellati o silenziati (${dismissed.length})</div>
+                                    <div style="font-size:12px; color:#94a3b8; margin-bottom:12px;">Puoi ripristinarli in qualsiasi momento con un click.</div>
+                                    <button type="button" onclick="restoreDismissedSmartAlerts()" style="background:rgba(56,189,248,0.18); border:1.5px solid #38bdf8; color:#7dd3fc; padding:8px 16px; border-radius:12px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(56,189,248,0.25);">
+                                        <span>🔄</span> Ripristina Tutti gli Avvisi
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        if (banner) banner.style.display = 'none';
+                    }
                 }
             }
         } catch(e) {
@@ -4929,6 +5011,66 @@
             isCaricamentoKpiInCorso = false;
         }
     }
+
+    function getDismissedSmartAlerts() {
+        try {
+            return JSON.parse(localStorage.getItem('milella_dismissed_alerts_v1') || '[]');
+        } catch(e) {
+            return [];
+        }
+    }
+
+    function setDismissedSmartAlerts(arr) {
+        try {
+            localStorage.setItem('milella_dismissed_alerts_v1', JSON.stringify(arr));
+        } catch(e) {}
+    }
+
+    window.dismissSmartAlert = function(alertKey, ev) {
+        if (ev) {
+            if (ev.stopPropagation) ev.stopPropagation();
+            if (ev.preventDefault) ev.preventDefault();
+        }
+        const dismissed = getDismissedSmartAlerts();
+        if (!dismissed.includes(alertKey)) {
+            dismissed.push(alertKey);
+            setDismissedSmartAlerts(dismissed);
+        }
+        const card = document.querySelector(`.smart-alert-card[data-alert-key="${alertKey}"]`);
+        if (card) {
+            card.style.transition = 'all 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.95) translateY(-8px)';
+            setTimeout(() => {
+                caricaKpiStats();
+            }, 220);
+        } else {
+            caricaKpiStats();
+        }
+    };
+
+    window.dismissAllSmartAlerts = function() {
+        if (!window.__currentVisibleAlertKeys || window.__currentVisibleAlertKeys.length === 0) return;
+        const dismissed = getDismissedSmartAlerts();
+        window.__currentVisibleAlertKeys.forEach(k => {
+            if (!dismissed.includes(k)) dismissed.push(k);
+        });
+        setDismissedSmartAlerts(dismissed);
+        const cards = document.querySelectorAll('#smartAlertsList .smart-alert-card');
+        cards.forEach(c => {
+            c.style.transition = 'all 0.22s ease';
+            c.style.opacity = '0';
+            c.style.transform = 'scale(0.95)';
+        });
+        setTimeout(() => {
+            caricaKpiStats();
+        }, 220);
+    };
+
+    window.restoreDismissedSmartAlerts = function() {
+        setDismissedSmartAlerts([]);
+        caricaKpiStats();
+    };
 
     window.chiudiNotificheSmartBanner = function() {
         const banner = document.getElementById('smartNotificationsBanner');

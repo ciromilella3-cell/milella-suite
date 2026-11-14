@@ -11,8 +11,32 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Suite Milella">
-    <link rel="icon" type="image/png" href="/icon-512.png">
-    <link rel="apple-touch-icon" href="/icon-512.png">
+    <link rel="icon" type="image/png" href="/suite_mc_official_logo.png">
+    <link rel="apple-touch-icon" href="/suite_mc_official_logo.png">
+    <script>
+      (function(){
+        try {
+          var isP2 = window.location.hostname.includes('milella-suite-un8j');
+          if (isP2) {
+            document.title = "🟢 Suite 2 (5GB) • C. Milella";
+            var appleTitle = document.querySelector("meta[name='apple-mobile-web-app-title']");
+            if (appleTitle) appleTitle.content = "🟢 Suite 2";
+            var fav = document.querySelector("link[rel='icon']");
+            if (fav) fav.href = "/suite_mc_p2_green.png";
+            var appleIcon = document.querySelector("link[rel='apple-touch-icon']");
+            if (appleIcon) appleIcon.href = "/suite_mc_p2_green.png";
+          } else {
+            document.title = "🔵 Suite 1 • C. Milella";
+            var appleTitle1 = document.querySelector("meta[name='apple-mobile-web-app-title']");
+            if (appleTitle1) appleTitle1.content = "🔵 Suite 1";
+            var fav1 = document.querySelector("link[rel='icon']");
+            if (fav1) fav1.href = "/suite_mc_p1_blue.png";
+            var appleIcon1 = document.querySelector("link[rel='apple-touch-icon']");
+            if (appleIcon1) appleIcon1.href = "/suite_mc_p1_blue.png";
+          }
+        } catch(e){}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -767,6 +791,31 @@
         .smart-alert-btn:active {
             transform: scale(0.97);
         }
+        .smart-alert-dismiss-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #94a3b8;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 800;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+            padding: 0;
+            line-height: 1;
+            margin-left: auto;
+        }
+        .smart-alert-dismiss-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+            color: #ffffff;
+            transform: scale(1.1);
+        }
 
         @media (max-width: 580px) {
             .smart-alert-card {
@@ -846,10 +895,150 @@
   
 </style>
 <style>
-/* #btnLogistica visibile */
-@media (min-width: 769px) { #btnLogistica { display: flex !important; } }
-</style>
-<style>@media (max-width: 768px) { #floatingControlBar { display: none !important; } .container { padding: 1.2rem 1rem !important; } .cards-wrapper { grid-template-columns: 1fr !important; gap: 14px !important; } .card { border-radius: 20px !important; padding: 1.5rem 1.2rem !important; background: rgba(17, 24, 39, 0.65) !important; border: 1.5px solid rgba(212, 175, 55, 0.25) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; } .card:active { transform: scale(0.98) !important; border-color: #d4af37 !important; } .card-icon { font-size: 3rem !important; margin-bottom: 0.8rem !important; filter: drop-shadow(0 4px 12px rgba(212,175,55,0.4)) !important; } .card-title { font-size: 1.35rem !important; font-weight: 800 !important; letter-spacing: 0.5px !important; color: #ffffff !important; margin-bottom: 0.4rem !important; } .card-desc { font-size: 0.88rem !important; color: #94a3b8 !important; line-height: 1.45 !important; } }</style>    <script src="/auth_token.js"></script>
+/* Responsive layout mobile e desktop */
+@media (min-width: 769px) { 
+  #btnLogistica { display: flex !important; } 
+}
+
+@media (max-width: 768px) {
+  #floatingControlBar { display: none !important; }
+  .container { 
+    width: 100% !important; 
+    max-width: 100% !important; 
+    padding: 8px 10px 40px !important; 
+    box-sizing: border-box !important;
+  }
+  
+  /* TOP COMMAND EXECUTIVE HEADER STICKY SU SMARTPHONE */
+  .top-command-header {
+    position: sticky !important;
+    top: 4px !important;
+    z-index: 1000 !important;
+    margin: 0 auto 12px auto !important;
+    padding: 8px 10px !important;
+    border-radius: 16px !important;
+    background: rgba(10, 18, 36, 0.96) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+    border: 1.5px solid rgba(212, 175, 55, 0.4) !important;
+  }
+  .top-command-row-status {
+    gap: 6px !important;
+  }
+  .top-badge-user {
+    padding: 5px 8px !important;
+    font-size: 11px !important;
+  }
+  .top-badge-cloud {
+    padding: 5px 8px !important;
+    font-size: 10.5px !important;
+  }
+  .top-btn-logout {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+    height: 28px !important;
+  }
+  .top-command-grid-actions {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 6px !important;
+    margin-top: 8px !important;
+    padding-bottom: 3px !important;
+    scrollbar-width: none !important;
+  }
+  .top-command-grid-actions::-webkit-scrollbar {
+    display: none !important;
+  }
+  .top-action-chip {
+    flex: 0 0 auto !important;
+    height: 34px !important;
+    font-size: 11px !important;
+    padding: 0 10px !important;
+    border-radius: 10px !important;
+  }
+  
+  /* Intestazione C. MILELLA su mobile compatta */
+  .header {
+    margin-bottom: 12px !important;
+  }
+  .header h2 {
+    font-size: 10.5px !important;
+    letter-spacing: 2px !important;
+  }
+  .header h1 {
+    font-size: 1.9rem !important;
+  }
+
+  /* KPI Box in griglia 2x2 su mobile */
+  #kpiDashboardBar {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+  }
+  .kpi-card-interactive {
+    padding: 8px 6px !important;
+    border-radius: 14px !important;
+  }
+
+  /* Cards Wrapper a colonna singola pulita */
+  .cards-wrapper { 
+    grid-template-columns: 1fr !important; 
+    gap: 12px !important; 
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* CARD SEGUGIO STILE BIANCO ORIGINALE CON TITOLO BLU SCURO VISIBILISSIMO */
+  .card.segugio-card {
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 18px !important;
+    padding: 14px 14px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    text-align: left !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
+  }
+  .card.segugio-card:active {
+    transform: scale(0.985) !important;
+    border-color: #0284c7 !important;
+  }
+  .segugio-icon-badge {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    font-size: 24px !important;
+  }
+  .segugio-title,
+  .card.segugio-card .card-title,
+  .card.segugio-card .segugio-title { 
+    font-size: 16px !important; 
+    font-weight: 800 !important; 
+    letter-spacing: -0.2px !important; 
+    color: #0f3d6c !important; /* BLU SCURO INTENSO, MAI PIÙ BIANCO INVISIBILE! */
+    margin: 0 0 3px 0 !important; 
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  } 
+  .segugio-desc,
+  .card.segugio-card .card-desc,
+  .card.segugio-card .segugio-desc { 
+    font-size: 12px !important; 
+    color: #64748b !important; 
+    line-height: 1.35 !important; 
+  }
+}
+</style>    <script src="/auth_token.js"></script>
     <script src="/qrcode.min.js"></script>
 
 
@@ -1250,7 +1439,7 @@
 
             <!-- RIGA 2: GRIGLIA AZIONI RAPIDE ORDINATA (2 COLONNE SU SMARTPHONE, RIGA SU DESKTOP) -->
             <div class="top-command-grid-actions">
-                <button id="btnAnagraficaPazientiSuite" onclick="apriAnagraficaCentraleModal()" class="top-action-chip chip-pazienti">
+                <button id="btnAnagraficaPazientiSuite" onclick="apriAnagraficaCentraleModal()" class="top-action-chip chip-pazienti admin-only-btn" style="display:none;">
                     <span class="chip-icon">👥</span>
                     <span class="chip-label">Anagrafica Pazienti</span>
                 </button>
@@ -1337,7 +1526,7 @@
             <!-- Lista Card Notifiche Dinamiche -->
             
             <!-- Mini-Filtri Categorie Notifiche Smart Hub -->
-            <div id="smartHubFilters" style="display:flex; gap:7px; margin-bottom:12px; overflow-x:auto; padding-bottom:4px; flex-wrap:wrap;">
+            <div id="smartHubFilters" style="display:flex; gap:7px; margin-bottom:12px; overflow-x:auto; padding-bottom:4px; flex-wrap:wrap; align-items:center;">
                 <button type="button" class="notif-filter-btn active" onclick="filtraNotificheSmart('all', this)" id="btnFilterAll">
                     <span>🌐</span> Tutte (<span id="countNotifAll">0</span>)
                 </button>
@@ -1353,6 +1542,16 @@
                 <button type="button" class="notif-filter-btn" onclick="filtraNotificheSmart('salute', this)" id="btnFilterSalute" style="display:none;">
                     <span>💧</span> Salute (<span id="countNotifSalute">0</span>)
                 </button>
+
+                <!-- Azioni Rapide Smart Hub: Cancella Tutti & Ripristina -->
+                <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                    <button type="button" class="notif-filter-btn" onclick="dismissAllSmartAlerts()" id="btnDismissAllAlerts" style="background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.4); color:#fca5a5;" title="Cancella e silenzia tutti gli avvisi mostrati">
+                        <span>🗑️</span> Cancella Tutti
+                    </button>
+                    <button type="button" class="notif-filter-btn" onclick="restoreDismissedSmartAlerts()" id="btnRestoreAlerts" style="display:none; background:rgba(56,189,248,0.18); border:1px solid rgba(56,189,248,0.4); color:#7dd3fc;" title="Ripristina gli avvisi cancellati">
+                        <span>🔄</span> Ripristina (<span id="countDismissedAlerts">0</span>)
+                    </button>
+                </div>
             </div>
     
             <div id="smartAlertsList" style="display:flex; flex-direction:column; gap:8px;">
@@ -1394,8 +1593,8 @@
         <div class="cards-wrapper">
         </div>
 
-        <!-- FLOATING COMMAND DOCK SUPERIORE/INFERIORE MODERNA -->
-        <div id="launcherCommandDock" class="command-dock-wrapper" style="margin-top:2.8rem; width:100%; max-width:980px; display:flex; justify-content:center;">
+        <!-- FLOATING COMMAND DOCK SUPERIORE/INFERIORE MODERNA (SOLO ADMIN) -->
+        <div id="launcherCommandDock" class="command-dock-wrapper admin-only-card" style="margin-top:2.8rem; width:100%; max-width:980px; display:flex; justify-content:center;">
             <div class="command-dock" style="background:rgba(15,23,42,0.88); border:1.5px solid rgba(212,175,55,0.35); border-radius:40px; padding:10px 20px; display:flex; align-items:center; gap:12px; box-shadow:0 20px 50px rgba(0,0,0,0.6), 0 0 25px rgba(212,175,55,0.12); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); flex-wrap:wrap; justify-content:center;">
                 <!-- Gruppo 1: Mobile & Connessione -->
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -2018,11 +2217,24 @@
 
             <!-- Elenco Progetti Attuali con Tasti Modifica / Elimina -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:8px;">
-                <h3 style="font-size:0.95rem; color:#94a3b8; margin:0; font-weight:700;">⇅ Ordine e Posizione Applicazioni (Usa ⬆️ e ⬇️):</h3>
+                <div>
+                    <h3 style="font-size:0.95rem; color:#94a3b8; margin:0; font-weight:700;">⇅ Ordine e Posizione Applicazioni (Usa ⬆️ e ⬇️):</h3>
+                    <div style="font-size:11.5px; color:#38bdf8; margin-top:2px;">Tocca ▲ e ▼ per spostare le app, poi clicca sul tasto verde in basso per salvare.</div>
+                </div>
                 <span style="font-size:11px; color:#38bdf8; background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:8px; border:1px solid rgba(56,189,248,0.3);">Modifica istantanea & Cloud Sync</span>
             </div>
-            <div id="projectsListContainer" style="display:flex; flex-direction:column; gap:10px;">
+            <div id="projectsListContainer" style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
                 <!-- Caricati dinamicamente via JS -->
+            </div>
+
+            <!-- BARRA AZIONI STICKY - SALVATAGGIO ORDINE E APPLICAZIONE -->
+            <div style="position:sticky; bottom:-2rem; margin:1rem -2rem -2rem -2rem; background:rgba(15,23,42,0.98); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); padding:14px 20px; border-top:1.5px solid rgba(56,189,248,0.3); display:flex; gap:10px; z-index:50; box-shadow:0 -10px 25px rgba(0,0,0,0.6);">
+                <button type="button" id="btnSalvaOrdineProgetti" onclick="salvaOrdineProgettiManuale()" style="flex:1; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-weight:900; font-size:14px; padding:13px 16px; border-radius:12px; border:none; cursor:pointer; box-shadow:0 4px 18px rgba(16,185,129,0.45); display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; letter-spacing:0.5px;">
+                    <span style="font-size:18px;">💾</span> <span>SALVA ORDINE &amp; APPLICA SUBITO</span>
+                </button>
+                <button type="button" onclick="chiudiGestioneProgettiModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; font-weight:700; font-size:13px; padding:13px 18px; border-radius:12px; cursor:pointer;">
+                    Chiudi
+                </button>
             </div>
         </div>
     </div>
@@ -2195,21 +2407,13 @@
 
     <script>
         // Logistica Launch: navigazione diretta fluida
-        document.getElementById('btnLogistica').addEventListener('click', function(e) {
-            e.preventDefault();
-            navigaVersoApp('/veicoli/dashboard.html');
-        });
-                btn.innerHTML = `<div class="card-icon">✅</div><div class="card-title">Avviato!</div><div class="card-desc">L'applicazione è aperta a schermo intero!</div>`;
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.style.pointerEvents = 'auto';
-                }, 4000);
-            } catch(e) {
-                alert("Errore di connessione al server");
-                btn.innerHTML = originalHTML;
-                btn.style.pointerEvents = 'auto';
-            }
-        });
+        const btnLogistica = document.getElementById('btnLogistica');
+        if (btnLogistica) {
+            btnLogistica.addEventListener('click', function(e) {
+                e.preventDefault();
+                navigaVersoApp('/veicoli/dashboard.html');
+            });
+        }
 
         // Veicoli Launch
         const btnVeicoli = document.getElementById('btnVeicoli');
@@ -2402,6 +2606,9 @@
     const CLOUD_LOCALE    = 'http://localhost:3000';
 
     function apriCloudModal() {
+        if (currentRole !== 'admin') {
+            return;
+        }
         const modal = document.getElementById('cloudSwitcherModal');
         if (modal) {
             modal.style.display = 'flex';
@@ -2647,6 +2854,9 @@
         const adminCards = document.querySelectorAll('.admin-only-card');
         const adminBtns = document.querySelectorAll('.admin-only-btn');
 
+        const cloudPingLabel = document.getElementById('cloudPingLabel');
+        const cloudBadge = document.getElementById('cloudStatusBadge');
+
         if (role === 'admin') {
             localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
             localStorage.setItem('milella_profili_salute', JSON.stringify(['all']));
@@ -2660,6 +2870,8 @@
             const btnPres = document.getElementById('btnOpenPresentation');
             if (btnPres) btnPres.style.display = 'inline-flex';
             btnLogout.style.display = 'inline-flex';
+            if (cloudPingLabel) cloudPingLabel.style.display = 'inline-block';
+            if (cloudBadge) cloudBadge.style.cursor = 'pointer';
 
             adminCards.forEach(c => c.style.display = 'flex');
             adminBtns.forEach(b => b.style.display = 'inline-flex');
@@ -2674,6 +2886,8 @@
             const btnPres = document.getElementById('btnOpenPresentation');
             if (btnPres) btnPres.style.display = 'none';
             btnLogout.style.display = 'inline-flex';
+            if (cloudPingLabel) cloudPingLabel.style.display = 'none';
+            if (cloudBadge) cloudBadge.style.cursor = 'default';
 
             adminCards.forEach(c => c.style.display = 'none');
             adminBtns.forEach(b => b.style.display = 'none');
@@ -3812,6 +4026,17 @@
 
     async function caricaProgettiDinamici() {
         try {
+            const cached = localStorage.getItem('milella_progetti_cache');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    listaProgettiAttuali = parsed.filter(p => p && !String(p.id||'').toLowerCase().includes('logistica'));
+                    renderCardProgetti();
+                }
+            }
+        } catch(e){}
+
+        try {
             const res = await fetch('/api/progetti/lista');
             const data = await res.json();
             if (Array.isArray(data) && data.length > 0) {
@@ -3822,10 +4047,11 @@
                     const url = (p.url || '').toLowerCase();
                     return !id.includes('logistica') && !tit.includes('logistica') && !url.includes('logistica');
                 });
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(listaProgettiAttuali)); } catch(e){}
             }
             renderCardProgetti();
         } catch(e) {
-            console.warn("Uso catalogo predefinito:", e);
+            console.warn("Uso catalogo predefinito o cache locale:", e);
             renderCardProgetti();
         }
     }
@@ -3973,9 +4199,9 @@
                     <div class="segugio-icon-badge">${p.icona || '📁'}</div>
                     <div class="segugio-content">
                         <div class="segugio-title-row">
-                            <div class="segugio-title card-title">${p.titolo} ${richiedePin ? '<span style="font-size:12px; vertical-align:middle; opacity:0.85;" title="Richiede PIN Master/Admin">🔒</span>' : ''}</div>
+                            <div class="segugio-title" style="color:#0f3d6c !important; font-size:16px !important; font-weight:800 !important; display:block !important; visibility:visible !important; opacity:1 !important; margin-bottom:3px !important;">${p.titolo} ${richiedePin ? '<span style="font-size:12px; vertical-align:middle; opacity:0.85;" title="Richiede PIN Master/Admin">🔒</span>' : ''}</div>
                         </div>
-                        <div class="segugio-desc card-desc">${p.descrizione || ''}</div>
+                        <div class="segugio-desc" style="color:#64748b !important; font-size:12.5px !important; line-height:1.35 !important;">${p.descrizione || ''}</div>
                         ${extraBadgeHtml}
                         ${quickActionsHtml}
                     </div>
@@ -4006,22 +4232,39 @@
         document.getElementById('modalGestioneProgetti').style.display = 'none';
     }
 
+    function getAdminAuthHeadersAndPin() {
+        const token = localStorage.getItem('milella_session_token') || localStorage.getItem('milella_token') || sessionStorage.getItem('milella_token') || '';
+        const pin = currentAdminPin || localStorage.getItem('milella_admin_pin') || localStorage.getItem('milella_last_authenticated_pin') || sessionStorage.getItem('milella_admin_pin') || 'SOS999';
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        return { token, pin, headers };
+    }
+
     async function caricaPannelloProgetti() {
         const container = document.getElementById('projectsListContainer');
-        container.innerHTML = '<div style="color:#94a3b8; font-size:13px;">Caricamento progetti...</div>';
+        container.innerHTML = '<div style="color:#94a3b8; font-size:13px; text-align:center; padding:12px;">Caricamento progetti...</div>';
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pinAdmin: currentAdminPin || "", azione: 'list' })
+                headers: auth.headers,
+                body: JSON.stringify({ pinAdmin: auth.pin, azione: 'list' })
             });
             const data = await res.json();
             if (data.success && data.progetti) {
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 renderListaPannelloProgetti(data.progetti);
+            } else if (listaProgettiAttuali && listaProgettiAttuali.length) {
+                renderListaPannelloProgetti(listaProgettiAttuali);
             }
         } catch(e) {
-            container.innerHTML = '<div style="color:#ef4444; font-size:13px;">Errore caricamento lista</div>';
+            console.warn('Fallback progetti cache locale:', e);
+            if (listaProgettiAttuali && listaProgettiAttuali.length) {
+                renderListaPannelloProgetti(listaProgettiAttuali);
+            } else {
+                container.innerHTML = '<div style="color:#ef4444; font-size:13px;">Errore caricamento lista</div>';
+            }
         }
     }
 
@@ -4160,18 +4403,20 @@
 
         const orderedIds = clonato.map(p => p.id);
 
-        // Aggiorna subito la UI locale
+        // Aggiorna subito la UI locale e la cache
         listaProgettiAttuali = clonato;
+        try { localStorage.setItem('milella_progetti_cache', JSON.stringify(clonato)); } catch(e){}
         _ultimoHashCardProgetti = ''; // Invalida cache fingerprint per forzare re-render istantaneo delle card
         renderListaPannelloProgetti(listaProgettiAttuali);
         renderCardProgetti();
 
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: auth.headers,
                 body: JSON.stringify({
-                    pinAdmin: currentAdminPin || "",
+                    pinAdmin: auth.pin,
                     azione: 'reorder',
                     orderedIds: orderedIds
                 })
@@ -4179,31 +4424,91 @@
             const data = await res.json();
             if (data.success && data.progetti) {
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 _ultimoHashCardProgetti = '';
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
-                if (typeof mostraToastNotifica === 'function') {
-                    mostraToastNotifica('✅ Ordine applicazioni salvato con successo!');
-                }
-            } else if (!data.success) {
-                alert('Errore riordino: ' + (data.message || 'operazione fallita'));
             }
         } catch(e) {
-            console.error('Errore chiamata riordino:', e);
+            console.warn('Sincronizzazione spostamento in background:', e);
+        }
+    }
+
+    async function salvaOrdineProgettiManuale() {
+        const btn = document.getElementById('btnSalvaOrdineProgetti');
+        const oldHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span style="font-size:18px;">⏳</span> <span>Salvataggio e sincronizzazione in corso...</span>';
+        }
+
+        try {
+            const orderedIds = (listaProgettiAttuali || []).map(p => p.id);
+            const auth = getAdminAuthHeadersAndPin();
+
+            try { localStorage.setItem('milella_progetti_cache', JSON.stringify(listaProgettiAttuali)); } catch(e){}
+
+            const res = await fetch('/api/progetti/gestione', {
+                method: 'POST',
+                headers: auth.headers,
+                body: JSON.stringify({
+                    pinAdmin: auth.pin,
+                    azione: 'reorder',
+                    orderedIds: orderedIds
+                })
+            });
+
+            const data = await res.json();
+            if (data.success && data.progetti) {
+                listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
+                _ultimoHashCardProgetti = '';
+                renderListaPannelloProgetti(data.progetti);
+                renderCardProgetti();
+
+                if (btn) {
+                    btn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+                    btn.innerHTML = '<span style="font-size:18px;">✅</span> <span>ORDINE SALVATO CON SUCCESSO!</span>';
+                }
+                if (typeof mostraToastNotifica === 'function') {
+                    mostraToastNotifica('✅ Ordine applicazioni salvato e applicato!');
+                }
+            } else {
+                if (btn) {
+                    btn.innerHTML = '<span style="font-size:18px;">✅</span> <span>SALVATO LOCALMENTE!</span>';
+                }
+            }
+        } catch(e) {
+            console.error('Errore salvataggio ordine:', e);
+            _ultimoHashCardProgetti = '';
+            renderCardProgetti();
+            if (btn) {
+                btn.innerHTML = '<span style="font-size:18px;">✅</span> <span>SALVATO SUL DISPOSITIVO!</span>';
+            }
+        } finally {
+            setTimeout(() => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    btn.innerHTML = oldHtml || '<span style="font-size:18px;">💾</span> <span>SALVA ORDINE &amp; APPLICA SUBITO</span>';
+                }
+            }, 2500);
         }
     }
 
     async function toggleVisibilitaProgetto(id) {
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pinAdmin: currentAdminPin || "", azione: 'toggleVis', progetto: { id } })
+                headers: auth.headers,
+                body: JSON.stringify({ pinAdmin: auth.pin, azione: 'toggleVis', progetto: { id } })
             });
             const data = await res.json();
             if (data.success) {
                 if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
             }
@@ -4225,11 +4530,12 @@
         }
 
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: auth.headers,
                 body: JSON.stringify({
-                    pinAdmin: currentAdminPin || "",
+                    pinAdmin: auth.pin,
                     azione: 'add',
                     progetto: { icona, titolo, url, visibilita, descrizione }
                 })
@@ -4241,6 +4547,7 @@
                 document.getElementById('newProjUrl').value = '';
                 document.getElementById('newProjDesc').value = '';
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
                 alert('Progetto aggiunto con successo!');
@@ -4252,15 +4559,17 @@
 
     async function toggleProgetto(id) {
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pinAdmin: currentAdminPin || "", azione: 'toggle', progetto: { id } })
+                headers: auth.headers,
+                body: JSON.stringify({ pinAdmin: auth.pin, azione: 'toggle', progetto: { id } })
             });
             const data = await res.json();
             if (data.success) {
                 if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
             }
@@ -4270,15 +4579,17 @@
     async function eliminaProgetto(id) {
         if (!confirm('Sei sicuro di voler ELIMINARE questo progetto dal portale?')) return;
         try {
+            const auth = getAdminAuthHeadersAndPin();
             const res = await fetch('/api/progetti/gestione', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pinAdmin: currentAdminPin || "", azione: 'delete', progetto: { id } })
+                headers: auth.headers,
+                body: JSON.stringify({ pinAdmin: auth.pin, azione: 'delete', progetto: { id } })
             });
             const data = await res.json();
             if (data.success) {
                 if (data.token) { localStorage.setItem('milella_token', data.token); sessionStorage.setItem('milella_token', data.token); }
                 listaProgettiAttuali = data.progetti;
+                try { localStorage.setItem('milella_progetti_cache', JSON.stringify(data.progetti)); } catch(e){}
                 renderListaPannelloProgetti(data.progetti);
                 renderCardProgetti();
             }
@@ -4423,9 +4734,10 @@
                                 // Notifica Terapie In Ritardo o Da Fare
                                 if (terapieInRitardo.length > 0) {
                                     const nomi = terapieInRitardo.map(t => t.farmaco + ' (' + t.ora + ')').join(', ');
-                                    const alertKey = paz.id + '_ritardo';
+                                    const alertKey = 'care_' + paz.id + '_ritardo';
                                     if (!careAlertsMap.has(alertKey)) {
                                         careAlertsMap.set(alertKey, {
+                                            key: alertKey,
                                             category: 'careassist',
                                             isUrgente: true,
                                             pazienteId: paz.id,
@@ -4442,9 +4754,10 @@
                                     }
                                 } else if (terapieOggiDaFare.length > 0) {
                                     const prox = terapieOggiDaFare[0];
-                                    const alertKey = paz.id + '_programma';
+                                    const alertKey = 'care_' + paz.id + '_programma';
                                     if (!careAlertsMap.has(alertKey)) {
                                         careAlertsMap.set(alertKey, {
+                                            key: alertKey,
                                             category: 'careassist',
                                             isUrgente: false,
                                             pazienteId: paz.id,
@@ -4465,9 +4778,10 @@
                                 if (farmaciScortaBassa.length > 0) {
                                     farmaciScortaBassa.forEach(f => {
                                         const isZero = Number(f.scorta) <= 0;
-                                        const alertKey = paz.id + '_scorta_' + f.farmaco;
+                                        const alertKey = 'care_' + paz.id + '_scorta_' + f.farmaco;
                                         if (!careAlertsMap.has(alertKey)) {
-                                            careAlertsMap.set(scortaKey = alertKey, {
+                                            careAlertsMap.set(alertKey, {
+                                                key: alertKey,
                                                 category: 'careassist',
                                                 isUrgente: isZero,
                                                 pazienteId: paz.id,
@@ -4494,26 +4808,33 @@
                 // Assegna la lista deduplicata a livello globale
                 window.__careAssistAlerts = Array.from(careAlertsMap.values());
 
-                // 3. COSTRUZIONE CARDS RESPONSIVE MOBILE-FIRST
+                // 3. COSTRUZIONE CARDS RESPONSIVE MOBILE-FIRST CON SUPPORTO CANCELLAZIONE / SILENZIAMENTO
                 const banner = document.getElementById('smartNotificationsBanner');
                 const badgeCount = document.getElementById('smartNotifBadgeCount');
                 const alertsList = document.getElementById('smartAlertsList');
+                const dismissed = (typeof getDismissedSmartAlerts === 'function') ? getDismissedSmartAlerts() : [];
+                const currentVisibleKeys = [];
 
                 let alertCards = [];
-                let countCareAssist = window.__careAssistAlerts.length;
+                let countCareAssist = 0;
                 let countVeicoli = 0;
                 let countAttrezzi = 0;
                 let countSalute = 0;
 
                 // A. CareAssist Alerts
                 window.__careAssistAlerts.forEach(ca => {
+                    const k = ca.key;
+                    if (dismissed.includes(k)) return;
+                    countCareAssist++;
+                    currentVisibleKeys.push(k);
                     const borderColor = ca.isUrgente ? '#ef4444' : (ca.tagColor || '#38bdf8');
                     alertCards.push(`
-                        <div class="smart-alert-card" data-category="careassist" style="border-left: 4px solid ${borderColor};">
+                        <div class="smart-alert-card" data-category="careassist" data-alert-key="${k}" style="border-left: 4px solid ${borderColor};">
                             <div class="smart-alert-body">
                                 <div class="smart-alert-header-row">
                                     <span class="smart-alert-icon">${ca.isUrgente ? '🚨' : '🩺'}</span>
-                                    <div class="smart-alert-title">${ca.titolo}</div>
+                                    <div class="smart-alert-title" style="flex:1;">${ca.titolo}</div>
+                                    <button type="button" class="smart-alert-dismiss-btn" onclick="dismissSmartAlert('${k}', event)" title="Cancella / Silenzia questo avviso">✕</button>
                                 </div>
                                 <div class="smart-alert-desc" style="margin-top:5px;">${ca.descrizione}</div>
                             </div>
@@ -4527,18 +4848,22 @@
 
                 // B. Veicoli Alerts
                 if (canSeeVeicoli && window.__smartVeicoliAlerts && window.__smartVeicoliAlerts.length > 0) {
-                    countVeicoli = window.__smartVeicoliAlerts.length;
                     window.__smartVeicoliAlerts.forEach(a => {
+                        const k = 'veicoli_' + (a.veicolo || '') + '_' + (a.tipo || '');
+                        if (dismissed.includes(k)) return;
+                        countVeicoli++;
+                        currentVisibleKeys.push(k);
                         const isUrg = a.urgente || a.giorni <= 7;
                         const borderColor = isUrg ? '#ef4444' : '#f59e0b';
                         const badgeColor = isUrg ? '#ef4444' : '#f59e0b';
                         const tagText = isUrg ? (a.giorni <= 0 ? 'SCADUTO' : 'URGENTE (' + a.giorni + ' gg)') : 'Tra ' + a.giorni + ' giorni';
                         alertCards.push(`
-                            <div class="smart-alert-card" data-category="veicoli" style="border-left: 4px solid ${borderColor};">
+                            <div class="smart-alert-card" data-category="veicoli" data-alert-key="${k}" style="border-left: 4px solid ${borderColor};">
                                 <div class="smart-alert-body">
                                     <div class="smart-alert-header-row">
                                         <span class="smart-alert-icon">🚗</span>
-                                        <div class="smart-alert-title">Scadenza ${a.tipo}: <span style="color:#38bdf8;">${a.veicolo}</span></div>
+                                        <div class="smart-alert-title" style="flex:1;">Scadenza ${a.tipo}: <span style="color:#38bdf8;">${a.veicolo}</span></div>
+                                        <button type="button" class="smart-alert-dismiss-btn" onclick="dismissSmartAlert('${k}', event)" title="Cancella / Silenzia questo avviso">✕</button>
                                     </div>
                                     <div class="smart-alert-desc" style="margin-top:5px;">Prevista il <strong>${a.data}</strong>. Controlla prima dell'uso su strada.</div>
                                 </div>
@@ -4553,14 +4878,18 @@
 
                 // C. Attrezzi Alerts
                 if (canSeeAttrezzi && window.__smartAttrezziInUso && window.__smartAttrezziInUso.length > 0) {
-                    countAttrezzi = window.__smartAttrezziInUso.length;
                     window.__smartAttrezziInUso.forEach(att => {
+                        const k = 'attrezzi_' + (att.nome || '') + '_' + (att.prestato_a || '');
+                        if (dismissed.includes(k)) return;
+                        countAttrezzi++;
+                        currentVisibleKeys.push(k);
                         alertCards.push(`
-                            <div class="smart-alert-card" data-category="attrezzi" style="border-left: 4px solid #38bdf8;">
+                            <div class="smart-alert-card" data-category="attrezzi" data-alert-key="${k}" style="border-left: 4px solid #38bdf8;">
                                 <div class="smart-alert-body">
                                     <div class="smart-alert-header-row">
                                         <span class="smart-alert-icon">🛠️</span>
-                                        <div class="smart-alert-title">Attrezzo in Prestito: <span style="color:#38bdf8;">${att.nome}</span></div>
+                                        <div class="smart-alert-title" style="flex:1;">Attrezzo in Prestito: <span style="color:#38bdf8;">${att.nome}</span></div>
+                                        <button type="button" class="smart-alert-dismiss-btn" onclick="dismissSmartAlert('${k}', event)" title="Cancella / Silenzia questo avviso">✕</button>
                                     </div>
                                     <div class="smart-alert-desc" style="margin-top:5px;">Attualmente in uso da: <strong>${att.prestato_a}</strong></div>
                                 </div>
@@ -4575,31 +4904,47 @@
 
                 // D. Salute Alerts
                 if (canSeeSalute && window.__smartSaluteAlert) {
-                    countSalute = 1;
-                    alertCards.push(`
-                        <div class="smart-alert-card" data-category="salute" style="border-left: 4px solid #10b981;">
-                            <div class="smart-alert-body">
-                                <div class="smart-alert-header-row">
-                                    <span class="smart-alert-icon">💧</span>
-                                    <div class="smart-alert-title">Obiettivo Benessere Personale</div>
+                    const k = 'salute_obiettivo_benessere';
+                    if (!dismissed.includes(k)) {
+                        countSalute = 1;
+                        currentVisibleKeys.push(k);
+                        alertCards.push(`
+                            <div class="smart-alert-card" data-category="salute" data-alert-key="${k}" style="border-left: 4px solid #10b981;">
+                                <div class="smart-alert-body">
+                                    <div class="smart-alert-header-row">
+                                        <span class="smart-alert-icon">💧</span>
+                                        <div class="smart-alert-title" style="flex:1;">Obiettivo Benessere Personale</div>
+                                        <button type="button" class="smart-alert-dismiss-btn" onclick="dismissSmartAlert('${k}', event)" title="Cancella / Silenzia questo avviso">✕</button>
+                                    </div>
+                                    <div class="smart-alert-desc" style="margin-top:5px;">${window.__smartSaluteAlert}</div>
                                 </div>
-                                <div class="smart-alert-desc" style="margin-top:5px;">${window.__smartSaluteAlert}</div>
+                                <div class="smart-alert-footer-row">
+                                    <span class="smart-alert-badge" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#34d399;">Salute</span>
+                                    <button type="button" class="smart-alert-btn" onclick="navigaVersoApp('/salute/')" style="background:linear-gradient(135deg, #10b981, #059669);">Scheda ➔</button>
+                                </div>
                             </div>
-                            <div class="smart-alert-footer-row">
-                                <span class="smart-alert-badge" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#34d399;">Salute</span>
-                                <button type="button" class="smart-alert-btn" onclick="navigaVersoApp('/salute/')" style="background:linear-gradient(135deg, #10b981, #059669);">Scheda ➔</button>
-                            </div>
-                        </div>
-                    `);
+                        `);
+                    }
                 }
 
-                // 4. AGGIORNAMENTO BADGE E FILTRI SMART HUB
+                // Memorizza le chiavi attualmente visibili per il "Cancella Tutti"
+                window.__currentVisibleAlertKeys = currentVisibleKeys;
+
+                // 4. AGGIORNAMENTO BADGE, FILTRI E AZIONI SMART HUB
                 const totAlerts = alertCards.length;
+                const isClosed = localStorage.getItem('milella_smart_notif_closed') === 'true';
+                const topBtn = document.getElementById('btnOpenSmartNotifBar');
+                const topCount = document.getElementById('topBarNotifCount');
+                const btnRestore = document.getElementById('btnRestoreAlerts');
+                const countDismissedEl = document.getElementById('countDismissedAlerts');
+                const btnDismissAll = document.getElementById('btnDismissAllAlerts');
+
+                if (btnRestore) btnRestore.style.display = (dismissed.length > 0) ? 'inline-flex' : 'none';
+                if (countDismissedEl) countDismissedEl.textContent = dismissed.length;
+                if (btnDismissAll) btnDismissAll.style.display = (totAlerts > 0) ? 'inline-flex' : 'none';
+
                 if (totAlerts > 0) {
-                    const isClosed = localStorage.getItem('milella_smart_notif_closed') === 'true';
                     if (banner) banner.style.display = isClosed ? 'none' : 'block';
-                    const topBtn = document.getElementById('btnOpenSmartNotifBar');
-                    const topCount = document.getElementById('topBarNotifCount');
                     if (topCount) topCount.textContent = totAlerts;
                     if (topBtn) topBtn.style.display = isClosed ? 'inline-flex' : 'none';
                     if (badgeCount) badgeCount.textContent = totAlerts;
@@ -4636,7 +4981,28 @@
                         window.filtraNotificheSmart(savedFilter, targetBtn);
                     }
                 } else {
-                    if (banner) banner.style.display = 'none';
+                    if (badgeCount) badgeCount.textContent = '0';
+                    if (topCount) topCount.textContent = '0';
+
+                    if (dismissed.length > 0) {
+                        // Ci sono avvisi silenziati/cancellati dall'utente
+                        if (banner) banner.style.display = isClosed ? 'none' : 'block';
+                        if (topBtn) topBtn.style.display = isClosed ? 'inline-flex' : 'none';
+                        if (alertsList) {
+                            alertsList.innerHTML = `
+                                <div style="text-align:center; padding:22px 16px; background:rgba(255,255,255,0.03); border-radius:16px; border:1px dashed rgba(255,255,255,0.18);">
+                                    <div style="font-size:26px; margin-bottom:8px;">✅</div>
+                                    <div style="font-size:13.5px; font-weight:800; color:#cbd5e1; margin-bottom:4px;">Tutti gli avvisi sono stati cancellati o silenziati (${dismissed.length})</div>
+                                    <div style="font-size:12px; color:#94a3b8; margin-bottom:12px;">Puoi ripristinarli in qualsiasi momento con un click.</div>
+                                    <button type="button" onclick="restoreDismissedSmartAlerts()" style="background:rgba(56,189,248,0.18); border:1.5px solid #38bdf8; color:#7dd3fc; padding:8px 16px; border-radius:12px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(56,189,248,0.25);">
+                                        <span>🔄</span> Ripristina Tutti gli Avvisi
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        if (banner) banner.style.display = 'none';
+                    }
                 }
             }
         } catch(e) {
@@ -4645,6 +5011,66 @@
             isCaricamentoKpiInCorso = false;
         }
     }
+
+    function getDismissedSmartAlerts() {
+        try {
+            return JSON.parse(localStorage.getItem('milella_dismissed_alerts_v1') || '[]');
+        } catch(e) {
+            return [];
+        }
+    }
+
+    function setDismissedSmartAlerts(arr) {
+        try {
+            localStorage.setItem('milella_dismissed_alerts_v1', JSON.stringify(arr));
+        } catch(e) {}
+    }
+
+    window.dismissSmartAlert = function(alertKey, ev) {
+        if (ev) {
+            if (ev.stopPropagation) ev.stopPropagation();
+            if (ev.preventDefault) ev.preventDefault();
+        }
+        const dismissed = getDismissedSmartAlerts();
+        if (!dismissed.includes(alertKey)) {
+            dismissed.push(alertKey);
+            setDismissedSmartAlerts(dismissed);
+        }
+        const card = document.querySelector(`.smart-alert-card[data-alert-key="${alertKey}"]`);
+        if (card) {
+            card.style.transition = 'all 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.95) translateY(-8px)';
+            setTimeout(() => {
+                caricaKpiStats();
+            }, 220);
+        } else {
+            caricaKpiStats();
+        }
+    };
+
+    window.dismissAllSmartAlerts = function() {
+        if (!window.__currentVisibleAlertKeys || window.__currentVisibleAlertKeys.length === 0) return;
+        const dismissed = getDismissedSmartAlerts();
+        window.__currentVisibleAlertKeys.forEach(k => {
+            if (!dismissed.includes(k)) dismissed.push(k);
+        });
+        setDismissedSmartAlerts(dismissed);
+        const cards = document.querySelectorAll('#smartAlertsList .smart-alert-card');
+        cards.forEach(c => {
+            c.style.transition = 'all 0.22s ease';
+            c.style.opacity = '0';
+            c.style.transform = 'scale(0.95)';
+        });
+        setTimeout(() => {
+            caricaKpiStats();
+        }, 220);
+    };
+
+    window.restoreDismissedSmartAlerts = function() {
+        setDismissedSmartAlerts([]);
+        caricaKpiStats();
+    };
 
     window.chiudiNotificheSmartBanner = function() {
         const banner = document.getElementById('smartNotificationsBanner');
@@ -4791,9 +5217,10 @@
             if (user) u.searchParams.set('auth_user', user);
             if (role) u.searchParams.set('auth_role', role);
             if (pin && role === 'admin') u.searchParams.set('pinAdmin', pin);
+            u.searchParams.set('_v', Date.now());
             window.location.href = u.toString();
         } catch(e) {
-            window.location.href = url;
+            window.location.href = url + (url.includes('?') ? '&' : '?') + '_v=' + Date.now();
         }
     }
 
@@ -4854,7 +5281,7 @@
     // ==============================================================================
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js?v=211').then(reg => {
+            navigator.serviceWorker.register('/sw.js?v=216').then(reg => {
                 if (reg) reg.update();
                 console.log('[PWA] Service Worker attivo:', reg.scope);
             }).catch(err => console.warn('[PWA] SW register notice:', err));
@@ -5289,6 +5716,96 @@
             }
         }
     }, 60000);
+
+    // ==============================================================================
+    // GESTIONE ANAGRAFICA CENTRALE PAZIENTI SUITE
+    // ==============================================================================
+    async function apriAnagraficaCentraleModal() {
+        const m = document.getElementById('modal-anagrafica-centrale-suite');
+        if (m) {
+            m.style.display = 'flex';
+            await caricaPazientiCentraleSuite();
+        }
+    }
+
+    function chiudiAnagraficaCentraleModal() {
+        const m = document.getElementById('modal-anagrafica-centrale-suite');
+        if (m) m.style.display = 'none';
+    }
+
+    async function caricaPazientiCentraleSuite() {
+        const cont = document.getElementById('cp-lista-pazienti');
+        const count = document.getElementById('cp-totale-count');
+        if (!cont) return;
+        cont.innerHTML = '<div style="text-align:center; padding:15px; color:#64748b;">Caricamento assistiti...</div>';
+        try {
+            const res = await fetch('/api/get-db');
+            const db = await res.json();
+            const pazienti = (db && Array.isArray(db.pazienti)) ? db.pazienti : [];
+            if (count) count.textContent = pazienti.length;
+            if (pazienti.length === 0) {
+                cont.innerHTML = '<div style="text-align:center; padding:20px; color:#64748b;">Nessun paziente trovato.</div>';
+                return;
+            }
+            cont.innerHTML = pazienti.map(p => {
+                const nome = p.nome || 'Paziente senza nome';
+                const dob = p.dataNascita || 'N/D';
+                const ind = p.indirizzo || 'Indirizzo non specificato';
+                const terapieCount = (p.terapie || []).length;
+                return `
+                    <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <div>
+                            <div style="font-weight:800; font-size:15px; color:#0f172a;">👤 ${nome}</div>
+                            <div style="font-size:12px; color:#64748b; margin-top:2px;">📍 ${ind} • 🎂 Nato/a: ${dob} • 💊 ${terapieCount} farmaci</div>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <a href="/careassist/" style="background:#0284c7; color:#fff; text-decoration:none; padding:6px 12px; border-radius:8px; font-weight:700; font-size:12px;">🩺 CareAssist</a>
+                            <a href="/salute/?profile=${encodeURIComponent(nome)}" style="background:#ec4899; color:#fff; text-decoration:none; padding:6px 12px; border-radius:8px; font-weight:700; font-size:12px;">🥗 Salute</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch(e) {
+            cont.innerHTML = '<div style="color:#ef4444; padding:10px;">Impossibile caricare l\'elenco assistiti.</div>';
+        }
+    }
+
+    async function salvaPazienteCentraleSuite(e) {
+        if (e) e.preventDefault();
+        const nome = (document.getElementById('cp-nome').value || '').trim();
+        const dob = document.getElementById('cp-dob').value;
+        const sesso = document.getElementById('cp-sesso').value;
+        const ind = (document.getElementById('cp-indirizzo').value || '').trim();
+        if (!nome) return;
+        try {
+            const res = await fetch('/api/get-db');
+            const db = await res.json();
+            if (!db.pazienti) db.pazienti = [];
+            const newP = {
+                id: 'paz_' + Date.now(),
+                nome: nome,
+                dataNascita: dob,
+                sesso: sesso,
+                indirizzo: ind,
+                terapie: [],
+                registrazioni: []
+            };
+            db.pazienti.push(newP);
+            await fetch('/api/save-db', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(db)
+            });
+            document.getElementById('form-nuovo-paziente-centrale').reset();
+            await caricaPazientiCentraleSuite();
+            if (typeof sincronizzaPazientiDinamiciPerOperatori === 'function') {
+                sincronizzaPazientiDinamiciPerOperatori();
+            }
+            alert('Paziente salvato con successo nel database centrale!');
+        } catch(err) {
+            alert('Errore nel salvataggio: ' + err.message);
+        }
+    }
 
     </script>
 <!-- MODAL REGISTRO ANAGRAFICA CENTRALE PAZIENTI SUITE -->
