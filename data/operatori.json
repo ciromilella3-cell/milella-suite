@@ -12,14 +12,17 @@
     "ruolo": "operatore",
     "codice": ".002",
     "appAbilitate": [
-      "app_careassist"
+      "app_careassist",
+      "app_salute"
     ],
     "pazAbilitati": [
-      "paz_rosa"
+      "paz_rosa",
+      "paz_1794120705837"
     ],
     "profiliSalute": [
       "moglie"
     ],
-    "attivo": true
+    "attivo": true,
+    "canEditTerapie": true
   }
 ]

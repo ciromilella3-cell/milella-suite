@@ -44,8 +44,21 @@ function renderizzaGrigliaPazientiAsl() {
   const countBadge = document.getElementById('asl-total-count');
   if (!container) return;
 
-  const tuttiPazienti = (typeof AppData !== 'undefined' && Array.isArray(AppData.pazienti)) ? AppData.pazienti : [];
+  const tuttiPazienti = (typeof getPazientiAccessibili === 'function')
+    ? getPazientiAccessibili()
+    : ((typeof AppData !== 'undefined' && Array.isArray(AppData.pazienti)) ? AppData.pazienti : []);
   const activeId = (typeof AppData !== 'undefined') ? AppData.activePazienteId : null;
+
+  // Se l'operatore non è admin, nascondi il tasto "+ Nuovo Assistito" e cestino
+  const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
+  const btnNuovoAsl = document.querySelector('.asl-new-patient-btn');
+  if (btnNuovoAsl) {
+    btnNuovoAsl.style.display = (role === 'admin') ? 'inline-flex' : 'none';
+  }
+  const cestinoFl = document.getElementById('win-desktop-floating-trash');
+  if (cestinoFl && role !== 'admin') {
+    cestinoFl.style.display = 'none';
+  }
 
   // Filtro combinato Testo + Categoria Triage
   const filtrati = tuttiPazienti.filter(p => {
@@ -74,7 +87,10 @@ function renderizzaGrigliaPazientiAsl() {
   });
 
   if (countBadge) {
-    countBadge.textContent = `${filtrati.length} di ${tuttiPazienti.length} Assistiti`;
+    const isRistretto = role !== 'admin' && typeof AppData !== 'undefined' && Array.isArray(AppData.pazienti) && tuttiPazienti.length < AppData.pazienti.length;
+    countBadge.textContent = isRistretto
+      ? `${filtrati.length} di ${tuttiPazienti.length} Assistiti Assegnati`
+      : `${filtrati.length} di ${tuttiPazienti.length} Assistiti`;
   }
 
   if (filtrati.length === 0) {

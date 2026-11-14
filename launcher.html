@@ -1414,7 +1414,7 @@
 
             <!-- RIGA 2: GRIGLIA AZIONI RAPIDE ORDINATA (2 COLONNE SU SMARTPHONE, RIGA SU DESKTOP) -->
             <div class="top-command-grid-actions">
-                <button id="btnAnagraficaPazientiSuite" onclick="apriAnagraficaCentraleModal()" class="top-action-chip chip-pazienti">
+                <button id="btnAnagraficaPazientiSuite" onclick="apriAnagraficaCentraleModal()" class="top-action-chip chip-pazienti admin-only-btn" style="display:none;">
                     <span class="chip-icon">👥</span>
                     <span class="chip-label">Anagrafica Pazienti</span>
                 </button>
@@ -5128,7 +5128,7 @@
     // ==============================================================================
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js?v=215').then(reg => {
+            navigator.serviceWorker.register('/sw.js?v=216').then(reg => {
                 if (reg) reg.update();
                 console.log('[PWA] Service Worker attivo:', reg.scope);
             }).catch(err => console.warn('[PWA] SW register notice:', err));
@@ -5563,6 +5563,96 @@
             }
         }
     }, 60000);
+
+    // ==============================================================================
+    // GESTIONE ANAGRAFICA CENTRALE PAZIENTI SUITE
+    // ==============================================================================
+    async function apriAnagraficaCentraleModal() {
+        const m = document.getElementById('modal-anagrafica-centrale-suite');
+        if (m) {
+            m.style.display = 'flex';
+            await caricaPazientiCentraleSuite();
+        }
+    }
+
+    function chiudiAnagraficaCentraleModal() {
+        const m = document.getElementById('modal-anagrafica-centrale-suite');
+        if (m) m.style.display = 'none';
+    }
+
+    async function caricaPazientiCentraleSuite() {
+        const cont = document.getElementById('cp-lista-pazienti');
+        const count = document.getElementById('cp-totale-count');
+        if (!cont) return;
+        cont.innerHTML = '<div style="text-align:center; padding:15px; color:#64748b;">Caricamento assistiti...</div>';
+        try {
+            const res = await fetch('/api/get-db');
+            const db = await res.json();
+            const pazienti = (db && Array.isArray(db.pazienti)) ? db.pazienti : [];
+            if (count) count.textContent = pazienti.length;
+            if (pazienti.length === 0) {
+                cont.innerHTML = '<div style="text-align:center; padding:20px; color:#64748b;">Nessun paziente trovato.</div>';
+                return;
+            }
+            cont.innerHTML = pazienti.map(p => {
+                const nome = p.nome || 'Paziente senza nome';
+                const dob = p.dataNascita || 'N/D';
+                const ind = p.indirizzo || 'Indirizzo non specificato';
+                const terapieCount = (p.terapie || []).length;
+                return `
+                    <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <div>
+                            <div style="font-weight:800; font-size:15px; color:#0f172a;">👤 ${nome}</div>
+                            <div style="font-size:12px; color:#64748b; margin-top:2px;">📍 ${ind} • 🎂 Nato/a: ${dob} • 💊 ${terapieCount} farmaci</div>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <a href="/careassist/" style="background:#0284c7; color:#fff; text-decoration:none; padding:6px 12px; border-radius:8px; font-weight:700; font-size:12px;">🩺 CareAssist</a>
+                            <a href="/salute/?profile=${encodeURIComponent(nome)}" style="background:#ec4899; color:#fff; text-decoration:none; padding:6px 12px; border-radius:8px; font-weight:700; font-size:12px;">🥗 Salute</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch(e) {
+            cont.innerHTML = '<div style="color:#ef4444; padding:10px;">Impossibile caricare l\'elenco assistiti.</div>';
+        }
+    }
+
+    async function salvaPazienteCentraleSuite(e) {
+        if (e) e.preventDefault();
+        const nome = (document.getElementById('cp-nome').value || '').trim();
+        const dob = document.getElementById('cp-dob').value;
+        const sesso = document.getElementById('cp-sesso').value;
+        const ind = (document.getElementById('cp-indirizzo').value || '').trim();
+        if (!nome) return;
+        try {
+            const res = await fetch('/api/get-db');
+            const db = await res.json();
+            if (!db.pazienti) db.pazienti = [];
+            const newP = {
+                id: 'paz_' + Date.now(),
+                nome: nome,
+                dataNascita: dob,
+                sesso: sesso,
+                indirizzo: ind,
+                terapie: [],
+                registrazioni: []
+            };
+            db.pazienti.push(newP);
+            await fetch('/api/save-db', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(db)
+            });
+            document.getElementById('form-nuovo-paziente-centrale').reset();
+            await caricaPazientiCentraleSuite();
+            if (typeof sincronizzaPazientiDinamiciPerOperatori === 'function') {
+                sincronizzaPazientiDinamiciPerOperatori();
+            }
+            alert('Paziente salvato con successo nel database centrale!');
+        } catch(err) {
+            alert('Errore nel salvataggio: ' + err.message);
+        }
+    }
 
     </script>
 <!-- MODAL REGISTRO ANAGRAFICA CENTRALE PAZIENTI SUITE -->

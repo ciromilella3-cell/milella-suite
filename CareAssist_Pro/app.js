@@ -2638,7 +2638,43 @@ function deduplicatePazientiMaster(list) {
 
 function getPazientiAccessibili() {
   if (!AppData || !Array.isArray(AppData.pazienti)) return [];
-  return deduplicatePazientiMaster(AppData.pazienti); // Tutti i pazienti sempre accessibili senza blocchi
+  const deduplicati = deduplicatePazientiMaster(AppData.pazienti);
+  const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
+  if (role === 'admin') return deduplicati;
+
+  let pazAbilitati = [];
+  try {
+    const raw = localStorage.getItem('milella_paz_abilitati') || localStorage.getItem('milella_last_authenticated_paz');
+    if (raw) {
+      pazAbilitati = JSON.parse(raw);
+    }
+  } catch(e) {
+    pazAbilitati = [];
+  }
+
+  // Se è specificato 'all' o la lista è vuota (operatore non ristretto o admin), vede tutti i pazienti
+  if (!pazAbilitati || pazAbilitati.length === 0 || pazAbilitati.includes('all')) {
+    return deduplicati;
+  }
+
+  const filtrati = deduplicati.filter(p => {
+    if (!p) return false;
+    if (pazAbilitati.includes(p.id)) return true;
+    const pNome = (p.nome || '').trim().toLowerCase();
+    return pazAbilitati.some(pid => {
+      if (!pid) return false;
+      if (pid === p.id) return true;
+      if (pid === 'paz_aldo' && pNome.includes('aldo')) return true;
+      if (pid === 'paz_angela' && pNome.includes('angela')) return true;
+      if (pid === 'paz_rosa' && pNome.includes('rosa')) return true;
+      if (pid === 'paz_1793216119572' && pNome.includes('ciro')) return true;
+      if (pid === 'paz_mariacarmela' && (pNome.includes('maria') || pNome.includes('carmela'))) return true;
+      if (pid === 'paz_1794120705837' && (pNome.includes('gabriele') || pNome.includes('francesco'))) return true;
+      return false;
+    });
+  });
+
+  return filtrati.length > 0 ? filtrati : deduplicati;
 }
 
 function getActivePaziente() {
@@ -2818,10 +2854,18 @@ function renderPazientiSelector() {
   const lista = getPazientiAccessibili();
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
 
-  // Se l'operatore non è admin, nascondi il tasto "Nuovo Assistito"
+  // Se l'operatore non è admin, nascondi il tasto "Nuovo Assistito" e cestino
   const btnNuovo = document.querySelector('.btn-new-patient');
   if (btnNuovo) {
     btnNuovo.style.display = (role === 'admin') ? 'inline-flex' : 'none';
+  }
+  const btnNuovoAsl = document.querySelector('.asl-new-patient-btn');
+  if (btnNuovoAsl) {
+    btnNuovoAsl.style.display = (role === 'admin') ? 'inline-flex' : 'none';
+  }
+  const cestinoFl = document.getElementById('win-desktop-floating-trash');
+  if (cestinoFl && role !== 'admin') {
+    cestinoFl.style.display = 'none';
   }
 
   // Se l'assistito attualmente selezionato non è più nella lista accessibile, cambia subito
