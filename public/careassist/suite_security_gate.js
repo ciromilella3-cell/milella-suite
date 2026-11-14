@@ -228,6 +228,16 @@
     }
 
     function checkGateState() {
+        const SESSION_KEY = 'milella_session_unlocked';
+        const isExplicitlyLocked = sessionStorage.getItem('milella_app_locked') === 'true' || localStorage.getItem('milella_app_locked') === 'true';
+        localStorage.removeItem(SESSION_KEY);
+        const hasSession = sessionStorage.getItem(SESSION_KEY) === 'true';
+        if (!isExplicitlyLocked && hasSession) {
+            const overlay = document.getElementById('suiteSecurityGateOverlay');
+            if (overlay) overlay.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            return;
+        }
         // 1. Se la sessione è già sbloccata nel tab corrente (sessionStorage)
         let isUnlocked = sessionStorage.getItem(SESSION_KEY) === 'true';
 

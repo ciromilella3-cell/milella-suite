@@ -1,4 +1,4 @@
-﻿// ==============================================================================
+// ==============================================================================
 // SELETTORE ASSISTITI STILE WHATSAPP CANALI (RICERCA & FILTRI ISTANTANEI)
 // ==============================================================================
 var _filtroCategoriaWhatsAppAttivo = 'tutti';
@@ -14904,20 +14904,25 @@ function verificaCambioDataAutomatico() {
   if (window._initialSyncDone === false) return;
   var oggiStr = new Date().toISOString().split('T')[0];
 
+  // Aggiorna sempre lo stato del banner persistente e del badge per le dosi pendenti
+  try {
+    if (typeof aggiornaStatoDosiPendentiBanner === 'function') {
+      aggiornaStatoDosiPendentiBanner();
+    }
+  } catch (eBanner) { }
+
   if (AppData.ultimoGiornoOperativo !== oggiStr) {
     if (AppData.ultimoGiornoOperativo) {
-      // Calcolo giorni trascorsi dall'ultimo giorno operativo registrato
+      // Rileva se ci sono somministrazioni passate (es. di ieri) non registrate
       try {
-        var d1 = new Date(AppData.ultimoGiornoOperativo);
-        var d2 = new Date(oggiStr);
-        var diffTime = Math.abs(d2 - d1);
-        var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays >= 1) {
-          window._giorniAssenzaRilevati = diffDays;
-          setTimeout(function () {
-            apriModalRiconciliazione(diffDays, AppData.ultimoGiornoOperativo);
-          }, 800);
+        if (typeof rilevaDosiPassateNonRegistrate === 'function') {
+          var dosi = rilevaDosiPassateNonRegistrate();
+          if (dosi.length > 0) {
+            window._dosiPendentiRilevate = dosi;
+            setTimeout(function () {
+              apriModalRiconciliazione();
+            }, 800);
+          }
         }
       } catch (e) { console.error('Data check error:', e); }
 
@@ -15011,13 +15016,250 @@ function apriModalSmartphone() {
   openModal('modal-smartphone');
 }
 
+// ==========================================================================
+// MODULO MASTER: RICONCILIAZIONE RECUPERO DOSI PASSATE & ALLINEAMENTO SCORTE
+// ==========================================================================
+
+window._dosiPendentiRilevate = [];
+
+function isTerapiaPrevistaPerData(t, dataTarget) {
+  if (!t) return true;
+  var target = (dataTarget instanceof Date) ? dataTarget : new Date();
+  var giornoMese = target.getDate();
+  var ultimoGiornoMese = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+
+  // Schema alternato mezza / intera: prevista OGNI GIORNO (con dosaggio variabile 0.5 o 1)
+  if (t.cadenzaTipo === 'alternata_mezza_intera') {
+    return true;
+  }
+
+  // 0. Giorni alterni: prevista se i giorni trascorsi dalla data di inizio sono pari (date locali)
+  if (t.cadenzaTipo === 'alterni') {
+    if (t.dataInizioAlterni || t.cadenzaDataInizio) {
+      var dStr = t.dataInizioAlterni || t.cadenzaDataInizio;
+      var pz = dStr.split('-').map(Number);
+      var inizio = new Date(pz[0], pz[1] - 1, pz[2]);
+      var targetMezzanotte = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+      var diffGiorni = Math.round((targetMezzanotte - inizio) / 86400000);
+      return diffGiorni >= 0 && diffGiorni % 2 === 0;
+    }
+    var epochDays = Math.floor(target.getTime() / 86400000);
+    return epochDays % 2 === 0;
+  }
+
+  // 1. Settimanale (1 volta a settimana nel giorno prescelto)
+  if (t.cadenzaTipo === 'settimanale') {
+    var dayOfWeek = target.getDay(); // 0 = Dom, 1 = Lun ... 6 = Sab
+    var isoDay = (dayOfWeek === 0) ? 7 : dayOfWeek; // 1 = Lun ... 7 = Dom
+    var targetDay = parseInt(t.cadenzaGiornoSettimana) || 1; // Default Lunedì
+    return isoDay === targetDay;
+  }
+
+  // 2. Cadenza quindicinale (il 15 e il 30 del mese o ultimo del mese)
+  if (t.cadenzaTipo === 'quindicinale_15_30' || ((t.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0 && (t.modo || '').indexOf('15') >= 0)) {
+    return (giornoMese === 15 || giornoMese === 30 || giornoMese === ultimoGiornoMese);
+  }
+
+  function verificaGiornoMeseMatchTarget(valGiorno) {
+    if (valGiorno === 'fine') {
+      return giornoMese === ultimoGiornoMese;
+    }
+    var num = parseInt(valGiorno) || 1;
+    if (num > ultimoGiornoMese) {
+      return giornoMese === ultimoGiornoMese;
+    }
+    return giornoMese === num;
+  }
+
+  // 3. Mensile (1 volta al mese nel giorno prescelto)
+  if (t.cadenzaTipo === 'mensile') {
+    return verificaGiornoMeseMatchTarget(t.cadenzaGiornoMese || '1');
+  }
+
+  // 4. Bimestrale (Ogni 2 mesi)
+  if (t.cadenzaTipo === 'bimestrale') {
+    if (!verificaGiornoMeseMatchTarget(t.cadenzaGiornoMese || '1')) return false;
+    if (t.cadenzaDataInizio) {
+      var pzB = t.cadenzaDataInizio.split('-').map(Number);
+      var inizioB = new Date(pzB[0], pzB[1] - 1, pzB[2] || 1);
+      var diffMesi = (target.getFullYear() - inizioB.getFullYear()) * 12 + (target.getMonth() - inizioB.getMonth());
+      return diffMesi >= 0 && (diffMesi % 2 === 0);
+    }
+    return (target.getMonth() % 2 === 0);
+  }
+
+  // 5. Trimestrale (Ogni 3 mesi)
+  if (t.cadenzaTipo === 'trimestrale') {
+    if (!verificaGiornoMeseMatchTarget(t.cadenzaGiornoMese || '1')) return false;
+    if (t.cadenzaDataInizio) {
+      var pzT = t.cadenzaDataInizio.split('-').map(Number);
+      var inizioT = new Date(pzT[0], pzT[1] - 1, pzT[2] || 1);
+      var diffMesiT = (target.getFullYear() - inizioT.getFullYear()) * 12 + (target.getMonth() - inizioT.getMonth());
+      return diffMesiT >= 0 && (diffMesiT % 3 === 0);
+    }
+    return (target.getMonth() % 3 === 0);
+  }
+
+  // 6. Semestrale (Ogni 6 mesi)
+  if (t.cadenzaTipo === 'semestrale') {
+    if (!verificaGiornoMeseMatchTarget(t.cadenzaGiornoMese || '1')) return false;
+    if (t.cadenzaDataInizio) {
+      var pzS = t.cadenzaDataInizio.split('-').map(Number);
+      var inizioS = new Date(pzS[0], pzS[1] - 1, pzS[2] || 1);
+      var diffMesiS = (target.getFullYear() - inizioS.getFullYear()) * 12 + (target.getMonth() - inizioS.getMonth());
+      return diffMesiS >= 0 && (diffMesiS % 6 === 0);
+    }
+    return (target.getMonth() % 6 === 0);
+  }
+
+  // 7. Annuale (1 volta all'anno)
+  if (t.cadenzaTipo === 'annuale') {
+    var targetMese = parseInt(t.cadenzaMeseAnnuale) || 1;
+    var targetGiorno = parseInt(t.cadenzaGiornoAnnuale) || 1;
+    var meseCorrente = target.getMonth() + 1;
+    if (meseCorrente !== targetMese) return false;
+    if (targetGiorno > ultimoGiornoMese) {
+      return giornoMese === ultimoGiornoMese;
+    }
+    return giornoMese === targetGiorno;
+  }
+
+  // 8. Al bisogno
+  if (t.cadenzaTipo === 'bisogno' || t.fascia === 'Al Bisogno' || t.ora === 'Al Bisogno') {
+    return true; // sempre richiamabile
+  }
+
+  // 9. Quotidiana o default
+  return true;
+}
+
+// Helper retrocompatibile per determinare se una terapia periodica è attiva oggi
+function isTerapiaPrevistaOggi(t) {
+  return isTerapiaPrevistaPerData(t, new Date());
+}
+
+// Rileva in modo intelligente tutte le somministrazioni passate (es. Ieri o giorni scorsi)
+// che non sono mai state registrate come somministrate o saltate.
+function rilevaDosiPassateNonRegistrate() {
+  if (!AppData || !Array.isArray(AppData.pazienti)) return [];
+  var oggi = new Date();
+  var oggiStr = oggi.toISOString().split('T')[0];
+
+  var dataInizio = new Date();
+  dataInizio.setDate(dataInizio.getDate() - 1); // almeno ieri
+
+  if (AppData.ultimoGiornoOperativo && AppData.ultimoGiornoOperativo < oggiStr) {
+    try {
+      var dUltimo = new Date(AppData.ultimoGiornoOperativo);
+      var diffD = Math.round((oggi - dUltimo) / 86400000);
+      if (diffD >= 1 && diffD <= 14) {
+        dataInizio = dUltimo;
+      }
+    } catch (e) { }
+  }
+
+  var giorniDaControllare = [];
+  var curr = new Date(dataInizio.getFullYear(), dataInizio.getMonth(), dataInizio.getDate());
+  var fine = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate()); // oggi escluso
+
+  var ieriDateStr = new Date(oggi.getTime() - 86400000).toISOString().split('T')[0];
+
+  while (curr < fine) {
+    var cStr = curr.toISOString().split('T')[0];
+    var isIeri = (cStr === ieriDateStr);
+    giorniDaControllare.push({
+      dateObj: new Date(curr),
+      dateStr: cStr,
+      label: isIeri ? ('Ieri (' + curr.toLocaleDateString('it-IT') + ')') : curr.toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: '2-digit' })
+    });
+    curr.setDate(curr.getDate() + 1);
+  }
+
+  var dosiPendenti = [];
+
+  (AppData.pazienti || []).forEach(function (p) {
+    var terapieAttive = (p.terapie || []).filter(function (t) {
+      var isBisogno = t.fascia === 'Al Bisogno' || t.fascia === 'Al Bisogno (SOS)' || (t.frequenzaTipo === 'bisogno');
+      return !isBisogno;
+    });
+
+    giorniDaControllare.forEach(function (giorno) {
+      terapieAttive.forEach(function (t) {
+        if (!isTerapiaPrevistaPerData(t, giorno.dateObj)) return;
+
+        // Verifica se esiste già una registrazione (somministrazione o salto) in questo giorno
+        var haRegistrazione = (p.registrazioni || []).some(function (r) {
+          if (!r) return false;
+          var rData = (r.timestamp || '').split('T')[0] || (r.data || '');
+          if (rData !== giorno.dateStr) return false;
+          return String(r.farmacoId) === String(t.id) ||
+            ((r.farmaco || '').trim().toLowerCase() === (t.farmaco || '').trim().toLowerCase() && r.orarioPrevisto === t.ora);
+        });
+
+        if (!haRegistrazione) {
+          var quantita = 1;
+          if (t.cadenzaTipo === 'alternata_mezza_intera') {
+            quantita = (typeof getDoseOdiernaAlternata === 'function') ? getDoseOdiernaAlternata(t).quantita : 1;
+          } else {
+            quantita = parseFloat(t.quantitaQuota) || (typeof calcolaConsumoGiornalieroFarmaco === 'function' ? calcolaConsumoGiornalieroFarmaco(t) : 1) || 1;
+          }
+          var isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
+
+          dosiPendenti.push({
+            id: 'pend_' + p.id + '_' + t.id + '_' + giorno.dateStr,
+            pazienteId: p.id,
+            pazienteNome: p.nome,
+            terapiaId: t.id,
+            farmaco: t.farmaco,
+            dosaggio: t.dosaggio,
+            ora: t.ora,
+            dataStr: giorno.dateStr,
+            dataVisuale: giorno.label,
+            quantita: quantita,
+            scorta: typeof t.scorta !== 'undefined' ? t.scorta : 0,
+            penneScorta: t.penneScorta,
+            isPenna: isPen,
+            selezionato: true
+          });
+        }
+      });
+    });
+  });
+
+  return dosiPendenti;
+}
+
+function aggiornaStatoDosiPendentiBanner() {
+  var dosi = rilevaDosiPassateNonRegistrate();
+  window._dosiPendentiRilevate = dosi;
+
+  var banner = document.getElementById('banner-dosi-pendenti-recupero');
+  var countEl = document.getElementById('banner-dosi-pendenti-count');
+  var topBtn = document.getElementById('btn-top-recupero-dosi');
+  var topBadge = document.getElementById('badge-top-recupero-count');
+
+  if (dosi.length > 0) {
+    if (banner) {
+      banner.style.display = 'block';
+      if (countEl) countEl.textContent = dosi.length;
+    }
+    if (topBtn) {
+      topBtn.style.display = 'inline-flex';
+      if (topBadge) topBadge.textContent = dosi.length;
+    }
+  } else {
+    if (banner) banner.style.display = 'none';
+    if (topBtn) topBtn.style.display = 'none';
+  }
+}
+
 function apriModalRiconciliazione(giorni, ultimaData) {
   var modal = document.getElementById('modal-riconciliazione');
-  var msgIntro = document.getElementById('riconciliazione-messaggio-intro');
-  var inputGg = document.getElementById('riconciliazione-giorni-input');
   if (!modal) return;
 
-  // Calcolo saluto orario personalizzato (Buongiorno / Buon pomeriggio / Buonasera)
+  var dosi = rilevaDosiPassateNonRegistrate();
+  window._dosiPendentiRilevate = dosi;
+
   var oraAttuale = new Date().getHours();
   var saluto = "Buongiorno";
   if (oraAttuale >= 13 && oraAttuale < 18) saluto = "Buon pomeriggio";
@@ -15026,7 +15268,6 @@ function apriModalRiconciliazione(giorni, ultimaData) {
   var salutoEl = document.getElementById('riconciliazione-saluto-orario');
   if (salutoEl) salutoEl.textContent = saluto + ' Operatore';
 
-  // Recupera profilo operatore attivo
   var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Dott. Ciro Milella';
   var opRuolo = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role') || 'admin';
   var ruoloBadgeText = (opRuolo === 'admin') ? 'Coordinatore Sanitario' : 'Operatore Socio-Sanitario (OSS)';
@@ -15037,31 +15278,223 @@ function apriModalRiconciliazione(giorni, ultimaData) {
   var opBadgeEl = document.getElementById('riconciliazione-ruolo-badge');
   if (opBadgeEl) opBadgeEl.textContent = ruoloBadgeText;
 
-  // Assistito attualmente selezionato
   var pAttivo = (typeof getPazienteAttivo === 'function') ? getPazienteAttivo() : null;
   var assEl = document.getElementById('riconciliazione-assistito-attivo');
   if (assEl && pAttivo) {
     assEl.textContent = 'Assistito in Carico: ' + (pAttivo.nome || 'Paziente');
   }
 
-  // Correzione data ultimo accesso effettiva (precedente a oggi)
-  var dPrec = new Date();
-  dPrec.setDate(dPrec.getDate() - Math.max(1, giorni));
-  var ultimaDataStr = dPrec.toLocaleDateString('it-IT');
-  if (ultimaData && !isNaN(new Date(ultimaData).getTime())) {
-    var checkD = new Date(ultimaData);
-    if (checkD.toDateString() !== new Date().toDateString()) {
-      ultimaDataStr = checkD.toLocaleDateString('it-IT');
+  var msgIntro = document.getElementById('riconciliazione-messaggio-intro');
+  if (msgIntro) {
+    if (dosi.length > 0) {
+      msgIntro.innerHTML = 'Rilevate <b>' + dosi.length + ' somministrazioni passate</b> non ancora registrate (es. Ieri a PC spento). Scegli se convalidarle per scalare le scorte o registrarle come saltate:';
+    } else {
+      msgIntro.innerHTML = 'Tutte le terapie dei giorni passati risultano già verificate e allineate con le scorte dei blister virtuali.';
     }
   }
 
-  if (msgIntro) {
-    msgIntro.innerHTML = 'Bentornato! L\'ultimo accesso registrato al software risale a <b>' + ultimaDataStr + '</b> (' + giorni + ' ' + (giorni === 1 ? 'giorno fa' : 'giorni fa') + ').';
+  var badgeTot = document.getElementById('riconciliazione-badge-totale');
+  if (badgeTot) badgeTot.textContent = dosi.length + ' farmaci';
+
+  // Popola la lista raggruppata per paziente
+  var container = document.getElementById('riconciliazione-dosi-container');
+  if (container) {
+    if (dosi.length === 0) {
+      container.innerHTML = '<div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:18px; text-align:center; color:#059669; font-weight:700;">✅ Tutte le terapie passate sono già state registrate regolarmente! Nessun disallineamento rilevato.</div>';
+    } else {
+      var perPaziente = {};
+      dosi.forEach(function (d) {
+        if (!perPaziente[d.pazienteId]) {
+          perPaziente[d.pazienteId] = { nome: d.pazienteNome, lista: [] };
+        }
+        perPaziente[d.pazienteId].lista.push(d);
+      });
+
+      var html = '';
+      Object.keys(perPaziente).forEach(function (pid) {
+        var gruppo = perPaziente[pid];
+        html += '<div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:12px 14px; box-shadow:0 2px 5px rgba(0,0,0,0.03); margin-bottom:8px;">';
+        html += '  <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin-bottom:8px; display:flex; align-items:center; gap:8px;">';
+        html += '    <span>👤</span> <span>' + gruppo.nome + '</span>';
+        html += '    <span style="font-size:11px; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:10px; font-weight:700;">' + gruppo.lista.length + ' dosi</span>';
+        html += '  </div>';
+        html += '  <div style="display:flex; flex-direction:column; gap:6px;">';
+
+        gruppo.lista.forEach(function (d) {
+          var scortaPrev = d.scorta;
+          var scortaDopo = Math.max(0, Math.round((scortaPrev - d.quantita) * 100) / 100);
+          var deltaTxt = d.isPenna ? ('-' + d.quantita + ' dose penna') : ('-' + d.quantita + ' cpr (' + scortaPrev + ' ➔ ' + scortaDopo + ')');
+
+          html += '    <label style="display:flex; align-items:center; justify-content:space-between; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:7px 10px; cursor:pointer; font-size:12.5px;">';
+          html += '      <div style="display:flex; align-items:center; gap:10px;">';
+          html += '        <input type="checkbox" class="chk-dose-riconciliazione" data-dose-id="' + d.id + '" ' + (d.selezionato ? 'checked' : '') + ' onchange="toggleDoseRiconciliazione(\'' + d.id + '\', this.checked)" style="width:17px; height:17px; accent-color:#0284c7; cursor:pointer;">';
+          html += '        <div>';
+          html += '          <span style="background:#fee2e2; color:#991b1b; font-size:10.5px; font-weight:800; padding:1px 6px; border-radius:4px; margin-right:6px;">' + d.ora + '</span>';
+          html += '          <strong style="color:#0f172a;">' + d.farmaco + '</strong>';
+          html += '          <span style="color:#64748b; font-size:11.5px; margin-left:6px;">(' + d.dosaggio + ')</span>';
+          html += '        </div>';
+          html += '      </div>';
+          html += '      <div style="text-align:right;">';
+          html += '        <span style="font-size:11px; color:#0369a1; font-weight:700; background:#f0f9ff; padding:2px 6px; border-radius:4px; border:1px solid #bae6fd;">' + deltaTxt + '</span>';
+          html += '        <div style="font-size:10px; color:#94a3b8; margin-top:2px;">' + d.dataVisuale + '</div>';
+          html += '      </div>';
+          html += '    </label>';
+        });
+
+        html += '  </div>';
+        html += '</div>';
+      });
+
+      container.innerHTML = html;
+    }
   }
-  if (inputGg) {
-    inputGg.value = Math.max(1, giorni);
-  }
+
+  var inputGg = document.getElementById('riconciliazione-giorni-input');
+  if (inputGg && giorni) inputGg.value = Math.max(1, giorni);
+
   openModal('modal-riconciliazione');
+}
+
+function toggleDoseRiconciliazione(id, val) {
+  if (!Array.isArray(window._dosiPendentiRilevate)) return;
+  var d = window._dosiPendentiRilevate.find(function (x) { return x.id === id; });
+  if (d) d.selezionato = !!val;
+}
+
+function selezionaTutteDosiRiconciliazione(val) {
+  if (Array.isArray(window._dosiPendentiRilevate)) {
+    window._dosiPendentiRilevate.forEach(function (d) { d.selezionato = !!val; });
+  }
+  document.querySelectorAll('.chk-dose-riconciliazione').forEach(function (chk) {
+    chk.checked = !!val;
+  });
+}
+
+function eseguiRecuperoDosiSelezionate() {
+  var dosi = window._dosiPendentiRilevate || [];
+  if (dosi.length === 0) {
+    closeModal('modal-riconciliazione');
+    return;
+  }
+
+  var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore OSS';
+  var oraRecuperoStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  var totScalate = 0;
+  var totSaltate = 0;
+
+  dosi.forEach(function (dose) {
+    var p = (AppData.pazienti || []).find(function (pz) { return pz.id === dose.pazienteId; });
+    if (!p) return;
+    var t = (p.terapie || []).find(function (it) { return String(it.id) === String(dose.terapiaId); });
+    if (!t) return;
+
+    if (dose.selezionato) {
+      // SCALA LA SCORTA
+      if (dose.isPenna) {
+        var dPen = (typeof calcolaDatiPennaIniettabile === 'function') ? calcolaDatiPennaIniettabile(t) : { giorniPerPenna: 30 };
+        var frazPenna = 1 / dPen.giorniPerPenna;
+        if (t.penneScorta > 0) {
+          t.penneScorta = Math.max(0, Math.round((t.penneScorta - frazPenna) * 100) / 100);
+          t.scorta = t.penneScorta;
+        }
+      } else {
+        var mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
+        var nuovaScorta = Math.max(0, Math.round((t.scorta - dose.quantita) * 100) / 100);
+        if (mt && mt.gemelle && mt.gemelle.length > 1) {
+          mt.gemelle.forEach(function (item) { item.scorta = nuovaScorta; });
+        } else if (t.scorta > 0) {
+          t.scorta = nuovaScorta;
+        }
+      }
+      totScalate++;
+
+      // REGISTRAZIONE CLINICA RETROATTIVA NEL DIARIO
+      if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+      p.registrazioni.push({
+        id: 'log_recup_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        tipo: 'farmaco_recuperato',
+        timestamp: dose.dataStr + 'T' + dose.ora + ':00.000Z',
+        farmacoId: t.id,
+        farmaco: t.farmaco,
+        dosaggio: t.dosaggio,
+        orarioPrevisto: t.ora,
+        orarioReale: 'Recuperata alle ' + oraRecuperoStr,
+        azione: 'somministrazione_retroattiva',
+        dettaglio: '✅ Somministrazione di ' + dose.dataVisuale + ' ore ' + dose.ora + ' confermata e allineata alle scorte (-' + dose.quantita + ' cpr). Rimanenza: ' + t.scorta + ' cpr.',
+        operatore: opNome
+      });
+    } else {
+      // DOSE NON SELEZIONATA: ARCHIVIA COME SALTATA SENZA TOCCARE SCORTE
+      totSaltate++;
+      if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+      p.registrazioni.push({
+        id: 'log_salto_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        tipo: 'farmaco_saltato',
+        timestamp: dose.dataStr + 'T' + dose.ora + ':00.000Z',
+        farmacoId: t.id,
+        farmaco: t.farmaco,
+        dosaggio: t.dosaggio,
+        orarioPrevisto: t.ora,
+        motivo: 'Mancata assunzione / Terapia saltata',
+        azione: 'omissione_clinica',
+        dettaglio: '❌ Terapia di ' + dose.dataVisuale + ' ore ' + dose.ora + ' saltata dal paziente. Scorta inalterata (' + t.scorta + ' cpr).',
+        operatore: opNome
+      });
+    }
+  });
+
+  AppData.ultimoGiornoOperativo = new Date().toISOString().split('T')[0];
+  closeModal('modal-riconciliazione');
+  saveDb(true);
+  aggiornaStatoDosiPendentiBanner();
+  renderAll();
+  showToast('✅ Allineamento completato: ' + totScalate + ' dosi confermate (scorte scalate) e ' + totSaltate + ' saltate archiviate! 🔄');
+}
+
+async function eseguiRegistrazioneTerapieSaltate() {
+  var dosi = window._dosiPendentiRilevate || [];
+  if (dosi.length === 0) {
+    closeModal('modal-riconciliazione');
+    return;
+  }
+
+  var confermato = await customConfirm(
+    'Conferma Terapie Saltate',
+    'Confermi che ieri (o nei giorni passati) le ' + dosi.length + ' terapie NON sono state somministrate dal paziente?\n\nLe scorte dei farmaci NON verranno toccate e l\'omissione sarà annotata nel diario clinico a norma di legge.',
+    '⚠️'
+  );
+  if (!confermato) return;
+
+  var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore OSS';
+
+  dosi.forEach(function (dose) {
+    var p = (AppData.pazienti || []).find(function (pz) { return pz.id === dose.pazienteId; });
+    if (!p) return;
+    var t = (p.terapie || []).find(function (it) { return String(it.id) === String(dose.terapiaId); });
+    if (!t) return;
+
+    if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+    p.registrazioni.push({
+      id: 'log_salto_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      tipo: 'farmaco_saltato',
+      timestamp: dose.dataStr + 'T' + dose.ora + ':00.000Z',
+      farmacoId: t.id,
+      farmaco: t.farmaco,
+      dosaggio: t.dosaggio,
+      orarioPrevisto: t.ora,
+      motivo: 'Mancata somministrazione / Terapia saltata dal paziente',
+      azione: 'omissione_clinica',
+      dettaglio: '❌ Terapia di ' + dose.dataVisuale + ' ore ' + dose.ora + ' non somministrata. Scorta lasciata intatta (' + t.scorta + ' cpr). Registrato dall\'operatore.',
+      operatore: opNome
+    });
+  });
+
+  AppData.ultimoGiornoOperativo = new Date().toISOString().split('T')[0];
+  closeModal('modal-riconciliazione');
+  saveDb(true);
+  aggiornaStatoDosiPendentiBanner();
+  renderAll();
+  showToast('ℹ️ Tutte le ' + dosi.length + ' dosi passate sono state archiviate come saltate. Scorte integre!', 'info');
 }
 
 function eseguiRiconciliazioneScorte() {
@@ -15104,121 +15537,12 @@ function eseguiRiconciliazioneScorte() {
     });
   });
 
+  AppData.ultimoGiornoOperativo = new Date().toISOString().split('T')[0];
   closeModal('modal-riconciliazione');
-  saveDb();
+  saveDb(true);
+  aggiornaStatoDosiPendentiBanner();
+  renderAll();
   showToast('Riconciliazione completata: aggiornate le scorte per ' + giorni + ' giorni passati! 🔄');
-}
-
-// Helper per determinare se una terapia periodica è attiva oggi
-function isTerapiaPrevistaOggi(t) {
-  if (!t) return true;
-  var oggi = new Date();
-  var giornoMese = oggi.getDate();
-  var ultimoGiornoMese = new Date(oggi.getFullYear(), oggi.getMonth() + 1, 0).getDate();
-
-  // Schema alternato mezza / intera: prevista OGNI GIORNO (con dosaggio variabile 0.5 o 1)
-  if (t.cadenzaTipo === 'alternata_mezza_intera') {
-    return true;
-  }
-
-  // 0. Giorni alterni: prevista se i giorni trascorsi dalla data di inizio sono pari (date locali)
-  if (t.cadenzaTipo === 'alterni') {
-    if (t.dataInizioAlterni || t.cadenzaDataInizio) {
-      var dStr = t.dataInizioAlterni || t.cadenzaDataInizio;
-      var pz = dStr.split('-').map(Number);
-      var inizio = new Date(pz[0], pz[1] - 1, pz[2]);
-      var oggiMezzanotte = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate());
-      var diffGiorni = Math.round((oggiMezzanotte - inizio) / 86400000);
-      return diffGiorni >= 0 && diffGiorni % 2 === 0;
-    }
-    var epochDays = Math.floor(oggi.getTime() / 86400000);
-    return epochDays % 2 === 0;
-  }
-
-  // 1. Settimanale (1 volta a settimana nel giorno prescelto)
-  if (t.cadenzaTipo === 'settimanale') {
-    var dayOfWeek = oggi.getDay(); // 0 = Dom, 1 = Lun ... 6 = Sab
-    var isoDay = (dayOfWeek === 0) ? 7 : dayOfWeek; // 1 = Lun ... 7 = Dom
-    var targetDay = parseInt(t.cadenzaGiornoSettimana) || 1; // Default Lunedì
-    return isoDay === targetDay;
-  }
-
-  // 2. Cadenza quindicinale (il 15 e il 30 del mese o ultimo del mese)
-  if (t.cadenzaTipo === 'quindicinale_15_30' || ((t.farmaco || '').toUpperCase().indexOf('DIBASE') >= 0 && (t.modo || '').indexOf('15') >= 0)) {
-    return (giornoMese === 15 || giornoMese === 30 || giornoMese === ultimoGiornoMese);
-  }
-
-  function verificaGiornoMeseMatch(valGiorno) {
-    if (valGiorno === 'fine') {
-      return giornoMese === ultimoGiornoMese;
-    }
-    var num = parseInt(valGiorno) || 1;
-    if (num > ultimoGiornoMese) {
-      return giornoMese === ultimoGiornoMese;
-    }
-    return giornoMese === num;
-  }
-
-  // 3. Mensile (1 volta al mese nel giorno prescelto)
-  if (t.cadenzaTipo === 'mensile') {
-    return verificaGiornoMeseMatch(t.cadenzaGiornoMese || '1');
-  }
-
-  // 4. Bimestrale (Ogni 2 mesi)
-  if (t.cadenzaTipo === 'bimestrale') {
-    if (!verificaGiornoMeseMatch(t.cadenzaGiornoMese || '1')) return false;
-    if (t.cadenzaDataInizio) {
-      var pzB = t.cadenzaDataInizio.split('-').map(Number);
-      var inizioB = new Date(pzB[0], pzB[1] - 1, pzB[2] || 1);
-      var diffMesi = (oggi.getFullYear() - inizioB.getFullYear()) * 12 + (oggi.getMonth() - inizioB.getMonth());
-      return diffMesi >= 0 && (diffMesi % 2 === 0);
-    }
-    return (oggi.getMonth() % 2 === 0);
-  }
-
-  // 5. Trimestrale (Ogni 3 mesi)
-  if (t.cadenzaTipo === 'trimestrale') {
-    if (!verificaGiornoMeseMatch(t.cadenzaGiornoMese || '1')) return false;
-    if (t.cadenzaDataInizio) {
-      var pzT = t.cadenzaDataInizio.split('-').map(Number);
-      var inizioT = new Date(pzT[0], pzT[1] - 1, pzT[2] || 1);
-      var diffMesiT = (oggi.getFullYear() - inizioT.getFullYear()) * 12 + (oggi.getMonth() - inizioT.getMonth());
-      return diffMesiT >= 0 && (diffMesiT % 3 === 0);
-    }
-    return (oggi.getMonth() % 3 === 0);
-  }
-
-  // 6. Semestrale (Ogni 6 mesi)
-  if (t.cadenzaTipo === 'semestrale') {
-    if (!verificaGiornoMeseMatch(t.cadenzaGiornoMese || '1')) return false;
-    if (t.cadenzaDataInizio) {
-      var pzS = t.cadenzaDataInizio.split('-').map(Number);
-      var inizioS = new Date(pzS[0], pzS[1] - 1, pzS[2] || 1);
-      var diffMesiS = (oggi.getFullYear() - inizioS.getFullYear()) * 12 + (oggi.getMonth() - inizioS.getMonth());
-      return diffMesiS >= 0 && (diffMesiS % 6 === 0);
-    }
-    return (oggi.getMonth() % 6 === 0);
-  }
-
-  // 7. Annuale (1 volta all'anno)
-  if (t.cadenzaTipo === 'annuale') {
-    var targetMese = parseInt(t.cadenzaMeseAnnuale) || 1;
-    var targetGiorno = parseInt(t.cadenzaGiornoAnnuale) || 1;
-    var meseCorrente = oggi.getMonth() + 1;
-    if (meseCorrente !== targetMese) return false;
-    if (targetGiorno > ultimoGiornoMese) {
-      return giornoMese === ultimoGiornoMese;
-    }
-    return giornoMese === targetGiorno;
-  }
-
-  // 8. Al bisogno
-  if (t.cadenzaTipo === 'bisogno' || t.fascia === 'Al Bisogno' || t.ora === 'Al Bisogno') {
-    return true; // sempre richiamabile
-  }
-
-  // 9. Quotidiana o default
-  return true;
 }
 
 
@@ -15542,6 +15866,7 @@ function renderAll() {
     });
   }
   verificaCambioDataAutomatico();
+  try { if (typeof aggiornaStatoDosiPendentiBanner === 'function') aggiornaStatoDosiPendentiBanner(); } catch (eBanner) { }
   aggiornaCardBuongiornoMattino();
   renderPazientiSelector();
   checkAlvoAlarm();
@@ -15584,6 +15909,14 @@ window.addEventListener('DOMContentLoaded', () => {
         const btn = document.querySelector('[data-target="tab-' + targetTab + '"]') || document.querySelector('[data-target="' + targetTab + '"]');
         if (btn) btn.click();
       }, 200);
+    }
+    const stampaParam = urlParams.get('stampa');
+    if (stampaParam === 'dossier') {
+      setTimeout(() => { if (typeof apriModalDossierClinico === 'function') apriModalDossierClinico(); }, 600);
+    }
+    const openParam = urlParams.get('open');
+    if (openParam === 'ricette') {
+      setTimeout(() => { if (typeof apriModalFabbisognoRicette === 'function') apriModalFabbisognoRicette(); }, 600);
     }
   } catch (eParam) { }
   initTabs();
@@ -16259,12 +16592,11 @@ if (!window._smartStudioTimerStarted) {
   }, 30000);
 }
 
-// Rintocco Sonoro Discreto all'Orario Esatto di Somministrazione (Soft Chime)
+// Rintocco Sonoro Discreto all'Orario Esatto di Somministrazione (Soft Chime su TUTTI i Pazienti)
 let _ultimoMinutoNotificatoTerapia = '';
 function verificaRintoccoOrarioTerapiaAttuale() {
   if (!window._initialSyncDone) return;
-  const p = getActivePaziente();
-  if (!p || !p.terapie) return;
+  if (!AppData || !Array.isArray(AppData.pazienti)) return;
 
   const now = new Date();
   const hStr = (now.getHours() < 10 ? '0' : '') + now.getHours();
@@ -16273,9 +16605,17 @@ function verificaRintoccoOrarioTerapiaAttuale() {
 
   if (_ultimoMinutoNotificatoTerapia === oraCorrente) return;
 
-  // Cerca se esiste una terapia prevista per oggi programmata esattamente a questo minuto
-  const terapieOra = p.terapie.filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && t.ora === oraCorrente);
-  if (terapieOra.length > 0) {
+  const listaPazienti = typeof getPazientiAccessibili === 'function' ? getPazientiAccessibili() : AppData.pazienti;
+  let terapieTrovate = [];
+
+  listaPazienti.forEach(p => {
+    const tp = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && t.ora === oraCorrente);
+    tp.forEach(t => {
+      terapieTrovate.push({ paziente: p, terapia: t });
+    });
+  });
+
+  if (terapieTrovate.length > 0) {
     _ultimoMinutoNotificatoTerapia = oraCorrente;
     forzaVolumeSicurezza70('Scadenza Orario Terapia (' + oraCorrente + ')', false);
     try {
@@ -16302,14 +16642,16 @@ function verificaRintoccoOrarioTerapiaAttuale() {
       }
     } catch (e) { console.error('Audio error:', e); }
 
-    const nomi = terapieOra.map(t => t.farmaco).join(', ');
-    showToast(`🔔 Promemoria Orario (${oraCorrente} — Volume Protetto ≥70%): Somministrare ${nomi} a ${p.nome}`, 'warning');
+    const desc = terapieTrovate.map(it => `${it.terapia.farmaco} (${it.paziente.nome})`).join(', ');
+    showToast(`🔔 Promemoria Orario (${oraCorrente} — Volume Protetto ≥70%): Somministrare ${desc}`, 'warning');
   }
 
-  // ESCALATION AUTOMATICA A 3 STADI (Protocollo Zero-Scuse per il Coordinatore/Capo)
-  try {
-    controllaEscalationTerapieNonAssunte(p, now);
-  } catch (e) { }
+  // ESCALATION AUTOMATICA A 3 STADI (Protocollo Zero-Scuse per il Coordinatore/Capo su tutti i pazienti)
+  listaPazienti.forEach(p => {
+    try {
+      controllaEscalationTerapieNonAssunte(p, now);
+    } catch (e) { }
+  });
 }
 
 const _escalationNotificataMap = {};
