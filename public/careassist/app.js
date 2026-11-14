@@ -2854,7 +2854,7 @@ function renderPazientiSelector() {
   const lista = getPazientiAccessibili();
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
 
-  // Se l'operatore non è admin, nascondi il tasto "Nuovo Assistito" e cestino
+  // Se l'operatore non è admin, nascondi il tasto "Nuovo Assistito", cestino e strumenti di sistema
   const btnNuovo = document.querySelector('.btn-new-patient');
   if (btnNuovo) {
     btnNuovo.style.display = (role === 'admin') ? 'inline-flex' : 'none';
@@ -2863,9 +2863,17 @@ function renderPazientiSelector() {
   if (btnNuovoAsl) {
     btnNuovoAsl.style.display = (role === 'admin') ? 'inline-flex' : 'none';
   }
-  const cestinoFl = document.getElementById('win-desktop-floating-trash');
-  if (cestinoFl && role !== 'admin') {
-    cestinoFl.style.display = 'none';
+  if (role !== 'admin') {
+    const cestinoFl = document.getElementById('win-desktop-floating-trash');
+    if (cestinoFl) cestinoFl.style.setProperty('display', 'none', 'important');
+    const cestinoMob = document.getElementById('mobile-header-cestino-btn');
+    if (cestinoMob) cestinoMob.style.setProperty('display', 'none', 'important');
+    const cestinoDesk = document.getElementById('header-btn-cestino-desktop');
+    if (cestinoDesk) cestinoDesk.style.setProperty('display', 'none', 'important');
+    const toolsWrap = document.getElementById('dropdown-tools-container');
+    if (toolsWrap) toolsWrap.style.setProperty('display', 'none', 'important');
+    const btnPrestampato = document.getElementById('btn-top-prestampato');
+    if (btnPrestampato) btnPrestampato.style.setProperty('display', 'none', 'important');
   }
 
   // Se l'assistito attualmente selezionato non è più nella lista accessibile, cambia subito

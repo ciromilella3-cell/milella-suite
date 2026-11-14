@@ -57,8 +57,15 @@ function renderizzaGrigliaPazientiAsl() {
   }
   const cestinoFl = document.getElementById('win-desktop-floating-trash');
   if (cestinoFl && role !== 'admin') {
-    cestinoFl.style.display = 'none';
+    cestinoFl.style.setProperty('display', 'none', 'important');
   }
+
+  let appAbilitate = [];
+  try {
+    appAbilitate = JSON.parse(localStorage.getItem('milella_app_abilitate') || '[]');
+  } catch(e) { appAbilitate = []; }
+  const haAmbulatorio = role === 'admin' || appAbilitate.includes('all') || appAbilitate.includes('app_mednutri');
+  const haSalute = role === 'admin' || appAbilitate.includes('all') || appAbilitate.includes('app_salute');
 
   // Filtro combinato Testo + Categoria Triage
   const filtrati = tuttiPazienti.filter(p => {
@@ -164,12 +171,14 @@ function renderizzaGrigliaPazientiAsl() {
           </div>
 
           <div class="asl-bridge-actions" onclick="event.stopPropagation()">
+            ${haAmbulatorio ? `
             <button type="button" class="asl-btn-bridge med" onclick="navigaAdAmbulatorioPaziente('${encodeURIComponent(pulitoNome)}')" title="Apri Ambulatorio Medico">
               🩺 Ambulatorio
-            </button>
+            </button>` : ''}
+            ${haSalute ? `
             <button type="button" class="asl-btn-bridge salute" onclick="navigaASalutePaziente('${encodeURIComponent(pulitoNome)}')" title="Apri Progetto Salute">
               🥗 Salute
-            </button>
+            </button>` : ''}
             <button type="button" class="asl-btn-select" onclick="selezionaAssistitoDaAsl('${p.id}')" title="Apri Cartella CareAssist">
               ${isAttivo ? 'Aperto' : 'Apri ➔'}
             </button>

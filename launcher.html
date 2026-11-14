@@ -1558,8 +1558,8 @@
         <div class="cards-wrapper">
         </div>
 
-        <!-- FLOATING COMMAND DOCK SUPERIORE/INFERIORE MODERNA -->
-        <div id="launcherCommandDock" class="command-dock-wrapper" style="margin-top:2.8rem; width:100%; max-width:980px; display:flex; justify-content:center;">
+        <!-- FLOATING COMMAND DOCK SUPERIORE/INFERIORE MODERNA (SOLO ADMIN) -->
+        <div id="launcherCommandDock" class="command-dock-wrapper admin-only-card" style="margin-top:2.8rem; width:100%; max-width:980px; display:flex; justify-content:center;">
             <div class="command-dock" style="background:rgba(15,23,42,0.88); border:1.5px solid rgba(212,175,55,0.35); border-radius:40px; padding:10px 20px; display:flex; align-items:center; gap:12px; box-shadow:0 20px 50px rgba(0,0,0,0.6), 0 0 25px rgba(212,175,55,0.12); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); flex-wrap:wrap; justify-content:center;">
                 <!-- Gruppo 1: Mobile & Connessione -->
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -2579,6 +2579,9 @@
     const CLOUD_LOCALE    = 'http://localhost:3000';
 
     function apriCloudModal() {
+        if (currentRole !== 'admin') {
+            return;
+        }
         const modal = document.getElementById('cloudSwitcherModal');
         if (modal) {
             modal.style.display = 'flex';
@@ -2824,6 +2827,9 @@
         const adminCards = document.querySelectorAll('.admin-only-card');
         const adminBtns = document.querySelectorAll('.admin-only-btn');
 
+        const cloudPingLabel = document.getElementById('cloudPingLabel');
+        const cloudBadge = document.getElementById('cloudStatusBadge');
+
         if (role === 'admin') {
             localStorage.setItem('milella_paz_abilitati', JSON.stringify(['all']));
             localStorage.setItem('milella_profili_salute', JSON.stringify(['all']));
@@ -2837,6 +2843,8 @@
             const btnPres = document.getElementById('btnOpenPresentation');
             if (btnPres) btnPres.style.display = 'inline-flex';
             btnLogout.style.display = 'inline-flex';
+            if (cloudPingLabel) cloudPingLabel.style.display = 'inline-block';
+            if (cloudBadge) cloudBadge.style.cursor = 'pointer';
 
             adminCards.forEach(c => c.style.display = 'flex');
             adminBtns.forEach(b => b.style.display = 'inline-flex');
@@ -2851,6 +2859,8 @@
             const btnPres = document.getElementById('btnOpenPresentation');
             if (btnPres) btnPres.style.display = 'none';
             btnLogout.style.display = 'inline-flex';
+            if (cloudPingLabel) cloudPingLabel.style.display = 'none';
+            if (cloudBadge) cloudBadge.style.cursor = 'default';
 
             adminCards.forEach(c => c.style.display = 'none');
             adminBtns.forEach(b => b.style.display = 'none');
