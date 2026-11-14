@@ -3242,7 +3242,12 @@
                     } else {
                         activeProfile = 'marito';
                         window.activeProfile = 'marito';
-                        localStorage.setItem('activeProfile', 'marito');
+                        const userRole = localStorage.getItem('milella_last_authenticated_role') || localStorage.getItem('milella_role');
+                        if (userRole === 'admin') {
+                            localStorage.setItem('activeProfile', 'marito');
+                        } else {
+                            localStorage.setItem('activeProfile', 'moglie');
+                        }
                     }
 
                     document.getElementById('delete-profile-modal').style.display = 'none';
@@ -4361,7 +4366,12 @@
                             localStorage.removeItem('menuData_' + stray);
                             localStorage.removeItem('anamnesi_' + stray);
                         });
-                        localStorage.setItem('activeProfile', 'marito');
+                        const userRole = localStorage.getItem('milella_last_authenticated_role') || localStorage.getItem('milella_role');
+                        if (userRole === 'admin') {
+                            localStorage.setItem('activeProfile', 'marito');
+                        } else {
+                            localStorage.setItem('activeProfile', 'moglie');
+                        }
                     } catch (e) { }
                 } catch (e) { }
 
