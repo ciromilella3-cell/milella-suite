@@ -3776,9 +3776,9 @@ textarea.form-control {
   }
 }
 
-/* Nascondi barra mobile su PC desktop */
+/* Barra di navigazione unificata Suite visibile sia su PC che su Mobile */
 .mobile-bottom-bar {
-  display: none;
+  display: flex !important;
 }
 
 
