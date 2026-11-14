@@ -1699,54 +1699,116 @@ app.post(['/api/veicoli/data', '/veicoli_mobile/api/data'], async (req, res) => 
     }
 });
 
-app.get(['/api/salute/data', '/salute/api/data'], (req, res) => {
+function consolidaProfiliSalute(data) {
+    if (!data || typeof data !== 'object') return;
     try {
-        if (fs.existsSync(saluteDbPath)) {
-            const data = fs.readFileSync(saluteDbPath, 'utf8');
-            let parsed = {};
-            try { parsed = JSON.parse(data || '{}'); } catch(e){}
-            // Escludi pesate cancellate memorizzate in _deletedWeightsLog
-            const delSet = new Set(parsed._deletedWeightsLog || []);
-            if (delSet.size > 0) {
-                Object.keys(parsed).forEach(k => {
-                    if (k.startsWith('weightLog_')) {
-                        const prof = k.replace('weightLog_', '');
-                        try {
-                            let arr = typeof parsed[k] === 'string' ? JSON.parse(parsed[k]) : parsed[k];
-                            if (Array.isArray(arr)) {
-                                arr = arr.filter(item => item && item.date && !delSet.has(`${prof}|${item.date}`));
-                                parsed[k] = JSON.stringify(arr);
+        const mariaKeys = ['moglie', '1', 'paz_mariacarmela', 'mariacarmelastoppelli', 'salute_moglie'];
+        const allWeights = new Map();
+        mariaKeys.forEach(pk => {
+            const raw = data['weightLog_' + pk];
+            if (raw) {
+                try {
+                    const arr = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                    if (Array.isArray(arr)) {
+                        arr.forEach(w => {
+                            if (w && w.date && w.weight) {
+                                const exist = allWeights.get(w.date);
+                                if (!exist || (w.timestamp && w.timestamp > (exist.timestamp || 0))) {
+                                    allWeights.set(w.date, w);
+                                }
                             }
-                        } catch(e) {}
+                        });
                     }
-                });
+                } catch(e) {}
             }
-            res.json(parsed);
-        } else {
-            // Fallback su Ultimo_Salvataggio_Automatico se salute_db.json non è presente
+        });
+
+        if (allWeights.size > 0) {
+            const sorted = Array.from(allWeights.values()).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+            const str = JSON.stringify(sorted);
+            data['weightLog_moglie'] = str;
+            data['weightLog_1'] = str;
+        }
+
+        let maxWater = 0;
+        mariaKeys.forEach(pk => {
+            const w = parseInt(data['waterCount_' + pk] || 0, 10);
+            if (w > maxWater) maxWater = w;
+        });
+        if (maxWater > 0) {
+            data['waterCount_moglie'] = maxWater;
+            data['waterCount_1'] = maxWater;
+        }
+
+        const pat = data['pathology_1'] || data['pathology_moglie'];
+        if (pat) {
+            data['pathology_moglie'] = pat;
+            data['pathology_1'] = pat;
+        }
+
+        const stats = data['profileStats_moglie'] || data['profileStats_1'];
+        if (stats) {
+            data['profileStats_moglie'] = stats;
+            data['profileStats_1'] = stats;
+        }
+
+        data['profileName_moglie'] = 'Maria Carmela';
+        data['profileName_1'] = 'Maria Carmela';
+    } catch(err) {
+        console.warn('Errore consolidamento profili Maria Carmela:', err);
+    }
+}
+
+app.get(['/api/salute/data', '/salute/api/data'], async (req, res) => {
+    try {
+        let parsed = await cloudGet('salute', null);
+        if (!parsed && fs.existsSync(saluteDbPath)) {
+            const data = fs.readFileSync(saluteDbPath, 'utf8');
+            try { parsed = JSON.parse(data || '{}'); } catch(e){}
+        }
+        if (!parsed) {
             const autoSaveFile = path.join(__dirname, 'public', 'salute', 'Backup_Salute', 'Ultimo_Salvataggio_Automatico.salute');
             if (fs.existsSync(autoSaveFile)) {
-                const data = fs.readFileSync(autoSaveFile, 'utf8');
-                res.type('application/json').send(data || '{}');
-            } else {
-                res.json({});
+                try { parsed = JSON.parse(fs.readFileSync(autoSaveFile, 'utf8') || '{}'); } catch(e){}
             }
         }
+        parsed = parsed || {};
+
+        consolidaProfiliSalute(parsed);
+
+        // Escludi pesate cancellate memorizzate in _deletedWeightsLog
+        const delSet = new Set(parsed._deletedWeightsLog || []);
+        if (delSet.size > 0) {
+            Object.keys(parsed).forEach(k => {
+                if (k.startsWith('weightLog_')) {
+                    const prof = k.replace('weightLog_', '');
+                    try {
+                        let arr = typeof parsed[k] === 'string' ? JSON.parse(parsed[k]) : parsed[k];
+                        if (Array.isArray(arr)) {
+                            arr = arr.filter(item => item && item.date && !delSet.has(`${prof}|${item.date}`));
+                            parsed[k] = JSON.stringify(arr);
+                        }
+                    } catch(e) {}
+                }
+            });
+        }
+        res.json(parsed);
     } catch(err) {
         console.error('Errore lettura salute db:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
-app.post(['/api/salute/data', '/salute/api/data'], (req, res) => {
+app.post(['/api/salute/data', '/salute/api/data'], async (req, res) => {
     try {
         if (!req.body || typeof req.body !== 'object') {
             return res.status(400).json({ error: 'Body non valido' });
         }
-        let current = {};
-        if (fs.existsSync(saluteDbPath)) {
+        let current = await cloudGet('salute', null);
+        if (!current && fs.existsSync(saluteDbPath)) {
             try { current = JSON.parse(fs.readFileSync(saluteDbPath, 'utf8')); } catch(e){}
         }
+        current = current || {};
         
         // Merge intelligente: unisci campi e storici
         const incoming = req.body;
@@ -1834,8 +1896,10 @@ app.post(['/api/salute/data', '/salute/api/data'], (req, res) => {
             });
             merged.health_profiles = Array.from(pSet);
         }
+
+        consolidaProfiliSalute(merged);
         
-        safeWriteAtomic(saluteDbPath, JSON.stringify(merged, null, 2));
+        await cloudSet('salute', merged, saluteDbPath);
         
         // Copia anche in Ultimo_Salvataggio_Automatico se la cartella esiste
         const autoSaveFile = path.join(__dirname, 'public', 'salute', 'Backup_Salute', 'Ultimo_Salvataggio_Automatico.salute');

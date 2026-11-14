@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 
 <head>
@@ -1029,6 +1029,68 @@
                     if (prof === 'moglie') return localStorage.getItem('profileName_moglie') || 'Maria Carmela';
                     return prof.charAt(0).toUpperCase() + prof.slice(1);
                 }
+
+                // Unificazione e consolidamento automatico di qualsiasi dato registrato per Maria Carmela (moglie, 1, etc.)
+                function consolidaProfiliSaluteLocale() {
+                    try {
+                        const mariaKeys = ['moglie', '1', 'paz_mariacarmela', 'mariacarmelastoppelli', 'salute_moglie'];
+                        const allWeights = new Map();
+                        mariaKeys.forEach(pk => {
+                            try {
+                                const raw = localStorage.getItem('weightLog_' + pk);
+                                if (raw) {
+                                    const arr = JSON.parse(raw);
+                                    if (Array.isArray(arr)) {
+                                        arr.forEach(w => {
+                                            if (w && w.date && w.weight) {
+                                                const exist = allWeights.get(w.date);
+                                                if (!exist || (w.timestamp && w.timestamp > (exist.timestamp || 0))) {
+                                                    allWeights.set(w.date, w);
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            } catch(e) {}
+                        });
+
+                        if (allWeights.size > 0) {
+                            const sorted = Array.from(allWeights.values()).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                            const str = JSON.stringify(sorted);
+                            localStorage.setItem('weightLog_moglie', str);
+                            localStorage.setItem('weightLog_1', str);
+                        }
+
+                        let maxWater = 0;
+                        mariaKeys.forEach(pk => {
+                            const w = parseInt(localStorage.getItem('waterCount_' + pk) || '0', 10);
+                            if (w > maxWater) maxWater = w;
+                        });
+                        if (maxWater > 0) {
+                            localStorage.setItem('waterCount_moglie', String(maxWater));
+                            localStorage.setItem('waterCount_1', String(maxWater));
+                        }
+
+                        const pat = localStorage.getItem('pathology_1') || localStorage.getItem('pathology_moglie');
+                        if (pat) {
+                            localStorage.setItem('pathology_moglie', pat);
+                            localStorage.setItem('pathology_1', pat);
+                        }
+
+                        const stats = localStorage.getItem('profileStats_moglie') || localStorage.getItem('profileStats_1');
+                        if (stats) {
+                            localStorage.setItem('profileStats_moglie', stats);
+                            localStorage.setItem('profileStats_1', stats);
+                        }
+
+                        localStorage.setItem('profileName_moglie', 'Maria Carmela');
+                        localStorage.setItem('profileName_1', 'Maria Carmela');
+                    } catch(err) {
+                        console.warn('Consolidamento Maria Carmela:', err);
+                    }
+                }
+                window.consolidaProfiliSaluteLocale = consolidaProfiliSaluteLocale;
+                consolidaProfiliSaluteLocale();
 
                 // Funzione centralizzata per calcolare i profili visibili autorizzati ed eliminare duplicati
                 function getVisibleHealthProfiles() {
@@ -2352,7 +2414,7 @@
         </main>
     </div>
 
-    <script src="script.js?v=3.1"></script>
+    <script src="script.js?v=3.2"></script>
     <div id="toast-notification"
         style="display:none; position:fixed; bottom:30px; right:30px; background:#43a047; color:white; padding:15px 25px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:9999; font-weight:bold; align-items:center; gap:10px; transition: opacity 0.3s ease-in-out;">
         <span id="toast-icon">✨</span>
@@ -2422,8 +2484,18 @@
 
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=25')
-                .then(() => console.log('Service Worker Registered'));
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                }
+            });
+            navigator.serviceWorker.register('./sw.js?v=26')
+                .then(reg => {
+                    console.log('Service Worker Registered v26');
+                    reg.update();
+                });
         }
     </script>
 
@@ -4522,7 +4594,7 @@
 
 
 
-    <script src="suite_bridge.js?v=3.1"></script>
+    <script src="suite_bridge.js?v=3.2"></script>
 
 
 

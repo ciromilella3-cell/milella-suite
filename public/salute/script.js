@@ -239,11 +239,24 @@ function logWeight(profile, newWeight) {
     log.sort((a, b) => a.timestamp - b.timestamp);
     localStorage.setItem(key, JSON.stringify(log));
 
+    const isMaria = (profile === 'moglie' || profile === '1' || (typeof getProfileDisplayName === 'function' && getProfileDisplayName(profile).toLowerCase().includes('maria')));
+    if (isMaria) {
+        localStorage.setItem('weightLog_moglie', JSON.stringify(log));
+        localStorage.setItem('weightLog_1', JSON.stringify(log));
+    }
+
     updateProgressUI(profile, startWeight, newWeight, goalWeight);
     calculateStats(profile, newWeight, log);
     drawChart(profile, log, startWeight);
     updateBMI(profile, newWeight);
-    if (typeof window.syncSaluteToCloud === "function") { window.syncSaluteToCloud({ [key]: JSON.stringify(log) }); }
+    if (typeof window.syncSaluteToCloud === "function") {
+        const payload = { [key]: JSON.stringify(log) };
+        if (isMaria) {
+            payload['weightLog_moglie'] = JSON.stringify(log);
+            payload['weightLog_1'] = JSON.stringify(log);
+        }
+        window.syncSaluteToCloud(payload);
+    }
 }
 
 function loadProgress(profile) {
@@ -3860,6 +3873,12 @@ window.saveStoricoModal = function() {
     // Ordina lo storico per data
     log.sort((a, b) => a.timestamp - b.timestamp);
     localStorage.setItem(key, JSON.stringify(log));
+
+    const isMaria = (profile === 'moglie' || profile === '1' || (typeof getProfileDisplayName === 'function' && getProfileDisplayName(profile).toLowerCase().includes('maria')));
+    if (isMaria) {
+        localStorage.setItem('weightLog_moglie', JSON.stringify(log));
+        localStorage.setItem('weightLog_1', JSON.stringify(log));
+    }
     
     document.getElementById('storico-modal').style.display = 'none';
     
@@ -3871,7 +3890,14 @@ window.saveStoricoModal = function() {
     
     // Ricarica i progressi per aggiornare grafico e statistiche
     loadProgress(profile);
-    /* saveStoricoModalSync */ if (typeof window.syncSaluteToCloud === "function") { window.syncSaluteToCloud({ [key]: JSON.stringify(log) }); }
+    if (typeof window.syncSaluteToCloud === "function") {
+        const payload = { [key]: JSON.stringify(log) };
+        if (isMaria) {
+            payload['weightLog_moglie'] = JSON.stringify(log);
+            payload['weightLog_1'] = JSON.stringify(log);
+        }
+        window.syncSaluteToCloud(payload);
+    }
 };
 
 
@@ -8094,12 +8120,17 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
                     validProfiles.add('moglie');
                     ['esempiocompleto', 'luigiscappa', 'a', 'salvatoresalva'].forEach(sp => validProfiles.delete(sp));
                     
-                    // Rimuovi da localStorage eventuali profili che sono stati eliminati dal Cloud
+                    // Consolida qualsiasi pesata prima di pulizie
+                    if (typeof window.consolidaProfiliSaluteLocale === 'function') {
+                        window.consolidaProfiliSaluteLocale();
+                    }
+
+                    // Rimuovi da localStorage eventuali profili estranei (senza toccare gli alias di Maria Carmela)
                     for (let i = 0; i < localStorage.length; i++) {
                         const lk = localStorage.key(i);
                         if (lk && lk.startsWith('profileName_')) {
                             const pid = lk.replace('profileName_', '');
-                            if (pid && !validProfiles.has(pid)) {
+                            if (pid && !validProfiles.has(pid) && pid !== '1' && !pid.includes('maria') && pid !== 'moglie') {
                                 localStorage.removeItem(lk);
                                 localStorage.removeItem('profileStats_' + pid);
                                 localStorage.removeItem('weightLog_' + pid);
@@ -8123,6 +8154,9 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
 
         localStorage.setItem('profileName_marito', 'Ciro Milella');
         localStorage.setItem('profileName_moglie', 'Maria Carmela');
+        if (typeof window.consolidaProfiliSaluteLocale === 'function') {
+            window.consolidaProfiliSaluteLocale();
+        }
         
         if (hasChanges || forceRefresh) {
             console.log('☁️ Progetto Salute: Dati sincronizzati dal Cloud!');
