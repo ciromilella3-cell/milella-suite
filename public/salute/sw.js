@@ -1,4 +1,4 @@
-const SALUTE_CACHE = 'salute-store-v26';
+const SALUTE_CACHE = 'salute-store-v27';
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(

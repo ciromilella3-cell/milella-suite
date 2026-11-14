@@ -25,10 +25,10 @@
                 }
             }
         }
-    } catch(e) {}
+    } catch (e) { }
 })();
 // ---- BEVERAGES (Water & Coffee) CON CALCOLATORE SU MISURA ----
-window.getPersonalizedWaterTarget = function(profile) {
+window.getPersonalizedWaterTarget = function (profile) {
     let weight = 75;
     let weightInput = document.getElementById('weight-' + profile);
     let startEl = document.getElementById('start_' + profile);
@@ -37,7 +37,7 @@ window.getPersonalizedWaterTarget = function(profile) {
     } else if (startEl && !isNaN(parseFloat(startEl.innerText)) && parseFloat(startEl.innerText) > 0) {
         weight = parseFloat(startEl.innerText);
     }
-    
+
     // Formula idrica medica raccomandata: 35ml per kg di peso corporeo
     let targetMl = Math.round(weight * 35);
     let targetGlasses = Math.max(6, Math.min(16, Math.round(targetMl / 250)));
@@ -51,13 +51,13 @@ window.getPersonalizedWaterTarget = function(profile) {
 
 function initBeverage(profile, type, max) {
     const container = document.getElementById(type + '-' + profile);
-    if(!container) return;
-    
+    if (!container) return;
+
     let totalMax = max || 8;
     if (type === 'water') {
         let pWater = getPersonalizedWaterTarget(profile);
         totalMax = pWater.glasses;
-        
+
         // Aggiorna target badge
         let targetEl = document.getElementById('water_target_' + profile);
         if (targetEl) {
@@ -66,14 +66,14 @@ function initBeverage(profile, type, max) {
     } else if (type === 'coffee') {
         totalMax = 4;
     }
-    
+
     const key = type + 'Count_' + profile;
     let count = parseInt(localStorage.getItem(key)) || 0;
     if (count > totalMax) count = totalMax;
-    
+
     container.innerHTML = '';
     const icon = type === 'water' ? '🥛' : '☕';
-    
+
     for (let i = 0; i < totalMax; i++) {
         const glass = document.createElement('span');
         glass.innerHTML = icon;
@@ -81,7 +81,7 @@ function initBeverage(profile, type, max) {
         glass.onclick = () => toggleBeverage(profile, type, i, totalMax);
         container.appendChild(glass);
     }
-    
+
     // Aggiorna stato testuale
     if (type === 'water') {
         let statusEl = document.getElementById('water_status_' + profile);
@@ -101,48 +101,48 @@ function initBeverage(profile, type, max) {
 function toggleBeverage(profile, type, index, max) {
     const key = type + 'Count_' + profile;
     let count = parseInt(localStorage.getItem(key)) || 0;
-    
+
     if (index === count - 1) {
         count--;
     } else {
         count = index + 1;
     }
-    
+
     if (count < 0) count = 0;
     if (count > max) count = max;
     localStorage.setItem(key, count);
     initBeverage(profile, type, max);
 }
 
-window.updateBeverage = function(profile, type, delta) {
+window.updateBeverage = function (profile, type, delta) {
     let max = 8;
     if (type === 'water') {
         max = getPersonalizedWaterTarget(profile).glasses;
     } else if (type === 'coffee') {
         max = 4;
     }
-    
+
     const key = type + 'Count_' + profile;
     let count = parseInt(localStorage.getItem(key)) || 0;
     count += delta;
     if (count < 0) count = 0;
     if (count > max) count = max;
-    
+
     localStorage.setItem(key, count);
     initBeverage(profile, type, max);
-    
+
     if (type === 'water' && count === max) {
         if (typeof showToast === 'function') showToast("🎉 Fantastico! Hai raggiunto il tuo fabbisogno d'acqua ideale di oggi!");
     }
 };
 
-function resetWater(profile) { 
-    localStorage.setItem('waterCount_' + profile, 0); 
-    initBeverage(profile, 'water'); 
+function resetWater(profile) {
+    localStorage.setItem('waterCount_' + profile, 0);
+    initBeverage(profile, 'water');
 }
-function resetCoffee(profile) { 
-    localStorage.setItem('coffeeCount_' + profile, 0); 
-    initBeverage(profile, 'coffee', 4); 
+function resetCoffee(profile) {
+    localStorage.setItem('coffeeCount_' + profile, 0);
+    initBeverage(profile, 'coffee', 4);
 }
 
 // ---- MOOD TRACKER ----
@@ -159,7 +159,7 @@ function setMood(profile, moodValue) {
 function loadMood(profile) {
     const today = new Date().toISOString().split('T')[0];
     const log = JSON.parse(localStorage.getItem(`moodLog_${profile}`)) || {};
-    if(log[today]) {
+    if (log[today]) {
         document.getElementById(`current-mood-${profile}`).innerText = `Salvato: ${log[today]}`;
         document.getElementById(`clear-mood-${profile}`).style.display = 'inline';
     }
@@ -179,33 +179,33 @@ function clearMood(profile) {
 function triggerScale(profile) {
     const input = document.getElementById('weight-' + profile);
     const newWeight = parseFloat(input.value);
-    
+
     if (isNaN(newWeight) || newWeight <= 0) return showCustomAlert('Inserisci un peso valido!');
 
     const display = document.getElementById('scale-screen-' + profile);
-    
-    const duration = 1500; 
-    const interval = 50; 
+
+    const duration = 1500;
+    const interval = 50;
     const steps = duration / interval;
     let step = 0;
-    
+
     const timer = setInterval(() => {
         step++;
-        let randomNum = (Math.random() * 20 + (newWeight - 10)).toFixed(1); 
+        let randomNum = (Math.random() * 20 + (newWeight - 10)).toFixed(1);
         display.innerHTML = randomNum + '<span class="scale-unit">kg</span>';
-        
+
         if (step >= steps) {
             clearInterval(timer);
             display.innerHTML = newWeight.toFixed(1) + '<span class="scale-unit">kg</span>';
-            
+
             display.style.textShadow = '0 0 40px #ffffff, 0 0 20px #ffffff';
             display.style.color = '#ffffff';
-            
-            setTimeout(() => { 
-                display.style.textShadow = '0 0 12px rgba(41, 182, 246, 0.9)'; 
+
+            setTimeout(() => {
+                display.style.textShadow = '0 0 12px rgba(41, 182, 246, 0.9)';
                 display.style.color = '#4fc3f7';
             }, 300);
-            
+
             logWeight(profile, newWeight);
         }
     }, interval);
@@ -219,10 +219,10 @@ function logWeight(profile, newWeight) {
     const key = `weightLog_${profile}`;
     let log = JSON.parse(localStorage.getItem(key)) || [];
     const today = new Date().toISOString().split('T')[0];
-    
+
     // Check per coriandoli
-    let lastWeight = log.length > 0 ? log[log.length-1].weight : startWeight;
-    if(newWeight < lastWeight) {
+    let lastWeight = log.length > 0 ? log[log.length - 1].weight : startWeight;
+    if (newWeight < lastWeight) {
         let lostKg = (lastWeight - newWeight).toFixed(1);
         fireConfetti();
         if (newWeight <= goalWeight) {
@@ -235,7 +235,7 @@ function logWeight(profile, newWeight) {
     const existingIndex = log.findIndex(entry => entry.date === today);
     if (existingIndex !== -1) log[existingIndex].weight = newWeight;
     else log.push({ date: today, weight: newWeight, timestamp: new Date().getTime() });
-    
+
     log.sort((a, b) => a.timestamp - b.timestamp);
     localStorage.setItem(key, JSON.stringify(log));
 
@@ -266,18 +266,31 @@ function loadProgress(profile) {
 
     const key = `weightLog_${profile}`;
     let log = JSON.parse(localStorage.getItem(key)) || [];
-    
+
     let currentWeight = startWeight;
+    let lastDate = '';
     if (log.length > 0) {
         currentWeight = log[log.length - 1].weight;
+        lastDate = log[log.length - 1].date;
         document.getElementById(`weight-${profile}`).value = currentWeight;
     }
-    
+
     const display = document.getElementById(`scale-screen-${profile}`);
     if (display) {
         display.innerHTML = currentWeight.toFixed(1) + '<span class="scale-unit">kg</span>';
     }
-    
+
+    const dateEl = document.getElementById(`scale-date-${profile}`);
+    if (dateEl) {
+        if (lastDate) {
+            const parts = lastDate.split('-');
+            const formatted = (parts.length === 3) ? `${parts[2]}/${parts[1]}/${parts[0]}` : lastDate;
+            dateEl.innerHTML = `📅 Rilevato il: <b style="color:#f8fafc;">${formatted}</b>`;
+        } else {
+            dateEl.innerHTML = '';
+        }
+    }
+
     updateProgressUI(profile, startWeight, currentWeight, goalWeight);
     calculateStats(profile, currentWeight, log);
     drawChart(profile, log, startWeight);
@@ -304,7 +317,7 @@ function updateBMI(prefix, weight) {
     let heightInMeters = height / 100;
     let bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
     let badge = document.getElementById(`bmi_${prefix}`);
-    if(!badge) return;
+    if (!badge) return;
     let text, color;
     if (bmi < 18.5) { text = "Sottopeso"; color = "#2196f3"; }
     else if (bmi < 25) { text = "Normopeso 😊"; color = "#4caf50"; }
@@ -320,10 +333,10 @@ function updateProgressUI(profile, startWeight, currentWeight, goalWeight) {
     let totalToLose = startWeight - goalWeight;
     let lost = startWeight - currentWeight;
     let percentage = (lost / totalToLose) * 100;
-    
+
     if (percentage < 0) percentage = 0;
     if (percentage > 100) percentage = 100;
-    
+
     bar.style.width = `${percentage}%`;
     bar.innerHTML = `${Math.round(percentage)}%`;
 
@@ -363,7 +376,7 @@ function calculateStats(profile, currentWeight, log) {
 function getWeightNearTime(log, targetTime) {
     let bestMatch = null, minDiff = Infinity;
     for (let entry of log) {
-        if (entry.timestamp <= targetTime + (24*60*60*1000)) {
+        if (entry.timestamp <= targetTime + (24 * 60 * 60 * 1000)) {
             let diff = Math.abs(targetTime - entry.timestamp);
             if (diff < minDiff) { minDiff = diff; bestMatch = entry.weight; }
         }
@@ -376,13 +389,13 @@ function getWeightNearTime(log, targetTime) {
 let charts = {};
 function drawChart(profile, log, startWeight) {
     const ctx = document.getElementById(`chart-${profile}`);
-    if(!ctx) return;
-    
+    if (!ctx) return;
+
     // Preparo i dati: se vuoto metto solo il peso di partenza
     let labels = [];
     let data = [];
-    
-    if(log.length === 0) {
+
+    if (log.length === 0) {
         labels = ["Inizio"];
         data = [startWeight];
     } else {
@@ -394,15 +407,15 @@ function drawChart(profile, log, startWeight) {
         });
         data = recentLog.map(e => e.weight);
     }
-    
+
     const chartColor = profile === 'marito' ? '#1976d2' : '#9c27b0';
-    
+
     if (typeof Chart === 'undefined') return;
 
-    if(charts[profile]) {
+    if (charts[profile]) {
         charts[profile].destroy();
     }
-    
+
     charts[profile] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -427,9 +440,21 @@ function drawChart(profile, log, startWeight) {
                 legend: { display: false }
             },
             scales: {
+                x: {
+                    ticks: {
+                        color: '#94a3b8',
+                        font: { weight: 'bold', size: 10 },
+                        autoSkip: false,
+                        maxRotation: 45,
+                        minRotation: 30
+                    },
+                    grid: { color: 'rgba(255,255,255,0.06)' }
+                },
                 y: {
                     min: Math.min(...data) - 2,
-                    max: Math.max(...data) + 2
+                    max: Math.max(...data) + 2,
+                    ticks: { color: '#94a3b8' },
+                    grid: { color: 'rgba(255,255,255,0.06)' }
                 }
             }
         }
@@ -465,23 +490,23 @@ function fireConfetti() {
 
 // ---- SMART SHOPPING LIST ----
 // ---- CHICCA 3: ESTRAI SPESA DAL MENU' SETTIMANALE ----
-window.generateShoppingListFromMenu = function() {
+window.generateShoppingListFromMenu = function () {
     let profileId = (typeof activeProfile !== 'undefined') ? activeProfile : 'marito';
     let section = document.getElementById('section-' + profileId);
     let table = section ? section.querySelector('.weekly-table') : document.querySelector('.weekly-table');
-    
-    if(!table) {
-        if(typeof showCustomAlert === 'function') showCustomAlert("Nessun menù settimanale trovato da cui estrarre la spesa!");
+
+    if (!table) {
+        if (typeof showCustomAlert === 'function') showCustomAlert("Nessun menù settimanale trovato da cui estrarre la spesa!");
         return;
     }
-    
+
     // Raccogli tutto il testo dei pasti settimanali
     let cells = table.querySelectorAll('tbody td:not(.day-cell):not(.kcal-cell)');
     let fullText = "";
     cells.forEach(c => fullText += " " + c.innerText);
-    
+
     let fullLower = fullText.toLowerCase();
-    
+
     // Dizionario intelligente di ingredienti raggruppati
     const ingredientDb = {
         carne_pesce: [
@@ -516,12 +541,12 @@ window.generateShoppingListFromMenu = function() {
             { name: "Frutta secca (Mandorle/Noci)", keys: ["mandorle", "noci", "frutta secca"] }
         ]
     };
-    
+
     let listContainer = document.querySelector('.shopping-list');
-    if(!listContainer) return;
-    
+    if (!listContainer) return;
+
     let newHtml = "";
-    
+
     // Categoria Carne & Pesce
     let foundCarne = ingredientDb.carne_pesce.filter(item => item.keys.some(k => fullLower.includes(k)));
     if (foundCarne.length === 0) foundCarne = ingredientDb.carne_pesce.slice(0, 4);
@@ -532,7 +557,7 @@ window.generateShoppingListFromMenu = function() {
         newHtml += `<li><label><input type="checkbox"> <span>${it.name}</span></label></li>`;
     });
     newHtml += `</ul></div>`;
-    
+
     // Categoria Verdure & Frutta
     let foundVerdure = ingredientDb.verdure_frutta.filter(item => item.keys.some(k => fullLower.includes(k)));
     if (foundVerdure.length === 0) foundVerdure = ingredientDb.verdure_frutta.slice(0, 5);
@@ -543,7 +568,7 @@ window.generateShoppingListFromMenu = function() {
         newHtml += `<li><label><input type="checkbox"> <span>${it.name}</span></label></li>`;
     });
     newHtml += `</ul></div>`;
-    
+
     // Categoria Carboidrati & Altro
     let foundCarbo = ingredientDb.carboidrati_altro.filter(item => item.keys.some(k => fullLower.includes(k)));
     if (foundCarbo.length === 0) foundCarbo = ingredientDb.carboidrati_altro.slice(0, 5);
@@ -554,12 +579,12 @@ window.generateShoppingListFromMenu = function() {
         newHtml += `<li><label><input type="checkbox"> <span>${it.name}</span></label></li>`;
     });
     newHtml += `</ul></div>`;
-    
+
     listContainer.innerHTML = newHtml;
     localStorage.setItem('saved_smart_shopping', newHtml);
-    
+
     let pName = getProfileDisplayName(profileId);
-    if(typeof showToast === 'function') {
+    if (typeof showToast === 'function') {
         showToast("🪄 Lista della spesa estratta con successo dal menù di " + pName + "! 🛒");
     } else {
         alert("Lista della spesa estratta con successo dal menù di " + pName + "!");
@@ -576,17 +601,17 @@ const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
 function initWalk(profile) {
     const container = document.getElementById('walk-' + profile);
     if (!container) return;
-    let walks = JSON.parse(localStorage.getItem('walks_' + profile)) || [false,false,false,false,false,false,false];
+    let walks = JSON.parse(localStorage.getItem('walks_' + profile)) || [false, false, false, false, false, false, false];
     container.innerHTML = '';
-    for(let i=0; i<7; i++) {
+    for (let i = 0; i < 7; i++) {
         let div = document.createElement('div');
         div.className = 'day-check';
-        div.innerHTML = `<span>${daysOfWeek[i]}</span><input type="checkbox" ${walks[i]?'checked':''} onchange="toggleWalk('${profile}',${i}, this.checked)">`;
+        div.innerHTML = `<span>${daysOfWeek[i]}</span><input type="checkbox" ${walks[i] ? 'checked' : ''} onchange="toggleWalk('${profile}',${i}, this.checked)">`;
         container.appendChild(div);
     }
 }
 function toggleWalk(profile, index, isChecked) {
-    let walks = JSON.parse(localStorage.getItem('walks_' + profile)) || [false,false,false,false,false,false,false];
+    let walks = JSON.parse(localStorage.getItem('walks_' + profile)) || [false, false, false, false, false, false, false];
     walks[index] = isChecked;
     localStorage.setItem('walks_' + profile, JSON.stringify(walks));
 }
@@ -598,23 +623,23 @@ function exportDataTXT() {
         output += `--- ${name} ---\n`;
         let wLog = JSON.parse(localStorage.getItem(`weightLog_${profile}`)) || [];
         let mLog = JSON.parse(localStorage.getItem(`moodLog_${profile}`)) || {};
-        
-        if(wLog.length === 0 && Object.keys(mLog).length === 0) {
+
+        if (wLog.length === 0 && Object.keys(mLog).length === 0) {
             output += 'Nessun dato registrato.\n'; return;
         }
-        
+
         let allDates = new Set([...wLog.map(e => e.date), ...Object.keys(mLog)]);
         let datesArr = Array.from(allDates).sort();
-        
+
         datesArr.forEach(date => {
             let weightObj = wLog.find(e => e.date === date);
             let weightStr = weightObj ? `${weightObj.weight} kg` : '-- kg';
             let moodStr = mLog[date] ? mLog[date] : 'N/D';
-            
+
             // Format date to DD/MM/YYYY
             let parts = date.split('-');
             let itaDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : date;
-            
+
             output += `${itaDate} | Peso: ${weightStr} | Umore/Energia: ${moodStr}\n`;
         });
     }
@@ -849,7 +874,7 @@ function getProfilePathology(profId) {
         if (profId === 'marito') pat = localStorage.getItem('pathology_1') || localStorage.getItem('profilePathology_marito');
         else if (profId === 'moglie') pat = localStorage.getItem('pathology_0') || localStorage.getItem('profilePathology_moglie');
     }
-    
+
     // Se non ancora salvata esplicitamente, controlliamo l'anamnesi o le patologie cliniche collegate dalla Suite
     if (!pat) {
         try {
@@ -859,7 +884,7 @@ function getProfilePathology(profId) {
                 try {
                     let ana = JSON.parse(rawAna);
                     pStr = (ana.patologie || JSON.stringify(ana)).toLowerCase();
-                } catch(eJson) {
+                } catch (eJson) {
                     pStr = String(rawAna).toLowerCase();
                 }
             }
@@ -885,7 +910,7 @@ function getProfilePathology(profId) {
             else if (pStr.includes('tiroide') || pStr.includes('eutirox')) pat = 'tiroide';
             else if (pStr.includes('osteopor') || pStr.includes('osteoartrosi') || pStr.includes('arcoxia')) pat = 'osteoporosi';
             else if (pStr.includes('steatosi') || pStr.includes('fegato') || pStr.includes('hbv') || pStr.includes('entecavir')) pat = 'steatosi';
-        } catch(e) {}
+        } catch (e) { }
     }
 
     if (!pat) {
@@ -899,11 +924,11 @@ function getProfilePathology(profId) {
 function setProfilePathology(profId, patKey) {
     if (!profId) profId = window.activeProfile || 'marito';
     if (!pathologyDb[patKey]) patKey = 'nessuna';
-    
+
     localStorage.setItem('pathology_' + profId, patKey);
     if (profId === 'marito') localStorage.setItem('pathology_1', patKey);
     if (profId === 'moglie') localStorage.setItem('pathology_0', patKey);
-    
+
     // Sincronizza con Anamnesi se presente
     try {
         let ana = JSON.parse(localStorage.getItem('anamnesi_' + profId)) || {};
@@ -917,17 +942,17 @@ function setProfilePathology(profId, patKey) {
             }
         }
         localStorage.setItem('anamnesi_' + profId, JSON.stringify(ana));
-    } catch(e) {}
-    
+    } catch (e) { }
+
     // Aggiorna UI
     updatePathologyUI(profId);
-    
+
     // Notifica toast
     let pObj = pathologyDb[patKey];
     if (typeof showToast === 'function' && pObj) {
         showToast("🩺 Focus Clinico impostato su: " + pObj.name, "#0284c7");
     }
-    
+
     // Ri-analizza le tabelle con i nuovi parametri
     reanalyzeAllTables();
 }
@@ -936,7 +961,7 @@ function updatePathologyUI(profId) {
     if (!profId) profId = window.activeProfile || 'marito';
     let patKey = getProfilePathology(profId);
     let p = pathologyDb[patKey] || pathologyDb['nessuna'];
-    
+
     // 1. Aggiorna Badge in Testata Profilo
     let badge = document.getElementById('badge_goal_' + profId);
     if (badge) {
@@ -944,24 +969,24 @@ function updatePathologyUI(profId) {
         badge.style.background = p.badgeBg;
         badge.title = `Focus Clinico: ${p.name}. Clicca per cambiare patologia o obiettivo!`;
     }
-    
+
     // 2. Aggiorna Guida / Scheda Clinica nel Profilo
     let nameDisplay = document.getElementById('pathology_name_display_' + profId);
     if (nameDisplay) {
         nameDisplay.innerHTML = `${p.emoji} ${p.name}`;
     }
-    
+
     let ruleDisplay = document.getElementById('pathology_golden_rule_' + profId);
     if (ruleDisplay) {
         ruleDisplay.innerText = p.goldenRule;
     }
-    
+
     let promoteDisplay = document.getElementById('pathology_promote_tags_' + profId);
     if (promoteDisplay) {
         let goodTags = p.good.slice(0, 8).map(g => `<span style="background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:12px; margin:2px; display:inline-block; font-weight:600;">✓ ${g}</span>`).join(' ');
         promoteDisplay.innerHTML = goodTags;
     }
-    
+
     let avoidDisplay = document.getElementById('pathology_avoid_tags_' + profId);
     if (avoidDisplay) {
         let badTags = p.bad.slice(0, 8).map(b => `<span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; margin:2px; display:inline-block; font-weight:600;">✕ ${b}</span>`).join(' ');
@@ -973,7 +998,7 @@ function analyzePathology(text, pathologyId) {
     if (!pathologyId || !pathologyDb[pathologyId]) return null;
     let p = pathologyDb[pathologyId];
     let t = text.toLowerCase();
-    
+
     // Cerca cibi sconsigliati
     let badMatches = [];
     p.bad.forEach(k => {
@@ -985,7 +1010,7 @@ function analyzePathology(text, pathologyId) {
             }
         }
     });
-    
+
     // Cerca cibi raccomandati
     let goodMatches = [];
     p.good.forEach(k => {
@@ -993,7 +1018,7 @@ function analyzePathology(text, pathologyId) {
             goodMatches.push(k);
         }
     });
-    
+
     if (badMatches.length > 0 && goodMatches.length > 0) {
         return {
             status: 'mixed',
@@ -1001,7 +1026,7 @@ function analyzePathology(text, pathologyId) {
             msg: `⚠️ Attenzione [${p.name}]: contiene cibi sconsigliati (${badMatches.slice(0, 3).join(', ')}). 💚 Presente anche cibo protettivo (${goodMatches.slice(0, 2).join(', ')}).`
         };
     }
-    
+
     if (badMatches.length > 0) {
         return {
             status: 'bad',
@@ -1009,7 +1034,7 @@ function analyzePathology(text, pathologyId) {
             msg: `⚠️ Attenzione [${p.name}]: contiene cibi sconsigliati (${badMatches.slice(0, 3).join(', ')}). ${p.badExplain}`
         };
     }
-    
+
     if (goodMatches.length > 0) {
         return {
             status: 'good',
@@ -1017,7 +1042,7 @@ function analyzePathology(text, pathologyId) {
             msg: `💚 Ottimo per [${p.name}]: contiene cibi raccomandati (${goodMatches.slice(0, 3).join(', ')}). ${p.goodExplain}`
         };
     }
-    
+
     return null;
 }
 
@@ -1238,9 +1263,9 @@ function findBadFoodInText(text, pathologyKey) {
     if (!text || !pathologyKey) return null;
     let patObj = pathologyDb[pathologyKey];
     if (!patObj) return null;
-    
+
     let lowText = text.toLowerCase();
-    
+
     // 1. Cerca nel database dettagliato delle alternative
     let altCategory = foodAlternativesDb[pathologyKey];
     if (altCategory && altCategory.items) {
@@ -1259,7 +1284,7 @@ function findBadFoodInText(text, pathologyKey) {
             }
         }
     }
-    
+
     // 2. Se non c'è match specifico, cerca nelle parole 'bad' generali della patologia
     if (patObj.bad && patObj.bad.length > 0) {
         for (let b of patObj.bad) {
@@ -1270,14 +1295,14 @@ function findBadFoodInText(text, pathologyKey) {
                 let regex = new RegExp('(\\b\\w*' + escapeRegexString(b) + '\\w*\\b)', 'i');
                 let wordMatch = text.match(regex);
                 let matchedWord = wordMatch ? wordMatch[0] : b;
-                
+
                 // Crea alternative dai cibi 'good' della patologia
                 let fallbackAlts = (patObj.good || []).slice(0, 3).map(g => ({
                     label: g.charAt(0).toUpperCase() + g.slice(1),
                     replaceWith: g,
                     icon: "🥗"
                 }));
-                
+
                 return {
                     matchedWord: matchedWord,
                     pathologyKey: pathologyKey,
@@ -1289,7 +1314,7 @@ function findBadFoodInText(text, pathologyKey) {
             }
         }
     }
-    
+
     return null;
 }
 
@@ -1297,69 +1322,69 @@ function findBadFoodInText(text, pathologyKey) {
 function formatCellWithWarnings(cell, pathologyKey) {
     if (!cell || !cell.classList.contains('editable-cell')) return;
     if (document.activeElement === cell) return; // Se l'utente sta scrivendo, non toccare
-    
+
     let cleanText = getCleanCellText(cell);
     if (!cleanText || cleanText.length < 3) return;
-    
+
     let badInfo = findBadFoodInText(cleanText, pathologyKey);
     if (!badInfo) {
         cell.innerHTML = cleanText;
         return;
     }
-    
+
     let matchWord = badInfo.matchedWord;
     let regex = new RegExp('(' + escapeRegexString(matchWord) + ')', 'gi');
     let highlightedText = cleanText.replace(regex, '<span class="bad-food-term" title="Alimento sconsigliato per ' + badInfo.pathologyName + '. Clicca per correggere in 1 click!" onclick="openFoodCorrectorFromElement(this, event)">$1 <span class="bad-food-warn-icon" contenteditable="false">⚠️</span></span>');
-    
+
     let chipHtml = '<div contenteditable="false" class="quick-fix-container no-print-preview">' +
         '<button type="button" class="quick-fix-chip" onclick="openFoodCorrectorFromElement(this, event)" title="Clicca per visualizzare le alternative sane raccomandate">' +
         '<span>⚠️ Correggi \'' + matchWord + '\'</span> ' +
         '<span class="badge-click-fix">1-Click ⚡</span>' +
         '</button></div>';
-    
+
     cell.innerHTML = highlightedText + chipHtml;
 }
 
 // Apri modale del correttore al click su alimento o pulsante chip
-window.openFoodCorrectorFromElement = function(el, event) {
+window.openFoodCorrectorFromElement = function (el, event) {
     if (event) {
         event.stopPropagation();
         event.preventDefault();
     }
     let cell = el.closest('td.editable-cell');
     if (!cell) return;
-    
+
     let row = cell.closest('tr');
     let dayName = row ? (row.querySelector('.day-cell') ? row.querySelector('.day-cell').innerText : 'Giorno') : '';
     let colIndex = cell.cellIndex;
     let mealName = (colIndex === 1) ? "Pranzo" : (colIndex === 2) ? "Cena" : "Spuntini";
-    
+
     let currentProf = (typeof getProfileForElement === 'function') ? getProfileForElement(cell) : (window.activeProfile || 'marito');
     let profName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(currentProf) : currentProf;
     let pathologyKey = (typeof getProfilePathology === 'function') ? getProfilePathology(currentProf) : (localStorage.getItem('pathology_' + currentProf) || 'steatosi');
-    
+
     let cleanText = getCleanCellText(cell);
     let badInfo = findBadFoodInText(cleanText, pathologyKey);
     if (!badInfo) {
         if (typeof showToast === 'function') showToast("Nessun alimento a rischio rilevato in questo pasto.", "#16a34a");
         return;
     }
-    
+
     let modal = document.getElementById('food-corrector-modal');
     if (!modal) return;
-    
+
     document.getElementById('corrector-profile-name').innerText = profName;
     document.getElementById('corrector-meal-badge').innerText = dayName + ' (' + mealName + ')';
-    
+
     let pObj = pathologyDb[pathologyKey] || { name: 'Condizione Clinica', emoji: '🩺' };
     document.getElementById('corrector-pathology-name').innerHTML = pObj.emoji + ' ' + pObj.name;
-    
+
     document.getElementById('corrector-bad-word').innerHTML = '⚠️ "' + badInfo.matchedWord + '"';
     document.getElementById('corrector-explanation').innerText = badInfo.explain || pObj.badExplain;
-    
+
     let container = document.getElementById('corrector-options-container');
     container.innerHTML = '';
-    
+
     let alts = badInfo.alternatives || [];
     alts.forEach(alt => {
         let optBtn = document.createElement('div');
@@ -1374,15 +1399,15 @@ window.openFoodCorrectorFromElement = function(el, event) {
             '<button type="button" class="apply-fix-btn">' +
             '<span>⚡ Sostituisci in 1 Click</span>' +
             '</button>';
-        
+
         optBtn.onclick = () => {
             applyFoodCorrection(cell, badInfo, alt.replaceWith);
             modal.style.display = 'none';
         };
-        
+
         container.appendChild(optBtn);
     });
-    
+
     modal.style.display = 'flex';
 };
 
@@ -1391,20 +1416,20 @@ function applyFoodCorrection(cell, badInfo, replacement) {
     if (!cell) return;
     let cleanText = getCleanCellText(cell);
     let newText = cleanText;
-    
+
     if (badInfo.replaceRegex && badInfo.replaceRegex.test(cleanText)) {
         newText = cleanText.replace(badInfo.replaceRegex, replacement);
     } else {
         let regex = new RegExp(escapeRegexString(badInfo.matchedWord), 'i');
         newText = cleanText.replace(regex, replacement);
     }
-    
+
     if (cell.id) {
         localStorage.setItem(cell.id, newText);
     }
-    
+
     cell.innerHTML = newText;
-    
+
     let table = cell.closest('.weekly-table');
     let row = cell.closest('tr');
     let tables = Array.from(document.querySelectorAll('.weekly-table'));
@@ -1414,16 +1439,16 @@ function applyFoodCorrection(cell, badInfo, replacement) {
     if (tableIndex !== -1 && rowIndex !== -1 && typeof syncCell === 'function') {
         syncCell(tableIndex, rowIndex, cell.cellIndex, newText);
     }
-    
+
     let currentProf = (typeof getProfileForElement === 'function') ? getProfileForElement(cell) : (window.activeProfile || 'marito');
     let pathologyKey = (typeof getProfilePathology === 'function') ? getProfilePathology(currentProf) : 'steatosi';
     formatCellWithWarnings(cell, pathologyKey);
-    
+
     if (row) {
         const event = new Event('input', { bubbles: true });
         row.dispatchEvent(event);
     }
-    
+
     if (typeof showToast === 'function') {
         showToast("🎉 Perfetto! Ingrediente sostituito con successo. Ora il pasto è 100% protettivo 💚", "#16a34a");
     }
@@ -1435,7 +1460,7 @@ function refreshAllCellWarnings() {
     tables.forEach(table => {
         let currentProf = (typeof getProfileForElement === 'function') ? getProfileForElement(table) : (window.activeProfile || 'marito');
         let patKey = (typeof getProfilePathology === 'function') ? getProfilePathology(currentProf) : 'steatosi';
-        
+
         const cells = table.querySelectorAll('tbody td.editable-cell');
         cells.forEach(cell => {
             formatCellWithWarnings(cell, patKey);
@@ -1451,22 +1476,22 @@ function reanalyzeAllTables() {
         try {
             const event = new Event("input", { bubbles: true });
             row.dispatchEvent(event);
-        } catch(e) {}
+        } catch (e) { }
     });
 }
 
-window.openPathologySelectorModal = function(profId) {
+window.openPathologySelectorModal = function (profId) {
     if (!profId) profId = window.activeProfile || 'marito';
     window.currentPathologyModalProf = profId;
-    
+
     let modal = document.getElementById('pathology-selector-modal');
     if (!modal) return;
-    
+
     let profNameEl = document.getElementById('pathology_modal_prof_name');
     if (profNameEl) {
         profNameEl.innerText = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(profId) : profId;
     }
-    
+
     let currentPat = getProfilePathology(profId);
     let container = document.getElementById('pathology_grid_container');
     if (container) {
@@ -1474,7 +1499,7 @@ window.openPathologySelectorModal = function(profId) {
         Object.keys(pathologyDb).forEach(key => {
             let item = pathologyDb[key];
             let isCurrent = (key === currentPat);
-            
+
             let card = document.createElement('div');
             card.style.background = isCurrent ? '#f0fdf4' : '#ffffff';
             card.style.border = isCurrent ? '2.5px solid #16a34a' : '1.5px solid #e2e8f0';
@@ -1487,17 +1512,17 @@ window.openPathologySelectorModal = function(profId) {
             card.style.flexDirection = 'column';
             card.style.justifyContent = 'space-between';
             card.style.boxShadow = isCurrent ? '0 4px 12px rgba(22, 163, 74, 0.15)' : '0 2px 5px rgba(0,0,0,0.03)';
-            
+
             card.onmouseover = () => { card.style.transform = 'translateY(-3px)'; card.style.boxShadow = '0 6px 16px rgba(0,0,0,0.1)'; };
             card.onmouseout = () => { card.style.transform = 'translateY(0)'; card.style.boxShadow = isCurrent ? '0 4px 12px rgba(22, 163, 74, 0.15)' : '0 2px 5px rgba(0,0,0,0.03)'; };
-            
+
             card.onclick = () => {
                 setProfilePathology(profId, key);
                 modal.style.display = 'none';
             };
-            
+
             let activeBadge = isCurrent ? `<span style="background:#16a34a; color:white; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:10px; margin-left:auto;">ATTIVO ✓</span>` : '';
-            
+
             card.innerHTML = `
                 <div>
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
@@ -1516,15 +1541,15 @@ window.openPathologySelectorModal = function(profId) {
                     💡 ${item.goldenRule.length > 80 ? item.goldenRule.slice(0, 80) + '...' : item.goldenRule}
                 </div>
             `;
-            
+
             container.appendChild(card);
         });
     }
-    
+
     modal.style.display = 'flex';
 };
 
-window.populatePathologySelectOptions = function(selectEl) {
+window.populatePathologySelectOptions = function (selectEl) {
     if (!selectEl) return;
     selectEl.innerHTML = '';
     Object.keys(pathologyDb).forEach(key => {
@@ -1537,9 +1562,9 @@ window.populatePathologySelectOptions = function(selectEl) {
 
 function calculateCaloriesFromText(text) {
     text = text.toLowerCase();
-    
+
     const db = [
-        { keys: ['pollo', 'tacchino', 'carne bianca'], kcal: 1.1, emoji: '🍗' }, 
+        { keys: ['pollo', 'tacchino', 'carne bianca'], kcal: 1.1, emoji: '🍗' },
         { keys: ['carne rossa', 'manzo', 'vitello', 'maiale', 'bistecca'], kcal: 1.5, emoji: '🥩' },
         { keys: ['salmone'], kcal: 2.1, emoji: '🍣' },
         { keys: ['sgombro'], kcal: 2.6, emoji: '🐟' },
@@ -1552,7 +1577,7 @@ function calculateCaloriesFromText(text) {
         { keys: ['yogurt'], kcal: 0.6, emoji: '🥣' },
         { keys: ['fiocchi di latte', 'ricotta', 'formaggio magro'], kcal: 0.9, emoji: '🧀' },
         { keys: ['formaggio', 'grana', 'parmigiano', 'mozzarella'], kcal: 3.5, emoji: '🧀' },
-        { keys: ['lenticchie', 'ceci', 'fagioli', 'piselli', 'legumi'], kcal: 1.0, emoji: '🧆' }, 
+        { keys: ['lenticchie', 'ceci', 'fagioli', 'piselli', 'legumi'], kcal: 1.0, emoji: '🧆' },
         { keys: ['mandorle', 'noci', 'arachidi', 'frutta secca'], kcal: 6.0, emoji: '🥜' },
         { keys: ['latte'], kcal: 0.5, emoji: '🥛' },
         { keys: ['zucchine', 'broccoli', 'spinaci', 'finocchi', 'insalata', 'rucola', 'verdura', 'carciofi', 'carote'], kcal: 0.2, emoji: '🥗' },
@@ -1572,7 +1597,7 @@ function calculateCaloriesFromText(text) {
         { keys: ['crackers', 'cracker'], kcal: 4.5, emoji: '🥪' },
         { keys: ['olive'], kcal: 1.5, emoji: '🫒' }
     ];
-    
+
     const units = {
         'uova': 70, 'uovo': 70,
         'cucch': 90, 'cucchiaio': 90, 'cucchiaino': 45,
@@ -1582,14 +1607,14 @@ function calculateCaloriesFromText(text) {
     };
 
     let total = 0;
-    
+
     text = text.replace(/ e /g, ',').replace(/\+/g, ',');
     let items = text.split(',');
-    
-    for(let item of items) {
+
+    for (let item of items) {
         let m = item.trim();
-        if(!m) continue;
-        
+        if (!m) continue;
+
         // --- MANUALE: Se l'utente scrive esplicitamente "XXX kcal" (es: "Pizza 800 kcal") ---
         let explicitKcal = m.match(/(\d+(?:[\.,]\d+)?)\s*kcal/);
         if (explicitKcal) {
@@ -1602,7 +1627,7 @@ function calculateCaloriesFromText(text) {
         let foundCustom = false;
         let strip = (s) => s.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
         let cleanM = strip(m);
-        
+
         if (cleanM.length > 0) {
             for (let cr of customRecipes) {
                 if (cr.isCustom && cleanM === strip(cr.text)) {
@@ -1613,25 +1638,25 @@ function calculateCaloriesFromText(text) {
             }
         }
         if (foundCustom) continue;
-        
+
         let numMatch = m.match(/(\d+(?:[\.,]\d+)?)/);
         let hasNum = numMatch !== null;
         let num = hasNum ? parseFloat(numMatch[1].replace(',', '.')) : 1;
-        
+
         if (hasNum && num === 0) continue;
-        
+
         let added = false;
-        for(let u in units) {
-            if(m.includes(u)) {
+        for (let u in units) {
+            if (m.includes(u)) {
                 total += num * units[u];
                 added = true;
                 break;
             }
         }
-        
-        if(!added) {
-            for(let dbItem of db) {
-                if(dbItem.keys.some(k => m.includes(k))) {
+
+        if (!added) {
+            for (let dbItem of db) {
+                if (dbItem.keys.some(k => m.includes(k))) {
                     let multiplier = num;
                     if (!hasNum) {
                         multiplier = 100; // default 100g se non specificato
@@ -1643,7 +1668,7 @@ function calculateCaloriesFromText(text) {
             }
         }
     }
-    
+
     return Math.round(total);
 }
 
@@ -1652,23 +1677,23 @@ let lastSyncBackup = null;
 
 function undoLastSync() {
     if (!lastSyncBackup) return;
-    
+
     let targetCell = document.getElementById(lastSyncBackup.targetId);
     if (targetCell) {
         // Ripristina il testo vecchio
         targetCell.innerHTML = lastSyncBackup.oldText;
         localStorage.setItem(lastSyncBackup.targetId, lastSyncBackup.oldText);
-        
+
         // Ricalcola Kcal
         const event = new Event('input', { bubbles: true });
         targetCell.parentNode.dispatchEvent(event);
     }
-    
+
     // Nasconde il tasto Annulla
     const undoBtn = document.getElementById('undoSyncBtn');
     if (undoBtn) undoBtn.style.display = 'none';
     lastSyncBackup = null;
-    
+
     // Disattiva in automatico la spunta per facilitare l'utente
     document.getElementById('syncMenus').checked = false;
     showCustomAlert("Sincronizzazione annullata e pasto ripristinato!\n\nHo anche spento l'interruttore 'Sincronizza Pranzi e Cene' in alto, così ora puoi modificare le due tabelle in modo indipendente.");
@@ -1677,7 +1702,7 @@ function undoLastSync() {
 function getTargetProfilesToSync(sourceProf) {
     let profiles = (typeof globalProfiles !== 'undefined') ? globalProfiles : (JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie']);
     let targets = [];
-    
+
     let sourceSetting = localStorage.getItem('syncTarget_' + sourceProf);
     if (!sourceSetting) {
         if (sourceProf === 'marito' && profiles.includes('moglie')) sourceSetting = 'moglie';
@@ -1727,7 +1752,7 @@ function syncCell(sourceTable, rowIdx, sourceCol, newText) {
         let targetId = `menuEdit_${targetTable}_r${rowIdx}_c${targetCol}`;
         let targetCell = document.getElementById(targetId);
         if (targetCell && targetCell.innerHTML !== newText) {
-            
+
             // Prima di sovrascrivere, salvo un backup per il tasto "Annulla"
             lastSyncBackup = {
                 targetId: targetId,
@@ -1737,11 +1762,11 @@ function syncCell(sourceTable, rowIdx, sourceCol, newText) {
             if (undoBtn) undoBtn.style.display = 'inline-block';
             const topUndo = document.getElementById('quickUndoTopBtn');
             if (topUndo) topUndo.style.display = 'inline-flex';
-            
+
             // Sovrascrive la cella
             targetCell.innerHTML = newText;
             localStorage.setItem(targetId, newText);
-            
+
             // Forza il ricalcolo delle Kcal della riga di destinazione
             const event = new Event('input');
             targetCell.parentNode.dispatchEvent(event);
@@ -1754,31 +1779,31 @@ let currentActiveCell = null;
 
 function showSuggestions(cell) {
     // Non mostrare per la colonna Kcal (l'ultima)
-    if(cell.cellIndex === cell.parentNode.cells.length - 1) return;
-    
+    if (cell.cellIndex === cell.parentNode.cells.length - 1) return;
+
     currentActiveCell = cell;
     const popup = document.getElementById('meal-suggestions');
     const rect = cell.getBoundingClientRect();
-    
+
     // Controlla se siamo nella colonna Colazione, Pranzo o Cena
     let headerText = cell.closest('table').querySelectorAll('th')[cell.cellIndex].innerText.toLowerCase();
-    
+
     // --- CALCOLO BUDGET CALORICO ---
     let row = cell.closest('tr');
     let cellsInRow = row.querySelectorAll('.editable-cell');
     let kcalSoFar = 0;
     cellsInRow.forEach(c => {
-        if(c !== cell) {
+        if (c !== cell) {
             kcalSoFar += calculateCaloriesFromText(c.innerText);
         }
     });
-    
+
     // Target medio giornaliero: ~1400 kcal
     let mealBudget = 1400 - kcalSoFar;
     if (mealBudget < 0) mealBudget = 0;
-    
+
     let suggs = [];
-    
+
     if (headerText.includes('colazione')) {
         suggs = [
             { name: "🥣 Yogurt & Frutta", text: "150g yogurt greco, 1 frutto, 10 mandorle" },
@@ -1797,23 +1822,23 @@ function showSuggestions(cell) {
             { name: "🍳 Uova & Pane Integrale", text: "2 uova, 70g pane integrale, spinaci, 1 cucch olio" },
             { name: "🥩 Tagliata & Patate", text: "150g carne magra, 150g patate al forno, 1 cucch olio" }
         ];
-        } else if (headerText.includes("spuntini")) { 
+    } else if (headerText.includes("spuntini")) {
         suggs = [
-            {name: "🍎 Frutto fresco", text: "1 mela o 1 arancia"}, 
-            {name: "🥜 Noci/Mandorle", text: "15g noci o mandorle"}, 
-            {name: "🥄 Yogurt", text: "100g yogurt magro"}, 
-            {name: "🧀 Parmigiano", text: "20g formaggio grana"}, 
-            {name: "🍫 Cioccolato", text: "15g cioccolato fondente 85%"},
-            {name: "🥚 Uovo sodo", text: "1 uovo sodo"},
-            {name: "🍘 Gallette", text: "2 gallette di riso/mais"},
-            {name: "🍞 Fetta + Marmellata", text: "1 fetta biscottata con marmellata"},
-            {name: "🥕 Verdure crude", text: "Finocchi, carote o sedano"},
-            {name: "🥣 Kefir", text: "150ml di kefir bianco"},
-            {name: "🍫 Barretta", text: "1 barretta proteica"},
-            {name: "🥜 Burro arachidi", text: "1 cucchiaino su 1 galletta"},
-            {name: "🫐 Frutti rossi", text: "150g di mirtilli/lamponi"},
-            {name: "🥪 Crackers", text: "1 pacchetto crackers integrali"},
-            {name: "🫒 Olive", text: "10 olive verdi o nere"}
+            { name: "🍎 Frutto fresco", text: "1 mela o 1 arancia" },
+            { name: "🥜 Noci/Mandorle", text: "15g noci o mandorle" },
+            { name: "🥄 Yogurt", text: "100g yogurt magro" },
+            { name: "🧀 Parmigiano", text: "20g formaggio grana" },
+            { name: "🍫 Cioccolato", text: "15g cioccolato fondente 85%" },
+            { name: "🥚 Uovo sodo", text: "1 uovo sodo" },
+            { name: "🍘 Gallette", text: "2 gallette di riso/mais" },
+            { name: "🍞 Fetta + Marmellata", text: "1 fetta biscottata con marmellata" },
+            { name: "🥕 Verdure crude", text: "Finocchi, carote o sedano" },
+            { name: "🥣 Kefir", text: "150ml di kefir bianco" },
+            { name: "🍫 Barretta", text: "1 barretta proteica" },
+            { name: "🥜 Burro arachidi", text: "1 cucchiaino su 1 galletta" },
+            { name: "🫐 Frutti rossi", text: "150g di mirtilli/lamponi" },
+            { name: "🥪 Crackers", text: "1 pacchetto crackers integrali" },
+            { name: "🫒 Olive", text: "10 olive verdi o nere" }
         ];
     } else {
         suggs = [
@@ -1826,7 +1851,7 @@ function showSuggestions(cell) {
             { name: "🍗 Pollo, Riso & Insalata", text: "150g petto di pollo, 50g riso basmati, insalata, 1 cucch olio" }
         ];
     }
-    
+
     // Calcola le kcal di ogni suggerimento e la differenza dal budget
     customRecipes = JSON.parse(localStorage.getItem('myCustomRecipes')) || [];
     customRecipes.forEach(cr => {
@@ -1840,7 +1865,7 @@ function showSuggestions(cell) {
         } else if (cr.category === 'pranzo_cena' && (headerText.includes('pranzo') || headerText.includes('cena'))) {
             isMatch = true;
         }
-        
+
         if (isMatch) {
             suggs.push({ name: `👩‍🍳 ${cr.title}`, text: cr.text });
         }
@@ -1849,17 +1874,17 @@ function showSuggestions(cell) {
         s.kcal = calculateCaloriesFromText(s.text);
         s.diff = Math.abs(s.kcal - mealBudget);
     });
-    
+
     // Ordina in base a chi si avvicina di più al budget
     suggs.sort((a, b) => a.diff - b.diff);
-    
+
     let html = `<div class="sugg-header">🎯 Kcal mancanti oggi: <br><b style="color:#2e7d32; font-size:1.1rem;">~${mealBudget} kcal</b></div>`;
-    
+
     // REGALO 1: Sostituto Pasto Intelligente in cima
     html += `<div class="sugg-btn" onclick="openMealSwapperForCurrentCell()" style="background: linear-gradient(135deg, #e0f2fe, #bae6fd); border: 1px solid #0284c7; color:#0369a1; text-align:center; font-weight:bold; font-size:0.92rem; padding:8px 10px; margin-bottom:10px; box-shadow:0 2px 6px rgba(2,132,199,0.15);">
                 🔄 Trova Alternativa / Sostituto Piatto 🪄
              </div>`;
-    
+
     suggs.forEach((s, idx) => {
         let badge = idx === 0 ? "🌟 " : "";
         let bestStyle = idx === 0 ? "border-color:#4caf50; background:#e8f5e9; font-weight:bold;" : "";
@@ -1868,56 +1893,56 @@ function showSuggestions(cell) {
                     <span style="flex:1;">${badge}${s.name}</span> <span style="color:#666; font-size:0.8rem; white-space:nowrap; margin-left:10px;">(~${s.kcal} kcal)</span>
                  </div>`;
     });
-    
+
     html += `<hr style="margin: 10px 0; border: 0; border-top: 1px dashed #ccc;">`;
-    
+
     // Controlli di sincronizzazione nel popup
     const isSyncOn = document.getElementById('syncMenus') && document.getElementById('syncMenus').checked;
     html += `<div style="font-size: 0.85rem; margin-bottom: 8px;">
                  <label style="cursor:pointer; display:flex; align-items:center; color:#1976d2; font-weight:bold;">
                      <input type="checkbox" onchange="toggleSyncFromPopup(this.checked)" ${isSyncOn ? 'checked' : ''} style="margin-right:6px; transform:scale(1.2);">
                      ${(() => {
-                         let activeP = (typeof activeProfile !== 'undefined') ? activeProfile : 'marito';
-                         let sTarget = localStorage.getItem('syncTarget_' + activeP);
-                         if (!sTarget) {
-                             if (activeP === 'marito') sTarget = 'moglie';
-                             else if (activeP === 'moglie') sTarget = 'marito';
-                             else sTarget = 'none';
-                         }
-                         if (sTarget === 'all') return '🔗 Sincronizza con Tutta la Famiglia 👨‍👩‍👧‍👦';
-                         if (sTarget !== 'none') {
-                             let name = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(sTarget) : sTarget;
-                             return `🔗 Sincronizza con ${name} 💍`;
-                         }
-                         return '🔗 Sincronizzazione (Menù Autonomo 🔓)';
-                     })()}
+            let activeP = (typeof activeProfile !== 'undefined') ? activeProfile : 'marito';
+            let sTarget = localStorage.getItem('syncTarget_' + activeP);
+            if (!sTarget) {
+                if (activeP === 'marito') sTarget = 'moglie';
+                else if (activeP === 'moglie') sTarget = 'marito';
+                else sTarget = 'none';
+            }
+            if (sTarget === 'all') return '🔗 Sincronizza con Tutta la Famiglia 👨‍👩‍👧‍👦';
+            if (sTarget !== 'none') {
+                let name = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(sTarget) : sTarget;
+                return `🔗 Sincronizza con ${name} 💍`;
+            }
+            return '🔗 Sincronizzazione (Menù Autonomo 🔓)';
+        })()}
                  </label>
              </div>`;
-             
+
     if (lastSyncBackup) {
         html += `<div class="sugg-btn" onclick="undoLastSync(); closeSuggestions();" style="background:#f57c00; border-color:#ef6c00; color:white; text-align:center; font-weight:bold;">↩️ Annulla Sincronizzazione</div>`;
     }
-    
+
     html += `<div class="sugg-btn" onclick="openMealSwapperForCurrentCell()" style="background:#e0f2fe; border-color:#0284c7; color:#0369a1; text-align:center; font-weight:bold;">🔄 Sostituisci Questo Pasto 🪄</div>
     <div class="sugg-btn" onclick="openRecipeBookForCell()" style="background:#e3f2fd; border-color:#2196f3; color:#1976d2; text-align:center; font-weight:bold;">📖 Sfoglia Ricettario Completo</div>`;
     html += `<div class="sugg-btn" onclick="closeAndFocus()" style="background:#ffebee; border-color:#ffcdd2; color:#c62828; text-align:center;">❌ Chiudi o Scrivi a mano</div>`;
-    
+
     popup.innerHTML = html;
     popup.style.display = 'block';
-    
+
     // Posizionamento centrale come modal
     popup.style.position = 'fixed';
     popup.style.top = '50%';
-    
+
     // Centra il popup orizzontalmente rispetto alla cella
     let leftPos = '50%';
-    
+
     // Evita che esca dai bordi dello schermo
-    if(leftPos < 10) leftPos = 10;
+    if (leftPos < 10) leftPos = 10;
     if (leftPos + 330 > window.innerWidth) {
         leftPos = window.innerWidth - 340;
     }
-    
+
     popup.style.left = leftPos;
     popup.style.transform = 'translate(-50%, -50%)';
     popup.style.zIndex = '9999';
@@ -1927,26 +1952,26 @@ function showSuggestions(cell) {
 }
 
 function applySuggestion(text) {
-    if(currentActiveCell) {
+    if (currentActiveCell) {
         let clean = getCleanCellText(text);
         currentActiveCell.innerHTML = clean;
         localStorage.setItem(currentActiveCell.id, clean);
-        
+
         // Estrai gli indici per la sincronizzazione
         let parts = currentActiveCell.id.split('_'); // es: menuEdit_0_r2_c1
-        if(parts.length === 4) {
+        if (parts.length === 4) {
             let tIdx = parseInt(parts[1]);
-            let rIdx = parseInt(parts[2].replace('r',''));
-            let cIdx = parseInt(parts[3].replace('c',''));
+            let rIdx = parseInt(parts[2].replace('r', ''));
+            let cIdx = parseInt(parts[3].replace('c', ''));
             syncCell(tIdx, rIdx, cIdx, clean);
         }
-        
+
         let prof = (typeof getProfileForElement === 'function') ? getProfileForElement(currentActiveCell) : (window.activeProfile || 'marito');
         let pat = (typeof getProfilePathology === 'function') ? getProfilePathology(prof) : 'steatosi';
         if (typeof formatCellWithWarnings === 'function') {
             formatCellWithWarnings(currentActiveCell, pat);
         }
-        
+
         // Forza il ricalcolo Kcal sulla riga
         const event = new Event('input', { bubbles: true });
         currentActiveCell.parentNode.dispatchEvent(event);
@@ -1955,7 +1980,7 @@ function applySuggestion(text) {
 }
 
 function resetMenus() {
-    showCustomConfirm("Sei sicuro di voler cancellare TUTTE le modifiche ai pasti e tornare al menù originale impostato da me? (Non perderai i dati del peso)", function() {
+    showCustomConfirm("Sei sicuro di voler cancellare TUTTE le modifiche ai pasti e tornare al menù originale impostato da me? (Non perderai i dati del peso)", function () {
         let keysToRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
             let key = localStorage.key(i);
@@ -1975,12 +2000,12 @@ function toggleSyncFromPopup(isChecked) {
 
 function closeSuggestions() {
     const popup = document.getElementById('meal-suggestions');
-    if(popup) popup.style.display = 'none';
+    if (popup) popup.style.display = 'none';
 }
 
 function closeAndFocus() {
     closeSuggestions();
-    if(currentActiveCell) {
+    if (currentActiveCell) {
         currentActiveCell.focus();
         if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
             let range = document.createRange();
@@ -1994,10 +2019,10 @@ function closeAndFocus() {
 }
 
 // Chiudi cliccando fuori
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const popup = document.getElementById('meal-suggestions');
-    if(popup && popup.style.display === 'block') {
-        if(!popup.contains(e.target) && !e.target.classList.contains('editable-cell')) {
+    if (popup && popup.style.display === 'block') {
+        if (!popup.contains(e.target) && !e.target.classList.contains('editable-cell')) {
             closeSuggestions();
         }
     }
@@ -2010,65 +2035,65 @@ function initEditableMenus() {
         const rows = table.querySelectorAll('tbody tr');
         rows.forEach((row, rowIndex) => {
             const cells = row.querySelectorAll('td');
-            
+
             // La colonna 0 è il Giorno, le altre sono editabili (inclusa la colonna Kcal)
-            for(let i=1; i<cells.length - 1; i++) {
+            for (let i = 1; i < cells.length - 1; i++) {
                 let cell = cells[i];
                 cell.setAttribute('contenteditable', 'true');
                 cell.classList.add('editable-cell');
                 cell.title = "Clicca per modificare questo pasto";
-                
+
                 let cellId = `menuEdit_${tableIndex}_r${rowIndex}_c${i}`;
                 cell.id = cellId;
-                
+
                 let savedText = localStorage.getItem(cellId);
-                if(savedText !== null) {
+                if (savedText !== null) {
                     cell.innerHTML = savedText;
                 }
-                
-                cell.addEventListener('input', function() {
+
+                cell.addEventListener('input', function () {
                     let clean = getCleanCellText(this.innerHTML);
                     localStorage.setItem(cellId, clean);
                     syncCell(tableIndex, rowIndex, i, clean);
                 });
-                
-                cell.addEventListener('focusin', function() {
+
+                cell.addEventListener('focusin', function () {
                     let clean = getCleanCellText(this.innerHTML);
                     this.innerText = clean;
                 });
-                
-                cell.addEventListener('focusout', function() {
+
+                cell.addEventListener('focusout', function () {
                     let clean = getCleanCellText(this.innerText);
                     localStorage.setItem(cellId, clean);
                     autoEmoji(this);
                     let cleanAfter = getCleanCellText(this.innerText);
                     localStorage.setItem(cellId, cleanAfter);
-                    
+
                     let prof = (typeof getProfileForElement === 'function') ? getProfileForElement(this) : (window.activeProfile || 'marito');
                     let pat = (typeof getProfilePathology === 'function') ? getProfilePathology(prof) : 'steatosi';
                     formatCellWithWarnings(this, pat);
-                    
+
                     const event = new Event('input', { bubbles: true });
                     this.parentNode.dispatchEvent(event);
                 });
-                
+
                 // Mostra popup al click
-                cell.addEventListener('dblclick', function() {
+                cell.addEventListener('dblclick', function () {
                     showSuggestions(this);
                 });
             }
-            
+
             // Aggiungo il ricalcolo automatico sulle righe
-            row.addEventListener('input', function() {
+            row.addEventListener('input', function () {
                 let rowCells = row.querySelectorAll('td.editable-cell');
                 let textToParse = "";
-                for(let k=0; k<rowCells.length; k++) {
+                for (let k = 0; k < rowCells.length; k++) {
                     textToParse += getCleanCellText(rowCells[k]) + " , ";
                 }
-                
+
                 let calculatedKcal = calculateCaloriesFromText(textToParse);
                 let kcalCell = row.querySelectorAll("td")[row.querySelectorAll("td").length - 1];
-                
+
 
                 let currentProf = (typeof getProfileForElement === 'function') ? getProfileForElement(row) : (window.activeProfile || 'marito');
                 let userPathology = (typeof getProfilePathology === 'function') ? getProfilePathology(currentProf) : (localStorage.getItem('pathology_' + currentProf) || 'nessuna');
@@ -2086,28 +2111,28 @@ function initEditableMenus() {
                 }
                 localStorage.setItem(kcalCell.id, kcalCell.innerHTML);
             });
-            
-            // Aggiungo le emoji in automatico on blur
-            
-        // --- CLEANUP BUG SPUNTINI ---
-        // Se la cella degli Spuntini (c3) contiene "~... kcal" o "0 kcal" per via del bug precedente, la svuotiamo.
-        let spuntiniCell = row.querySelectorAll("td")[3];
-        if (spuntiniCell && (spuntiniCell.innerText.includes("kcal") || spuntiniCell.innerText.trim() === "0 kcal" || spuntiniCell.innerText.trim() === "0")) {
-            spuntiniCell.innerHTML = "";
-            localStorage.setItem(spuntiniCell.id, "");
-        }
-        
-        // Forza ricalcolo all avvio per aggiornare i totali
-        setTimeout(() => {
-            let prof = (typeof getProfileForElement === 'function') ? getProfileForElement(row) : (window.activeProfile || 'marito');
-            let pat = (typeof getProfilePathology === 'function') ? getProfilePathology(prof) : 'steatosi';
-            row.querySelectorAll('td.editable-cell').forEach(c => formatCellWithWarnings(c, pat));
-            const event = new Event("input", { bubbles: true });
-            row.dispatchEvent(event);
-        }, 500);
 
-            row.addEventListener('focusout', function(e) {
-                if(e.target && e.target.classList.contains('editable-cell') && e.target.cellIndex < row.cells.length - 1) {
+            // Aggiungo le emoji in automatico on blur
+
+            // --- CLEANUP BUG SPUNTINI ---
+            // Se la cella degli Spuntini (c3) contiene "~... kcal" o "0 kcal" per via del bug precedente, la svuotiamo.
+            let spuntiniCell = row.querySelectorAll("td")[3];
+            if (spuntiniCell && (spuntiniCell.innerText.includes("kcal") || spuntiniCell.innerText.trim() === "0 kcal" || spuntiniCell.innerText.trim() === "0")) {
+                spuntiniCell.innerHTML = "";
+                localStorage.setItem(spuntiniCell.id, "");
+            }
+
+            // Forza ricalcolo all avvio per aggiornare i totali
+            setTimeout(() => {
+                let prof = (typeof getProfileForElement === 'function') ? getProfileForElement(row) : (window.activeProfile || 'marito');
+                let pat = (typeof getProfilePathology === 'function') ? getProfilePathology(prof) : 'steatosi';
+                row.querySelectorAll('td.editable-cell').forEach(c => formatCellWithWarnings(c, pat));
+                const event = new Event("input", { bubbles: true });
+                row.dispatchEvent(event);
+            }, 500);
+
+            row.addEventListener('focusout', function (e) {
+                if (e.target && e.target.classList.contains('editable-cell') && e.target.cellIndex < row.cells.length - 1) {
                     autoEmoji(e.target);
                     localStorage.setItem(e.target.id, e.target.innerHTML);
                 }
@@ -2118,7 +2143,7 @@ function initEditableMenus() {
 
 // ---- RESET COMPLETO ----
 function clearAllData() {
-    showCustomConfirm("Sei sicuro di voler cancellare TUTTE le modifiche ai pasti e tornare al menù originale impostato da me? (Non perderai i dati del peso)", function() {
+    showCustomConfirm("Sei sicuro di voler cancellare TUTTE le modifiche ai pasti e tornare al menù originale impostato da me? (Non perderai i dati del peso)", function () {
         let keysToRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
             let key = localStorage.key(i);
@@ -2144,31 +2169,31 @@ function printShoppingList() {
     setTimeout(() => { document.body.classList.remove('print-shopping-only'); }, 500);
 }
 
-function checkStreak(profile) { 
-    let waterCount = parseInt(localStorage.getItem('waterCount_' + profile)) || 0; 
-    let streakSpan = document.getElementById('streak_' + profile); 
+function checkStreak(profile) {
+    let waterCount = parseInt(localStorage.getItem('waterCount_' + profile)) || 0;
+    let streakSpan = document.getElementById('streak_' + profile);
     if (!streakSpan) return;
-    
+
     let target = (typeof getPersonalizedWaterTarget === 'function') ? getPersonalizedWaterTarget(profile).glasses : 8;
-    if (waterCount >= target && target > 0) { 
-        streakSpan.innerHTML = '<span style="background: #ffd54f; color: #212121; font-size: 0.82rem; font-weight: 800; padding: 4px 12px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.25); display: inline-flex; align-items: center; gap: 4px; border: 1px solid #ffca28; vertical-align: middle;">🏅 Obiettivo Acqua Raggiunto!</span>'; 
-    } else { 
-        streakSpan.innerHTML = ''; 
-    } 
+    if (waterCount >= target && target > 0) {
+        streakSpan.innerHTML = '<span style="background: #ffd54f; color: #212121; font-size: 0.82rem; font-weight: 800; padding: 4px 12px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.25); display: inline-flex; align-items: center; gap: 4px; border: 1px solid #ffca28; vertical-align: middle;">🏅 Obiettivo Acqua Raggiunto!</span>';
+    } else {
+        streakSpan.innerHTML = '';
+    }
 }
 setInterval(() => {
     let profilesToInit = (typeof globalProfiles !== 'undefined') ? globalProfiles : ['marito', 'moglie'];
     profilesToInit.forEach(profile => checkStreak(profile));
 }, 1000);
 
-function shareWhatsApp() { 
-    let list = document.querySelector('.shopping-list'); 
+function shareWhatsApp() {
+    let list = document.querySelector('.shopping-list');
     if (!list) {
         if (typeof showCustomAlert === 'function') showCustomAlert("Non c'è nessuna lista della spesa da inviare! Genera prima la lista dal menù settimanale.");
         else alert("Non c'è nessuna lista della spesa da inviare!");
         return;
     }
-    let items = list.querySelectorAll('li'); 
+    let items = list.querySelectorAll('li');
     if (items.length === 0) {
         if (typeof showCustomAlert === 'function') showCustomAlert("Il carrello è vuoto! Genera prima la lista dal menù settimanale.");
         else alert("Il carrello è vuoto!");
@@ -2180,19 +2205,19 @@ function shareWhatsApp() {
     text += "──────────────────────────\n\n";
 
     let hasItems = false;
-    items.forEach(item => { 
+    items.forEach(item => {
         let cb = item.querySelector('input');
-        let isDone = cb ? cb.checked : false; 
+        let isDone = cb ? cb.checked : false;
         let span = item.querySelector('span');
-        let itemName = span ? span.innerText.trim() : item.innerText.trim(); 
-        if (!isDone) { 
-            text += "◻️ " + itemName + "\n"; 
+        let itemName = span ? span.innerText.trim() : item.innerText.trim();
+        if (!isDone) {
+            text += "◻️ " + itemName + "\n";
             hasItems = true;
         } else {
             text += "✔️ ~" + itemName + "~\n";
             hasItems = true;
         }
-    }); 
+    });
     if (!hasItems) {
         if (typeof showCustomAlert === 'function') showCustomAlert("Tutti i prodotti risultano spuntati o la lista è vuota!");
         else alert("Tutti i prodotti risultano spuntati!");
@@ -2206,7 +2231,7 @@ function shareWhatsApp() {
         copyTextToClipboardUniversal(text);
     }
 
-    let url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(text); 
+    let url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(text);
     let opened = false;
     if (typeof window.require !== 'undefined') {
         try {
@@ -2215,12 +2240,12 @@ function shareWhatsApp() {
                 shell.openExternal(url);
                 opened = true;
             }
-        } catch(e) {
+        } catch (e) {
             console.warn("Shell openExternal error:", e);
         }
     }
     if (!opened) {
-        window.open(url, '_blank'); 
+        window.open(url, '_blank');
     }
 
     if (typeof showToast === 'function') {
@@ -2234,19 +2259,19 @@ function saveStats(profile) {
     let goalEl = document.getElementById('goal_' + profile);
     let kcalEl = document.getElementById('kcal_' + profile);
     let heightEl = document.getElementById('height_' + profile);
-    
+
     let saved = localStorage.getItem('profileStats_' + profile);
     let prevStats = saved ? JSON.parse(saved) : {};
-    
+
     let kcalVal = kcalEl ? kcalEl.innerText.trim() : '';
-    
+
     // Se le calorie sono vuote o '---', calcola automaticamente su misura
     if (!kcalVal || kcalVal === '---' || isNaN(parseInt(kcalVal))) {
         if (typeof window.autoCalculateKcalDeficit === 'function') {
             kcalVal = window.autoCalculateKcalDeficit(profile, false);
         }
     }
-    
+
     let stats = {
         dob: dobInput,
         start: startEl ? startEl.innerText.trim() : (prevStats.start || "---"),
@@ -2256,7 +2281,7 @@ function saveStats(profile) {
         gender: prevStats.gender || 'M'
     };
     localStorage.setItem('profileStats_' + profile, JSON.stringify(stats));
-    
+
     updateAgeDisplay(profile, dobInput);
     loadProgress(profile);
 }
@@ -2264,7 +2289,7 @@ function saveStats(profile) {
 function updateAgeDisplay(profile, dobString) {
     let etaSpan = document.getElementById('eta_' + profile);
     if (!etaSpan) return; if (!dobString) { etaSpan.innerText = '--'; return; }
-    
+
     let dob = new Date(dobString);
     let today = new Date();
     let age = today.getFullYear() - dob.getFullYear();
@@ -2278,7 +2303,7 @@ function updateAgeDisplay(profile, dobString) {
 function loadStats(profile) {
     let saved = localStorage.getItem('profileStats_' + profile);
     let stats = saved ? JSON.parse(saved) : {};
-    
+
     if (stats.dob && document.getElementById('dob_' + profile)) {
         document.getElementById('dob_' + profile).value = stats.dob;
         updateAgeDisplay(profile, stats.dob);
@@ -2286,7 +2311,7 @@ function loadStats(profile) {
     if (document.getElementById('start_' + profile)) document.getElementById('start_' + profile).innerText = (stats.start && stats.start !== '') ? stats.start : "---";
     if (document.getElementById('goal_' + profile)) document.getElementById('goal_' + profile).innerText = (stats.goal && stats.goal !== '') ? stats.goal : "---";
     if (document.getElementById('height_' + profile)) document.getElementById('height_' + profile).innerText = (stats.height && stats.height !== '' && stats.height !== '---') ? stats.height : "160";
-    
+
     let kcalEl = document.getElementById('kcal_' + profile);
     if (kcalEl) {
         if (stats.kcal && stats.kcal !== '---' && !isNaN(parseInt(stats.kcal)) && parseInt(stats.kcal) > 0) {
@@ -2310,17 +2335,17 @@ function printDiet(profile) {
     let profileId = typeof profile === 'string' ? profile : (profile === 0 ? 'marito' : 'moglie');
     let section = document.getElementById('section-' + profileId);
     let targetTable = section ? section.querySelector('.weekly-table') : document.querySelectorAll('.weekly-table')[profileId === 'marito' ? 0 : 1];
-    
+
     if (!targetTable) return;
-    
+
     let profileName = getProfileDisplayName(profileId);
-    
+
     // Recupera protocollo e orari salvati per la stampa
     let fastType = localStorage.getItem('fast_type_' + profileId) || '16';
     let fastStart = localStorage.getItem('fast_start_' + profileId) || '20:30';
     let fastEnd = localStorage.getItem('fast_end_' + profileId) || '12:30';
     let eatHours = 24 - (parseInt(fastType) || 16);
-    let fastingSubtitle = (fastType !== 'none') 
+    let fastingSubtitle = (fastType !== 'none')
         ? '⏳ Protocollo Digiuno: ' + fastType + ':' + eatHours + ' (' + fastStart + ' - ' + fastEnd + ')'
         : '🍽️ Dieta Libera (Senza vincoli di orario)';
 
@@ -2328,11 +2353,11 @@ function printDiet(profile) {
     let patKey = (typeof getProfilePathology === 'function') ? getProfilePathology(profileId) : 'nessuna';
     let pObj = (typeof pathologyDb !== 'undefined' && pathologyDb[patKey]) ? pathologyDb[patKey] : null;
     let pathologySubtitle = pObj ? ' • ' + pObj.emoji + ' ' + pObj.badgeText : '';
-    
+
     // Rimuovi vecchio iframe di stampa se presente
     let oldFrame = document.getElementById('diet-print-frame');
     if (oldFrame) oldFrame.remove();
-    
+
     // Crea un iframe off-screen con dimensioni reali A4
     let printIframe = document.createElement('iframe');
     printIframe.id = 'diet-print-frame';
@@ -2344,7 +2369,7 @@ function printDiet(profile) {
     printIframe.style.border = 'none';
     printIframe.style.zIndex = '-9999';
     document.body.appendChild(printIframe);
-    
+
     let doc = printIframe.contentWindow.document;
     doc.open();
     doc.write(`
@@ -2377,21 +2402,21 @@ function printDiet(profile) {
         </html>
     `);
     doc.close();
-    
+
     // Mantieni l'iframe vivo finché l'utente non ha finito di interagire con la stampante
-    printIframe.contentWindow.onafterprint = function() {
+    printIframe.contentWindow.onafterprint = function () {
         setTimeout(() => {
             if (document.body.contains(printIframe)) {
                 printIframe.remove();
             }
         }, 1500);
     };
-    
+
     setTimeout(() => {
         try {
             printIframe.contentWindow.focus();
             printIframe.contentWindow.print();
-        } catch(e) {
+        } catch (e) {
             console.error("Errore stampa iframe:", e);
             window.print();
         }
@@ -2399,22 +2424,22 @@ function printDiet(profile) {
 }
 
 function clearDiet(prof) {
-    showCustomConfirm("Sei sicuro di voler svuotare l'intera settimana per questa persona? (Il menù base e i tuoi appunti scompariranno)", function() {
+    showCustomConfirm("Sei sicuro di voler svuotare l'intera settimana per questa persona? (Il menù base e i tuoi appunti scompariranno)", function () {
         let section = document.getElementById('section-' + prof);
         let table = section ? section.querySelector('.weekly-table') : document.querySelectorAll('.weekly-table')[prof === 'marito' ? 0 : 1];
         if (!table) return;
-        
+
         let cells = table.querySelectorAll('td.editable-cell');
         cells.forEach(c => {
             c.innerText = '';
             localStorage.setItem(c.id, '');
         });
-        
+
         let rows = table.querySelectorAll('tbody tr');
         rows.forEach(row => {
             let rowCells = row.querySelectorAll('td.editable-cell');
             let kcalCell = row.querySelectorAll("td")[row.querySelectorAll("td").length - 1];
-            if(kcalCell) {
+            if (kcalCell) {
                 kcalCell.innerHTML = '0 kcal';
                 localStorage.setItem(kcalCell.id, '0 kcal');
             }
@@ -2459,21 +2484,21 @@ function autoEmoji(cell) {
     ];
     let items = text.split(',');
     let modified = false;
-    for(let i=0; i<items.length; i++) {
+    for (let i = 0; i < items.length; i++) {
         let m = items[i].trim().toLowerCase();
         let matchedEmoji = null;
-        for(let dbItem of db) {
-            if(dbItem.keys.some(k => m.includes(k))) {
+        for (let dbItem of db) {
+            if (dbItem.keys.some(k => m.includes(k))) {
                 matchedEmoji = dbItem.emoji;
                 break;
             }
         }
-        if(matchedEmoji && !items[i].includes(matchedEmoji)) {
+        if (matchedEmoji && !items[i].includes(matchedEmoji)) {
             items[i] = items[i].trim() + ' ' + matchedEmoji;
             modified = true;
         }
     }
-    if(modified) {
+    if (modified) {
         cell.innerText = items.join(', ');
     }
 }
@@ -2490,7 +2515,7 @@ const defaultRecipes = [
     { title: 'Pasta Integrale Tonno', text: '80g pasta int., 100g tonno, pomodorini, olio evo', kcal: 420, emoji: '🍝', img: 'pasta_tonno.jpg' },
     { title: 'Uova in Purgatorio', text: '2 uova, 150g pomodoro, 1 fetta pane int., olio evo', kcal: 320, emoji: '🍳', img: 'uova_purgatorio.jpg' },
     { title: 'Insalatona Feta e Noci', text: '50g feta, 20g noci, mista, pomodori, olio evo', kcal: 350, emoji: '🥗', img: 'insalatona_feta.jpg' }
-,
+    ,
     { title: "Salmone al Pistacchio", text: "200g salmone in crosta di pistacchi, zucchine, 1 fetta pane segale, 1 cucch. olio evo", kcal: 400, emoji: '🐟', img: "salmone_pistacchio.jpg" },
     { title: "Pollo Limone e Zenzero", text: "150g pollo al limone e zenzero, insalata mista, 70g riso basmati, 1.5 cucch. olio evo", kcal: 380, emoji: '🍗', img: "pollo_limone_zenzero.jpg" },
     { title: "Crema Zucchine e Ricotta", text: "70g pasta integrale, crema di zucchine e 100g ricotta, 1 cucch. olio evo", kcal: 350, emoji: '🍝', img: "crema_zucchine_ricotta.jpg" },
@@ -2512,13 +2537,13 @@ function openRecipeBook(fromCell = false) {
     if (!fromCell) window.targetRecipeCell = null;
     let list = document.getElementById('recipe-list');
     list.innerHTML = '';
-    
+
     let allRecipes = [...customRecipes, ...defaultRecipes];
-    
+
     allRecipes.forEach(r => {
         let card = document.createElement('div');
         card.style.cssText = 'border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.04); margin-bottom: 12px; gap: 15px;';
-        
+
         let safeTitle = encodeURIComponent(r.title);
         let safeText = encodeURIComponent(r.text);
 
@@ -2571,46 +2596,46 @@ function openRecipeBook(fromCell = false) {
 }
 
 function deleteCustomRecipe(title) {
-    showCustomConfirm('Vuoi eliminare questa ricetta personale?', function() {
-    customRecipes = customRecipes.filter(r => r.title !== title);
-    localStorage.setItem('myCustomRecipes', JSON.stringify(customRecipes));
-    openRecipeBook();
-});
+    showCustomConfirm('Vuoi eliminare questa ricetta personale?', function () {
+        customRecipes = customRecipes.filter(r => r.title !== title);
+        localStorage.setItem('myCustomRecipes', JSON.stringify(customRecipes));
+        openRecipeBook();
+    });
 }
 
 function openAddRecipeModal() {
     window.editingRecipeTitle = null;
     let modalTitle = document.querySelector('#add-recipe-modal h3');
     if (modalTitle) modalTitle.innerText = "➕ Crea la tua Ricetta";
-    
+
     document.getElementById('new-recipe-title').value = '';
     document.getElementById('new-recipe-ingredients').value = '';
     document.getElementById('new-recipe-kcal').value = '';
     document.getElementById('new-recipe-emoji').value = '';
     if (document.getElementById('new-recipe-img')) document.getElementById('new-recipe-img').value = '';
-    
+
     document.getElementById('add-recipe-modal').style.display = 'flex';
 }
 
 function editFromSearch(title) {
     customRecipes = JSON.parse(localStorage.getItem('myCustomRecipes')) || [];
     let recipe = customRecipes.find(r => r.title === title);
-    if(recipe) {
+    if (recipe) {
         document.getElementById('paste-recipe-title').value = recipe.title;
         document.getElementById('paste-recipe-ingredients').value = recipe.text;
         document.getElementById('paste-recipe-kcal').innerText = recipe.kcal;
-        
+
         editingRecipeTitle = title;
-        
+
         // Scroll down
-        document.getElementById('paste-recipe-title').scrollIntoView({behavior: "smooth"});
+        document.getElementById('paste-recipe-title').scrollIntoView({ behavior: "smooth" });
         document.getElementById('paste-recipe-ingredients').focus();
         showToast("Ricetta pronta in basso! Modificala e clicca Salva.");
     }
 }
 
 function deleteFromSearch(title) {
-    showCustomConfirm('Vuoi davvero eliminare questa ricetta dal tuo ricettario?', function() {
+    showCustomConfirm('Vuoi davvero eliminare questa ricetta dal tuo ricettario?', function () {
         customRecipes = (JSON.parse(localStorage.getItem('myCustomRecipes')) || []).filter(r => r.title !== title);
         localStorage.setItem('myCustomRecipes', JSON.stringify(customRecipes));
         showToast("Ricetta eliminata!");
@@ -2633,20 +2658,20 @@ function savePastedRecipe() {
     let title = document.getElementById('paste-recipe-title').value.trim();
     let text = document.getElementById('paste-recipe-ingredients').value.trim();
     let kcal = parseInt(document.getElementById('paste-recipe-kcal').innerText);
-    
-    if(!title || !text || kcal === 0) {
+
+    if (!title || !text || kcal === 0) {
         showCustomAlert("Inserisci un titolo, incolla gli ingredienti validi e assicurati che le calorie siano calcolate!");
         return;
     }
-    
+
     customRecipes = JSON.parse(localStorage.getItem('myCustomRecipes')) || [];
-    
+
     if (editingRecipeTitle) {
         // Remove old version if we are editing
         customRecipes = customRecipes.filter(r => r.title !== editingRecipeTitle);
         editingRecipeTitle = null;
     }
-    
+
     let newRecipe = {
         title: title,
         text: text,
@@ -2655,22 +2680,22 @@ function savePastedRecipe() {
         isCustom: true,
         category: 'all'
     };
-    
+
     customRecipes.unshift(newRecipe);
     localStorage.setItem('myCustomRecipes', JSON.stringify(customRecipes));
-    
+
     showToast("Ricetta salvata con successo nel tuo Ricettario Magico!");
-    
+
     // Refresh search results
     searchRecipe();
 }
 function updateSgarrometro() {
     let sgarriMarito = 0;
     let sgarriMoglie = 0;
-    
+
     // Lista delle parole chiave che attivano lo sgarro
     const junkWords = ['pasto libero', 'pizza', 'patatine', 'cioccolato', 'nutella', 'cornetto', 'biscotti', 'merendina', 'gelato'];
-    
+
     // Controlla tabella Marito
     const tables = document.querySelectorAll('.weekly-table');
     const tbodyMarito = tables[0] ? tables[0].querySelector('tbody') : null;
@@ -2682,7 +2707,7 @@ function updateSgarrometro() {
             }
         });
     }
-    
+
     // Controlla tabella Moglie
     const tbodyMoglie = tables[1] ? tables[1].querySelector('tbody') : null;
     if (tbodyMoglie) {
@@ -2693,14 +2718,14 @@ function updateSgarrometro() {
             }
         });
     }
-    
+
     // Aggiorna UI Marito
     const countMarito = document.getElementById('sgarro-count-marito');
     const msgMarito = document.getElementById('sgarro-msg-marito');
     const boxMarito = document.getElementById('sgarro-marito');
-    if(countMarito) {
+    if (countMarito) {
         countMarito.innerText = sgarriMarito;
-        if(sgarriMarito === 0) {
+        if (sgarriMarito === 0) {
             msgMarito.innerText = 'Perfetto! Settimana immacolata!';
             msgMarito.style.color = '#2e7d32';
             boxMarito.style.background = '#e8f5e9';
@@ -2717,14 +2742,14 @@ function updateSgarrometro() {
             boxMarito.style.borderColor = '#ffcdd2';
         }
     }
-    
+
     // Aggiorna UI Moglie
     const countMoglie = document.getElementById('sgarro-count-moglie');
     const msgMoglie = document.getElementById('sgarro-msg-moglie');
     const boxMoglie = document.getElementById('sgarro-moglie');
-    if(countMoglie) {
+    if (countMoglie) {
         countMoglie.innerText = sgarriMoglie;
-        if(sgarriMoglie === 0) {
+        if (sgarriMoglie === 0) {
             msgMoglie.innerText = 'Perfetta! Settimana immacolata!';
             msgMoglie.style.color = '#2e7d32';
             boxMoglie.style.background = '#e8f5e9';
@@ -2743,17 +2768,17 @@ function updateSgarrometro() {
     }
 }
 
-document.addEventListener('input', (e) => { if (e.target.classList.contains('editable-cell') || e.target.tagName === 'TR' || e.target.tagName === 'TD') { updateSgarrometro(); const bm = document.getElementById('sgarro-marito'); if(bm && bm.dataset.h === 'true') highlightSgarri(0, true); const bw = document.getElementById('sgarro-moglie'); if(bw && bw.dataset.h === 'true') highlightSgarri(1, true); } });
-document.addEventListener('DOMContentLoaded', () => { setTimeout(() => { updateSgarrometro(); const bm = document.getElementById('sgarro-marito'); if(bm) { bm.addEventListener('click', () => { let s = bm.dataset.h === 'true'; bm.dataset.h = !s; bm.style.outline = !s ? '3px solid red' : 'none'; highlightSgarri(0, !s); }); bm.style.cursor='pointer'; } const bw = document.getElementById('sgarro-moglie'); if(bw) { bw.addEventListener('click', () => { let s = bw.dataset.h === 'true'; bw.dataset.h = !s; bw.style.outline = !s ? '3px solid red' : 'none'; highlightSgarri(1, !s); }); bw.style.cursor='pointer'; } }, 1000); });
+document.addEventListener('input', (e) => { if (e.target.classList.contains('editable-cell') || e.target.tagName === 'TR' || e.target.tagName === 'TD') { updateSgarrometro(); const bm = document.getElementById('sgarro-marito'); if (bm && bm.dataset.h === 'true') highlightSgarri(0, true); const bw = document.getElementById('sgarro-moglie'); if (bw && bw.dataset.h === 'true') highlightSgarri(1, true); } });
+document.addEventListener('DOMContentLoaded', () => { setTimeout(() => { updateSgarrometro(); const bm = document.getElementById('sgarro-marito'); if (bm) { bm.addEventListener('click', () => { let s = bm.dataset.h === 'true'; bm.dataset.h = !s; bm.style.outline = !s ? '3px solid red' : 'none'; highlightSgarri(0, !s); }); bm.style.cursor = 'pointer'; } const bw = document.getElementById('sgarro-moglie'); if (bw) { bw.addEventListener('click', () => { let s = bw.dataset.h === 'true'; bw.dataset.h = !s; bw.style.outline = !s ? '3px solid red' : 'none'; highlightSgarri(1, !s); }); bw.style.cursor = 'pointer'; } }, 1000); });
 
 function highlightSgarri(idx, show) {
     const j = ['pasto libero', 'pizza', 'patatine', 'cioccolato', 'nutella', 'cornetto', 'biscotti', 'merendina', 'gelato'];
     const t = document.querySelectorAll('.weekly-table');
     const tb = t[idx] ? t[idx].querySelector('tbody') : null;
-    if(!tb) return;
+    if (!tb) return;
     tb.querySelectorAll('.editable-cell').forEach(c => {
-        if(j.some(w => c.textContent.toLowerCase().includes(w))) {
-            if(show) {
+        if (j.some(w => c.textContent.toLowerCase().includes(w))) {
+            if (show) {
                 c.style.setProperty('background-color', '#ffcdd2', 'important'); c.style.setProperty('border', '3px solid red', 'important');
                 c.style.setProperty('box-shadow', 'inset 0 0 10px #d32f2f', 'important');
                 c.style.setProperty('color', '#b71c1c', 'important');
@@ -2781,12 +2806,12 @@ function openPortionsCalculator() {
 function calcPortions() {
     let text = document.getElementById('portion-recipe-ingredients').value;
     let count = parseInt(document.getElementById('portion-recipe-count').value) || 1;
-    
+
     if (text.trim().length === 0) return;
-    
+
     let totalKcal = calculateCaloriesFromText(text);
     let portionKcal = Math.round(totalKcal / count);
-    
+
     document.getElementById('portion-total-kcal').innerText = totalKcal;
     document.getElementById('portion-single-kcal').innerText = portionKcal;
     document.getElementById('portion-results').style.display = 'block';
@@ -2796,16 +2821,16 @@ function savePortionToRicettario() {
     let title = document.getElementById('portion-recipe-title').value.trim();
     let text = document.getElementById('portion-recipe-ingredients').value.trim();
     let kcal = parseInt(document.getElementById('portion-single-kcal').innerText) || 0;
-    
-    if(!title || !text || kcal === 0) {
+
+    if (!title || !text || kcal === 0) {
         showCustomAlert("Prima inserisci ingredienti, titolo e premi Calcola!");
         return;
     }
-    
+
     // Formattiamo il testo della porzione
     let count = document.getElementById('portion-recipe-count').value;
     let portionText = "1 porzione di " + title + " (~" + kcal + " kcal) (su " + count + " totali)";
-    
+
     let newRecipe = {
         title: title,
         text: portionText,
@@ -2813,11 +2838,11 @@ function savePortionToRicettario() {
         emoji: '🍰', // Emoji generica per ricette a porzioni
         isCustom: true
     };
-    
+
     customRecipes = JSON.parse(localStorage.getItem('myCustomRecipes')) || [];
     customRecipes.unshift(newRecipe);
     localStorage.setItem('myCustomRecipes', JSON.stringify(customRecipes));
-    
+
     showToast("Porzione salvata nel Ricettario!");
     document.getElementById('portions-recipe-modal').style.display = 'none';
 }
@@ -2828,7 +2853,7 @@ function updatePathology(profileIndex, value) {
     showToast("Profilo patologia aggiornato!");
     // Forza ricalcolo
     let table = document.querySelectorAll('.weekly-table')[profileIndex];
-    if(table) {
+    if (table) {
         let rows = table.querySelectorAll('tbody tr');
         rows.forEach(r => {
             const event = new Event("input", { bubbles: true });
@@ -2841,7 +2866,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // init selectors
     ['0', '1'].forEach(idx => {
         let select = document.getElementById('pathology_' + idx);
-        if(select) {
+        if (select) {
             let saved = localStorage.getItem('pathology_' + idx) || 'nessuna';
             select.value = saved;
         }
@@ -2860,9 +2885,9 @@ window.addEventListener('DOMContentLoaded', () => {
         if (nameSpan) {
             let savedName = localStorage.getItem('profileName_' + idx);
             if (savedName) nameSpan.innerText = savedName;
-            
+
             // Per evitare che l'invio vada a capo (enter key)
-            nameSpan.addEventListener('keydown', function(e) {
+            nameSpan.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     this.blur();
@@ -2874,15 +2899,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 // MIGRATION SCRIPT FOR LOCALSTORAGE PHOTOS
-(function(){
+(function () {
     let customRecipes = JSON.parse(localStorage.getItem("myCustomRecipes")) || [];
     let modified = false;
     customRecipes.forEach(r => {
-        if(r.title === "CAFFÈ" && !r.img) { r.img = "caffe.jpg"; modified = true; }
-        if(r.title === "Pasta & Piselli" && !r.img) { r.img = "pasta_piselli.jpg"; modified = true; }
-        if(r.title === "Sgombro alla griglia" && !r.img) { r.img = "sgombro_griglia.jpg"; modified = true; }
+        if (r.title === "CAFFÈ" && !r.img) { r.img = "caffe.jpg"; modified = true; }
+        if (r.title === "Pasta & Piselli" && !r.img) { r.img = "pasta_piselli.jpg"; modified = true; }
+        if (r.title === "Sgombro alla griglia" && !r.img) { r.img = "sgombro_griglia.jpg"; modified = true; }
     });
-    if(modified) localStorage.setItem("myCustomRecipes", JSON.stringify(customRecipes));
+    if (modified) localStorage.setItem("myCustomRecipes", JSON.stringify(customRecipes));
 })();
 
 
@@ -2890,7 +2915,7 @@ window.editingRecipeTitle = null;
 function editCustomRecipe(title) {
     let recipe = customRecipes.find(r => r.title === title);
     if (!recipe) return;
-    
+
     document.getElementById('new-recipe-title').value = recipe.title;
     document.getElementById('new-recipe-ingredients').value = recipe.text;
     document.getElementById('new-recipe-kcal').value = recipe.kcal;
@@ -2898,12 +2923,12 @@ function editCustomRecipe(title) {
     if (document.getElementById('new-recipe-category')) {
         document.getElementById('new-recipe-category').value = recipe.category || 'all';
     }
-    
+
     window.editingRecipeTitle = title;
-    
+
     let modalTitle = document.querySelector('#add-recipe-modal h3');
     if (modalTitle) modalTitle.innerText = "✏️ Modifica Ricetta";
-    
+
     document.getElementById('add-recipe-modal').style.display = 'flex';
 }
 
@@ -2914,7 +2939,7 @@ function saveNewRecipe() {
     let text = document.getElementById('new-recipe-ingredients').value.trim();
     let kcal = document.getElementById('new-recipe-kcal').value.trim();
     let emoji = document.getElementById('new-recipe-emoji').value.trim() || '🍽️';
-    
+
     let imgInput = document.getElementById('new-recipe-img');
     let img = '';
     if (imgInput && imgInput.files && imgInput.files.length > 0) {
@@ -2922,12 +2947,12 @@ function saveNewRecipe() {
     } else if (imgInput && imgInput.value) {
         img = imgInput.value.replace(/C:fakepath/i, '');
     }
-    
-    if(!title || !text || !kcal) {
+
+    if (!title || !text || !kcal) {
         showCustomAlert("Compila tutti i campi obbligatori (Nome, Ingredienti, Kcal)!");
         return;
     }
-    
+
     let newRecipe = {
         title: title,
         text: text,
@@ -2937,14 +2962,14 @@ function saveNewRecipe() {
         img: img,
         category: document.getElementById('new-recipe-category') ? document.getElementById('new-recipe-category').value : 'all'
     };
-    
+
     customRecipes = JSON.parse(localStorage.getItem('myCustomRecipes')) || [];
-    
+
     if (window.editingRecipeTitle) {
         let idx = customRecipes.findIndex(r => r.title === window.editingRecipeTitle);
         if (idx >= 0) {
             if (!newRecipe.img && customRecipes[idx].img) {
-                newRecipe.img = customRecipes[idx].img; 
+                newRecipe.img = customRecipes[idx].img;
             }
             customRecipes[idx] = newRecipe;
         }
@@ -2952,15 +2977,15 @@ function saveNewRecipe() {
     } else {
         customRecipes.unshift(newRecipe);
     }
-    
+
     localStorage.setItem('myCustomRecipes', JSON.stringify(customRecipes));
-    
+
     document.getElementById('new-recipe-title').value = '';
     document.getElementById('new-recipe-ingredients').value = '';
     document.getElementById('new-recipe-kcal').value = '';
     document.getElementById('new-recipe-emoji').value = '';
     if (document.getElementById('new-recipe-img')) document.getElementById('new-recipe-img').value = '';
-    
+
     document.getElementById('add-recipe-modal').style.display = 'none';
     openRecipeBook();
 }
@@ -2969,13 +2994,13 @@ function openAddRecipeModal() {
     window.editingRecipeTitle = null;
     let modalTitle = document.querySelector('#add-recipe-modal h3');
     if (modalTitle) modalTitle.innerText = "➕ Crea la tua Ricetta";
-    
+
     document.getElementById('new-recipe-title').value = '';
     document.getElementById('new-recipe-ingredients').value = '';
     document.getElementById('new-recipe-kcal').value = '';
     document.getElementById('new-recipe-emoji').value = '';
     if (document.getElementById('new-recipe-img')) document.getElementById('new-recipe-img').value = '';
-    
+
     document.getElementById('add-recipe-modal').style.display = 'flex';
 }
 
@@ -2999,15 +3024,15 @@ function selectRecipeTarget(text, title) {
         if (typeof autoEmoji === 'function') autoEmoji(cell);
         let clean = getCleanCellText(cell.innerText);
         localStorage.setItem(cell.id, clean);
-        
+
         let prof = (typeof getProfileForElement === 'function') ? getProfileForElement(cell) : (window.activeProfile || 'marito');
         let pat = (typeof getProfilePathology === 'function') ? getProfilePathology(prof) : 'steatosi';
         if (typeof formatCellWithWarnings === 'function') {
             formatCellWithWarnings(cell, pat);
         }
-        
+
         let row = cell.closest('tr');
-        if(row) {
+        if (row) {
             let evt = new Event('input', { bubbles: true });
             row.dispatchEvent(evt);
         }
@@ -3017,18 +3042,18 @@ function selectRecipeTarget(text, title) {
     } else {
         window.currentRecipeToInsert = text;
         window.currentRecipeTitleToInsert = title;
-        
+
         // Trova i dettagli della ricetta per l'anteprima
         let allRecipes = [...(typeof customRecipes !== 'undefined' ? customRecipes : []), ...(typeof defaultRecipes !== 'undefined' ? defaultRecipes : [])];
         let found = allRecipes.find(r => r.title === title) || { title: title, kcal: 350, emoji: "🍽️" };
         let proc = (typeof RECIPE_PROCEDURES !== 'undefined' && RECIPE_PROCEDURES[title]) ? RECIPE_PROCEDURES[title] : { time: "20 min" };
-        
+
         const previewTitle = document.getElementById('dest-recipe-preview-title');
         if (previewTitle) previewTitle.innerHTML = `${found.emoji || '🍽️'} ${found.title}`;
-        
+
         const previewKcal = document.getElementById('dest-recipe-preview-kcal');
         if (previewKcal) previewKcal.innerText = `🔥 ~${found.kcal || 350} kcal`;
-        
+
         const previewTime = document.getElementById('dest-recipe-preview-time');
         if (previewTime) previewTime.innerText = `⏱️ ${proc.time || '20 min'}`;
 
@@ -3038,7 +3063,7 @@ function selectRecipeTarget(text, title) {
             profSelect.innerHTML = '';
             let profiles = (typeof globalProfiles !== 'undefined') ? globalProfiles : (JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie']);
             let currActive = (typeof activeProfile !== 'undefined') ? activeProfile : profiles[0];
-            
+
             // Opzione Tutta la Famiglia
             let allOpt = document.createElement('option');
             allOpt.value = 'all';
@@ -3099,7 +3124,7 @@ function confirmRecipeInsertion() {
                 cell.innerText = recipeText;
                 if (typeof autoEmoji === 'function') autoEmoji(cell);
                 localStorage.setItem(cell.id, cell.innerHTML);
-                
+
                 let row = cell.closest('tr');
                 if (row) {
                     let evt = new Event('input', { bubbles: true });
@@ -3108,7 +3133,7 @@ function confirmRecipeInsertion() {
                 count++;
             }
         });
-        
+
         document.getElementById('recipe-dest-modal').style.display = 'none';
         if (typeof showToast === 'function') {
             showToast(`👨‍👩‍👧‍👦 '${recipeTitle}' inserita nel menù di TUTTA la Famiglia!`, '#16a34a');
@@ -3125,7 +3150,7 @@ function confirmRecipeInsertion() {
             cell.innerText = recipeText;
             if (typeof autoEmoji === 'function') autoEmoji(cell);
             localStorage.setItem(cell.id, cell.innerHTML);
-            
+
             let row = cell.closest('tr');
             if (row) {
                 let evt = new Event('input', { bubbles: true });
@@ -3163,7 +3188,7 @@ function toggleDarkMode() {
     showToast(isDark ? "🌙 Tema scuro attivato!" : "☀️ Tema chiaro attivato!");
 }
 window.addEventListener('DOMContentLoaded', () => {
-    if(localStorage.getItem('darkMode') === 'yes') {
+    if (localStorage.getItem('darkMode') === 'yes') {
         document.body.classList.add('dark-mode');
     }
 });
@@ -3172,7 +3197,7 @@ window.addEventListener('DOMContentLoaded', () => {
 window.currentRecipeFilter = 'all';
 function filterRecipes(category, btn) {
     window.currentRecipeFilter = category;
-    
+
     // Update button styles
     let btns = document.querySelectorAll('#recipe-filters button');
     btns.forEach(b => {
@@ -3180,26 +3205,26 @@ function filterRecipes(category, btn) {
         b.style.color = '#333';
         b.style.borderColor = '#ccc';
     });
-    if(btn) {
+    if (btn) {
         btn.style.background = '#1976d2';
         btn.style.color = 'white';
         btn.style.borderColor = '#1976d2';
     }
-    
+
     openRecipeBook(window.targetRecipeCell ? true : false);
 }
 
 // Override openRecipeBook to apply filters
 const originalOpenRecipeBook = openRecipeBook;
-openRecipeBook = function(fromCell = false) {
+openRecipeBook = function (fromCell = false) {
     originalOpenRecipeBook(fromCell);
-    
+
     // Now apply filter to the generated DOM elements
     let cards = document.querySelectorAll('#recipe-list > div');
     cards.forEach(card => {
         let text = card.innerText.toLowerCase();
         let show = true;
-        
+
         if (window.currentRecipeFilter === 'colazione') {
             let kws = ['latte', 'yogurt', 'avena', 'biscotti', 'fette biscottate', 'pancake', 'porridge'];
             show = kws.some(k => text.includes(k));
@@ -3210,79 +3235,80 @@ openRecipeBook = function(fromCell = false) {
             let kws = ['frutto', 'mandorle', 'noci', 'spuntino', 'frutta', 'crema'];
             show = kws.some(k => text.includes(k)) && !text.includes('pasta'); // Simple heuristic
         }
-        
+
         if (window.currentRecipeFilter === 'all') show = true;
-        
+
         card.style.display = show ? 'flex' : 'none';
     });
 };
 
 // --- MAGIC WAND (FILL RANDOM) ---
 function fillRandomMeals() {
-    showCustomConfirm("La bacchetta magica riempirà tutti i pasti vuoti della settimana con ricette a caso dal tuo ricettario! Vuoi procedere?", function() {
-    
-    let allRecipes = [...(JSON.parse(localStorage.getItem('myCustomRecipes'))||[]), ...defaultRecipes];
-    
-    const colazioni = allRecipes.filter(r => ['latte', 'yogurt', 'avena', 'biscotti', 'pancake', 'porridge'].some(k => r.text.toLowerCase().includes(k)));
-    const pranzi = allRecipes.filter(r => ['pasta', 'riso', 'farro', 'quinoa', 'pollo', 'salmone', 'orata', 'sgombro', 'zuppa', 'lenticchie'].some(k => r.text.toLowerCase().includes(k)));
-    const cene = pranzi; // Reuse for now
-    const spuntini = allRecipes.filter(r => ['frutto', 'mandorle', 'noci', 'spuntino', 'crema'].some(k => r.text.toLowerCase().includes(k)) && !r.text.toLowerCase().includes('pasta'));
-    
-    const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)] || arr[0];
-    
-    let cellsUpdated = 0;
-    
-    document.querySelectorAll('.weekly-table tbody tr').forEach(row => {
-        let cells = row.querySelectorAll('td.editable-cell');
-        // cell 0 = Colazione (index 1), cell 1 = Pranzo (index 2), cell 2 = Cena (index 3), cell 3 = Spuntini (index 4)
-        
-        if (cells[0] && cells[0].innerText.trim() === '') {
-            cells[0].innerText = getRandom(colazioni).text;
-            localStorage.setItem(cells[0].id, cells[0].innerHTML);
-            cellsUpdated++;
-        }
-        if (cells[1] && cells[1].innerText.trim() === '') {
-            cells[1].innerText = getRandom(pranzi).text;
-            localStorage.setItem(cells[1].id, cells[1].innerHTML);
-            cellsUpdated++;
-        }
-        if (cells[2] && cells[2].innerText.trim() === '') {
-            cells[2].innerText = getRandom(cene).text;
-            localStorage.setItem(cells[2].id, cells[2].innerHTML);
-            cellsUpdated++;
-        }
-        if (cells[3] && cells[3].innerText.trim() === '') {
-            cells[3].innerText = getRandom(spuntini).text;
-            localStorage.setItem(cells[3].id, cells[3].innerHTML);
-            cellsUpdated++;
-        }
-        
-        if(cellsUpdated > 0) {
-            row.dispatchEvent(new Event('input', {bubbles: true}));
+    showCustomConfirm("La bacchetta magica riempirà tutti i pasti vuoti della settimana con ricette a caso dal tuo ricettario! Vuoi procedere?", function () {
+
+        let allRecipes = [...(JSON.parse(localStorage.getItem('myCustomRecipes')) || []), ...defaultRecipes];
+
+        const colazioni = allRecipes.filter(r => ['latte', 'yogurt', 'avena', 'biscotti', 'pancake', 'porridge'].some(k => r.text.toLowerCase().includes(k)));
+        const pranzi = allRecipes.filter(r => ['pasta', 'riso', 'farro', 'quinoa', 'pollo', 'salmone', 'orata', 'sgombro', 'zuppa', 'lenticchie'].some(k => r.text.toLowerCase().includes(k)));
+        const cene = pranzi; // Reuse for now
+        const spuntini = allRecipes.filter(r => ['frutto', 'mandorle', 'noci', 'spuntino', 'crema'].some(k => r.text.toLowerCase().includes(k)) && !r.text.toLowerCase().includes('pasta'));
+
+        const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)] || arr[0];
+
+        let cellsUpdated = 0;
+
+        document.querySelectorAll('.weekly-table tbody tr').forEach(row => {
+            let cells = row.querySelectorAll('td.editable-cell');
+            // cell 0 = Colazione (index 1), cell 1 = Pranzo (index 2), cell 2 = Cena (index 3), cell 3 = Spuntini (index 4)
+
+            if (cells[0] && cells[0].innerText.trim() === '') {
+                cells[0].innerText = getRandom(colazioni).text;
+                localStorage.setItem(cells[0].id, cells[0].innerHTML);
+                cellsUpdated++;
+            }
+            if (cells[1] && cells[1].innerText.trim() === '') {
+                cells[1].innerText = getRandom(pranzi).text;
+                localStorage.setItem(cells[1].id, cells[1].innerHTML);
+                cellsUpdated++;
+            }
+            if (cells[2] && cells[2].innerText.trim() === '') {
+                cells[2].innerText = getRandom(cene).text;
+                localStorage.setItem(cells[2].id, cells[2].innerHTML);
+                cellsUpdated++;
+            }
+            if (cells[3] && cells[3].innerText.trim() === '') {
+                cells[3].innerText = getRandom(spuntini).text;
+                localStorage.setItem(cells[3].id, cells[3].innerHTML);
+                cellsUpdated++;
+            }
+
+            if (cellsUpdated > 0) {
+                row.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+
+        if (cellsUpdated > 0) {
+            showToast(`🪄 Magia! ${cellsUpdated} pasti riempiti casualmente!`);
+        } else {
+            showToast(`Tutti i pasti erano già pianificati!`);
         }
     });
-    
-    if (cellsUpdated > 0) {
-        showToast(`🪄 Magia! ${cellsUpdated} pasti riempiti casualmente!`);
-    } else {
-        showToast(`Tutti i pasti erano già pianificati!`);
-    }});
 }
 
 
 function searchRecipe() {
     let queryInput = document.getElementById('recipe-search');
-    if(!queryInput) return;
+    if (!queryInput) return;
     let query = queryInput.value.trim();
-    if(query === '') return;
-    
+    if (query === '') return;
+
     // Mostra anche internal search (se presente in futuro), per ora apriamo web search
     let url = 'https://www.giallozafferano.it/ricerca-ricette/light+' + encodeURIComponent(query) + '/';
     window.open(url, '_blank');
 }
 
 
-window.showCustomConfirm = function(msg, onConfirm) {
+window.showCustomConfirm = function (msg, onConfirm) {
     let overlay = document.createElement('div');
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
@@ -3372,7 +3398,7 @@ window.showCustomConfirm = function(msg, onConfirm) {
 
     btnContainer.appendChild(cancelBtn);
     btnContainer.appendChild(confirmBtn);
-    
+
     box.appendChild(icon);
     box.appendChild(text);
     box.appendChild(btnContainer);
@@ -3387,7 +3413,7 @@ window.showCustomConfirm = function(msg, onConfirm) {
 };
 
 
-window.showCustomAlert = function(msg) {
+window.showCustomAlert = function (msg) {
     let overlay = document.createElement('div');
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
@@ -3456,7 +3482,7 @@ window.showCustomAlert = function(msg) {
     okBtn.onclick = close;
 
     btnContainer.appendChild(okBtn);
-    
+
     box.appendChild(icon);
     box.appendChild(text);
     box.appendChild(btnContainer);
@@ -3475,18 +3501,18 @@ function exportPDF(profile) {
     let profileId = typeof profile === 'string' ? profile : (profile === 0 ? 'marito' : 'moglie');
     let section = document.getElementById('section-' + profileId);
     let table = section ? section.querySelector('.weekly-table') : document.querySelectorAll('.weekly-table')[profileId === 'marito' ? 0 : 1];
-    
+
     if (!table) return;
     let title = "Menu_" + getProfileDisplayName(profileId);
-    
-    if(typeof showToast === 'function') showToast("Generazione PDF in corso...");
+
+    if (typeof showToast === 'function') showToast("Generazione PDF in corso...");
 
     let wrapper = document.createElement('div');
     wrapper.style.background = 'white';
     wrapper.style.color = 'black';
     // Riduciamo i padding per far stare tutto su 1 singola pagina
     wrapper.style.padding = '5px';
-    
+
     let titleEl = document.createElement('h1');
     titleEl.style.textAlign = 'center';
     titleEl.style.color = '#2e7d32';
@@ -3494,10 +3520,10 @@ function exportPDF(profile) {
     titleEl.style.marginBottom = '10px';
     titleEl.style.fontSize = '24px';
     titleEl.innerText = title.replace('_', ' ');
-    
+
     table.parentNode.insertBefore(wrapper, table);
     wrapper.appendChild(titleEl);
-    
+
     let fastType = localStorage.getItem('fast_type_' + profileId) || '16';
     let fastStart = localStorage.getItem('fast_start_' + profileId) || '20:30';
     let fastEnd = localStorage.getItem('fast_end_' + profileId) || '12:30';
@@ -3510,34 +3536,34 @@ function exportPDF(profile) {
     subTitleEl.style.marginBottom = '12px';
     subTitleEl.innerText = '🌿 Protocollo Digiuno: ' + fastType + ':' + eatHours + ' (Digiuno: ' + fastStart + ' - ' + fastEnd + ' | Pasti: ' + fastEnd + ' - ' + fastStart + ')';
     wrapper.appendChild(subTitleEl);
-    
+
     wrapper.appendChild(table);
-    
+
     let editableCells = table.querySelectorAll('.editable-cell');
     let tds = table.querySelectorAll('td, th');
-    
+
     let originalStyles = [];
     editableCells.forEach(c => {
         originalStyles.push(c.style.cssText);
         c.style.border = '1px solid #ccc';
     });
-    
+
     let originalPaddings = [];
     tds.forEach(td => {
         originalPaddings.push(td.style.padding);
         // Compattiamo la tabella per farla entrare in una singola pagina A4
         td.style.padding = '8px';
     });
-    
+
     window.scrollTo(0, 0);
 
     setTimeout(() => {
         let opt = {
-          margin:       0.2, // Margine piccolissimo per recuperare spazio
-          filename:     title + '.pdf',
-          image:        { type: 'jpeg', quality: 1 },
-          html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-          jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+            margin: 0.2, // Margine piccolissimo per recuperare spazio
+            filename: title + '.pdf',
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
         };
 
         html2pdf().set(opt).from(wrapper).save().then(() => {
@@ -3566,7 +3592,7 @@ function getBackupTimestampFileName() {
 }
 
 // PREMIUM FEATURES
-window.backupData = async function() {
+window.backupData = async function () {
     let data = JSON.stringify(localStorage);
 
     // Se l'app gira in Electron, apri la finestra nativa direttamente nella cartella Backup_Salute
@@ -3584,7 +3610,7 @@ window.backupData = async function() {
     }
 
     // Fallback browser standard con nome data e ora automatica
-    let blob = new Blob([data], {type: "application/json"});
+    let blob = new Blob([data], { type: "application/json" });
     let url = URL.createObjectURL(blob);
     let a = document.createElement('a');
     a.href = url;
@@ -3595,7 +3621,7 @@ window.backupData = async function() {
     showCustomAlert("Backup scaricato con successo! 🎉\nData e ora salvate nel nome del file.");
 };
 
-window.triggerRestore = async function() {
+window.triggerRestore = async function () {
     // Se l'app gira in Electron, apri la cartella Backup_Salute nativamente
     if (typeof window.require !== 'undefined') {
         try {
@@ -3605,12 +3631,12 @@ window.triggerRestore = async function() {
                 try {
                     let data = JSON.parse(res.content);
                     localStorage.clear();
-                    for(let key in data) {
+                    for (let key in data) {
                         localStorage.setItem(key, data[key]);
                     }
                     showCustomAlert("Profilo ripristinato con successo! 🎉\n\nBackup caricato: " + (res.fileName || res.filePath) + "\n\nRicarico l'app per applicare i dati... 🔄");
                     setTimeout(() => location.reload(), 1500);
-                } catch(err) {
+                } catch (err) {
                     showCustomAlert("Errore durante il ripristino! Il file non contiene dati validi.");
                 }
             }
@@ -3623,7 +3649,7 @@ window.triggerRestore = async function() {
     document.getElementById('restoreFileInput').click();
 };
 
-window.openBackupFolder = async function() {
+window.openBackupFolder = async function () {
     if (typeof window.require !== 'undefined') {
         try {
             const { ipcRenderer } = window.require('electron');
@@ -3636,7 +3662,7 @@ window.openBackupFolder = async function() {
     showCustomAlert("La cartella dei backup si trova in: Progetto_Salute/Backup_Salute");
 };
 
-window.openProgramFolder = async function() {
+window.openProgramFolder = async function () {
     if (typeof window.require !== 'undefined') {
         try {
             const { ipcRenderer } = window.require('electron');
@@ -3649,67 +3675,67 @@ window.openProgramFolder = async function() {
     showCustomAlert("La cartella del programma si trova in:\n" + window.location.pathname);
 };
 
-window.restoreData = function(event) {
+window.restoreData = function (event) {
     let file = event.target.files[0];
-    if(!file) return;
+    if (!file) return;
     let reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         try {
             let data = JSON.parse(e.target.result);
             localStorage.clear();
-            for(let key in data) {
+            for (let key in data) {
                 localStorage.setItem(key, data[key]);
             }
             showCustomAlert("Profilo ripristinato con successo! Ricarico l'app... 🔄");
             setTimeout(() => location.reload(), 2000);
-        } catch(err) {
+        } catch (err) {
             showCustomAlert("Errore durante il ripristino! Il file potrebbe non essere valido.");
         }
     };
     reader.readAsText(file);
 };
 
-window.exportRicettarioPDF = function() {
+window.exportRicettarioPDF = function () {
     let listContainer = document.getElementById('recipe-list');
-    if(!listContainer) {
+    if (!listContainer) {
         showCustomAlert("Non riesco a trovare le ricette da esportare!");
         return;
     }
-    
+
     let printDiv = document.createElement('div');
     printDiv.innerHTML = '<h1 style="text-align:center; color:#2e7d32; font-family:sans-serif; margin-bottom: 20px;">🥗 Il Mio Ricettario</h1>' + listContainer.innerHTML;
     printDiv.style.width = '800px';
     printDiv.style.padding = '20px';
     printDiv.style.background = 'white';
     printDiv.style.color = 'black';
-    
+
     printDiv.querySelectorAll('button').forEach(b => b.remove());
     printDiv.querySelectorAll('div').forEach(el => {
         el.style.color = 'black';
-        if(el.style.backgroundColor === 'rgb(44, 44, 44)' || el.style.backgroundColor === '#2c2c2c' || el.classList.contains('dark-mode')) {
+        if (el.style.backgroundColor === 'rgb(44, 44, 44)' || el.style.backgroundColor === '#2c2c2c' || el.classList.contains('dark-mode')) {
             el.style.backgroundColor = '#f9f9f9';
         }
     });
-    
+
     // Append in viewport but hidden behind everything
     printDiv.style.position = 'absolute';
     printDiv.style.top = '0';
     printDiv.style.left = '0';
     printDiv.style.zIndex = '-9999';
     document.body.appendChild(printDiv);
-    
+
     let opt = {
-      margin:       0.5,
-      filename:     'Ricettario.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, windowWidth: 800, windowHeight: printDiv.scrollHeight },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        margin: 0.5,
+        filename: 'Ricettario.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, windowWidth: 800, windowHeight: printDiv.scrollHeight },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
-    
+
     html2pdf().set(opt).from(printDiv).save().then(() => {
         document.body.removeChild(printDiv);
     });
-    
+
     showCustomAlert("Generazione PDF Ricettario in corso... 📖");
 };
 
@@ -3719,28 +3745,28 @@ window.exportRicettarioPDF = function() {
 
 // --- GRAPHS ---
 let myCharts = {};
-window.renderChart = function(profile) {
+window.renderChart = function (profile) {
     let wrapper = document.getElementById('chart-wrapper-' + profile);
     wrapper.style.display = 'block';
-    
+
     let historyStr = localStorage.getItem('weightLog_' + profile);
     let history = historyStr ? JSON.parse(historyStr) : [];
-    if(history.length === 0) {
+    if (history.length === 0) {
         showCustomAlert("Nessun dato sul peso salvato per questo profilo!");
         return;
     }
-    
+
     let labels = history.map(item => item.date);
     let data = history.map(item => parseFloat(item.weight));
-    
+
     let ctx = document.getElementById('chart-' + profile).getContext('2d');
-    
+
     if (typeof Chart === 'undefined') return;
 
-    if(myCharts[profile]) {
+    if (myCharts[profile]) {
         myCharts[profile].destroy();
     }
-    
+
     myCharts[profile] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -3766,23 +3792,23 @@ window.renderChart = function(profile) {
 };
 
 // --- AI SVUOTA FRIGO ---
-window.generateAIRecipe = function() {
+window.generateAIRecipe = function () {
     let input = document.getElementById('aiIngredients').value.trim();
-    if(!input) {
+    if (!input) {
         showCustomAlert("Scrivi qualche ingrediente prima!");
         return;
     }
-    
+
     let ingredients = input.split(',').map(i => i.trim());
     let mainIng = ingredients[0].charAt(0).toUpperCase() + ingredients[0].slice(1);
-    
+
     let adjectives = ["Gourmet", "Leggero", "al Forno", "Profumato", "Croccante", "del Benessere"];
     let adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-    
+
     let title = mainIng + " " + adj;
     let description = "1 Porzione.\nIngredienti principali: " + ingredients.join(", ") + ".\n" +
         "Preparazione: Cuocere tutto a fuoco lento aggiungendo 1 cucchiaio di olio EVO (100 kcal), sale e spezie. Accompagnare con 50g di pane. 🪄 Piatto creato magicamente dall'AI!";
-        
+
     // Salva direttamente la ricetta nel ricettario
     let customRecipes = JSON.parse(localStorage.getItem('myCustomRecipes')) || [];
     let newRecipe = {
@@ -3795,29 +3821,29 @@ window.generateAIRecipe = function() {
     };
     customRecipes.unshift(newRecipe);
     localStorage.setItem('myCustomRecipes', JSON.stringify(customRecipes));
-    
+
     // Aggiorna la vista del ricettario
-    if(typeof searchRecipe === 'function') searchRecipe();
-    
+    if (typeof searchRecipe === 'function') searchRecipe();
+
     // Pulisci l'input
     document.getElementById('aiIngredients').value = '';
-    
+
     showCustomAlert("✨ Magia completata! ✨\n\nHo inventato: '" + title + "' (450 kcal)\n\nLa ricetta è già stata salvata nel tuo Ricettario Magico ed è pronta per essere usata nei menù!");
 };
 
 
 
 // ---- INSERIMENTO MANUALE STORICO CON CALENDARIO ----
-window.promptStorico = function(profile) {
+window.promptStorico = function (profile) {
     document.getElementById('storico-profile').value = profile;
-    
+
     // Setta la data di default ad oggi
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('storico-date').value = today;
     document.getElementById('storico-weight').value = '';
-    
+
     document.getElementById('storico-modal').style.display = 'flex';
-    
+
     // Inizializza il fantastico Flatpickr!
     if (window.flatpickr) {
         flatpickr("#storico-date", {
@@ -3827,7 +3853,7 @@ window.promptStorico = function(profile) {
             altFormat: "d F Y",
             maxDate: "today",
             theme: "dark",
-            onChange: function() {
+            onChange: function () {
                 // Focus automatico sul campo peso quando si sceglie la data!
                 setTimeout(() => {
                     document.getElementById('storico-weight').focus();
@@ -3841,27 +3867,27 @@ window.promptStorico = function(profile) {
     }
 };
 
-window.saveStoricoModal = function() {
+window.saveStoricoModal = function () {
     const profile = document.getElementById('storico-profile').value;
     const dateStr = document.getElementById('storico-date').value;
     const weightStr = document.getElementById('storico-weight').value;
-    
+
     if (!dateStr) {
         if (typeof showCustomAlert === 'function') showCustomAlert("Seleziona una data dal calendario!");
         else showToast("Seleziona una data dal calendario!");
         return;
     }
-    
+
     let weight = parseFloat(weightStr.replace(',', '.'));
     if (isNaN(weight) || weight <= 0) {
         if (typeof showCustomAlert === 'function') showCustomAlert("Inserisci un peso valido!");
         else showToast("Inserisci un peso valido!");
         return;
     }
-    
+
     const key = `weightLog_${profile}`;
     let log = JSON.parse(localStorage.getItem(key)) || [];
-    
+
     // Controlla se esiste già una pesata per quella data
     const existingIndex = log.findIndex(entry => entry.date === dateStr);
     if (existingIndex !== -1) {
@@ -3869,7 +3895,7 @@ window.saveStoricoModal = function() {
     } else {
         log.push({ date: dateStr, weight: weight, timestamp: new Date(dateStr).getTime() });
     }
-    
+
     // Ordina lo storico per data
     log.sort((a, b) => a.timestamp - b.timestamp);
     localStorage.setItem(key, JSON.stringify(log));
@@ -3879,15 +3905,15 @@ window.saveStoricoModal = function() {
         localStorage.setItem('weightLog_moglie', JSON.stringify(log));
         localStorage.setItem('weightLog_1', JSON.stringify(log));
     }
-    
+
     document.getElementById('storico-modal').style.display = 'none';
-    
+
     if (typeof showToast === 'function') {
         showToast("Pesata storica salvata con successo!");
     } else {
         showToast("Pesata storica salvata con successo!");
     }
-    
+
     // Ricarica i progressi per aggiornare grafico e statistiche
     loadProgress(profile);
     if (typeof window.syncSaluteToCloud === "function") {
@@ -3904,28 +3930,28 @@ window.saveStoricoModal = function() {
 // ---- ELIMINAZIONE PUNTI DAL GRAFICO (DOPPIO CLICK) ----
 function setupChartDoubleClick(profile) {
     const canvas = document.getElementById(`chart-${profile}`);
-    if(!canvas) return;
-    
+    if (!canvas) return;
+
     // Rimuoviamo vecchi listener per evitare duplicati
-    canvas.ondblclick = function(evt) {
+    canvas.ondblclick = function (evt) {
         const chart = charts[profile];
-        if(!chart) return;
-        
+        if (!chart) return;
+
         const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
-        
+
         if (points.length) {
             const firstPoint = points[0];
             const index = firstPoint.index;
             const label = chart.data.labels[index];
             const value = chart.data.datasets[firstPoint.datasetIndex].data[index];
-            
+
             // Non permettiamo di eliminare il punto "29/09" fisso di partenza se è l'unico
             if (label === '29/09' && index === 0 && chart.data.labels.length === 1) {
                 if (typeof showCustomAlert === 'function') showCustomAlert("Non puoi eliminare il punto di partenza isolato.");
                 else showToast("Non puoi eliminare il punto di partenza isolato.");
                 return;
             }
-            
+
             // APRI MODALE SIMPATICA
             window._pendingDelete = { profile, label, value };
             document.getElementById('delete-modal-text').innerHTML = `Pesata del <b>${label}</b> (Attuale: <b>${value} kg</b>)`; document.getElementById('edit-modal-weight-input').value = value;
@@ -3936,23 +3962,23 @@ function setupChartDoubleClick(profile) {
 
 // Intercettiamo drawChart per applicare il listener ogni volta che il grafico viene disegnato
 const originalDrawChart = drawChart;
-drawChart = function(profile, log, startWeight) {
+drawChart = function (profile, log, startWeight) {
     originalDrawChart(profile, log, startWeight);
     setupChartDoubleClick(profile);
 };
 
-window.closeDeleteModal = function() {
+window.closeDeleteModal = function () {
     document.getElementById('delete-modal').style.display = 'none';
     window._pendingDelete = null;
 };
 
-window.confirmDeleteModal = function() {
-    if(!window._pendingDelete) return;
-    
+window.confirmDeleteModal = function () {
+    if (!window._pendingDelete) return;
+
     const { profile, label, value } = window._pendingDelete;
     const key = `weightLog_${profile}`;
     let log = JSON.parse(localStorage.getItem(key)) || [];
-    
+
     const [dd, mm] = label.split('/');
     let foundIndex = -1;
     // 1. Cerca per data e peso
@@ -3973,7 +3999,7 @@ window.confirmDeleteModal = function() {
             }
         }
     }
-    
+
     if (foundIndex !== -1) {
         const removedItem = log.splice(foundIndex, 1)[0];
         localStorage.setItem(key, JSON.stringify(log));
@@ -3995,27 +4021,27 @@ window.confirmDeleteModal = function() {
             }
         }
 
-        if(typeof showToast === 'function') showToast(`Pesata del ${label} eliminata definitivamente! 🗑️`);
+        if (typeof showToast === 'function') showToast(`Pesata del ${label} eliminata definitivamente! 🗑️`);
         if (typeof loadProgress === 'function') loadProgress(profile);
         if (typeof window.refreshDashboardStats === 'function') window.refreshDashboardStats(profile);
     } else {
         if (label === '29/09') {
-             if (typeof showCustomAlert === 'function') showCustomAlert("Questo è il peso iniziale. Se vuoi modificarlo, cambia il Peso Iniziale in alto.");
-             else showToast("Questo è il peso iniziale. Se vuoi modificarlo, cambia il Peso Iniziale in alto.");
+            if (typeof showCustomAlert === 'function') showCustomAlert("Questo è il peso iniziale. Se vuoi modificarlo, cambia il Peso Iniziale in alto.");
+            else showToast("Questo è il peso iniziale. Se vuoi modificarlo, cambia il Peso Iniziale in alto.");
         } else {
-             if (typeof showToast === 'function') showToast("Pesata non trovata o già rimossa.");
+            if (typeof showToast === 'function') showToast("Pesata non trovata o già rimossa.");
         }
     }
-    
+
     if (typeof closeChartFocusBadge === 'function') closeChartFocusBadge(profile);
     closeDeleteModal();
 };
 
 // ---- TOAST NOTIFICATIONS (BEAUTIFUL ALERTS) ----
-window.showToast = function(message, isError = false) {
+window.showToast = function (message, isError = false) {
     const container = document.getElementById('toast-container');
     if (!container) return;
-    
+
     const toast = document.createElement('div');
     toast.style.background = isError ? '#e53935' : '#4caf50';
     toast.style.color = '#fff';
@@ -4028,15 +4054,15 @@ window.showToast = function(message, isError = false) {
     toast.style.transform = 'translateY(20px)';
     toast.style.transition = 'all 0.3s ease';
     toast.innerHTML = isError ? '❌ ' + message : '✅ ' + message;
-    
+
     container.appendChild(toast);
-    
+
     // Animate in
     setTimeout(() => {
         toast.style.opacity = '1';
         toast.style.transform = 'translateY(0)';
     }, 10);
-    
+
     // Animate out after 3 seconds
     setTimeout(() => {
         toast.style.opacity = '0';
@@ -4048,39 +4074,39 @@ window.showToast = function(message, isError = false) {
 };
 
 // --- RECOVERED FUNCTIONS ---
-window.autoFillWeek = function(profile) {
+window.autoFillWeek = function (profile) {
     let profileId = typeof profile === 'string' ? profile : (profile === 0 ? 'marito' : 'moglie');
     if (typeof showCustomConfirm === 'function') {
-        showCustomConfirm('Vuoi riempire i pasti vuoti della settimana con ricette casuali?', function() { runAutoFill(profileId); });
+        showCustomConfirm('Vuoi riempire i pasti vuoti della settimana con ricette casuali?', function () { runAutoFill(profileId); });
     } else {
-        if(confirm('Vuoi riempire i pasti vuoti della settimana con ricette casuali?')) runAutoFill(profileId);
+        if (confirm('Vuoi riempire i pasti vuoti della settimana con ricette casuali?')) runAutoFill(profileId);
     }
 };
 
 function runAutoFill(profileId) {
     let section = document.getElementById('section-' + profileId);
     let table = section ? section.querySelector('.weekly-table') : document.querySelectorAll('.weekly-table')[profileId === 'marito' ? 0 : 1];
-    if(!table) return;
-    
-    let allRecipes = [...(JSON.parse(localStorage.getItem('myCustomRecipes'))||[]), ...(typeof defaultRecipes !== 'undefined' ? defaultRecipes : [])];
-    if(allRecipes.length === 0) return;
-    
-    const pranzi = allRecipes.filter(r => ['pasta', 'riso', 'farro', 'quinoa', 'pollo', 'salmone', 'orata', 'sgombro', 'zuppa', 'lenticchie', 'fesa', 'tonno', 'uova', 'insalata'].some(k => (r.text||r.nome||r.name||'').toLowerCase().includes(k)));
+    if (!table) return;
+
+    let allRecipes = [...(JSON.parse(localStorage.getItem('myCustomRecipes')) || []), ...(typeof defaultRecipes !== 'undefined' ? defaultRecipes : [])];
+    if (allRecipes.length === 0) return;
+
+    const pranzi = allRecipes.filter(r => ['pasta', 'riso', 'farro', 'quinoa', 'pollo', 'salmone', 'orata', 'sgombro', 'zuppa', 'lenticchie', 'fesa', 'tonno', 'uova', 'insalata'].some(k => (r.text || r.nome || r.name || '').toLowerCase().includes(k)));
     const cene = pranzi;
-    const spuntini = allRecipes.filter(r => ['frutta', 'mela', 'noci', 'mandorle', 'yogurt', 'kefir', 'cioccolato', 'barretta', 'spuntino', 'snack', 'pane'].some(k => (r.text||r.nome||r.name||'').toLowerCase().includes(k)));
-    
+    const spuntini = allRecipes.filter(r => ['frutta', 'mela', 'noci', 'mandorle', 'yogurt', 'kefir', 'cioccolato', 'barretta', 'spuntino', 'snack', 'pane'].some(k => (r.text || r.nome || r.name || '').toLowerCase().includes(k)));
+
     // Fallback se non trova spuntini nel ricettario
     const defaultSpuntini = [
-        {text: "1 Mela e 10g mandorle"},
-        {text: "Yogurt greco 150g"},
-        {text: "15g noci + 1 frutto"},
-        {text: "Spremuta d'arancia"},
-        {text: "Kefir e un quadratino di cioccolato fondente"}
+        { text: "1 Mela e 10g mandorle" },
+        { text: "Yogurt greco 150g" },
+        { text: "15g noci + 1 frutto" },
+        { text: "Spremuta d'arancia" },
+        { text: "Kefir e un quadratino di cioccolato fondente" }
     ];
     let spuntiniList = spuntini.length > 0 ? spuntini : defaultSpuntini;
-    
-    const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)] || arr[0] || {text: 'Ricetta casuale'};
-    
+
+    const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)] || arr[0] || { text: 'Ricetta casuale' };
+
     let typeSelect = document.getElementById('fast_type_' + profileId);
     let fastType = typeSelect ? typeSelect.value : (localStorage.getItem('fast_type_' + profileId) || '16');
 
@@ -4167,15 +4193,15 @@ function runAutoFill(profileId) {
         }
         rowIndex++;
     });
-    
-    if(cellsUpdated > 0) {
+
+    if (cellsUpdated > 0) {
         if (typeof showToast === 'function') showToast('Riempiti ' + cellsUpdated + ' pasti vuoti!');
         else alert('Riempiti ' + cellsUpdated + ' pasti vuoti!');
     } else {
         if (typeof showToast === 'function') showToast('Tutti i pasti erano già pianificati!');
         else alert('Tutti i pasti erano già pianificati!');
     }
-    
+
     let pat = (typeof getProfilePathology === 'function') ? getProfilePathology(profileId) : (localStorage.getItem('pathology_' + profileId) || 'steatosi');
     table.querySelectorAll('tbody tr').forEach(row => {
         let rowCells = row.querySelectorAll('td.editable-cell');
@@ -4192,29 +4218,29 @@ function runAutoFill(profileId) {
     });
 
     // Forza ricalcolo kcal
-    if(typeof updateSgarrometro === 'function') updateSgarrometro();
+    if (typeof updateSgarrometro === 'function') updateSgarrometro();
 }
 
-window.exportDietPDF = function(profile) {
+window.exportDietPDF = function (profile) {
     let profileId = typeof profile === 'string' ? profile : (profile === 0 ? 'marito' : 'moglie');
     let section = document.getElementById('section-' + profileId);
     let table = section ? section.querySelector('.weekly-table') : document.querySelectorAll('.weekly-table')[profile];
-    if(!table) return;
-    
+    if (!table) return;
+
     let opt = {
-      margin:       0.5,
-      filename:     'Dieta_' + profileId + '.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+        margin: 0.5,
+        filename: 'Dieta_' + profileId + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
     };
     if (typeof html2pdf !== 'undefined') html2pdf().set(opt).from(table).save();
     else alert("Libreria PDF non caricata!");
 };
 
-window.initAllProfiles = function() {
+window.initAllProfiles = function () {
     let profilesToInit = (typeof globalProfiles !== 'undefined') ? globalProfiles : ['marito', 'moglie'];
-    
+
     profilesToInit.forEach(profile => {
         initBeverage(profile, 'water', 8);
         initBeverage(profile, 'coffee', 3);
@@ -4226,77 +4252,77 @@ window.initAllProfiles = function() {
         let savedFastStart = localStorage.getItem('fast_start_' + profile) || '20:30';
         let savedFastEnd = localStorage.getItem('fast_end_' + profile) || '12:30';
         updateWeeklyTableForFasting(profile, savedFastType, savedFastStart, savedFastEnd);
-        if(typeof loadFasting === 'function') loadFasting(profile);
+        if (typeof loadFasting === 'function') loadFasting(profile);
     });
-    
-    if(typeof initEditableMenus === 'function') initEditableMenus();
-    if(typeof initFamilySyncControls === 'function') initFamilySyncControls();
+
+    if (typeof initEditableMenus === 'function') initEditableMenus();
+    if (typeof initFamilySyncControls === 'function') initFamilySyncControls();
 };
 
 
 // --- GESTIONE DIGIUNO MULTI-PROTOCOLLO ---
-window.calcEndFasting = function(profile) {
+window.calcEndFasting = function (profile) {
     let typeSelect = document.getElementById('fast_type_' + profile);
     let startInput = document.getElementById('fast_start_' + profile);
     let endInput = document.getElementById('fast_end_' + profile);
-    
-    if(!typeSelect || !startInput || !endInput) return;
-    if(typeSelect.value === 'none') return;
-    
+
+    if (!typeSelect || !startInput || !endInput) return;
+    if (typeSelect.value === 'none') return;
+
     let fastHours = parseInt(typeSelect.value) || 16;
     let startParts = startInput.value.split(':');
-    if(startParts.length !== 2) return;
-    
+    if (startParts.length !== 2) return;
+
     let startH = parseInt(startParts[0]);
     let startM = parseInt(startParts[1]);
-    
+
     let endH = (startH + fastHours) % 24;
-    
+
     let endHStr = endH.toString().padStart(2, '0');
     let startMStr = startM.toString().padStart(2, '0');
-    
+
     endInput.value = endHStr + ':' + startMStr;
 };
 
-window.saveFasting = function(profile) {
+window.saveFasting = function (profile) {
     let typeSelect = document.getElementById('fast_type_' + profile);
     let startInput = document.getElementById('fast_start_' + profile);
     let endInput = document.getElementById('fast_end_' + profile);
-    if(!typeSelect) return;
-    
+    if (!typeSelect) return;
+
     localStorage.setItem('fast_type_' + profile, typeSelect.value);
-    if(startInput) localStorage.setItem('fast_start_' + profile, startInput.value);
-    if(endInput) localStorage.setItem('fast_end_' + profile, endInput.value);
+    if (startInput) localStorage.setItem('fast_start_' + profile, startInput.value);
+    if (endInput) localStorage.setItem('fast_end_' + profile, endInput.value);
 };
 
-window.disableFasting = function(profile) {
+window.disableFasting = function (profile) {
     let typeSelect = document.getElementById('fast_type_' + profile);
-    if(typeSelect) typeSelect.value = 'none';
+    if (typeSelect) typeSelect.value = 'none';
     saveFasting(profile);
     updateFasting(profile);
 };
 
-window.loadFasting = function(profile) {
+window.loadFasting = function (profile) {
     let typeSelect = document.getElementById('fast_type_' + profile);
     let startInput = document.getElementById('fast_start_' + profile);
     let endInput = document.getElementById('fast_end_' + profile);
-    if(!typeSelect) return;
-    
+    if (!typeSelect) return;
+
     let savedType = localStorage.getItem('fast_type_' + profile);
     if (!savedType) savedType = '16'; // default 16 se prima volta
-    
+
     typeSelect.value = savedType;
-    
-    if(startInput) {
+
+    if (startInput) {
         let savedStart = localStorage.getItem('fast_start_' + profile) || '20:30';
         startInput.value = savedStart;
     }
-    
+
     calcEndFasting(profile);
     updateFasting(profile);
 };
 
-window.onFastingChange = function(profile) {
+window.onFastingChange = function (profile) {
     calcEndFasting(profile);
     saveFasting(profile);
     updateFasting(profile);
@@ -4316,7 +4342,7 @@ window.onFastingChange = function(profile) {
     let label = fastLabels[fastType] || fastType;
 
     if (typeof showCustomConfirm === 'function') {
-        showCustomConfirm("Hai impostato: " + label + ".\n\nVuoi aggiornare e riempire automaticamente la tabella dei pasti per adeguarla subito a questi orari?", function() {
+        showCustomConfirm("Hai impostato: " + label + ".\n\nVuoi aggiornare e riempire automaticamente la tabella dei pasti per adeguarla subito a questi orari?", function () {
             runAutoFill(profile);
         });
     }
@@ -4431,63 +4457,63 @@ function updateWeeklyTableForFasting(profile, fastType, startTime, endTime) {
 }
 
 
-window.updateFasting = function(profile) {
+window.updateFasting = function (profile) {
     let typeSelect = document.getElementById('fast_type_' + profile);
     let startInput = document.getElementById('fast_start_' + profile);
     let endInput = document.getElementById('fast_end_' + profile);
-    if(!typeSelect) return;
-    
+    if (!typeSelect) return;
+
     let detailsEl = document.getElementById('fast_details_' + profile);
     let disabledMsgEl = document.getElementById('fast_disabled_msg_' + profile);
     let disableBtn = document.getElementById('fast_disable_btn_' + profile);
     let badgeEl = document.getElementById('fast_badge_' + profile);
     let dietTitleEl = document.getElementById('diet_title_' + profile);
-    
+
     // CASO DISATTIVATO (NESSUN DIGIUNO)
     if (typeSelect.value === 'none') {
-        if(detailsEl) detailsEl.style.display = 'none';
-        if(disabledMsgEl) disabledMsgEl.style.display = 'block';
-        if(disableBtn) disableBtn.style.display = 'none';
-        
-        if(badgeEl) {
+        if (detailsEl) detailsEl.style.display = 'none';
+        if (disabledMsgEl) disabledMsgEl.style.display = 'block';
+        if (disableBtn) disableBtn.style.display = 'none';
+
+        if (badgeEl) {
             badgeEl.innerHTML = "🍽️ Dieta Tradizionale";
             badgeEl.style.background = "#546e7a";
         }
-        if(dietTitleEl) {
+        if (dietTitleEl) {
             dietTitleEl.innerHTML = "📊 Piano Settimanale Completo (Dieta Standard)";
         }
         updateWeeklyTableForFasting(profile, 'none', '13:30', '20:00');
         return;
     }
-    
+
     // CASO DIGIUNO ATTIVO
-    if(detailsEl) detailsEl.style.display = 'block';
-    if(disabledMsgEl) disabledMsgEl.style.display = 'none';
-    if(disableBtn) disableBtn.style.display = 'inline-block';
-    
-    if(!startInput || !endInput) return;
-    
+    if (detailsEl) detailsEl.style.display = 'block';
+    if (disabledMsgEl) disabledMsgEl.style.display = 'none';
+    if (disableBtn) disableBtn.style.display = 'inline-block';
+
+    if (!startInput || !endInput) return;
+
     let fastHours = parseInt(typeSelect.value) || 16;
     let eatHours = 24 - fastHours;
     let startTime = startInput.value;
     let endTime = endInput.value;
-    
+
     let now = new Date();
     let currentTotalMinutes = now.getHours() * 60 + now.getMinutes();
-    
+
     let startParts = startTime.split(':');
     let startTotalMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
-    
+
     let endParts = endTime.split(':');
     let endTotalMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
-    
+
     let isFasting = false;
     let elapsedMinutes = 0;
     let totalFastingWindow = 0;
     let timeLeft = 0;
-    
+
     if (startTotalMinutes > endTotalMinutes) {
-        totalFastingWindow = (24 * 60 - startTotalMinutes) + endTotalMinutes; 
+        totalFastingWindow = (24 * 60 - startTotalMinutes) + endTotalMinutes;
         if (currentTotalMinutes >= startTotalMinutes || currentTotalMinutes < endTotalMinutes) {
             isFasting = true;
             if (currentTotalMinutes >= startTotalMinutes) elapsedMinutes = currentTotalMinutes - startTotalMinutes;
@@ -4507,36 +4533,36 @@ window.updateFasting = function(profile) {
             else timeLeft = (24 * 60 - currentTotalMinutes) + startTotalMinutes;
         }
     }
-    
+
     let hoursLeft = Math.floor(timeLeft / 60);
     let minsLeft = timeLeft % 60;
     let currentSec = now.getSeconds();
     let secLeft = (60 - currentSec) % 60;
     let timeStr = (hoursLeft > 0 ? hoursLeft + "h " : "") + minsLeft + "m " + String(secLeft).padStart(2, '0') + "s";
     let formattedDigits = String(hoursLeft).padStart(2, '0') + ":" + String(minsLeft).padStart(2, '0') + ":" + String(secLeft).padStart(2, '0');
-    
+
     // Status & Progress elements
     let statusEl = document.getElementById('fast_status_' + profile);
     let progressEl = document.getElementById('fast_progress_' + profile);
     let timeEl = document.getElementById('fast_time_left_' + profile);
     let digitsEl = document.getElementById('fast_live_digits_' + profile);
     let phaseBadgeEl = document.getElementById('fast_phase_badge_' + profile);
-    
+
     if (digitsEl) {
         digitsEl.innerText = formattedDigits;
     }
-    
+
     if (isFasting) {
-        if(statusEl) {
+        if (statusEl) {
             statusEl.innerHTML = "⏳ FASE DI DIGIUNO (" + fastHours + " ORE)";
             statusEl.style.color = "#d32f2f";
         }
-        if(progressEl) {
+        if (progressEl) {
             progressEl.style.background = "linear-gradient(90deg, #ea580c, #dc2626)";
             let percent = totalFastingWindow > 0 ? Math.min(100, Math.max(0, (elapsedMinutes / totalFastingWindow) * 100)) : 0;
             progressEl.style.width = percent.toFixed(1) + "%";
         }
-        if(timeEl) {
+        if (timeEl) {
             timeEl.innerHTML = "Mancano <strong>" + timeStr + "</strong> all'inizio dei pasti (ore " + endTime + ") 💪";
         }
         if (phaseBadgeEl) {
@@ -4558,15 +4584,15 @@ window.updateFasting = function(profile) {
             }
         }
     } else {
-        if(statusEl) {
+        if (statusEl) {
             statusEl.innerHTML = "🍽️ FINESTRA PASTI ATTIVA (" + eatHours + " ORE)";
             statusEl.style.color = "#2e7d32";
         }
-        if(progressEl) {
+        if (progressEl) {
             progressEl.style.background = "linear-gradient(90deg, #16a34a, #22c55e)";
             progressEl.style.width = "100%";
         }
-        if(timeEl) {
+        if (timeEl) {
             timeEl.innerHTML = "Puoi consumare i pasti. Tra <strong>" + timeStr + "</strong> inizierà il nuovo digiuno (ore " + startTime + ").";
         }
         if (phaseBadgeEl) {
@@ -4576,21 +4602,21 @@ window.updateFasting = function(profile) {
             phaseBadgeEl.style.borderColor = "#bbf7d0";
         }
     }
-    
+
     // Indicatore finestre orarie nel widget
     let windowFastEl = document.getElementById('fast_window_fast_' + profile);
-    if(windowFastEl) {
+    if (windowFastEl) {
         windowFastEl.innerHTML = startTime + " ➔ " + endTime + " (" + fastHours + "h)";
     }
     let windowEatEl = document.getElementById('fast_window_eat_' + profile);
-    if(windowEatEl) {
+    if (windowEatEl) {
         windowEatEl.innerHTML = endTime + " ➔ " + startTime + " (" + eatHours + "h)";
     }
-    
+
     // Note dinamiche specifiche per ciascun protocollo
     let noteFastEl = document.getElementById('fast_note_fast_' + profile);
     let noteEatEl = document.getElementById('fast_note_eat_' + profile);
-    
+
     const protocolNotes = {
         "12": {
             fast: "🌙 <strong>Digiuno circadiano naturale (12h):</strong> coincide con la notte. Consentiti: acqua minerale, tè, tisane rilassanti o caffè non zuccherato.",
@@ -4617,46 +4643,46 @@ window.updateFasting = function(profile) {
             eat: "☀️ <strong>Un solo pasto al giorno (1h):</strong> cena unica completa di tutti i macronutrienti e micronutrienti essenziali."
         }
     };
-    
+
     let pKey = typeSelect.value;
     if (protocolNotes[pKey]) {
-        if(noteFastEl) noteFastEl.innerHTML = protocolNotes[pKey].fast;
-        if(noteEatEl) noteEatEl.innerHTML = protocolNotes[pKey].eat;
+        if (noteFastEl) noteFastEl.innerHTML = protocolNotes[pKey].fast;
+        if (noteEatEl) noteEatEl.innerHTML = protocolNotes[pKey].eat;
     } else {
-        if(noteFastEl) noteFastEl.innerHTML = "Consentiti: Acqua, tè, tisane e caffè senza zucchero.";
-        if(noteEatEl) noteEatEl.innerHTML = "Concentra i tuoi pasti all'interno di questa fascia oraria.";
+        if (noteFastEl) noteFastEl.innerHTML = "Consentiti: Acqua, tè, tisane e caffè senza zucchero.";
+        if (noteEatEl) noteEatEl.innerHTML = "Concentra i tuoi pasti all'interno di questa fascia oraria.";
     }
-    
+
     // Badge nel Profilo (Header scheda)
-    if(badgeEl) {
+    if (badgeEl) {
         badgeEl.innerHTML = "⏳ Digiuno " + fastHours + ":" + eatHours + " (" + startTime + " - " + endTime + ")";
         badgeEl.style.background = "#2e7d32";
     }
-    
+
     // Titolo dinamico del Menù Settimanale
-    if(dietTitleEl) {
+    if (dietTitleEl) {
         dietTitleEl.innerHTML = "📊 Piano Settimanale Completo (Digiuno " + fastHours + ":" + eatHours + ")";
     }
     // Adatta le colonne della tabella e le celle al protocollo orario di digiuno
     updateWeeklyTableForFasting(profile, typeSelect.value, startTime, endTime);
-    
+
     // CHICCA 1: Coach Dinamico con Pillole Interattive Cliccabili
     // CHICCA 1: Coach Dinamico con Pillole Interattive Cliccabili
     let tipTextEl = document.getElementById('fast_smart_tip_text_' + profile);
-    if(tipTextEl) {
+    if (tipTextEl) {
         let currentH = now.getHours();
         let advice = "";
-        
+
         let pillVerdure = '<span onclick="openNutritionTip(\'verdure\')" style="color:#1b5e20; background:#e8f5e9; border:1px solid #c8e6c9; padding:2px 7px; border-radius:6px; font-weight:bold; cursor:pointer;" title="Clicca per scoprire le verdure di stagione">verdure fresche 🥗</span>';
         let pillProteine = '<span onclick="openNutritionTip(\'proteine\')" style="color:#1b5e20; background:#e8f5e9; border:1px solid #c8e6c9; padding:2px 7px; border-radius:6px; font-weight:bold; cursor:pointer;" title="Clicca per capire cosa sono le proteine nobili">proteine nobili 🍗</span>';
         let pillCarboidrati = '<span onclick="openNutritionTip(\'carboidrati\')" style="color:#1b5e20; background:#e8f5e9; border:1px solid #c8e6c9; padding:2px 7px; border-radius:6px; font-weight:bold; cursor:pointer;" title="Clicca per scoprire i carboidrati complessi sani">carboidrati complessi 🌾</span>';
         let pillAutofagia = '<span onclick="openNutritionTip(\'autofagia\')" style="color:#1b5e20; background:#e8f5e9; border:1px solid #c8e6c9; padding:2px 7px; border-radius:6px; font-weight:bold; cursor:pointer;" title="Clicca per approfondire">autofagia cellulare 🧬</span>';
-        
+
         tipTextEl.setAttribute('data-is-fasting', isFasting ? 'true' : 'false');
         let prevFasting = tipTextEl.getAttribute('data-prev-fasting');
         let fastingChanged = (prevFasting !== null && prevFasting !== (isFasting ? 'true' : 'false'));
         tipTextEl.setAttribute('data-prev-fasting', isFasting ? 'true' : 'false');
-        
+
         // Se l\'utente ha cliccato "Cambia Consiglio" e siamo nella stessa fase, mantieni il consiglio scelto dall\'utente!
         if (!tipTextEl.dataset.userChosen || fastingChanged || !tipTextEl.innerHTML.trim()) {
             if (isFasting) {
@@ -4705,17 +4731,17 @@ setTimeout(() => {
     });
 }, 400);
 
-window.showFastingInfo = function(profile) {
+window.showFastingInfo = function (profile) {
     let typeSelect = document.getElementById('fast_type_' + profile);
-    if(!typeSelect) return;
-    
+    if (!typeSelect) return;
+
     let type = typeSelect.value;
     let title = "";
     let rules = "";
     let pros = "";
     let cons = "";
-    
-        switch(type) {
+
+    switch (type) {
         case "none":
             title = "Dieta Tradizionale / Libera";
             rules = "Prevede la normale distribuzione della giornata alimentare (Colazione, Pranzo, Cena ed eventuali Spuntini) senza intervalli forzati di digiuno prolungato.";
@@ -4759,7 +4785,7 @@ window.showFastingInfo = function(profile) {
             cons = "Protocollo estremo. \u00C8 praticamente impossibile assumere tutte le proteine e i micronutrienti necessari in un solo pasto. Va usato solo sotto controllo o per periodi brevissimi.";
             break;
     }
-    
+
     // Create Modal
     let overlay = document.createElement('div');
     overlay.style.position = 'fixed';
@@ -4774,7 +4800,7 @@ window.showFastingInfo = function(profile) {
     overlay.style.alignItems = 'center';
     overlay.style.opacity = '0';
     overlay.style.transition = 'opacity 0.3s ease';
-    
+
     let box = document.createElement('div');
     box.style.backgroundColor = 'white';
     box.style.padding = '25px';
@@ -4785,7 +4811,7 @@ window.showFastingInfo = function(profile) {
     box.style.transform = 'translateY(30px) scale(0.95)';
     box.style.transition = 'all 0.3s ease';
     box.style.fontFamily = 'sans-serif';
-    
+
     let htmlContent = `
         <h2 style="color:#2e7d32; margin-top:0; border-bottom:2px solid #8bc34a; padding-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
             <span>ℹ️ Protocollo ${title}</span>
@@ -4801,12 +4827,12 @@ window.showFastingInfo = function(profile) {
             <button onclick="this.closest('.fasting-modal-overlay').remove()" style="background:#2196f3; color:white; border:none; border-radius:8px; padding:10px 40px; font-size:1rem; font-weight:bold; cursor:pointer; box-shadow: 0 4px 6px rgba(33,150,243,0.3);">Ho Capito</button>
         </div>
     `;
-    
+
     box.innerHTML = htmlContent;
     overlay.className = 'fasting-modal-overlay';
     overlay.appendChild(box);
     document.body.appendChild(overlay);
-    
+
     // Animate In
     requestAnimationFrame(() => {
         overlay.style.opacity = '1';
@@ -4814,13 +4840,13 @@ window.showFastingInfo = function(profile) {
     });
 };
 
-window.printFastingInfo = function(type) {
+window.printFastingInfo = function (type) {
     let title = "";
     let rules = "";
     let pros = "";
     let cons = "";
-    
-    switch(type) {
+
+    switch (type) {
         case "12":
             title = "12:12 (Principianti)";
             rules = "Prevede 12 ore di digiuno e 12 ore di finestra alimentare. Di solito si fa coincidere il digiuno con le ore notturne (es. dalle 20:00 alle 08:00).";
@@ -4893,7 +4919,7 @@ window.printFastingInfo = function(type) {
     wrapper.style.top = '0px';
     wrapper.style.left = '0px';
     wrapper.style.zIndex = '-9999';
-    
+
     document.body.appendChild(wrapper);
 
     // Hide overlay so it doesn't interfere
@@ -4903,7 +4929,7 @@ window.printFastingInfo = function(type) {
         oldDisplay = overlay.style.display;
         overlay.style.display = 'none';
     }
-    
+
     let opt = {
         margin: 0.5,
         filename: 'Protocollo_Digiuno_' + type + '.pdf',
@@ -4911,7 +4937,7 @@ window.printFastingInfo = function(type) {
         html2canvas: { scale: 2, useCORS: true, windowWidth: 800, windowHeight: wrapper.scrollHeight, scrollY: 0 },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
-    
+
     if (typeof html2pdf !== 'undefined') {
         html2pdf().set(opt).from(wrapper).save().then(() => {
             document.body.removeChild(wrapper);
@@ -4929,7 +4955,7 @@ window.printFastingInfo = function(type) {
 };
 
 // ---- CHICCA 4: BANNER CELEBRAZIONE PESATA ----
-window.showCelebrationBanner = function(title, message, isGoal) {
+window.showCelebrationBanner = function (title, message, isGoal) {
     let overlay = document.createElement('div');
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
@@ -4943,7 +4969,7 @@ window.showCelebrationBanner = function(title, message, isGoal) {
     overlay.style.alignItems = 'center';
     overlay.style.opacity = '0';
     overlay.style.transition = 'opacity 0.3s ease';
-    
+
     let box = document.createElement('div');
     box.style.background = isGoal ? 'linear-gradient(135deg, #fffde7, #ffffff)' : 'linear-gradient(135deg, #f1f8e9, #ffffff)';
     box.style.padding = '35px 30px';
@@ -4956,20 +4982,20 @@ window.showCelebrationBanner = function(title, message, isGoal) {
     box.style.transition = 'all 0.3s ease';
     box.style.border = isGoal ? '3px solid #ffd54f' : '3px solid #81c784';
     box.style.fontFamily = "'Inter', sans-serif, system-ui";
-    
+
     let emoji = isGoal ? '🏆👑🥇' : '🎉🎈💪';
-    
+
     box.innerHTML = `
         <div style="font-size:3rem; margin-bottom:10px; animation: bounce 1s infinite;">${emoji}</div>
         <h2 style="color:${isGoal ? '#f57f17' : '#2e7d32'}; margin:0 0 15px 0; font-size:1.6rem; font-weight:800;">${title}</h2>
         <div style="font-size:1.15rem; color:#333; line-height:1.6; margin-bottom:25px;">${message}</div>
         <button onclick="this.closest('.celebration-overlay').remove()" style="background:${isGoal ? 'linear-gradient(135deg, #ffb300, #f57c00)' : 'linear-gradient(135deg, #43a047, #2e7d32)'}; color:white; border:none; border-radius:30px; padding:12px 35px; font-size:1.1rem; font-weight:bold; cursor:pointer; box-shadow:0 6px 15px rgba(0,0,0,0.2);">Avanti Tutta! 💪</button>
     `;
-    
+
     overlay.className = 'celebration-overlay';
     overlay.appendChild(box);
     document.body.appendChild(overlay);
-    
+
     requestAnimationFrame(() => {
         overlay.style.opacity = '1';
         box.style.transform = 'scale(1)';
@@ -4977,7 +5003,7 @@ window.showCelebrationBanner = function(title, message, isGoal) {
 };
 
 // ---- GUIDA NUTRIZIONALE INTERATTIVA (VERDURE STAGIONE, PROTEINE NOBILI, CARBOIDRATI) ----
-window.openNutritionTip = function(topic) {
+window.openNutritionTip = function (topic) {
     let now = new Date();
     let month = now.getMonth(); // 0-11
     const monthNames = [
@@ -4985,15 +5011,15 @@ window.openNutritionTip = function(topic) {
         "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"
     ];
     let currentMonthName = monthNames[month];
-    
+
     let title = "";
     let badge = "";
     let contentHtml = "";
-    
+
     if (topic === 'verdure') {
         let season = "";
         let seasonalVeggies = [];
-        
+
         if (month === 2 || month === 3 || month === 4) {
             season = "Primavera";
             seasonalVeggies = [
@@ -5031,15 +5057,15 @@ window.openNutritionTip = function(topic) {
                 { name: "Porri", desc: "Diuretici, aromatizzanti naturali senza bisogno di aggiungere sale." }
             ];
         }
-        
+
         title = "🥗 Verdure Fresche di Stagione";
         badge = currentMonthName + " (" + season + ")";
-        
+
         let listHtml = "";
         seasonalVeggies.forEach(v => {
             listHtml += "<li style='margin-bottom:8px;'><strong>" + v.name + ":</strong> <span style='color:#555;'>" + v.desc + "</span></li>";
         });
-        
+
         contentHtml = `
             <div style="background:#e8f5e9; padding:12px; border-radius:8px; border-left:4px solid #4caf50; margin-bottom:15px;">
                 <strong>💡 Perché di stagione?</strong> Le verdure raccolte nel loro periodo naturale hanno fino al <strong>300% in più di vitamine</strong>, meno pesticidi e un sapore incomparabilmente più intenso!
@@ -5106,7 +5132,7 @@ window.openNutritionTip = function(topic) {
             </ul>
         `;
     }
-    
+
     // Popup Modal
     let overlay = document.createElement('div');
     overlay.className = 'nutrition-tip-overlay';
@@ -5122,11 +5148,11 @@ window.openNutritionTip = function(topic) {
     overlay.style.alignItems = 'center';
     overlay.style.opacity = '0';
     overlay.style.transition = 'opacity 0.25s ease';
-    
+
     overlay.onclick = (e) => {
-        if(e.target === overlay) overlay.remove();
+        if (e.target === overlay) overlay.remove();
     };
-    
+
     let box = document.createElement('div');
     box.style.background = 'white';
     box.style.padding = '25px 30px';
@@ -5139,7 +5165,7 @@ window.openNutritionTip = function(topic) {
     box.style.transform = 'translateY(20px) scale(0.95)';
     box.style.transition = 'all 0.25s ease';
     box.style.fontFamily = "'Inter', sans-serif, system-ui";
-    
+
     box.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #eee; padding-bottom:12px; margin-bottom:15px;">
             <div>
@@ -5155,10 +5181,10 @@ window.openNutritionTip = function(topic) {
             <button onclick="this.closest('.nutrition-tip-overlay').remove()" style="background:#2e7d32; color:white; border:none; border-radius:25px; padding:10px 30px; font-weight:bold; font-size:0.95rem; cursor:pointer; box-shadow:0 4px 10px rgba(46,125,50,0.25);">Ho Capito 👌</button>
         </div>
     `;
-    
+
     overlay.appendChild(box);
     document.body.appendChild(overlay);
-    
+
     requestAnimationFrame(() => {
         overlay.style.opacity = '1';
         box.style.transform = 'translateY(0) scale(1)';
@@ -5168,7 +5194,7 @@ window.openNutritionTip = function(topic) {
 // ============================================================
 // CENTRO DI CONTROLLO & PREFERENZE (APPLE macOS + WINDOWS 11 FLUENT)
 // ============================================================
-window.openControlCenter = function() {
+window.openControlCenter = function () {
     const modal = document.getElementById('control-center-modal');
     if (!modal) return;
 
@@ -5189,7 +5215,7 @@ window.openControlCenter = function() {
     const topUndoBtn = document.getElementById('quickUndoTopBtn');
     const undoWrapper = document.getElementById('modalUndoSyncWrapper');
     let hasUndo = (origUndoBtn && origUndoBtn.style.display !== 'none');
-    
+
     if (undoWrapper) undoWrapper.style.display = hasUndo ? 'flex' : 'none';
     if (topUndoBtn) topUndoBtn.style.display = hasUndo ? 'inline-flex' : 'none';
 
@@ -5200,7 +5226,7 @@ window.openControlCenter = function() {
     });
 };
 
-window.closeControlCenter = function() {
+window.closeControlCenter = function () {
     const modal = document.getElementById('control-center-modal');
     if (!modal) return;
     modal.classList.remove('active');
@@ -5209,13 +5235,13 @@ window.closeControlCenter = function() {
     }, 250);
 };
 
-window.handleOverlayBackdropClick = function(event) {
+window.handleOverlayBackdropClick = function (event) {
     if (event.target && event.target.id === 'control-center-modal') {
         window.closeControlCenter();
     }
 };
 
-window.onToggleThemeSwitch = function(isChecked) {
+window.onToggleThemeSwitch = function (isChecked) {
     if (typeof toggleDarkMode === 'function') {
         toggleDarkMode();
     }
@@ -5225,7 +5251,7 @@ window.onToggleThemeSwitch = function(isChecked) {
     }
 };
 
-window.onToggleSyncSwitch = function(isChecked) {
+window.onToggleSyncSwitch = function (isChecked) {
     const syncCheckbox = document.getElementById('syncMenus');
     if (syncCheckbox) {
         syncCheckbox.checked = isChecked;
@@ -5238,13 +5264,13 @@ window.onToggleSyncSwitch = function(isChecked) {
     }
     const statusText = document.getElementById('footerStatusText');
     if (statusText) {
-        statusText.textContent = isChecked 
-            ? "🔗 Sincronizzazione Attiva • Le modifiche si replicano tra profili" 
+        statusText.textContent = isChecked
+            ? "🔗 Sincronizzazione Attiva • Le modifiche si replicano tra profili"
             : "🔓 Sincronizzazione Disattivata • Tabelle pasti indipendenti";
     }
 };
 
-window.syncSyncToggles = function(isChecked) {
+window.syncSyncToggles = function (isChecked) {
     const syncSwitch = document.getElementById('modalSyncSwitch');
     if (syncSwitch) syncSwitch.checked = isChecked;
     const dot = document.getElementById('controlStatusDot');
@@ -5254,7 +5280,7 @@ window.syncSyncToggles = function(isChecked) {
     }
 };
 
-window.openSmartShoppingList = function() {
+window.openSmartShoppingList = function () {
     window.closeControlCenter();
     const section = document.getElementById('shopping-section');
     if (section) {
@@ -5268,7 +5294,7 @@ window.openSmartShoppingList = function() {
 };
 
 // Chiudi Modali con il tasto ESC
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         const recipeModal = document.getElementById('recipe-modal');
         if (recipeModal && recipeModal.style.display !== 'none') recipeModal.style.display = 'none';
@@ -5309,7 +5335,7 @@ const DAILY_WISDOM_TIPS = [
 
 let currentWisdomIndex = 0;
 
-window.initDailyWisdom = function() {
+window.initDailyWisdom = function () {
     const textEl = document.getElementById('wisdom-text');
     const topicEl = document.getElementById('wisdom-topic-badge');
     const dateEl = document.getElementById('wisdom-date-badge');
@@ -5335,7 +5361,7 @@ function renderCurrentWisdom() {
     }
 }
 
-window.cycleNextWisdom = function() {
+window.cycleNextWisdom = function () {
     currentWisdomIndex = (currentWisdomIndex + 1) % DAILY_WISDOM_TIPS.length;
     renderCurrentWisdom();
 };
@@ -5352,7 +5378,7 @@ let breathingPhase = 0; // 0=idle, 1=inhale(4), 2=hold(7), 3=exhale(8)
 let breathingCycleCount = 1;
 let breathingSecondsLeft = 4;
 
-window.openSosHungerModal = function() {
+window.openSosHungerModal = function () {
     const modal = document.getElementById('sos-hunger-modal');
     if (!modal) return;
     modal.style.display = 'flex';
@@ -5360,7 +5386,7 @@ window.openSosHungerModal = function() {
     window.startBreathingExercise();
 };
 
-window.closeSosHungerModal = function() {
+window.closeSosHungerModal = function () {
     const modal = document.getElementById('sos-hunger-modal');
     if (!modal) return;
     window.stopBreathingExercise();
@@ -5368,13 +5394,13 @@ window.closeSosHungerModal = function() {
     setTimeout(() => { modal.style.display = 'none'; }, 250);
 };
 
-window.startBreathingExercise = function() {
+window.startBreathingExercise = function () {
     window.stopBreathingExercise();
     breathingCycleCount = 1;
     runBreathingCycle();
 };
 
-window.stopBreathingExercise = function() {
+window.stopBreathingExercise = function () {
     if (breathingTimer) {
         clearInterval(breathingTimer);
         breathingTimer = null;
@@ -5441,7 +5467,7 @@ function runBreathingCycle() {
 // ============================================================
 // REGALO 2: PAGELLA SETTIMANALE & RESOCONTO DI COPPIA
 // ============================================================
-window.openWeeklyReportModal = function() {
+window.openWeeklyReportModal = function () {
     const modal = document.getElementById('weekly-report-modal');
     if (!modal) return;
 
@@ -5478,7 +5504,7 @@ window.openWeeklyReportModal = function() {
     }
 };
 
-window.closeWeeklyReportModal = function() {
+window.closeWeeklyReportModal = function () {
     const modal = document.getElementById('weekly-report-modal');
     if (!modal) return;
     modal.classList.remove('active');
@@ -5529,7 +5555,7 @@ const FOOD_SWAP_DATABASE = {
     }
 };
 
-window.openMealSwapperModal = function(initialCategory = 'carne') {
+window.openMealSwapperModal = function (initialCategory = 'carne') {
     const modal = document.getElementById('meal-swapper-modal');
     if (!modal) return;
     modal.style.display = 'flex';
@@ -5537,14 +5563,14 @@ window.openMealSwapperModal = function(initialCategory = 'carne') {
     window.selectSwapperCategory(initialCategory);
 };
 
-window.closeMealSwapperModal = function() {
+window.closeMealSwapperModal = function () {
     const modal = document.getElementById('meal-swapper-modal');
     if (!modal) return;
     modal.classList.remove('active');
     setTimeout(() => { modal.style.display = 'none'; }, 250);
 };
 
-window.openMealSwapperForCurrentCell = function() {
+window.openMealSwapperForCurrentCell = function () {
     let initialCat = 'carne';
     if (typeof currentActiveCell !== 'undefined' && currentActiveCell) {
         let txt = currentActiveCell.innerText.toLowerCase();
@@ -5562,7 +5588,7 @@ window.openMealSwapperForCurrentCell = function() {
     window.openMealSwapperModal(initialCat);
 };
 
-window.selectSwapperCategory = function(catKey) {
+window.selectSwapperCategory = function (catKey) {
     const catData = FOOD_SWAP_DATABASE[catKey];
     if (!catData) return;
 
@@ -5594,7 +5620,7 @@ window.selectSwapperCategory = function(catKey) {
     `).join('');
 };
 
-window.applySwapperItem = function(foodText) {
+window.applySwapperItem = function (foodText) {
     if (typeof currentActiveCell !== 'undefined' && currentActiveCell) {
         currentActiveCell.innerHTML = foodText;
         if (currentActiveCell.id) {
@@ -5621,9 +5647,9 @@ window.applySwapperItem = function(foodText) {
 // ============================================================
 // GESTIONE SINCRONIZZAZIONE DI FAMIGLIA & COPIA SETTIMANA
 // ============================================================
-window.initFamilySyncControls = function() {
+window.initFamilySyncControls = function () {
     let profiles = (typeof globalProfiles !== 'undefined') ? globalProfiles : (JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie']);
-    
+
     profiles.forEach(prof => {
         let select = document.getElementById('sync_target_' + prof);
         let statusLabel = document.getElementById('sync_status_label_' + prof);
@@ -5639,7 +5665,7 @@ window.initFamilySyncControls = function() {
 
         let optionsHtml = '';
         optionsHtml += `<option value="none" ${savedTarget === 'none' ? 'selected' : ''}>🔓 Nessuno (Menù Indipendente)</option>`;
-        
+
         profiles.forEach(other => {
             if (other !== prof) {
                 let otherName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(other) : other;
@@ -5667,12 +5693,12 @@ window.initFamilySyncControls = function() {
     });
 };
 
-window.changeProfileSyncTarget = function(prof, targetValue) {
+window.changeProfileSyncTarget = function (prof, targetValue) {
     localStorage.setItem('syncTarget_' + prof, targetValue);
-    
+
     let statusLabel = document.getElementById('sync_status_label_' + prof);
     let targetName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(targetValue) : targetValue;
-    
+
     if (statusLabel) {
         if (targetValue === 'none') {
             statusLabel.innerHTML = '🔓 <strong>Menù Autonomo:</strong> Le modifiche degli altri non toccano i tuoi pasti.';
@@ -5710,14 +5736,14 @@ window.changeProfileSyncTarget = function(prof, targetValue) {
 
 let currentCopyDestProfile = null;
 
-window.openCopyWeekModal = function(destProf) {
+window.openCopyWeekModal = function (destProf) {
     currentCopyDestProfile = destProf;
     const modal = document.getElementById('copy-week-modal');
     if (!modal) return;
 
     let profiles = (typeof globalProfiles !== 'undefined') ? globalProfiles : (JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie']);
     let destName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(destProf) : destProf;
-    
+
     let destEl = document.getElementById('copy-week-dest-name');
     if (destEl) destEl.textContent = destName;
 
@@ -5736,18 +5762,18 @@ window.openCopyWeekModal = function(destProf) {
     modal.style.display = 'flex';
 };
 
-window.closeCopyWeekModal = function() {
+window.closeCopyWeekModal = function () {
     const modal = document.getElementById('copy-week-modal');
     if (modal) modal.style.display = 'none';
     currentCopyDestProfile = null;
 };
 
-window.executeCopyWeek = function() {
+window.executeCopyWeek = function () {
     if (!currentCopyDestProfile) return;
     let profiles = (typeof globalProfiles !== 'undefined') ? globalProfiles : (JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie']);
     let sourceSelect = document.getElementById('copy-week-source-select');
     if (!sourceSelect) return;
-    
+
     let sourceProf = sourceSelect.value;
     let sourceTable = profiles.indexOf(sourceProf);
     let destTable = profiles.indexOf(currentCopyDestProfile);
@@ -5762,7 +5788,7 @@ window.executeCopyWeek = function() {
             let sourceId = `menuEdit_${sourceTable}_r${row}_c${col}`;
             let destId = `menuEdit_${destTable}_r${row}_c${col}`;
             let sourceText = localStorage.getItem(sourceId);
-            
+
             if (sourceText === null) {
                 let sCell = document.getElementById(sourceId);
                 if (sCell) sourceText = sCell.innerHTML;
@@ -5776,7 +5802,7 @@ window.executeCopyWeek = function() {
                 }
             }
         }
-        
+
         let testDestCell = document.getElementById(`menuEdit_${destTable}_r${row}_c1`);
         if (testDestCell && testDestCell.parentNode) {
             const event = new Event('input', { bubbles: true });
@@ -6135,10 +6161,10 @@ const RECIPE_PROCEDURES = {
 let currentViewingProcedureTitle = null;
 let currentViewingProcedureRecipe = null;
 
-window.openRecipeProcedureModal = function(encodedTitle) {
+window.openRecipeProcedureModal = function (encodedTitle) {
     let title = decodeURIComponent(encodedTitle);
     currentViewingProcedureTitle = title;
-    
+
     const modal = document.getElementById('recipe-procedure-modal');
     if (!modal) return;
 
@@ -6232,12 +6258,12 @@ window.openRecipeProcedureModal = function(encodedTitle) {
     modal.style.display = 'flex';
 };
 
-window.closeRecipeProcedureModal = function() {
+window.closeRecipeProcedureModal = function () {
     const modal = document.getElementById('recipe-procedure-modal');
     if (modal) modal.style.display = 'none';
 };
 
-window.addCurrentProcedureToMenu = function() {
+window.addCurrentProcedureToMenu = function () {
     if (!currentViewingProcedureRecipe) return;
     closeRecipeProcedureModal();
     if (typeof selectRecipeTarget === 'function') {
@@ -6267,7 +6293,7 @@ const SEASONAL_VEGETABLES = {
 
 window.currentSelectedSeasonMonth = new Date().getMonth();
 
-window.openNutritionGuide = function(topic) {
+window.openNutritionGuide = function (topic) {
     const modal = document.getElementById('nutrition-guide-modal');
     if (!modal) return;
 
@@ -6296,12 +6322,12 @@ window.openNutritionGuide = function(topic) {
     modal.style.display = 'flex';
 };
 
-window.closeNutritionGuide = function() {
+window.closeNutritionGuide = function () {
     const modal = document.getElementById('nutrition-guide-modal');
     if (modal) modal.style.display = 'none';
 };
 
-window.selectSeasonMonth = function(mIdx) {
+window.selectSeasonMonth = function (mIdx) {
     window.currentSelectedSeasonMonth = mIdx;
     const bodyEl = document.getElementById('nutri-modal-body');
     if (bodyEl) renderSeasonVegetables(bodyEl, mIdx);
@@ -6452,7 +6478,7 @@ window.userCurrentTipIndex = window.userCurrentTipIndex || {};
 
 window.userCurrentTipIndex = window.userCurrentTipIndex || {};
 
-window.getFastingTipsCatalog = function(isFasting) {
+window.getFastingTipsCatalog = function (isFasting) {
     let pillVerdure = '<span onclick="openNutritionTip(\'verdure\')" style="color:#1b5e20; background:#e8f5e9; border:1px solid #c8e6c9; padding:2px 7px; border-radius:6px; font-weight:bold; cursor:pointer;" title="Clicca per scoprire le verdure di stagione">verdure fresche 🥗</span>';
     let pillProteine = '<span onclick="openNutritionTip(\'proteine\')" style="color:#1b5e20; background:#e8f5e9; border:1px solid #c8e6c9; padding:2px 7px; border-radius:6px; font-weight:bold; cursor:pointer;" title="Clicca per capire cosa sono le proteine nobili">proteine nobili 🍗</span>';
     let pillGrassi = '<span onclick="openNutritionTip(\'grassi\')" style="color:#1b5e20; background:#e8f5e9; border:1px solid #c8e6c9; padding:2px 7px; border-radius:6px; font-weight:bold; cursor:pointer;" title="Clicca per scoprire i grassi buoni">grassi buoni 🥑</span>';
@@ -6483,24 +6509,24 @@ window.getFastingTipsCatalog = function(isFasting) {
     }
 };
 
-window.nextFastingTip = function(profile) {
+window.nextFastingTip = function (profile) {
     let tipEl = document.getElementById('fast_smart_tip_text_' + profile);
     if (!tipEl) return;
-    
+
     let isFasting = (tipEl.getAttribute('data-is-fasting') === 'true');
     let tips = window.getFastingTipsCatalog(isFasting);
-    
+
     window.userCurrentTipIndex = window.userCurrentTipIndex || {};
     let currentIndex = (typeof window.userCurrentTipIndex[profile] === 'number') ? window.userCurrentTipIndex[profile] : 0;
     let nextIndex = (currentIndex + 1) % tips.length;
     window.userCurrentTipIndex[profile] = nextIndex;
     let chosen = tips[nextIndex];
-    
+
     tipEl.dataset.userChosen = 'true';
     tipEl.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
     tipEl.style.opacity = '0';
     tipEl.style.transform = 'translateY(-4px)';
-    
+
     setTimeout(() => {
         tipEl.innerHTML = chosen;
         tipEl.style.opacity = '1';
@@ -6508,7 +6534,7 @@ window.nextFastingTip = function(profile) {
     }, 200);
 };
 
-window.buildStandaloneExe = async function() {
+window.buildStandaloneExe = async function () {
     if (typeof window.require !== 'undefined') {
         try {
             if (typeof showToast === 'function') {
@@ -6538,22 +6564,22 @@ window.buildStandaloneExe = async function() {
 // CALCOLO SCIENTIFICO FABBISOGNO CALORICO PER DIMAGRIRE (Mifflin-St Jeor)
 // =========================================================================
 
-window.autoCalculateKcalDeficit = function(profile, notify = false) {
+window.autoCalculateKcalDeficit = function (profile, notify = false) {
     let saved = localStorage.getItem('profileStats_' + profile);
     let stats = saved ? JSON.parse(saved) : {};
     let ana = JSON.parse(localStorage.getItem('anamnesi_' + profile)) || {};
-    
+
     // 1. Altezza (cm)
     let heightEl = document.getElementById('height_' + profile);
     let rawHeight = heightEl ? heightEl.innerText.trim() : (stats.height || "");
     let height = parseFloat(rawHeight) || parseFloat(ana.altezza) || 165;
-    
+
     // 2. Peso (kg) - usa il peso iniziale o la pesata più recente
     let startEl = document.getElementById('start_' + profile);
     let weightInput = document.getElementById('weight-' + profile);
     let rawWeight = weightInput && weightInput.value ? weightInput.value : (startEl ? startEl.innerText.trim() : (stats.start || ""));
     let weight = parseFloat(rawWeight) || 75;
-    
+
     // 3. Età (anni) dalla data di nascita
     let dobInput = document.getElementById('dob_' + profile);
     let dobString = (dobInput && dobInput.value) ? dobInput.value : (stats.dob || "");
@@ -6566,7 +6592,7 @@ window.autoCalculateKcalDeficit = function(profile, notify = false) {
         if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
         if (isNaN(age) || age <= 0) age = 45;
     }
-    
+
     // 4. Sesso (M o F)
     let gender = stats.gender || '';
     let profLower = (profile + ' ' + (localStorage.getItem('profileName_' + profile) || '')).toLowerCase();
@@ -6585,20 +6611,20 @@ window.autoCalculateKcalDeficit = function(profile, notify = false) {
     } else {
         bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
     }
-    
+
     // 6. TDEE (Consumo totale giornaliero considerando attività fisica leggera/media x 1.35)
     let tdee = bmr * 1.35;
-    
+
     // 7. Deficit per Dimagrimento Sano (Deficit sostenibile di ~500 kcal per perdere ~0.5kg di grasso a settimana)
     let deficitKcal = Math.round(tdee - 500);
-    
+
     // 8. Soglia minima di sicurezza biologica OMS / SINU
     let minSafe = (gender === 'M') ? 1400 : 1200;
     if (deficitKcal < minSafe) deficitKcal = minSafe;
-    
+
     // Arrotonda ai 50 più vicini per facilità di pianificazione della dieta
     deficitKcal = Math.round(deficitKcal / 50) * 50;
-    
+
     // Applica a video e salva nello stato
     let kcalEl = document.getElementById('kcal_' + profile);
     if (kcalEl) {
@@ -6610,11 +6636,11 @@ window.autoCalculateKcalDeficit = function(profile, notify = false) {
     stats.dob = dobString;
     stats.gender = gender;
     localStorage.setItem('profileStats_' + profile, JSON.stringify(stats));
-    
+
     if (notify && typeof showToast === 'function') {
         showToast("🪄 Fabbisogno calcolato su misura: ~" + deficitKcal + " kcal/die (Metabolismo Basale: " + Math.round(bmr) + ", Consumo Totale: " + Math.round(tdee) + ")", '#0284c7');
     }
-    
+
     return deficitKcal.toString();
 };
 
@@ -6625,14 +6651,14 @@ window.autoCalculateKcalDeficit = function(profile, notify = false) {
 
 window.currentPreviewProfile = 'marito';
 
-window.openPrintPreview = function(profile) {
+window.openPrintPreview = function (profile) {
     let profileId = typeof profile === 'string' ? profile : (profile === 0 ? 'marito' : 'moglie');
     if (!profileId) profileId = window.activeProfile || 'marito';
     window.currentPreviewProfile = profileId;
 
     let section = document.getElementById('section-' + profileId);
     let targetTable = section ? section.querySelector('.weekly-table') : document.querySelectorAll('.weekly-table')[profileId === 'marito' ? 0 : 1];
-    
+
     if (!targetTable) {
         targetTable = document.querySelector('.weekly-table');
     }
@@ -6642,13 +6668,13 @@ window.openPrintPreview = function(profile) {
     }
 
     let profileName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(profileId) : profileId;
-    
+
     // Recupera protocollo e orari salvati
     let fastType = localStorage.getItem('fast_type_' + profileId) || '16';
     let fastStart = localStorage.getItem('fast_start_' + profileId) || '20:30';
     let fastEnd = localStorage.getItem('fast_end_' + profileId) || '12:30';
     let eatHours = 24 - (parseInt(fastType) || 16);
-    let fastingSubtitle = (fastType !== 'none') 
+    let fastingSubtitle = (fastType !== 'none')
         ? '⏳ Protocollo Digiuno: ' + fastType + ':' + eatHours + ' (' + fastStart + ' - ' + fastEnd + ')'
         : '🍽️ Dieta Libera Tradizionale (Senza vincoli di orario)';
 
@@ -6755,13 +6781,13 @@ window.openPrintPreview = function(profile) {
     }
 };
 
-window.closePrintPreview = function() {
+window.closePrintPreview = function () {
     window._isPreviewingShoppingList = false;
     let modal = document.getElementById('print-preview-modal');
     if (modal) modal.style.display = 'none';
 };
 
-window.printFromPreview = function() {
+window.printFromPreview = function () {
     let isShopping = window._isPreviewingShoppingList === true;
     let className = isShopping ? 'print-shopping-preview-mode' : 'print-preview-mode';
     document.body.classList.add(className);
@@ -6773,7 +6799,7 @@ window.printFromPreview = function() {
     }, 200);
 };
 
-window.savePdfDirectly = function() {
+window.savePdfDirectly = function () {
     let sheet = document.getElementById('print-preview-sheet');
     if (!sheet) return;
 
@@ -6788,11 +6814,11 @@ window.savePdfDirectly = function() {
     }
 
     let opt = {
-        margin:       [8, 8, 8, 8],
-        filename:     fileName,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: isShopping ? 'portrait' : 'landscape' }
+        margin: [8, 8, 8, 8],
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: isShopping ? 'portrait' : 'landscape' }
     };
 
     html2pdf().set(opt).from(sheet).outputPdf('datauristring').then(async (pdfDataUri) => {
@@ -6806,7 +6832,7 @@ window.savePdfDirectly = function() {
                         showToast("🎉 File PDF salvato sul tuo PC!", "#16a34a");
                     }
                 }
-            } catch(err) {
+            } catch (err) {
                 console.error("Errore salvataggio PDF via Electron:", err);
                 const a = document.createElement('a');
                 a.href = pdfDataUri;
@@ -6827,7 +6853,7 @@ window.savePdfDirectly = function() {
     });
 };
 
-window.openShoppingPrintPreview = function() {
+window.openShoppingPrintPreview = function () {
     let pName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(window.activeProfile || 'marito') : 'Famiglia';
     window._isPreviewingShoppingList = true;
 
@@ -6939,7 +6965,7 @@ function exportPDF(profile) {
 // =========================================================================
 // 🎲 RIGENERA SOLO QUESTO GIORNO (REROLL SINGOLO PASTO)
 // =========================================================================
-window.rerollSingleDay = function(profileId, rowIndex) {
+window.rerollSingleDay = function (profileId, rowIndex) {
     if (!profileId) profileId = window.activeProfile || 'marito';
     let section = document.getElementById('section-' + profileId);
     let table = section ? section.querySelector('.weekly-table') : document.querySelectorAll('.weekly-table')[profileId === 'marito' ? 0 : 1];
@@ -6982,8 +7008,8 @@ window.rerollSingleDay = function(profileId, rowIndex) {
         "Spuntino Apertura Finestra: Finocchi e carote croccanti 🥕 con 30g parmigiano o noci 🥜"
     ];
 
-    const allRecipes = [...(JSON.parse(localStorage.getItem('myCustomRecipes'))||[]), ...(typeof defaultRecipes !== 'undefined' ? defaultRecipes : [])];
-    const pranziList = allRecipes.filter(r => ['pasta', 'riso', 'farro', 'quinoa', 'pollo', 'salmone', 'orata', 'sgombro', 'zuppa', 'lenticchie', 'fesa', 'tonno', 'uova', 'insalata'].some(k => (r.text||r.nome||r.name||'').toLowerCase().includes(k)));
+    const allRecipes = [...(JSON.parse(localStorage.getItem('myCustomRecipes')) || []), ...(typeof defaultRecipes !== 'undefined' ? defaultRecipes : [])];
+    const pranziList = allRecipes.filter(r => ['pasta', 'riso', 'farro', 'quinoa', 'pollo', 'salmone', 'orata', 'sgombro', 'zuppa', 'lenticchie', 'fesa', 'tonno', 'uova', 'insalata'].some(k => (r.text || r.nome || r.name || '').toLowerCase().includes(k)));
     const getRandom = (arr, current) => {
         let filtered = arr.filter(x => (x.text || x) !== current);
         let pool = filtered.length > 0 ? filtered : arr;
@@ -7036,7 +7062,7 @@ window.rerollSingleDay = function(profileId, rowIndex) {
 // =========================================================================
 // 🛒 LISTA DELLA SPESA INTELLIGENTE (MODAL & CONDIVISIONE)
 // =========================================================================
-window.openSmartShoppingList = function(profileId) {
+window.openSmartShoppingList = function (profileId) {
     if (!profileId) profileId = window.activeProfile || 'marito';
     let section = document.getElementById('section-' + profileId);
     let table = section ? section.querySelector('.weekly-table') : document.querySelectorAll('.weekly-table')[profileId === 'marito' ? 0 : 1];
@@ -7231,7 +7257,7 @@ function copyTextToClipboardUniversal(text) {
                 clipboard.writeText(text);
                 return true;
             }
-        } catch(e) {
+        } catch (e) {
             console.warn("Electron clipboard error:", e);
         }
     }
@@ -7248,10 +7274,10 @@ function copyTextToClipboardUniversal(text) {
         ta.select();
         success = document.execCommand('copy');
         document.body.removeChild(ta);
-    } catch(e) {}
+    } catch (e) { }
     // 3. Prova anche navigator.clipboard
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(() => {});
+        navigator.clipboard.writeText(text).catch(() => { });
         success = true;
     }
     return success;
@@ -7268,14 +7294,14 @@ function showShoppingFeedback(msg) {
     }
 }
 
-window.closeSmartShoppingList = function() {
+window.closeSmartShoppingList = function () {
     let modal = document.getElementById('smart-shopping-modal');
     if (modal) {
         modal.style.display = 'none';
     }
 };
 
-window.copyShoppingListToClipboard = function() {
+window.copyShoppingListToClipboard = function () {
     let text = getShoppingListFormattedText();
     if (!text) {
         if (typeof showCustomAlert === 'function') showCustomAlert("Nessun elemento da copiare nella lista!");
@@ -7289,7 +7315,7 @@ window.copyShoppingListToClipboard = function() {
     }
 };
 
-window.shareShoppingListWhatsApp = function() {
+window.shareShoppingListWhatsApp = function () {
     let text = getShoppingListFormattedText();
     if (!text) {
         if (typeof showCustomAlert === 'function') showCustomAlert("Nessun elemento da inviare!");
@@ -7311,7 +7337,7 @@ window.shareShoppingListWhatsApp = function() {
                 shell.openExternal(url);
                 opened = true;
             }
-        } catch(e) {
+        } catch (e) {
             console.warn("Shell openExternal error:", e);
         }
     }
@@ -7325,13 +7351,13 @@ window.shareShoppingListWhatsApp = function() {
     }
 };
 
-window.exportShoppingListPDF = function() {
+window.exportShoppingListPDF = function () {
     if (typeof window.openShoppingPrintPreview === 'function') {
         window.openShoppingPrintPreview();
     }
 };
 
-window.printShoppingListDirect = function() {
+window.printShoppingListDirect = function () {
     document.body.classList.add('print-shopping-active');
     setTimeout(() => {
         window.print();
@@ -7342,7 +7368,7 @@ window.printShoppingListDirect = function() {
 };
 
 // Supporto tasto ESC per chiudere la modale spesa
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         let modal = document.getElementById('smart-shopping-modal');
         if (modal && modal.style.display !== 'none') {
@@ -7354,7 +7380,7 @@ document.addEventListener('keydown', function(e) {
 // =========================================================================
 // 1. 📲 QR CODE ISTANTANEO PER SMARTPHONE (LISTA DELLA SPESA)
 // =========================================================================
-window.toggleShoppingQRCode = function() {
+window.toggleShoppingQRCode = function () {
     let card = document.getElementById('shopping-qr-card');
     if (!card) return;
     if (card.style.display !== 'none' && card.style.display !== '') {
@@ -7386,7 +7412,7 @@ window.toggleShoppingQRCode = function() {
                 });
                 generated = true;
             }
-        } catch(e) {
+        } catch (e) {
             console.warn("QRCode library error:", e);
         }
     }
@@ -7399,7 +7425,7 @@ window.toggleShoppingQRCode = function() {
 // =========================================================================
 // 2. 🍲 GUIDA MEAL PREP & BATCH COOKING DEL WEEKEND
 // =========================================================================
-window.openMealPrepModal = function(profileId) {
+window.openMealPrepModal = function (profileId) {
     if (!profileId) profileId = window.activeProfile || 'marito';
     let pName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(profileId) : 'Famiglia';
     let titleEl = document.getElementById('meal-prep-title');
@@ -7491,12 +7517,12 @@ window.openMealPrepModal = function(profileId) {
     if (modal) modal.style.display = 'flex';
 };
 
-window.closeMealPrepModal = function() {
+window.closeMealPrepModal = function () {
     let modal = document.getElementById('meal-prep-modal');
     if (modal) modal.style.display = 'none';
 };
 
-window.printMealPrepDirect = function() {
+window.printMealPrepDirect = function () {
     document.body.classList.add('print-meal-prep-active');
     setTimeout(() => {
         window.print();
@@ -7509,7 +7535,7 @@ window.printMealPrepDirect = function() {
 // =========================================================================
 // 3. ⚖️ RIPARTIZIONE MACRONUTRIENTI IN TEMPO REALE (40/30/30)
 // =========================================================================
-window.updateMacroTrackerUI = function(profileId) {
+window.updateMacroTrackerUI = function (profileId) {
     if (!profileId) profileId = window.activeProfile || 'marito';
     let carbEl = document.getElementById('macro_carb_' + profileId);
     let protEl = document.getElementById('macro_prot_' + profileId);
@@ -7574,7 +7600,7 @@ const FRIDGE_PANTRY_ITEMS = [
     { name: "Zenzero o Curcuma", cat: "aromi", icon: "✨" }
 ];
 
-window.openFridgeFinderModal = function() {
+window.openFridgeFinderModal = function () {
     let container = document.getElementById('fridge-tags-container');
     if (container && container.children.length === 0) {
         FRIDGE_PANTRY_ITEMS.forEach(it => {
@@ -7584,7 +7610,7 @@ window.openFridgeFinderModal = function() {
             btn.innerHTML = `${it.icon} ${it.name}`;
             btn.dataset.item = it.name;
             btn.dataset.cat = it.cat;
-            btn.onclick = function() {
+            btn.onclick = function () {
                 btn.classList.toggle('active');
                 generateFridgeRecipe();
             };
@@ -7595,12 +7621,12 @@ window.openFridgeFinderModal = function() {
     if (modal) modal.style.display = 'flex';
 };
 
-window.closeFridgeFinderModal = function() {
+window.closeFridgeFinderModal = function () {
     let modal = document.getElementById('fridge-finder-modal');
     if (modal) modal.style.display = 'none';
 };
 
-window.resetFridgeTags = function() {
+window.resetFridgeTags = function () {
     let container = document.getElementById('fridge-tags-container');
     if (container) {
         let activeButtons = container.querySelectorAll('.fridge-tag-pill.active');
@@ -7613,7 +7639,7 @@ window.resetFridgeTags = function() {
     }
 };
 
-window.generateFridgeRecipe = function() {
+window.generateFridgeRecipe = function () {
     let container = document.getElementById('fridge-tags-container');
     let res = document.getElementById('fridge-recipe-result');
     if (!container || !res) return;
@@ -7679,7 +7705,7 @@ window.generateFridgeRecipe = function() {
 // =========================================================================
 // 5. 🔔 PROMEMORIA NOTIFICHE DESKTOP WINDOWS PER DIGIUNO & TISANE
 // =========================================================================
-window.toggleFastingNotifications = function(enabled) {
+window.toggleFastingNotifications = function (enabled) {
     localStorage.setItem('fasting_notifications_enabled', enabled ? 'true' : 'false');
     if (enabled) {
         if (typeof triggerWindowsNotification === 'function') {
@@ -7698,7 +7724,7 @@ window.toggleFastingNotifications = function(enabled) {
     }
 };
 
-window.triggerWindowsNotification = function(title, body) {
+window.triggerWindowsNotification = function (title, body) {
     if (localStorage.getItem('fasting_notifications_enabled') === 'false') return;
 
     if (typeof window.require !== 'undefined') {
@@ -7708,7 +7734,7 @@ window.triggerWindowsNotification = function(title, body) {
                 ipcRenderer.invoke('show-desktop-notification', { title, body });
                 return;
             }
-        } catch(e) {
+        } catch (e) {
             console.warn("Electron notification error:", e);
         }
     }
@@ -7747,7 +7773,7 @@ function checkFastingHydrationReminder() {
 // =========================================================================
 // 6. 📈 GRAFICO INTERATTIVO TREND PESO & CIRCONFERENZA VITA & PROIEZIONE
 // =========================================================================
-window.openWeightTrendModal = function(profileId) {
+window.openWeightTrendModal = function (profileId) {
     if (!profileId) profileId = window.activeProfile || 'marito';
     window.currentTrendProfile = profileId;
 
@@ -7781,12 +7807,12 @@ window.openWeightTrendModal = function(profileId) {
     if (modal) modal.style.display = 'flex';
 };
 
-window.closeWeightTrendModal = function() {
+window.closeWeightTrendModal = function () {
     let modal = document.getElementById('weight-trend-modal');
     if (modal) modal.style.display = 'none';
 };
 
-window.addTrendMeasurement = function() {
+window.addTrendMeasurement = function () {
     let profileId = window.currentTrendProfile || window.activeProfile || 'marito';
     let dateInput = document.getElementById('trend-input-date');
     let wInput = document.getElementById('trend-input-weight');
@@ -7841,7 +7867,7 @@ window.addTrendMeasurement = function() {
     }
 };
 
-window.renderWeightTrendUI = function(profileId) {
+window.renderWeightTrendUI = function (profileId) {
     let key = `weightLog_${profileId}`;
     let log = JSON.parse(localStorage.getItem(key)) || [];
     let startWeight = parseFloat(document.getElementById('start_' + profileId)?.innerText) || (log.length > 0 ? log[0].weight : 80);
@@ -7965,27 +7991,27 @@ function renderWeightTrendSVG(log, startWeight, goalWeight) {
             ${(hasWaist && waistPoints) ? `<polyline fill="none" stroke="#d97706" stroke-width="2.5" stroke-dasharray="6,3" stroke-linecap="round" stroke-linejoin="round" points="${waistPoints}" />` : ''}
 
             ${log.map((e, i) => {
-                let cx = getX(i);
-                let cyW = getYWeight(e.weight);
-                let dateLabel = e.date ? e.date.slice(5) : '';
-                let dotSvg = `
+        let cx = getX(i);
+        let cyW = getYWeight(e.weight);
+        let dateLabel = e.date ? e.date.slice(5) : '';
+        let dotSvg = `
                     <circle cx="${cx.toFixed(1)}" cy="${cyW.toFixed(1)}" r="5" fill="#ffffff" stroke="#10b981" stroke-width="3">
                         <title>${e.date}: ${e.weight} kg</title>
                     </circle>
                     <text x="${cx.toFixed(1)}" y="${(cyW - 9).toFixed(1)}" text-anchor="middle" fill="#047857" font-size="11" font-weight="800">${e.weight}kg</text>
                     <text x="${cx.toFixed(1)}" y="${(padTop + plotH + 18).toFixed(1)}" text-anchor="middle" fill="#64748b" font-size="10">${dateLabel}</text>
                 `;
-                if (typeof e.waist === 'number' && e.waist > 0) {
-                    let cyWaist = getYWaist(e.waist);
-                    dotSvg += `
+        if (typeof e.waist === 'number' && e.waist > 0) {
+            let cyWaist = getYWaist(e.waist);
+            dotSvg += `
                         <circle cx="${cx.toFixed(1)}" cy="${cyWaist.toFixed(1)}" r="4" fill="#ffffff" stroke="#d97706" stroke-width="2.5">
                             <title>${e.date}: Vita ${e.waist} cm</title>
                         </circle>
                         <text x="${cx.toFixed(1)}" y="${(cyWaist + 14).toFixed(1)}" text-anchor="middle" fill="#b45309" font-size="10" font-weight="700">${e.waist}cm</text>
                     `;
-                }
-                return dotSvg;
-            }).join('')}
+        }
+        return dotSvg;
+    }).join('')}
         </svg>
     `;
 
@@ -8029,7 +8055,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // =========================================================================
 // ☁️ MOTORE DI SINCRONIZZAZIONE CLOUD PROGETTO SALUTE (PC & SMARTPHONE)
 // =========================================================================
-window.syncSaluteToCloud = async function(customPayload) {
+window.syncSaluteToCloud = async function (customPayload) {
     try {
         let payload = customPayload;
         if (!payload || typeof payload !== 'object') {
@@ -8047,12 +8073,12 @@ window.syncSaluteToCloud = async function(customPayload) {
         if (resp.ok) {
             console.log('☁️ Progetto Salute: Sincronizzazione cloud riuscita!');
         }
-    } catch(err) {
+    } catch (err) {
         console.warn('☁️ Sync Cloud offline:', err);
     }
 };
 
-window.pullSaluteFromCloud = async function(forceRefresh) {
+window.pullSaluteFromCloud = async function (forceRefresh) {
     try {
         const resp = await fetch('/api/salute/data?t=' + Date.now());
         if (!resp.ok) return false;
@@ -8064,7 +8090,7 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
         for (let k in cloudData) {
             const cloudVal = typeof cloudData[k] === 'object' ? JSON.stringify(cloudData[k]) : String(cloudData[k]);
             const localVal = localStorage.getItem(k);
-            
+
             // Per gli array di peso, fai merge intelligente escludendo le pesate eliminate
             if (k.startsWith('weightLog_')) {
                 try {
@@ -8089,7 +8115,7 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
                         cloudArr.forEach(item => {
                             if (item && item.date && !delSet.has(item.date)) map.set(item.date, item);
                         });
-                        const mergedArr = Array.from(map.values()).sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
+                        const mergedArr = Array.from(map.values()).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
                         const mergedStr = JSON.stringify(mergedArr);
                         if (mergedStr !== localVal) {
                             localStorage.setItem(k, mergedStr);
@@ -8097,15 +8123,15 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
                         }
                         continue;
                     }
-                } catch(eMerge) {}
+                } catch (eMerge) { }
             }
-            
+
             if (cloudVal !== localVal) {
                 localStorage.setItem(k, cloudVal);
                 hasChanges = true;
             }
         }
-        
+
         // Sincronizzazione dinamica dei profili Cloud -> Locale
         try {
             if (cloudData.health_profiles) {
@@ -8113,13 +8139,13 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
                 if (Array.isArray(cloudPList) && cloudPList.length > 0) {
                     let localPList = JSON.parse(localStorage.getItem('health_profiles') || '["marito", "moglie"]');
                     if (!Array.isArray(localPList)) localPList = ['marito', 'moglie'];
-                    
+
                     // Assicuriamoci che i profili nel cloud siano la lista autoritativa
                     const validProfiles = new Set(cloudPList);
                     validProfiles.add('marito');
                     validProfiles.add('moglie');
                     ['esempiocompleto', 'luigiscappa', 'a', 'salvatoresalva'].forEach(sp => validProfiles.delete(sp));
-                    
+
                     // Consolida qualsiasi pesata prima di pulizie
                     if (typeof window.consolidaProfiliSaluteLocale === 'function') {
                         window.consolidaProfiliSaluteLocale();
@@ -8148,7 +8174,7 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
                     }
                 }
             }
-        } catch(ePl) {
+        } catch (ePl) {
             console.warn('Errore riconciliazione profili:', ePl);
         }
 
@@ -8157,107 +8183,109 @@ window.pullSaluteFromCloud = async function(forceRefresh) {
         if (typeof window.consolidaProfiliSaluteLocale === 'function') {
             window.consolidaProfiliSaluteLocale();
         }
-        
+
         if (hasChanges || forceRefresh) {
             console.log('☁️ Progetto Salute: Dati sincronizzati dal Cloud!');
-            
+
             // NON ricaricare MAI la pagina con window.location.reload() in background
             // per evitare di interrompere l'utente mentre digita o naviga.
             // Aggiorna invece i componenti dinamicamente.
-            if (typeof renderTabs === 'function') {
-                try {
-                    globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
-                    const vis = (typeof getVisibleHealthProfiles === 'function') ? getVisibleHealthProfiles() : globalProfiles;
-                    let act = localStorage.getItem('activeProfile');
-                    activeProfile = (act && vis.includes(act)) ? act : vis[0];
-                    window.activeProfile = activeProfile;
-                    renderTabs();
-                    if (typeof renderProfiles === 'function') renderProfiles();
-                } catch(eR) {}
+            if (typeof renderTabs === 'function' && typeof globalProfiles !== 'undefined') {
+                if (typeof renderTabs === 'function') {
+                    try {
+                        globalProfiles = JSON.parse(localStorage.getItem('health_profiles')) || ['marito', 'moglie'];
+                        const vis = (typeof getVisibleHealthProfiles === 'function') ? getVisibleHealthProfiles() : globalProfiles;
+                        let act = localStorage.getItem('activeProfile');
+                        activeProfile = (act && globalProfiles.includes(act)) ? act : globalProfiles[0];
+                        activeProfile = (act && vis.includes(act)) ? act : vis[0];
+                        window.activeProfile = activeProfile;
+                        renderTabs();
+                        if (typeof renderProfiles === 'function') renderProfiles();
+                    } catch (eR) { }
+                }
+
+                // Se l'utente sta digitando in un campo di input, non sovrascrivere la UI attiva
+                const activeEl = document.activeElement;
+                const isUserEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
+                if (!isUserEditing && typeof loadProgress === 'function') {
+                    (JSON.parse(localStorage.getItem('health_profiles') || '["marito","moglie"]')).forEach(p => loadProgress(p));
+                }
             }
-            
-            // Se l'utente sta digitando in un campo di input, non sovrascrivere la UI attiva
-            const activeEl = document.activeElement;
-            const isUserEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
-            if (!isUserEditing && typeof loadProgress === 'function') {
-                (JSON.parse(localStorage.getItem('health_profiles') || '["marito","moglie"]')).forEach(p => loadProgress(p));
-            }
+            return true;
+        } catch (err) {
+            console.warn('☁️ Pull cloud error:', err);
+            return false;
         }
-        return true;
-    } catch(err) {
-        console.warn('☁️ Pull cloud error:', err);
-        return false;
-    }
-};
+    };
 
-// Sincronizzazione automatica all'avvio
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { setTimeout(() => window.pullSaluteFromCloud(false), 500); });
-} else {
-    setTimeout(() => window.pullSaluteFromCloud(false), 500);
-}
-
-// 🔄 Sincronizzazione in tempo reale:
-// Polling a intervalli regolari (30s) per non stressare il browser né interrompere l'input
-setInterval(() => {
-    if (!document.hidden && navigator.onLine) {
-        const activeEl = document.activeElement;
-        const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
-        if (!isEditing) {
-            window.pullSaluteFromCloud(false);
-        }
-    }
-}, 30000);
-
-// Quando l'utente torna sulla finestra (focus o tab attiva), sincronizza se non sta digitando
-window.addEventListener('focus', () => {
-    if (navigator.onLine) {
-        const activeEl = document.activeElement;
-        const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
-        if (!isEditing) window.pullSaluteFromCloud(false);
-    }
-});
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && navigator.onLine) {
-        const activeEl = document.activeElement;
-        const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
-        if (!isEditing) window.pullSaluteFromCloud(false);
-    }
-});
-
-// =========================================================================
-// 🚀 CONTROLLI PESO SMART & GESTORE STORICO PESI
-// =========================================================================
-window.adjustQuickWeight = function(profile, delta) {
-    const input = document.getElementById('weight-' + profile);
-    if (!input) return;
-    let cur = parseFloat(input.value) || 80.0;
-    cur = Math.round((cur + delta) * 10) / 10;
-    if (cur > 0) {
-        input.value = cur.toFixed(1);
-    }
-};
-
-window.openWeightHistoryManager = function(profile) {
-    const key = 'weightLog_' + profile;
-    const log = JSON.parse(localStorage.getItem(key)) || [];
-    const profName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(profile) : profile;
-
-    let modal = document.getElementById('weight-history-manager-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'weight-history-manager-modal';
-        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); z-index:99999; display:flex; justify-content:center; align-items:center; padding:15px;';
-        document.body.appendChild(modal);
-    }
-
-    let itemsHtml = '';
-    if (log.length === 0) {
-        itemsHtml = '<p style="color:#94a3b8; text-align:center; padding:20px;">Nessuna pesata registrata.</p>';
+    // Sincronizzazione automatica all'avvio
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => { setTimeout(() => window.pullSaluteFromCloud(false), 500); });
     } else {
-        const sortedLog = [...log].sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
-        sortedLog.forEach((item) => {
-            itemsHtml += `
+        setTimeout(() => window.pullSaluteFromCloud(false), 500);
+    }
+
+    // 🔄 Sincronizzazione in tempo reale:
+    // Polling a intervalli regolari (30s) per non stressare il browser né interrompere l'input
+    setInterval(() => {
+        if (!document.hidden && navigator.onLine) {
+            const activeEl = document.activeElement;
+            const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+            if (!isEditing) {
+                window.pullSaluteFromCloud(false);
+            }
+        }
+    }, 30000);
+
+    // Quando l'utente torna sulla finestra (focus o tab attiva), sincronizza se non sta digitando
+    window.addEventListener('focus', () => {
+        if (navigator.onLine) {
+            const activeEl = document.activeElement;
+            const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+            if (!isEditing) window.pullSaluteFromCloud(false);
+        }
+    });
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && navigator.onLine) {
+            const activeEl = document.activeElement;
+            const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+            if (!isEditing) window.pullSaluteFromCloud(false);
+        }
+    });
+
+    // =========================================================================
+    // 🚀 CONTROLLI PESO SMART & GESTORE STORICO PESI
+    // =========================================================================
+    window.adjustQuickWeight = function (profile, delta) {
+        const input = document.getElementById('weight-' + profile);
+        if (!input) return;
+        let cur = parseFloat(input.value) || 80.0;
+        cur = Math.round((cur + delta) * 10) / 10;
+        if (cur > 0) {
+            input.value = cur.toFixed(1);
+        }
+    };
+
+    window.openWeightHistoryManager = function (profile) {
+        const key = 'weightLog_' + profile;
+        const log = JSON.parse(localStorage.getItem(key)) || [];
+        const profName = (typeof getProfileDisplayName === 'function') ? getProfileDisplayName(profile) : profile;
+
+        let modal = document.getElementById('weight-history-manager-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'weight-history-manager-modal';
+            modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); z-index:99999; display:flex; justify-content:center; align-items:center; padding:15px;';
+            document.body.appendChild(modal);
+        }
+
+        let itemsHtml = '';
+        if (log.length === 0) {
+            itemsHtml = '<p style="color:#94a3b8; text-align:center; padding:20px;">Nessuna pesata registrata.</p>';
+        } else {
+            const sortedLog = [...log].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            sortedLog.forEach((item) => {
+                itemsHtml += `
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:8px;">
                     <div>
                         <strong style="font-size:1.05rem; color:#0f172a;">${item.date}</strong>
@@ -8268,10 +8296,10 @@ window.openWeightHistoryManager = function(profile) {
                     </button>
                 </div>
             `;
-        });
-    }
+            });
+        }
 
-    modal.innerHTML = `
+        modal.innerHTML = `
         <div style="background:#ffffff; border-radius:18px; width:100%; max-width:480px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden;">
             <div style="padding:16px 20px; background:linear-gradient(135deg, #0f172a, #1e293b); color:#fff; display:flex; justify-content:space-between; align-items:center;">
                 <h3 style="margin:0; font-size:1.1rem; color:#f8fafc;">📋 Storico Pesi: ${profName}</h3>
@@ -8286,313 +8314,313 @@ window.openWeightHistoryManager = function(profile) {
             </div>
         </div>
     `;
-    modal.style.display = 'flex';
-};
+        modal.style.display = 'flex';
+    };
 
-window.deleteWeightEntry = function(profile, dateStr, weightVal) {
-    const msg = weightVal ? `Vuoi davvero cancellare la pesata del ${dateStr} (${weightVal} kg)?` : `Vuoi davvero cancellare la pesata del ${dateStr}?`;
-    if (!confirm(msg)) return;
-    const key = 'weightLog_' + profile;
-    let log = JSON.parse(localStorage.getItem(key)) || [];
-    log = log.filter(item => item && item.date !== dateStr);
-    localStorage.setItem(key, JSON.stringify(log));
-
-    // Registro cancellazione locale e cloud autoritativo
-    const delKey = 'deletedWeights_' + profile;
-    const delList = JSON.parse(localStorage.getItem(delKey) || '[]');
-    if (!delList.includes(dateStr)) {
-        delList.push(dateStr);
-        localStorage.setItem(delKey, JSON.stringify(delList));
-    }
-
-    if (typeof loadProgress === 'function') loadProgress(profile);
-    if (typeof window.refreshDashboardStats === 'function') window.refreshDashboardStats(profile);
-    if (typeof window.syncSaluteToCloud === 'function') {
-        window.syncSaluteToCloud({
-            [key]: JSON.stringify(log),
-            _forceWeightLog: true,
-            _deletedWeights: [{ profile, date: dateStr }]
-        });
-    }
-    window.openWeightHistoryManager(profile);
-    if (typeof showToast === 'function') showToast('Pesata rimossa con successo! 🗑️');
-};
-
-// Funzioni di regolazione e salvataggio per la modale di Modifica / Elimina
-window.adjustEditModalWeight = function(delta) {
-    const input = document.getElementById('edit-modal-weight-input');
-    if (!input) return;
-    let val = parseFloat(input.value) || 80.0;
-    val = Math.round((val + delta) * 10) / 10;
-    if (val > 0) input.value = val.toFixed(1);
-};
-
-window.saveEditedWeightFromModal = function() {
-    if (!window._pendingDelete) return;
-    const { profile, label, value } = window._pendingDelete;
-    const input = document.getElementById('edit-modal-weight-input');
-    const newWeight = parseFloat(input.value);
-    if (isNaN(newWeight) || newWeight <= 0) {
-        alert("Inserisci un peso valido!");
-        return;
-    }
-
-    const key = 'weightLog_' + profile;
-    let log = JSON.parse(localStorage.getItem(key)) || [];
-    const [dd, mm] = label.split('/');
-    let foundIndex = -1;
-    for (let i = log.length - 1; i >= 0; i--) {
-        const logParts = log[i].date.split('-');
-        if (logParts[2] === dd && logParts[1] === mm && (value === undefined || Math.abs(log[i].weight - parseFloat(value)) < 0.1 || log[i].weight === value)) {
-            foundIndex = i;
-            break;
-        }
-    }
-    if (foundIndex === -1) {
-        for (let i = log.length - 1; i >= 0; i--) {
-            const logParts = log[i].date.split('-');
-            if (logParts[2] === dd && logParts[1] === mm) {
-                foundIndex = i;
-                break;
-            }
-        }
-    }
-
-    if (foundIndex !== -1) {
-        log[foundIndex].weight = newWeight;
+    window.deleteWeightEntry = function (profile, dateStr, weightVal) {
+        const msg = weightVal ? `Vuoi davvero cancellare la pesata del ${dateStr} (${weightVal} kg)?` : `Vuoi davvero cancellare la pesata del ${dateStr}?`;
+        if (!confirm(msg)) return;
+        const key = 'weightLog_' + profile;
+        let log = JSON.parse(localStorage.getItem(key)) || [];
+        log = log.filter(item => item && item.date !== dateStr);
         localStorage.setItem(key, JSON.stringify(log));
-        if (typeof showToast === 'function') showToast("Pesata modificata con successo! 💾");
+
+        // Registro cancellazione locale e cloud autoritativo
+        const delKey = 'deletedWeights_' + profile;
+        const delList = JSON.parse(localStorage.getItem(delKey) || '[]');
+        if (!delList.includes(dateStr)) {
+            delList.push(dateStr);
+            localStorage.setItem(delKey, JSON.stringify(delList));
+        }
+
         if (typeof loadProgress === 'function') loadProgress(profile);
         if (typeof window.refreshDashboardStats === 'function') window.refreshDashboardStats(profile);
         if (typeof window.syncSaluteToCloud === 'function') {
             window.syncSaluteToCloud({
                 [key]: JSON.stringify(log),
-                _forceWeightLog: true
+                _forceWeightLog: true,
+                _deletedWeights: [{ profile, date: dateStr }]
             });
         }
-    } else {
-        alert("Impossibile trovare la pesata da modificare.");
-    }
+        window.openWeightHistoryManager(profile);
+        if (typeof showToast === 'function') showToast('Pesata rimossa con successo! 🗑️');
+    };
 
-    closeDeleteModal();
-};
+    // Funzioni di regolazione e salvataggio per la modale di Modifica / Elimina
+    window.adjustEditModalWeight = function (delta) {
+        const input = document.getElementById('edit-modal-weight-input');
+        if (!input) return;
+        let val = parseFloat(input.value) || 80.0;
+        val = Math.round((val + delta) * 10) / 10;
+        if (val > 0) input.value = val.toFixed(1);
+    };
 
-// ========================================================
-// 🔍 VISUALIZZAZIONE IN GRANDE AL TOCCO SUL PUNTO DEL GRAFICO
-// ========================================================
-window.showChartPointFocus = function(profile, index) {
-    const chart = charts[profile];
-    if (!chart || !chart.data || !chart.data.labels) return;
-
-    const label = chart.data.labels[index];
-    const dataset = chart.data.datasets[0];
-    if (!dataset || !dataset.data) return;
-    const weight = dataset.data[index];
-
-    const badge = document.getElementById(`chart-focus-badge-${profile}`);
-    const dateEl = document.getElementById(`chart-focus-date-${profile}`);
-    const weightEl = document.getElementById(`chart-focus-weight-${profile}`);
-    const diffEl = document.getElementById(`chart-focus-diff-${profile}`);
-    const manageBtn = document.getElementById(`chart-focus-manage-btn-${profile}`);
-
-    if (!badge || !dateEl || !weightEl || !diffEl) return;
-
-    // Formattazione data
-    dateEl.innerHTML = `📅 Pesata del <b>${label}</b>`;
-    weightEl.innerHTML = `${Number(weight).toFixed(1)} <span style="font-size:1.1rem; color:#94a3b8; font-weight:700;">kg</span>`;
-
-    // Calcolo variazione rispetto alla pesata precedente nel grafico
-    if (index > 0) {
-        const prevWeight = dataset.data[index - 1];
-        const diff = Math.round((weight - prevWeight) * 10) / 10;
-        if (diff < 0) {
-            diffEl.innerHTML = `📉 ${diff.toFixed(1)} kg`;
-            diffEl.style.background = 'rgba(16, 185, 129, 0.2)';
-            diffEl.style.color = '#34d399';
-            diffEl.style.border = '1px solid #059669';
-        } else if (diff > 0) {
-            diffEl.innerHTML = `📈 +${diff.toFixed(1)} kg`;
-            diffEl.style.background = 'rgba(239, 68, 68, 0.2)';
-            diffEl.style.color = '#f87171';
-            diffEl.style.border = '1px solid #dc2626';
-        } else {
-            diffEl.innerHTML = `⚖️ Stabile (0.0 kg)`;
-            diffEl.style.background = 'rgba(148, 163, 184, 0.2)';
-            diffEl.style.color = '#cbd5e1';
-            diffEl.style.border = '1px solid #64748b';
+    window.saveEditedWeightFromModal = function () {
+        if (!window._pendingDelete) return;
+        const { profile, label, value } = window._pendingDelete;
+        const input = document.getElementById('edit-modal-weight-input');
+        const newWeight = parseFloat(input.value);
+        if (isNaN(newWeight) || newWeight <= 0) {
+            alert("Inserisci un peso valido!");
+            return;
         }
-        diffEl.style.display = 'inline-block';
-    } else {
-        diffEl.innerHTML = `🏁 Inizio rilevazione`;
-        diffEl.style.background = 'rgba(56, 189, 248, 0.2)';
-        diffEl.style.color = '#38bdf8';
-        diffEl.style.border = '1px solid #0284c7';
-        diffEl.style.display = 'inline-block';
-    }
 
-    // Configurazione pulsante Gestisci (Modifica / Elimina)
-    if (manageBtn) {
-        manageBtn.onclick = function() {
-            window._pendingDelete = { profile, label, value: weight };
-            const modalText = document.getElementById('delete-modal-text');
-            const modalInput = document.getElementById('edit-modal-weight-input');
-            if (modalText) modalText.innerHTML = `Pesata del <b>${label}</b> (Attuale: <b>${weight} kg</b>)`;
-            if (modalInput) modalInput.value = weight;
-            const modal = document.getElementById('delete-modal');
-            if (modal) modal.style.display = 'flex';
-        };
-    }
-
-    badge.style.display = 'block';
-};
-
-window.closeChartFocusBadge = function(profile) {
-    const badge = document.getElementById(`chart-focus-badge-${profile}`);
-    if (badge) badge.style.display = 'none';
-};
-
-// Riconfigurazione interattiva su click e tocco per i grafici
-(function() {
-    function attachChartTouchListeners(profile) {
-        const canvas = document.getElementById(`chart-${profile}`);
-        if (!canvas) return;
-
-        function handlePointer(evt) {
-            const chart = charts[profile];
-            if (!chart) return;
-            const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, true);
-            if (points && points.length > 0) {
-                const firstPoint = points[0];
-                window.showChartPointFocus(profile, firstPoint.index);
+        const key = 'weightLog_' + profile;
+        let log = JSON.parse(localStorage.getItem(key)) || [];
+        const [dd, mm] = label.split('/');
+        let foundIndex = -1;
+        for (let i = log.length - 1; i >= 0; i--) {
+            const logParts = log[i].date.split('-');
+            if (logParts[2] === dd && logParts[1] === mm && (value === undefined || Math.abs(log[i].weight - parseFloat(value)) < 0.1 || log[i].weight === value)) {
+                foundIndex = i;
+                break;
+            }
+        }
+        if (foundIndex === -1) {
+            for (let i = log.length - 1; i >= 0; i--) {
+                const logParts = log[i].date.split('-');
+                if (logParts[2] === dd && logParts[1] === mm) {
+                    foundIndex = i;
+                    break;
+                }
             }
         }
 
-        canvas.onclick = handlePointer;
-        // Su mobile touchstart/pointerup garantisce immediata risposta
-        canvas.onpointerup = handlePointer;
-    }
+        if (foundIndex !== -1) {
+            log[foundIndex].weight = newWeight;
+            localStorage.setItem(key, JSON.stringify(log));
+            if (typeof showToast === 'function') showToast("Pesata modificata con successo! 💾");
+            if (typeof loadProgress === 'function') loadProgress(profile);
+            if (typeof window.refreshDashboardStats === 'function') window.refreshDashboardStats(profile);
+            if (typeof window.syncSaluteToCloud === 'function') {
+                window.syncSaluteToCloud({
+                    [key]: JSON.stringify(log),
+                    _forceWeightLog: true
+                });
+            }
+        } else {
+            alert("Impossibile trovare la pesata da modificare.");
+        }
 
-    const prevDraw = drawChart;
-    drawChart = function(profile, log, startWeight) {
-        prevDraw(profile, log, startWeight);
-        attachChartTouchListeners(profile);
+        closeDeleteModal();
     };
-})();
 
-// ========================================================
-// 💧 QUICK WATER TAP (AGGIUNGI 1 BICCHIERE IN UN CLIC)
-// ========================================================
-window.addQuickWater = function(profile) {
-    if (typeof updateBeverage === 'function') {
-        updateBeverage(profile, 'water', 1);
-    }
-    window.refreshQuickWaterDisplay(profile);
-    if (typeof showToast === 'function') showToast("💧 +1 Bicchiere d'acqua registrato! Ottimo lavoro!");
-};
+    // ========================================================
+    // 🔍 VISUALIZZAZIONE IN GRANDE AL TOCCO SUL PUNTO DEL GRAFICO
+    // ========================================================
+    window.showChartPointFocus = function (profile, index) {
+        const chart = charts[profile];
+        if (!chart || !chart.data || !chart.data.labels) return;
 
-window.refreshQuickWaterDisplay = function(profile) {
-    const key = 'waterCount_' + profile;
-    const count = parseInt(localStorage.getItem(key)) || 0;
-    const el = document.getElementById('quick-water-count-' + profile);
-    if (el) {
-        let max = 8;
-        if (typeof getPersonalizedWaterTarget === 'function') {
-            max = getPersonalizedWaterTarget(profile).glasses;
+        const label = chart.data.labels[index];
+        const dataset = chart.data.datasets[0];
+        if (!dataset || !dataset.data) return;
+        const weight = dataset.data[index];
+
+        const badge = document.getElementById(`chart-focus-badge-${profile}`);
+        const dateEl = document.getElementById(`chart-focus-date-${profile}`);
+        const weightEl = document.getElementById(`chart-focus-weight-${profile}`);
+        const diffEl = document.getElementById(`chart-focus-diff-${profile}`);
+        const manageBtn = document.getElementById(`chart-focus-manage-btn-${profile}`);
+
+        if (!badge || !dateEl || !weightEl || !diffEl) return;
+
+        // Formattazione data
+        dateEl.innerHTML = `📅 Pesata del <b>${label}</b>`;
+        weightEl.innerHTML = `${Number(weight).toFixed(1)} <span style="font-size:1.1rem; color:#94a3b8; font-weight:700;">kg</span>`;
+
+        // Calcolo variazione rispetto alla pesata precedente nel grafico
+        if (index > 0) {
+            const prevWeight = dataset.data[index - 1];
+            const diff = Math.round((weight - prevWeight) * 10) / 10;
+            if (diff < 0) {
+                diffEl.innerHTML = `📉 ${diff.toFixed(1)} kg`;
+                diffEl.style.background = 'rgba(16, 185, 129, 0.2)';
+                diffEl.style.color = '#34d399';
+                diffEl.style.border = '1px solid #059669';
+            } else if (diff > 0) {
+                diffEl.innerHTML = `📈 +${diff.toFixed(1)} kg`;
+                diffEl.style.background = 'rgba(239, 68, 68, 0.2)';
+                diffEl.style.color = '#f87171';
+                diffEl.style.border = '1px solid #dc2626';
+            } else {
+                diffEl.innerHTML = `⚖️ Stabile (0.0 kg)`;
+                diffEl.style.background = 'rgba(148, 163, 184, 0.2)';
+                diffEl.style.color = '#cbd5e1';
+                diffEl.style.border = '1px solid #64748b';
+            }
+            diffEl.style.display = 'inline-block';
+        } else {
+            diffEl.innerHTML = `🏁 Inizio rilevazione`;
+            diffEl.style.background = 'rgba(56, 189, 248, 0.2)';
+            diffEl.style.color = '#38bdf8';
+            diffEl.style.border = '1px solid #0284c7';
+            diffEl.style.display = 'inline-block';
         }
-        el.innerHTML = `<b>${count}</b> / ${max} bicchieri (${(count * 0.25).toFixed(1)}L)`;
-    }
-};
 
-// ========================================================
-// 🍽️ VISTA RAPIDA "COSA C'È NEL PIATTO OGGI"
-// ========================================================
-window.refreshTodayMealBox = function(profile) {
-    const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
-    const now = new Date();
-    const dayIndex = now.getDay(); // 0 = Domenica, 1 = Lunedì...
-    const dayName = dayNames[dayIndex];
-
-    const titleEl = document.getElementById('today-meal-dayname-' + profile);
-    const lunchEl = document.getElementById('today-lunch-' + profile);
-    const dinnerEl = document.getElementById('today-dinner-' + profile);
-
-    if (titleEl) titleEl.innerText = `Menù di Oggi (${dayName})`;
-
-    const section = document.getElementById('section-' + profile);
-    if (!section) return;
-    const table = section.querySelector('.weekly-table');
-    if (!table) return;
-
-    // Le righe della tabella sono in ordine: Lunedì (0), Martedì (1), ..., Domenica (6)
-    // Se dayIndex è 0 (Domenica), la riga corrispondente è la 6. Altrimenti dayIndex - 1.
-    const tableRowIndex = (dayIndex === 0) ? 6 : (dayIndex - 1);
-    const rows = table.querySelectorAll('tbody tr');
-    if (rows && rows[tableRowIndex]) {
-        const cells = rows[tableRowIndex].querySelectorAll('td');
-        if (cells.length >= 3) {
-            const lunchText = cells[1].innerText.trim() || 'Nessun pranzo indicato';
-            const dinnerText = cells[2].innerText.trim() || 'Nessuna cena indicata';
-            if (lunchEl) lunchEl.innerHTML = lunchText;
-            if (dinnerEl) dinnerEl.innerHTML = dinnerText;
+        // Configurazione pulsante Gestisci (Modifica / Elimina)
+        if (manageBtn) {
+            manageBtn.onclick = function () {
+                window._pendingDelete = { profile, label, value: weight };
+                const modalText = document.getElementById('delete-modal-text');
+                const modalInput = document.getElementById('edit-modal-weight-input');
+                if (modalText) modalText.innerHTML = `Pesata del <b>${label}</b> (Attuale: <b>${weight} kg</b>)`;
+                if (modalInput) modalInput.value = weight;
+                const modal = document.getElementById('delete-modal');
+                if (modal) modal.style.display = 'flex';
+            };
         }
-    }
-};
 
-// ========================================================
-// 🚀 STIMA INTELLIGENTE DATA TRAGUARDO
-// ========================================================
-window.calculateGoalPrediction = function(profile, currentWeight, goalWeight, log) {
-    const el = document.getElementById('goal-prediction-' + profile);
-    if (!el) return;
+        badge.style.display = 'block';
+    };
 
-    if (!log || log.length < 2) {
-        el.innerHTML = `🎯 Inserisci qualche pesata nei prossimi giorni per calcolare la stima del traguardo!`;
-        return;
-    }
+    window.closeChartFocusBadge = function (profile) {
+        const badge = document.getElementById(`chart-focus-badge-${profile}`);
+        if (badge) badge.style.display = 'none';
+    };
 
-    if (currentWeight <= goalWeight) {
-        el.innerHTML = `🏆 <b>Traguardo raggiunto!</b> Sei arrivato/a al tuo peso obiettivo (${goalWeight} kg)! 🎉`;
-        return;
-    }
+    // Riconfigurazione interattiva su click e tocco per i grafici
+    (function () {
+        function attachChartTouchListeners(profile) {
+            const canvas = document.getElementById(`chart-${profile}`);
+            if (!canvas) return;
 
-    // Calcolo velocità di perdita negli ultimi 14-30 giorni
-    const firstLog = log[0];
-    const daysElapsed = Math.max(1, (new Date().getTime() - (firstLog.timestamp || new Date(firstLog.date).getTime())) / (1000 * 60 * 60 * 24));
-    const totalLost = firstLog.weight - currentWeight;
+            function handlePointer(evt) {
+                const chart = charts[profile];
+                if (!chart) return;
+                const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, true);
+                if (points && points.length > 0) {
+                    const firstPoint = points[0];
+                    window.showChartPointFocus(profile, firstPoint.index);
+                }
+            }
 
-    if (totalLost <= 0) {
-        el.innerHTML = `🎯 Mancano <b>${(currentWeight - goalWeight).toFixed(1)} kg</b> all'obiettivo. Mantieni la costanza! 💪`;
-        return;
-    }
+            canvas.onclick = handlePointer;
+            // Su mobile touchstart/pointerup garantisce immediata risposta
+            canvas.onpointerup = handlePointer;
+        }
 
-    const ratePerDay = totalLost / daysElapsed; // kg persi al giorno
-    const kgRemaining = currentWeight - goalWeight;
-    const daysNeeded = Math.round(kgRemaining / ratePerDay);
+        const prevDraw = drawChart;
+        drawChart = function (profile, log, startWeight) {
+            prevDraw(profile, log, startWeight);
+            attachChartTouchListeners(profile);
+        };
+    })();
 
-    if (daysNeeded > 0 && daysNeeded < 365 * 2) {
-        const targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + daysNeeded);
-        const options = { day: 'numeric', month: 'long', year: 'numeric' };
-        const formattedDate = targetDate.toLocaleDateString('it-IT', options);
-        el.innerHTML = `🚀 A questo ritmo (-${(ratePerDay * 7).toFixed(1)} kg/settimana), traguardo stimato: <b>${formattedDate}</b>!`;
-    } else {
-        el.innerHTML = `🎯 Mancano <b>${kgRemaining.toFixed(1)} kg</b> all'obiettivo (${goalWeight} kg). Avanti così!`;
-    }
-};
-
-// Intercettiamo loadProgress per aggiornare l'idratazione rapida, il pasto di oggi e la predizione
-(function() {
-    const origLoadProgress = loadProgress;
-    loadProgress = function(profile) {
-        origLoadProgress(profile);
+    // ========================================================
+    // 💧 QUICK WATER TAP (AGGIUNGI 1 BICCHIERE IN UN CLIC)
+    // ========================================================
+    window.addQuickWater = function (profile) {
+        if (typeof updateBeverage === 'function') {
+            updateBeverage(profile, 'water', 1);
+        }
         window.refreshQuickWaterDisplay(profile);
-        window.refreshTodayMealBox(profile);
-
-        const key = `weightLog_${profile}`;
-        const log = JSON.parse(localStorage.getItem(key)) || [];
-        const curW = log.length > 0 ? log[log.length - 1].weight : parseFloat(document.getElementById('start_' + profile)?.innerText) || 80;
-        const goalW = parseFloat(document.getElementById('goal_' + profile)?.innerText) || 65;
-        window.calculateGoalPrediction(profile, curW, goalW, log);
+        if (typeof showToast === 'function') showToast("💧 +1 Bicchiere d'acqua registrato! Ottimo lavoro!");
     };
-})();
+
+    window.refreshQuickWaterDisplay = function (profile) {
+        const key = 'waterCount_' + profile;
+        const count = parseInt(localStorage.getItem(key)) || 0;
+        const el = document.getElementById('quick-water-count-' + profile);
+        if (el) {
+            let max = 8;
+            if (typeof getPersonalizedWaterTarget === 'function') {
+                max = getPersonalizedWaterTarget(profile).glasses;
+            }
+            el.innerHTML = `<b>${count}</b> / ${max} bicchieri (${(count * 0.25).toFixed(1)}L)`;
+        }
+    };
+
+    // ========================================================
+    // 🍽️ VISTA RAPIDA "COSA C'È NEL PIATTO OGGI"
+    // ========================================================
+    window.refreshTodayMealBox = function (profile) {
+        const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+        const now = new Date();
+        const dayIndex = now.getDay(); // 0 = Domenica, 1 = Lunedì...
+        const dayName = dayNames[dayIndex];
+
+        const titleEl = document.getElementById('today-meal-dayname-' + profile);
+        const lunchEl = document.getElementById('today-lunch-' + profile);
+        const dinnerEl = document.getElementById('today-dinner-' + profile);
+
+        if (titleEl) titleEl.innerText = `Menù di Oggi (${dayName})`;
+
+        const section = document.getElementById('section-' + profile);
+        if (!section) return;
+        const table = section.querySelector('.weekly-table');
+        if (!table) return;
+
+        // Le righe della tabella sono in ordine: Lunedì (0), Martedì (1), ..., Domenica (6)
+        // Se dayIndex è 0 (Domenica), la riga corrispondente è la 6. Altrimenti dayIndex - 1.
+        const tableRowIndex = (dayIndex === 0) ? 6 : (dayIndex - 1);
+        const rows = table.querySelectorAll('tbody tr');
+        if (rows && rows[tableRowIndex]) {
+            const cells = rows[tableRowIndex].querySelectorAll('td');
+            if (cells.length >= 3) {
+                const lunchText = cells[1].innerText.trim() || 'Nessun pranzo indicato';
+                const dinnerText = cells[2].innerText.trim() || 'Nessuna cena indicata';
+                if (lunchEl) lunchEl.innerHTML = lunchText;
+                if (dinnerEl) dinnerEl.innerHTML = dinnerText;
+            }
+        }
+    };
+
+    // ========================================================
+    // 🚀 STIMA INTELLIGENTE DATA TRAGUARDO
+    // ========================================================
+    window.calculateGoalPrediction = function (profile, currentWeight, goalWeight, log) {
+        const el = document.getElementById('goal-prediction-' + profile);
+        if (!el) return;
+
+        if (!log || log.length < 2) {
+            el.innerHTML = `🎯 Inserisci qualche pesata nei prossimi giorni per calcolare la stima del traguardo!`;
+            return;
+        }
+
+        if (currentWeight <= goalWeight) {
+            el.innerHTML = `🏆 <b>Traguardo raggiunto!</b> Sei arrivato/a al tuo peso obiettivo (${goalWeight} kg)! 🎉`;
+            return;
+        }
+
+        // Calcolo velocità di perdita negli ultimi 14-30 giorni
+        const firstLog = log[0];
+        const daysElapsed = Math.max(1, (new Date().getTime() - (firstLog.timestamp || new Date(firstLog.date).getTime())) / (1000 * 60 * 60 * 24));
+        const totalLost = firstLog.weight - currentWeight;
+
+        if (totalLost <= 0) {
+            el.innerHTML = `🎯 Mancano <b>${(currentWeight - goalWeight).toFixed(1)} kg</b> all'obiettivo. Mantieni la costanza! 💪`;
+            return;
+        }
+
+        const ratePerDay = totalLost / daysElapsed; // kg persi al giorno
+        const kgRemaining = currentWeight - goalWeight;
+        const daysNeeded = Math.round(kgRemaining / ratePerDay);
+
+        if (daysNeeded > 0 && daysNeeded < 365 * 2) {
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + daysNeeded);
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const formattedDate = targetDate.toLocaleDateString('it-IT', options);
+            el.innerHTML = `🚀 A questo ritmo (-${(ratePerDay * 7).toFixed(1)} kg/settimana), traguardo stimato: <b>${formattedDate}</b>!`;
+        } else {
+            el.innerHTML = `🎯 Mancano <b>${kgRemaining.toFixed(1)} kg</b> all'obiettivo (${goalWeight} kg). Avanti così!`;
+        }
+    };
+
+    // Intercettiamo loadProgress per aggiornare l'idratazione rapida, il pasto di oggi e la predizione
+    (function () {
+        const origLoadProgress = loadProgress;
+        loadProgress = function (profile) {
+            origLoadProgress(profile);
+            window.refreshQuickWaterDisplay(profile);
+            window.refreshTodayMealBox(profile);
+
+            const key = `weightLog_${profile}`;
+            const log = JSON.parse(localStorage.getItem(key)) || [];
+            const curW = log.length > 0 ? log[log.length - 1].weight : parseFloat(document.getElementById('start_' + profile)?.innerText) || 80;
+            const goalW = parseFloat(document.getElementById('goal_' + profile)?.innerText) || 65;
+            window.calculateGoalPrediction(profile, curW, goalW, log);
+        };
+    })();
 

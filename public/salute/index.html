@@ -1468,6 +1468,7 @@
                             <div class="scale-display" id="scale-screen-{PROF}" style="font-size:2.8rem; font-weight:900; color:#38bdf8; text-shadow:0 0 20px rgba(56,189,248,0.4); margin:6px 0;">
                                 80.0<span class="scale-unit" style="font-size:1.2rem; color:#94a3b8; margin-left:4px;">kg</span>
                             </div>
+                            <div id="scale-date-{PROF}" style="font-size:0.85rem; color:#bae6fd; font-weight:700; margin-bottom:6px;"></div>
                             <div class="bmi-badge" id="bmi_{PROF}" style="display:inline-block; margin-bottom:12px; padding:4px 14px; border-radius:20px; font-size:0.85rem; font-weight:700;"></div>
 
                             <!-- CONTROLLI TOUCH FACILI + - -->
@@ -2414,7 +2415,7 @@
         </main>
     </div>
 
-    <script src="script.js?v=3.2"></script>
+    <script src="script.js?v=3.3"></script>
     <div id="toast-notification"
         style="display:none; position:fixed; bottom:30px; right:30px; background:#43a047; color:white; padding:15px 25px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:9999; font-weight:bold; align-items:center; gap:10px; transition: opacity 0.3s ease-in-out;">
         <span id="toast-icon">✨</span>
@@ -2491,9 +2492,9 @@
                     window.location.reload();
                 }
             });
-            navigator.serviceWorker.register('./sw.js?v=26')
+            navigator.serviceWorker.register('./sw.js?v=27')
                 .then(reg => {
-                    console.log('Service Worker Registered v26');
+                    console.log('Service Worker Registered v27');
                     reg.update();
                 });
         }
