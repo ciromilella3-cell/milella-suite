@@ -1212,6 +1212,19 @@ function getPazienteCiroInit() {
       scorta: 41,
       giorniAlert: 10,
       cadenzaTipo: 'giornaliera',
+      canaleDistribuzione: 'territoriale_asl',
+      pianoTerapeutico: {
+        attivo: true,
+        dataScadenza: '2027-02-22',
+        protocollo: '011BQ1X145RHL',
+        scatoleTotali: 12,
+        scatoleRitirate: 9,
+        scatoleResidue: 3,
+        centroPrescrittore: 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)',
+        sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO',
+        note: '1 cpr/die a digiuno (almeno 2h prima o dopo i pasti) - PHT Distribuzione Diretta HBV',
+        ultimoRitiro: '2026-08-18'
+      },
       fattoOggi: false,
       ultimaModificaClinica: {
         data: '28/10/2026',
@@ -1256,6 +1269,29 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
         }
       }
     });
+
+    // Sincronizza e arricchisce il Piano Terapeutico Farmacia Territoriale ASL per Ciro (Entecavir)
+    const ciroPz = AppData.pazienti.find(function (p) { return (p.nome || '').toLowerCase().includes('ciro'); });
+    if (ciroPz && Array.isArray(ciroPz.terapie)) {
+      const entecavir = ciroPz.terapie.find(function (t) { return (t.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
+      if (entecavir && (!entecavir.pianoTerapeutico || !entecavir.canaleDistribuzione)) {
+        entecavir.canaleDistribuzione = 'territoriale_asl';
+        entecavir.cprPerScatola = 30;
+        entecavir.pianoTerapeutico = {
+          attivo: true,
+          dataScadenza: '2027-02-22',
+          protocollo: '011BQ1X145RHL',
+          scatoleTotali: 12,
+          scatoleRitirate: 9,
+          scatoleResidue: 3,
+          centroPrescrittore: 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)',
+          sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO',
+          note: '1 cpr/die a digiuno (almeno 2h prima o dopo i pasti) - PHT Distribuzione Diretta HBV',
+          ultimoRitiro: '2026-08-18'
+        };
+        try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
+      }
+    }
   }
 
   const aldoEx = AppData.pazienti.find(p => p.id === 'paz_aldo');
@@ -5760,6 +5796,30 @@ function renderTerapie() {
         })()}
             ${t.ultimaModificaClinica ? `<span style="display:inline-block; font-size:10px; font-weight:800; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:1px 6px; border-radius:6px; margin-left:4px;" title="${t.ultimaModificaClinica.motivo || ''}">🩺 Agg. ${t.ultimaModificaClinica.fonte || 'Medico'} (${t.ultimaModificaClinica.data || ''})</span>` : ''}
             ${t.principio ? `<br><small style="color:#64748b;">Principio: ${t.principio}</small>` : ''}
+            ${(() => {
+          const isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
+            (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
+            ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
+          if (isASL) {
+            const ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
+            const totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
+            const ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
+            const resScat = Math.max(0, totScat - ritScat);
+            const dtScad = ptObj ? (ptObj.dataScadenza || ptObj.dataScadenzaAnno || '') : '';
+            return `
+              <div style="margin-top:4px; display:inline-flex; align-items:center; gap:5px; flex-wrap:wrap;">
+                <span class="badge" style="background:#0284c7; color:#ffffff; font-weight:800; font-size:10.5px; padding:2px 8px; border-radius:6px; box-shadow:0 1px 3px rgba(2,132,199,0.3);" title="Erogazione diretta Presidio Farmacia Territoriale ASL su Piano Terapeutico Specialistico">
+                  🏛️ Farmacia Territoriale ASL
+                </span>
+                <span class="badge" style="background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; font-weight:800; font-size:10px; padding:2px 6px; border-radius:6px;" title="Scatole spettanti ancora da ritirare">
+                  📦 Spettano: <b>${resScat}</b> / ${totScat} scatole
+                </span>
+                ${dtScad ? `<span class="badge" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-weight:700; font-size:9.5px; padding:2px 5px; border-radius:5px;" title="Data Scadenza Piano Terapeutico">⏳ Scad. PT: ${dtScad}</span>` : ''}
+              </div>
+            `;
+          }
+          return '';
+        })()}
           </div>
         </td>
         <td class="td-col td-dosaggio">
@@ -5915,6 +5975,23 @@ function renderTerapie() {
         </td>
         <td class="td-col td-carico" style="text-align: center; vertical-align: middle;">
           ${(() => {
+          const isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
+            (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
+            ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
+          if (isASL) {
+            const ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
+            const totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
+            const ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
+            const resScat = Math.max(0, totScat - ritScat);
+            return `
+              <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+                <button class="btn btn-carico-luxury asl" onclick="scalaScatolaTerritorialeRapida(${t.id})" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; font-weight:800; font-size:11px; padding:6px 10px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(2,132,199,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Registra ritiro di 1 scatola presso la Farmacia Territoriale ASL: scala dalle spettanti (${resScat} rimaste) e carica +${t.cprPerScatola || 30} cpr a casa">
+                  <span>🏛️</span> <span>Ritiro ASL (${resScat} rimaste)</span>
+                </button>
+                <small style="font-size:9.5px; color:#0369a1; font-weight:700;">+${t.cprPerScatola || 30} cpr / -1 scatola spettante</small>
+              </div>
+            `;
+          }
           const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
           if (isPen) {
             return `
@@ -7173,6 +7250,227 @@ function apriRicaricaScorta(farmacoId) {
   }
   openModal('modal-ricarica-scorta'); if (typeof aggiornaCampoEsattoCarico === 'function') aggiornaCampoEsattoCarico();
 }
+
+// ==============================================================================
+// GESTIONE UNIVERSALE FARMACIA TERRITORIALE ASL & PIANO TERAPEUTICO (PHT / DPC)
+// Monitoraggio Scatole Spettanti, Scalamento Ritiro e Carico Scorte Domiciliari
+// ==============================================================================
+
+function toggleSezioneCanaleTerritoriale(val) {
+  var boxPT = document.getElementById('box-dettagli-piano-terapeutico');
+  var badge = document.getElementById('badge-tipo-canale');
+  if (val === 'territoriale_asl') {
+    if (boxPT) boxPT.style.display = 'block';
+    if (badge) {
+      badge.textContent = '🏛️ Territoriale ASL (PT)';
+      badge.style.background = '#0284c7';
+      badge.style.color = '#ffffff';
+    }
+    aggiornaCalcoloPianoTerapeuticoModale();
+  } else {
+    if (boxPT) boxPT.style.display = 'none';
+    if (badge) {
+      badge.textContent = 'Convenzionata';
+      badge.style.background = '#e2e8f0';
+      badge.style.color = '#475569';
+    }
+  }
+}
+window.toggleSezioneCanaleTerritoriale = toggleSezioneCanaleTerritoriale;
+
+function aggiornaCalcoloPianoTerapeuticoModale() {
+  var elTot = document.getElementById('edit-pt-scatole-totali');
+  var elRit = document.getElementById('edit-pt-scatole-ritirate');
+  var elRes = document.getElementById('edit-pt-scatole-residue-display');
+  var elScad = document.getElementById('edit-pt-data-scadenza');
+  var elAvviso = document.getElementById('edit-pt-avviso-scadenza');
+  var badgeStato = document.getElementById('pt-status-badge');
+
+  var tot = elTot ? (parseInt(elTot.value, 10) || 0) : 12;
+  var rit = elRit ? (parseInt(elRit.value, 10) || 0) : 0;
+  var res = Math.max(0, tot - rit);
+  if (elRes) elRes.textContent = res;
+
+  if (elScad && elScad.value) {
+    var dtScad = new Date(elScad.value);
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    var diffMs = dtScad.getTime() - now.getTime();
+    var diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      if (elAvviso) {
+        elAvviso.textContent = '🚨 Piano Terapeutico SCADUTO da ' + Math.abs(diffDays) + ' giorni!';
+        elAvviso.style.color = '#b91c1c';
+      }
+      if (badgeStato) {
+        badgeStato.textContent = 'SCADUTO';
+        badgeStato.style.background = '#fee2e2';
+        badgeStato.style.color = '#b91c1c';
+      }
+    } else if (diffDays <= 30) {
+      if (elAvviso) {
+        elAvviso.textContent = '⚠️ In scadenza tra ' + diffDays + ' giorni (prenotare rinnovo specialistico)';
+        elAvviso.style.color = '#d97706';
+      }
+      if (badgeStato) {
+        badgeStato.textContent = 'IN SCADENZA';
+        badgeStato.style.background = '#fef3c7';
+        badgeStato.style.color = '#b45309';
+      }
+    } else {
+      if (elAvviso) {
+        elAvviso.textContent = '🟢 Valido per ancora ' + diffDays + ' giorni';
+        elAvviso.style.color = '#15803d';
+      }
+      if (badgeStato) {
+        badgeStato.textContent = 'Attivo';
+        badgeStato.style.background = '#dcfce7';
+        badgeStato.style.color = '#15803d';
+      }
+    }
+  }
+}
+window.aggiornaCalcoloPianoTerapeuticoModale = aggiornaCalcoloPianoTerapeuticoModale;
+
+function scalaScatolaTerritorialeDaModale() {
+  var elTot = document.getElementById('edit-pt-scatole-totali');
+  var elRit = document.getElementById('edit-pt-scatole-ritirate');
+  var tot = elTot ? (parseInt(elTot.value, 10) || 12) : 12;
+  var rit = elRit ? (parseInt(elRit.value, 10) || 0) : 0;
+  var res = Math.max(0, tot - rit);
+
+  if (res <= 0) {
+    if (typeof showToast === 'function') {
+      showToast('⚠️ Tutte le ' + tot + ' scatole previste dal Piano Terapeutico risultano già ritirate!', 'warning');
+    } else {
+      alert('Tutte le scatole previste dal Piano Terapeutico risultano già ritirate.');
+    }
+    return;
+  }
+
+  rit += 1;
+  if (elRit) elRit.value = rit;
+  aggiornaCalcoloPianoTerapeuticoModale();
+
+  // Incrementa la scorta del farmaco con 1 confezione (es. 30 cpr)
+  var cprPerScatola = parseInt(document.getElementById('edit-farm-cpr-scatola')?.value, 10) || 30;
+  var elScorta = document.getElementById('edit-farm-scorta');
+  if (elScorta) {
+    var curScorta = parseFloat(elScorta.value) || 0;
+    elScorta.value = Math.round((curScorta + cprPerScatola) * 10) / 10;
+  }
+
+  if (typeof ricalcolaRiepilogoCapsula === 'function') ricalcolaRiepilogoCapsula();
+
+  if (typeof showToast === 'function') {
+    showToast('📦 Registrato ritiro farmacia ASL: 1 scatola scalata dalle residue (+ ' + cprPerScatola + ' cpr caricate nella scorta a casa)!', 'success');
+  }
+}
+window.scalaScatolaTerritorialeDaModale = scalaScatolaTerritorialeDaModale;
+
+async function scalaScatolaTerritorialeRapida(terapiaId) {
+  try {
+    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    if (!p || !Array.isArray(p.terapie)) return;
+
+    var t = p.terapie.find(item => String(item.id) === String(terapiaId) || item.id == terapiaId);
+    if (!t) return;
+
+    var pt = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
+    if (!pt) {
+      pt = {
+        attivo: true,
+        scatoleTotali: 12,
+        scatoleRitirate: 0,
+        scatoleResidue: 12,
+        dataScadenza: '2027-02-22',
+        sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO',
+        storicoRitiri: []
+      };
+      t.pianoTerapeutico = pt;
+      t.canaleDistribuzione = 'territoriale_asl';
+    }
+
+    var tot = parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12;
+    var rit = parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0;
+    var res = Math.max(0, tot - rit);
+
+    if (res <= 0) {
+      if (typeof showToast === 'function') {
+        showToast('⚠️ Tutte le ' + tot + ' scatole previste dal Piano Terapeutico risultano già ritirate!', 'warning');
+      }
+      return;
+    }
+
+    // Scala 1 scatola
+    rit += 1;
+    res -= 1;
+    pt.scatoleRitirate = rit;
+    pt.scatoleResidue = res;
+    if (pt.scatoleRitirateTotali !== undefined) pt.scatoleRitirateTotali = rit;
+    if (pt.scatoleResidueDaRitirare !== undefined) pt.scatoleResidueDaRitirare = res;
+
+    pt.storicoRitiri = pt.storicoRitiri || [];
+    var now = new Date();
+    var dataOggiStr = now.toISOString().slice(0, 10);
+    pt.storicoRitiri.push({
+      data: dataOggiStr,
+      scatole: 1,
+      puntoRitiro: pt.sedeRitiro || pt.puntoRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO',
+      note: 'Ritiro rapido registrato da diario terapie'
+    });
+
+    // Aggiunge le compresse alla scorta a casa
+    var cprAggiunte = parseInt(t.cprPerScatola, 10) || 30;
+    t.scorta = Math.round(((parseFloat(t.scorta) || 0) + cprAggiunte) * 10) / 10;
+    t.ultimoRitiro = now.toISOString();
+
+    // Sincronizza gemelle multi-tempo se presenti
+    var mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
+    if (mt && mt.gemelle && mt.gemelle.length > 1) {
+      mt.gemelle.forEach(function (item) {
+        item.scorta = t.scorta;
+        item.ultimoRitiro = t.ultimoRitiro;
+        item.pianoTerapeutico = pt;
+        item.canaleDistribuzione = 'territoriale_asl';
+      });
+    }
+
+    // Registra nel log attività
+    p.registrazioni = p.registrazioni || [];
+    p.registrazioni.push({
+      id: 'log_' + Date.now(),
+      tipo: 'scorta',
+      farmacoId: t.id,
+      farmaco: t.farmaco,
+      azione: 'ritiro_territoriale_asl',
+      numScatole: 1,
+      cprAggiunte: cprAggiunte,
+      timestamp: now.toISOString(),
+      desc: 'Ritiro Farmacia Territoriale ASL: 1 scatola di ' + t.farmaco + ' (+' + cprAggiunte + ' cpr a casa). Spettano ancora ' + res + ' scatole (Piano Terapeutico).',
+      operatore: 'Operatore OSS / Famiglia'
+    });
+
+    // Se è Ciro o paziente con piano DPC, sincronizza
+    if (p.pianoTerapeuticoDpc) {
+      p.pianoTerapeuticoDpc.scatoleRitirateTotali = rit;
+      p.pianoTerapeuticoDpc.scatoleResidueDaRitirare = res;
+    }
+
+    if (typeof saveDb === 'function') saveDb();
+    if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+    if (typeof renderTerapie === 'function') renderTerapie();
+    if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
+    if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([60]);
+    if (typeof showToast === 'function') {
+      showToast('🏛️ Ritiro ASL registrato! Spettano ancora ' + res + ' scatole (caricate +' + cprAggiunte + ' cpr a casa)', 'success');
+    }
+  } catch (err) {
+    console.error('Errore scalaScatolaTerritorialeRapida:', err);
+  }
+}
+window.scalaScatolaTerritorialeRapida = scalaScatolaTerritorialeRapida;
 
 // CARICO AUTOMATICO ISTANTANEO DI 1 SCATOLA INTERA (1-CLICK & TOUCH OTTIMIZZATO)
 async function caricaScatolaRapida(farmacoId) {
@@ -12037,6 +12335,57 @@ function apriModificaFarmaco(farmacoId) {
       }
     });
 
+    // 4b. GESTIONE CANALE DI EROGAZIONE & PIANO TERAPEUTICO ASL (DISTRIBUZIONE DIRETTA PHT/DPC)
+    var isTerritoriale = (t.canaleDistribuzione === 'territoriale_asl') ||
+      (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
+      ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
+
+    var radConv = document.getElementById('radio-canale-convenzionata');
+    var radTerr = document.getElementById('radio-canale-territoriale');
+    var boxPT = document.getElementById('box-dettagli-piano-terapeutico');
+    var badgeCanale = document.getElementById('badge-tipo-canale');
+
+    if (isTerritoriale) {
+      if (radConv) radConv.checked = false;
+      if (radTerr) radTerr.checked = true;
+      if (boxPT) boxPT.style.display = 'block';
+      if (badgeCanale) {
+        badgeCanale.textContent = '🏛️ Territoriale ASL (PT)';
+        badgeCanale.style.background = '#0284c7';
+        badgeCanale.style.color = '#ffffff';
+      }
+
+      var ptSource = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null) || {};
+      var dtScad = ptSource.dataScadenza || ptSource.dataScadenzaAnno || '2027-02-22';
+      var prot = ptSource.protocollo || ptSource.idPrescrizione || '';
+      var totScat = parseInt(ptSource.scatoleTotali || ptSource.scatoleSpettantiAnno, 10) || 12;
+      var ritScat = parseInt(ptSource.scatoleRitirate || ptSource.scatoleRitirateTotali, 10) || 0;
+      var resScat = Math.max(0, totScat - ritScat);
+      var centroPrescr = ptSource.centroPrescrittore || (ptSource.strutturaPrescrittrice ? (ptSource.strutturaPrescrittrice + (ptSource.medicoPrescrittore ? ' (' + ptSource.medicoPrescrittore + ')' : '')) : 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari');
+      var sedeRit = ptSource.sedeRitiro || ptSource.puntoRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO';
+      var notePT = ptSource.note || '1 cpr/die a digiuno (almeno 2h prima o dopo i pasti) - PHT Distribuzione Diretta HBV';
+
+      if (document.getElementById('edit-pt-data-scadenza')) document.getElementById('edit-pt-data-scadenza').value = dtScad;
+      if (document.getElementById('edit-pt-protocollo')) document.getElementById('edit-pt-protocollo').value = prot;
+      if (document.getElementById('edit-pt-scatole-totali')) document.getElementById('edit-pt-scatole-totali').value = totScat;
+      if (document.getElementById('edit-pt-scatole-ritirate')) document.getElementById('edit-pt-scatole-ritirate').value = ritScat;
+      if (document.getElementById('edit-pt-scatole-residue-display')) document.getElementById('edit-pt-scatole-residue-display').textContent = resScat;
+      if (document.getElementById('edit-pt-centro-prescrittore')) document.getElementById('edit-pt-centro-prescrittore').value = centroPrescr;
+      if (document.getElementById('edit-pt-sede-ritiro')) document.getElementById('edit-pt-sede-ritiro').value = sedeRit;
+      if (document.getElementById('edit-pt-note')) document.getElementById('edit-pt-note').value = notePT;
+
+      if (typeof aggiornaCalcoloPianoTerapeuticoModale === 'function') aggiornaCalcoloPianoTerapeuticoModale();
+    } else {
+      if (radConv) radConv.checked = true;
+      if (radTerr) radTerr.checked = false;
+      if (boxPT) boxPT.style.display = 'none';
+      if (badgeCanale) {
+        badgeCanale.textContent = 'Convenzionata';
+        badgeCanale.style.background = '#e2e8f0';
+        badgeCanale.style.color = '#475569';
+      }
+    }
+
     if (typeof renderDosiCards === 'function') renderDosiCards();
     if (typeof ricalcolaRiepilogoCapsula === 'function') ricalcolaRiepilogoCapsula();
     if (typeof resetScannerFarmacoUI === 'function') resetScannerFarmacoUI('capsula');
@@ -12503,7 +12852,36 @@ function salvaModificaFarmaco(e) {
     return !isColl;
   });
 
-  // 2. Leggi le card dal form (con fallback sicuro su _capsulaCurrentDosi)
+  // 2. Leggi le impostazioni del canale di erogazione e piano terapeutico ASL
+  var canaleDist = (document.getElementById('radio-canale-territoriale') && document.getElementById('radio-canale-territoriale').checked) ? 'territoriale_asl' : 'convenzionata';
+  var ptData = null;
+  if (canaleDist === 'territoriale_asl') {
+    var totScat = parseInt(document.getElementById('edit-pt-scatole-totali')?.value, 10) || 12;
+    var ritScat = parseInt(document.getElementById('edit-pt-scatole-ritirate')?.value, 10) || 0;
+    var resScat = Math.max(0, totScat - ritScat);
+    ptData = {
+      attivo: true,
+      dataScadenza: document.getElementById('edit-pt-data-scadenza')?.value || '',
+      protocollo: document.getElementById('edit-pt-protocollo')?.value.trim() || '',
+      scatoleTotali: totScat,
+      scatoleRitirate: ritScat,
+      scatoleResidue: resScat,
+      centroPrescrittore: document.getElementById('edit-pt-centro-prescrittore')?.value.trim() || '',
+      sedeRitiro: document.getElementById('edit-pt-sede-ritiro')?.value.trim() || '',
+      note: document.getElementById('edit-pt-note')?.value.trim() || '',
+      ultimoRitiro: new Date().toISOString()
+    };
+
+    if (p.pianoTerapeuticoDpc) {
+      p.pianoTerapeuticoDpc.scatoleSpettantiAnno = totScat;
+      p.pianoTerapeuticoDpc.scatoleRitirateTotali = ritScat;
+      p.pianoTerapeuticoDpc.scatoleResidueDaRitirare = resScat;
+      if (ptData.dataScadenza) p.pianoTerapeuticoDpc.dataScadenzaAnno = ptData.dataScadenza;
+      if (ptData.sedeRitiro) p.pianoTerapeuticoDpc.puntoRitiro = ptData.sedeRitiro;
+    }
+  }
+
+  // 2b. Leggi le card dal form (con fallback sicuro su _capsulaCurrentDosi)
   var cardElements = document.querySelectorAll('#box-dosi-cards-container .dose-card-item');
   var totalDosi = cardElements.length;
 
@@ -12546,6 +12924,8 @@ function salvaModificaFarmaco(e) {
         saltatoOggi: false,
         ultimaModificaTimestamp: Date.now(),
         tipoFormulazione: (window._currentFormatoModal === 'penna') ? 'penna' : 'compressa',
+        canaleDistribuzione: canaleDist,
+        pianoTerapeutico: ptData,
         ultimaModificaClinica: ultimaMod
       });
     });
@@ -12598,6 +12978,8 @@ function salvaModificaFarmaco(e) {
         saltatoOggi: false,
         ultimaModificaTimestamp: Date.now(),
         tipoFormulazione: isFormatoPenna ? 'penna' : 'compressa',
+        canaleDistribuzione: canaleDist,
+        pianoTerapeutico: ptData,
         penneScorta: pScorta,
         unitaDoseDie: pDoseDie,
         unitaPerPenna: pUnitaTot,
@@ -17859,6 +18241,30 @@ function apriMascheraNuovoFarmaco() {
   if (typeof resetScannerFarmacoUI === 'function') resetScannerFarmacoUI('capsula');
   var boxSugg = document.getElementById('farm-suggerimenti-box');
   if (boxSugg) boxSugg.innerHTML = '';
+
+  // Reset Canale Erogazione Farmacia Convenzionata vs Territoriale ASL
+  var radConv = document.getElementById('radio-canale-convenzionata');
+  var radTerr = document.getElementById('radio-canale-territoriale');
+  if (radConv) radConv.checked = true;
+  if (radTerr) radTerr.checked = false;
+  var boxPT = document.getElementById('box-dettagli-piano-terapeutico');
+  if (boxPT) boxPT.style.display = 'none';
+  var badgeCanale = document.getElementById('badge-tipo-canale');
+  if (badgeCanale) {
+    badgeCanale.textContent = 'Convenzionata';
+    badgeCanale.style.background = '#e2e8f0';
+    badgeCanale.style.color = '#475569';
+  }
+  var dScadDefault = new Date();
+  dScadDefault.setFullYear(dScadDefault.getFullYear() + 1);
+  if (document.getElementById('edit-pt-data-scadenza')) document.getElementById('edit-pt-data-scadenza').value = dScadDefault.toISOString().slice(0, 10);
+  if (document.getElementById('edit-pt-protocollo')) document.getElementById('edit-pt-protocollo').value = '';
+  if (document.getElementById('edit-pt-scatole-totali')) document.getElementById('edit-pt-scatole-totali').value = '12';
+  if (document.getElementById('edit-pt-scatole-ritirate')) document.getElementById('edit-pt-scatole-ritirate').value = '0';
+  if (document.getElementById('edit-pt-scatole-residue-display')) document.getElementById('edit-pt-scatole-residue-display').textContent = '12';
+  if (document.getElementById('edit-pt-centro-prescrittore')) document.getElementById('edit-pt-centro-prescrittore').value = '';
+  if (document.getElementById('edit-pt-sede-ritiro')) document.getElementById('edit-pt-sede-ritiro').value = 'Farmacia Territoriale ASL Bari - Ex CTO';
+  if (document.getElementById('edit-pt-note')) document.getElementById('edit-pt-note').value = '';
 
   openModal('modal-modifica-farmaco');
 }
