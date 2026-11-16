@@ -1,12 +1,12 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v331-farmacia-territoriale';
+const CACHE_NAME = 'careassist-pro-v332-pulizia-dock';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './turni.html',
   './style.css',
-  './style.css?v=331',
-  './app.js?v=331',
+  './style.css?v=332',
+  './app.js?v=332',
   './app.js',
   './suite_bridge.js',
   './turnario_admin.js',

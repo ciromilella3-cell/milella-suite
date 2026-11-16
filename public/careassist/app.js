@@ -5723,10 +5723,16 @@ function renderTerapie() {
       }
 
       // Informazioni ultimo ritiro
-      const farmaciaNome = t.farmacia || p.farmaciaDiRiferimento || 'Farmacia MACARIO';
+      const isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
+        (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
+        ((t.farmaco || '').toUpperCase().includes('ENTECAVIR') && (p.nome || '').toLowerCase().includes('ciro'));
+      const farmaciaNome = isASL
+        ? ((t.pianoTerapeutico && (t.pianoTerapeutico.sedeRitiro || t.pianoTerapeutico.puntoRitiro)) || 'Farmacia Territoriale ASL Bari - Ex CTO')
+        : (t.farmacia || p.farmaciaDiRiferimento || 'Farmacia MACARIO');
+      const farmaciaIcon = isASL ? '🏛️' : '🏥';
       const ritiroInfo = t.ultimoRitiro
-        ? `<div style="font-size:10px; color:#0369a1; font-weight:700; margin-top:3px;">📅 Ritirato: <b>${new Date(t.ultimoRitiro).toLocaleDateString('it-IT')}</b></div><div style="font-size:9.5px; color:#047857; font-weight:600;">🏥 ${farmaciaNome}</div>`
-        : `<div style="font-size:10px; color:#64748b; margin-top:3px;">Prescrizione Attiva</div><div style="font-size:9.5px; color:#64748b;">${farmaciaNome}</div>`;
+        ? `<div style="font-size:10px; color:#0369a1; font-weight:700; margin-top:3px;">📅 Ritirato: <b>${new Date(t.ultimoRitiro).toLocaleDateString('it-IT')}</b></div><div style="font-size:9.5px; color:${isASL ? '#0284c7' : '#047857'}; font-weight:700;">${farmaciaIcon} ${farmaciaNome}</div>`
+        : `<div style="font-size:10px; color:#64748b; margin-top:3px;">Prescrizione Attiva</div><div style="font-size:9.5px; color:#64748b;">${farmaciaIcon} ${farmaciaNome}</div>`;
 
       return `
       <tr id="terapia-row-${t.id}" class="terapia-row-item" data-farmaco-id="${t.id}">
