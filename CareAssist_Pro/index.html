@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=336">
+  <link rel="stylesheet" href="style.css?v=337">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -4744,12 +4744,39 @@
           </div>
         </div>
 
+        <!-- 5. GRAFICO VISUALE AVANZAMENTO ANNUALE (12 SCATOLE) -->
+        <div id="ritiro-asl-progress-box" style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:12px; padding:10px 12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-size:11px; font-weight:800; text-transform:uppercase; color:#475569;">📊 Fabbisogno Annuale (12 Mesi):</span>
+            <span id="ritiro-asl-progress-perc" style="font-size:11px; font-weight:900; color:#0284c7;">--%</span>
+          </div>
+          <div id="ritiro-asl-progress-segments" style="display:grid; grid-template-columns:repeat(12, 1fr); gap:4px;">
+            <!-- Generato dinamicamente -->
+          </div>
+        </div>
+
+        <!-- 2. ALLERTA SCADENZA / RINNOVO PIANO TERAPEUTICO -->
+        <div id="ritiro-asl-allerta-scadenza" style="display:none; background:#fffbeb; border:1.5px solid #fde68a; border-radius:12px; padding:10px 12px;">
+          <!-- Popolato dinamicamente se in scadenza -->
+        </div>
+
         <input type="hidden" id="ritiro-asl-farmaco-id" value="">
 
-        <!-- DATA DEL RITIRO -->
+        <!-- DATA DEL RITIRO & 1. PROSSIMO RITIRO PREVISTO -->
         <div>
           <label style="font-size:12px; font-weight:800; color:#334155; display:block; margin-bottom:5px;">📅 Data del Ritiro effettuato:</label>
-          <input type="date" id="ritiro-asl-data" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:14px; font-weight:700; background:#ffffff; color:#0f172a; box-sizing:border-box;">
+          <input type="date" id="ritiro-asl-data" onchange="aggiornaSimulazioneRitiroASL()" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:14px; font-weight:700; background:#ffffff; color:#0f172a; box-sizing:border-box;">
+          
+          <!-- CALCOLO DATA PROSSIMO RITIRO & BOTTONE CALENDARIO -->
+          <div id="ritiro-asl-prossimo-box" style="margin-top:6px; background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:10px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <div>
+              <span style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#1e40af;">📅 Prossimo Ritiro ASL Consigliato:</span>
+              <div id="ritiro-asl-prossima-data-testo" style="font-size:13.5px; font-weight:900; color:#0284c7;">--/--/----</div>
+            </div>
+            <button type="button" onclick="aggiungiPromemoriaCalendarioASLDaModal()" style="background:#0284c7; color:#ffffff; border:none; padding:6px 11px; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 1px 4px rgba(2,132,199,0.3);">
+              <span>🔔</span> <span>Aggiungi a Calendario</span>
+            </button>
+          </div>
         </div>
 
         <!-- QUANTE SCATOLE CONSEGNATE -->
@@ -4788,6 +4815,24 @@
           <input type="text" id="ritiro-asl-note" placeholder="es. Ritiro fornitura trimestrale effettuato regolarmente" style="width:100%; padding:9px 12px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:13px; background:#ffffff; color:#0f172a; box-sizing:border-box;">
         </div>
 
+        <!-- 3. FOTO DELLA BOLLA DI CONSEGNA / RICEVUTA ASL -->
+        <div style="background:#f8fafc; border:1.5px dashed #cbd5e1; border-radius:12px; padding:10px 12px;">
+          <input type="file" id="asl-ricevuta-file-input" accept="image/*" capture="environment" style="display:none;" onchange="gestisciCaricaFotoRicevutaASL(event)">
+          <div id="asl-ricevuta-preview-wrap" style="display:none; align-items:center; justify-content:space-between; margin-bottom:8px; background:#ffffff; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img id="asl-ricevuta-img-preview" src="" style="width:48px; height:48px; object-fit:cover; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;" onclick="apriFotoRicevutaASL(this.src)" title="Tocca per ingrandire">
+              <div>
+                <div style="font-size:12px; font-weight:800; color:#0f172a;">Ricevuta ASL Allegata ✓</div>
+                <div style="font-size:10px; color:#64748b;">Pronta per essere salvata nel fascicolo</div>
+              </div>
+            </div>
+            <button type="button" onclick="rimuoviFotoRicevutaASL()" style="background:#fee2e2; color:#b91c1c; border:none; border-radius:6px; padding:4px 8px; font-size:11px; font-weight:800; cursor:pointer;">✕ Rimuovi</button>
+          </div>
+          <button type="button" onclick="document.getElementById('asl-ricevuta-file-input').click()" style="width:100%; background:#ffffff; color:#0369a1; border:1.5px solid #93c5fd; border-radius:10px; padding:8px 12px; font-size:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+            <span>📷</span> <span>Scatta Foto / Allega Ricevuta Cartacea ASL</span>
+          </button>
+        </div>
+
         <!-- BOX SIMULAZIONE IN TEMPO REALE -->
         <div id="ritiro-asl-simulazione-box" style="background:#ecfdf5; border:1.5px solid #a7f3d0; border-radius:12px; padding:12px 14px;">
           <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#065f46; letter-spacing:0.4px; margin-bottom:4px;">✨ Riepilogo Operazione Automatica:</div>
@@ -4800,9 +4845,15 @@
 
       <!-- FOOTER CON BOTTONI AZIONE -->
       <div style="padding:14px 20px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <button type="button" onclick="apriModalStampaRegistroASLDaRitiro()" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; padding:9px 14px; border-radius:10px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
-          🖨️ Storico &amp; Stampa A4
-        </button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" onclick="apriModalStampaRegistroASLDaRitiro()" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; padding:9px 12px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+            🖨️ Storico A4
+          </button>
+          <!-- 4. BOTTONE NOTIFICA MMG WHATSAPP -->
+          <button type="button" onclick="notificaRitiroASLAlMedicoDaModal()" style="background:#ecfdf5; color:#047857; border:1.5px solid #6ee7b7; padding:9px 12px; border-radius:10px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+            <span>📲</span> <span>Notifica MMG</span>
+          </button>
+        </div>
         <div style="display:flex; gap:8px;">
           <button type="button" onclick="chiudiModalRegistraRitiroASL()" style="background:#ffffff; color:#64748b; border:1px solid #cbd5e1; padding:9px 14px; border-radius:10px; font-size:12.5px; font-weight:700; cursor:pointer;">Annulla</button>
           <button type="button" onclick="confermaRegistraRitiroASL()" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:900; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(5,150,105,0.35);">
@@ -4829,11 +4880,17 @@
             <div style="font-size:11.5px; color:#94a3b8;">Documento Clinico di Carico &amp; Scarico PHT (Formato Ufficiale A4)</div>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <button type="button" onclick="stampaRegistroRitiriASL()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; padding:8px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(2,132,199,0.35);">
             🖨️ Stampa A4 / Salva PDF
           </button>
-          <button type="button" onclick="condividiRegistroASLWhatsApp()" style="background:#25d366; color:#ffffff; border:none; padding:8px 14px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+          <button type="button" onclick="notificaRitiroASLAlMedicoDaStampa()" style="background:#ecfdf5; color:#047857; border:1.5px solid #6ee7b7; padding:8px 13px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Invia riepilogo al Medico di Famiglia">
+            <span>📲</span> <span>Notifica MMG</span>
+          </button>
+          <button type="button" onclick="aggiungiPromemoriaCalendarioASLDaStampa()" style="background:#f0f9ff; color:#0284c7; border:1.5px solid #93c5fd; padding:8px 13px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Aggiungi promemoria prossimo ritiro al calendario dello smartphone">
+            <span>🔔</span> <span>Calendario</span>
+          </button>
+          <button type="button" onclick="condividiRegistroASLWhatsApp()" style="background:#25d366; color:#ffffff; border:none; padding:8px 13px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
             📲 WhatsApp
           </button>
           <button type="button" onclick="chiudiModalStampaRegistroASL()" style="background:rgba(255,255,255,0.15); color:#ffffff; border:1px solid rgba(255,255,255,0.3); padding:8px 12px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;">
@@ -4847,6 +4904,19 @@
         <!-- CONTENUTO INIETTATO DINAMICAMENTE DA JAVASCRIPT -->
       </div>
 
+    </div>
+  </div>
+
+  <!-- VIEWER INGRANDIMENTO RICEVUTA ASL -->
+  <div class="modal-overlay" id="modal-foto-ricevuta-asl-viewer" style="display:none; z-index:20000070; align-items:center; justify-content:center; padding:16px; background:rgba(15,23,42,0.85);" onclick="if(event.target===this) chiudiFotoRicevutaASL();">
+    <div style="max-width:90vw; max-height:90vh; position:relative; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.5); display:flex; flex-direction:column;">
+      <div style="background:#0f172a; color:#ffffff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:800; font-size:13px;">📷 Ricevuta / Bolla di Consegna ASL</span>
+        <button type="button" onclick="chiudiFotoRicevutaASL()" style="background:transparent; border:none; color:#ffffff; font-size:18px; cursor:pointer; font-weight:900;">✕</button>
+      </div>
+      <div style="padding:10px; overflow:auto; text-align:center;">
+        <img id="asl-foto-viewer-img" src="" style="max-width:100%; max-height:80vh; object-fit:contain; border-radius:8px;">
+      </div>
     </div>
   </div>
 
@@ -9390,7 +9460,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=336"></script>
+  <script src="app.js?v=337"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9401,7 +9471,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=336', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=337', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
