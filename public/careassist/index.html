@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=335">
+  <link rel="stylesheet" href="style.css?v=336">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -3724,6 +3724,33 @@
             </div>
             <div id="sff-badge-urgenza-alert"
               style="display: none; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-align: center;">
+            </div>
+          </div>
+
+          <!-- BOX PIANO TERAPEUTICO ASL (DISTRIBUZIONE DIRETTA) -->
+          <div id="sff-box-asl"
+            style="display: none; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #0284c7; border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 3px 10px rgba(2,132,199,0.12);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 19px;">🏛️</span>
+                <span style="font-weight: 900; font-size: 13px; color: #0369a1; text-transform: uppercase;">Piano Terapeutico ASL PHT</span>
+              </div>
+              <span id="sff-asl-rimaste-badge"
+                style="background: #0284c7; color: #ffffff; font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 6px;">10 scatole rimaste</span>
+            </div>
+            <div style="font-size: 11.5px; color: #334155; margin-bottom: 10px; line-height: 1.4;">
+              Presidio: <b>Farmacia Territoriale ASL Bari - Ex CTO</b><br>
+              Protocollo: <b id="sff-asl-protocollo">011BQ1X145RHL</b> &bull; Scadenza: <b id="sff-asl-scadenza">22/02/2027</b>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" onclick="sffRegistraRitiroASL()"
+                style="flex: 1; padding: 11px 12px; border-radius: 12px; font-weight: 900; font-size: 13px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 8px rgba(2,132,199,0.3);">
+                <span>🏛️</span> <span>Registra Ritiro ASL</span>
+              </button>
+              <button type="button" onclick="sffStampaRegistroASL()"
+                style="padding: 11px 14px; border-radius: 12px; font-weight: 800; font-size: 12.5px; background: #ffffff; color: #0284c7; border: 1.5px solid #0284c7; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                <span>🖨️</span> <span>Stampa A4</span>
+              </button>
             </div>
           </div>
           <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
@@ -9363,7 +9390,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=335"></script>
+  <script src="app.js?v=336"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9374,7 +9401,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=335', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=336', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

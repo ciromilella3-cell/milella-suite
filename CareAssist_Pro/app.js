@@ -13115,6 +13115,31 @@ function apriSchedaFarmacoFullscreen(farmacoId) {
       noteEl.innerHTML = noteText;
     }
 
+    // Gestione Box Piano Terapeutico ASL (se presente)
+    var aslBox = document.getElementById('sff-box-asl');
+    var isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
+      (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
+      ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
+    if (aslBox) {
+      if (isASL) {
+        aslBox.style.display = 'block';
+        var ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
+        var totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
+        var ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
+        var resScat = Math.max(0, totScat - ritScat);
+        var dtScad = ptObj ? (ptObj.dataScadenza || ptObj.dataScadenzaAnno || '22/02/2027') : '22/02/2027';
+        var proto = ptObj ? (ptObj.protocollo || ptObj.numeroRegistro || '011BQ1X145RHL') : '011BQ1X145RHL';
+        var badgeRimaste = document.getElementById('sff-asl-rimaste-badge');
+        var protEl = document.getElementById('sff-asl-protocollo');
+        var scadEl = document.getElementById('sff-asl-scadenza');
+        if (badgeRimaste) badgeRimaste.textContent = resScat + ' rimaste (su ' + totScat + ')';
+        if (protEl) protEl.textContent = proto;
+        if (scadEl) scadEl.textContent = dtScad;
+      } else {
+        aslBox.style.display = 'none';
+      }
+    }
+
     // Apri modale
     var modal = document.getElementById('modal-scheda-farmaco-fullscreen');
     if (modal) {
@@ -13159,6 +13184,22 @@ async function sffCaricaScatolaIntera() {
   apriSchedaFarmacoFullscreen(fid);
 }
 window.sffCaricaScatolaIntera = sffCaricaScatolaIntera;
+
+function sffRegistraRitiroASL() {
+  if (!_currentSchedaFarmacoId) return;
+  var fid = _currentSchedaFarmacoId;
+  chiudiSchedaFarmacoFullscreen();
+  apriModalRegistraRitiroASL(fid);
+}
+window.sffRegistraRitiroASL = sffRegistraRitiroASL;
+
+function sffStampaRegistroASL() {
+  if (!_currentSchedaFarmacoId) return;
+  var fid = _currentSchedaFarmacoId;
+  chiudiSchedaFarmacoFullscreen();
+  apriModalStampaRegistroASL(fid);
+}
+window.sffStampaRegistroASL = sffStampaRegistroASL;
 
 async function sffRegolaScortaManuale(delta) {
   if (!_currentSchedaFarmacoId) return;
@@ -29741,7 +29782,10 @@ function renderMobileNativeView(terapie, p) {
           '</button>' +
           '<div class="mobile-hero-secondary-row">' +
           '<button type="button" class="btn-mobile-hero-sub" onclick="apriModalSaltaFarmaco(' + nextT.id + ')">⏭️ Non somministrato / Salta</button>' +
-          '<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>' +
+          (isASLHero
+            ? ('<button type="button" class="btn-mobile-hero-sub" style="background:#0284c7; color:#fff; font-weight:800;" onclick="apriModalRegistraRitiroASL(' + nextT.id + ')">🏛️ Ritiro ASL</button><button type="button" class="btn-mobile-hero-sub" onclick="apriModalStampaRegistroASL(' + nextT.id + ')">🖨️ Stampa A4</button>')
+            : ('<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>')
+          ) +
           '</div>';
       } else {
         heroContainer.className = 'mobile-hero-card ready';
@@ -29773,9 +29817,12 @@ function renderMobileNativeView(terapie, p) {
           '</button>' +
           '<div class="mobile-hero-secondary-row">' +
           '<button type="button" class="btn-mobile-hero-sub" onclick="apriModalSaltaFarmaco(' + nextT.id + ')">⏭️ Salta</button>' +
-          '<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>' +
+          (isASLHero
+            ? ('<button type="button" class="btn-mobile-hero-sub" style="background:#0284c7; color:#fff; font-weight:800;" onclick="apriModalRegistraRitiroASL(' + nextT.id + ')">🏛️ Ritiro ASL</button><button type="button" class="btn-mobile-hero-sub" onclick="apriModalStampaRegistroASL(' + nextT.id + ')">🖨️ Stampa A4</button>')
+            : ('<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>')
+          ) +
           '<button type="button" class="btn-mobile-hero-sub" onclick="mostraAuditFarmaco(' + nextT.id + ')">ℹ️ Dettagli</button>' +
-          '</div>' +
+          '</div>' + +
           '<div style="text-align:center; margin-top:12px; padding-top:8px; border-top:1px dashed #e2e8f0;">' +
           '<a href="#mobile-terapie-timeline" onclick="document.getElementById(\'mobile-terapie-timeline\').scrollIntoView({behavior:\'smooth\'}); return false;" style="font-size:12px; font-weight:800; color:#0284c7; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">' +
           '<span>👇</span> <span>Scorri per vedere tutte le ' + (p.terapie || []).length + ' terapie di oggi</span>' +
@@ -29864,6 +29911,24 @@ function renderMobileNativeView(terapie, p) {
           '<span style="font-size:11px; color:#0284c7; font-weight:800;" title="Apri scheda intera">📱 Apri ↗</span>' +
           '</div>' +
           principioHtml +
+          (() => {
+            var isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
+              (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
+              ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
+            if (isASL) {
+              var ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
+              var totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
+              var ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
+              var resScat = Math.max(0, totScat - ritScat);
+              var dtScad = ptObj ? (ptObj.dataScadenza || ptObj.dataScadenzaAnno || '22/02/2027') : '22/02/2027';
+              return '<div style="margin-top:5px; display:inline-flex; align-items:center; gap:5px; flex-wrap:wrap;">' +
+                '<span style="background:#0284c7; color:#ffffff; font-weight:800; font-size:10px; padding:2px 7px; border-radius:6px; box-shadow:0 1px 3px rgba(2,132,199,0.3);">🏛️ Farmacia Territoriale ASL</span>' +
+                '<span style="background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; font-weight:800; font-size:10px; padding:2px 6px; border-radius:6px;">📦 Spettano: <b>' + resScat + '</b> / ' + totScat + ' scatole</span>' +
+                (dtScad ? ('<span style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-weight:700; font-size:9.5px; padding:2px 5px; border-radius:5px;">⏳ Scad: ' + dtScad + '</span>') : '') +
+                '</div>';
+            }
+            return '';
+          })() +
           '<div class="mobile-card-dosaggio" style="margin-top:2px; font-size:12px; color:#334155; font-weight:600;">' +
           (t.dosaggio || '') + (t.modo && !isAssimilazioneInfo ? (' — ' + t.modo) : '') +
           '</div>' +
@@ -29874,7 +29939,22 @@ function renderMobileNativeView(terapie, p) {
           '<div class="mobile-card-scorta" onclick="event.stopPropagation(); modificaScortaRapida(\'' + t.id + '\')" title="Tocca per modificare il numero esatto di compresse/capsule in scorta" style="font-size:12px; color:#334155; font-weight:700; cursor:pointer; background:rgba(255,255,255,0.9); padding:2px 7px; border-radius:6px; border:1px solid #cbd5e1; display:inline-flex; align-items:center; gap:4px;">' +
           '<span>📦 Scorta:</span> <b style="color:#0284c7; font-size:13px;">' + (infoScorta ? infoScorta.scortaNum : (t.scorta || 0)) + '</b>' + (infoScorta ? (' <span style="font-size:10px; color:#64748b; font-weight:700;">(~' + infoScorta.ggAutonomia + ' gg)</span>') : '') + ' <span style="font-size:10px; color:#0284c7;" title="Modifica scorta">✏️</span>' +
           '</div>' +
-          '<button type="button" class="btn-card-scatola-action" onclick="event.stopPropagation(); caricaScatolaRapida(\'' + t.id + '\')" title="Aggiungi 1 scatola ritirata dalla farmacia">📦 +Scatola</button>' +
+          (() => {
+            var isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
+              (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
+              ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
+            if (isASL) {
+              var ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
+              var totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
+              var ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
+              var resScat = Math.max(0, totScat - ritScat);
+              return '<button type="button" class="btn-card-scatola-action" onclick="event.stopPropagation(); apriModalRegistraRitiroASL(\'' + t.id + '\')" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; font-weight:900 !important; border:none !important; box-shadow:0 2px 6px rgba(2,132,199,0.35); padding:6px 11px; border-radius:8px; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Registra ritiro scatole ASL">' +
+                '<span>🏛️ Ritiro ASL (' + resScat + ' rimaste)</span>' +
+                '</button>' +
+                '<button type="button" class="btn-card-time-action" onclick="event.stopPropagation(); apriModalStampaRegistroASL(\'' + t.id + '\')" style="background:#eff6ff !important; color:#0284c7 !important; border:1.5px solid #93c5fd !important; font-weight:800; padding:6px 9px; border-radius:8px; font-size:11px; cursor:pointer;" title="Visualizza e Stampa Registro A4">🖨️ Stampa A4</button>';
+            }
+            return '<button type="button" class="btn-card-scatola-action" onclick="event.stopPropagation(); caricaScatolaRapida(\'' + t.id + '\')" title="Aggiungi 1 scatola ritirata dalla farmacia">📦 +Scatola</button>';
+          })() +
           '<button type="button" class="btn-card-time-action" onclick="event.stopPropagation(); apriCambiaOrarioRapido(\'' + t.id + '\')" title="Sposta orario di somministrazione">🕒 Orario</button>' +
           '</div>' +
           '<div style="display:flex; align-items:center; gap:6px;">' +
