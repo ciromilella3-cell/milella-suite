@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=333">
+  <link rel="stylesheet" href="style.css?v=334">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -4598,10 +4598,13 @@
                   </div>
                 </div>
 
-                <!-- BOTTONE AZIONE RAPIDA: SCALA 1 SCATOLA -->
-                <div style="margin-top:10px; display:flex; gap:8px; align-items:center;">
-                  <button type="button" class="btn btn-primary" onclick="scalaScatolaTerritorialeDaModale()" style="flex:1; padding:9px 14px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:none; border-radius:8px; box-shadow:0 2px 6px rgba(2,132,199,0.3); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
-                    <span>📦</span> <span>Registra Ritiro ASL (-1 Spettante, +Scorta Casa)</span>
+                <!-- BOTTONE AZIONE RAPIDA: SCALA SCATOLE & STAMPA STORICO -->
+                <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-primary" onclick="apriModalRegistraRitiroASLDaModale()" style="flex:1; min-width:180px; padding:9px 14px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:none; border-radius:8px; box-shadow:0 2px 6px rgba(2,132,199,0.3); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
+                    <span>🏛️</span> <span>Registra Ritiro ASL (1, 2 o 3 Scatole)</span>
+                  </button>
+                  <button type="button" class="btn" onclick="apriModalStampaRegistroASLDaModale()" style="padding:9px 14px; font-size:12px; font-weight:800; background:#f1f5f9; color:#0369a1; border:1.5px solid #0284c7; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;" title="Visualizza & Stampa Foglio A4 Storico Ritiri">
+                    <span>🖨️</span> <span>Stampa Storico A4</span>
                   </button>
                 </div>
               </div>
@@ -4676,6 +4679,176 @@
       </form>
     </div>
   </div>
+
+  <!-- ==========================================================================
+       MODAL 1: REGISTRA RITIRO FARMACIA TERRITORIALE ASL (1, 2, 3 SCATOLE / DATA)
+       ========================================================================== -->
+  <div class="modal-overlay" id="modal-registra-ritiro-asl" style="display:none; z-index:20000050; align-items:center; justify-content:center; padding:12px;">
+    <div class="modal-card" style="max-width:580px; width:100%; border-radius:20px; overflow:hidden; background:#ffffff; box-shadow:0 25px 65px rgba(15,23,42,0.45); border:1.5px solid #cbd5e1; display:flex; flex-direction:column; max-height:92vh;">
+      
+      <!-- HEADER -->
+      <div style="background:linear-gradient(135deg, #0369a1 0%, #0284c7 100%); color:#ffffff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:22px;">🏛️</div>
+          <div>
+            <h3 style="margin:0; font-size:16px; font-weight:900; line-height:1.2;">Registra Ritiro Farmaco ASL</h3>
+            <div style="font-size:12px; opacity:0.9; margin-top:2px;">Farmacia Territoriale • Piano Terapeutico PHT</div>
+          </div>
+        </div>
+        <button type="button" onclick="chiudiModalRegistraRitiroASL()" style="background:rgba(255,255,255,0.2); border:none; color:#ffffff; width:32px; height:32px; border-radius:50%; font-size:16px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+      </div>
+
+      <!-- BODY -->
+      <div style="padding:18px 22px; overflow-y:auto; display:flex; flex-direction:column; gap:14px; background:#f8fafc;">
+        
+        <!-- CARD INFO FARMACO & PAZIENTE -->
+        <div style="background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:14px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#0369a1; letter-spacing:0.4px;">Assistito &amp; Farmaco</div>
+            <div id="ritiro-asl-paziente-farmaco" style="font-size:14px; font-weight:900; color:#0f172a;">Ciro Milella • Entecavir Sandoz 0,5 mg</div>
+            <div id="ritiro-asl-protocollo-badge" style="font-size:11px; color:#0284c7; font-weight:700; margin-top:2px;">Protocollo: 011BQ1X145RHL • Scad. 22/02/2027</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:10px; font-weight:800; text-transform:uppercase; color:#64748b;">Spettanti Residue</div>
+            <div id="ritiro-asl-scatole-residue-badge" style="font-size:18px; font-weight:900; color:#0284c7;">10 su 12</div>
+          </div>
+        </div>
+
+        <input type="hidden" id="ritiro-asl-farmaco-id" value="">
+
+        <!-- DATA DEL RITIRO -->
+        <div>
+          <label style="font-size:12px; font-weight:800; color:#334155; display:block; margin-bottom:5px;">📅 Data del Ritiro effettuato:</label>
+          <input type="date" id="ritiro-asl-data" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:14px; font-weight:700; background:#ffffff; color:#0f172a; box-sizing:border-box;">
+        </div>
+
+        <!-- QUANTE SCATOLE CONSEGNATE -->
+        <div>
+          <label style="font-size:12px; font-weight:800; color:#334155; display:block; margin-bottom:6px;">📦 Quante scatole ti hanno consegnato alla ASL?</label>
+          
+          <!-- TASTI VELOCI 1, 2, 3 SCATOLE -->
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:8px;">
+            <button type="button" class="btn-preset-scatole" id="btn-preset-scat-1" onclick="impostaScatoleRitiroRapido(1, this)" style="padding:10px 6px; border-radius:10px; border:1.5px solid #cbd5e1; background:#ffffff; font-weight:800; font-size:12px; color:#334155; cursor:pointer; text-align:center; transition:all 0.15s ease;">
+              1 Scatola<br><small style="font-size:10px; font-weight:600; color:#64748b;">(1 Mese • +30 cpr)</small>
+            </button>
+            <button type="button" class="btn-preset-scatole" id="btn-preset-scat-2" onclick="impostaScatoleRitiroRapido(2, this)" style="padding:10px 6px; border-radius:10px; border:1.5px solid #cbd5e1; background:#ffffff; font-weight:800; font-size:12px; color:#334155; cursor:pointer; text-align:center; transition:all 0.15s ease;">
+              2 Scatole<br><small style="font-size:10px; font-weight:600; color:#64748b;">(2 Mesi • +60 cpr)</small>
+            </button>
+            <button type="button" class="btn-preset-scatole active" id="btn-preset-scat-3" onclick="impostaScatoleRitiroRapido(3, this)" style="padding:10px 6px; border-radius:10px; border:2px solid #0284c7; background:#e0f2fe; font-weight:900; font-size:12px; color:#0369a1; cursor:pointer; text-align:center; box-shadow:0 2px 6px rgba(2,132,199,0.2); transition:all 0.15s ease;">
+              ⭐ 3 Scatole<br><small style="font-size:10px; font-weight:800; color:#0284c7;">(Trimestre • +90 cpr)</small>
+            </button>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:12px; font-weight:700; color:#64748b;">Oppure inserisci numero:</span>
+            <input type="number" id="ritiro-asl-num-scatole" min="1" max="24" value="3" oninput="aggiornaSimulazioneRitiroASL()" style="width:70px; padding:6px 10px; border-radius:8px; border:1.5px solid #cbd5e1; font-weight:900; font-size:15px; text-align:center;">
+            <span style="font-size:12px; font-weight:700; color:#334155;">scatole</span>
+          </div>
+        </div>
+
+        <!-- PRESIDIO ASL DI RITIRO -->
+        <div>
+          <label style="font-size:12px; font-weight:800; color:#334155; display:block; margin-bottom:5px;">🏛️ Presidio Farmacia Territoriale di Ritiro:</label>
+          <input type="text" id="ritiro-asl-presidio" value="Farmacia Territoriale ASL Bari - Ex CTO" style="width:100%; padding:9px 12px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:13px; font-weight:700; background:#ffffff; color:#0f172a; box-sizing:border-box;">
+        </div>
+
+        <!-- NOTE O RIFERIMENTO DDT / SCONTRINO (OPZIONALE) -->
+        <div>
+          <label style="font-size:12px; font-weight:800; color:#334155; display:block; margin-bottom:5px;">📝 Note / N. Ricevuta o DDT (Opzionale):</label>
+          <input type="text" id="ritiro-asl-note" placeholder="es. Ritiro fornitura trimestrale effettuato regolarmente" style="width:100%; padding:9px 12px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:13px; background:#ffffff; color:#0f172a; box-sizing:border-box;">
+        </div>
+
+        <!-- BOX SIMULAZIONE IN TEMPO REALE -->
+        <div id="ritiro-asl-simulazione-box" style="background:#ecfdf5; border:1.5px solid #a7f3d0; border-radius:12px; padding:12px 14px;">
+          <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#065f46; letter-spacing:0.4px; margin-bottom:4px;">✨ Riepilogo Operazione Automatica:</div>
+          <div id="ritiro-asl-simulazione-testo" style="font-size:12.5px; color:#047857; font-weight:700; line-height:1.4;">
+            Verranno caricate <b>+90 compresse</b> a casa. Le scatole spettanti passeranno da <b>10</b> a <b>7 rimaste</b>.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER CON BOTTONI AZIONE -->
+      <div style="padding:14px 20px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <button type="button" onclick="apriModalStampaRegistroASLDaRitiro()" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; padding:9px 14px; border-radius:10px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+          🖨️ Storico &amp; Stampa A4
+        </button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" onclick="chiudiModalRegistraRitiroASL()" style="background:#ffffff; color:#64748b; border:1px solid #cbd5e1; padding:9px 14px; border-radius:10px; font-size:12.5px; font-weight:700; cursor:pointer;">Annulla</button>
+          <button type="button" onclick="confermaRegistraRitiroASL()" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; border:none; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:900; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(5,150,105,0.35);">
+            ✅ Conferma Ritiro
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: STAMPA REGISTRO CRONOLOGICO RITIRI ASL (FORMATO A4 UFFICIALE)
+       ========================================================================== -->
+  <div class="modal-overlay" id="modal-registro-ritiri-asl-stampa" style="display:none; z-index:20000060; align-items:flex-start; overflow-y:auto; padding:12px 6px;">
+    <div class="modal-card" style="max-width:880px; width:100%; border-radius:18px; overflow:hidden; background:#ffffff; box-shadow:0 25px 65px rgba(15,23,42,0.5); border:1px solid #cbd5e1; margin:10px auto; display:flex; flex-direction:column; max-height:95vh;">
+      
+      <!-- TOOLBAR DI CONTROLLO PRO (NON STAMPABILE) -->
+      <div class="no-print-asl" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#ffffff; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:2px solid #0284c7;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:22px;">🏛️</span>
+          <div>
+            <div style="font-size:14px; font-weight:900; color:#ffffff;">Registro Cronologico Ritiri Farmacia Territoriale ASL</div>
+            <div style="font-size:11.5px; color:#94a3b8;">Documento Clinico di Carico &amp; Scarico PHT (Formato Ufficiale A4)</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" onclick="stampaRegistroRitiriASL()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; padding:8px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(2,132,199,0.35);">
+            🖨️ Stampa A4 / Salva PDF
+          </button>
+          <button type="button" onclick="condividiRegistroASLWhatsApp()" style="background:#25d366; color:#ffffff; border:none; padding:8px 14px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            📲 WhatsApp
+          </button>
+          <button type="button" onclick="chiudiModalStampaRegistroASL()" style="background:rgba(255,255,255,0.15); color:#ffffff; border:1px solid rgba(255,255,255,0.3); padding:8px 12px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;">
+            ✕ Chiudi
+          </button>
+        </div>
+      </div>
+
+      <!-- FOGLIO A4 STAMPABILE -->
+      <div id="foglio-stampa-registro-asl" style="padding:28px 32px; background:#ffffff; color:#0f172a; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; overflow-y:auto; line-height:1.45;">
+        <!-- CONTENUTO INIETTATO DINAMICAMENTE DA JAVASCRIPT -->
+      </div>
+
+    </div>
+  </div>
+
+  <style id="style-print-registro-asl">
+    @media print {
+      body.printing-registro-asl * {
+        visibility: hidden !important;
+      }
+      body.printing-registro-asl #modal-registro-ritiri-asl-stampa,
+      body.printing-registro-asl #modal-registro-ritiri-asl-stampa * {
+        visibility: visible !important;
+      }
+      body.printing-registro-asl #modal-registro-ritiri-asl-stampa {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        z-index: 9999999 !important;
+      }
+      body.printing-registro-asl .no-print-asl {
+        display: none !important;
+      }
+      body.printing-registro-asl #foglio-stampa-registro-asl {
+        padding: 10mm 12mm !important;
+      }
+    }
+  </style>
 
   <div class="modal-overlay" id="modal-farmaco">
     <div class="modal-card" style="max-width: 680px;">
@@ -9187,7 +9360,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=333"></script>
+  <script src="app.js?v=334"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9198,7 +9371,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=333', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=334', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

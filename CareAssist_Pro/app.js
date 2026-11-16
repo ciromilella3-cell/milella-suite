@@ -5991,10 +5991,13 @@ function renderTerapie() {
             const resScat = Math.max(0, totScat - ritScat);
             return `
               <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                <button class="btn btn-carico-luxury asl" onclick="scalaScatolaTerritorialeRapida(${t.id})" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; font-weight:800; font-size:11px; padding:6px 10px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(2,132,199,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Registra ritiro di 1 scatola presso la Farmacia Territoriale ASL: scala dalle spettanti (${resScat} rimaste) e carica +${t.cprPerScatola || 30} cpr a casa">
+                <button class="btn btn-carico-luxury asl" onclick="apriModalRegistraRitiroASL(${t.id})" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; font-weight:800; font-size:11px; padding:6px 10px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(2,132,199,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Registra ritiro di 1, 2 o 3 scatole presso la Farmacia Territoriale ASL: scala dalle spettanti (${resScat} rimaste) e carica compresse a casa">
                   <span>🏛️</span> <span>Ritiro ASL (${resScat} rimaste)</span>
                 </button>
-                <small style="font-size:9.5px; color:#0369a1; font-weight:700;">+${t.cprPerScatola || 30} cpr / -1 scatola spettante</small>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <small style="font-size:9.5px; color:#0369a1; font-weight:700;">+30 cpr/scatola</small>
+                  <button type="button" onclick="event.stopPropagation(); apriModalStampaRegistroASL(${t.id})" style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:9.5px; font-weight:800; text-decoration:underline; padding:0;" title="Visualizza e Stampa Registro A4 Ritiri ASL">🖨️ Stampa A4</button>
+                </div>
               </div>
             `;
           }
@@ -7375,12 +7378,19 @@ function scalaScatolaTerritorialeDaModale() {
 }
 window.scalaScatolaTerritorialeDaModale = scalaScatolaTerritorialeDaModale;
 
-async function scalaScatolaTerritorialeRapida(terapiaId) {
+// ==============================================================================
+// GESTIONE REGISTRAZIONE & STAMPA RITIRO FARMACIA TERRITORIALE ASL (1, 2, 3 SCATOLE / DATA)
+// ==============================================================================
+
+function apriModalRegistraRitiroASL(terapiaId) {
   try {
     var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
     if (!p || !Array.isArray(p.terapie)) return;
 
     var t = p.terapie.find(item => String(item.id) === String(terapiaId) || item.id == terapiaId);
+    if (!t) {
+      t = p.terapie.find(item => item.canaleDistribuzione === 'territoriale_asl' || (item.pianoTerapeutico && item.pianoTerapeutico.attivo) || (item.farmaco || '').toUpperCase().includes('ENTECAVIR'));
+    }
     if (!t) return;
 
     var pt = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
@@ -7391,6 +7401,7 @@ async function scalaScatolaTerritorialeRapida(terapiaId) {
         scatoleRitirate: 0,
         scatoleResidue: 12,
         dataScadenza: '2027-02-22',
+        protocollo: '011BQ1X145RHL',
         sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO',
         storicoRitiri: []
       };
@@ -7398,39 +7409,194 @@ async function scalaScatolaTerritorialeRapida(terapiaId) {
       t.canaleDistribuzione = 'territoriale_asl';
     }
 
-    var tot = parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12;
-    var rit = parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0;
-    var res = Math.max(0, tot - rit);
+    pt.storicoRitiri = pt.storicoRitiri || [];
 
-    if (res <= 0) {
-      if (typeof showToast === 'function') {
-        showToast('⚠️ Tutte le ' + tot + ' scatole previste dal Piano Terapeutico risultano già ritirate!', 'warning');
-      }
+    // Aggiorna ID e campi maschera
+    var elFId = document.getElementById('ritiro-asl-farmaco-id');
+    if (elFId) elFId.value = t.id;
+
+    var elPzF = document.getElementById('ritiro-asl-paziente-farmaco');
+    if (elPzF) elPzF.textContent = (p.nome || 'Assistito') + ' • ' + (t.farmaco || 'Farmaco ASL');
+
+    var prot = pt.protocollo || (p.pianoTerapeuticoDpc ? p.pianoTerapeuticoDpc.idPrescrizione : '011BQ1X145RHL');
+    var scad = pt.dataScadenza ? new Date(pt.dataScadenza).toLocaleDateString('it-IT') : '22/02/2027';
+    var elProt = document.getElementById('ritiro-asl-protocollo-badge');
+    if (elProt) elProt.textContent = 'Protocollo ASL: ' + prot + ' • Scadenza PT: ' + scad;
+
+    var totScat = parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12;
+    var ritScat = parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0;
+    var resScat = Math.max(0, totScat - ritScat);
+    var elRes = document.getElementById('ritiro-asl-scatole-residue-badge');
+    if (elRes) elRes.textContent = resScat + ' su ' + totScat;
+
+    // Data di default: oggi YYYY-MM-DD
+    var todayStr = new Date().toISOString().split('T')[0];
+    var elData = document.getElementById('ritiro-asl-data');
+    if (elData) elData.value = todayStr;
+
+    // Presidio di default
+    var elPres = document.getElementById('ritiro-asl-presidio');
+    if (elPres) elPres.value = pt.sedeRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO';
+
+    var elNote = document.getElementById('ritiro-asl-note');
+    if (elNote) elNote.value = 'Ritiro fornitura trimestrale (3 scatole) effettuato regolarmente';
+
+    // Preset default: 3 scatole (trimestre)
+    impostaScatoleRitiroRapido(3);
+
+    var modal = document.getElementById('modal-registra-ritiro-asl');
+    if (modal) {
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+  } catch (err) {
+    console.error('Errore apriModalRegistraRitiroASL:', err);
+  }
+}
+window.apriModalRegistraRitiroASL = apriModalRegistraRitiroASL;
+
+function chiudiModalRegistraRitiroASL() {
+  var modal = document.getElementById('modal-registra-ritiro-asl');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+window.chiudiModalRegistraRitiroASL = chiudiModalRegistraRitiroASL;
+
+function impostaScatoleRitiroRapido(n, elBtn) {
+  var inputNum = document.getElementById('ritiro-asl-num-scatole');
+  if (inputNum) inputNum.value = n;
+
+  document.querySelectorAll('.btn-preset-scatole').forEach(function (b) {
+    b.classList.remove('active');
+    b.style.borderColor = '#cbd5e1';
+    b.style.background = '#ffffff';
+    b.style.color = '#334155';
+    b.style.boxShadow = 'none';
+  });
+
+  var targetBtn = elBtn || document.getElementById('btn-preset-scat-' + n);
+  if (targetBtn) {
+    targetBtn.classList.add('active');
+    targetBtn.style.borderColor = '#0284c7';
+    targetBtn.style.background = '#e0f2fe';
+    targetBtn.style.color = '#0369a1';
+    targetBtn.style.boxShadow = '0 2px 6px rgba(2,132,199,0.2)';
+  }
+
+  aggiornaSimulazioneRitiroASL();
+}
+window.impostaScatoleRitiroRapido = impostaScatoleRitiroRapido;
+
+function aggiornaSimulazioneRitiroASL() {
+  try {
+    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    var tId = document.getElementById('ritiro-asl-farmaco-id')?.value;
+    var t = p && p.terapie ? p.terapie.find(item => String(item.id) === String(tId) || item.id == tId) : null;
+    if (!t && p && p.terapie) {
+      t = p.terapie.find(item => item.canaleDistribuzione === 'territoriale_asl' || (item.pianoTerapeutico && item.pianoTerapeutico.attivo) || (item.farmaco || '').toUpperCase().includes('ENTECAVIR'));
+    }
+    var pt = t ? t.pianoTerapeutico : null;
+
+    var numScat = parseInt(document.getElementById('ritiro-asl-num-scatole')?.value, 10) || 1;
+    var cprPerScatola = t ? (parseInt(t.cprPerScatola, 10) || 30) : 30;
+    var cprTotali = numScat * cprPerScatola;
+
+    var totScat = pt ? (parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12) : 12;
+    var ritScat = pt ? (parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0) : 0;
+    var resAttuali = Math.max(0, totScat - ritScat);
+    var resNuove = Math.max(0, resAttuali - numScat);
+
+    var curScorta = t ? (parseFloat(t.scorta) || 0) : 0;
+    var nuovaScorta = Math.round((curScorta + cprTotali) * 10) / 10;
+
+    var testoEl = document.getElementById('ritiro-asl-simulazione-testo');
+    if (testoEl) {
+      testoEl.innerHTML = 'Verranno caricate <b>+' + cprTotali + ' compresse</b> a casa (scorta totale: <b>' + nuovaScorta + ' cpr</b>).<br>' +
+        'Le scatole spettanti passeranno da <b>' + resAttuali + '</b> a <b>' + resNuove + ' rimaste</b> su ' + totScat + ' previste dal Piano Terapeutico.';
+    }
+  } catch (e) {
+    console.warn('Errore aggiornaSimulazioneRitiroASL:', e);
+  }
+}
+window.aggiornaSimulazioneRitiroASL = aggiornaSimulazioneRitiroASL;
+
+async function confermaRegistraRitiroASL() {
+  try {
+    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    if (!p || !Array.isArray(p.terapie)) return;
+
+    var tId = document.getElementById('ritiro-asl-farmaco-id')?.value;
+    var t = p.terapie.find(item => String(item.id) === String(tId) || item.id == tId);
+    if (!t) {
+      t = p.terapie.find(item => item.canaleDistribuzione === 'territoriale_asl' || (item.pianoTerapeutico && item.pianoTerapeutico.attivo) || (item.farmaco || '').toUpperCase().includes('ENTECAVIR'));
+    }
+    if (!t) return;
+
+    var pt = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
+    if (!pt) return;
+
+    var dataRitiro = document.getElementById('ritiro-asl-data')?.value || new Date().toISOString().split('T')[0];
+    var numScat = parseInt(document.getElementById('ritiro-asl-num-scatole')?.value, 10) || 1;
+    if (numScat <= 0) {
+      alert('Inserisci un numero valido di scatole ritirate.');
       return;
     }
 
-    // Scala 1 scatola
-    rit += 1;
-    res -= 1;
-    pt.scatoleRitirate = rit;
-    pt.scatoleResidue = res;
-    if (pt.scatoleRitirateTotali !== undefined) pt.scatoleRitirateTotali = rit;
-    if (pt.scatoleResidueDaRitirare !== undefined) pt.scatoleResidueDaRitirare = res;
+    var presidio = document.getElementById('ritiro-asl-presidio')?.value || pt.sedeRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO';
+    var note = document.getElementById('ritiro-asl-note')?.value || ('Ritiro fornitura di ' + numScat + ' scatole');
 
+    var cprPerScatola = parseInt(t.cprPerScatola, 10) || 30;
+    var cprAggiunte = numScat * cprPerScatola;
+
+    var totScat = parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12;
+    var ritScat = (parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0) + numScat;
+    var resScat = Math.max(0, totScat - ritScat);
+
+    // Aggiorna terapia
+    t.scorta = Math.round(((parseFloat(t.scorta) || 0) + cprAggiunte) * 10) / 10;
+    t.ultimoRitiro = dataRitiro;
+    pt.scatoleRitirate = ritScat;
+    pt.scatoleResidue = resScat;
+    pt.ultimoRitiro = dataRitiro;
+    pt.sedeRitiro = presidio;
+
+    // Registra nello storico dedicato del Piano Terapeutico
     pt.storicoRitiri = pt.storicoRitiri || [];
-    var now = new Date();
-    var dataOggiStr = now.toISOString().slice(0, 10);
-    pt.storicoRitiri.push({
-      data: dataOggiStr,
-      scatole: 1,
-      puntoRitiro: pt.sedeRitiro || pt.puntoRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO',
-      note: 'Ritiro rapido registrato da diario terapie'
+    var nuovoRitiroObj = {
+      id: 'rit_' + Date.now(),
+      data: dataRitiro,
+      timestamp: new Date().toISOString(),
+      scatole: numScat,
+      cprAggiunte: cprAggiunte,
+      scatoleResidueDopo: resScat,
+      scatoleTotali: totScat,
+      sedeRitiro: presidio,
+      protocollo: pt.protocollo || '011BQ1X145RHL',
+      note: note,
+      operatore: 'Operatore OSS / Famiglia'
+    };
+    pt.storicoRitiri.push(nuovoRitiroObj);
+
+    // Registra nel log attività generale del paziente
+    p.registrazioni = p.registrazioni || [];
+    p.registrazioni.push({
+      id: 'log_' + Date.now(),
+      tipo: 'scorta',
+      farmacoId: t.id,
+      farmaco: t.farmaco,
+      azione: 'ritiro_territoriale_asl',
+      numScatole: numScat,
+      cprAggiunte: cprAggiunte,
+      timestamp: new Date().toISOString(),
+      desc: 'Ritiro Farmacia Territoriale ASL: ' + numScat + ' scatole di ' + t.farmaco + ' (+' + cprAggiunte + ' cpr a casa). Spettano ancora ' + resScat + ' scatole. Presidio: ' + presidio + '.',
+      operatore: 'Operatore OSS / Famiglia'
     });
 
-    // Aggiunge le compresse alla scorta a casa
-    var cprAggiunte = parseInt(t.cprPerScatola, 10) || 30;
-    t.scorta = Math.round(((parseFloat(t.scorta) || 0) + cprAggiunte) * 10) / 10;
-    t.ultimoRitiro = now.toISOString();
+    // Se è Ciro o paziente con scheda DPC, sincronizza
+    if (p.pianoTerapeuticoDpc) {
+      p.pianoTerapeuticoDpc.scatoleRitirateTotali = ritScat;
+      p.pianoTerapeuticoDpc.scatoleResidueDaRitirare = resScat;
+    }
 
     // Sincronizza gemelle multi-tempo se presenti
     var mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
@@ -7443,38 +7609,292 @@ async function scalaScatolaTerritorialeRapida(terapiaId) {
       });
     }
 
-    // Registra nel log attività
-    p.registrazioni = p.registrazioni || [];
-    p.registrazioni.push({
-      id: 'log_' + Date.now(),
-      tipo: 'scorta',
-      farmacoId: t.id,
-      farmaco: t.farmaco,
-      azione: 'ritiro_territoriale_asl',
-      numScatole: 1,
-      cprAggiunte: cprAggiunte,
-      timestamp: now.toISOString(),
-      desc: 'Ritiro Farmacia Territoriale ASL: 1 scatola di ' + t.farmaco + ' (+' + cprAggiunte + ' cpr a casa). Spettano ancora ' + res + ' scatole (Piano Terapeutico).',
-      operatore: 'Operatore OSS / Famiglia'
-    });
-
-    // Se è Ciro o paziente con piano DPC, sincronizza
-    if (p.pianoTerapeuticoDpc) {
-      p.pianoTerapeuticoDpc.scatoleRitirateTotali = rit;
-      p.pianoTerapeuticoDpc.scatoleResidueDaRitirare = res;
-    }
-
     if (typeof saveDb === 'function') saveDb();
     if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
     if (typeof renderTerapie === 'function') renderTerapie();
     if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
-    if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([60]);
+    if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([80]);
+
+    chiudiModalRegistraRitiroASL();
+
     if (typeof showToast === 'function') {
-      showToast('🏛️ Ritiro ASL registrato! Spettano ancora ' + res + ' scatole (caricate +' + cprAggiunte + ' cpr a casa)', 'success');
+      showToast('🏛️ Ritiro di ' + numScat + ' scatole registrato! +' + cprAggiunte + ' cpr caricate (spettano ancora ' + resScat + ' scatole)', 'success');
+    }
+
+    // Apre subito il foglio A4 per la visualizzazione/stampa
+    setTimeout(function () {
+      apriModalStampaRegistroASL(t.id);
+    }, 450);
+
+  } catch (err) {
+    console.error('Errore confermaRegistraRitiroASL:', err);
+  }
+}
+window.confermaRegistraRitiroASL = confermaRegistraRitiroASL;
+
+// APRE IL REGISTRO RITIRI ASL STAMPABILE IN FORMATO A4 UFFICIALE
+function apriModalStampaRegistroASL(farmacoId) {
+  try {
+    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+    if (!p) return;
+
+    var t = null;
+    if (farmacoId && Array.isArray(p.terapie)) {
+      t = p.terapie.find(item => String(item.id) === String(farmacoId) || item.id == farmacoId);
+    }
+    if (!t && Array.isArray(p.terapie)) {
+      t = p.terapie.find(item => item.canaleDistribuzione === 'territoriale_asl' || (item.pianoTerapeutico && item.pianoTerapeutico.attivo) || (item.farmaco || '').toUpperCase().includes('ENTECAVIR'));
+    }
+    if (!t) return;
+
+    var pt = t.pianoTerapeutico || {};
+    var storico = Array.isArray(pt.storicoRitiri) ? pt.storicoRitiri.slice() : [];
+
+    var totScat = parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12;
+    var ritScat = parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0;
+    var resScat = Math.max(0, totScat - ritScat);
+
+    var prot = pt.protocollo || (p.pianoTerapeuticoDpc ? p.pianoTerapeuticoDpc.idPrescrizione : '011BQ1X145RHL');
+    var scad = pt.dataScadenza ? new Date(pt.dataScadenza).toLocaleDateString('it-IT') : '22/02/2027';
+    var centro = pt.centroPrescrittore || (p.pianoTerapeuticoDpc ? (p.pianoTerapeuticoDpc.strutturaPrescrittrice + ' - ' + (p.pianoTerapeuticoDpc.direttoreUO || 'Prof.ssa A. Saracino')) : 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari');
+    var presidio = pt.sedeRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO';
+
+    var righeTabellaHtml = '';
+    if (storico.length === 0) {
+      if (ritScat > 0) {
+        righeTabellaHtml += `
+          <tr style="border-bottom:1px solid #e2e8f0;">
+            <td style="padding:10px 8px; text-align:center; font-weight:800; color:#64748b;">1</td>
+            <td style="padding:10px 8px; font-weight:700;">${pt.ultimoRitiro ? new Date(pt.ultimoRitiro).toLocaleDateString('it-IT') : 'Ritiro Iniziale'}</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:900; color:#0369a1;">${ritScat} scatole</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:700; color:#059669;">+${ritScat * (t.cprPerScatola || 30)} cpr</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:900; color:#0284c7;">${resScat} rimaste</td>
+            <td style="padding:10px 8px; font-size:11.5px; color:#475569;"><b>${presidio}</b><br><span style="color:#64748b;">Ritiro fornitura registrato</span></td>
+            <td style="padding:10px 8px; text-align:center; font-size:11px; color:#94a3b8;">Firma Farmacia ASL</td>
+          </tr>
+        `;
+      } else {
+        righeTabellaHtml += `
+          <tr>
+            <td colspan="7" style="padding:20px; text-align:center; color:#64748b; font-style:italic;">Nessun ritiro registrato finora. Tutte le ${totScat} scatole risultano ancora spettanti.</td>
+          </tr>
+        `;
+      }
+    } else {
+      storico.forEach(function (r, idx) {
+        var dataFmt = r.data ? new Date(r.data).toLocaleDateString('it-IT') : '--/--/----';
+        righeTabellaHtml += `
+          <tr style="border-bottom:1px solid #e2e8f0; background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+            <td style="padding:10px 8px; text-align:center; font-weight:800; color:#64748b;">${idx + 1}</td>
+            <td style="padding:10px 8px; font-weight:800; color:#0f172a;">${dataFmt}</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:900; color:#0369a1;">${r.scatole} ${r.scatole === 1 ? 'scatola' : 'scatole'}</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:700; color:#059669;">+${r.cprAggiunte || (r.scatole * 30)} cpr</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:900; color:#0284c7;">${r.scatoleResidueDopo !== undefined ? r.scatoleResidueDopo : '--'} rimaste</td>
+            <td style="padding:10px 8px; font-size:11.5px; color:#334155;"><b>${r.sedeRitiro || presidio}</b><br><span style="color:#64748b;">${r.note || 'Ritiro fornitura ASL'}</span></td>
+            <td style="padding:10px 8px; text-align:center; font-size:11px; color:#475569;">Firma: ________________</td>
+          </tr>
+        `;
+      });
+    }
+
+    var foglio = document.getElementById('foglio-stampa-registro-asl');
+    if (!foglio) return;
+
+    var dataOggiStr = new Date().toLocaleDateString('it-IT');
+    var oraOggiStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+    foglio.innerHTML = `
+      <!-- INTESTAZIONE ISTITUZIONALE ASL -->
+      <div style="border-bottom: 2.5px solid #0284c7; padding-bottom: 14px; margin-bottom: 18px; display:flex; justify-content:space-between; align-items:flex-start;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="font-size:36px; line-height:1;">🏛️</div>
+          <div>
+            <div style="font-size:15px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px;">REGIONE PUGLIA • AZIENDA SANITARIA LOCALE BARI</div>
+            <div style="font-size:12.5px; font-weight:800; color:#0284c7; margin-top:2px;">DIPARTIMENTO FARMACEUTICO TERRITORIALE • DISTRIBUZIONE DIRETTA (PHT - L. 405/2001)</div>
+            <div style="font-size:11px; color:#475569; margin-top:2px;">Presidio Erogatore: <b>${presidio}</b></div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="background:#0284c7; color:#ffffff; font-size:11px; font-weight:900; padding:4px 10px; border-radius:6px; text-transform:uppercase; display:inline-block;">Scheda Ufficiale A4</div>
+          <div style="font-size:10.5px; color:#64748b; margin-top:4px;">Emesso il: <b>${dataOggiStr}</b> ore ${oraOggiStr}</div>
+        </div>
+      </div>
+
+      <!-- TITOLO DOCUMENTO -->
+      <div style="text-align:center; margin-bottom:18px;">
+        <h2 style="margin:0; font-size:16px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.6px;">
+          REGISTRO CRONOLOGICO CARICO &amp; RITIRO FARMACI DA PIANO TERAPEUTICO
+        </h2>
+        <div style="font-size:11.5px; color:#64748b; margin-top:3px; font-weight:600;">Monitoraggio Ufficiale Fabbisogno Annuale e Consegne Scatole Farmacia Territoriale</div>
+      </div>
+
+      <!-- 2 BOX: DATI ASSISTITO & DATI PIANO TERAPEUTICO -->
+      <div style="display:grid; grid-template-columns: 1fr 1.2fr; gap:14px; margin-bottom:18px;">
+        
+        <!-- BOX 1: DATI ASSISTITO -->
+        <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 14px;">
+          <div style="font-size:11px; font-weight:900; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;">
+            👤 DATI ASSISTITO
+          </div>
+          <div style="font-size:14.5px; font-weight:900; color:#0f172a;">${p.nome || 'Ciro Milella'}</div>
+          <div style="font-size:12px; color:#334155; margin-top:3px;">Nato il: <b>16/12/1967 (58 anni)</b></div>
+          <div style="font-size:12px; color:#334155; margin-top:2px;">Domicilio: <b>${p.indirizzo || 'Via Giulio Petroni 69 - Bari (BA)'}</b></div>
+          <div style="font-size:12px; color:#334155; margin-top:2px;">MMG Curante: <b>${p.medicoCurante || p.medico || 'Dott. Roberto Scarcia'}</b></div>
+        </div>
+
+        <!-- BOX 2: DATI PIANO TERAPEUTICO -->
+        <div style="background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:10px; padding:12px 14px;">
+          <div style="font-size:11px; font-weight:900; color:#0284c7; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; border-bottom:1px solid #e0f2fe; padding-bottom:4px;">
+            📋 PIANO TERAPEUTICO SPECIALISTICO
+          </div>
+          <div style="font-size:14px; font-weight:900; color:#0369a1;">${t.farmaco || 'Entecavir Sandoz 0,5 mg'}</div>
+          <div style="font-size:11.5px; color:#334155; margin-top:2px;">Posologia: <b>1 compressa/die a digiuno</b> • Confezione da: <b>${t.cprPerScatola || 30} cpr</b></div>
+          <div style="font-size:11.5px; color:#0284c7; margin-top:2px;">Protocollo ASL: <b>${prot}</b> • Scadenza: <b>${scad}</b></div>
+          <div style="font-size:11.5px; color:#334155; margin-top:2px;">Centro Prescrittore: <b>${centro}</b></div>
+        </div>
+
+      </div>
+
+      <!-- TABELLA CRONOLOGICA DEI RITIRI -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+          <span>📦 Cronologia Erogazioni &amp; Ritiri Effettuati</span>
+          <span style="font-size:11px; font-weight:800; color:#0284c7;">Fabbisogno Totale: ${totScat} Scatole / Anno</span>
+        </div>
+        <table style="width:100%; border-collapse:collapse; font-size:12px; border:1px solid #cbd5e1;">
+          <thead>
+            <tr style="background:#0f172a; color:#ffffff;">
+              <th style="padding:8px; text-align:center; width:35px;">#</th>
+              <th style="padding:8px; text-align:left;">Data Ritiro</th>
+              <th style="padding:8px; text-align:center;">Q.tà Ritirata</th>
+              <th style="padding:8px; text-align:center;">Compresse</th>
+              <th style="padding:8px; text-align:center;">Residuo Piano</th>
+              <th style="padding:8px; text-align:left;">Sede Erogatrice &amp; Note</th>
+              <th style="padding:8px; text-align:center; width:130px;">Timbro / Firma</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${righeTabellaHtml}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- BILANCIO ATTUALE E RIEPILOGO STATO SCORTE -->
+      <div style="background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 16px; margin-bottom:20px; display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; text-align:center;">
+        <div>
+          <div style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#64748b;">Totale Assegnate</div>
+          <div style="font-size:18px; font-weight:900; color:#0f172a; margin-top:2px;">${totScat} scatole</div>
+        </div>
+        <div>
+          <div style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#0369a1;">Già Consegnate</div>
+          <div style="font-size:18px; font-weight:900; color:#0369a1; margin-top:2px;">${ritScat} scatole</div>
+        </div>
+        <div>
+          <div style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#16a34a;">Ancora Spettanti</div>
+          <div style="font-size:18px; font-weight:900; color:#16a34a; margin-top:2px;">${resScat} scatole</div>
+        </div>
+        <div>
+          <div style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#ea580c;">Scorta Attuale a Casa</div>
+          <div style="font-size:18px; font-weight:900; color:#ea580c; margin-top:2px;">${t.scorta || 0} cpr</div>
+        </div>
+      </div>
+
+      <!-- SEZIONE FIRME & TIMBRI -->
+      <div style="border-top:1px dashed #cbd5e1; padding-top:16px; display:flex; justify-content:space-between; align-items:flex-end;">
+        <div style="text-align:center; width:220px;">
+          <div style="font-size:11px; font-weight:800; color:#475569; margin-bottom:38px;">Timbro Farmacia Territoriale ASL</div>
+          <div style="border-bottom:1px solid #475569; width:100%;"></div>
+        </div>
+        <div style="font-size:10px; color:#64748b; text-align:center; max-width:280px; line-height:1.3;">
+          Documento generato da Suite Sanitaria Milella CareAssist Pro. Valido ai fini della verifica aderenza terapeutica e monitoraggio PHT ASL.
+        </div>
+        <div style="text-align:center; width:220px;">
+          <div style="font-size:11px; font-weight:800; color:#475569; margin-bottom:38px;">Firma Assistito / Delegato al Ritiro</div>
+          <div style="border-bottom:1px solid #475569; width:100%;"></div>
+        </div>
+      </div>
+    `;
+
+    var modal = document.getElementById('modal-registro-ritiri-asl-stampa');
+    if (modal) {
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
     }
   } catch (err) {
-    console.error('Errore scalaScatolaTerritorialeRapida:', err);
+    console.error('Errore apriModalStampaRegistroASL:', err);
   }
+}
+window.apriModalStampaRegistroASL = apriModalStampaRegistroASL;
+
+function chiudiModalStampaRegistroASL() {
+  var modal = document.getElementById('modal-registro-ritiri-asl-stampa');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+window.chiudiModalStampaRegistroASL = chiudiModalStampaRegistroASL;
+
+function stampaRegistroRitiriASL() {
+  document.body.classList.add('printing-registro-asl');
+  setTimeout(function () {
+    window.print();
+    setTimeout(function () {
+      document.body.classList.remove('printing-registro-asl');
+    }, 1500);
+  }, 200);
+}
+window.stampaRegistroRitiriASL = stampaRegistroRitiriASL;
+
+function condividiRegistroASLWhatsApp() {
+  var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
+  if (!p) return;
+  var t = p.terapie ? p.terapie.find(item => item.canaleDistribuzione === 'territoriale_asl' || (item.pianoTerapeutico && item.pianoTerapeutico.attivo) || (item.farmaco || '').toUpperCase().includes('ENTECAVIR')) : null;
+  if (!t) return;
+  var pt = t.pianoTerapeutico || {};
+
+  var totScat = parseInt(pt.scatoleTotali || 12, 10);
+  var ritScat = parseInt(pt.scatoleRitirate || 0, 10);
+  var resScat = Math.max(0, totScat - ritScat);
+
+  var msg = '🏛️ *REGISTRO RITIRI FARMACIA TERRITORIALE ASL*\n';
+  msg += '👤 *Assistito:* ' + (p.nome || 'Ciro Milella') + '\n';
+  msg += '💊 *Farmaco:* ' + (t.farmaco || 'Entecavir Sandoz 0,5 mg') + '\n';
+  msg += '📋 *Protocollo PT:* ' + (pt.protocollo || '011BQ1X145RHL') + ' (Scad. ' + (pt.dataScadenza || '22/02/2027') + ')\n';
+  msg += '🏛️ *Presidio:* ' + (pt.sedeRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO') + '\n\n';
+  msg += '📦 *SITUAZIONE CONSEGNE:*\n';
+  msg += '• Scatole Assegnate: *' + totScat + ' scatole/anno*\n';
+  msg += '• Scatole Già Ritirate: *' + ritScat + ' scatole*\n';
+  msg += '• Scatole Ancora Spettanti: *' + resScat + ' scatole rimaste*\n';
+  msg += '• Scorta Attuale a Casa: *' + (t.scorta || 0) + ' compresse*\n';
+  if (pt.ultimoRitiro) {
+    msg += '• Ultimo Ritiro Effettuato: *' + new Date(pt.ultimoRitiro).toLocaleDateString('it-IT') + '*\n';
+  }
+
+  var url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+}
+window.condividiRegistroASLWhatsApp = condividiRegistroASLWhatsApp;
+
+function apriModalRegistraRitiroASLDaModale() {
+  var tId = document.getElementById('edit-farmaco-id')?.value;
+  apriModalRegistraRitiroASL(tId);
+}
+window.apriModalRegistraRitiroASLDaModale = apriModalRegistraRitiroASLDaModale;
+
+function apriModalStampaRegistroASLDaModale() {
+  var tId = document.getElementById('edit-farmaco-id')?.value;
+  apriModalStampaRegistroASL(tId);
+}
+window.apriModalStampaRegistroASLDaModale = apriModalStampaRegistroASLDaModale;
+
+function apriModalStampaRegistroASLDaRitiro() {
+  var tId = document.getElementById('ritiro-asl-farmaco-id')?.value;
+  chiudiModalRegistraRitiroASL();
+  apriModalStampaRegistroASL(tId);
+}
+window.apriModalStampaRegistroASLDaRitiro = apriModalStampaRegistroASLDaRitiro;
+
+async function scalaScatolaTerritorialeRapida(terapiaId) {
+  apriModalRegistraRitiroASL(terapiaId);
 }
 window.scalaScatolaTerritorialeRapida = scalaScatolaTerritorialeRapida;
 
