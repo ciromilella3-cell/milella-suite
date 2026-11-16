@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=332">
+  <link rel="stylesheet" href="style.css?v=333">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -466,8 +466,15 @@
       style="background:#0f172a; padding:6px 16px; border-top:1px solid rgba(255,255,255,0.08);">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
 
-        <!-- I 4 PULSANTI CHIAVE OSS (GRANDI, TATTILI E IMMEDIATI) -->
+        <!-- I PULSANTI OPERATIVI (GRANDI, TATTILI E IMMEDIATI) -->
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+
+          <button class="btn" onclick="window.location.href='/launcher.html'"
+            style="background:#ffffff; color:#0f172a; font-weight:900; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1.5px solid #cbd5e1; box-shadow:0 2px 6px rgba(0,0,0,0.15); display:inline-flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.15s ease;"
+            onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#ffffff';"
+            title="Torna alla Home Suite Milella">
+            <span style="font-size:16px;">🏠</span> <span>Home Suite</span>
+          </button>
 
           <button class="btn" onclick="apriModalConsegnaVocale()"
             style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #818cf8; box-shadow:0 2px 6px rgba(79,70,229,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
@@ -635,6 +642,12 @@
       </div>
     </div>
     <div class="sticky-patient-actions">
+      <button type="button" class="btn-sticky-bridge-home" onclick="window.location.href='/launcher.html'"
+        title="Torna alla Home Suite Milella"
+        style="background:#ffffff; color:#0f172a; border:1px solid #cbd5e1; padding:5px 12px; border-radius:8px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:all 0.15s ease;"
+        onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#ffffff';">
+        🏠 <span>Home Suite</span>
+      </button>
       <span id="sticky-patient-alert-pill" class="sticky-alert-pill" style="display:none;"
         onclick="vaiATerapiaInRitardoAttiva()" title="Terapie in ritardo per questo assistito">
         🚨 <span id="sticky-patient-alert-count">0</span> RITARDI
@@ -9174,7 +9187,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=332"></script>
+  <script src="app.js?v=333"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9185,7 +9198,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=330', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=333', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
@@ -10099,6 +10112,7 @@
     .mobile-bottom-bar .bar-item.active {
       color: #0284c7 !important;
     }
+  </style>
 
   <!-- BOTTOM-SHEET MODERNO APP MOBILE PER I 3 PUNTINI (⋮) STRUMENTI SU SMARTPHONE -->
   <div id="modal-menu-oss-bottomsheet" class="modal-overlay"
