@@ -21,8 +21,15 @@
 }
 
 @keyframes aslFadeIn {
-  from { opacity: 0; transform: scale(0.97); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .asl-modal-window {
@@ -160,7 +167,7 @@
   color: #0f172a;
   background: #ffffff;
   outline: none;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
   transition: all 0.2s;
 }
 
@@ -316,7 +323,7 @@
   justify-content: center;
   font-size: 26px;
   color: #ffffff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
   flex-shrink: 0;
 }
 
@@ -499,7 +506,7 @@
   .asl-modal-overlay {
     padding: 0 !important;
   }
-  
+
   .asl-modal-window {
     width: 100vw !important;
     height: 100vh !important;
@@ -543,7 +550,8 @@
     flex-wrap: wrap !important;
   }
 
-  .asl-title-box h2, .asl-main-title {
+  .asl-title-box h2,
+  .asl-main-title {
     font-size: 1.05rem !important;
     font-weight: 800 !important;
     line-height: 1.2 !important;
@@ -562,7 +570,8 @@
     flex-shrink: 0 !important;
   }
 
-  .asl-sub-desc, .asl-title-box p {
+  .asl-sub-desc,
+  .asl-title-box p {
     font-size: 0.72rem !important;
     margin: 2px 0 0 0 !important;
     white-space: nowrap !important;

@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=334">
+  <link rel="stylesheet" href="style.css?v=335">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -1396,9 +1396,12 @@
                 title="Abilita audio e notifiche native su smartphone">
                 🔔 Notifiche & Audio
               </button>
-              <button class="btn btn-outline"
-                onclick="document.querySelector('[data-target=\'tab-farmaci\']').click()">Tutti i farmaci
-                &rarr;</button>
+              <button class="btn"
+                style="background:#0284c7; color:#ffffff; font-weight:800; font-size:11.5px; padding:5px 12px; border-radius:8px; border:none; box-shadow:0 1px 4px rgba(2,132,199,0.3); cursor:pointer;"
+                onclick="document.querySelector('[data-target=\'tab-farmaci\']').click()"
+                title="Apri la sezione completa Terapie con Carico Farmaci, Ritiro ASL e Stampa Registro A4">
+                📋 Tutti i farmaci &rarr;
+              </button>
             </div>
           </div>
           <div class="table-responsive">
@@ -9360,7 +9363,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=334"></script>
+  <script src="app.js?v=335"></script>
   <script src="turnario_admin.js?v=2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9371,7 +9374,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=334', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=335', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

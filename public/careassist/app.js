@@ -6182,6 +6182,28 @@ function renderTerapie() {
             <b style="color:var(--primary);">${t.farmaco}</b><br>
             <small style="color:#64748b;">${t.modo}</small>
           </div>
+          ${(() => {
+            const isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
+              (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
+              ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
+            if (isASL) {
+              const ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
+              const totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
+              const ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
+              const resScat = Math.max(0, totScat - ritScat);
+              return `
+                <div style="margin-top:5px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                  <button type="button" onclick="event.stopPropagation(); apriModalRegistraRitiroASL(${t.id})" class="btn" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:10.5px; padding:3px 9px; border-radius:6px; border:none; box-shadow:0 1px 4px rgba(2,132,199,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Registra ritiro di 1, 2 o 3 scatole presso la Farmacia Territoriale ASL">
+                    <span>🏛️</span> <span>Ritiro ASL (${resScat} rimaste)</span>
+                  </button>
+                  <button type="button" onclick="event.stopPropagation(); apriModalStampaRegistroASL(${t.id})" class="btn" style="background:#eff6ff; color:#0284c7; border:1px solid #93c5fd; font-weight:800; font-size:10px; padding:2px 7px; border-radius:6px; cursor:pointer;" title="Visualizza e Stampa Registro A4 Ritiri ASL">
+                    🖨️ Stampa A4
+                  </button>
+                </div>
+              `;
+            }
+            return '';
+          })()}
         </td>
         <td>
           <span class="badge ${t.scorta <= 5 ? 'badge-danger' : 'badge-primary'}">${t.scorta} cpr</span>
