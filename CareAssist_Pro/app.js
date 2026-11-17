@@ -30139,7 +30139,7 @@ function renderMobileNativeView(terapie, p) {
             : ('<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>')
           ) +
           '<button type="button" class="btn-mobile-hero-sub" onclick="mostraAuditFarmaco(' + nextT.id + ')">ℹ️ Dettagli</button>' +
-          '</div>' + +
+          '</div>' +
           '<div style="text-align:center; margin-top:12px; padding-top:8px; border-top:1px dashed #e2e8f0;">' +
           '<a href="#mobile-terapie-timeline" onclick="document.getElementById(\'mobile-terapie-timeline\').scrollIntoView({behavior:\'smooth\'}); return false;" style="font-size:12px; font-weight:800; color:#0284c7; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">' +
           '<span>👇</span> <span>Scorri per vedere tutte le ' + (p.terapie || []).length + ' terapie di oggi</span>' +
