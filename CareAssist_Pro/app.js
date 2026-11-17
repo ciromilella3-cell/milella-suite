@@ -7565,9 +7565,21 @@ function aggiungiPromemoriaCalendarioASL(farmacoId, customDate) {
 }
 window.aggiungiPromemoriaCalendarioASL = aggiungiPromemoriaCalendarioASL;
 
+function onManualProssimaDataASLChange() {
+  window._aslProssimaDataManuale = true;
+}
+window.onManualProssimaDataASLChange = onManualProssimaDataASLChange;
+
+function impostaProssimaDataAutoASL() {
+  window._aslProssimaDataManuale = false;
+  aggiornaSimulazioneRitiroASL();
+}
+window.impostaProssimaDataAutoASL = impostaProssimaDataAutoASL;
+
 function aggiungiPromemoriaCalendarioASLDaModal() {
   var tId = document.getElementById('ritiro-asl-farmaco-id')?.value;
-  var pData = document.getElementById('ritiro-asl-prossima-data-testo')?.getAttribute('data-iso');
+  var inputVal = document.getElementById('ritiro-asl-prossima-data-input')?.value;
+  var pData = inputVal || document.getElementById('ritiro-asl-prossima-data-testo')?.getAttribute('data-iso');
   aggiungiPromemoriaCalendarioASL(tId, pData);
 }
 window.aggiungiPromemoriaCalendarioASLDaModal = aggiungiPromemoriaCalendarioASLDaModal;
@@ -7739,7 +7751,15 @@ function apriModalRegistraRitiroASL(terapiaId) {
     if (elNote) elNote.value = 'Ritiro fornitura trimestrale (3 scatole) effettuato regolarmente';
 
     // Preset default: 3 scatole (trimestre)
+    window._aslProssimaDataManuale = false;
     impostaScatoleRitiroRapido(3);
+    if (pt.prossimoRitiroIso) {
+      var pInput = document.getElementById('ritiro-asl-prossima-data-input');
+      if (pInput) {
+        pInput.value = pt.prossimoRitiroIso;
+        window._aslProssimaDataManuale = true;
+      }
+    }
 
     var modal = document.getElementById('modal-registra-ritiro-asl');
     if (modal) {
@@ -7816,8 +7836,12 @@ function aggiornaSimulazioneRitiroASL() {
     var nextCalc = calcolaDatiProssimoRitiroASL(t, pt, numScat);
     var pDataEl = document.getElementById('ritiro-asl-prossima-data-testo');
     if (pDataEl) {
-      pDataEl.innerHTML = nextCalc.dateFmt + ' <span style="font-size:11px; color:#64748b; font-weight:700;">(~' + nextCalc.giorniAlProssimo + ' gg da oggi • ' + nextCalc.giorniAutonomia + ' gg copertura tot)</span>';
+      pDataEl.innerHTML = nextCalc.dateFmt + ' <span style="font-size:10.5px; color:#64748b; font-weight:700;">(' + nextCalc.giorniAutonomia + ' gg scorta)</span>';
       pDataEl.setAttribute('data-iso', nextCalc.dateIso);
+    }
+    var pInputEl = document.getElementById('ritiro-asl-prossima-data-input');
+    if (pInputEl && !window._aslProssimaDataManuale) {
+      pInputEl.value = nextCalc.dateIso;
     }
   } catch (e) {
     console.warn('Errore aggiornaSimulazioneRitiroASL:', e);
@@ -7883,10 +7907,17 @@ async function confermaRegistraRitiroASL() {
     };
     pt.storicoRitiri.push(nuovoRitiroObj);
 
-    // Memorizza data prossimo ritiro
-    var nextDati = calcolaDatiProssimoRitiroASL(t, pt, 0);
-    pt.prossimoRitiroConsigliato = nextDati.dateFmt;
-    pt.prossimoRitiroIso = nextDati.dateIso;
+    // Memorizza data prossimo ritiro (o manuale scelta dall'utente, o calcolata)
+    var inputProssimaData = document.getElementById('ritiro-asl-prossima-data-input')?.value;
+    if (inputProssimaData && !isNaN(new Date(inputProssimaData).getTime())) {
+      var dMan = new Date(inputProssimaData);
+      pt.prossimoRitiroIso = inputProssimaData;
+      pt.prossimoRitiroConsigliato = dMan.toLocaleDateString('it-IT');
+    } else {
+      var nextDati = calcolaDatiProssimoRitiroASL(t, pt, 0);
+      pt.prossimoRitiroConsigliato = nextDati.dateFmt;
+      pt.prossimoRitiroIso = nextDati.dateIso;
+    }
 
     // Registra nel log attività generale del paziente
     p.registrazioni = p.registrazioni || [];
@@ -13155,9 +13186,15 @@ function apriModificaFarmaco(farmacoId) {
         var ultRit = ptSource.ultimoRitiro ? new Date(ptSource.ultimoRitiro).toLocaleDateString('it-IT') : 'Nessuno registrato';
         var elUlt = document.getElementById('top-asl-ultimo-ritiro-testo');
         if (elUlt) elUlt.textContent = ultRit;
-        var nextDati = (typeof calcolaDatiProssimoRitiroASL === 'function') ? calcolaDatiProssimoRitiroASL(t, ptSource, 0) : null;
         var elProx = document.getElementById('top-asl-prossimo-ritiro-testo');
-        if (elProx) elProx.textContent = nextDati ? nextDati.dateFmt : 'Da calcolare';
+        if (elProx) {
+          if (ptSource.prossimoRitiroConsigliato) {
+            elProx.textContent = ptSource.prossimoRitiroConsigliato;
+          } else {
+            var nextDati = (typeof calcolaDatiProssimoRitiroASL === 'function') ? calcolaDatiProssimoRitiroASL(t, ptSource, 0) : null;
+            elProx.textContent = nextDati ? nextDati.dateFmt : 'Da calcolare';
+          }
+        }
       }
     } else {
       if (radConv) radConv.checked = true;

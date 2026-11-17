@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=344">
+  <link rel="stylesheet" href="style.css?v=345">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -4799,15 +4799,32 @@
           <label style="font-size:12px; font-weight:800; color:#334155; display:block; margin-bottom:5px;">📅 Data del Ritiro effettuato:</label>
           <input type="date" id="ritiro-asl-data" onchange="aggiornaSimulazioneRitiroASL()" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:14px; font-weight:700; background:#ffffff; color:#0f172a; box-sizing:border-box;">
           
-          <!-- CALCOLO DATA PROSSIMO RITIRO & BOTTONE CALENDARIO -->
-          <div id="ritiro-asl-prossimo-box" style="margin-top:6px; background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:10px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-            <div>
-              <span style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#1e40af;">📅 Prossimo Ritiro ASL Consigliato:</span>
-              <div id="ritiro-asl-prossima-data-testo" style="font-size:13.5px; font-weight:900; color:#0284c7;">--/--/----</div>
+          <!-- SELEZIONE AUTONOMA & MODIFICABILE PROSSIMO RITIRO ASL / PRENOTAZIONE -->
+          <div id="ritiro-asl-prossimo-box" style="margin-top:10px; background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border:1.5px solid #38bdf8; border-radius:12px; padding:10px 14px; box-shadow:0 2px 8px rgba(2,132,199,0.12);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:16px;">🗓️</span>
+                <span style="font-size:12px; font-weight:800; text-transform:uppercase; color:#0369a1; letter-spacing:0.3px;">Prossima Data Ritiro / Prenotazione:</span>
+              </div>
+              <div id="ritiro-asl-prossimo-suggerito-badge" style="font-size:11px; font-weight:700; color:#0284c7; background:#ffffff; border:1px solid #bae6fd; padding:2px 8px; border-radius:6px;">
+                Stima scorta: <span id="ritiro-asl-prossima-data-testo">--/--/----</span>
+              </div>
             </div>
-            <button type="button" onclick="aggiungiPromemoriaCalendarioASLDaModal()" style="background:#0284c7; color:#ffffff; border:none; padding:6px 11px; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 1px 4px rgba(2,132,199,0.3);">
-              <span>🔔</span> <span>Aggiungi a Calendario</span>
-            </button>
+
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <div style="flex:1; min-width:160px;">
+                <input type="date" id="ritiro-asl-prossima-data-input" onchange="onManualProssimaDataASLChange()" style="width:100%; padding:9px 12px; border-radius:8px; border:1.5px solid #0284c7; font-size:14px; font-weight:800; background:#ffffff; color:#0f172a; box-sizing:border-box; outline:none; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              </div>
+              <button type="button" onclick="impostaProssimaDataAutoASL()" style="background:#ffffff; color:#0369a1; border:1.5px solid #0284c7; padding:8px 10px; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; transition:all 0.15s ease;" title="Reimposta la data calcolata in automatico in base alle scatole">
+                <span>🔄</span> <span>Auto</span>
+              </button>
+              <button type="button" onclick="aggiungiPromemoriaCalendarioASLDaModal()" style="background:#0284c7; color:#ffffff; border:none; padding:8px 12px; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.35);">
+                <span>🔔</span> <span>Aggiungi a Calendario</span>
+              </button>
+            </div>
+            <div style="font-size:10.5px; color:#475569; margin-top:5px; line-height:1.3;">
+              💡 <b>Totale autonomia:</b> puoi modificare liberamente questa data quando prenoti alla farmacia territoriale o andare quando sei comodo.
+            </div>
           </div>
         </div>
 
@@ -9492,8 +9509,8 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=344"></script>
-  <script src="turnario_admin.js?v=344"></script>
+  <script src="app.js?v=345"></script>
+  <script src="turnario_admin.js?v=345"></script>
   <script>
     if ('serviceWorker' in navigator) {
       var _reloadingSw = false;
@@ -9503,7 +9520,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=344', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=345', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
