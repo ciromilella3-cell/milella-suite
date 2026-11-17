@@ -11392,12 +11392,7 @@ button[onclick*="mostraGuidaContestuale"],
 
 @media (max-width: 768px) {
   .win-desktop-floating-trash {
-    bottom: 84px !important;
-    right: 14px !important;
-    padding: 6px 8px !important;
-    transform: scale(0.92) !important;
-    z-index: 10000000 !important;
-    display: flex !important;
+    display: none !important;
   }
 }
 
@@ -11426,4 +11421,11 @@ button[onclick*="mostraGuidaContestuale"],
 
 .win-desktop-trash-btn-mobile-hdr:active {
   transform: scale(0.92);
+}
+/* ANTI-BOX-VUOTO SU MOBILE */
+.mobile-hero-card:empty, #mobile-hero-ritardi-banner:empty, #mobile-hero-action-card:empty {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
 }

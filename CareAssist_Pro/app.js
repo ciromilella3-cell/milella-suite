@@ -1212,19 +1212,6 @@ function getPazienteCiroInit() {
       scorta: 41,
       giorniAlert: 10,
       cadenzaTipo: 'giornaliera',
-      canaleDistribuzione: 'territoriale_asl',
-      pianoTerapeutico: {
-        attivo: true,
-        dataScadenza: '2027-02-22',
-        protocollo: '011BQ1X145RHL',
-        scatoleTotali: 12,
-        scatoleRitirate: 9,
-        scatoleResidue: 3,
-        centroPrescrittore: 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)',
-        sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO',
-        note: '1 cpr/die a digiuno (almeno 2h prima o dopo i pasti) - PHT Distribuzione Diretta HBV',
-        ultimoRitiro: '2026-08-18'
-      },
       fattoOggi: false,
       ultimaModificaClinica: {
         data: '28/10/2026',
@@ -1269,29 +1256,6 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
         }
       }
     });
-
-    // Sincronizza e arricchisce il Piano Terapeutico Farmacia Territoriale ASL per Ciro (Entecavir)
-    const ciroPz = AppData.pazienti.find(function (p) { return (p.nome || '').toLowerCase().includes('ciro'); });
-    if (ciroPz && Array.isArray(ciroPz.terapie)) {
-      const entecavir = ciroPz.terapie.find(function (t) { return (t.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
-      if (entecavir && (!entecavir.pianoTerapeutico || !entecavir.canaleDistribuzione)) {
-        entecavir.canaleDistribuzione = 'territoriale_asl';
-        entecavir.cprPerScatola = 30;
-        entecavir.pianoTerapeutico = {
-          attivo: true,
-          dataScadenza: '2027-02-22',
-          protocollo: '011BQ1X145RHL',
-          scatoleTotali: 12,
-          scatoleRitirate: 9,
-          scatoleResidue: 3,
-          centroPrescrittore: 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)',
-          sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO',
-          note: '1 cpr/die a digiuno (almeno 2h prima o dopo i pasti) - PHT Distribuzione Diretta HBV',
-          ultimoRitiro: '2026-08-18'
-        };
-        try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
-      }
-    }
   }
 
   const aldoEx = AppData.pazienti.find(p => p.id === 'paz_aldo');
@@ -5723,16 +5687,10 @@ function renderTerapie() {
       }
 
       // Informazioni ultimo ritiro
-      const isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
-        (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
-        ((t.farmaco || '').toUpperCase().includes('ENTECAVIR') && (p.nome || '').toLowerCase().includes('ciro'));
-      const farmaciaNome = isASL
-        ? ((t.pianoTerapeutico && (t.pianoTerapeutico.sedeRitiro || t.pianoTerapeutico.puntoRitiro)) || 'Farmacia Territoriale ASL Bari - Ex CTO')
-        : (t.farmacia || p.farmaciaDiRiferimento || 'Farmacia MACARIO');
-      const farmaciaIcon = isASL ? '🏛️' : '🏥';
+      const farmaciaNome = t.farmacia || p.farmaciaDiRiferimento || 'Farmacia MACARIO';
       const ritiroInfo = t.ultimoRitiro
-        ? `<div style="font-size:10px; color:#0369a1; font-weight:700; margin-top:3px;">📅 Ritirato: <b>${new Date(t.ultimoRitiro).toLocaleDateString('it-IT')}</b></div><div style="font-size:9.5px; color:${isASL ? '#0284c7' : '#047857'}; font-weight:700;">${farmaciaIcon} ${farmaciaNome}</div>`
-        : `<div style="font-size:10px; color:#64748b; margin-top:3px;">Prescrizione Attiva</div><div style="font-size:9.5px; color:#64748b;">${farmaciaIcon} ${farmaciaNome}</div>`;
+        ? `<div style="font-size:10px; color:#0369a1; font-weight:700; margin-top:3px;">📅 Ritirato: <b>${new Date(t.ultimoRitiro).toLocaleDateString('it-IT')}</b></div><div style="font-size:9.5px; color:#047857; font-weight:600;">🏥 ${farmaciaNome}</div>`
+        : `<div style="font-size:10px; color:#64748b; margin-top:3px;">Prescrizione Attiva</div><div style="font-size:9.5px; color:#64748b;">${farmaciaNome}</div>`;
 
       return `
       <tr id="terapia-row-${t.id}" class="terapia-row-item" data-farmaco-id="${t.id}">
@@ -5802,30 +5760,6 @@ function renderTerapie() {
         })()}
             ${t.ultimaModificaClinica ? `<span style="display:inline-block; font-size:10px; font-weight:800; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:1px 6px; border-radius:6px; margin-left:4px;" title="${t.ultimaModificaClinica.motivo || ''}">🩺 Agg. ${t.ultimaModificaClinica.fonte || 'Medico'} (${t.ultimaModificaClinica.data || ''})</span>` : ''}
             ${t.principio ? `<br><small style="color:#64748b;">Principio: ${t.principio}</small>` : ''}
-            ${(() => {
-          const isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
-            (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
-            ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
-          if (isASL) {
-            const ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
-            const totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
-            const ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
-            const resScat = Math.max(0, totScat - ritScat);
-            const dtScad = ptObj ? (ptObj.dataScadenza || ptObj.dataScadenzaAnno || '') : '';
-            return `
-              <div style="margin-top:4px; display:inline-flex; align-items:center; gap:5px; flex-wrap:wrap;">
-                <span class="badge" style="background:#0284c7; color:#ffffff; font-weight:800; font-size:10.5px; padding:2px 8px; border-radius:6px; box-shadow:0 1px 3px rgba(2,132,199,0.3);" title="Erogazione diretta Presidio Farmacia Territoriale ASL su Piano Terapeutico Specialistico">
-                  🏛️ Farmacia Territoriale ASL
-                </span>
-                <span class="badge" style="background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; font-weight:800; font-size:10px; padding:2px 6px; border-radius:6px;" title="Scatole spettanti ancora da ritirare">
-                  📦 Spettano: <b>${resScat}</b> / ${totScat} scatole
-                </span>
-                ${dtScad ? `<span class="badge" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-weight:700; font-size:9.5px; padding:2px 5px; border-radius:5px;" title="Data Scadenza Piano Terapeutico">⏳ Scad. PT: ${dtScad}</span>` : ''}
-              </div>
-            `;
-          }
-          return '';
-        })()}
           </div>
         </td>
         <td class="td-col td-dosaggio">
@@ -5981,26 +5915,6 @@ function renderTerapie() {
         </td>
         <td class="td-col td-carico" style="text-align: center; vertical-align: middle;">
           ${(() => {
-          const isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
-            (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
-            ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
-          if (isASL) {
-            const ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
-            const totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
-            const ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
-            const resScat = Math.max(0, totScat - ritScat);
-            return `
-              <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                <button class="btn btn-carico-luxury asl" onclick="apriModalRegistraRitiroASL(${t.id})" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; font-weight:800; font-size:11px; padding:6px 10px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(2,132,199,0.35); cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Registra ritiro di 1, 2 o 3 scatole presso la Farmacia Territoriale ASL: scala dalle spettanti (${resScat} rimaste) e carica compresse a casa">
-                  <span>🏛️</span> <span>Ritiro ASL (${resScat} rimaste)</span>
-                </button>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <small style="font-size:9.5px; color:#0369a1; font-weight:700;">+30 cpr/scatola</small>
-                  <button type="button" onclick="event.stopPropagation(); apriModalStampaRegistroASL(${t.id})" style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:9.5px; font-weight:800; text-decoration:underline; padding:0;" title="Visualizza e Stampa Registro A4 Ritiri ASL">🖨️ Stampa A4</button>
-                </div>
-              </div>
-            `;
-          }
           const isPen = (typeof isFarmacoPennaIniettabile === 'function') && isFarmacoPennaIniettabile(t);
           if (isPen) {
             return `
@@ -6182,28 +6096,6 @@ function renderTerapie() {
             <b style="color:var(--primary);">${t.farmaco}</b><br>
             <small style="color:#64748b;">${t.modo}</small>
           </div>
-          ${(() => {
-            const isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
-              (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
-              ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
-            if (isASL) {
-              const ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
-              const totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
-              const ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
-              const resScat = Math.max(0, totScat - ritScat);
-              return `
-                <div style="margin-top:5px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                  <button type="button" onclick="event.stopPropagation(); apriModalRegistraRitiroASL(${t.id})" class="btn" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:10.5px; padding:3px 9px; border-radius:6px; border:none; box-shadow:0 1px 4px rgba(2,132,199,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Registra ritiro di 1, 2 o 3 scatole presso la Farmacia Territoriale ASL">
-                    <span>🏛️</span> <span>Ritiro ASL (${resScat} rimaste)</span>
-                  </button>
-                  <button type="button" onclick="event.stopPropagation(); apriModalStampaRegistroASL(${t.id})" class="btn" style="background:#eff6ff; color:#0284c7; border:1px solid #93c5fd; font-weight:800; font-size:10px; padding:2px 7px; border-radius:6px; cursor:pointer;" title="Visualizza e Stampa Registro A4 Ritiri ASL">
-                    🖨️ Stampa A4
-                  </button>
-                </div>
-              `;
-            }
-            return '';
-          })()}
         </td>
         <td>
           <span class="badge ${t.scorta <= 5 ? 'badge-danger' : 'badge-primary'}">${t.scorta} cpr</span>
@@ -7281,961 +7173,6 @@ function apriRicaricaScorta(farmacoId) {
   }
   openModal('modal-ricarica-scorta'); if (typeof aggiornaCampoEsattoCarico === 'function') aggiornaCampoEsattoCarico();
 }
-
-// ==============================================================================
-// GESTIONE UNIVERSALE FARMACIA TERRITORIALE ASL & PIANO TERAPEUTICO (PHT / DPC)
-// Monitoraggio Scatole Spettanti, Scalamento Ritiro e Carico Scorte Domiciliari
-// ==============================================================================
-
-function toggleSezioneCanaleTerritoriale(val) {
-  var boxPT = document.getElementById('box-dettagli-piano-terapeutico');
-  var badge = document.getElementById('badge-tipo-canale');
-  if (val === 'territoriale_asl') {
-    if (boxPT) boxPT.style.display = 'block';
-    if (badge) {
-      badge.textContent = '🏛️ Territoriale ASL (PT)';
-      badge.style.background = '#0284c7';
-      badge.style.color = '#ffffff';
-    }
-    aggiornaCalcoloPianoTerapeuticoModale();
-  } else {
-    if (boxPT) boxPT.style.display = 'none';
-    if (badge) {
-      badge.textContent = 'Convenzionata';
-      badge.style.background = '#e2e8f0';
-      badge.style.color = '#475569';
-    }
-  }
-}
-window.toggleSezioneCanaleTerritoriale = toggleSezioneCanaleTerritoriale;
-
-function aggiornaCalcoloPianoTerapeuticoModale() {
-  var elTot = document.getElementById('edit-pt-scatole-totali');
-  var elRit = document.getElementById('edit-pt-scatole-ritirate');
-  var elRes = document.getElementById('edit-pt-scatole-residue-display');
-  var elScad = document.getElementById('edit-pt-data-scadenza');
-  var elAvviso = document.getElementById('edit-pt-avviso-scadenza');
-  var badgeStato = document.getElementById('pt-status-badge');
-
-  var tot = elTot ? (parseInt(elTot.value, 10) || 0) : 12;
-  var rit = elRit ? (parseInt(elRit.value, 10) || 0) : 0;
-  var res = Math.max(0, tot - rit);
-  if (elRes) elRes.textContent = res;
-
-  if (elScad && elScad.value) {
-    var dtScad = new Date(elScad.value);
-    var now = new Date();
-    now.setHours(0, 0, 0, 0);
-    var diffMs = dtScad.getTime() - now.getTime();
-    var diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) {
-      if (elAvviso) {
-        elAvviso.textContent = '🚨 Piano Terapeutico SCADUTO da ' + Math.abs(diffDays) + ' giorni!';
-        elAvviso.style.color = '#b91c1c';
-      }
-      if (badgeStato) {
-        badgeStato.textContent = 'SCADUTO';
-        badgeStato.style.background = '#fee2e2';
-        badgeStato.style.color = '#b91c1c';
-      }
-    } else if (diffDays <= 30) {
-      if (elAvviso) {
-        elAvviso.textContent = '⚠️ In scadenza tra ' + diffDays + ' giorni (prenotare rinnovo specialistico)';
-        elAvviso.style.color = '#d97706';
-      }
-      if (badgeStato) {
-        badgeStato.textContent = 'IN SCADENZA';
-        badgeStato.style.background = '#fef3c7';
-        badgeStato.style.color = '#b45309';
-      }
-    } else {
-      if (elAvviso) {
-        elAvviso.textContent = '🟢 Valido per ancora ' + diffDays + ' giorni';
-        elAvviso.style.color = '#15803d';
-      }
-      if (badgeStato) {
-        badgeStato.textContent = 'Attivo';
-        badgeStato.style.background = '#dcfce7';
-        badgeStato.style.color = '#15803d';
-      }
-    }
-  }
-}
-window.aggiornaCalcoloPianoTerapeuticoModale = aggiornaCalcoloPianoTerapeuticoModale;
-
-function scalaScatolaTerritorialeDaModale() {
-  var elTot = document.getElementById('edit-pt-scatole-totali');
-  var elRit = document.getElementById('edit-pt-scatole-ritirate');
-  var tot = elTot ? (parseInt(elTot.value, 10) || 12) : 12;
-  var rit = elRit ? (parseInt(elRit.value, 10) || 0) : 0;
-  var res = Math.max(0, tot - rit);
-
-  if (res <= 0) {
-    if (typeof showToast === 'function') {
-      showToast('⚠️ Tutte le ' + tot + ' scatole previste dal Piano Terapeutico risultano già ritirate!', 'warning');
-    } else {
-      alert('Tutte le scatole previste dal Piano Terapeutico risultano già ritirate.');
-    }
-    return;
-  }
-
-  rit += 1;
-  if (elRit) elRit.value = rit;
-  aggiornaCalcoloPianoTerapeuticoModale();
-
-  // Incrementa la scorta del farmaco con 1 confezione (es. 30 cpr)
-  var cprPerScatola = parseInt(document.getElementById('edit-farm-cpr-scatola')?.value, 10) || 30;
-  var elScorta = document.getElementById('edit-farm-scorta');
-  if (elScorta) {
-    var curScorta = parseFloat(elScorta.value) || 0;
-    elScorta.value = Math.round((curScorta + cprPerScatola) * 10) / 10;
-  }
-
-  if (typeof ricalcolaRiepilogoCapsula === 'function') ricalcolaRiepilogoCapsula();
-
-  if (typeof showToast === 'function') {
-    showToast('📦 Registrato ritiro farmacia ASL: 1 scatola scalata dalle residue (+ ' + cprPerScatola + ' cpr caricate nella scorta a casa)!', 'success');
-  }
-}
-window.scalaScatolaTerritorialeDaModale = scalaScatolaTerritorialeDaModale;
-
-// ==============================================================================
-// GESTIONE REGISTRAZIONE & STAMPA RITIRO FARMACIA TERRITORIALE ASL (1, 2, 3 SCATOLE / DATA)
-// ==============================================================================
-
-// ==============================================================================
-// GESTIONE AVANZATA PIANO TERAPEUTICO ASL / PHT (5 FUNZIONI PRO)
-// ==============================================================================
-window._tempFotoRicevutaASL = null;
-
-function gestisciCaricaFotoRicevutaASL(event) {
-  var file = event.target.files && event.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function (e) {
-    var rawUrl = e.target.result;
-    var img = new Image();
-    img.onload = function () {
-      var maxDim = 1200;
-      var w = img.width;
-      var h = img.height;
-      if (w > maxDim || h > maxDim) {
-        if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
-        else { w = Math.round((w * maxDim) / h); h = maxDim; }
-      }
-      var canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      var compressedData = canvas.toDataURL('image/jpeg', 0.82);
-      window._tempFotoRicevutaASL = compressedData;
-      var pImg = document.getElementById('asl-ricevuta-img-preview');
-      var pWrap = document.getElementById('asl-ricevuta-preview-wrap');
-      if (pImg) pImg.src = compressedData;
-      if (pWrap) pWrap.style.display = 'flex';
-      if (typeof showToast === 'function') showToast('📷 Ricevuta ASL allegata con successo!', 'success');
-    };
-    img.src = rawUrl;
-  };
-  reader.readAsDataURL(file);
-}
-window.gestisciCaricaFotoRicevutaASL = gestisciCaricaFotoRicevutaASL;
-
-function rimuoviFotoRicevutaASL() {
-  window._tempFotoRicevutaASL = null;
-  var pWrap = document.getElementById('asl-ricevuta-preview-wrap');
-  if (pWrap) pWrap.style.display = 'none';
-  var fInput = document.getElementById('asl-ricevuta-file-input');
-  if (fInput) fInput.value = '';
-}
-window.rimuoviFotoRicevutaASL = rimuoviFotoRicevutaASL;
-
-function apriFotoRicevutaASL(src) {
-  if (!src) return;
-  var vImg = document.getElementById('asl-foto-viewer-img');
-  var vModal = document.getElementById('modal-foto-ricevuta-asl-viewer');
-  if (vImg) vImg.src = src;
-  if (vModal) vModal.style.display = 'flex';
-}
-window.apriFotoRicevutaASL = apriFotoRicevutaASL;
-
-function chiudiFotoRicevutaASL() {
-  var vModal = document.getElementById('modal-foto-ricevuta-asl-viewer');
-  if (vModal) vModal.style.display = 'none';
-}
-window.chiudiFotoRicevutaASL = chiudiFotoRicevutaASL;
-
-// 5. Grafico Annuale 12 Scatole
-function generaGrafico12ScatoleHTML(pt) {
-  var totScat = pt ? (parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12) : 12;
-  var ritScat = pt ? (parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0) : 0;
-  var resScat = Math.max(0, totScat - ritScat);
-  var perc = Math.min(100, Math.round((ritScat / totScat) * 100));
-  var html = '';
-  for (var i = 1; i <= totScat; i++) {
-    var isRit = i <= ritScat;
-    var bg = isRit ? 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)' : '#f1f5f9';
-    var color = isRit ? '#ffffff' : '#64748b';
-    var border = isRit ? '1px solid #15803d' : '1px dashed #cbd5e1';
-    var text = isRit ? ('✓ ' + i) : String(i);
-    var tip = isRit ? ('Scatola #' + i + ': Consegnata') : ('Scatola #' + i + ': Spettante');
-    html += '<div style="background:' + bg + '; color:' + color + '; border:' + border + '; border-radius:6px; padding:6px 2px; text-align:center; font-size:11px; font-weight:900; line-height:1;" title="' + tip + '">' + text + '</div>';
-  }
-  return { html: html, perc: perc, ritScat: ritScat, totScat: totScat, resScat: resScat };
-}
-window.generaGrafico12ScatoleHTML = generaGrafico12ScatoleHTML;
-
-// 1. Calcolo Prossimo Ritiro ASL
-function calcolaDatiProssimoRitiroASL(t, pt, scatoleDaAggiungere) {
-  var curScorta = t ? (parseFloat(t.scorta) || 0) : 0;
-  var cprPerScatola = t ? (parseInt(t.cprPerScatola, 10) || 30) : 30;
-  var aggiunta = (parseInt(scatoleDaAggiungere, 10) || 0) * cprPerScatola;
-  var totCpr = curScorta + aggiunta;
-  var consumoDie = t ? (parseFloat(t.quantitaQuota) || 1) : 1;
-  var giorniAutonomia = Math.floor(totCpr / consumoDie);
-  var giorniAnticipo = 12;
-  var giorniAlProssimo = Math.max(1, giorniAutonomia - giorniAnticipo);
-
-  var baseDate = new Date();
-  var inputData = document.getElementById('ritiro-asl-data')?.value;
-  if (inputData && !isNaN(new Date(inputData).getTime())) {
-    baseDate = new Date(inputData);
-  }
-
-  var dataProssima = new Date(baseDate);
-  dataProssima.setDate(dataProssima.getDate() + giorniAlProssimo);
-  var dataProssimaStr = dataProssima.toLocaleDateString('it-IT');
-  var dataProssimaIso = dataProssima.toISOString().split('T')[0];
-
-  return {
-    dateObj: dataProssima,
-    dateFmt: dataProssimaStr,
-    dateIso: dataProssimaIso,
-    giorniAutonomia: giorniAutonomia,
-    giorniAlProssimo: giorniAlProssimo
-  };
-}
-window.calcolaDatiProssimoRitiroASL = calcolaDatiProssimoRitiroASL;
-
-// 1. Google Calendar Integration
-function aggiungiPromemoriaCalendarioASL(farmacoId, customDate) {
-  var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
-  var t = null;
-  if (farmacoId && p && p.terapie) {
-    t = p.terapie.find(x => String(x.id) === String(farmacoId) || x.id == farmacoId);
-  }
-  if (!t && p && p.terapie) {
-    t = p.terapie.find(x => x.canaleDistribuzione === 'territoriale_asl' || (x.pianoTerapeutico && x.pianoTerapeutico.attivo) || (x.farmaco || '').toUpperCase().includes('ENTECAVIR'));
-  }
-  var pt = t ? t.pianoTerapeutico : null;
-
-  var targetDate = customDate ? new Date(customDate) : null;
-  if (!targetDate || isNaN(targetDate.getTime())) {
-    var nextData = calcolaDatiProssimoRitiroASL(t, pt, 0);
-    targetDate = nextData.dateObj;
-  }
-
-  targetDate.setHours(9, 0, 0, 0);
-  var pad = function (n) { return (n < 10 ? '0' : '') + n; };
-  var dtStartStr = targetDate.getFullYear() + pad(targetDate.getMonth() + 1) + pad(targetDate.getDate()) + 'T090000Z';
-  var dtEndStr = targetDate.getFullYear() + pad(targetDate.getMonth() + 1) + pad(targetDate.getDate()) + 'T100000Z';
-
-  var fNome = t ? t.farmaco : 'Entecavir Sandoz 0,5 mg';
-  var pNome = p ? p.nome : 'Ciro Milella';
-  var presidio = (pt && pt.sedeRitiro) || 'Farmacia Territoriale ASL Bari - Ex CTO';
-  var proto = (pt && pt.protocollo) || '011BQ1X145RHL';
-
-  var title = encodeURIComponent("🏛️ Ritiro Farmaco ASL: " + fNome + " (" + pNome + ")");
-  var details = encodeURIComponent("Promemoria programmato da CareAssist Pro per il ritiro fornitura specialistica presso " + presidio + ".\nPiano Terapeutico Protocollo: " + proto + ".\nRicorda di portare documento di esenzione e tessera sanitaria.");
-  var location = encodeURIComponent(presidio + ", Bari");
-
-  var googleUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + dtStartStr + "/" + dtEndStr + "&details=" + details + "&location=" + location;
-  window.open(googleUrl, '_blank');
-  if (typeof showToast === 'function') {
-    showToast('📅 Apertura Google Calendar per impostare il promemoria...', 'info');
-  }
-}
-window.aggiungiPromemoriaCalendarioASL = aggiungiPromemoriaCalendarioASL;
-
-function aggiungiPromemoriaCalendarioASLDaModal() {
-  var tId = document.getElementById('ritiro-asl-farmaco-id')?.value;
-  var pData = document.getElementById('ritiro-asl-prossima-data-testo')?.getAttribute('data-iso');
-  aggiungiPromemoriaCalendarioASL(tId, pData);
-}
-window.aggiungiPromemoriaCalendarioASLDaModal = aggiungiPromemoriaCalendarioASLDaModal;
-
-function aggiungiPromemoriaCalendarioASLDaStampa() {
-  aggiungiPromemoriaCalendarioASL();
-}
-window.aggiungiPromemoriaCalendarioASLDaStampa = aggiungiPromemoriaCalendarioASLDaStampa;
-
-// 4. WhatsApp Medico di Base (Dott. Scarcia)
-function notificaRitiroASLAlMedico(farmacoId) {
-  var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
-  var t = null;
-  if (farmacoId && p && p.terapie) {
-    t = p.terapie.find(x => String(x.id) === String(farmacoId) || x.id == farmacoId);
-  }
-  if (!t && p && p.terapie) {
-    t = p.terapie.find(x => x.canaleDistribuzione === 'territoriale_asl' || (x.pianoTerapeutico && x.pianoTerapeutico.attivo) || (x.farmaco || '').toUpperCase().includes('ENTECAVIR'));
-  }
-  if (!p || !t) return;
-  var pt = t.pianoTerapeutico || {};
-
-  var ultimoR = (Array.isArray(pt.storicoRitiri) && pt.storicoRitiri.length > 0) ? pt.storicoRitiri[pt.storicoRitiri.length - 1] : null;
-  var dataRitiroFmt = ultimoR && ultimoR.data ? new Date(ultimoR.data).toLocaleDateString('it-IT') : new Date().toLocaleDateString('it-IT');
-  var nScat = ultimoR ? (ultimoR.scatole || 3) : 3;
-  var cprAggiunte = ultimoR ? (ultimoR.cprAggiunte || (nScat * 30)) : (nScat * 30);
-
-  var totScat = parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12;
-  var ritScat = parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || nScat;
-  var resScat = Math.max(0, totScat - ritScat);
-  var proto = pt.protocollo || '011BQ1X145RHL';
-  var scadPT = pt.dataScadenza ? new Date(pt.dataScadenza).toLocaleDateString('it-IT') : '22/02/2027';
-  var presidio = pt.sedeRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO';
-
-  var nextCalc = calcolaDatiProssimoRitiroASL(t, pt, 0);
-  var medicoNome = p.medicoCurante || p.medico || 'Dott. Roberto Scarcia';
-
-  var messaggio = "Gentile " + medicoNome + ",\n" +
-    "Ti informo che in data " + dataRitiroFmt + " sono state regolarmente ritirate n. " + nScat + " scatole di " + t.farmaco + " (+" + cprAggiunte + " compresse) per il paziente " + (p.nome || "Ciro Milella") + ".\n\n" +
-    "📋 Dettagli Piano Terapeutico Specialistico:\n" +
-    "• Protocollo ASL: " + proto + "\n" +
-    "• Presidio erogatore: " + presidio + "\n" +
-    "• Scadenza Piano: " + scadPT + "\n" +
-    "• Avanzamento annuale: " + ritScat + " ritirate / " + resScat + " rimaste (su " + totScat + " totali)\n" +
-    "• Scorta attuale a casa: " + (t.scorta || 0) + " cpr\n" +
-    "• Prossimo ritiro ASL previsto: " + nextCalc.dateFmt + "\n\n" +
-    "Aggiornamento di continuità terapeutica generato da CareAssist Pro.";
-
-  var waUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(messaggio);
-  window.open(waUrl, '_blank');
-}
-window.notificaRitiroASLAlMedico = notificaRitiroASLAlMedico;
-
-function notificaRitiroASLAlMedicoDaModal() {
-  var tId = document.getElementById('ritiro-asl-farmaco-id')?.value;
-  notificaRitiroASLAlMedico(tId);
-}
-window.notificaRitiroASLAlMedicoDaModal = notificaRitiroASLAlMedicoDaModal;
-
-function notificaRitiroASLAlMedicoDaStampa() {
-  notificaRitiroASLAlMedico();
-}
-window.notificaRitiroASLAlMedicoDaStampa = notificaRitiroASLAlMedicoDaStampa;
-
-function apriModalRegistraRitiroASL(terapiaId) {
-  try {
-    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
-    if (!p || !Array.isArray(p.terapie)) return;
-
-    var t = p.terapie.find(item => String(item.id) === String(terapiaId) || item.id == terapiaId);
-    if (!t) {
-      t = p.terapie.find(item => item.canaleDistribuzione === 'territoriale_asl' || (item.pianoTerapeutico && item.pianoTerapeutico.attivo) || (item.farmaco || '').toUpperCase().includes('ENTECAVIR'));
-    }
-    if (!t) return;
-
-    var pt = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
-    if (!pt) {
-      pt = {
-        attivo: true,
-        scatoleTotali: 12,
-        scatoleRitirate: 0,
-        scatoleResidue: 12,
-        dataScadenza: '2027-02-22',
-        protocollo: '011BQ1X145RHL',
-        sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO',
-        storicoRitiri: []
-      };
-      t.pianoTerapeutico = pt;
-      t.canaleDistribuzione = 'territoriale_asl';
-    }
-
-    pt.storicoRitiri = pt.storicoRitiri || [];
-
-    // Reset foto ricevuta temporanea
-    rimuoviFotoRicevutaASL();
-
-    // Aggiorna ID e campi maschera
-    var elFId = document.getElementById('ritiro-asl-farmaco-id');
-    if (elFId) elFId.value = t.id;
-
-    var elPzF = document.getElementById('ritiro-asl-paziente-farmaco');
-    if (elPzF) elPzF.textContent = (p.nome || 'Assistito') + ' • ' + (t.farmaco || 'Farmaco ASL');
-
-    var prot = pt.protocollo || (p.pianoTerapeuticoDpc ? p.pianoTerapeuticoDpc.idPrescrizione : '011BQ1X145RHL');
-    var scad = pt.dataScadenza ? new Date(pt.dataScadenza).toLocaleDateString('it-IT') : '22/02/2027';
-    var elProt = document.getElementById('ritiro-asl-protocollo-badge');
-    if (elProt) elProt.textContent = 'Protocollo ASL: ' + prot + ' • Scadenza PT: ' + scad;
-
-    var totScat = parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12;
-    var ritScat = parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0;
-    var resScat = Math.max(0, totScat - ritScat);
-    var elRes = document.getElementById('ritiro-asl-scatole-residue-badge');
-    if (elRes) elRes.textContent = resScat + ' su ' + totScat;
-
-    // 5. Render grafico 12 scatole
-    var g12 = generaGrafico12ScatoleHTML(pt);
-    var segEl = document.getElementById('ritiro-asl-progress-segments');
-    if (segEl) segEl.innerHTML = g12.html;
-    var percEl = document.getElementById('ritiro-asl-progress-perc');
-    if (percEl) percEl.textContent = g12.perc + '% (' + g12.ritScat + '/' + g12.totScat + ' scatole)';
-
-    // 2. Controllo Scadenza Piano Terapeutico Specialistico
-    var elAlertScad = document.getElementById('ritiro-asl-allerta-scadenza');
-    if (elAlertScad) {
-      var dScadVal = pt.dataScadenza ? new Date(pt.dataScadenza) : new Date('2027-02-22');
-      var diffDays = Math.ceil((dScadVal - new Date()) / (1000 * 60 * 60 * 24));
-      if (diffDays <= 45 && diffDays >= 0) {
-        elAlertScad.style.display = 'block';
-        elAlertScad.innerHTML = `
-          <div style="display:flex; align-items:flex-start; gap:8px;">
-            <span style="font-size:18px;">⚠️</span>
-            <div style="flex:1;">
-              <div style="font-size:12px; font-weight:900; color:#b45309;">ATTENZIONE: PIANO TERAPEUTICO IN SCADENZA TRA ${diffDays} GIORNI (${scad})!</div>
-              <div style="font-size:11px; color:#92400e; margin-top:2px;">È opportuno verificare o fissare la visita specialistica di controllo (Infettivologia/Epatologia) per il rinnovo annuale.</div>
-              <button type="button" onclick="chiudiModalRegistraRitiroASL(); openModal('modal-visita');" style="margin-top:6px; background:#d97706; color:#ffffff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">
-                📅 Prenota / Inserisci Visita Specialistica
-              </button>
-            </div>
-          </div>
-        `;
-      } else if (diffDays < 0) {
-        elAlertScad.style.display = 'block';
-        elAlertScad.style.background = '#fef2f2';
-        elAlertScad.style.borderColor = '#fca5a5';
-        elAlertScad.innerHTML = `
-          <div style="display:flex; align-items:flex-start; gap:8px;">
-            <span style="font-size:18px;">🚨</span>
-            <div style="flex:1;">
-              <div style="font-size:12px; font-weight:900; color:#b91c1c;">PIANO TERAPEUTICO SCADUTO IL ${scad}!</div>
-              <div style="font-size:11px; color:#991b1b; margin-top:2px;">Necessario nuovo piano terapeutico rilasciato dal centro prescrittore.</div>
-            </div>
-          </div>
-        `;
-      } else {
-        elAlertScad.style.display = 'none';
-      }
-    }
-
-    // Data di default: oggi YYYY-MM-DD
-    var todayStr = new Date().toISOString().split('T')[0];
-    var elData = document.getElementById('ritiro-asl-data');
-    if (elData) elData.value = todayStr;
-
-    // Presidio di default
-    var elPres = document.getElementById('ritiro-asl-presidio');
-    if (elPres) elPres.value = pt.sedeRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO';
-
-    var elNote = document.getElementById('ritiro-asl-note');
-    if (elNote) elNote.value = 'Ritiro fornitura trimestrale (3 scatole) effettuato regolarmente';
-
-    // Preset default: 3 scatole (trimestre)
-    impostaScatoleRitiroRapido(3);
-
-    var modal = document.getElementById('modal-registra-ritiro-asl');
-    if (modal) {
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-    }
-  } catch (err) {
-    console.error('Errore apriModalRegistraRitiroASL:', err);
-  }
-}
-window.apriModalRegistraRitiroASL = apriModalRegistraRitiroASL;
-
-function chiudiModalRegistraRitiroASL() {
-  var modal = document.getElementById('modal-registra-ritiro-asl');
-  if (modal) modal.style.display = 'none';
-  document.body.style.overflow = '';
-}
-window.chiudiModalRegistraRitiroASL = chiudiModalRegistraRitiroASL;
-
-function impostaScatoleRitiroRapido(n, elBtn) {
-  var inputNum = document.getElementById('ritiro-asl-num-scatole');
-  if (inputNum) inputNum.value = n;
-
-  document.querySelectorAll('.btn-preset-scatole').forEach(function (b) {
-    b.classList.remove('active');
-    b.style.borderColor = '#cbd5e1';
-    b.style.background = '#ffffff';
-    b.style.color = '#334155';
-    b.style.boxShadow = 'none';
-  });
-
-  var targetBtn = elBtn || document.getElementById('btn-preset-scat-' + n);
-  if (targetBtn) {
-    targetBtn.classList.add('active');
-    targetBtn.style.borderColor = '#0284c7';
-    targetBtn.style.background = '#e0f2fe';
-    targetBtn.style.color = '#0369a1';
-    targetBtn.style.boxShadow = '0 2px 6px rgba(2,132,199,0.2)';
-  }
-
-  aggiornaSimulazioneRitiroASL();
-}
-window.impostaScatoleRitiroRapido = impostaScatoleRitiroRapido;
-
-function aggiornaSimulazioneRitiroASL() {
-  try {
-    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
-    var tId = document.getElementById('ritiro-asl-farmaco-id')?.value;
-    var t = p && p.terapie ? p.terapie.find(item => String(item.id) === String(tId) || item.id == tId) : null;
-    if (!t && p && p.terapie) {
-      t = p.terapie.find(item => item.canaleDistribuzione === 'territoriale_asl' || (item.pianoTerapeutico && item.pianoTerapeutico.attivo) || (item.farmaco || '').toUpperCase().includes('ENTECAVIR'));
-    }
-    var pt = t ? t.pianoTerapeutico : null;
-
-    var numScat = parseInt(document.getElementById('ritiro-asl-num-scatole')?.value, 10) || 1;
-    var cprPerScatola = t ? (parseInt(t.cprPerScatola, 10) || 30) : 30;
-    var cprTotali = numScat * cprPerScatola;
-
-    var totScat = pt ? (parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12) : 12;
-    var ritScat = pt ? (parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0) : 0;
-    var resAttuali = Math.max(0, totScat - ritScat);
-    var resNuove = Math.max(0, resAttuali - numScat);
-
-    var curScorta = t ? (parseFloat(t.scorta) || 0) : 0;
-    var nuovaScorta = Math.round((curScorta + cprTotali) * 10) / 10;
-
-    var testoEl = document.getElementById('ritiro-asl-simulazione-testo');
-    if (testoEl) {
-      testoEl.innerHTML = 'Verranno caricate <b>+' + cprTotali + ' compresse</b> a casa (scorta totale: <b>' + nuovaScorta + ' cpr</b>).<br>' +
-        'Le scatole spettanti passeranno da <b>' + resAttuali + '</b> a <b>' + resNuove + ' rimaste</b> su ' + totScat + ' previste dal Piano Terapeutico.';
-    }
-
-    // 1. Calcola e aggiorna data prossimo ritiro suggerita
-    var nextCalc = calcolaDatiProssimoRitiroASL(t, pt, numScat);
-    var pDataEl = document.getElementById('ritiro-asl-prossima-data-testo');
-    if (pDataEl) {
-      pDataEl.innerHTML = nextCalc.dateFmt + ' <span style="font-size:11px; color:#64748b; font-weight:700;">(~' + nextCalc.giorniAlProssimo + ' gg da oggi • ' + nextCalc.giorniAutonomia + ' gg copertura tot)</span>';
-      pDataEl.setAttribute('data-iso', nextCalc.dateIso);
-    }
-  } catch (e) {
-    console.warn('Errore aggiornaSimulazioneRitiroASL:', e);
-  }
-}
-window.aggiornaSimulazioneRitiroASL = aggiornaSimulazioneRitiroASL;
-
-async function confermaRegistraRitiroASL() {
-  try {
-    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
-    if (!p || !Array.isArray(p.terapie)) return;
-
-    var tId = document.getElementById('ritiro-asl-farmaco-id')?.value;
-    var t = p.terapie.find(item => String(item.id) === String(tId) || item.id == tId);
-    if (!t) {
-      t = p.terapie.find(item => item.canaleDistribuzione === 'territoriale_asl' || (item.pianoTerapeutico && item.pianoTerapeutico.attivo) || (item.farmaco || '').toUpperCase().includes('ENTECAVIR'));
-    }
-    if (!t) return;
-
-    var pt = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
-    if (!pt) return;
-
-    var dataRitiro = document.getElementById('ritiro-asl-data')?.value || new Date().toISOString().split('T')[0];
-    var numScat = parseInt(document.getElementById('ritiro-asl-num-scatole')?.value, 10) || 1;
-    if (numScat <= 0) {
-      alert('Inserisci un numero valido di scatole ritirate.');
-      return;
-    }
-
-    var presidio = document.getElementById('ritiro-asl-presidio')?.value || pt.sedeRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO';
-    var note = document.getElementById('ritiro-asl-note')?.value || ('Ritiro fornitura di ' + numScat + ' scatole');
-
-    var cprPerScatola = parseInt(t.cprPerScatola, 10) || 30;
-    var cprAggiunte = numScat * cprPerScatola;
-
-    var totScat = parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12;
-    var ritScat = (parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0) + numScat;
-    var resScat = Math.max(0, totScat - ritScat);
-
-    // Aggiorna terapia
-    t.scorta = Math.round(((parseFloat(t.scorta) || 0) + cprAggiunte) * 10) / 10;
-    t.ultimoRitiro = dataRitiro;
-    pt.scatoleRitirate = ritScat;
-    pt.scatoleResidue = resScat;
-    pt.ultimoRitiro = dataRitiro;
-    pt.sedeRitiro = presidio;
-
-    // Registra nello storico dedicato del Piano Terapeutico
-    pt.storicoRitiri = pt.storicoRitiri || [];
-    var nuovoRitiroObj = {
-      id: 'rit_' + Date.now(),
-      data: dataRitiro,
-      timestamp: new Date().toISOString(),
-      scatole: numScat,
-      cprAggiunte: cprAggiunte,
-      scatoleResidueDopo: resScat,
-      scatoleTotali: totScat,
-      sedeRitiro: presidio,
-      protocollo: pt.protocollo || '011BQ1X145RHL',
-      note: note,
-      fotoRicevuta: window._tempFotoRicevutaASL || null,
-      operatore: 'Operatore OSS / Famiglia'
-    };
-    pt.storicoRitiri.push(nuovoRitiroObj);
-
-    // Memorizza data prossimo ritiro
-    var nextDati = calcolaDatiProssimoRitiroASL(t, pt, 0);
-    pt.prossimoRitiroConsigliato = nextDati.dateFmt;
-    pt.prossimoRitiroIso = nextDati.dateIso;
-
-    // Registra nel log attività generale del paziente
-    p.registrazioni = p.registrazioni || [];
-    p.registrazioni.push({
-      id: 'log_' + Date.now(),
-      tipo: 'scorta',
-      farmacoId: t.id,
-      farmaco: t.farmaco,
-      azione: 'ritiro_territoriale_asl',
-      numScatole: numScat,
-      cprAggiunte: cprAggiunte,
-      timestamp: new Date().toISOString(),
-      desc: 'Ritiro Farmacia Territoriale ASL: ' + numScat + ' scatole di ' + t.farmaco + ' (+' + cprAggiunte + ' cpr a casa). Spettano ancora ' + resScat + ' scatole. Presidio: ' + presidio + '.',
-      operatore: 'Operatore OSS / Famiglia'
-    });
-
-    // Se è Ciro o paziente con scheda DPC, sincronizza
-    if (p.pianoTerapeuticoDpc) {
-      p.pianoTerapeuticoDpc.scatoleRitirateTotali = ritScat;
-      p.pianoTerapeuticoDpc.scatoleResidueDaRitirare = resScat;
-    }
-
-    // Sincronizza gemelle multi-tempo se presenti
-    var mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
-    if (mt && mt.gemelle && mt.gemelle.length > 1) {
-      mt.gemelle.forEach(function (item) {
-        item.scorta = t.scorta;
-        item.ultimoRitiro = t.ultimoRitiro;
-        item.pianoTerapeutico = pt;
-        item.canaleDistribuzione = 'territoriale_asl';
-      });
-    }
-
-    if (typeof saveDb === 'function') saveDb();
-    if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
-    if (typeof renderTerapie === 'function') renderTerapie();
-    if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
-    if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([80]);
-
-    chiudiModalRegistraRitiroASL();
-
-    if (typeof showToast === 'function') {
-      showToast('🏛️ Ritiro di ' + numScat + ' scatole registrato! +' + cprAggiunte + ' cpr caricate (spettano ancora ' + resScat + ' scatole)', 'success');
-    }
-
-    // Apre subito il foglio A4 per la visualizzazione/stampa
-    setTimeout(function () {
-      apriModalStampaRegistroASL(t.id);
-    }, 450);
-
-  } catch (err) {
-    console.error('Errore confermaRegistraRitiroASL:', err);
-  }
-}
-window.confermaRegistraRitiroASL = confermaRegistraRitiroASL;
-
-// APRE IL REGISTRO RITIRI ASL STAMPABILE IN FORMATO A4 UFFICIALE
-function apriModalStampaRegistroASL(farmacoId) {
-  try {
-    var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
-    if (!p) return;
-
-    var t = null;
-    if (farmacoId && Array.isArray(p.terapie)) {
-      t = p.terapie.find(item => String(item.id) === String(farmacoId) || item.id == farmacoId);
-    }
-    if (!t && Array.isArray(p.terapie)) {
-      t = p.terapie.find(item => item.canaleDistribuzione === 'territoriale_asl' || (item.pianoTerapeutico && item.pianoTerapeutico.attivo) || (item.farmaco || '').toUpperCase().includes('ENTECAVIR'));
-    }
-    if (!t) return;
-
-    var pt = t.pianoTerapeutico || {};
-    var storico = Array.isArray(pt.storicoRitiri) ? pt.storicoRitiri.slice() : [];
-
-    var totScat = parseInt(pt.scatoleTotali || pt.scatoleSpettantiAnno, 10) || 12;
-    var ritScat = parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0;
-    var resScat = Math.max(0, totScat - ritScat);
-
-    var prot = pt.protocollo || (p.pianoTerapeuticoDpc ? p.pianoTerapeuticoDpc.idPrescrizione : '011BQ1X145RHL');
-    var scad = pt.dataScadenza ? new Date(pt.dataScadenza).toLocaleDateString('it-IT') : '22/02/2027';
-    var centro = pt.centroPrescrittore || (p.pianoTerapeuticoDpc ? (p.pianoTerapeuticoDpc.strutturaPrescrittrice + ' - ' + (p.pianoTerapeuticoDpc.direttoreUO || 'Prof.ssa A. Saracino')) : 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari');
-    var presidio = pt.sedeRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO';
-
-    var nextRitiroDati = calcolaDatiProssimoRitiroASL(t, pt, 0);
-    var g12Stampa = generaGrafico12ScatoleHTML(pt);
-
-    var righeTabellaHtml = '';
-    if (storico.length === 0) {
-      if (ritScat > 0) {
-        righeTabellaHtml += `
-          <tr style="border-bottom:1px solid #e2e8f0;">
-            <td style="padding:10px 8px; text-align:center; font-weight:800; color:#64748b;">1</td>
-            <td style="padding:10px 8px; font-weight:700;">${pt.ultimoRitiro ? new Date(pt.ultimoRitiro).toLocaleDateString('it-IT') : 'Ritiro Iniziale'}</td>
-            <td style="padding:10px 8px; text-align:center; font-weight:900; color:#0369a1;">${ritScat} scatole</td>
-            <td style="padding:10px 8px; text-align:center; font-weight:700; color:#059669;">+${ritScat * (t.cprPerScatola || 30)} cpr</td>
-            <td style="padding:10px 8px; text-align:center; font-weight:900; color:#0284c7;">${resScat} rimaste</td>
-            <td style="padding:10px 8px; font-size:11.5px; color:#475569;"><b>${presidio}</b><br><span style="color:#64748b;">Ritiro fornitura registrato</span></td>
-            <td style="padding:10px 8px; text-align:center; font-size:11px; color:#94a3b8;">Firma Farmacia ASL</td>
-          </tr>
-        `;
-      } else {
-        righeTabellaHtml += `
-          <tr>
-            <td colspan="7" style="padding:20px; text-align:center; color:#64748b; font-style:italic;">Nessun ritiro registrato finora. Tutte le ${totScat} scatole risultano ancora spettanti.</td>
-          </tr>
-        `;
-      }
-    } else {
-      storico.forEach(function (r, idx) {
-        var dataFmt = r.data ? new Date(r.data).toLocaleDateString('it-IT') : '--/--/----';
-        var fotoHtml = r.fotoRicevuta
-          ? `<div style="margin-top:4px;"><button type="button" onclick="apriFotoRicevutaASL('${r.fotoRicevuta}')" style="background:#eff6ff; color:#0284c7; border:1px solid #93c5fd; padding:2px 7px; border-radius:5px; font-size:10px; font-weight:800; cursor:pointer;">📷 Vedi Ricevuta ASL</button></div>`
-          : '';
-        righeTabellaHtml += `
-          <tr style="border-bottom:1px solid #e2e8f0; background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
-            <td style="padding:10px 8px; text-align:center; font-weight:800; color:#64748b;">${idx + 1}</td>
-            <td style="padding:10px 8px; font-weight:800; color:#0f172a;">${dataFmt}</td>
-            <td style="padding:10px 8px; text-align:center; font-weight:900; color:#0369a1;">${r.scatole} ${r.scatole === 1 ? 'scatola' : 'scatole'}</td>
-            <td style="padding:10px 8px; text-align:center; font-weight:700; color:#059669;">+${r.cprAggiunte || (r.scatole * 30)} cpr</td>
-            <td style="padding:10px 8px; text-align:center; font-weight:900; color:#0284c7;">${r.scatoleResidueDopo !== undefined ? r.scatoleResidueDopo : '--'} rimaste</td>
-            <td style="padding:10px 8px; font-size:11.5px; color:#334155;">
-              <b>${r.sedeRitiro || presidio}</b><br>
-              <span style="color:#64748b;">${r.note || 'Ritiro fornitura ASL'}</span>
-              ${fotoHtml}
-            </td>
-            <td style="padding:10px 8px; text-align:center; font-size:11px; color:#475569;">Firma: ________________</td>
-          </tr>
-        `;
-      });
-    }
-
-    var foglio = document.getElementById('foglio-stampa-registro-asl');
-    if (!foglio) return;
-
-    var dataOggiStr = new Date().toLocaleDateString('it-IT');
-    var oraOggiStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-
-    foglio.innerHTML = `
-      <!-- INTESTAZIONE ISTITUZIONALE ASL -->
-      <div style="border-bottom: 2.5px solid #0284c7; padding-bottom: 14px; margin-bottom: 16px; display:flex; justify-content:space-between; align-items:flex-start;">
-        <div style="display:flex; align-items:center; gap:14px;">
-          <div style="font-size:36px; line-height:1;">🏛️</div>
-          <div>
-            <div style="font-size:15px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px;">REGIONE PUGLIA • AZIENDA SANITARIA LOCALE BARI</div>
-            <div style="font-size:12.5px; font-weight:800; color:#0284c7; margin-top:2px;">DIPARTIMENTO FARMACEUTICO TERRITORIALE • DISTRIBUZIONE DIRETTA (PHT - L. 405/2001)</div>
-            <div style="font-size:11px; color:#475569; margin-top:2px;">Presidio Erogatore: <b>${presidio}</b></div>
-          </div>
-        </div>
-        <div style="text-align:right;">
-          <div style="background:#0284c7; color:#ffffff; font-size:11px; font-weight:900; padding:4px 10px; border-radius:6px; text-transform:uppercase; display:inline-block;">Scheda Ufficiale A4</div>
-          <div style="font-size:10.5px; color:#64748b; margin-top:4px;">Emesso il: <b>${dataOggiStr}</b> ore ${oraOggiStr}</div>
-        </div>
-      </div>
-
-      <!-- TITOLO DOCUMENTO -->
-      <div style="text-align:center; margin-bottom:16px;">
-        <h2 style="margin:0; font-size:16px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.6px;">
-          REGISTRO CRONOLOGICO CARICO &amp; RITIRO FARMACI DA PIANO TERAPEUTICO
-        </h2>
-        <div style="font-size:11.5px; color:#64748b; margin-top:3px; font-weight:600;">Monitoraggio Ufficiale Fabbisogno Annuale e Consegne Scatole Farmacia Territoriale</div>
-      </div>
-
-      <!-- 2 BOX: DATI ASSISTITO & DATI PIANO TERAPEUTICO -->
-      <div style="display:grid; grid-template-columns: 1fr 1.2fr; gap:14px; margin-bottom:14px;">
-        
-        <!-- BOX 1: DATI ASSISTITO -->
-        <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 14px;">
-          <div style="font-size:11px; font-weight:900; color:#0369a1; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;">
-            👤 DATI ASSISTITO
-          </div>
-          <div style="font-size:14.5px; font-weight:900; color:#0f172a;">${p.nome || 'Ciro Milella'}</div>
-          <div style="font-size:12px; color:#334155; margin-top:3px;">Nato il: <b>16/12/1967 (58 anni)</b></div>
-          <div style="font-size:12px; color:#334155; margin-top:2px;">Domicilio: <b>${p.indirizzo || 'Via Giulio Petroni 69 - Bari (BA)'}</b></div>
-          <div style="font-size:12px; color:#334155; margin-top:2px;">MMG Curante: <b>${p.medicoCurante || p.medico || 'Dott. Roberto Scarcia'}</b></div>
-        </div>
-
-        <!-- BOX 2: DATI PIANO TERAPEUTICO -->
-        <div style="background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:10px; padding:12px 14px;">
-          <div style="font-size:11px; font-weight:900; color:#0284c7; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; border-bottom:1px solid #e0f2fe; padding-bottom:4px;">
-            📋 PIANO TERAPEUTICO SPECIALISTICO
-          </div>
-          <div style="font-size:14px; font-weight:900; color:#0369a1;">${t.farmaco || 'Entecavir Sandoz 0,5 mg'}</div>
-          <div style="font-size:11.5px; color:#334155; margin-top:2px;">Posologia: <b>1 compressa/die a digiuno</b> • Confezione da: <b>${t.cprPerScatola || 30} cpr</b></div>
-          <div style="font-size:11.5px; color:#0284c7; margin-top:2px;">Protocollo ASL: <b>${prot}</b> • Scadenza: <b>${scad}</b></div>
-          <div style="font-size:11.5px; color:#334155; margin-top:2px;">Centro Prescrittore: <b>${centro}</b></div>
-        </div>
-
-      </div>
-
-      <!-- 5. GRAFICO VISUALE AVANZAMENTO ANNUALE (12 SCATOLE) NEL FOGLIO A4 -->
-      <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px 14px; margin-bottom:14px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-          <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#0f172a;">📊 Avanzamento Fabbisogno Annuale (12 Scatole):</span>
-          <span style="font-size:11.5px; font-weight:900; color:#0284c7;">${g12Stampa.perc}% erogato (${g12Stampa.ritScat} su ${g12Stampa.totScat} scatole • ${g12Stampa.resScat} rimanenti)</span>
-        </div>
-        <div style="display:grid; grid-template-columns:repeat(12, 1fr); gap:5px;">
-          ${g12Stampa.html}
-        </div>
-      </div>
-
-      <!-- 1. BOX PROSSIMO RITIRO ASL CONSIGLIATO -->
-      <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:10px; padding:8px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <div>
-          <span style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#1e40af;">📅 Finestra Consigliata Prossimo Ritiro ASL:</span>
-          <div style="font-size:13.5px; font-weight:900; color:#0284c7; margin-top:1px;">
-            Entro il <b>${nextRitiroDati.dateFmt}</b> <span style="font-size:11px; font-weight:700; color:#475569;">(Autonomia scorte stimata: ~${nextRitiroDati.giorniAutonomia} giorni)</span>
-          </div>
-        </div>
-        <div style="font-size:11px; font-weight:800; color:#0369a1;">
-          Sede: <b>${presidio}</b>
-        </div>
-      </div>
-
-      <!-- TABELLA CRONOLOGICA DEI RITIRI -->
-      <div style="margin-bottom:16px;">
-        <div style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-          <span>📦 Cronologia Erogazioni &amp; Ritiri Effettuati</span>
-          <span style="font-size:11px; font-weight:800; color:#0284c7;">Fabbisogno Totale: ${totScat} Scatole / Anno</span>
-        </div>
-        <table style="width:100%; border-collapse:collapse; font-size:12px; border:1px solid #cbd5e1;">
-          <thead>
-            <tr style="background:#0f172a; color:#ffffff;">
-              <th style="padding:8px; text-align:center; width:35px;">#</th>
-              <th style="padding:8px; text-align:left;">Data Ritiro</th>
-              <th style="padding:8px; text-align:center;">Q.tà Ritirata</th>
-              <th style="padding:8px; text-align:center;">Compresse</th>
-              <th style="padding:8px; text-align:center;">Residuo Piano</th>
-              <th style="padding:8px; text-align:left;">Sede Erogatrice &amp; Note</th>
-              <th style="padding:8px; text-align:center; width:130px;">Timbro / Firma</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${righeTabellaHtml}
-          </tbody>
-        </table>
-      </div>
-
-      <!-- BILANCIO ATTUALE E RIEPILOGO STATO SCORTE -->
-      <div style="background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 16px; margin-bottom:18px; display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; text-align:center;">
-        <div>
-          <div style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#64748b;">Totale Assegnate</div>
-          <div style="font-size:18px; font-weight:900; color:#0f172a; margin-top:2px;">${totScat} scatole</div>
-        </div>
-        <div>
-          <div style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#0369a1;">Già Consegnate</div>
-          <div style="font-size:18px; font-weight:900; color:#0369a1; margin-top:2px;">${ritScat} scatole</div>
-        </div>
-        <div>
-          <div style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#16a34a;">Ancora Spettanti</div>
-          <div style="font-size:18px; font-weight:900; color:#16a34a; margin-top:2px;">${resScat} scatole</div>
-        </div>
-        <div>
-          <div style="font-size:10.5px; font-weight:800; text-transform:uppercase; color:#ea580c;">Scorta Attuale a Casa</div>
-          <div style="font-size:18px; font-weight:900; color:#ea580c; margin-top:2px;">${t.scorta || 0} cpr</div>
-        </div>
-      </div>
-
-      <!-- SEZIONE FIRME & TIMBRI -->
-      <div style="border-top:1px dashed #cbd5e1; padding-top:16px; display:flex; justify-content:space-between; align-items:flex-end;">
-        <div style="text-align:center; width:220px;">
-          <div style="font-size:11px; font-weight:800; color:#475569; margin-bottom:38px;">Timbro Farmacia Territoriale ASL</div>
-          <div style="border-bottom:1px solid #475569; width:100%;"></div>
-        </div>
-        <div style="font-size:10px; color:#64748b; text-align:center; max-width:280px; line-height:1.3;">
-          Documento generato da Suite Sanitaria Milella CareAssist Pro. Valido ai fini della verifica aderenza terapeutica e monitoraggio PHT ASL.
-        </div>
-        <div style="text-align:center; width:220px;">
-          <div style="font-size:11px; font-weight:800; color:#475569; margin-bottom:38px;">Firma Assistito / Delegato al Ritiro</div>
-          <div style="border-bottom:1px solid #475569; width:100%;"></div>
-        </div>
-      </div>
-    `;
-
-    var modal = document.getElementById('modal-registro-ritiri-asl-stampa');
-    if (modal) {
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-    }
-  } catch (err) {
-    console.error('Errore apriModalStampaRegistroASL:', err);
-  }
-}
-window.apriModalStampaRegistroASL = apriModalStampaRegistroASL;
-
-function chiudiModalStampaRegistroASL() {
-  var modal = document.getElementById('modal-registro-ritiri-asl-stampa');
-  if (modal) modal.style.display = 'none';
-  document.body.style.overflow = '';
-}
-window.chiudiModalStampaRegistroASL = chiudiModalStampaRegistroASL;
-
-function stampaRegistroRitiriASL() {
-  document.body.classList.add('printing-registro-asl');
-  setTimeout(function () {
-    window.print();
-    setTimeout(function () {
-      document.body.classList.remove('printing-registro-asl');
-    }, 1500);
-  }, 200);
-}
-window.stampaRegistroRitiriASL = stampaRegistroRitiriASL;
-
-function condividiRegistroASLWhatsApp() {
-  var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
-  if (!p) return;
-  var t = p.terapie ? p.terapie.find(item => item.canaleDistribuzione === 'territoriale_asl' || (item.pianoTerapeutico && item.pianoTerapeutico.attivo) || (item.farmaco || '').toUpperCase().includes('ENTECAVIR')) : null;
-  if (!t) return;
-  var pt = t.pianoTerapeutico || {};
-
-  var totScat = parseInt(pt.scatoleTotali || 12, 10);
-  var ritScat = parseInt(pt.scatoleRitirate || 0, 10);
-  var resScat = Math.max(0, totScat - ritScat);
-
-  var msg = '🏛️ *REGISTRO RITIRI FARMACIA TERRITORIALE ASL*\n';
-  msg += '👤 *Assistito:* ' + (p.nome || 'Ciro Milella') + '\n';
-  msg += '💊 *Farmaco:* ' + (t.farmaco || 'Entecavir Sandoz 0,5 mg') + '\n';
-  msg += '📋 *Protocollo PT:* ' + (pt.protocollo || '011BQ1X145RHL') + ' (Scad. ' + (pt.dataScadenza || '22/02/2027') + ')\n';
-  msg += '🏛️ *Presidio:* ' + (pt.sedeRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO') + '\n\n';
-  msg += '📦 *SITUAZIONE CONSEGNE:*\n';
-  msg += '• Scatole Assegnate: *' + totScat + ' scatole/anno*\n';
-  msg += '• Scatole Già Ritirate: *' + ritScat + ' scatole*\n';
-  msg += '• Scatole Ancora Spettanti: *' + resScat + ' scatole rimaste*\n';
-  msg += '• Scorta Attuale a Casa: *' + (t.scorta || 0) + ' compresse*\n';
-  if (pt.ultimoRitiro) {
-    msg += '• Ultimo Ritiro Effettuato: *' + new Date(pt.ultimoRitiro).toLocaleDateString('it-IT') + '*\n';
-  }
-
-  var url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
-  window.open(url, '_blank');
-}
-window.condividiRegistroASLWhatsApp = condividiRegistroASLWhatsApp;
-
-function apriModalRegistraRitiroASLDaModale() {
-  var tId = document.getElementById('edit-farmaco-id')?.value;
-  apriModalRegistraRitiroASL(tId);
-}
-window.apriModalRegistraRitiroASLDaModale = apriModalRegistraRitiroASLDaModale;
-
-function apriModalStampaRegistroASLDaModale() {
-  var tId = document.getElementById('edit-farmaco-id')?.value;
-  apriModalStampaRegistroASL(tId);
-}
-window.apriModalStampaRegistroASLDaModale = apriModalStampaRegistroASLDaModale;
-
-function apriModalStampaRegistroASLDaRitiro() {
-  var tId = document.getElementById('ritiro-asl-farmaco-id')?.value;
-  chiudiModalRegistraRitiroASL();
-  apriModalStampaRegistroASL(tId);
-}
-window.apriModalStampaRegistroASLDaRitiro = apriModalStampaRegistroASLDaRitiro;
-
-async function scalaScatolaTerritorialeRapida(terapiaId) {
-  apriModalRegistraRitiroASL(terapiaId);
-}
-window.scalaScatolaTerritorialeRapida = scalaScatolaTerritorialeRapida;
 
 // CARICO AUTOMATICO ISTANTANEO DI 1 SCATOLA INTERA (1-CLICK & TOUCH OTTIMIZZATO)
 async function caricaScatolaRapida(farmacoId) {
@@ -13100,57 +12037,6 @@ function apriModificaFarmaco(farmacoId) {
       }
     });
 
-    // 4b. GESTIONE CANALE DI EROGAZIONE & PIANO TERAPEUTICO ASL (DISTRIBUZIONE DIRETTA PHT/DPC)
-    var isTerritoriale = (t.canaleDistribuzione === 'territoriale_asl') ||
-      (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
-      ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
-
-    var radConv = document.getElementById('radio-canale-convenzionata');
-    var radTerr = document.getElementById('radio-canale-territoriale');
-    var boxPT = document.getElementById('box-dettagli-piano-terapeutico');
-    var badgeCanale = document.getElementById('badge-tipo-canale');
-
-    if (isTerritoriale) {
-      if (radConv) radConv.checked = false;
-      if (radTerr) radTerr.checked = true;
-      if (boxPT) boxPT.style.display = 'block';
-      if (badgeCanale) {
-        badgeCanale.textContent = '🏛️ Territoriale ASL (PT)';
-        badgeCanale.style.background = '#0284c7';
-        badgeCanale.style.color = '#ffffff';
-      }
-
-      var ptSource = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null) || {};
-      var dtScad = ptSource.dataScadenza || ptSource.dataScadenzaAnno || '2027-02-22';
-      var prot = ptSource.protocollo || ptSource.idPrescrizione || '';
-      var totScat = parseInt(ptSource.scatoleTotali || ptSource.scatoleSpettantiAnno, 10) || 12;
-      var ritScat = parseInt(ptSource.scatoleRitirate || ptSource.scatoleRitirateTotali, 10) || 0;
-      var resScat = Math.max(0, totScat - ritScat);
-      var centroPrescr = ptSource.centroPrescrittore || (ptSource.strutturaPrescrittrice ? (ptSource.strutturaPrescrittrice + (ptSource.medicoPrescrittore ? ' (' + ptSource.medicoPrescrittore + ')' : '')) : 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari');
-      var sedeRit = ptSource.sedeRitiro || ptSource.puntoRitiro || 'Farmacia Territoriale ASL Bari - Ex CTO';
-      var notePT = ptSource.note || '1 cpr/die a digiuno (almeno 2h prima o dopo i pasti) - PHT Distribuzione Diretta HBV';
-
-      if (document.getElementById('edit-pt-data-scadenza')) document.getElementById('edit-pt-data-scadenza').value = dtScad;
-      if (document.getElementById('edit-pt-protocollo')) document.getElementById('edit-pt-protocollo').value = prot;
-      if (document.getElementById('edit-pt-scatole-totali')) document.getElementById('edit-pt-scatole-totali').value = totScat;
-      if (document.getElementById('edit-pt-scatole-ritirate')) document.getElementById('edit-pt-scatole-ritirate').value = ritScat;
-      if (document.getElementById('edit-pt-scatole-residue-display')) document.getElementById('edit-pt-scatole-residue-display').textContent = resScat;
-      if (document.getElementById('edit-pt-centro-prescrittore')) document.getElementById('edit-pt-centro-prescrittore').value = centroPrescr;
-      if (document.getElementById('edit-pt-sede-ritiro')) document.getElementById('edit-pt-sede-ritiro').value = sedeRit;
-      if (document.getElementById('edit-pt-note')) document.getElementById('edit-pt-note').value = notePT;
-
-      if (typeof aggiornaCalcoloPianoTerapeuticoModale === 'function') aggiornaCalcoloPianoTerapeuticoModale();
-    } else {
-      if (radConv) radConv.checked = true;
-      if (radTerr) radTerr.checked = false;
-      if (boxPT) boxPT.style.display = 'none';
-      if (badgeCanale) {
-        badgeCanale.textContent = 'Convenzionata';
-        badgeCanale.style.background = '#e2e8f0';
-        badgeCanale.style.color = '#475569';
-      }
-    }
-
     if (typeof renderDosiCards === 'function') renderDosiCards();
     if (typeof ricalcolaRiepilogoCapsula === 'function') ricalcolaRiepilogoCapsula();
     if (typeof resetScannerFarmacoUI === 'function') resetScannerFarmacoUI('capsula');
@@ -13432,31 +12318,6 @@ function apriSchedaFarmacoFullscreen(farmacoId) {
       noteEl.innerHTML = noteText;
     }
 
-    // Gestione Box Piano Terapeutico ASL (se presente)
-    var aslBox = document.getElementById('sff-box-asl');
-    var isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
-      (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
-      ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
-    if (aslBox) {
-      if (isASL) {
-        aslBox.style.display = 'block';
-        var ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
-        var totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
-        var ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
-        var resScat = Math.max(0, totScat - ritScat);
-        var dtScad = ptObj ? (ptObj.dataScadenza || ptObj.dataScadenzaAnno || '22/02/2027') : '22/02/2027';
-        var proto = ptObj ? (ptObj.protocollo || ptObj.numeroRegistro || '011BQ1X145RHL') : '011BQ1X145RHL';
-        var badgeRimaste = document.getElementById('sff-asl-rimaste-badge');
-        var protEl = document.getElementById('sff-asl-protocollo');
-        var scadEl = document.getElementById('sff-asl-scadenza');
-        if (badgeRimaste) badgeRimaste.textContent = resScat + ' rimaste (su ' + totScat + ')';
-        if (protEl) protEl.textContent = proto;
-        if (scadEl) scadEl.textContent = dtScad;
-      } else {
-        aslBox.style.display = 'none';
-      }
-    }
-
     // Apri modale
     var modal = document.getElementById('modal-scheda-farmaco-fullscreen');
     if (modal) {
@@ -13501,22 +12362,6 @@ async function sffCaricaScatolaIntera() {
   apriSchedaFarmacoFullscreen(fid);
 }
 window.sffCaricaScatolaIntera = sffCaricaScatolaIntera;
-
-function sffRegistraRitiroASL() {
-  if (!_currentSchedaFarmacoId) return;
-  var fid = _currentSchedaFarmacoId;
-  chiudiSchedaFarmacoFullscreen();
-  apriModalRegistraRitiroASL(fid);
-}
-window.sffRegistraRitiroASL = sffRegistraRitiroASL;
-
-function sffStampaRegistroASL() {
-  if (!_currentSchedaFarmacoId) return;
-  var fid = _currentSchedaFarmacoId;
-  chiudiSchedaFarmacoFullscreen();
-  apriModalStampaRegistroASL(fid);
-}
-window.sffStampaRegistroASL = sffStampaRegistroASL;
 
 async function sffRegolaScortaManuale(delta) {
   if (!_currentSchedaFarmacoId) return;
@@ -13658,36 +12503,7 @@ function salvaModificaFarmaco(e) {
     return !isColl;
   });
 
-  // 2. Leggi le impostazioni del canale di erogazione e piano terapeutico ASL
-  var canaleDist = (document.getElementById('radio-canale-territoriale') && document.getElementById('radio-canale-territoriale').checked) ? 'territoriale_asl' : 'convenzionata';
-  var ptData = null;
-  if (canaleDist === 'territoriale_asl') {
-    var totScat = parseInt(document.getElementById('edit-pt-scatole-totali')?.value, 10) || 12;
-    var ritScat = parseInt(document.getElementById('edit-pt-scatole-ritirate')?.value, 10) || 0;
-    var resScat = Math.max(0, totScat - ritScat);
-    ptData = {
-      attivo: true,
-      dataScadenza: document.getElementById('edit-pt-data-scadenza')?.value || '',
-      protocollo: document.getElementById('edit-pt-protocollo')?.value.trim() || '',
-      scatoleTotali: totScat,
-      scatoleRitirate: ritScat,
-      scatoleResidue: resScat,
-      centroPrescrittore: document.getElementById('edit-pt-centro-prescrittore')?.value.trim() || '',
-      sedeRitiro: document.getElementById('edit-pt-sede-ritiro')?.value.trim() || '',
-      note: document.getElementById('edit-pt-note')?.value.trim() || '',
-      ultimoRitiro: new Date().toISOString()
-    };
-
-    if (p.pianoTerapeuticoDpc) {
-      p.pianoTerapeuticoDpc.scatoleSpettantiAnno = totScat;
-      p.pianoTerapeuticoDpc.scatoleRitirateTotali = ritScat;
-      p.pianoTerapeuticoDpc.scatoleResidueDaRitirare = resScat;
-      if (ptData.dataScadenza) p.pianoTerapeuticoDpc.dataScadenzaAnno = ptData.dataScadenza;
-      if (ptData.sedeRitiro) p.pianoTerapeuticoDpc.puntoRitiro = ptData.sedeRitiro;
-    }
-  }
-
-  // 2b. Leggi le card dal form (con fallback sicuro su _capsulaCurrentDosi)
+  // 2. Leggi le card dal form (con fallback sicuro su _capsulaCurrentDosi)
   var cardElements = document.querySelectorAll('#box-dosi-cards-container .dose-card-item');
   var totalDosi = cardElements.length;
 
@@ -13730,8 +12546,6 @@ function salvaModificaFarmaco(e) {
         saltatoOggi: false,
         ultimaModificaTimestamp: Date.now(),
         tipoFormulazione: (window._currentFormatoModal === 'penna') ? 'penna' : 'compressa',
-        canaleDistribuzione: canaleDist,
-        pianoTerapeutico: ptData,
         ultimaModificaClinica: ultimaMod
       });
     });
@@ -13784,8 +12598,6 @@ function salvaModificaFarmaco(e) {
         saltatoOggi: false,
         ultimaModificaTimestamp: Date.now(),
         tipoFormulazione: isFormatoPenna ? 'penna' : 'compressa',
-        canaleDistribuzione: canaleDist,
-        pianoTerapeutico: ptData,
         penneScorta: pScorta,
         unitaDoseDie: pDoseDie,
         unitaPerPenna: pUnitaTot,
@@ -19047,30 +17859,6 @@ function apriMascheraNuovoFarmaco() {
   if (typeof resetScannerFarmacoUI === 'function') resetScannerFarmacoUI('capsula');
   var boxSugg = document.getElementById('farm-suggerimenti-box');
   if (boxSugg) boxSugg.innerHTML = '';
-
-  // Reset Canale Erogazione Farmacia Convenzionata vs Territoriale ASL
-  var radConv = document.getElementById('radio-canale-convenzionata');
-  var radTerr = document.getElementById('radio-canale-territoriale');
-  if (radConv) radConv.checked = true;
-  if (radTerr) radTerr.checked = false;
-  var boxPT = document.getElementById('box-dettagli-piano-terapeutico');
-  if (boxPT) boxPT.style.display = 'none';
-  var badgeCanale = document.getElementById('badge-tipo-canale');
-  if (badgeCanale) {
-    badgeCanale.textContent = 'Convenzionata';
-    badgeCanale.style.background = '#e2e8f0';
-    badgeCanale.style.color = '#475569';
-  }
-  var dScadDefault = new Date();
-  dScadDefault.setFullYear(dScadDefault.getFullYear() + 1);
-  if (document.getElementById('edit-pt-data-scadenza')) document.getElementById('edit-pt-data-scadenza').value = dScadDefault.toISOString().slice(0, 10);
-  if (document.getElementById('edit-pt-protocollo')) document.getElementById('edit-pt-protocollo').value = '';
-  if (document.getElementById('edit-pt-scatole-totali')) document.getElementById('edit-pt-scatole-totali').value = '12';
-  if (document.getElementById('edit-pt-scatole-ritirate')) document.getElementById('edit-pt-scatole-ritirate').value = '0';
-  if (document.getElementById('edit-pt-scatole-residue-display')) document.getElementById('edit-pt-scatole-residue-display').textContent = '12';
-  if (document.getElementById('edit-pt-centro-prescrittore')) document.getElementById('edit-pt-centro-prescrittore').value = '';
-  if (document.getElementById('edit-pt-sede-ritiro')) document.getElementById('edit-pt-sede-ritiro').value = 'Farmacia Territoriale ASL Bari - Ex CTO';
-  if (document.getElementById('edit-pt-note')) document.getElementById('edit-pt-note').value = '';
 
   openModal('modal-modifica-farmaco');
 }
@@ -30040,6 +28828,7 @@ function renderMobileNativeView(terapie, p) {
 
   // 2. Calcola la Hero Action Card: "COSA DEVI FARE ADESSO"
   var heroContainer = document.getElementById('mobile-hero-action-card');
+    if (heroContainer) { heroContainer.style.display = 'none'; }
   if (heroContainer) {
     var oraAttuale = new Date();
     var minAttuali = oraAttuale.getHours() * 60 + oraAttuale.getMinutes();
@@ -30055,7 +28844,7 @@ function renderMobileNativeView(terapie, p) {
     });
 
     if (nonFatti.length === 0) {
-      heroContainer.className = 'mobile-hero-card done-all';
+      heroContainer.style.display = 'block'; heroContainer.className = 'mobile-hero-card done-all';
       heroContainer.innerHTML =
         '<div class="mobile-hero-badge badge-done">🎉 TUTTE LE TERAPIE COMPLETATE</div>' +
         '<div class="mobile-hero-title">Tutto Somministrato!</div>' +
@@ -30068,7 +28857,7 @@ function renderMobileNativeView(terapie, p) {
       var isRitardo = diffMin >= 0; // Orario di assunzione scattato o superato!
 
       if (isRitardo) {
-        heroContainer.className = 'mobile-hero-card urgent';
+        heroContainer.style.display = 'block'; heroContainer.className = 'mobile-hero-card urgent';
         var badgeRitardoTesto = (diffMin === 0)
           ? '<span class="pulse-alert-icon">🚨</span> ATTENZIONE • DA ASSUMERE ADESSO (ORE ' + nextT.ora + ')'
           : '<span class="pulse-alert-icon">🚨</span> ATTENZIONE • IN RITARDO DI ' + (diffMin >= 60 ? Math.floor(diffMin / 60) + 'h ' : '') + (diffMin % 60) + 'm';
@@ -30099,13 +28888,10 @@ function renderMobileNativeView(terapie, p) {
           '</button>' +
           '<div class="mobile-hero-secondary-row">' +
           '<button type="button" class="btn-mobile-hero-sub" onclick="apriModalSaltaFarmaco(' + nextT.id + ')">⏭️ Non somministrato / Salta</button>' +
-          (isASLHero
-            ? ('<button type="button" class="btn-mobile-hero-sub" style="background:#0284c7; color:#fff; font-weight:800;" onclick="apriModalRegistraRitiroASL(' + nextT.id + ')">🏛️ Ritiro ASL</button><button type="button" class="btn-mobile-hero-sub" onclick="apriModalStampaRegistroASL(' + nextT.id + ')">🖨️ Stampa A4</button>')
-            : ('<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>')
-          ) +
+          '<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>' +
           '</div>';
       } else {
-        heroContainer.className = 'mobile-hero-card ready';
+        heroContainer.style.display = 'block'; heroContainer.className = 'mobile-hero-card ready';
         var labelOrario = '⏰ PROSSIMA SOMMINISTRAZIONE • ORE ' + nextT.ora;
         var heroAssimilazioneHtml = nextT.modo
           ? '<div class="pill-assimilazione-avviso" style="margin:5px 0 8px 0;"><span>🍽️ Modo d\'uso:</span> <b>' + nextT.modo + '</b></div>'
@@ -30134,12 +28920,9 @@ function renderMobileNativeView(terapie, p) {
           '</button>' +
           '<div class="mobile-hero-secondary-row">' +
           '<button type="button" class="btn-mobile-hero-sub" onclick="apriModalSaltaFarmaco(' + nextT.id + ')">⏭️ Salta</button>' +
-          (isASLHero
-            ? ('<button type="button" class="btn-mobile-hero-sub" style="background:#0284c7; color:#fff; font-weight:800;" onclick="apriModalRegistraRitiroASL(' + nextT.id + ')">🏛️ Ritiro ASL</button><button type="button" class="btn-mobile-hero-sub" onclick="apriModalStampaRegistroASL(' + nextT.id + ')">🖨️ Stampa A4</button>')
-            : ('<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>')
-          ) +
+          '<button type="button" class="btn-mobile-hero-sub" onclick="caricaScatolaRapida(' + nextT.id + ')">📦 +Scatola</button>' +
           '<button type="button" class="btn-mobile-hero-sub" onclick="mostraAuditFarmaco(' + nextT.id + ')">ℹ️ Dettagli</button>' +
-          '</div>' + +
+          '</div>' +
           '<div style="text-align:center; margin-top:12px; padding-top:8px; border-top:1px dashed #e2e8f0;">' +
           '<a href="#mobile-terapie-timeline" onclick="document.getElementById(\'mobile-terapie-timeline\').scrollIntoView({behavior:\'smooth\'}); return false;" style="font-size:12px; font-weight:800; color:#0284c7; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">' +
           '<span>👇</span> <span>Scorri per vedere tutte le ' + (p.terapie || []).length + ' terapie di oggi</span>' +
@@ -30228,24 +29011,6 @@ function renderMobileNativeView(terapie, p) {
           '<span style="font-size:11px; color:#0284c7; font-weight:800;" title="Apri scheda intera">📱 Apri ↗</span>' +
           '</div>' +
           principioHtml +
-          (() => {
-            var isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
-              (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
-              ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
-            if (isASL) {
-              var ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
-              var totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
-              var ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
-              var resScat = Math.max(0, totScat - ritScat);
-              var dtScad = ptObj ? (ptObj.dataScadenza || ptObj.dataScadenzaAnno || '22/02/2027') : '22/02/2027';
-              return '<div style="margin-top:5px; display:inline-flex; align-items:center; gap:5px; flex-wrap:wrap;">' +
-                '<span style="background:#0284c7; color:#ffffff; font-weight:800; font-size:10px; padding:2px 7px; border-radius:6px; box-shadow:0 1px 3px rgba(2,132,199,0.3);">🏛️ Farmacia Territoriale ASL</span>' +
-                '<span style="background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; font-weight:800; font-size:10px; padding:2px 6px; border-radius:6px;">📦 Spettano: <b>' + resScat + '</b> / ' + totScat + ' scatole</span>' +
-                (dtScad ? ('<span style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-weight:700; font-size:9.5px; padding:2px 5px; border-radius:5px;">⏳ Scad: ' + dtScad + '</span>') : '') +
-                '</div>';
-            }
-            return '';
-          })() +
           '<div class="mobile-card-dosaggio" style="margin-top:2px; font-size:12px; color:#334155; font-weight:600;">' +
           (t.dosaggio || '') + (t.modo && !isAssimilazioneInfo ? (' — ' + t.modo) : '') +
           '</div>' +
@@ -30256,22 +29021,7 @@ function renderMobileNativeView(terapie, p) {
           '<div class="mobile-card-scorta" onclick="event.stopPropagation(); modificaScortaRapida(\'' + t.id + '\')" title="Tocca per modificare il numero esatto di compresse/capsule in scorta" style="font-size:12px; color:#334155; font-weight:700; cursor:pointer; background:rgba(255,255,255,0.9); padding:2px 7px; border-radius:6px; border:1px solid #cbd5e1; display:inline-flex; align-items:center; gap:4px;">' +
           '<span>📦 Scorta:</span> <b style="color:#0284c7; font-size:13px;">' + (infoScorta ? infoScorta.scortaNum : (t.scorta || 0)) + '</b>' + (infoScorta ? (' <span style="font-size:10px; color:#64748b; font-weight:700;">(~' + infoScorta.ggAutonomia + ' gg)</span>') : '') + ' <span style="font-size:10px; color:#0284c7;" title="Modifica scorta">✏️</span>' +
           '</div>' +
-          (() => {
-            var isASL = (t.canaleDistribuzione === 'territoriale_asl') ||
-              (t.pianoTerapeutico && t.pianoTerapeutico.attivo) ||
-              ((t.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
-            if (isASL) {
-              var ptObj = t.pianoTerapeutico || (typeof getPianoTerapeuticoAttivo === 'function' ? getPianoTerapeuticoAttivo(p) : null);
-              var totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
-              var ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
-              var resScat = Math.max(0, totScat - ritScat);
-              return '<button type="button" class="btn-card-scatola-action" onclick="event.stopPropagation(); apriModalRegistraRitiroASL(\'' + t.id + '\')" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; font-weight:900 !important; border:none !important; box-shadow:0 2px 6px rgba(2,132,199,0.35); padding:6px 11px; border-radius:8px; font-size:11.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="Registra ritiro scatole ASL">' +
-                '<span>🏛️ Ritiro ASL (' + resScat + ' rimaste)</span>' +
-                '</button>' +
-                '<button type="button" class="btn-card-time-action" onclick="event.stopPropagation(); apriModalStampaRegistroASL(\'' + t.id + '\')" style="background:#eff6ff !important; color:#0284c7 !important; border:1.5px solid #93c5fd !important; font-weight:800; padding:6px 9px; border-radius:8px; font-size:11px; cursor:pointer;" title="Visualizza e Stampa Registro A4">🖨️ Stampa A4</button>';
-            }
-            return '<button type="button" class="btn-card-scatola-action" onclick="event.stopPropagation(); caricaScatolaRapida(\'' + t.id + '\')" title="Aggiungi 1 scatola ritirata dalla farmacia">📦 +Scatola</button>';
-          })() +
+          '<button type="button" class="btn-card-scatola-action" onclick="event.stopPropagation(); caricaScatolaRapida(\'' + t.id + '\')" title="Aggiungi 1 scatola ritirata dalla farmacia">📦 +Scatola</button>' +
           '<button type="button" class="btn-card-time-action" onclick="event.stopPropagation(); apriCambiaOrarioRapido(\'' + t.id + '\')" title="Sposta orario di somministrazione">🕒 Orario</button>' +
           '</div>' +
           '<div style="display:flex; align-items:center; gap:6px;">' +

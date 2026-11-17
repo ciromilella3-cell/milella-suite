@@ -112,14 +112,19 @@ const server = http.createServer((req, res) => {
 
 function getLocalIp() {
   const nets = os.networkInterfaces();
+  let wifiIp = null;
+  let fallbackIp = null;
   for (const name of Object.keys(nets)) {
+    // Ignora schede virtuali
+    if (/tailscale|vmware|virtual|vEthernet|loopback/i.test(name)) continue;
     for (const net of nets[name]) {
       if (net.family === 'IPv4' && !net.internal) {
-        return net.address;
+        if (/wi-?fi|wlan/i.test(name)) return net.address;
+        if (!fallbackIp) fallbackIp = net.address;
       }
     }
   }
-  return 'localhost';
+  return wifiIp || fallbackIp || '192.168.1.8';
 }
 
 server.listen(PORT, '0.0.0.0', () => {
