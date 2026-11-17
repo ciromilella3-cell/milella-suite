@@ -30065,7 +30065,8 @@ function renderMobileNativeView(terapie, p) {
       var nextT = nonFatti[0];
       var minNext = (nextT.ora && nextT.ora.includes(':')) ? (parseInt(nextT.ora.split(':')[0]) * 60 + parseInt(nextT.ora.split(':')[1])) : 0;
       var diffMin = minAttuali - minNext;
-      var isRitardo = diffMin >= 0; // Orario di assunzione scattato o superato!
+      var isRitardo = diffMin >= 0;
+      var isASLHero = (nextT.canaleDistribuzione === 'territoriale_asl') || (nextT.pianoTerapeutico && nextT.pianoTerapeutico.attivo) || ((nextT.farmaco || '').toUpperCase().indexOf('ENTECAVIR') >= 0 && (p.nome || '').toLowerCase().indexOf('ciro') >= 0);
 
       if (isRitardo) {
         heroContainer.className = 'mobile-hero-card urgent';
