@@ -92,9 +92,7 @@ body {
   min-width: 0;
 }
 
-.mobile-header-cestino-btn {
-  display: none;
-}
+.mobile-header-cestino-btn { display: none !important; }
 
 .brand {
   display: flex;
@@ -9143,27 +9141,10 @@ main,
    ALLERTA TERAPIE MULTI-PAZIENTE MOBILE (1-TOUCH HEADER + BOTTONI)
    ========================================================================== */
 .mobile-header-ritardi-btn,
-.mobile-header-cestino-btn {
-  display: none;
-}
+.mobile-header-cestino-btn { display: none !important; }
 
 @media (max-width: 768px) {
-  .mobile-header-cestino-btn {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
-    border: 1.5px solid #7dd3fc !important;
-    color: #0369a1 !important;
-    padding: 4px 9px !important;
-    border-radius: 18px !important;
-    font-size: 11px !important;
-    font-weight: 800 !important;
-    cursor: pointer !important;
-    white-space: nowrap !important;
-    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.2) !important;
-    flex-shrink: 0 !important;
-  }
+  .mobile-header-cestino-btn { display: none !important; }
 
   .mobile-header-ritardi-btn {
     display: inline-flex !important;
@@ -11392,11 +11373,16 @@ button[onclick*="mostraGuidaContestuale"],
 
 @media (max-width: 768px) {
   .win-desktop-floating-trash {
-    bottom: 84px !important;
+    position: fixed !important;
+    bottom: 88px !important;
     right: 14px !important;
-    padding: 6px 8px !important;
-    transform: scale(0.92) !important;
-    z-index: 10000000 !important;
+    padding: 6px 10px !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1.5px solid #0284c7 !important;
+    box-shadow: 0 4px 16px rgba(2, 132, 199, 0.28) !important;
+    transform: scale(0.95) !important;
+    z-index: 9999999 !important;
     display: flex !important;
   }
 }
@@ -11427,12 +11413,7 @@ button[onclick*="mostraGuidaContestuale"],
 .win-desktop-trash-btn-mobile-hdr:active {
   transform: scale(0.92);
 }
-/* MOBILE FIXES v340 */
-@media (max-width: 768px) {
-  .win-desktop-floating-trash {
-    display: none !important;
-  }
-}
+/* MOBILE FIXES: Floating trash visible in bottom right on mobile */
 .mobile-hero-card:empty,
 #mobile-hero-ritardi-banner:empty,
 #mobile-hero-action-card:empty {
