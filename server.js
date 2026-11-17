@@ -2864,7 +2864,7 @@ app.post('/api/sync/execute', async (req, res) => {
         const deskQuestaDir = (desktopFolder && desktopFolder.trim()) ? desktopFolder.trim() : path.join(process.env.USERPROFILE || 'C:\\Users\\Utente', 'Desktop', 'questa');
 
         // URL del Cloud Master
-        const CLOUD_MASTER_URL = process.env.RENDER_EXTERNAL_URL || 'https://milella-suite-un8j.onrender.com';
+        const CLOUD_MASTER_URL = process.env.RENDER_EXTERNAL_URL || 'https://milella-suite-iv93.onrender.com';
 
         // ----------------------------------------------------
         // CASO 1: USB <-> DESKTOP (Robocopy Reale Bidirezionale/Incrementale)
@@ -3612,7 +3612,7 @@ async function inviaPushMobileEmergenza(titolo, messaggio, priorita = 5, tag = '
                         'Title': titolo,
                         'Priority': String(priorita), // 5 = Urgent/Max, suona anche in non disturbare
                         'Tags': tag,
-                        'Click': 'https://milella-suite-un8j.onrender.com/careassist/',
+                        'Click': 'https://milella-suite-iv93.onrender.com/careassist/',
                         'Content-Type': 'text/plain; charset=utf-8',
                         'Content-Length': Buffer.byteLength(postData)
                     }
@@ -3633,7 +3633,7 @@ async function inviaPushMobileEmergenza(titolo, messaggio, priorita = 5, tag = '
     if (cfg.telegramToken && cfg.telegramChatId) {
         try {
             const https = require('https');
-            const tgMsg = `🚨 *${titolo}*\n\n${messaggio}\n\n👉 [Apri CareAssist](https://milella-suite-un8j.onrender.com/careassist/)`;
+            const tgMsg = `🚨 *${titolo}*\n\n${messaggio}\n\n👉 [Apri CareAssist](https://milella-suite-iv93.onrender.com/careassist/)`;
             const tgUrl = `https://api.telegram.org/bot${cfg.telegramToken}/sendMessage`;
             const payload = JSON.stringify({
                 chat_id: cfg.telegramChatId,
@@ -3835,7 +3835,7 @@ app.listen(PORT, '0.0.0.0', () => {
 
     // Sistema Anti-Sospensione H24 (Keep-Alive per Render Cloud)
     // Invia un auto-ping leggero ogni 10 minuti per evitare che il server vada in standby
-    const KEEP_ALIVE_URL = process.env.RENDER_EXTERNAL_URL || 'https://milella-suite-un8j.onrender.com';
+    const KEEP_ALIVE_URL = process.env.RENDER_EXTERNAL_URL || 'https://milella-suite-iv93.onrender.com';
     function keepAlivePing() {
         try {
             const https = require('https');
