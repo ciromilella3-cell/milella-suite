@@ -7292,6 +7292,8 @@ function toggleSezioneCanaleTerritoriale(val) {
   var badge = document.getElementById('badge-tipo-canale');
   if (val === 'territoriale_asl') {
     if (boxPT) boxPT.style.display = 'block';
+    var topAslBox = document.getElementById('box-hero-ritiro-asl-top');
+    if (topAslBox) topAslBox.style.display = 'block';
     if (badge) {
       badge.textContent = '🏛️ Territoriale ASL (PT)';
       badge.style.background = '#0284c7';
@@ -7300,6 +7302,10 @@ function toggleSezioneCanaleTerritoriale(val) {
     aggiornaCalcoloPianoTerapeuticoModale();
   } else {
     if (boxPT) boxPT.style.display = 'none';
+    var topAslBox = document.getElementById('box-hero-ritiro-asl-top');
+    if (topAslBox) topAslBox.style.display = 'none';
+      var topAslBox = document.getElementById('box-hero-ritiro-asl-top');
+      if (topAslBox) topAslBox.style.display = 'none';
     if (badge) {
       badge.textContent = 'Convenzionata';
       badge.style.background = '#e2e8f0';
@@ -8214,13 +8220,13 @@ function condividiRegistroASLWhatsApp() {
 window.condividiRegistroASLWhatsApp = condividiRegistroASLWhatsApp;
 
 function apriModalRegistraRitiroASLDaModale() {
-  var tId = document.getElementById('edit-farmaco-id')?.value;
+  var tId = document.getElementById('edit-farm-id')?.value || document.getElementById('edit-farmaco-id')?.value;
   apriModalRegistraRitiroASL(tId);
 }
 window.apriModalRegistraRitiroASLDaModale = apriModalRegistraRitiroASLDaModale;
 
 function apriModalStampaRegistroASLDaModale() {
-  var tId = document.getElementById('edit-farmaco-id')?.value;
+  var tId = document.getElementById('edit-farm-id')?.value || document.getElementById('edit-farmaco-id')?.value;
   apriModalStampaRegistroASL(tId);
 }
 window.apriModalStampaRegistroASLDaModale = apriModalStampaRegistroASLDaModale;
@@ -13140,6 +13146,19 @@ function apriModificaFarmaco(farmacoId) {
       if (document.getElementById('edit-pt-note')) document.getElementById('edit-pt-note').value = notePT;
 
       if (typeof aggiornaCalcoloPianoTerapeuticoModale === 'function') aggiornaCalcoloPianoTerapeuticoModale();
+      
+      var topAslBox = document.getElementById('box-hero-ritiro-asl-top');
+      if (topAslBox) {
+        topAslBox.style.display = 'block';
+        var bRes = document.getElementById('top-asl-badge-residue');
+        if (bRes) bRes.textContent = resScat + ' rimaste (su ' + totScat + ')';
+        var ultRit = ptSource.ultimoRitiro ? new Date(ptSource.ultimoRitiro).toLocaleDateString('it-IT') : 'Nessuno registrato';
+        var elUlt = document.getElementById('top-asl-ultimo-ritiro-testo');
+        if (elUlt) elUlt.textContent = ultRit;
+        var nextDati = (typeof calcolaDatiProssimoRitiroASL === 'function') ? calcolaDatiProssimoRitiroASL(t, ptSource, 0) : null;
+        var elProx = document.getElementById('top-asl-prossimo-ritiro-testo');
+        if (elProx) elProx.textContent = nextDati ? nextDati.dateFmt : 'Da calcolare';
+      }
     } else {
       if (radConv) radConv.checked = true;
       if (radTerr) radTerr.checked = false;
