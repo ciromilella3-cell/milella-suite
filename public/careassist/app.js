@@ -34890,3 +34890,182 @@ window.stampaPassaportoEmergenza112 = function () {
   win.document.write(htmlDoc);
   win.document.close();
 };
+
+
+
+// ==========================================
+// BOLLARIO SCORTE FARMACI & SEMAFORO RIORDINO
+// ==========================================
+function apriModalBollarioScorte() {
+  const modal = document.getElementById('modal-bollario-scorte');
+  if (!modal) return;
+
+  const p = getAssistitoAttivo();
+  if (!p) {
+    alert('Nessun assistito selezionato.');
+    return;
+  }
+
+  const subtitolo = document.getElementById('bollario-subtitolo-assistito');
+  if (subtitolo) {
+    subtitolo.textContent = 'Assistito: ' + (p.nome || 'Paziente') + ' • Controllo scorte & fabbisogno';
+  }
+
+  popolaBollarioScorte();
+  modal.style.display = 'flex';
+}
+
+function chiudiModalBollarioScorte() {
+  const modal = document.getElementById('modal-bollario-scorte');
+  if (modal) modal.style.display = 'none';
+}
+
+function popolaBollarioScorte() {
+  const tbody = document.getElementById('bollario-scorte-tbody');
+  if (!tbody) return;
+
+  const p = getAssistitoAttivo();
+  if (!p || !p.terapie || p.terapie.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">Nessuna terapia attiva registrata per questo assistito.</td></tr>';
+    return;
+  }
+
+  let countOttimo = 0;
+  let countAllerta = 0;
+  let countCritico = 0;
+
+  // Unifica terapie per nome farmaco per evitare duplicati di fasce orarie diverse
+  const farmaciMap = {};
+  p.terapie.forEach(t => {
+    const nomeNorm = (t.farmaco || '').trim();
+    if (!nomeNorm) return;
+    if (!farmaciMap[nomeNorm]) {
+      farmaciMap[nomeNorm] = {
+        farmaco: t.farmaco,
+        principio: t.principioAttivo || '',
+        dosaggio: t.dosaggio || '',
+        orari: [t.orario || ''],
+        scorta: typeof t.scorta === 'number' ? t.scorta : (parseInt(t.scorta, 10) || 0),
+        rawTerapia: t
+      };
+    } else {
+      if (t.orario && !farmaciMap[nomeNorm].orari.includes(t.orario)) {
+        farmaciMap[nomeNorm].orari.push(t.orario);
+      }
+      // Se una delle righe ha una scorta aggiornata
+      if (typeof t.scorta === 'number' && t.scorta > farmaciMap[nomeNorm].scorta) {
+        farmaciMap[nomeNorm].scorta = t.scorta;
+      }
+    }
+  });
+
+  const list = Object.values(farmaciMap);
+  tbody.innerHTML = '';
+
+  list.forEach(item => {
+    // Calcolo semaforo
+    const semaforo = calcolaSemaforoAutonomia(item.rawTerapia, item.scorta);
+    if (semaforo.stato === 'ottimo') countOttimo++;
+    else if (semaforo.stato === 'allerta') countAllerta++;
+    else countCritico++;
+
+    // Data prevista di fine scorta
+    const dataFine = new Date();
+    dataFine.setDate(dataFine.getDate() + semaforo.giorni);
+    const dataFineStr = dataFine.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    const tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid #f1f5f9';
+    tr.style.transition = 'background 0.15s ease';
+    tr.onmouseenter = function() { tr.style.background = '#f8fafc'; };
+    tr.onmouseleave = function() { tr.style.background = 'transparent'; };
+
+    tr.innerHTML = `
+      <td style="padding:12px 14px; vertical-align:middle;">
+        <span style="display:inline-flex; align-items:center; gap:6px; font-weight:800; font-size:12px; padding:4px 10px; border-radius:20px; background:${semaforo.bg}; color:${semaforo.colore}; border:1px solid ${semaforo.border};">
+          <span style="font-size:10px;">${semaforo.stato === 'ottimo' ? '🟢' : semaforo.stato === 'allerta' ? '🟡' : '🔴'}</span>
+          <span>${semaforo.stato.toUpperCase()}</span>
+        </span>
+      </td>
+      <td style="padding:12px 14px; vertical-align:middle;">
+        <div style="font-weight:800; color:#0f172a; font-size:13.5px;">${item.farmaco}</div>
+        <div style="font-size:11.5px; color:#64748b;">${item.dosaggio} • Orari: ${item.orari.join(', ')}</div>
+      </td>
+      <td style="padding:12px 14px; vertical-align:middle;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <b style="font-size:14px; color:#1e293b;">${item.scorta}</b>
+          <span style="font-size:12px; color:#64748b;">unità / compresse</span>
+          <button type="button" onclick="apriRicaricaScortaDettaglio('${item.farmaco.replace(/'/g, "\\'")}')" style="background:#e0f2fe; border:1px solid #7dd3fc; color:#0284c7; padding:2px 7px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;" title="Modifica scorta manuale">+ Aggiorna</button>
+        </div>
+      </td>
+      <td style="padding:12px 14px; vertical-align:middle;">
+        <div style="font-weight:800; color:${semaforo.colore}; font-size:13px;">${semaforo.testo}</div>
+        <div style="font-size:11.5px; color:#64748b;">Esaurimento: <b>${dataFineStr}</b></div>
+      </td>
+      <td style="padding:12px 14px; vertical-align:middle; text-align:center;">
+        <button type="button" onclick="inviaRichiestaRiordinoSingoloWA('${item.farmaco.replace(/'/g, "\\'")}', ${item.scorta}, ${semaforo.giorni})" style="background:#25d366; color:#ffffff; border:none; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 4px rgba(37,211,102,0.25);" title="Invia promemoria ricetta su WhatsApp">
+          <span>📲</span> <span>Ordina Ricetta</span>
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('bollario-count-ottimo').textContent = countOttimo + ' Farmaci';
+  document.getElementById('bollario-count-allerta').textContent = countAllerta + ' Farmaci';
+  document.getElementById('bollario-count-critico').textContent = countCritico + ' Farmaci';
+}
+
+function apriRicaricaScortaDettaglio(nomeFarmaco) {
+  const p = getAssistitoAttivo();
+  if (!p || !p.terapie) return;
+  const t = p.terapie.find(x => x.farmaco === nomeFarmaco);
+  if (t && typeof apriRicaricaScorta === 'function') {
+    apriRicaricaScorta(t.id);
+  } else {
+    const q = prompt('Inserisci la nuova scorta numerica attuale per ' + nomeFarmaco + ':', '30');
+    if (q !== null && !isNaN(parseInt(q, 10))) {
+      p.terapie.forEach(x => {
+        if (x.farmaco === nomeFarmaco) x.scorta = parseInt(q, 10);
+      });
+      salvaDatiAssistito();
+      popolaBollarioScorte();
+    }
+  }
+}
+
+function inviaRichiestaRiordinoSingoloWA(nomeFarmaco, scorta, giorni) {
+  const p = getAssistitoAttivo() || {};
+  const msg = 'Gentile Dottore / Farmacia,%0A%0ASi richiede cortesemente il rinnovo ricetta / riordino per l\'assistito: ' + (p.nome || 'Paziente') + ' (CF: ' + (p.codiceFiscale || 'In cartella') + ').%0A%0A*Farmaco:* ' + encodeURIComponent(nomeFarmaco) + '%0A*Scorta residua:* ' + scorta + ' unità (Autonomia residua: circa ' + giorni + ' giorni).%0A%0AInviato tramite CareAssist Pro.';
+  window.open('https://api.whatsapp.com/send?text=' + msg, '_blank');
+}
+
+function inviaRichiestaRiordinoMultiploWA() {
+  const p = getAssistitoAttivo();
+  if (!p || !p.terapie) return;
+
+  const critici = [];
+  p.terapie.forEach(t => {
+    const sem = calcolaSemaforoAutonomia(t, t.scorta || 0);
+    if ((sem.stato === 'critico' || sem.stato === 'allerta') && !critici.find(c => c.farmaco === t.farmaco)) {
+      critici.push({ farmaco: t.farmaco, scorta: t.scorta || 0, giorni: sem.giorni });
+    }
+  });
+
+  if (critici.length === 0) {
+    alert('Nessun farmaco in esaurimento o critico al momento!');
+    return;
+  }
+
+  let elenco = '';
+  critici.forEach(c => {
+    elenco += '• *' + c.farmaco + '* (Scorta: ' + c.scorta + ' unità - Mancano ' + c.giorni + ' gg)%0A';
+  });
+
+  const msg = 'Gentile Medico Curante / Farmacia,%0A%0ARichiesta urgente rinnovo ricette per l\'assistito: ' + (p.nome || 'Paziente') + ' (Nato il ' + (p.dataNascita || 'In cartella') + ').%0A%0A*Farmaci in esaurimento imminente:*%0A' + elenco + '%0ASi prega di emettere promemoria dematerializzati (NRE).%0AGrazie,%0ACaregiver / Operatore CareAssist Pro.';
+  window.open('https://api.whatsapp.com/send?text=' + msg, '_blank');
+}
+
+function stampaBollarioScortePDF() {
+  window.print();
+}
