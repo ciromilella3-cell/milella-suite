@@ -29,7 +29,7 @@
           "ultimaDoseSomministrata": 1,
           "ultimoRitiro": "2026-11-07T21:20:21.450Z",
           "fattoOggiTimestamp": 1794661880918,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1794085262569,
@@ -59,7 +59,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794661887979,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 103,
@@ -75,7 +75,7 @@
           "ultimaDoseSomministrata": 1,
           "ultimoRitiro": "2026-11-07T19:46:40.008Z",
           "fattoOggiTimestamp": 1794661939897,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1032,
@@ -91,7 +91,7 @@
           "ultimaDoseSomministrata": 1,
           "ultimoRitiro": "2026-11-07T19:46:40.008Z",
           "fattoOggiTimestamp": 1794661945051,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 104,
@@ -756,7 +756,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662004325,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 202,
@@ -772,7 +772,7 @@
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662009990,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 203,
@@ -788,7 +788,7 @@
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662018780,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 208,
@@ -805,7 +805,7 @@
           "cadenzaTipo": "quindicinale_15_30",
           "ultimaDoseSomministrata": 0.06666666666666667,
           "fattoOggiTimestamp": 1794662023421,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 204,
@@ -821,7 +821,7 @@
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662028286,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 205,
@@ -838,7 +838,7 @@
           "ultimaDoseSomministrata": 1,
           "ultimoRitiro": "2026-11-07T20:18:10.813Z",
           "fattoOggiTimestamp": 1794662034990,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 206,
@@ -1239,7 +1239,7 @@
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662069138,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 312,
@@ -1255,7 +1255,7 @@
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662074064,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1794119789330,
@@ -1285,7 +1285,7 @@
           },
           "ultimaDoseSomministrata": 0.5,
           "fattoOggiTimestamp": 1794662080070,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1794119271026,
@@ -1315,7 +1315,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662090259,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1794120216740,
@@ -1345,7 +1345,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662095918,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1794119856922,
@@ -1375,7 +1375,7 @@
           },
           "ultimaDoseSomministrata": 2,
           "fattoOggiTimestamp": 1794662101121,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1794119962919,
@@ -1405,7 +1405,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662108668,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1794118995873,
@@ -1435,7 +1435,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662114338,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1794119202709,
@@ -1465,7 +1465,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662121727,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1794120309246,
@@ -2869,7 +2869,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662061269,
-          "fattoOggiGiorno": "2026-11-14",
+          "fattoOggiGiorno": "2026-11-18",
           "ultimoRitiro": "2026-11-16",
           "pianoTerapeutico": {
             "scatoleTotali": 12,
@@ -4130,7 +4130,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662136648,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         },
         {
           "id": 1794159380065,
@@ -4160,7 +4160,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiTimestamp": 1794662141374,
-          "fattoOggiGiorno": "2026-11-14"
+          "fattoOggiGiorno": "2026-11-18"
         }
       ],
       "registrazioni": [
@@ -4387,12 +4387,13 @@
       "lastModified": 1794662141378
     }
   ],
-  "lastModified": 1794995571311,
+  "lastModified": 1794996829328,
   "lastModifiedBy": {
     "nome": "Ciro Milella (Admin)",
     "ruolo": "admin",
     "paziente": "Ciro Milella",
     "ora": "10:55",
     "timestamp": 1794995571311
-  }
+  },
+  "ultimoGiornoOperativo": "2026-11-18"
 }

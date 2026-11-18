@@ -16596,12 +16596,17 @@ function verificaCambioDataAutomatico() {
 
       (AppData.pazienti || []).forEach(function (p) {
         (p.terapie || []).forEach(function (t) {
-          t.fattoOggi = false;
-          delete t.fattoOggiTimestamp;
-          delete t.fattoOggiGiorno;
-          delete t.annullatoOggiTimestamp;
-          delete t.saltatoOggi;
-          delete t.motivoSalto;
+          // Se la terapia è già stata registrata con la data odierna (es. presa stamattina dallo smartphone), non azzerarla!
+          if (t.fattoOggiGiorno === oggiStr) {
+            t.fattoOggi = true;
+          } else {
+            t.fattoOggi = false;
+            delete t.fattoOggiTimestamp;
+            delete t.fattoOggiGiorno;
+            delete t.annullatoOggiTimestamp;
+            delete t.saltatoOggi;
+            delete t.motivoSalto;
+          }
         });
         p.idratazioneOggi = 0;
       });
