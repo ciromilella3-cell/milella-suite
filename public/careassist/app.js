@@ -16615,9 +16615,7 @@ function verificaCambioDataAutomatico() {
           var dosi = rilevaDosiPassateNonRegistrate();
           if (dosi.length > 0) {
             window._dosiPendentiRilevate = dosi;
-            setTimeout(function () {
-              apriModalRiconciliazione();
-            }, 800);
+            // Auto-popup disattivato (Compromesso 1)
           }
         }
       } catch (e) { console.error('Data check error:', e); }
