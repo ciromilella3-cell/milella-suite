@@ -4109,6 +4109,12 @@ function cestinoRipristina(id) {
 }
 
 async function cestinoEliminaDefinitivo(id) {
+  var authAdmin = await window.richiediPinAdminPerCancellazione('Inserisci il PIN / Password Amministratore (SOS999) per eliminare definitivamente questo elemento dal Cestino:');
+  if (!authAdmin) {
+    showToast('Operazione annullata: password Admin non fornita.', 'warning');
+    return;
+  }
+
   try {
     const lista = (AppData && Array.isArray(AppData._cestino)) ? AppData._cestino : [];
     const e = lista.find(function (x) { return x.id === id; });
@@ -4141,6 +4147,12 @@ async function cestinoEliminaDefinitivo(id) {
 }
 
 async function cestinoSvuota() {
+  var authAdmin = await window.richiediPinAdminPerCancellazione('Inserisci il PIN / Password Amministratore (SOS999) per svuotare DEFINITIVAMENTE l\'intero Cestino:');
+  if (!authAdmin) {
+    showToast('Operazione annullata: password Admin non fornita.', 'warning');
+    return;
+  }
+
   try {
     const n = (AppData && Array.isArray(AppData._cestino)) ? AppData._cestino.length : 0;
     if (!n) {
@@ -9348,15 +9360,9 @@ function toggleSelectAllDiarioBtn(scope) {
 }
 
 async function eliminaAnnotazioniSelezionate(scope) {
-  const authAdmin = await window.richiediPinAdminPerCancellazione('Inserisci il PIN o Password Amministratore per eliminare le annotazioni selezionate dal diario:');
-  if (!authAdmin) {
-    showToast('Operazione annullata: autorizzazione Admin non fornita.', 'warning');
-    return;
-  }
   const p = getActivePaziente();
   if (!p) return;
 
-  // Raccogli tutte le checkbox spuntate sia in diario che in full
   const cbs = Array.from(document.querySelectorAll('.diario-cb-diario:checked, .diario-cb-recent:checked, .diario-cb-full:checked'));
   const count = cbs.length;
   if (!count) {
@@ -9364,41 +9370,28 @@ async function eliminaAnnotazioniSelezionate(scope) {
     return;
   }
 
+  const scelta = await window.chiediTipoEliminazioneDiario(count, p.nome);
+  if (!scelta) return;
+
   const idsToDelete = new Set(cbs.map(cb => String(cb.dataset.id)));
+  const daArchiviare = (p.registrazioni || []).filter(r => idsToDelete.has(String(r.id)));
 
-  let ok = false;
-  try {
-    ok = await customConfirm(
-      'Elimina Annotazioni Selezionate',
-      `Stai per eliminare ${count} annotazion${count === 1 ? 'e' : 'i'} dal registro di ${p.nome}.` + CESTINO_AVVISO,
-      '🗑️',
-      'Sposta nel Cestino'
-    );
-  } catch (e) {
-    ok = window.confirm(`Vuoi eliminare ${count} annotazioni selezionate dal diario?`);
-  }
-
-  if (ok) {
-    const daArchiviare = (p.registrazioni || []).filter(r => idsToDelete.has(String(r.id)));
+  if (scelta === 'cestino') {
     if (daArchiviare.length && typeof cestinoAggiungi === 'function') {
       try {
         cestinoAggiungi('annotazione', daArchiviare.length + ' annotazioni del diario', (daArchiviare[0].desc || daArchiviare[0].tipo || '').toString().slice(0, 110), daArchiviare, p);
       } catch (err) { }
     }
-    p.registrazioni = (p.registrazioni || []).filter(r => !idsToDelete.has(String(r.id)));
-    saveDb();
-    renderDiario();
-  if (typeof renderDiarioMobile === 'function') renderDiarioMobile();
-    if (typeof showToast === 'function') {
-      showToast(`${count} annotazion${count === 1 ? 'e eliminata' : 'i eliminate'} con successo! 🗑️`);
-    }
+    showToast(`${count} annotazioni spostate nel Cestino. 📦`, 'info');
+  } else if (scelta === 'definitivo') {
+    showToast(`${count} annotazioni eliminate definitivamente per sempre. ⛔`, 'success');
   }
-}
 
-window.getDiarioCheckboxes = getDiarioCheckboxes;
-window.onDiarioCheckboxChange = onDiarioCheckboxChange;
-window.toggleSelectAllDiario = toggleSelectAllDiario;
-window.toggleSelectAllDiarioBtn = toggleSelectAllDiarioBtn;
+  p.registrazioni = (p.registrazioni || []).filter(r => !idsToDelete.has(String(r.id)));
+  saveDb();
+  renderDiario();
+  if (typeof renderDiarioMobile === 'function') renderDiarioMobile();
+}
 window.eliminaAnnotazioniSelezionate = eliminaAnnotazioniSelezionate;
 
 function renderDiario() {
@@ -9535,35 +9528,26 @@ function renderDiario() {
 async function eliminaLog(id) {
   const p = getActivePaziente();
   if (!p) return;
-  const authAdmin = await window.richiediPinAdminPerCancellazione('Conferma di essere l\'Amministratore (Admin) per eliminare questa annotazione dal diario:');
-  if (!authAdmin) {
-    showToast('Operazione annullata: autorizzazione Admin non fornita.', 'warning');
-    return;
-  }
 
-  let ok = false;
-  try {
-    ok = await customConfirm(
-      'Elimina Registrazione',
-      'Vuoi eliminare questa registrazione dal diario clinico?' + CESTINO_AVVISO,
-      '🗑️',
-      'Sposta nel Cestino'
-    );
-  } catch (e) {
-    ok = confirm('Vuoi eliminare questa registrazione dal diario clinico?');
-  }
+  const scelta = await window.chiediTipoEliminazioneDiario(1, p.nome);
+  if (!scelta) return;
 
-  if (ok) {
-    const rec = (p.registrazioni || []).find(r => String(r.id) === String(id) || String(r.timestamp) === String(id));
-    if (rec && typeof cestinoAggiungi === 'function') {
+  const rec = (p.registrazioni || []).find(r => String(r.id) === String(id) || String(r.timestamp) === String(id));
+  if (!rec) return;
+
+  if (scelta === 'cestino') {
+    if (typeof cestinoAggiungi === 'function') {
       cestinoAggiungi('annotazione', 'Annotazione del diario', (rec.testo || rec.desc || rec.tipo || '').toString().slice(0, 140), [rec], p);
     }
-    p.registrazioni = (p.registrazioni || []).filter(r => String(r.id) !== String(id) && String(r.timestamp) !== String(id));
-    saveDb();
-    renderDiario();
-    if (typeof renderDiarioMobile === 'function') renderDiarioMobile();
-    if (typeof showToast === 'function') showToast('Registrazione spostata nel Cestino. 🗑️');
+    showToast('Registrazione spostata nel Cestino. 📦', 'info');
+  } else if (scelta === 'definitivo') {
+    showToast('Registrazione eliminata definitivamente per sempre. ⛔', 'success');
   }
+
+  p.registrazioni = (p.registrazioni || []).filter(r => String(r.id) !== String(id) && String(r.timestamp) !== String(id));
+  saveDb();
+  renderDiario();
+  if (typeof renderDiarioMobile === 'function') renderDiarioMobile();
 }
 window.eliminaLog = eliminaLog;
 
@@ -33456,5 +33440,102 @@ window.richiediPinAdminPerCancellazione = function (motivoAzione) {
     btnConfirm.onclick = checkPin;
     btnCancel.onclick = function () { m.remove(); resolve(false); };
     btnClose.onclick = function () { m.remove(); resolve(false); };
+  });
+};
+
+
+// ==============================================================================
+// MODALE SCELTA ELIMINAZIONE: SPOSTA NEL CESTINO OPPURE ELIMINA DEFINITIVAMENTE (ADMIN PIN)
+// ==============================================================================
+window.chiediTipoEliminazioneDiario = function(conteggio, pazienteNome) {
+  return new Promise(function(resolve) {
+    var modalId = 'modal-scelta-eliminazione-diario';
+    var exist = document.getElementById(modalId);
+    if (exist) exist.remove();
+
+    var countTxt = conteggio === 1 ? 'questa registrazione' : (conteggio + ' registrazioni selezionate');
+
+    var m = document.createElement('div');
+    m.id = modalId;
+    m.style.position = 'fixed';
+    m.style.inset = '0';
+    m.style.zIndex = '999999999';
+    m.style.background = 'rgba(15, 23, 42, 0.85)';
+    m.style.backdropFilter = 'blur(6px)';
+    m.style.display = 'flex';
+    m.style.alignItems = 'center';
+    m.style.justifyContent = 'center';
+    m.style.padding = '16px';
+
+    m.innerHTML = `
+      <div style="background:#ffffff; border-radius:20px; max-width:440px; width:100%; box-shadow:0 25px 60px rgba(0,0,0,0.45); overflow:hidden; border:2px solid #0284c7; animation:modalPopIn 0.25s ease;">
+        <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#ffffff; padding:18px 22px; display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0284c7;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:26px;">🗑️</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; font-weight:800; color:#fff;">Gestione Eliminazione Registro</h3>
+              <p style="margin:2px 0 0; font-size:11.5px; color:#38bdf8;">${pazienteNome || 'Cartella Clinica'}</p>
+            </div>
+          </div>
+          <button id="scelta-del-close" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+        </div>
+
+        <div style="padding:22px; text-align:center;">
+          <p style="margin:0 0 16px; font-size:14px; color:#334155; line-height:1.5;">
+            Come desideri eliminare <b>${countTxt}</b>?
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;">
+            <!-- OPZIONE 1: SPOSTA NEL CESTINO -->
+            <button id="btn-scelta-cestino" style="background:#f0f9ff; border:2px solid #38bdf8; color:#0369a1; padding:12px 16px; border-radius:12px; font-size:13.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:space-between; transition:0.2s;">
+              <div style="display:flex; align-items:center; gap:10px; text-align:left;">
+                <span style="font-size:22px;">📦</span>
+                <div>
+                  <div style="color:#0284c7; font-weight:900;">Sposta nel Cestino</div>
+                  <div style="font-size:11px; color:#64748b; font-weight:600;">Recuperabile entro 60 giorni</div>
+                </div>
+              </div>
+              <span style="font-size:16px;">➔</span>
+            </button>
+
+            <!-- OPZIONE 2: ELIMINA DEFINITIVAMENTE (ADMIN) -->
+            <button id="btn-scelta-definitivo" style="background:#fef2f2; border:2px solid #f87171; color:#991b1b; padding:12px 16px; border-radius:12px; font-size:13.5px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:space-between; transition:0.2s;">
+              <div style="display:flex; align-items:center; gap:10px; text-align:left;">
+                <span style="font-size:22px;">🔒</span>
+                <div>
+                  <div style="color:#dc2626; font-weight:900;">Elimina Definitivamente</div>
+                  <div style="font-size:11px; color:#991b1b; font-weight:600;">Richiede Password / PIN Admin (SOS999)</div>
+                </div>
+              </div>
+              <span style="font-size:16px;">➔</span>
+            </button>
+          </div>
+
+          <button id="btn-scelta-annulla" style="background:#f1f5f9; color:#475569; border:none; padding:10px 20px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer; width:100%;">
+            Annulla Operazione
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(m);
+
+    document.getElementById('scelta-del-close').onclick = function() { m.remove(); resolve(null); };
+    document.getElementById('btn-scelta-annulla').onclick = function() { m.remove(); resolve(null); };
+
+    document.getElementById('btn-scelta-cestino').onclick = function() {
+      m.remove();
+      resolve('cestino');
+    };
+
+    document.getElementById('btn-scelta-definitivo').onclick = async function() {
+      m.remove();
+      var auth = await window.richiediPinAdminPerCancellazione('Inserisci il PIN / Password Amministratore (SOS999) per eliminare definitivamente:');
+      if (auth) {
+        resolve('definitivo');
+      } else {
+        resolve(null);
+      }
+    };
   });
 };
