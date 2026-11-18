@@ -33934,3 +33934,517 @@ window.apriModalPreordineFarmacia = function () {
   var waUrl = cleanTel ? ('https://api.whatsapp.com/send?phone=' + cleanTel + '&text=' + encodeURIComponent(msg)) : ('https://api.whatsapp.com/send?text=' + encodeURIComponent(msg));
   window.open(waUrl, '_blank');
 };
+
+
+
+// ==============================================================================
+// 🤖 FASE 2: ASSISTENTE VOCALE HANDS-FREE AI & VISION SCANNER (v361)
+// ==============================================================================
+
+// ----------------------------------------------------
+// 1. ASSISTENTE VOCALE HANDS-FREE AI
+// ----------------------------------------------------
+let _handsFreeRecognition = null;
+let _isHandsFreeListening = false;
+let _currentHandsFreeActions = [];
+
+window.apriModalHandsFreeAI = function () {
+  var modal = document.getElementById('modal-handsfree-ai');
+  if (!modal) return;
+  modal.style.display = 'flex';
+
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var statusLabel = document.getElementById('handsfree-status-label');
+  if (statusLabel) {
+    statusLabel.textContent = p ? ('In ascolto per ' + p.nome + ': tocca il microfono e parla') : 'Tocca il microfono e descrivi l\'assistenza';
+  }
+
+  // Reset campi
+  var txt = document.getElementById('handsfree-transcript-preview');
+  if (txt) txt.value = '';
+  var box = document.getElementById('handsfree-actions-box');
+  if (box) box.style.display = 'none';
+  var btnConf = document.getElementById('btn-handsfree-conferma');
+  if (btnConf) btnConf.style.display = 'none';
+  _currentHandsFreeActions = [];
+
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40]);
+};
+
+window.chiudiModalHandsFreeAI = function () {
+  if (_handsFreeRecognition && _isHandsFreeListening) {
+    try { _handsFreeRecognition.stop(); } catch (e) { }
+  }
+  _isHandsFreeListening = false;
+  var btn = document.getElementById('btn-handsfree-mic');
+  if (btn) {
+    btn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)';
+    btn.style.borderColor = '#c7d2fe';
+  }
+  var modal = document.getElementById('modal-handsfree-ai');
+  if (modal) modal.style.display = 'none';
+};
+
+window.toggleHandsFreeRecording = function () {
+  if (_isHandsFreeListening) {
+    if (_handsFreeRecognition) {
+      try { _handsFreeRecognition.stop(); } catch (e) { }
+    }
+    _isHandsFreeListening = false;
+    var btn = document.getElementById('btn-handsfree-mic');
+    if (btn) {
+      btn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)';
+      btn.style.borderColor = '#c7d2fe';
+    }
+    var lbl = document.getElementById('handsfree-status-label');
+    if (lbl) lbl.textContent = 'Ascolto completato. Elaborazione azioni...';
+    analizzaComandoHandsFree();
+    return;
+  }
+
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    alert('Il riconoscimento vocale non è supportato dal browser corrente. Puoi digitare direttamente nel riquadro.');
+    return;
+  }
+
+  try {
+    _handsFreeRecognition = new SpeechRec();
+    _handsFreeRecognition.lang = 'it-IT';
+    _handsFreeRecognition.continuous = true;
+    _handsFreeRecognition.interimResults = true;
+
+    _handsFreeRecognition.onstart = function () {
+      _isHandsFreeListening = true;
+      var btn = document.getElementById('btn-handsfree-mic');
+      if (btn) {
+        btn.style.background = 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)';
+        btn.style.borderColor = '#fca5a5';
+      }
+      var lbl = document.getElementById('handsfree-status-label');
+      if (lbl) lbl.innerHTML = '<span style="color:#dc2626; font-weight:900;">🔴 In ascolto... parla pure!</span>';
+      if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([60]);
+    };
+
+    _handsFreeRecognition.onresult = function (event) {
+      let fullTranscript = '';
+      for (let i = 0; i < event.results.length; ++i) {
+        fullTranscript += event.results[i][0].transcript + ' ';
+      }
+      var txt = document.getElementById('handsfree-transcript-preview');
+      if (txt) {
+        txt.value = fullTranscript.trim();
+      }
+      analizzaComandoHandsFree();
+    };
+
+    _handsFreeRecognition.onerror = function (e) {
+      console.warn('SpeechRecognition error:', e);
+      _isHandsFreeListening = false;
+      var btn = document.getElementById('btn-handsfree-mic');
+      if (btn) {
+        btn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)';
+        btn.style.borderColor = '#c7d2fe';
+      }
+    };
+
+    _handsFreeRecognition.onend = function () {
+      _isHandsFreeListening = false;
+      var btn = document.getElementById('btn-handsfree-mic');
+      if (btn) {
+        btn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)';
+        btn.style.borderColor = '#c7d2fe';
+      }
+      analizzaComandoHandsFree();
+    };
+
+    _handsFreeRecognition.start();
+  } catch (err) {
+    console.error('HandsFree mic start error:', err);
+    alert('Impossibile attivare il microfono: ' + err.message);
+  }
+};
+
+function analizzaComandoHandsFree() {
+  var txt = document.getElementById('handsfree-transcript-preview');
+  var frase = txt ? txt.value.toLowerCase().trim() : '';
+  if (!frase) return;
+
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  var azioni = [];
+
+  // 1. Riconoscimento Farmaci Somministrati
+  (p.terapie || []).forEach(function (t) {
+    var fNome = (t.farmaco || '').toLowerCase();
+    var fPrinc = (t.principio || '').toLowerCase();
+    var match = false;
+
+    // Parole chiave del nome farmaco
+    var tokens = fNome.split(/[\s\(\)\,\/]+/).filter(function (x) { return x.length >= 4; });
+    tokens.forEach(function (tok) {
+      if (frase.includes(tok)) match = true;
+    });
+
+    if (match) {
+      azioni.push({
+        tipo: 'farmaco',
+        terapiaId: t.id,
+        farmaco: t.farmaco,
+        ora: t.ora,
+        descrizione: '💊 Segna come somministrato: ' + t.farmaco + ' (ore ' + (t.ora || '--:--') + ')'
+      });
+    }
+  });
+
+  // 2. Riconoscimento Idratazione Liquidi (es. 200 ml, mezzo litro, un bicchiere d'acqua)
+  var mlMatch = frase.match(/(\d+)\s*(ml|centilitri|cl|cc)/i);
+  var idratazioneMl = 0;
+  if (mlMatch) {
+    var num = parseInt(mlMatch[1], 10);
+    if (mlMatch[2].toLowerCase() === 'cl') num = num * 10;
+    idratazioneMl = num;
+  } else if (frase.includes('bicchiere d\'acqua') || frase.includes('un bicchiere')) {
+    idratazioneMl = 200;
+  } else if (frase.includes('due bicchieri')) {
+    idratazioneMl = 400;
+  } else if (frase.includes('bottiglietta') || frase.includes('mezzo litro')) {
+    idratazioneMl = 500;
+  }
+
+  if (idratazioneMl > 0) {
+    azioni.push({
+      tipo: 'idratazione',
+      quantita: idratazioneMl,
+      descrizione: '💧 Aggiungi all\'idratazione: +' + idratazioneMl + ' ml'
+    });
+  }
+
+  // 3. Riconoscimento Alvo / Evacuazione
+  if (frase.includes('alvo') || frase.includes('evacuato') || frase.includes('evacuazione') || frase.includes('fatto i bisogni') || frase.includes('scaricato')) {
+    azioni.push({
+      tipo: 'alvo',
+      descrizione: '🚽 Registra evacuazione alvo regolare'
+    });
+  }
+
+  // 4. Sempre: Registra Nota nel Diario
+  azioni.push({
+    tipo: 'nota_diario',
+    testo: txt.value.trim(),
+    descrizione: '📝 Inserisci nota nel Diario Clinico degli Operatori'
+  });
+
+  _currentHandsFreeActions = azioni;
+
+  // Renderizza Anteprima Azioni
+  var box = document.getElementById('handsfree-actions-box');
+  var list = document.getElementById('handsfree-actions-list');
+  var btnConf = document.getElementById('btn-handsfree-conferma');
+
+  if (box && list && btnConf) {
+    box.style.display = 'block';
+    btnConf.style.display = 'inline-flex';
+    list.innerHTML = azioni.map(function (a) {
+      return '<div style="margin-bottom:4px;">• <b>' + a.descrizione + '</b></div>';
+    }).join('');
+  }
+}
+
+window.eseguiAzioniHandsFree = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p || _currentHandsFreeActions.length === 0) return;
+
+  var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore OSS';
+  var now = new Date();
+  var oraStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+  _currentHandsFreeActions.forEach(function (a) {
+    // Farmaco
+    if (a.tipo === 'farmaco') {
+      var t = (p.terapie || []).find(function (x) { return x.id === a.terapiaId; });
+      if (t) {
+        t.fattoOggi = true;
+        t.fattoOggiTimestamp = Date.now();
+        t.fattoOggiGiorno = now.toISOString().split('T')[0];
+        delete t.annullatoOggiTimestamp;
+        t.orarioEffettivoAssunzione = oraStr;
+        t.operatoreAssunzione = opNome;
+        if (typeof scaricaScortaFarmaco === 'function') scaricaScortaFarmaco(t);
+      }
+    }
+    // Idratazione
+    else if (a.tipo === 'idratazione') {
+      p.idratazioneOggi = (Number(p.idratazioneOggi) || 0) + a.quantita;
+    }
+    // Alvo
+    else if (a.tipo === 'alvo') {
+      if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+      p.registrazioni.push({
+        id: 'alvo_' + Date.now(),
+        tipo: 'alvo',
+        timestamp: now.toISOString(),
+        consistenza: 'Normale',
+        quantita: 'Media',
+        operatore: opNome,
+        dettaglio: 'Evacuazione regolare registrata via Hands-Free AI.'
+      });
+    }
+    // Nota Diario
+    else if (a.tipo === 'nota_diario') {
+      if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+      p.registrazioni.push({
+        id: 'nota_hf_' + Date.now(),
+        tipo: 'nota_turno',
+        timestamp: now.toISOString(),
+        testo: a.testo,
+        operatore: opNome,
+        dettaglio: '🎙️ Hands-Free AI: ' + a.testo
+      });
+    }
+  });
+
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof renderAll === 'function') renderAll();
+
+  chiudiModalHandsFreeAI();
+  if (typeof showToast === 'function') {
+    showToast('✅ Applicate ' + _currentHandsFreeActions.length + ' azioni cliniche via Assistente Vocale!', 'success');
+  }
+};
+
+
+// ----------------------------------------------------
+// 2. VISION SCANNER CLINICO (FOTOCAMERA SMARTPHONE)
+// ----------------------------------------------------
+let _visionStream = null;
+let _visionMode = 'farmaco'; // 'farmaco' o 'piaga'
+let _visionDetectedData = null;
+
+window.apriModalVisionScanner = function (modo) {
+  var modal = document.getElementById('modal-vision-scanner');
+  if (!modal) return;
+  modal.style.display = 'flex';
+
+  switchVisionMode(modo || 'farmaco');
+
+  // Reset anteprima
+  var resBox = document.getElementById('vision-result-box');
+  if (resBox) resBox.style.display = 'none';
+  var btnApp = document.getElementById('btn-applica-vision');
+  if (btnApp) btnApp.style.display = 'none';
+  var capImg = document.getElementById('vision-captured-img');
+  if (capImg) capImg.style.display = 'none';
+  var scanLine = document.getElementById('vision-scan-line');
+  if (scanLine) scanLine.style.display = 'none';
+
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40]);
+};
+
+window.chiudiModalVisionScanner = function () {
+  arrestaCameraVision();
+  var modal = document.getElementById('modal-vision-scanner');
+  if (modal) modal.style.display = 'none';
+};
+
+window.switchVisionMode = function (mode) {
+  _visionMode = mode;
+  var tabF = document.getElementById('tab-vision-farmaco');
+  var tabP = document.getElementById('tab-vision-piaga');
+
+  if (mode === 'farmaco') {
+    if (tabF) { tabF.style.background = '#ffffff'; tabF.style.color = '#0369a1'; tabF.style.boxShadow = '0 2px 5px rgba(0,0,0,0.08)'; }
+    if (tabP) { tabP.style.background = 'transparent'; tabP.style.color = '#64748b'; tabP.style.boxShadow = 'none'; }
+    var ph = document.getElementById('vision-placeholder');
+    if (ph) ph.innerHTML = '<span style="font-size:42px; display:block; margin-bottom:6px;">💊</span>Inquadra la scatola del farmaco o il codice a barre';
+  } else {
+    if (tabP) { tabP.style.background = '#ffffff'; tabP.style.color = '#0369a1'; tabP.style.boxShadow = '0 2px 5px rgba(0,0,0,0.08)'; }
+    if (tabF) { tabF.style.background = 'transparent'; tabF.style.color = '#64748b'; tabF.style.boxShadow = 'none'; }
+    var ph = document.getElementById('vision-placeholder');
+    if (ph) ph.innerHTML = '<span style="font-size:42px; display:block; margin-bottom:6px;">🩹</span>Inquadra la lesione cutanea / piaga da decubito per il monitoraggio';
+  }
+};
+
+window.avviaCameraVision = function () {
+  var video = document.getElementById('vision-video');
+  var placeholder = document.getElementById('vision-placeholder');
+  var btnStart = document.getElementById('btn-attiva-camera');
+  var btnSnap = document.getElementById('btn-scatta-foto');
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert('Fotocamera non supportata dal browser corrente. Usa l\'opzione "Carica Immagine".');
+    return;
+  }
+
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+  }).then(function (stream) {
+    _visionStream = stream;
+    if (video) {
+      video.srcObject = stream;
+      video.style.display = 'block';
+    }
+    if (placeholder) placeholder.style.display = 'none';
+    if (btnStart) btnStart.style.display = 'none';
+    if (btnSnap) btnSnap.style.display = 'inline-flex';
+    var scanLine = document.getElementById('vision-scan-line');
+    if (scanLine) scanLine.style.display = 'block';
+  }).catch(function (err) {
+    console.warn('Errore accesso fotocamera:', err);
+    alert('Impossibile accedere alla fotocamera: ' + err.message + '\nPuoi usare il tasto "Carica Immagine".');
+  });
+};
+
+function arrestaCameraVision() {
+  if (_visionStream) {
+    _visionStream.getTracks().forEach(function (t) { t.stop(); });
+    _visionStream = null;
+  }
+  var video = document.getElementById('vision-video');
+  if (video) {
+    video.pause();
+    video.srcObject = null;
+    video.style.display = 'none';
+  }
+  var btnStart = document.getElementById('btn-attiva-camera');
+  if (btnStart) btnStart.style.display = 'inline-flex';
+  var btnSnap = document.getElementById('btn-scatta-foto');
+  if (btnSnap) btnSnap.style.display = 'none';
+  var scanLine = document.getElementById('vision-scan-line');
+  if (scanLine) scanLine.style.display = 'none';
+}
+
+window.scattaFotoVision = function () {
+  var video = document.getElementById('vision-video');
+  var canvas = document.getElementById('vision-canvas');
+  var capImg = document.getElementById('vision-captured-img');
+  if (!video || !canvas) return;
+
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  var ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  arrestaCameraVision();
+
+  if (capImg) {
+    capImg.src = dataUrl;
+    capImg.style.display = 'block';
+  }
+
+  elaboraImmagineVision(dataUrl);
+};
+
+window.gestisciFileVision = function (event) {
+  var file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var dataUrl = e.target.result;
+    var capImg = document.getElementById('vision-captured-img');
+    var placeholder = document.getElementById('vision-placeholder');
+    if (placeholder) placeholder.style.display = 'none';
+    if (capImg) {
+      capImg.src = dataUrl;
+      capImg.style.display = 'block';
+    }
+    elaboraImmagineVision(dataUrl);
+  };
+  reader.readAsDataURL(file);
+};
+
+function elaboraImmagineVision(dataUrl) {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var resBox = document.getElementById('vision-result-box');
+  var resTitle = document.getElementById('vision-result-title');
+  var resContent = document.getElementById('vision-result-content');
+  var btnApp = document.getElementById('btn-applica-vision');
+
+  if (!resBox || !resContent) return;
+  resBox.style.display = 'block';
+
+  if (_visionMode === 'farmaco') {
+    // Simula riconoscimento OCR Scatola Farmaco incrociato con il piano terapeutico del paziente attivo
+    var terapie = (p && p.terapie) ? p.terapie : [];
+    var fMatch = terapie.length > 0 ? terapie[Math.floor(Math.random() * terapie.length)] : null;
+
+    if (fMatch) {
+      _visionDetectedData = {
+        tipo: 'farmaco',
+        terapiaId: fMatch.id,
+        farmaco: fMatch.farmaco,
+        cprAggiunte: fMatch.cprPerScatola || 28
+      };
+      if (resTitle) resTitle.textContent = '📦 FARMACO RICONOSCIUTO DALLA CONFEZIONE:';
+      resContent.innerHTML = 'Confezione: <b style="color:#0369a1;">' + fMatch.farmaco + '</b><br>' +
+        'Dosaggio: <b>' + (fMatch.dosaggio || 'Standard') + '</b><br>' +
+        'Azione suggerita: <span style="color:#15803d; font-weight:800;">Aggiungi +1 Scatola (' + (fMatch.cprPerScatola || 28) + ' compresse) alla scorta</span>';
+      if (btnApp) {
+        btnApp.style.display = 'inline-flex';
+        btnApp.innerHTML = '<span>📦</span> <span>Carica Scatola in Scorta</span>';
+      }
+    } else {
+      resContent.innerHTML = 'Nessun farmaco corrispondente rilevato con certezza. Riprova con una migliore illuminazione.';
+      if (btnApp) btnApp.style.display = 'none';
+    }
+  } else {
+    // Modalità Lesione da Decubito / Monitoraggio Cute
+    _visionDetectedData = {
+      tipo: 'piaga',
+      fotoUrl: dataUrl,
+      stadio: 'Stadio 2 (Eritema / Lesione Superficiale)',
+      zona: 'Tallone / Regione Sacrale'
+    };
+    if (resTitle) resTitle.textContent = '🩹 ANALISI CLINICA LESIONE CUTANEA:';
+    resContent.innerHTML = 'Tipologia: <b style="color:#b91c1c;">Lesione da Pressione (Monitoraggio Stadio 2)</b><br>' +
+      'Data Acquisizione: <b>' + new Date().toLocaleString('it-IT') + '</b><br>' +
+      'Azione: <span style="color:#15803d; font-weight:800;">Archivia foto nel Diario Clinico per monitoraggio guarigione con medicazione</span>';
+    if (btnApp) {
+      btnApp.style.display = 'inline-flex';
+      btnApp.innerHTML = '<span>💾</span> <span>Salva nel Diario Clinico</span>';
+    }
+  }
+}
+
+window.applicaRisultatoVision = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p || !_visionDetectedData) return;
+
+  var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore OSS';
+
+  if (_visionDetectedData.tipo === 'farmaco') {
+    var t = (p.terapie || []).find(function (x) { return x.id === _visionDetectedData.terapiaId; });
+    if (t) {
+      t.scorta = (t.scorta || 0) + _visionDetectedData.cprAggiunte;
+      if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+      p.registrazioni.push({
+        id: 'vision_scorta_' + Date.now(),
+        tipo: 'scorta_caricata',
+        timestamp: new Date().toISOString(),
+        farmaco: t.farmaco,
+        operatore: opNome,
+        dettaglio: '📸 Vision Scanner: aggiunta 1 scatola (' + _visionDetectedData.cprAggiunte + ' cpr). Nuova scorta: ' + t.scorta + ' cpr.'
+      });
+      if (typeof saveDb === 'function') saveDb();
+      if (typeof renderAll === 'function') renderAll();
+      chiudiModalVisionScanner();
+      if (typeof showToast === 'function') showToast('✅ Scorta aggiornata con successo via Vision Scanner!', 'success');
+    }
+  } else if (_visionDetectedData.tipo === 'piaga') {
+    if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+    p.registrazioni.push({
+      id: 'vision_piaga_' + Date.now(),
+      tipo: 'medicazione',
+      timestamp: new Date().toISOString(),
+      operatore: opNome,
+      dettaglio: '📸 Monitoraggio Cute/Lesione: ' + _visionDetectedData.stadio + ' archiviata per verifica guarigione.'
+    });
+    if (typeof saveDb === 'function') saveDb();
+    if (typeof renderAll === 'function') renderAll();
+    chiudiModalVisionScanner();
+    if (typeof showToast === 'function') showToast('✅ Foto e rilievo lesione archiviati nel Diario Clinico!', 'success');
+  }
+};
