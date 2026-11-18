@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 
 <head>
@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=347">
+  <link rel="stylesheet" href="style.css?v=348">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -4797,6 +4797,16 @@
           </button>
         </div>
 
+        <!-- STORICO COMPLETO RITIRI ASL CON DATA E NOTE -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:12px; padding:10px 12px;">
+          <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#0369a1; letter-spacing:0.4px; margin-bottom:6px; display:flex; align-items:center; gap:5px;">
+            <span>📋</span> <span>Cronologia Ritiri Effettuati:</span>
+          </div>
+          <div id="ritiro-asl-storico-elenco" style="display:flex; flex-direction:column; gap:5px; max-height:140px; overflow-y:auto; font-size:11px;">
+            <!-- Generato dinamicamente via JS -->
+          </div>
+        </div>
+
         <!-- BOX SIMULAZIONE IN TEMPO REALE -->
         <div id="ritiro-asl-simulazione-box" style="background:#ecfdf5; border:1.5px solid #a7f3d0; border-radius:12px; padding:12px 14px;">
           <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#065f46; letter-spacing:0.4px; margin-bottom:4px;">✨ Riepilogo Operazione Automatica:</div>
@@ -9424,8 +9434,8 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=347"></script>
-  <script src="turnario_admin.js?v=347"></script>
+  <script src="app.js?v=348"></script>
+  <script src="turnario_admin.js?v=348"></script>
   <script>
     if ('serviceWorker' in navigator) {
       var _reloadingSw = false;
@@ -9435,7 +9445,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=347', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=348', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

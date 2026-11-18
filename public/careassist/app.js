@@ -7196,6 +7196,12 @@ function mostraAuditFarmaco(farmacoId) {
       return dt.toLocaleDateString('it-IT');
     })()}</b>
       </div>
+      <div style="margin-top:6px;">
+        <button type="button" class="btn btn-sm" onclick="registraCaricoManualeConData(${t.id})"
+                style="background:#0284c7; color:#ffffff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+          <span>📦</span> <span>+ Registra Carico con Data</span>
+        </button>
+      </div>
     </div>
   `;
 
@@ -7281,6 +7287,91 @@ function mostraAuditFarmaco(farmacoId) {
   document.getElementById('modal-audit-farmaco').setAttribute('data-farmaco-id', farmacoId);
   openModal('modal-audit-farmaco');
 }
+
+// REGISTRAZIONE CARICO FARMACO CON DATA E QUANTITÀ PERSONALIZZABILE
+async function registraCaricoManualeConData(farmacoId) {
+  try {
+    const p = getActivePaziente();
+    if (!p) return;
+    const t = (p.terapie || []).find(item => String(item.id) === String(farmacoId) || item.id == farmacoId);
+    if (!t) return;
+
+    const isPen = typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t);
+    const cprPerScatola = isPen ? (parseInt(t.pennePerScatola, 10) || 3) : (parseInt(t.cprPerScatola, 10) || 28);
+    const unita = isPen ? 'penne' : 'cpr';
+
+    const oggiStr = new Date().toISOString().split('T')[0];
+    const dataScelta = prompt(`📦 Registra Carico Farmacia per "${t.farmaco}"\nInserisci la data del carico/ritiro (AAAA-MM-GG):`, oggiStr);
+    if (!dataScelta) return;
+
+    const numScatStr = prompt(`Quante scatole/confezioni sono state ritirate? (Ogni confezione contiene ${cprPerScatola} ${unita}):`, '1');
+    if (!numScatStr) return;
+    const nScat = parseInt(numScatStr, 10);
+    if (isNaN(nScat) || nScat <= 0) {
+      alert('Numero di scatole non valido.');
+      return;
+    }
+
+    const daAggiungere = nScat * cprPerScatola;
+    const farmaciaNome = prompt('Farmacia o punto di ritiro:', t.farmacia || p.farmaciaDiRiferimento || 'Farmacia MACARIO');
+
+    const operatore = localStorage.getItem('milella_user') || 'Caregiver';
+
+    if (isPen) {
+      t.penneScorta = Math.round(((parseFloat(t.penneScorta) || parseFloat(t.scorta) || 0) + daAggiungere) * 100) / 100;
+      t.scorta = t.penneScorta;
+    } else {
+      const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
+      if (mt && mt.gemelle && mt.gemelle.length > 1) {
+        mt.gemelle.forEach(function (item) {
+          item.scorta = Math.round(((parseFloat(item.scorta) || 0) + daAggiungere) * 10) / 10;
+          item.ultimoRitiro = dataScelta;
+        });
+      } else {
+        t.scorta = Math.round(((parseFloat(t.scorta) || 0) + daAggiungere) * 10) / 10;
+      }
+    }
+    t.ultimoRitiro = dataScelta;
+
+    t.storicoCarichi = Array.isArray(t.storicoCarichi) ? t.storicoCarichi : [];
+    t.storicoCarichi.push({
+      data: dataScelta,
+      timestamp: new Date().toISOString(),
+      tipo: unita,
+      quantita: daAggiungere,
+      scatole: nScat,
+      scortaRisultante: t.scorta,
+      operatore: operatore,
+      farmacia: farmaciaNome || 'Farmacia'
+    });
+
+    p.registrazioni = p.registrazioni || [];
+    p.registrazioni.push({
+      id: 'log_' + Date.now(),
+      tipo: 'scorta',
+      farmacoId: t.id,
+      farmaco: t.farmaco,
+      azione: 'carico_farmacia',
+      numScatole: nScat,
+      cprAggiunte: daAggiungere,
+      timestamp: new Date(dataScelta + 'T12:00:00').toISOString(),
+      desc: `Carico Farmacia: Ritiro del ${new Date(dataScelta).toLocaleDateString('it-IT')} di ${nScat} scatole di ${t.farmaco} (+${daAggiungere} ${unita}). Presso: ${farmaciaNome || 'Farmacia'}. Nuova scorta: ${t.scorta} ${unita}.`,
+      operatore: operatore
+    });
+
+    saveDb();
+    if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
+    if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
+    if (typeof renderTerapie === 'function') renderTerapie();
+    if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
+
+    showToast(`✅ Carico del ${new Date(dataScelta).toLocaleDateString('it-IT')} salvato! Scorta attuale: ${t.scorta} ${unita}`, 'success');
+    mostraAuditFarmaco(t.id);
+  } catch (err) {
+    console.error('Errore registraCaricoManualeConData:', err);
+  }
+}
+window.registraCaricoManualeConData = registraCaricoManualeConData;
 
 // CANCELLAZIONE DISCRETA SINGOLO EVENTO DI PROVA PROTETTA DA PUK
 async function eliminaAuditSingolo(logId, farmacoId) {
@@ -7855,6 +7946,25 @@ function apriModalRegistraRitiroASL(terapiaId) {
     if (segEl) segEl.innerHTML = g12.html;
     var percEl = document.getElementById('ritiro-asl-progress-perc');
     if (percEl) percEl.textContent = g12.perc + '% (' + g12.ritScat + '/' + g12.totScat + ' scatole)';
+
+    // Popola lo storico dei ritiri ASL con data, quantità e presidio
+    var elStoricoElenco = document.getElementById('ritiro-asl-storico-elenco');
+    if (elStoricoElenco) {
+      if (Array.isArray(pt.storicoRitiri) && pt.storicoRitiri.length > 0) {
+        elStoricoElenco.innerHTML = pt.storicoRitiri.slice().reverse().map(function (r) {
+          var dFmt = r.data ? new Date(r.data).toLocaleDateString('it-IT') : '--/--/----';
+          return '<div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border-left:3px solid #0284c7; padding:5px 8px; border-radius:6px;">' +
+            '<div>' +
+              '<b>📅 ' + dFmt + '</b>: ' + (r.scatole || 1) + ' scatole (+' + (r.cprAggiunte || ((r.scatole || 1) * 30)) + ' cpr)' +
+              (r.note ? '<div style="color:#64748b; font-size:10px;">' + r.note + '</div>' : '') +
+            '</div>' +
+            '<span style="font-weight:800; color:#0369a1; font-size:10px;">' + (r.sedeRitiro ? r.sedeRitiro.replace('Farmacia Territoriale ASL ', '') : 'ASL') + '</span>' +
+          '</div>';
+        }).join('');
+      } else {
+        elStoricoElenco.innerHTML = '<div style="color:#94a3b8; font-style:italic; padding:4px;">Nessun ritiro ASL precedente registrato.</div>';
+      }
+    }
 
     // 2. Controllo Scadenza Piano Terapeutico Specialistico
     var elAlertScad = document.getElementById('ritiro-asl-allerta-scadenza');
@@ -8462,6 +8572,18 @@ async function caricaScatolaRapida(farmacoId) {
       t.scorta = t.penneScorta;
       t.ultimoRitiro = now.toISOString();
 
+      t.storicoCarichi = Array.isArray(t.storicoCarichi) ? t.storicoCarichi : [];
+      t.storicoCarichi.push({
+        data: now.toISOString().split('T')[0],
+        timestamp: now.toISOString(),
+        tipo: 'penne',
+        quantita: penneDaAggiungere,
+        scatole: 1,
+        scortaRisultante: t.penneScorta,
+        operatore: localStorage.getItem('milella_user') || 'Caregiver',
+        farmacia: t.farmacia || p.farmaciaDiRiferimento || 'Farmacia'
+      });
+
       p.registrazioni = p.registrazioni || [];
       p.registrazioni.push({
         id: 'log_' + Date.now(),
@@ -8473,7 +8595,7 @@ async function caricaScatolaRapida(farmacoId) {
         penneAggiunte: penneDaAggiungere,
         timestamp: now.toISOString(),
         desc: 'Carico DPC Farmacia: Ritiro di 1 confezione di ' + t.farmaco + ' (+' + penneDaAggiungere + ' penne). Nuova scorta: ' + t.penneScorta + ' penne.',
-        operatore: 'Operatore OSS / Famiglia'
+        operatore: localStorage.getItem('milella_user') || 'Operatore OSS / Famiglia'
       });
 
       if (typeof saveDb === 'function') saveDb();
@@ -8499,19 +8621,31 @@ async function caricaScatolaRapida(farmacoId) {
       t.ultimoRitiro = now.toISOString();
     }
 
-    p.registrazioni = p.registrazioni || [];
-    p.registrazioni.push({
-      id: 'log_' + Date.now(),
-      tipo: 'scorta',
-      farmacoId: t.id,
-      farmaco: t.farmaco,
-      azione: 'carico_farmacia',
-      numScatole: 1,
-      cprAggiunte: cprDaAggiungere,
-      timestamp: now.toISOString(),
-      desc: `Carico Farmacia: Ritiro di 1 scatola di ${t.farmaco} (+${cprDaAggiungere} cpr). Nuova scorta: ${t.scorta} cpr.`,
-      operatore: 'Operatore OSS / Famiglia'
-    });
+      t.storicoCarichi = Array.isArray(t.storicoCarichi) ? t.storicoCarichi : [];
+      t.storicoCarichi.push({
+        data: now.toISOString().split('T')[0],
+        timestamp: now.toISOString(),
+        tipo: 'compresse',
+        quantita: cprDaAggiungere,
+        scatole: 1,
+        scortaRisultante: t.scorta,
+        operatore: localStorage.getItem('milella_user') || 'Caregiver',
+        farmacia: t.farmacia || p.farmaciaDiRiferimento || 'Farmacia'
+      });
+
+      p.registrazioni = p.registrazioni || [];
+      p.registrazioni.push({
+        id: 'log_' + Date.now(),
+        tipo: 'scorta',
+        farmacoId: t.id,
+        farmaco: t.farmaco,
+        azione: 'carico_farmacia',
+        numScatole: 1,
+        cprAggiunte: cprDaAggiungere,
+        timestamp: now.toISOString(),
+        desc: `Carico Farmacia: Ritiro di 1 scatola di ${t.farmaco} (+${cprDaAggiungere} cpr). Nuova scorta: ${t.scorta} cpr.`,
+        operatore: localStorage.getItem('milella_user') || 'Operatore OSS / Famiglia'
+      });
 
     if (typeof saveDb === 'function') saveDb();
     if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
