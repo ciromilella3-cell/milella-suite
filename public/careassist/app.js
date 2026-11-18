@@ -1776,6 +1776,80 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     }
   }
 
+  // Registrazione e allineamento ritiro ASL Entecavir (16/11/2026) per Ciro Milella
+  const ciroAllinea = AppData.pazienti.find(p => p.id === 'paz_1793216119572' || (p.nome || '').toLowerCase().includes('ciro milella'));
+  if (ciroAllinea && !AppData.ciroEntecavirRitiro20261116) {
+    AppData.ciroEntecavirRitiro20261116 = true;
+    ciroAllinea.terapie = ciroAllinea.terapie || [];
+    let tEnt = ciroAllinea.terapie.find(t => (t.farmaco || '').toLowerCase().includes('entecavir'));
+    if (tEnt) {
+      tEnt.scorta = 111;
+      tEnt.ultimoRitiro = '2026-11-16';
+      tEnt.canaleDistribuzione = 'territoriale_asl';
+      tEnt.pianoTerapeutico = tEnt.pianoTerapeutico || {};
+      let pt = tEnt.pianoTerapeutico;
+      pt.attivo = true;
+      pt.scatoleTotali = 12;
+      pt.scatoleRitirate = 12;
+      pt.scatoleResidue = 0;
+      pt.dataScadenza = '2027-02-22';
+      pt.protocollo = '011BQ1X145RHL';
+      pt.centroPrescrittore = 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)';
+      pt.sedeRitiro = 'Farmacia Territoriale ASL Bari - Ex CTO';
+      pt.ultimoRitiro = '2026-11-16';
+      pt.prossimoRitiroIso = '2027-02-22';
+      pt.prossimoRitiroConsigliato = '22/02/2027';
+
+      pt.storicoRitiri = [
+        { id: 'rit_1', data: '2026-02-23', timestamp: '2026-02-23T10:00:00.000Z', scatole: 3, cprAggiunte: 90, scatoleResidueDopo: 9, scatoleTotali: 12, sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO', note: '1° Tranche trimestrale ritirata regolarmente' },
+        { id: 'rit_2', data: '2026-05-20', timestamp: '2026-05-20T10:00:00.000Z', scatole: 3, cprAggiunte: 90, scatoleResidueDopo: 6, scatoleTotali: 12, sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO', note: '2° Tranche trimestrale ritirata regolarmente' },
+        { id: 'rit_3', data: '2026-08-18', timestamp: '2026-08-18T10:00:00.000Z', scatole: 3, cprAggiunte: 90, scatoleResidueDopo: 3, scatoleTotali: 12, sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO', note: '3° Tranche trimestrale ritirata regolarmente' },
+        { id: 'rit_4', data: '2026-11-16', timestamp: '2026-11-16T10:00:00.000Z', scatole: 3, cprAggiunte: 90, scatoleResidueDopo: 0, scatoleTotali: 12, sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO', note: '4° Tranche trimestrale completata (3 scatole ritirate, scorta allineata a 111 cpr)' }
+      ];
+
+      ciroAllinea.pianoTerapeuticoDpc = {
+        idPrescrizione: "011BQ1X145RHL",
+        nRegistrazioneRicetta: "630889604",
+        strutturaPrescrittrice: "AO CONS. POLICLINICO - BARI - MALATTIE INFETTIVE UNIVERSITARIA",
+        medicoPrescrittore: "Dr. Michele MILELLA (Cod. 640631)",
+        direttoreUO: "Prof.ssa Annalisa SARACINO",
+        diagnosiAifa: "07032 EPATITE VIRALE B CRONICA SENZA MENZIONE DI COMA EPATICO, SENZA MENZIONE DI EPATITE DELTA",
+        codiceEsenzione: "TOT04",
+        farmacoNome: "ENTACAVIR SUN 0,5 MG (30 CPR)",
+        formaFarmaceutica: "Compresse rivestite",
+        posologia: "1 cpr / die (a digiuno)",
+        cprPerConfezione: 30,
+        scatoleSpettantiAnno: 12,
+        dataPrescrizioneInizio: "2026-02-23",
+        dataScadenzaAnno: "2027-02-22",
+        prossimaVisitaAmbulatoriale: "2027-02-23",
+        scatoleRitirateTotali: 12,
+        scatoleResidueDaRitirare: 0,
+        puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO",
+        storicoRitiri: [
+          { data: "2026-02-23", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "1° Tranche" },
+          { data: "2026-05-20", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "2° Tranche" },
+          { data: "2026-08-18", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "3° Tranche" },
+          { data: "2026-11-16", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "4° Tranche (Completamento fornitura annuale, scorta a casa: 111 cpr)" }
+        ]
+      };
+
+      ciroAllinea.registrazioni = ciroAllinea.registrazioni || [];
+      ciroAllinea.registrazioni.push({
+        id: 'log_entecavir_20261116',
+        tipo: 'scorta',
+        farmacoId: tEnt.id,
+        farmaco: tEnt.farmaco,
+        azione: 'ritiro_territoriale_asl',
+        numScatole: 3,
+        cprAggiunte: 90,
+        timestamp: '2026-11-16T11:00:00.000Z',
+        desc: 'Ritiro Farmacia Territoriale ASL (4° Tranche): 3 scatole di Entecavir Sandoz 0,5 mg ritirate il 16/11/2026. Scorta totale a casa allineata a 111 compresse. Fornitura annuale completata (12/12 scatole). Presidio: Farmacia Territoriale ASL Bari - Ex CTO.',
+        operatore: 'Operatore OSS / Famiglia'
+      });
+    }
+  }
+
   // Registrazione consegna effettiva Pants Serenity del 17/11/2026 per Rosa Annunziata
   if (rosaFoto && !AppData.rosaSerenityConsegna20261117) {
     AppData.rosaSerenityConsegna20261117 = true;
@@ -8015,6 +8089,12 @@ function apriModalRegistraRitiroASL(terapiaId) {
     var elNote = document.getElementById('ritiro-asl-note');
     if (elNote) elNote.value = 'Ritiro fornitura trimestrale (3 scatole) effettuato regolarmente';
 
+    // Scorta effettiva a casa
+    var elScortaEff = document.getElementById('ritiro-asl-scorta-effettiva');
+    if (elScortaEff) {
+      elScortaEff.value = Math.round(((parseFloat(t.scorta) || 0) + 90) * 10) / 10;
+    }
+
     // Preset default: 3 scatole (trimestre)
     window._aslProssimaDataManuale = false;
     impostaScatoleRitiroRapido(3);
@@ -8091,6 +8171,12 @@ function aggiornaSimulazioneRitiroASL() {
     var curScorta = t ? (parseFloat(t.scorta) || 0) : 0;
     var nuovaScorta = Math.round((curScorta + cprTotali) * 10) / 10;
 
+    var elScortaEff = document.getElementById('ritiro-asl-scorta-effettiva');
+    if (elScortaEff && (!elScortaEff.value || elScortaEff.dataset.autoVal == elScortaEff.value)) {
+      elScortaEff.value = nuovaScorta;
+      elScortaEff.dataset.autoVal = nuovaScorta;
+    }
+
     var testoEl = document.getElementById('ritiro-asl-simulazione-testo');
     if (testoEl) {
       testoEl.innerHTML = 'Verranno caricate <b>+' + cprTotali + ' compresse</b> a casa (scorta totale: <b>' + nuovaScorta + ' cpr</b>).<br>' +
@@ -8146,8 +8232,13 @@ async function confermaRegistraRitiroASL() {
     var ritScat = (parseInt(pt.scatoleRitirate || pt.scatoleRitirateTotali, 10) || 0) + numScat;
     var resScat = Math.max(0, totScat - ritScat);
 
-    // Aggiorna terapia
-    t.scorta = Math.round(((parseFloat(t.scorta) || 0) + cprAggiunte) * 10) / 10;
+    // Aggiorna terapia (con eventuale rettifica manuale della scorta reale)
+    var inputScortaEff = document.getElementById('ritiro-asl-scorta-effettiva')?.value;
+    if (inputScortaEff !== undefined && inputScortaEff !== '' && !isNaN(parseFloat(inputScortaEff))) {
+      t.scorta = Math.round(parseFloat(inputScortaEff) * 10) / 10;
+    } else {
+      t.scorta = Math.round(((parseFloat(t.scorta) || 0) + cprAggiunte) * 10) / 10;
+    }
     t.ultimoRitiro = dataRitiro;
     pt.scatoleRitirate = ritScat;
     pt.scatoleResidue = resScat;
@@ -24125,7 +24216,7 @@ function getPianoTerapeuticoAttivo(paziente) {
 
   // 1. PROFILO CIRO MILELLA (Epatite Cronica B - Entecavir 0,5 mg)
   if (pNome.includes('ciro')) {
-    if (!p.pianoTerapeuticoDpc || p.pianoTerapeuticoDpc.scatoleRitirateTotali !== 9) {
+    if (!p.pianoTerapeuticoDpc) {
       p.pianoTerapeuticoDpc = {
         idPrescrizione: "011BQ1X145RHL",
         nRegistrazioneRicetta: "630889604",
