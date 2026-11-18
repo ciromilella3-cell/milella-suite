@@ -4672,7 +4672,12 @@
             <div style="font-size:12px; opacity:0.9; margin-top:2px;">Farmacia Territoriale • Piano Terapeutico PHT</div>
           </div>
         </div>
-        <button type="button" onclick="chiudiModalRegistraRitiroASL()" style="background:rgba(255,255,255,0.2); border:none; color:#ffffff; width:32px; height:32px; border-radius:50%; font-size:16px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" onclick="mostraGuidaContestuale('ritiro-asl')" class="btn" style="background:rgba(255,255,255,0.2); color:#ffffff; border:1px solid rgba(255,255,255,0.4); font-size:11.5px; font-weight:800; padding:4px 10px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(0,0,0,0.15);" title="A cosa serve questo modulo di ritiro ASL">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
+          <button type="button" onclick="chiudiModalRegistraRitiroASL()" style="background:rgba(255,255,255,0.2); border:none; color:#ffffff; width:32px; height:32px; border-radius:50%; font-size:16px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+        </div>
       </div>
 
       <!-- BODY -->
@@ -9448,8 +9453,8 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=349"></script>
-  <script src="turnario_admin.js?v=349"></script>
+  <script src="app.js?v=350"></script>
+  <script src="turnario_admin.js?v=350"></script>
   <script>
     if ('serviceWorker' in navigator) {
       var _reloadingSw = false;

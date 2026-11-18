@@ -27191,6 +27191,20 @@ window.fermaVoceBriefing = fermaVoceBriefing;
 // 💡 SISTEMA DI GUIDA CONTESTUALE DINAMICA & UTILITÀ CLINICO-GESTIONALE
 // ==========================================================================
 var GUIDE_CONTESTUALI = {
+  'ritiro-asl': {
+    icona: '🏛️',
+    titolo: 'Registra Ritiro Farmaco ASL (Farmacia Territoriale)',
+    sottotitolo: 'Gestione Piani Terapeutici PHT/DPC, tranches annuali e allineamento scorte reali',
+    scopo: 'Questa finestra permette di registrare i ritiri periodici (mensili, bimestrali o trimestrali) dei farmaci specialistici erogati direttamente dalla <b>Farmacia Territoriale ASL</b> (es. Entecavir per epatite, farmaci oncologici o ad alto costo). Permette di tenere traccia delle 12 scatole annuali previste dal Piano Terapeutico Specialistico e caricare le compresse o confezioni presenti fisicamente a casa.',
+    comeSiUsa: [
+      '<b>Data del Ritiro effettuato</b>: imposta la data in cui hai ritirato fisicamente il farmaco (di default oggi, oppure retroattiva come il 16/11/2026).',
+      '<b>Prossima Data Ritiro / Prenotazione</b>: il sistema calcola in automatico la data ideale per la prenotazione o il prossimo ritiro in base all\'autonomia residua, permettendoti anche di salvarla su Google Calendar con un clic.',
+      '<b>Quante scatole ti hanno consegnato</b>: premi comodamente <b>1 Scatola</b> (+30 cpr), <b>2 Scatole</b> (+60 cpr) o <b>3 Scatole</b> (+90 cpr - Trimestre).',
+      '<b>Scorta Totale Reale a Casa</b>: visualizza la scorta calcolata e ti permette di rettificare digitando l\'esatto conteggio delle compresse che hai fisicamente a casa (es. 111 cpr).',
+      '<b>Allegato Ricevuta &amp; Storico</b>: puoi scattare la foto della ricevuta/bolla ASL, consultare i ritiri precedenti e stampare il <i>Registro Ufficiale A4</i> con la cronologia.'
+    ],
+    utilita: '<b>Precisione assoluta e zero interruzioni di cura</b>. Evita il rischio di rimanere senza farmaci salvavita o ad erogazione controllata. Monitora l\'avanzamento del fabbisogno annuale (12 mesi) e ti avvisa tempestivamente quando il Piano Terapeutico è vicino alla scadenza per prenotare la visita specialistica di rinnovo.'
+  },
   'piano-terapeutico': {
     icona: '📋',
     titolo: 'Piano Terapeutico A4 &amp; Quadro Fabbisogno MMG',
