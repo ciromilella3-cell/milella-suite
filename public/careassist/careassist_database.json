@@ -2177,7 +2177,7 @@
           "quantitaQuota": 1,
           "modo": "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell'infezione cronica da virus dell'epatite B (HBV).",
           "cprPerScatola": 30,
-          "scorta": 28,
+          "scorta": 111,
           "giorniAlert": 10,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
@@ -2193,7 +2193,14 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "ultimoRitiro": "2026-11-16",
+          "pianoTerapeutico": {
+            "scatoleTotali": 12,
+            "scatoleRitirate": 12,
+            "scatoleResidue": 0,
+            "ultimoRitiro": "2026-11-16"
+          }
         }
       ],
       "registrazioni": [
@@ -3056,8 +3063,8 @@
         "dataPrescrizioneInizio": "2026-02-23",
         "dataScadenzaAnno": "2027-02-22",
         "prossimaVisitaAmbulatoriale": "2027-02-23",
-        "scatoleRitirateTotali": 9,
-        "scatoleResidueDaRitirare": 3,
+        "scatoleRitirateTotali": 12,
+        "scatoleResidueDaRitirare": 0,
         "puntoRitiro": "Farmacia Territoriale ASL Bari Ex CTO",
         "storicoRitiri": [
           {
@@ -3615,14 +3622,14 @@
       "lastModified": 1794389658760
     }
   ],
-  "lastModified": 1794389658760,
+  "lastModified": 1794995571461,
   "lastModifiedDevice": "smartphone",
   "lastModifiedBy": {
     "nome": "Ciro Milella (Admin)",
     "ruolo": "admin",
-    "paziente": "Gabriele Francesco Stoppelli",
-    "ora": "10:34",
-    "timestamp": 1794389658760
+    "paziente": "Ciro Milella",
+    "ora": "10:55",
+    "timestamp": 1794995571461
   },
   "ultimoGiornoOperativo": "2026-11-11",
   "aldoVimpatInizializzato2026": true,

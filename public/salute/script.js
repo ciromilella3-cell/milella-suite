@@ -67,6 +67,16 @@ function initBeverage(profile, type, max) {
         totalMax = 4;
     }
 
+    const todayIso = new Date().toISOString().split('T')[0];
+    const dateKey = type + '_date_' + profile;
+    const lastDate = localStorage.getItem(dateKey);
+    if (lastDate && lastDate !== todayIso) {
+        localStorage.setItem(type + 'Count_' + profile, 0);
+        localStorage.setItem(dateKey, todayIso);
+    } else if (!lastDate) {
+        localStorage.setItem(dateKey, todayIso);
+    }
+
     const key = type + 'Count_' + profile;
     let count = parseInt(localStorage.getItem(key)) || 0;
     if (count > totalMax) count = totalMax;
@@ -110,8 +120,11 @@ function toggleBeverage(profile, type, index, max) {
 
     if (count < 0) count = 0;
     if (count > max) count = max;
+    const todayIso = new Date().toISOString().split('T')[0];
+    localStorage.setItem(type + '_date_' + profile, todayIso);
     localStorage.setItem(key, count);
     initBeverage(profile, type, max);
+    if (typeof scheduleSyncToCloud === 'function') scheduleSyncToCloud(500);
 }
 
 window.updateBeverage = function (profile, type, delta) {
@@ -128,8 +141,11 @@ window.updateBeverage = function (profile, type, delta) {
     if (count < 0) count = 0;
     if (count > max) count = max;
 
+    const todayIso = new Date().toISOString().split('T')[0];
+    localStorage.setItem(type + '_date_' + profile, todayIso);
     localStorage.setItem(key, count);
     initBeverage(profile, type, max);
+    if (typeof scheduleSyncToCloud === 'function') scheduleSyncToCloud(500);
 
     if (type === 'water' && count === max) {
         if (typeof showToast === 'function') showToast("🎉 Fantastico! Hai raggiunto il tuo fabbisogno d'acqua ideale di oggi!");

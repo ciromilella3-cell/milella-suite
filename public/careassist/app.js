@@ -33211,3 +33211,21 @@ window.addEventListener('hashchange', function() {
   }
 });
 
+
+
+// Funzione globale ottimizzata per Smartphone & Tablet per sincronizzare e ricaricare senza perdere dati
+window.forceUpdateCareAssistApp = function () {
+  showSyncToast('Sincronizzazione Cloud in corso...', false);
+  if (typeof saveDb === 'function') {
+    saveDb(true); // invia subito eventuali modifiche pendenti dello smartphone
+  }
+  setTimeout(function () {
+    if (typeof sincronizzaDbDalServer === 'function') {
+      sincronizzaDbDalServer(function () {
+        showSyncToast('Cloud e Smartphone perfettamente allineati! ✓', true);
+      });
+    } else {
+      location.reload();
+    }
+  }, 400);
+};
