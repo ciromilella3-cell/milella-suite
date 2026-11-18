@@ -9348,6 +9348,11 @@ function toggleSelectAllDiarioBtn(scope) {
 }
 
 async function eliminaAnnotazioniSelezionate(scope) {
+  const authAdmin = await window.richiediPinAdminPerCancellazione('Inserisci il PIN o Password Amministratore per eliminare le annotazioni selezionate dal diario:');
+  if (!authAdmin) {
+    showToast('Operazione annullata: autorizzazione Admin non fornita.', 'warning');
+    return;
+  }
   const p = getActivePaziente();
   if (!p) return;
 
@@ -9563,6 +9568,11 @@ async function eliminaLog(id) {
 window.eliminaLog = eliminaLog;
 
 async function svuotaRitardiFarmaci() {
+  const authAdmin = await window.richiediPinAdminPerCancellazione('Inserisci il PIN o Password Amministratore per cancellare gli avvisi di ritardo:');
+  if (!authAdmin) {
+    showToast('Operazione annullata: autorizzazione Admin non fornita.', 'warning');
+    return;
+  }
   const p = getActivePaziente();
   if (!p) return;
 
