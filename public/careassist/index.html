@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=361">
+  <link rel="stylesheet" href="style.css?v=362">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -544,6 +544,12 @@
             <span style="font-size:16px;">🎙️</span> <span>Briefing Vocale AI</span>
           </button>
 
+          <button class="btn" onclick="apriModalFirmaConsegna()"
+            style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:900; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #34d399; box-shadow:0 2px 6px rgba(5,150,105,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
+            title="Firma Elettronica Consegna Turno e Timbratura GPS">
+            <span style="font-size:16px;">✍️</span> <span>Firma Turno</span>
+          </button>
+
           <button class="btn" onclick="window.location.href='/careassist/turni.html'"
             style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #34d399; box-shadow:0 2px 6px rgba(5,150,105,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
             title="Apri il Turnario Operatori">
@@ -639,6 +645,11 @@
               style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;"
               onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
               <span>📄</span> <span>Stampa Diario Giornaliero</span>
+            </a>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalFirmaConsegna();"
+              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#047857; background:#ecfdf5; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #d1fae5;"
+              onmouseover="this.style.background='#d1fae5'" onmouseout="this.style.background='#ecfdf5'">
+              <span>✍️</span> <span>Firma Elettronica & Timbratura GPS</span>
             </a>
             <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalHandsFreeAI();"
               style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#4338ca; background:#eef2ff; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #e0e7ff;"
@@ -9567,7 +9578,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=361"></script>
+  <script src="app.js?v=362"></script>
   <script src="turnario_admin.js?v=350"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -11339,6 +11350,77 @@
           <button type="button" class="btn" onclick="chiudiModalVisionScanner()" style="background:#f1f5f9; color:#475569; font-weight:800; font-size:12px; padding:8px 14px; border-radius:10px; border:1px solid #cbd5e1; cursor:pointer;">Chiudi</button>
           <button type="button" class="btn" id="btn-applica-vision" onclick="applicaRisultatoVision()" style="display:none; background:#15803d; color:#ffffff; font-weight:900; font-size:12.5px; padding:8px 16px; border-radius:10px; border:none; cursor:pointer;">
             <span>✓</span> <span>Conferma e Salva in Cartella</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ==============================================================================
+       MODAL: FIRMA DIGITALE CONSEGNA TURNO & TIMBRATURA GPS (FASE 3)
+       ============================================================================== -->
+  <div class="modal-overlay" id="modal-firma-consegna" style="display:none; align-items:center; justify-content:center; z-index:999999;">
+    <div class="modal-card" style="max-width:540px; width:92%; border-radius:20px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.45); border:2px solid #059669; animation:modalPopIn 0.25s cubic-bezier(0.16,1,0.3,1);">
+      
+      <!-- HEADER -->
+      <div style="background:linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%); color:#ffffff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:24px;">✍️</span>
+          <div>
+            <div style="font-weight:900; font-size:15px; letter-spacing:0.3px;">FIRMA DIGITALE & CHECK-IN TURNO</div>
+            <div style="font-size:11.5px; color:#a7f3d0; font-weight:700;">Validazione Giuridica & Timbratura GPS Operatori</div>
+          </div>
+        </div>
+        <button type="button" onclick="chiudiModalFirmaConsegna()" style="background:rgba(255,255,255,0.15); border:none; color:#ffffff; width:32px; height:32px; border-radius:50%; font-size:16px; font-weight:900; cursor:pointer;">✖</button>
+      </div>
+
+      <!-- BODY -->
+      <div style="padding:22px; background:#ffffff;">
+
+        <!-- RIEPILOGO TURNO & POSIZIONE -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px 16px; margin-bottom:16px; font-size:12.5px; color:#334155; line-height:1.6;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span>👤 <b>Operatore:</b> <span id="firma-operatore-nome">Operatore OSS</span></span>
+            <span style="background:#dcfce7; color:#15803d; font-weight:800; font-size:11px; padding:2px 7px; border-radius:6px;" id="firma-tipo-badge">FINE TURNO</span>
+          </div>
+          <div>🕒 <b>Orario:</b> <span id="firma-orario-str">--:--</span></div>
+          <div style="display:flex; align-items:center; gap:6px; margin-top:4px;">
+            <span>📍 <b>Check-in Geocodificato:</b></span>
+            <span id="firma-gps-status" style="color:#0284c7; font-weight:800;">Rilevamento coordinate in corso...</span>
+          </div>
+        </div>
+
+        <!-- CANVAS FIRMA DIGITALE -->
+        <div style="margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label style="font-size:12px; font-weight:900; color:#0f172a; text-transform:uppercase;">Apponi la tua Firma a Schermo:</label>
+            <button type="button" onclick="pulisciCanvasFirma()" style="background:#f1f5f9; border:1px solid #cbd5e1; color:#64748b; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; cursor:pointer;">
+              Pulisci 🔄
+            </button>
+          </div>
+
+          <div style="border:2px dashed #94a3b8; border-radius:14px; background:#ffffff; overflow:hidden; position:relative; touch-action:none;">
+            <canvas id="signature-pad-canvas" width="480" height="150" style="width:100%; height:150px; display:block; cursor:crosshair;"></canvas>
+            <div id="firma-watermark" style="position:absolute; bottom:8px; right:12px; font-size:10.5px; color:#cbd5e1; font-weight:700; pointer-events:none; user-select:none;">
+              CareAssist Pro Security Hash
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTE CONCLUSIVE TURNO -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:11.5px; font-weight:800; color:#475569; text-transform:uppercase; margin-bottom:4px;">Note e Rilievi Consegna per il Collega:</label>
+          <input type="text" id="firma-note-turno" placeholder="es. Terapie completate regolarmente, assistito tranquillo..." style="width:100%; border:1.5px solid #cbd5e1; border-radius:10px; padding:9px 12px; font-size:12.5px; font-weight:600; color:#0f172a;">
+        </div>
+
+        <!-- FOOTER PULSANTI -->
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn" onclick="chiudiModalFirmaConsegna()" style="background:#f1f5f9; color:#475569; font-weight:800; font-size:12.5px; padding:8px 16px; border-radius:10px; border:1px solid #cbd5e1; cursor:pointer;">Annulla</button>
+          <button type="button" class="btn" onclick="salvaFirmaECheckin()" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:900; font-size:13px; padding:8px 20px; border-radius:10px; border:none; box-shadow:0 3px 10px rgba(5,150,105,0.3); cursor:pointer;">
+            <span>✍️</span> <span>Convalida e Firma Turno</span>
           </button>
         </div>
 

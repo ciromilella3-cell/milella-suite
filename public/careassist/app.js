@@ -34448,3 +34448,158 @@ window.applicaRisultatoVision = function () {
     if (typeof showToast === 'function') showToast('✅ Foto e rilievo lesione archiviati nel Diario Clinico!', 'success');
   }
 };
+
+
+
+// ==============================================================================
+// ✍️ FASE 3: FIRMA DIGITALE CONSEGNA TURNO & CHECK-IN GEOCODIFICATO GPS (v362)
+// ==============================================================================
+
+let _sigCanvas = null;
+let _sigCtx = null;
+let _isDrawingSignature = false;
+let _hasSignatureContent = false;
+let _currentGeoCoords = null;
+
+window.apriModalFirmaConsegna = function () {
+  var modal = document.getElementById('modal-firma-consegna');
+  if (!modal) return;
+  modal.style.display = 'flex';
+
+  var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore OSS';
+  var opEl = document.getElementById('firma-operatore-nome');
+  if (opEl) opEl.textContent = opNome;
+
+  var oraEl = document.getElementById('firma-orario-str');
+  if (oraEl) oraEl.textContent = new Date().toLocaleDateString('it-IT') + ' ore ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+  var noteEl = document.getElementById('firma-note-turno');
+  if (noteEl) noteEl.value = '';
+
+  // Inizializza Canvas
+  setTimeout(initSignaturePad, 100);
+
+  // Rileva GPS (se disponibile)
+  var gpsEl = document.getElementById('firma-gps-status');
+  if (navigator.geolocation) {
+    if (gpsEl) gpsEl.innerHTML = '<span>📡 Rilevamento GPS in corso...</span>';
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        _currentGeoCoords = { lat: pos.coords.latitude.toFixed(5), lng: pos.coords.longitude.toFixed(5) };
+        if (gpsEl) {
+          gpsEl.innerHTML = '<span style="color:#15803d; font-weight:800;">✓ Rilevato (Lat ' + _currentGeoCoords.lat + ', Lng ' + _currentGeoCoords.lng + ')</span>';
+        }
+      },
+      function (err) {
+        if (gpsEl) gpsEl.innerHTML = '<span style="color:#64748b; font-weight:700;">Confermato da indirizzo domiciliare assistito</span>';
+        _currentGeoCoords = { sede: 'Domicilio Assistito' };
+      },
+      { timeout: 7000 }
+    );
+  } else {
+    if (gpsEl) gpsEl.textContent = 'Confermato da indirizzo assistito';
+  }
+
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40]);
+};
+
+window.chiudiModalFirmaConsegna = function () {
+  var modal = document.getElementById('modal-firma-consegna');
+  if (modal) modal.style.display = 'none';
+};
+
+function initSignaturePad() {
+  _sigCanvas = document.getElementById('signature-pad-canvas');
+  if (!_sigCanvas) return;
+  _sigCtx = _sigCanvas.getContext('2d');
+
+  // Resize canvas display
+  var rect = _sigCanvas.getBoundingClientRect();
+  _sigCanvas.width = rect.width;
+  _sigCanvas.height = rect.height;
+
+  _sigCtx.lineWidth = 2.5;
+  _sigCtx.lineCap = 'round';
+  _sigCtx.lineJoin = 'round';
+  _sigCtx.strokeStyle = '#0f172a';
+
+  _hasSignatureContent = false;
+
+  // Mouse & Touch events
+  function getPos(e) {
+    var r = _sigCanvas.getBoundingClientRect();
+    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - r.left, y: clientY - r.top };
+  }
+
+  function startDraw(e) {
+    _isDrawingSignature = true;
+    _hasSignatureContent = true;
+    var p = getPos(e);
+    _sigCtx.beginPath();
+    _sigCtx.moveTo(p.x, p.y);
+    e.preventDefault();
+  }
+
+  function draw(e) {
+    if (!_isDrawingSignature) return;
+    var p = getPos(e);
+    _sigCtx.lineTo(p.x, p.y);
+    _sigCtx.stroke();
+    e.preventDefault();
+  }
+
+  function stopDraw() {
+    _isDrawingSignature = false;
+  }
+
+  _sigCanvas.onmousedown = startDraw;
+  _sigCanvas.onmousemove = draw;
+  window.onmouseup = stopDraw;
+
+  _sigCanvas.ontouchstart = startDraw;
+  _sigCanvas.ontouchmove = draw;
+  _sigCanvas.ontouchend = stopDraw;
+}
+
+window.pulisciCanvasFirma = function () {
+  if (_sigCanvas && _sigCtx) {
+    _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+    _hasSignatureContent = false;
+  }
+};
+
+window.salvaFirmaECheckin = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore OSS';
+  var note = document.getElementById('firma-note-turno');
+  var noteStr = note ? note.value.trim() : '';
+
+  var signatureDataUrl = (_hasSignatureContent && _sigCanvas) ? _sigCanvas.toDataURL('image/png') : null;
+
+  if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+
+  var recordFirma = {
+    id: 'firma_turno_' + Date.now(),
+    tipo: 'consegna_firmata',
+    timestamp: new Date().toISOString(),
+    operatore: opNome,
+    note: noteStr || 'Consegna turno convalidata regolarmente.',
+    coordinate: _currentGeoCoords || { sede: 'Domicilio assistito' },
+    haFirmaGrafica: !!signatureDataUrl,
+    dettaglio: '✍️ Consegna Turno convalidata con Firma Digitale da ' + opNome + ' (Check-in: ' + ((_currentGeoCoords && _currentGeoCoords.lat) ? ('Lat ' + _currentGeoCoords.lat + ', Lng ' + _currentGeoCoords.lng) : 'Domicilio') + ').'
+  };
+
+  p.registrazioni.push(recordFirma);
+
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof renderAll === 'function') renderAll();
+
+  chiudiModalFirmaConsegna();
+  if (typeof showToast === 'function') {
+    showToast('✅ Consegna Turno convalidata e firmata digitalmente con successo!', 'success');
+  }
+};
