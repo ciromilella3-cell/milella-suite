@@ -5632,6 +5632,9 @@ function initTabs() {
       if (target === 'tab-diario') {
         if (typeof renderDiario === 'function') renderDiario();
       }
+      if (target === 'tab-family-portal') {
+        if (typeof renderFamilyPortal === 'function') renderFamilyPortal();
+      }
 
       // Se seleziona un tab operativo (visite, terapie, patologie, ecc.), scrolla per renderlo subito visibile
       if (target && target !== 'tab-dashboard' && targetEl) {
@@ -33222,6 +33225,10 @@ window.salvaModificaDiarioItem = salvaModificaDiarioItem;
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(function() {
     if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
+  if (typeof renderFamilyPortal === 'function') {
+    var tabFam = document.getElementById('tab-family-portal');
+    if (tabFam && tabFam.style.display !== 'none') renderFamilyPortal();
+  }
     if (window.location.search.includes('open=cestino') || window.location.hash === '#cestino') {
       if (typeof apriModalCestino === 'function') apriModalCestino();
     }
@@ -33538,4 +33545,392 @@ window.chiediTipoEliminazioneDiario = function(conteggio, pazienteNome) {
       }
     };
   });
+};
+
+
+
+// ==============================================================================
+// 👨‍👩‍👧‍👦 FASE 1: PORTALE TRASPARENZA FAMIGLIA & MMG LINK PRO (v360)
+// ==============================================================================
+
+window.renderFamilyPortal = function () {
+  var container = document.getElementById('family-portal-container');
+  if (!container) return;
+
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) {
+    container.innerHTML = '<div style="text-align:center; padding:40px; color:#64748b; font-weight:700;">Nessun assistito selezionato.</div>';
+    return;
+  }
+
+  var oggiStr = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var oggiIso = new Date().toISOString().split('T')[0];
+
+  // 1. Calcolo Aderenza Terapeutica Odierna
+  var terapie = (p.terapie || []).filter(function (t) {
+    var b = t.fascia === 'Al Bisogno' || t.fascia === 'Al Bisogno (SOS)' || t.frequenzaTipo === 'bisogno';
+    return !b;
+  });
+  var totTerapie = terapie.length;
+  var preseOggi = terapie.filter(function (t) { return !!t.fattoOggi; }).length;
+  var percTerapie = totTerapie > 0 ? Math.round((preseOggi / totTerapie) * 100) : 100;
+
+  // 2. Idratazione odierna
+  var idratazioneMl = Number(p.idratazioneOggi) || 0;
+  var obiettivoMl = 1500;
+  var percIdratazione = Math.min(100, Math.round((idratazioneMl / obiettivoMl) * 100));
+
+  // 3. Ultima evacuazione (Alvo)
+  var alvoLogs = (p.registrazioni || []).filter(function (r) { return r && r.tipo === 'alvo'; })
+    .sort(function (a, b) { return new Date(b.timestamp) - new Date(a.timestamp); });
+  var ultimaEvacuazioneStr = 'Nessuna recente';
+  var coloreAlvo = '#15803d';
+  if (alvoLogs.length > 0) {
+    var dtAlvo = new Date(alvoLogs[0].timestamp);
+    var diffDays = Math.floor((new Date() - dtAlvo) / (1000 * 60 * 60 * 24));
+    ultimaEvacuazioneStr = dtAlvo.toLocaleDateString('it-IT') + ' (' + (diffDays === 0 ? 'Oggi' : (diffDays === 1 ? 'Ieri' : (diffDays + ' gg fa'))) + ')';
+    if (diffDays >= 3) coloreAlvo = '#b91c1c';
+    else if (diffDays === 2) coloreAlvo = '#b45309';
+  }
+
+  // 4. Ultima Consegna / Nota OSS
+  var noteLogs = (p.registrazioni || []).filter(function (r) {
+    return r && (r.tipo === 'nota_turno' || r.tipo === 'consegna_vocale' || r.tipo === 'diario');
+  }).sort(function (a, b) { return new Date(b.timestamp) - new Date(a.timestamp); });
+  var ultimaNota = noteLogs.length > 0 ? (noteLogs[0].dettaglio || noteLogs[0].testo || noteLogs[0].descrizione || 'Tutto regolare.') : 'Nessuna nota recente inserita dagli operatori.';
+
+  // 5. Scorte Critiche & Richiesta Farmaci
+  var scorteCritiche = (p.terapie || []).filter(function (t) {
+    if (typeof t.scorta === 'undefined') return false;
+    var soglia = t.giorniAlert || 7;
+    return t.scorta <= soglia;
+  });
+
+  // Numeri WhatsApp MMG e Farmacia
+  var telMedRaw = p.medicoCellulare || p.medicoTelefono || p.cellulareMedico || '';
+  var telMedPulito = telMedRaw.replace(/[^0-9]/g, '');
+  if (telMedPulito.length === 10 && (telMedPulito.startsWith('3') || telMedPulito.startsWith('0'))) telMedPulito = '39' + telMedPulito;
+
+  var telFarmRaw = p.farmaciaTelefono || '';
+  var telFarmPulito = telFarmRaw.replace(/[^0-9]/g, '');
+  if (telFarmPulito.length === 10 && (telFarmPulito.startsWith('3') || telFarmPulito.startsWith('0'))) telFarmPulito = '39' + telFarmPulito;
+
+  // Generatore messaggio rapido stato famiglia
+  var msgFamiglia = '👋 *AGGIORNAMENTO ASSISTENZA DOMICILIARE*\n' +
+    '👤 Assistito: *' + p.nome + '*\n' +
+    '📅 Data: ' + new Date().toLocaleDateString('it-IT') + ' (ore ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) + ')\n\n' +
+    '💊 *Terapie Odierne:* ' + preseOggi + ' su ' + totTerapie + ' assunte (' + percTerapie + '%)\n' +
+    '💧 *Idratazione Odierna:* ' + idratazioneMl + ' ml / 1.500 ml\n' +
+    '🚽 *Stato Alvo:* ' + ultimaEvacuazioneStr + '\n' +
+    '📝 *Ultima Nota Operatore:* ' + (ultimaNota.length > 120 ? ultimaNota.slice(0, 120) + '...' : ultimaNota) + '\n\n' +
+    'Tutto sotto controllo con CareAssist Pro 🩺';
+
+  var waFamigliaUrl = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msgFamiglia);
+
+  var html = `
+    <!-- HEADER HERO PORTALE FAMIGLIA -->
+    <div style="background:linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%); border-radius:20px; padding:24px 28px; color:#ffffff; margin-bottom:24px; box-shadow:0 8px 30px rgba(6,78,59,0.25); border:2px solid #34d399; position:relative; overflow:hidden;">
+      <div style="position:absolute; right:-20px; top:-20px; font-size:130px; opacity:0.08; pointer-events:none;">👨‍👩‍👧‍👦</div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; position:relative; z-index:2;">
+        <div>
+          <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.15); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:800; border:1px solid rgba(255,255,255,0.3); margin-bottom:8px;">
+            <span>🛡️ PORTALE TRASPARENZA FAMIGLIA & MMG LINK</span>
+          </div>
+          <h2 style="font-size:24px; font-weight:900; margin:0 0 6px 0; color:#ffffff;">
+            Assistito: ${p.nome}
+          </h2>
+          <div style="font-size:13px; color:#a7f3d0; font-weight:700;">
+            📅 ${oggiStr} • Stato clinico e trasparenza per parenti, medico e farmacia
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <a href="${waFamigliaUrl}" target="_blank" class="btn" style="background:#25d366; color:#ffffff; font-weight:900; font-size:13px; padding:10px 18px; border-radius:12px; border:none; box-shadow:0 4px 14px rgba(37,211,102,0.4); display:inline-flex; align-items:center; gap:6px; text-decoration:none;">
+            <span>💬</span> <span>Invia Report Famiglia WhatsApp</span>
+          </a>
+          <button type="button" class="btn" onclick="stampaReportFamigliaPDF()" style="background:#ffffff; color:#064e3b; font-weight:900; font-size:13px; padding:10px 18px; border-radius:12px; border:none; box-shadow:0 4px 14px rgba(0,0,0,0.15); display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+            <span>🖨️</span> <span>Stampa Foglio Famiglia A4</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRIGLIA CRUSCOTTO TRASPARENZA (4 CARD CHIAVE) -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:16px; margin-bottom:24px;">
+
+      <!-- CARD 1: TERAPIE DI OGGI -->
+      <div style="background:#ffffff; border-radius:16px; padding:18px 20px; border:1.5px solid #e2e8f0; box-shadow:0 4px 15px rgba(0,0,0,0.04);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase;">💊 Terapie Odierne</span>
+          <span style="font-size:18px;">🩺</span>
+        </div>
+        <div style="font-size:26px; font-weight:900; color:#0f172a; margin-bottom:4px;">
+          ${preseOggi} <span style="font-size:16px; color:#64748b; font-weight:700;">/ ${totTerapie} assunte</span>
+        </div>
+        <div style="width:100%; height:8px; background:#f1f5f9; border-radius:6px; overflow:hidden; margin:8px 0;">
+          <div style="width:${percTerapie}%; height:100%; background:${percTerapie === 100 ? '#10b981' : '#0284c7'};"></div>
+        </div>
+        <div style="font-size:12px; font-weight:800; color:${percTerapie === 100 ? '#15803d' : '#0369a1'};">
+          ${percTerapie === 100 ? '✓ Tutte le dosi assunte regolarmente!' : (percTerapie + '% completato finora')}
+        </div>
+      </div>
+
+      <!-- CARD 2: IDRATAZIONE -->
+      <div style="background:#ffffff; border-radius:16px; padding:18px 20px; border:1.5px solid #e2e8f0; box-shadow:0 4px 15px rgba(0,0,0,0.04);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase;">💧 Idratazione Liquidi</span>
+          <span style="font-size:18px;">🥛</span>
+        </div>
+        <div style="font-size:26px; font-weight:900; color:#0f172a; margin-bottom:4px;">
+          ${idratazioneMl} <span style="font-size:16px; color:#64748b; font-weight:700;">/ 1.500 ml</span>
+        </div>
+        <div style="width:100%; height:8px; background:#f1f5f9; border-radius:6px; overflow:hidden; margin:8px 0;">
+          <div style="width:${percIdratazione}%; height:100%; background:#0ea5e9;"></div>
+        </div>
+        <div style="font-size:12px; font-weight:800; color:#0284c7;">
+          ${percIdratazione >= 80 ? '✓ Livello idratazione ottimale' : ('Raggiunto il ' + percIdratazione + '% dell\'obiettivo')}
+        </div>
+      </div>
+
+      <!-- CARD 3: STATO ALVO / EVACUAZIONI -->
+      <div style="background:#ffffff; border-radius:16px; padding:18px 20px; border:1.5px solid #e2e8f0; box-shadow:0 4px 15px rgba(0,0,0,0.04);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase;">🚽 Monitoraggio Alvo</span>
+          <span style="font-size:18px;">📊</span>
+        </div>
+        <div style="font-size:20px; font-weight:900; color:${coloreAlvo}; margin-bottom:4px;">
+          ${ultimaEvacuazioneStr}
+        </div>
+        <div style="font-size:12px; color:#64748b; font-weight:700; margin-top:8px;">
+          Prevenzione stipsi e monitoraggio intestinale continuo.
+        </div>
+      </div>
+
+      <!-- CARD 4: SCORTE CRITICHE -->
+      <div style="background:#ffffff; border-radius:16px; padding:18px 20px; border:1.5px solid #e2e8f0; box-shadow:0 4px 15px rgba(0,0,0,0.04);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase;">📦 Scorte &amp; Ricette</span>
+          <span style="font-size:18px;">💊</span>
+        </div>
+        <div style="font-size:24px; font-weight:900; color:${scorteCritiche.length > 0 ? '#b45309' : '#15803d'}; margin-bottom:4px;">
+          ${scorteCritiche.length > 0 ? (scorteCritiche.length + ' in esaurimento') : '✓ Tutte regolari'}
+        </div>
+        <div style="font-size:12px; color:#64748b; font-weight:700; margin-top:8px;">
+          ${scorteCritiche.length > 0 ? 'Richiesta ricette consigliata nei prossimi giorni' : 'Autonomia scorte superiore a 7 giorni'}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SEZIONE LINK MEDICO CURANTE (MMG) & FARMACIA DI RIFERIMENTO -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(360px, 1fr)); gap:20px; margin-bottom:24px;">
+
+      <!-- BOX MEDICO CURANTE MMG -->
+      <div style="background:#ffffff; border-radius:18px; padding:22px; border:1.5px solid #93c5fd; box-shadow:0 4px 15px rgba(2,132,199,0.08);">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">
+          <span style="font-size:28px;">🩺</span>
+          <div>
+            <div style="font-size:11px; font-weight:900; color:#0284c7; text-transform:uppercase; letter-spacing:0.5px;">MEDICO DI MEDICINA GENERALE (MMG)</div>
+            <div style="font-size:17px; font-weight:900; color:#0f172a;">${p.medicoNome || p.medicoCurante || 'Dott. Roberto Scarcia'}</div>
+          </div>
+        </div>
+        
+        <div style="font-size:13px; color:#475569; margin-bottom:14px; line-height:1.6;">
+          📍 <b>Studio:</b> ${p.medicoStudio || p.medicoIndirizzo || 'Via Muciaccia, 11 - Bari'}<br>
+          📞 <b>Recapito:</b> ${p.medicoCellulare || p.medicoTel || p.medicoTelefono || '080 557 44 90'}<br>
+          🕒 <b>Orari Ambulatorio:</b> ${p.medicoOrari || 'Lun-Ven orari di studio'}
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          ${telMedPulito ? `
+            <a href="https://api.whatsapp.com/send?phone=${telMedPulito}&text=${encodeURIComponent('Gentile Dottore, Le invio un aggiornamento clinico e richiesta ricette per ' + p.nome + ' (CareAssist Pro).')}" target="_blank" class="btn" style="background:#25d366; color:#ffffff; font-weight:800; font-size:12.5px; padding:8px 14px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+              <span>💬</span> <span>WhatsApp MMG</span>
+            </a>
+          ` : ''}
+          <button type="button" class="btn" onclick="apriModalFabbisognoRicette()" style="background:#0284c7; color:#ffffff; font-weight:800; font-size:12.5px; padding:8px 14px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <span>📋</span> <span>Elenco Fabbisogno Ricette</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- BOX FARMACIA DI RIFERIMENTO -->
+      <div style="background:#ffffff; border-radius:18px; padding:22px; border:1.5px solid #86efac; box-shadow:0 4px 15px rgba(16,185,129,0.08);">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">
+          <span style="font-size:28px;">🏥</span>
+          <div>
+            <div style="font-size:11px; font-weight:900; color:#15803d; text-transform:uppercase; letter-spacing:0.5px;">FARMACIA DI FIDUCIA TERRITORIALE</div>
+            <div style="font-size:17px; font-weight:900; color:#0f172a;">${p.farmaciaDiRiferimento || p.farmacia || 'Farmacia Dott. MACARIO'}</div>
+          </div>
+        </div>
+
+        <div style="font-size:13px; color:#475569; margin-bottom:14px; line-height:1.6;">
+          📍 <b>Indirizzo:</b> ${p.farmaciaIndirizzo || 'Via G. Petroni, 69/b - Bari'}<br>
+          📞 <b>Telefono:</b> ${p.farmaciaTelefono || '080 542 8061'}<br>
+          🚚 <b>Consegna Domiciliare:</b> Ritiro facilitato per assistito
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          ${telFarmPulito ? `
+            <a href="https://api.whatsapp.com/send?phone=${telFarmPulito}&text=${encodeURIComponent('Buongiorno Farmacia, vi contatto per verificare la disponibilità dei farmaci domiciliari per ' + p.nome + '.')}" target="_blank" class="btn" style="background:#25d366; color:#ffffff; font-weight:800; font-size:12.5px; padding:8px 14px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+              <span>💬</span> <span>WhatsApp Farmacia</span>
+            </a>
+          ` : ''}
+          <button type="button" class="btn" onclick="apriModalPreordineFarmacia()" style="background:#15803d; color:#ffffff; font-weight:800; font-size:12.5px; padding:8px 14px; border-radius:10px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <span>📦</span> <span>Pre-ordine Scorte Farmacia</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SEZIONE ULTIMA CONSEGNA E DIARIO CLINICO TRASPARENTE -->
+    <div style="background:#ffffff; border-radius:18px; padding:22px; border:1.5px solid #e2e8f0; box-shadow:0 4px 15px rgba(0,0,0,0.04);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:22px;">📋</span>
+          <span style="font-size:16px; font-weight:900; color:#0f172a;">Ultime Note &amp; Attività degli Operatori</span>
+        </div>
+        <button type="button" class="btn" onclick="document.querySelector('.nav-tab[data-target=\\'tab-diario\\']').click()" style="background:#eff6ff; color:#0284c7; border:1px solid #bfdbfe; font-weight:800; font-size:12px; padding:5px 12px; border-radius:8px; cursor:pointer;">
+          Vedi Tutto il Diario Clinico ➔
+        </button>
+      </div>
+
+      <div style="background:#f8fafc; border-radius:12px; padding:16px; border:1px solid #e2e8f0; font-size:13.5px; color:#334155; line-height:1.6;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span style="background:#0284c7; color:#fff; font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px;">ULTIMA REGISTRAZIONE</span>
+          <span style="font-size:11.5px; color:#64748b; font-weight:700;">${noteLogs.length > 0 ? (new Date(noteLogs[0].timestamp).toLocaleString('it-IT')) : oggiStr}</span>
+          <span style="margin-left:auto; font-size:11.5px; color:#475569; font-weight:800;">Operatore: ${noteLogs.length > 0 ? (noteLogs[0].operatore || 'In turno') : 'OSS'}</span>
+        </div>
+        <div style="color:#0f172a; font-weight:600;">
+          ${ultimaNota}
+        </div>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+};
+
+// Funzione di stampa A4 per Familiari
+window.stampaReportFamigliaPDF = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  var win = window.open('', '_blank');
+  if (!win) {
+    alert('Consenti i popup per stampare il report famiglia.');
+    return;
+  }
+
+  var oggiStr = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var terapie = p.terapie || [];
+  var prese = terapie.filter(function (t) { return !!t.fattoOggi; }).length;
+
+  var docHtml = `
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+      <meta charset="UTF-8">
+      <title>Report Trasparenza Famiglia - ${p.nome}</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 30px; color: #0f172a; line-height: 1.5; }
+        .header { border-bottom: 2px solid #047857; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+        h1 { margin: 0; color: #064e3b; font-size: 22px; }
+        .meta { font-size: 13px; color: #475569; }
+        .box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+        .box-title { font-weight: 800; font-size: 13px; color: #065f46; text-transform: uppercase; margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #e2e8f0; padding: 8px 10px; text-align: left; font-size: 12px; }
+        th { background: #f1f5f9; font-weight: 800; }
+        @media print {
+          body { padding: 0; }
+          .no-print { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <h1>CareAssist Pro • Report Trasparenza Famiglia</h1>
+          <div class="meta">Assistito: <b>${p.nome}</b> (${p.dataNascita || '--'}) • Medico: <b>${p.medicoNome || 'Dott. Roberto Scarcia'}</b></div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px; color:#64748b;">Data Stampa:</div>
+          <div style="font-weight:800; font-size:13px;">${oggiStr}</div>
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="box-title">Riepilogo Parametri e Cure Giornaliere</div>
+        <div>• <b>Terapie somministrate oggi:</b> ${prese} su ${terapie.length} programmate</div>
+        <div>• <b>Idratazione registrata:</b> ${p.idratazioneOggi || 0} ml su 1.500 ml</div>
+        <div>• <b>Farmacia Territoriale di Fiducia:</b> ${p.farmaciaDiRiferimento || 'Farmacia Dott. MACARIO'}</div>
+      </div>
+
+      <div class="box">
+        <div class="box-title">Piano Farmacologico Attivo</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Orario</th>
+              <th>Farmaco & Dosaggio</th>
+              <th>Posologia / Assimilazione</th>
+              <th>Stato Odierno</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${terapie.map(function (t) {
+              return '<tr><td><b>' + (t.ora || '--:--') + '</b></td><td><b>' + t.farmaco + '</b><br><span style="font-size:11px; color:#64748b;">' + (t.dosaggio || '') + '</span></td><td>' + (t.modo || '--') + '</td><td>' + (t.fattoOggi ? '✓ Somministrato' : 'Da somministrare') + '</td></tr>';
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:30px; font-size:11px; color:#94a3b8; text-align:center;">
+        Documento generato ad uso esclusivo del nucleo familiare e dei caregiver autorizzati • CareAssist Pro Suite Socio-Sanitaria Domiciliare
+      </div>
+
+      <script>
+        window.onload = function() { window.print(); };
+      </script>
+    </body>
+    </html>
+  `;
+
+  win.document.write(docHtml);
+  win.document.close();
+};
+
+// Modal Preordine Farmacia
+window.apriModalPreordineFarmacia = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  var terapie = (p.terapie || []).filter(function (t) {
+    return typeof t.scorta !== 'undefined' && t.scorta <= 14;
+  });
+
+  var farmaciaNome = p.farmaciaDiRiferimento || p.farmacia || 'Farmacia di riferimento';
+  var farmaciaTel = p.farmaciaTelefono || '';
+  var cleanTel = farmaciaTel.replace(/[^0-9]/g, '');
+  if (cleanTel.length === 10 && (cleanTel.startsWith('3') || cleanTel.startsWith('0'))) cleanTel = '39' + cleanTel;
+
+  var msg = '🏥 *RICHIESTA PRE-ORDINE FARMACI PER ASSISTITO*\n' +
+    'Assistito: *' + p.nome + '*\n' +
+    'Farmacia: *' + farmaciaNome + '*\n' +
+    'Data: ' + new Date().toLocaleDateString('it-IT') + '\n\n' +
+    'Buongiorno, si richiede la disponibilità / pre-ordine per il ritiro delle seguenti confezioni:\n';
+
+  if (terapie.length === 0) {
+    msg += '• Controllo generale scorte: nessun farmaco attualmente sotto i 14 giorni di scorta.\n';
+  } else {
+    terapie.forEach(function (t, i) {
+      msg += (i + 1) + '. *' + t.farmaco + '* (' + (t.dosaggio || t.ora) + ') - Rimanenza attuale: ' + t.scorta + ' cpr (Richiesta: 1 scatola)\n';
+    });
+  }
+
+  msg += '\nGrazie per la consueta collaborazione.\nCareAssist Pro · Assistenza Domiciliare 🩺';
+
+  var waUrl = cleanTel ? ('https://api.whatsapp.com/send?phone=' + cleanTel + '&text=' + encodeURIComponent(msg)) : ('https://api.whatsapp.com/send?text=' + encodeURIComponent(msg));
+  window.open(waUrl, '_blank');
 };

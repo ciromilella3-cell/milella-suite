@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=348">
+  <link rel="stylesheet" href="style.css?v=360">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -661,6 +661,8 @@
       Prestampato Infettivi</button>
     <button class="nav-tab" data-target="tab-diario"
       style="font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px;">📋 Storico Diario</button>
+    <button class="nav-tab" data-target="tab-family-portal" id="tab-btn-family-portal"
+      style="font-weight:900; font-size:13px; padding:8px 16px; border-radius:10px; background:#f0fdf4; color:#15803d; border:1.5px solid #86efac;">👨‍👩‍👧‍👦 Portale Famiglia & MMG</button>
   </nav>
 
   <!-- BOTTONE FLOTTANTE (FAB) VISITA SPECIALISTICA DISATTIVATO PER EVITARE SOVRAPPOSIZIONI SU SCHERMO E TOCCHI ACCIDENTALI -->
@@ -2127,6 +2129,13 @@
 
       </div>
 
+    </section>
+
+    <!-- TAB 7: PORTALE TRASPARENZA FAMIGLIA & MMG LINK PRO -->
+    <section id="tab-family-portal" class="tab-content" style="display:none;">
+      <div id="family-portal-container">
+        <!-- Renderizzato da renderFamilyPortal() -->
+      </div>
     </section>
 
   </main>
@@ -9536,7 +9545,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=359"></script>
+  <script src="app.js?v=360"></script>
   <script src="turnario_admin.js?v=350"></script>
   <script>
     if ('serviceWorker' in navigator) {
