@@ -34896,11 +34896,18 @@ window.stampaPassaportoEmergenza112 = function () {
 // ==========================================
 // BOLLARIO SCORTE FARMACI & SEMAFORO RIORDINO
 // ==========================================
-function apriModalBollarioScorte() {
-  const modal = document.getElementById('modal-bollario-scorte');
-  if (!modal) return;
 
-  const p = getAssistitoAttivo();
+// ==========================================
+// BOLLARIO SCORTE FARMACI & SEMAFORO RIORDINO
+// ==========================================
+window.apriModalBollarioScorte = function() {
+  const modal = document.getElementById('modal-bollario-scorte');
+  if (!modal) {
+    console.error('Modal modal-bollario-scorte non trovato nel DOM');
+    return;
+  }
+
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : (window.AppData && window.AppData.pazienti ? window.AppData.pazienti[0] : null);
   if (!p) {
     alert('Nessun assistito selezionato.');
     return;
@@ -34913,18 +34920,18 @@ function apriModalBollarioScorte() {
 
   popolaBollarioScorte();
   modal.style.display = 'flex';
-}
+};
 
-function chiudiModalBollarioScorte() {
+window.chiudiModalBollarioScorte = function() {
   const modal = document.getElementById('modal-bollario-scorte');
   if (modal) modal.style.display = 'none';
-}
+};
 
-function popolaBollarioScorte() {
+window.popolaBollarioScorte = function() {
   const tbody = document.getElementById('bollario-scorte-tbody');
   if (!tbody) return;
 
-  const p = getAssistitoAttivo();
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : (window.AppData && window.AppData.pazienti ? window.AppData.pazienti[0] : null);
   if (!p || !p.terapie || p.terapie.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">Nessuna terapia attiva registrata per questo assistito.</td></tr>';
     return;
@@ -34944,15 +34951,15 @@ function popolaBollarioScorte() {
         farmaco: t.farmaco,
         principio: t.principioAttivo || '',
         dosaggio: t.dosaggio || '',
-        orari: [t.orario || ''],
+        orari: [t.ora || t.orario || ''],
         scorta: typeof t.scorta === 'number' ? t.scorta : (parseInt(t.scorta, 10) || 0),
         rawTerapia: t
       };
     } else {
-      if (t.orario && !farmaciMap[nomeNorm].orari.includes(t.orario)) {
-        farmaciMap[nomeNorm].orari.push(t.orario);
+      const orarioStr = t.ora || t.orario || '';
+      if (orarioStr && !farmaciMap[nomeNorm].orari.includes(orarioStr)) {
+        farmaciMap[nomeNorm].orari.push(orarioStr);
       }
-      // Se una delle righe ha una scorta aggiornata
       if (typeof t.scorta === 'number' && t.scorta > farmaciMap[nomeNorm].scorta) {
         farmaciMap[nomeNorm].scorta = t.scorta;
       }
@@ -34971,7 +34978,7 @@ function popolaBollarioScorte() {
 
     // Data prevista di fine scorta
     const dataFine = new Date();
-    dataFine.setDate(dataFine.getDate() + semaforo.giorni);
+    dataFine.setDate(dataFine.getDate() + (semaforo.giorni || 0));
     const dataFineStr = dataFine.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
     const tr = document.createElement('tr');
@@ -34979,6 +34986,8 @@ function popolaBollarioScorte() {
     tr.style.transition = 'background 0.15s ease';
     tr.onmouseenter = function() { tr.style.background = '#f8fafc'; };
     tr.onmouseleave = function() { tr.style.background = 'transparent'; };
+
+    const farmacoEscaped = (item.farmaco || '').replace(/'/g, "\\'");
 
     tr.innerHTML = `
       <td style="padding:12px 14px; vertical-align:middle;">
@@ -34989,13 +34998,13 @@ function popolaBollarioScorte() {
       </td>
       <td style="padding:12px 14px; vertical-align:middle;">
         <div style="font-weight:800; color:#0f172a; font-size:13.5px;">${item.farmaco}</div>
-        <div style="font-size:11.5px; color:#64748b;">${item.dosaggio} • Orari: ${item.orari.join(', ')}</div>
+        <div style="font-size:11.5px; color:#64748b;">${item.dosaggio} • Orari: ${item.orari.filter(Boolean).join(', ')}</div>
       </td>
       <td style="padding:12px 14px; vertical-align:middle;">
         <div style="display:flex; align-items:center; gap:8px;">
           <b style="font-size:14px; color:#1e293b;">${item.scorta}</b>
           <span style="font-size:12px; color:#64748b;">unità / compresse</span>
-          <button type="button" onclick="apriRicaricaScortaDettaglio('${item.farmaco.replace(/'/g, "\\'")}')" style="background:#e0f2fe; border:1px solid #7dd3fc; color:#0284c7; padding:2px 7px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;" title="Modifica scorta manuale">+ Aggiorna</button>
+          <button type="button" onclick="apriRicaricaScortaDettaglio('${farmacoEscaped}')" style="background:#e0f2fe; border:1px solid #7dd3fc; color:#0284c7; padding:2px 7px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;" title="Modifica scorta manuale">+ Aggiorna</button>
         </div>
       </td>
       <td style="padding:12px 14px; vertical-align:middle;">
@@ -35003,7 +35012,7 @@ function popolaBollarioScorte() {
         <div style="font-size:11.5px; color:#64748b;">Esaurimento: <b>${dataFineStr}</b></div>
       </td>
       <td style="padding:12px 14px; vertical-align:middle; text-align:center;">
-        <button type="button" onclick="inviaRichiestaRiordinoSingoloWA('${item.farmaco.replace(/'/g, "\\'")}', ${item.scorta}, ${semaforo.giorni})" style="background:#25d366; color:#ffffff; border:none; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 4px rgba(37,211,102,0.25);" title="Invia promemoria ricetta su WhatsApp">
+        <button type="button" onclick="inviaRichiestaRiordinoSingoloWA('${farmacoEscaped}', ${item.scorta}, ${semaforo.giorni})" style="background:#25d366; color:#ffffff; border:none; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 4px rgba(37,211,102,0.25);" title="Invia promemoria ricetta su WhatsApp">
           <span>📲</span> <span>Ordina Ricetta</span>
         </button>
       </td>
@@ -35011,13 +35020,16 @@ function popolaBollarioScorte() {
     tbody.appendChild(tr);
   });
 
-  document.getElementById('bollario-count-ottimo').textContent = countOttimo + ' Farmaci';
-  document.getElementById('bollario-count-allerta').textContent = countAllerta + ' Farmaci';
-  document.getElementById('bollario-count-critico').textContent = countCritico + ' Farmaci';
-}
+  const elOtt = document.getElementById('bollario-count-ottimo');
+  if (elOtt) elOtt.textContent = countOttimo + ' Farmaci';
+  const elAll = document.getElementById('bollario-count-allerta');
+  if (elAll) elAll.textContent = countAllerta + ' Farmaci';
+  const elCrit = document.getElementById('bollario-count-critico');
+  if (elCrit) elCrit.textContent = countCritico + ' Farmaci';
+};
 
-function apriRicaricaScortaDettaglio(nomeFarmaco) {
-  const p = getAssistitoAttivo();
+window.apriRicaricaScortaDettaglio = function(nomeFarmaco) {
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : (window.AppData && window.AppData.pazienti ? window.AppData.pazienti[0] : null);
   if (!p || !p.terapie) return;
   const t = p.terapie.find(x => x.farmaco === nomeFarmaco);
   if (t && typeof apriRicaricaScorta === 'function') {
@@ -35028,20 +35040,21 @@ function apriRicaricaScortaDettaglio(nomeFarmaco) {
       p.terapie.forEach(x => {
         if (x.farmaco === nomeFarmaco) x.scorta = parseInt(q, 10);
       });
-      salvaDatiAssistito();
+      if (typeof saveState === 'function') saveState();
+      else if (typeof safeSaveLocalDb === 'function') safeSaveLocalDb(AppData);
       popolaBollarioScorte();
     }
   }
-}
+};
 
-function inviaRichiestaRiordinoSingoloWA(nomeFarmaco, scorta, giorni) {
-  const p = getAssistitoAttivo() || {};
+window.inviaRichiestaRiordinoSingoloWA = function(nomeFarmaco, scorta, giorni) {
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : {};
   const msg = 'Gentile Dottore / Farmacia,%0A%0ASi richiede cortesemente il rinnovo ricetta / riordino per l\'assistito: ' + (p.nome || 'Paziente') + ' (CF: ' + (p.codiceFiscale || 'In cartella') + ').%0A%0A*Farmaco:* ' + encodeURIComponent(nomeFarmaco) + '%0A*Scorta residua:* ' + scorta + ' unità (Autonomia residua: circa ' + giorni + ' giorni).%0A%0AInviato tramite CareAssist Pro.';
   window.open('https://api.whatsapp.com/send?text=' + msg, '_blank');
-}
+};
 
-function inviaRichiestaRiordinoMultiploWA() {
-  const p = getAssistitoAttivo();
+window.inviaRichiestaRiordinoMultiploWA = function() {
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
   if (!p || !p.terapie) return;
 
   const critici = [];
@@ -35064,8 +35077,9 @@ function inviaRichiestaRiordinoMultiploWA() {
 
   const msg = 'Gentile Medico Curante / Farmacia,%0A%0ARichiesta urgente rinnovo ricette per l\'assistito: ' + (p.nome || 'Paziente') + ' (Nato il ' + (p.dataNascita || 'In cartella') + ').%0A%0A*Farmaci in esaurimento imminente:*%0A' + elenco + '%0ASi prega di emettere promemoria dematerializzati (NRE).%0AGrazie,%0ACaregiver / Operatore CareAssist Pro.';
   window.open('https://api.whatsapp.com/send?text=' + msg, '_blank');
-}
+};
 
-function stampaBollarioScortePDF() {
+window.stampaBollarioScortePDF = function() {
   window.print();
-}
+};
+
