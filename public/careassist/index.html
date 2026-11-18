@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=365">
+  <link rel="stylesheet" href="style.css?v=366">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -329,20 +329,19 @@
 
       <!-- SELETTORE ASSISTITO ATTIVO (CAPSULE EXECUTIVE CARD) -->
       <div class="header-center-patient">
-        <div class="patient-picker-box">
+        <div class="patient-picker-box" style="overflow:visible !important;">
           <div class="patient-picker-chip" onclick="apriSwitchPazienteRapido()"
             title="Tocca per cambiare rapidamente assistito (4 schede con avatar)" style="cursor:pointer;">
             <span class="patient-picker-icon">👥</span>
             <span class="patient-picker-label">ASSISTITO:</span>
             <span style="font-size:10px; color:#0284c7; margin-left:2px; font-weight:900;">▾</span>
           </div>
-          <select id="select-paziente-attivo" class="patient-select-input" onchange="cambiaPaziente(this.value)">
+          <select id="select-paziente-attivo" class="patient-select-input" onchange="cambiaPaziente(this.value)" style="min-width:130px; max-width:240px; flex:1 1 auto;">
             <!-- popolato dinamicamente -->
           </select>
-          <button class="btn btn-new-patient" onclick="openModal('modal-nuovo-paziente')"
-            title="Aggiungi una nuova cartella assistito">
-            <span>➕</span> <span class="btn-new-patient-full-label">Nuovo</span><span
-              class="btn-new-patient-mobile-label" style="display:none;">Nuovo</span>
+          <button type="button" class="btn btn-new-patient" onclick="openModal('modal-nuovo-paziente')"
+            title="Aggiungi una nuova cartella assistito" style="flex-shrink:0 !important; margin-left:4px;">
+            <span>➕</span> <span>Nuovo</span>
           </button>
         </div>
       </div>
@@ -9595,7 +9594,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=365"></script>
+  <script src="app.js?v=366"></script>
   <script src="turnario_admin.js?v=350"></script>
   <script>
     if ('serviceWorker' in navigator) {
