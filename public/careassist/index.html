@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=366">
+  <link rel="stylesheet" href="style.css?v=367">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -196,7 +196,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="registro_asl.css?v=260">
+  <link rel="stylesheet" href="registro_asl.css?v=367">
 
   <style>
     @keyframes menuDropAnim {
@@ -349,13 +349,6 @@
       <!-- UTILITY HEADER: MENU APPLICAZIONI & OPZIONI / BACKUP -->
       <div class="header-top-utilities">
         <!-- COLLEGAMENTI DIRETTI SUITE APPS (NAVIGAZIONE CROSS-APP COME IN PROGETTO SALUTE) -->
-        <button type="button" class="btn btn-header-utility" onclick="if(typeof forceUpdateCareAssistApp==='function'){forceUpdateCareAssistApp();}else{location.reload(true);}"
-          title="Ricarica la pagina, sincronizza con il Cloud e aggiorna tutti i dati"
-          style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; font-weight:900 !important; font-size:12px !important; padding:6px 14px !important; border-radius:10px !important; border:1.5px solid #38bdf8 !important; box-shadow:0 2px 8px rgba(2,132,199,0.4) !important; display:inline-flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.15s ease;"
-          onmouseover="this.style.transform='translateY(-1px) scale(1.04)';" onmouseout="this.style.transform='none';">
-          <span style="font-size:15px;">🔄</span> <span>Ricarica</span>
-        </button>
-
         <button type="button" class="btn btn-header-utility btn-suite-link-salute" onclick="navigaAProgettoSalute()"
           title="Passa a Progetto Salute & Alimentazione per questo assistito"
           style="background:linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color:#ffffff !important; font-weight:800 !important; font-size:12px !important; padding:6px 13px !important; border-radius:10px !important; border:1px solid rgba(255,255,255,0.3) !important; box-shadow:0 2px 7px rgba(16,185,129,0.35) !important; display:inline-flex; align-items:center; gap:5px; cursor:pointer; transition:all 0.15s ease;"
@@ -712,6 +705,14 @@
       style="font-weight:800; font-size:13px; padding:8px 16px; border-radius:10px;">📋 Storico Diario</button>
     <button class="nav-tab" data-target="tab-family-portal" id="tab-btn-family-portal"
       style="font-weight:900; font-size:13px; padding:8px 16px; border-radius:10px; background:#f0fdf4; color:#15803d; border:1.5px solid #86efac;">👨‍👩‍👧‍👦 Portale Famiglia & MMG</button>
+    <div style="margin-left:auto; display:flex; align-items:center; gap:8px; padding-left:10px;">
+      <button type="button" class="btn" onclick="if(typeof forceUpdateCareAssistApp==='function'){forceUpdateCareAssistApp();}else{location.reload(true);}"
+        title="Ricarica istantanea, sincronizzazione Cloud e aggiornamento dati"
+        style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; font-weight:900 !important; font-size:12.5px !important; padding:7px 16px !important; border-radius:10px !important; border:1.5px solid #38bdf8 !important; box-shadow:0 2px 8px rgba(2,132,199,0.35) !important; display:inline-flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap; transition:all 0.15s ease;"
+        onmouseover="this.style.transform='translateY(-1px) scale(1.03)';" onmouseout="this.style.transform='none';">
+        <span style="font-size:15px;">🔄</span> <span>Ricarica</span>
+      </button>
+    </div>
   </nav>
 
   <!-- BOTTONE FLOTTANTE (FAB) VISITA SPECIALISTICA DISATTIVATO PER EVITARE SOVRAPPOSIZIONI SU SCHERMO E TOCCHI ACCIDENTALI -->
@@ -9594,8 +9595,8 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=366"></script>
-  <script src="turnario_admin.js?v=350"></script>
+  <script src="app.js?v=367"></script>
+  <script src="turnario_admin.js?v=367"></script>
   <script>
     if ('serviceWorker' in navigator) {
       var _reloadingSw = false;
@@ -9605,7 +9606,7 @@
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=348', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=367', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
@@ -10335,7 +10336,7 @@
 
 
   <script src="suite_bridge.js"></script>
-  <script src="registro_asl.js?v=325"></script>
+  <script src="registro_asl.js?v=367"></script>
   <!-- ==========================================================================
      MASCHERA REGISTRO ANAGRAFE SANITARIA & TRIAGE ADI/ASL ENTERPRISE
      ========================================================================== -->
@@ -11191,6 +11192,9 @@
     <button type="button" class="bar-item" onclick="document.querySelector('.nav-tab[data-target=\'tab-family-portal\']').click();" title="Portale Famiglia & MMG">
       <span class="icon" style="font-size:20px; line-height:1;">👨‍👩‍👧‍👦</span>
       <span>Famiglia</span>
+    
+    <button class="tab-btn btn-nav-reload" onclick="window.location.reload()" title="Ricarica applicazione e sincronizza dati" style="margin-left: auto; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff !important; font-weight: 700; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 2px 6px rgba(2,132,199,0.35); display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; cursor: pointer; white-space: nowrap;">
+      🔄 Ricarica
     </button>
   </nav>
   <nav class="mobile-bottom-bar-old" style="display:none;" id="careassist-mobile-bar-legacy">

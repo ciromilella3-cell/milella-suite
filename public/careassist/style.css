@@ -11420,3 +11420,15 @@ button[onclick*="mostraGuidaContestuale"],
 #mobile-hero-action-card:empty {
   display: none !important;
 }
+
+/* DESKTOP HIDE MOBILE BOTTOM BAR */
+@media (min-width: 769px) {
+  .mobile-bottom-bar {
+    display: none !important;
+  }
+}
+@media (max-width: 768px) {
+  .btn-nav-reload {
+    display: none !important;
+  }
+}
