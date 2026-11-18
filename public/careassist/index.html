@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=364">
+  <link rel="stylesheet" href="style.css?v=365">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -350,6 +350,13 @@
       <!-- UTILITY HEADER: MENU APPLICAZIONI & OPZIONI / BACKUP -->
       <div class="header-top-utilities">
         <!-- COLLEGAMENTI DIRETTI SUITE APPS (NAVIGAZIONE CROSS-APP COME IN PROGETTO SALUTE) -->
+        <button type="button" class="btn btn-header-utility" onclick="if(typeof forceUpdateCareAssistApp==='function'){forceUpdateCareAssistApp();}else{location.reload(true);}"
+          title="Ricarica la pagina, sincronizza con il Cloud e aggiorna tutti i dati"
+          style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; color:#ffffff !important; font-weight:900 !important; font-size:12px !important; padding:6px 14px !important; border-radius:10px !important; border:1.5px solid #38bdf8 !important; box-shadow:0 2px 8px rgba(2,132,199,0.4) !important; display:inline-flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.15s ease;"
+          onmouseover="this.style.transform='translateY(-1px) scale(1.04)';" onmouseout="this.style.transform='none';">
+          <span style="font-size:15px;">🔄</span> <span>Ricarica</span>
+        </button>
+
         <button type="button" class="btn btn-header-utility btn-suite-link-salute" onclick="navigaAProgettoSalute()"
           title="Passa a Progetto Salute & Alimentazione per questo assistito"
           style="background:linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color:#ffffff !important; font-weight:800 !important; font-size:12px !important; padding:6px 13px !important; border-radius:10px !important; border:1px solid rgba(255,255,255,0.3) !important; box-shadow:0 2px 7px rgba(16,185,129,0.35) !important; display:inline-flex; align-items:center; gap:5px; cursor:pointer; transition:all 0.15s ease;"
@@ -9588,7 +9595,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=364"></script>
+  <script src="app.js?v=365"></script>
   <script src="turnario_admin.js?v=350"></script>
   <script>
     if ('serviceWorker' in navigator) {
