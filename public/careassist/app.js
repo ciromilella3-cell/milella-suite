@@ -33326,3 +33326,13 @@ window.apriGuidaInizioTurnoOperatore = function() {
 
   document.body.appendChild(m);
 };
+
+
+window.nascondiBannerDosiPendenti = function() {
+  var b = document.getElementById('banner-dosi-pendenti-recupero');
+  if (b) b.style.display = 'none';
+  var topBtn = document.getElementById('btn-top-recupero-dosi');
+  if (topBtn) topBtn.style.display = 'none';
+  sessionStorage.setItem('careassist_dosi_pendenti_dismissed', 'true');
+  showToast('Avviso dosi pendenti chiuso per questa sessione.', 'info');
+};
