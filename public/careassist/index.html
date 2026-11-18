@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=363">
+  <link rel="stylesheet" href="style.css?v=364">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -645,6 +645,16 @@
               style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;"
               onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
               <span>📄</span> <span>Stampa Diario Giornaliero</span>
+            </a>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalScaleValutazione();"
+              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#6d28d9; background:#f5f3ff; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #ede9fe;"
+              onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
+              <span>🧠</span> <span>Scale Cliniche (Braden & Barthel)</span>
+            </a>
+            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); stampaPassaportoEmergenza112();"
+              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#b91c1c; background:#fef2f2; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #fee2e2;"
+              onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
+              <span>🪪</span> <span>Passaporto Emergenza 112 Tascabile</span>
             </a>
             <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalFirmaConsegna();"
               style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#047857; background:#ecfdf5; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #d1fae5;"
@@ -9578,7 +9588,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=363"></script>
+  <script src="app.js?v=364"></script>
   <script src="turnario_admin.js?v=350"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -11458,6 +11468,57 @@
         </div>
 
       </div>
+    </div>
+  </div>
+
+
+
+  <!-- ==============================================================================
+       MODAL: SCALE DI VALUTAZIONE CLINICA (BRADEN & BARTHEL)
+       ============================================================================== -->
+  <div class="modal-overlay" id="modal-scale-valutazione" style="display:none; align-items:center; justify-content:center; z-index:999999;">
+    <div class="modal-card" style="max-width:680px; width:94%; max-height:90vh; display:flex; flex-direction:column; border-radius:20px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.45); border:2px solid #8b5cf6; animation:modalPopIn 0.25s cubic-bezier(0.16,1,0.3,1);">
+      
+      <!-- HEADER -->
+      <div style="background:linear-gradient(135deg, #4c1d95 0%, #6d28d9 50%, #7c3aed 100%); color:#ffffff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:24px;">🧠</span>
+          <div>
+            <div style="font-weight:900; font-size:15px; letter-spacing:0.3px;">SCALE CLINICHE DI FRAGILITÀ & RISCHIO</div>
+            <div style="font-size:11.5px; color:#ddd6fe; font-weight:700;">Valutazioni Validate ASL/ADI • Scala di Braden & Indice di Barthel</div>
+          </div>
+        </div>
+        <button type="button" onclick="chiudiModalScaleValutazione()" style="background:rgba(255,255,255,0.15); border:none; color:#ffffff; width:32px; height:32px; border-radius:50%; font-size:16px; font-weight:900; cursor:pointer;">✖</button>
+      </div>
+
+      <!-- SELETTORE SCALA -->
+      <div style="display:flex; background:#f5f3ff; padding:6px; border-bottom:1px solid #e9d5ff; gap:6px;">
+        <button type="button" id="tab-scala-braden" onclick="switchScalaValutazione('braden')" style="flex:1; padding:9px; border-radius:10px; font-size:12.5px; font-weight:900; border:none; cursor:pointer; background:#ffffff; color:#6d28d9; box-shadow:0 2px 5px rgba(0,0,0,0.08);">
+          🩹 Scala di Braden (Rischio Lesioni da Decubito)
+        </button>
+        <button type="button" id="tab-scala-barthel" onclick="switchScalaValutazione('barthel')" style="flex:1; padding:9px; border-radius:10px; font-size:12.5px; font-weight:900; border:none; cursor:pointer; background:transparent; color:#64748b;">
+          🚶 Indice di Barthel (Autonomia ADL)
+        </button>
+      </div>
+
+      <!-- BODY SCROLLABILE -->
+      <div style="padding:22px; background:#ffffff; overflow-y:auto; flex:1;" id="scale-valutazione-body">
+        <!-- Renderizzato dinamicamente -->
+      </div>
+
+      <!-- FOOTER -->
+      <div style="padding:14px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+        <div id="scala-punteggio-preview" style="font-size:13.5px; font-weight:900; color:#4c1d95;">
+          Punteggio: --
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn" onclick="chiudiModalScaleValutazione()" style="background:#f1f5f9; color:#475569; font-weight:800; font-size:12px; padding:7px 14px; border-radius:10px; border:1px solid #cbd5e1; cursor:pointer;">Annulla</button>
+          <button type="button" class="btn" onclick="salvaValutazioneScala()" style="background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color:#ffffff; font-weight:900; font-size:12.5px; padding:8px 18px; border-radius:10px; border:none; box-shadow:0 3px 10px rgba(109,40,217,0.3); cursor:pointer;">
+            <span>💾</span> <span>Salva Valutazione in Cartella</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 

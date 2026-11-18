@@ -34603,3 +34603,290 @@ window.salvaFirmaECheckin = function () {
     showToast('✅ Consegna Turno convalidata e firmata digitalmente con successo!', 'success');
   }
 };
+
+
+
+// ==============================================================================
+// 🧠 SCALE DI VALUTAZIONE CLINICA VALIDATE (BRADEN & BARTHEL) & PASSAPORTO 112 (v364)
+// ==============================================================================
+
+let _scalaCorrente = 'braden'; // 'braden' o 'barthel'
+let _valoriBraden = { sensory: 3, moisture: 3, activity: 2, mobility: 2, nutrition: 3, friction: 2 };
+let _valoriBarthel = { alimentazione: 10, bagno: 5, igiene: 5, vestirsi: 10, intestino: 10, vescica: 10, wc: 10, trasferimenti: 15, deambulazione: 15, scale: 10 };
+
+window.apriModalScaleValutazione = function (tipo) {
+  var modal = document.getElementById('modal-scale-valutazione');
+  if (!modal) return;
+  modal.style.display = 'flex';
+
+  switchScalaValutazione(tipo || 'braden');
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40]);
+};
+
+window.chiudiModalScaleValutazione = function () {
+  var modal = document.getElementById('modal-scale-valutazione');
+  if (modal) modal.style.display = 'none';
+};
+
+window.switchScalaValutazione = function (tipo) {
+  _scalaCorrente = tipo;
+  var tabBr = document.getElementById('tab-scala-braden');
+  var tabBa = document.getElementById('tab-scala-barthel');
+  var body = document.getElementById('scale-valutazione-body');
+
+  if (tipo === 'braden') {
+    if (tabBr) { tabBr.style.background = '#ffffff'; tabBr.style.color = '#6d28d9'; tabBr.style.boxShadow = '0 2px 5px rgba(0,0,0,0.08)'; }
+    if (tabBa) { tabBa.style.background = 'transparent'; tabBa.style.color = '#64748b'; tabBa.style.boxShadow = 'none'; }
+    renderFormBraden();
+  } else {
+    if (tabBa) { tabBa.style.background = '#ffffff'; tabBa.style.color = '#6d28d9'; tabBa.style.boxShadow = '0 2px 5px rgba(0,0,0,0.08)'; }
+    if (tabBr) { tabBr.style.background = 'transparent'; tabBr.style.color = '#64748b'; tabBr.style.boxShadow = 'none'; }
+    renderFormBarthel();
+  }
+};
+
+function renderFormBraden() {
+  var body = document.getElementById('scale-valutazione-body');
+  if (!body) return;
+
+  var dom = [
+    { key: 'sensory', title: '1. Percezione Sensoriale', options: [{ v: 1, l: 'Completamente limitata (non risponde agli stimoli dolorosi)' }, { v: 2, l: 'Molto limitata (risponde solo a stimoli dolorosi intensi)' }, { v: 3, l: 'Leggermente limitata (risponde a comandi verbali)' }, { v: 4, l: 'Nessuna limitazione' }] },
+    { key: 'moisture', title: '2. Umidità Cutanea', options: [{ v: 1, l: 'Costantemente umida (sudore, urina continuativa)' }, { v: 2, l: 'Spesso umida (cambio pannolone/traverse frequente)' }, { v: 3, l: 'Occasionalmente umida (1 cambio straordinario/die)' }, { v: 4, l: 'Raramente umida (cute asciutta)' }] },
+    { key: 'activity', title: '3. Attività Motoria', options: [{ v: 1, l: 'Allettato (costretto a letto continuativamente)' }, { v: 2, l: 'In poltrona (capacità deambulazione nulla o minima)' }, { v: 3, l: 'Cammina occasionalmente (brevi tratti con supporto)' }, { v: 4, l: 'Cammina frequentemente (autonomo)' }] },
+    { key: 'mobility', title: '4. Mobilità nei Cambi Postura', options: [{ v: 1, l: 'Completamente immobile' }, { v: 2, l: 'Molto limitata (necessita di assistenza totale per voltarsi)' }, { v: 3, l: 'Leggermente limitata (piccoli spostamenti autonomi)' }, { v: 4, l: 'Nessuna limitazione' }] },
+    { key: 'nutrition', title: '5. Nutrizione & Apporto Pasti', options: [{ v: 1, l: 'Molto povera (assume meno di un terzo dei pasti)' }, { v: 2, l: 'Probabilmente inadeguata (circa metà pasto)' }, { v: 3, l: 'Adeguata (più di metà pasto regolarmente)' }, { v: 4, l: 'Eccellente (mangia tutto)' }] },
+    { key: 'friction', title: '6. Frizione & Scivolamento', options: [{ v: 1, l: 'Problema significativo (scivola continuamente sul letto/poltrona)' }, { v: 2, l: 'Problema potenziale (movimenti deboli con lieve attrito)' }, { v: 3, l: 'Nessun problema apparente' }] }
+  ];
+
+  var html = '<div style="font-size:13px; color:#475569; margin-bottom:16px;">Compila i 6 parametri per calcolare il rischio di insorgenza piaghe da decubito (LdP):</div>';
+
+  dom.forEach(function (d) {
+    html += '<div style="margin-bottom:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px 16px;">' +
+      '<div style="font-size:13px; font-weight:800; color:#1e1b4b; margin-bottom:8px;">' + d.title + '</div>' +
+      '<div style="display:flex; flex-direction:column; gap:6px;">';
+    d.options.forEach(function (opt) {
+      var isSel = _valoriBraden[d.key] === opt.v;
+      html += '<label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:' + (isSel ? '800' : '600') + '; color:' + (isSel ? '#6d28d9' : '#334155') + '; cursor:pointer;">' +
+        '<input type="radio" name="braden_' + d.key + '" value="' + opt.v + '" ' + (isSel ? 'checked' : '') + ' onchange="updateBradenVal(\'' + d.key + '\', ' + opt.v + ')" style="accent-color:#7c3aed;">' +
+        '<span>(' + opt.v + ' pt) ' + opt.l + '</span>' +
+        '</label>';
+    });
+    html += '</div></div>';
+  });
+
+  body.innerHTML = html;
+  calcolaPunteggioBraden();
+}
+
+window.updateBradenVal = function (key, val) {
+  _valoriBraden[key] = Number(val);
+  calcolaPunteggioBraden();
+};
+
+function calcolaPunteggioBraden() {
+  var tot = 0;
+  for (var k in _valoriBraden) { tot += _valoriBraden[k]; }
+  var prevEl = document.getElementById('scala-punteggio-preview');
+  if (!prevEl) return;
+
+  var rischio = '';
+  var colore = '#15803d';
+  if (tot <= 12) { rischio = '🚨 RISCHIO ELEVATO (< 13 pt)'; colore = '#b91c1c'; }
+  else if (tot <= 14) { rischio = '⚠️ RISCHIO MODERATO (13-14 pt)'; colore = '#b45309'; }
+  else if (tot <= 18) { rischio = '🟡 RISCHIO LIEVE (15-18 pt)'; colore = '#d97706'; }
+  else { rischio = '✅ NESSUN RISCHIO (> 18 pt)'; colore = '#15803d'; }
+
+  prevEl.innerHTML = 'Scala di Braden: <b style="font-size:16px; color:' + colore + ';">' + tot + ' / 23 pt</b> • <span style="color:' + colore + ';">' + rischio + '</span>';
+}
+
+function renderFormBarthel() {
+  var body = document.getElementById('scale-valutazione-body');
+  if (!body) return;
+
+  var dom = [
+    { key: 'alimentazione', title: '1. Alimentazione', options: [{ v: 0, l: 'Incapace / Dipendente totale' }, { v: 5, l: 'Ha bisogno di aiuto (es. tagliare la carne)' }, { v: 10, l: 'Autonomo' }] },
+    { key: 'bagno', title: '2. Fare il Bagno / Doccia', options: [{ v: 0, l: 'Dipendente' }, { v: 5, l: 'Autonomo' }] },
+    { key: 'igiene', title: '3. Igiene Personale (viso, denti, capelli)', options: [{ v: 0, l: 'Ha bisogno di aiuto' }, { v: 5, l: 'Autonomo' }] },
+    { key: 'vestirsi', title: '4. Vestirsi / Svestirsi', options: [{ v: 0, l: 'Dipendente' }, { v: 5, l: 'Ha bisogno di aiuto per bottoni/scarpe' }, { v: 10, l: 'Autonomo' }] },
+    { key: 'intestino', title: '5. Continenza Intestinale', options: [{ v: 0, l: 'Incontinente' }, { v: 5, l: 'Occasionale incontinenza (1 volta/settimana)' }, { v: 10, l: 'Continente' }] },
+    { key: 'vescica', title: '6. Continenza Urinaria', options: [{ v: 0, l: 'Incontinente / Catetere permanente con perdite' }, { v: 5, l: 'Occasionali incidenti' }, { v: 10, l: 'Continente' }] },
+    { key: 'wc', title: '7. Uso del WC / Comoda', options: [{ v: 0, l: 'Dipendente' }, { v: 5, l: 'Ha bisogno di aiuto per equilibrio o pulizia' }, { v: 10, l: 'Autonomo' }] },
+    { key: 'trasferimenti', title: '8. Trasferimento Letto - Poltrona', options: [{ v: 0, l: 'Incapace / Sollevatore meccanico' }, { v: 5, l: 'Necessita di 1 o 2 persone' }, { v: 10, l: 'Lieve aiuto verbale/fisico' }, { v: 15, l: 'Completamente autonomo' }] },
+    { key: 'deambulazione', title: '9. Deambulazione in Piano', options: [{ v: 0, l: 'Immobile o < 50 metri' }, { v: 5, l: 'Autonomo in carrozzina (> 50m)' }, { v: 10, l: 'Cammina con aiuto di 1 persona o deambulatore' }, { v: 15, l: 'Autonomo (> 50m)' }] },
+    { key: 'scale', title: '10. Salire e Scendere le Scale', options: [{ v: 0, l: 'Incapace' }, { v: 5, l: 'Ha bisogno di aiuto o supervisione' }, { v: 10, l: 'Autonomo' }] }
+  ];
+
+  var html = '<div style="font-size:13px; color:#475569; margin-bottom:16px;">Compila l\'Indice di Barthel per misurare il grado di autonomia nelle attività quotidiane (ADL):</div>';
+
+  dom.forEach(function (d) {
+    html += '<div style="margin-bottom:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px 16px;">' +
+      '<div style="font-size:13px; font-weight:800; color:#1e1b4b; margin-bottom:8px;">' + d.title + '</div>' +
+      '<div style="display:flex; flex-direction:column; gap:5px;">';
+    d.options.forEach(function (opt) {
+      var isSel = _valoriBarthel[d.key] === opt.v;
+      html += '<label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:' + (isSel ? '800' : '600') + '; color:' + (isSel ? '#6d28d9' : '#334155') + '; cursor:pointer;">' +
+        '<input type="radio" name="barthel_' + d.key + '" value="' + opt.v + '" ' + (isSel ? 'checked' : '') + ' onchange="updateBarthelVal(\'' + d.key + '\', ' + opt.v + ')" style="accent-color:#7c3aed;">' +
+        '<span>(' + opt.v + ' pt) ' + opt.l + '</span>' +
+        '</label>';
+    });
+    html += '</div></div>';
+  });
+
+  body.innerHTML = html;
+  calcolaPunteggioBarthel();
+}
+
+window.updateBarthelVal = function (key, val) {
+  _valoriBarthel[key] = Number(val);
+  calcolaPunteggioBarthel();
+};
+
+function calcolaPunteggioBarthel() {
+  var tot = 0;
+  for (var k in _valoriBarthel) { tot += _valoriBarthel[k]; }
+  var prevEl = document.getElementById('scala-punteggio-preview');
+  if (!prevEl) return;
+
+  var giudizio = '';
+  var colore = '#15803d';
+  if (tot <= 20) { giudizio = '🚨 DIPENDENZA TOTALE (0-20 pt)'; colore = '#b91c1c'; }
+  else if (tot <= 60) { giudizio = '⚠️ DIPENDENZA GRAVE (21-60 pt)'; colore = '#b45309'; }
+  else if (tot <= 90) { giudizio = '🟡 DIPENDENZA MODERATA (61-90 pt)'; colore = '#d97706'; }
+  else if (tot <= 99) { giudizio = '🟢 LIEVE DIPENDENZA (91-99 pt)'; colore = '#16a34a'; }
+  else { giudizio = '✅ COMPLETAMENTE AUTONOMO (100 pt)'; colore = '#15803d'; }
+
+  prevEl.innerHTML = 'Indice di Barthel: <b style="font-size:16px; color:' + colore + ';">' + tot + ' / 100 pt</b> • <span style="color:' + colore + ';">' + giudizio + '</span>';
+}
+
+window.salvaValutazioneScala = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  var opNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Operatore OSS';
+  if (!Array.isArray(p.registrazioni)) p.registrazioni = [];
+
+  if (_scalaCorrente === 'braden') {
+    var totB = 0; for (var k in _valoriBraden) { totB += _valoriBraden[k]; }
+    p.registrazioni.push({
+      id: 'scala_braden_' + Date.now(),
+      tipo: 'valutazione_braden',
+      timestamp: new Date().toISOString(),
+      operatore: opNome,
+      punteggio: totB,
+      dettaglio: '🧠 Valutazione Scala di Braden (Rischio LdP): Punteggio ' + totB + ' / 23 pt (' + (totB <= 12 ? 'Rischio Elevato' : (totB <= 14 ? 'Rischio Moderato' : 'Basso Rischio')) + ').'
+    });
+  } else {
+    var totBa = 0; for (var kb in _valoriBarthel) { totBa += _valoriBarthel[kb]; }
+    p.registrazioni.push({
+      id: 'scala_barthel_' + Date.now(),
+      tipo: 'valutazione_barthel',
+      timestamp: new Date().toISOString(),
+      operatore: opNome,
+      punteggio: totBa,
+      dettaglio: '🧠 Valutazione Indice di Barthel (Autonomia ADL): Punteggio ' + totBa + ' / 100 pt.'
+    });
+  }
+
+  if (typeof saveDb === 'function') saveDb();
+  if (typeof renderAll === 'function') renderAll();
+
+  chiudiModalScaleValutazione();
+  if (typeof showToast === 'function') {
+    showToast('✅ Valutazione clinica salvata con successo nella cartella dell\'assistito!', 'success');
+  }
+};
+
+
+// ----------------------------------------------------
+// 🪪 STAMPA PASSAPORTO DI EMERGENZA 112 TASCABILE
+// ----------------------------------------------------
+window.stampaPassaportoEmergenza112 = function () {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) return;
+
+  var win = window.open('', '_blank');
+  if (!win) {
+    alert('Consenti i popup per stampare il Passaporto di Emergenza 112.');
+    return;
+  }
+
+  var terapie = (p.terapie || []).slice(0, 6);
+  var salvavita = terapie.filter(function (t) {
+    return (t.farmaco || '').match(/cardioaspirin|lasix|bisoprolol|sinemet|vimpat|averelix|triatec|congescor|entecavir/i);
+  });
+
+  var htmlDoc = `
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+      <meta charset="UTF-8">
+      <title>Passaporto Emergenza 112 - ${p.nome}</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 20px; background: #f8fafc; color: #0f172a; }
+        .card-container { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .badge-card { width: 340px; height: 216px; background: #ffffff; border: 2px solid #dc2626; border-radius: 14px; padding: 14px; box-sizing: border-box; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+        .header { background: #dc2626; color: #ffffff; margin: -14px -14px 10px -14px; padding: 6px 14px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 13px; }
+        .name { font-size: 15px; font-weight: 900; color: #0f172a; margin-bottom: 2px; }
+        .info { font-size: 11px; color: #475569; line-height: 1.4; }
+        .salvavita-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 4px 8px; margin-top: 6px; font-size: 10.5px; color: #991b1b; }
+        .qr-placeholder { position: absolute; right: 12px; bottom: 12px; width: 64px; height: 64px; background: #0f172a; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 9px; font-weight: 800; text-align: center; }
+        @media print {
+          body { background: #ffffff; padding: 0; }
+          .no-print { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div style="text-align:center; margin-bottom:20px;" class="no-print">
+        <h2 style="margin:0 0 6px 0; color:#dc2626;">🚨 Passaporto Sanitario di Emergenza NUE 112 Tascabile</h2>
+        <div style="font-size:13px; color:#64748b;">Formato Carta di Credito tascabile (Fronte / Retro) • Ritaglia e inserisci nel portafoglio o magnetizza sul frigo</div>
+      </div>
+
+      <div class="card-container">
+        <!-- FRONTE -->
+        <div class="badge-card">
+          <div class="header">
+            <span>🚨 PASSAPORTO EMERGENZA NUE 112</span>
+            <span>SOS</span>
+          </div>
+          <div class="name">${p.nome}</div>
+          <div class="info">
+            🎂 <b>Nascita:</b> ${p.dataNascita || '--'} • <b>CF:</b> ${p.codiceFiscale || p.cf || '--'}<br>
+            📍 <b>Domicilio:</b> ${p.indirizzo || 'Bari (BA)'}<br>
+            📞 <b>Caregiver/Figlio:</b> ${p.maritoCellulare || p.cellulare || '338 000 00 01'}<br>
+            🩺 <b>MMG:</b> ${p.medicoNome || 'Dott. Roberto Scarcia'} (${p.medicoTelefono || '080 557 44 90'})
+          </div>
+          <div class="salvavita-box">
+            <b>⚠️ PATOLOGIE PRINCIPALI:</b><br>
+            ${(p.patologie || ['Ipertensione', 'Monitoraggio domiciliare']).slice(0, 3).join(', ')}
+          </div>
+        </div>
+
+        <!-- RETRO -->
+        <div class="badge-card">
+          <div class="header" style="background:#1e293b;">
+            <span>💊 TERAPIE SALVAVITA IN CORSO</span>
+            <span>CLINICA</span>
+          </div>
+          <div class="info" style="font-size:10px; line-height:1.4; width: 230px;">
+            ${salvavita.length > 0 ? salvavita.map(function(t){ return '• <b>' + t.farmaco + '</b> (' + (t.dosaggio || t.ora) + ')'; }).join('<br>') : 'Terapie orali continuative regolarmente monitorate.'}
+            <div style="margin-top:6px; color:#b91c1c; font-weight:800;">
+              ❌ ALLERGIE NOTE: Nessuna intolleranza segnalata
+            </div>
+          </div>
+          <div class="qr-placeholder">
+            QR CLINICO<br>112 EMERGENZA
+          </div>
+        </div>
+      </div>
+
+      <script>
+        window.onload = function() { window.print(); };
+      </script>
+    </body>
+    </html>
+  `;
+
+  win.document.write(htmlDoc);
+  win.document.close();
+};
