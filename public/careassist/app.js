@@ -1042,7 +1042,7 @@ function getPazienteRosaInit() {
   rosa.ausili = [
     { tipo: 'Deambulatore rollator con freno per interni/esterni', stato: 'In uso regolare', utilizzo: 'Uso quotidiano per deambulazione interna ed esterna in sicurezza' },
     { tipo: 'Calze elastiche antitrombo a compressione graduata', stato: 'In uso', utilizzo: 'In uso diurno per favorire il ritorno venoso e prevenzione edemi' },
-    { tipo: 'Mutandina Assorbente PANTS (Pull-Up monouso)', taglia: 'L (Extra) - Girovita 110-150 cm', cartoni: '10 confezioni (140 pz)', scortaPacchi: 10, pezziTotali: 140, pezziPerPacco: 14, utilizzo: 'PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021) - 10 conf. x 14 pz = 140 pz. DDT Serenity N. 2286626418 del 21/08/2026. Ord. ASP 0060448686 - Distretto Villa D\'Agri 02 02. Codice Utente: 002713. Prossima consegna indicativa: 24/11/2026 con preavviso telefonico (3380000003). Scadenza Piano: 18/02/2027.', fabbisogno: 'Fornitura periodica ASP Potenza (consegne ogni ~90 giorni)', fornitore: 'Serenity S.p.A. / ASP Potenza (Distretto Villa D\'Agri)', ddtNumero: '2286626418', ddtData: '2026-08-21', codiceUtente: '002713', codiceArticolo: '00037212200021', numConfezioni: 10, pezziConsegnati: 140, prossimaConsegnaIndicativa: '2026-11-24', scadenzaPiano: '2027-02-18', stato: 'In uso attivo regolare', dataRifornimento: '2026-08-21', dataScadenza: '2027-02-18', prossimaRichiesta: '2026-11-24', giorniAlert: 15 }
+    { tipo: 'Mutandina Assorbente PANTS (Pull-Up monouso)', taglia: 'L (Extra) - Girovita 110-150 cm', cartoni: '10 confezioni (140 pz)', scortaPacchi: 10, pezziTotali: 140, pezziPerPacco: 14, utilizzo: 'PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021) - 10 conf. x 14 pz = 140 pz. DDT Serenity N. 2286626418 del 21/08/2026. Ord. ASP 0060448686 - Distretto Villa D\'Agri 02 02. Codice Utente: 002713. Ultimo carico: 17/11/2026. Prossima consegna indicativa: ~17/02/2027 con preavviso telefonico (3380000003). Scadenza Piano: 18/02/2027.', fabbisogno: 'Fornitura periodica ASP Potenza (consegne ogni ~90 giorni)', fornitore: 'Serenity S.p.A. / ASP Potenza (Distretto Villa D\'Agri)', ddtNumero: '2286626418', ddtData: '2026-08-21', codiceUtente: '002713', codiceArticolo: '00037212200021', numConfezioni: 10, pezziConsegnati: 140, prossimaConsegnaIndicativa: '2027-02-17', scadenzaPiano: '2027-02-18', stato: 'In uso attivo regolare', dataRifornimento: '2026-11-17', dataScadenza: '2027-02-17', prossimaRichiesta: '2027-02-17', giorniAlert: 15, storicoConsegne: [{ data: '2026-08-21', note: '10 conf. (140 pz) - DDT 2286626418' }, { data: '2026-11-17', note: 'Carico fornitura domiciliare ricevuto' }] }
   ];
   rosa.terapie = getTerapieRosaFoto();
   rosa.visite = [
@@ -1774,6 +1774,54 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
         fatto: false
       });
     }
+  }
+
+  // Registrazione consegna effettiva Pants Serenity del 17/11/2026 per Rosa Annunziata
+  if (rosaFoto && !AppData.rosaSerenityConsegna20261117) {
+    AppData.rosaSerenityConsegna20261117 = true;
+    rosaFoto.ausili = rosaFoto.ausili || [];
+    let pants = rosaFoto.ausili.find(a => (a.tipo || '').toUpperCase().includes('PANTS'));
+    if (!pants) {
+      pants = { tipo: 'Mutandina Assorbente PANTS (Pull-Up monouso)' };
+      rosaFoto.ausili.push(pants);
+    }
+    pants.storicoConsegne = pants.storicoConsegne || [
+      { data: '2026-08-21', note: '10 confezioni (140 pz) - DDT Serenity n. 2286626418 (Fornitura ASP)' }
+    ];
+    if (!pants.storicoConsegne.some(c => c.data === '2026-11-17')) {
+      pants.storicoConsegne.push({
+        data: '2026-11-17',
+        note: 'Carico fornitura domiciliare PANTS Serenity ricevuto regolarmente.'
+      });
+    }
+    pants.dataRifornimento = '2026-11-17';
+    pants.prossimaRichiesta = '2027-02-17';
+    pants.prossimaConsegnaIndicativa = '2027-02-17';
+    pants.dataScadenza = '2027-02-17';
+    pants.utilizzo = 'PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021). Ultimo carico ricevuto: 17/11/2026. Fornitura programmata ogni 90 giorni (ASP Potenza / Villa D\'Agri). Prossima consegna indicativa: ~17/02/2027. Scadenza Piano: 18/02/2027.';
+
+    // Segna come completata o aggiorna la visita di promemoria PANTS
+    if (Array.isArray(rosaFoto.visite)) {
+      rosaFoto.visite.forEach(v => {
+        if ((v.motivo || '').includes('PANTS')) {
+          v.fatto = true;
+          v.note = 'Consegna ricevuta regolarmente a domicilio il 17/11/2026.';
+        }
+      });
+    }
+
+    // Aggiungi annotazione nel Diario Clinico di Rosa
+    rosaFoto.registrazioni = rosaFoto.registrazioni || [];
+    rosaFoto.registrazioni.push({
+      id: 'reg_pants_' + Date.now(),
+      tipo: 'ausilio_consegna',
+      categoria: 'Ausili',
+      data: '2026-11-17',
+      ora: '11:00',
+      timestamp: new Date('2026-11-17T11:00:00').toISOString(),
+      testo: '📦 Ricevuto carico domiciliare mutandine assorbenti PANTS Serenity (Fornitura trimestrale ASP). Registrato nello storico consegne.',
+      operatore: 'CareAssist Pro'
+    });
   }
 
   // Inizializzazione / integrazione garantita del profilo di Ciro Milella
@@ -2890,7 +2938,7 @@ function renderPazientiSelector() {
   const lista = getPazientiAccessibili();
   const role = localStorage.getItem('milella_role') || localStorage.getItem('milella_last_authenticated_role');
 
-  // Se l'operatore non è admin, nascondi il tasto "Nuovo Assistito", cestino e strumenti di sistema
+  // Se l'operatore non è admin, nascondi il tasto "Nuovo Assistito" e strumenti avanzati di sistema
   const btnNuovo = document.querySelector('.btn-new-patient');
   if (btnNuovo) {
     btnNuovo.style.display = (role === 'admin') ? 'inline-flex' : 'none';
@@ -2899,13 +2947,15 @@ function renderPazientiSelector() {
   if (btnNuovoAsl) {
     btnNuovoAsl.style.display = (role === 'admin') ? 'inline-flex' : 'none';
   }
+  // Cestino Windows abilitato e visibile per tutti i profili (Admin, Operatori, M.C. Stoppelli)
+  const cestinoFl = document.getElementById('win-desktop-floating-trash');
+  if (cestinoFl) cestinoFl.style.setProperty('display', 'flex', 'important');
+  const cestinoMob = document.getElementById('mobile-header-cestino-btn');
+  if (cestinoMob) cestinoMob.style.setProperty('display', 'inline-flex', 'important');
+  const cestinoDesk = document.getElementById('header-btn-cestino-desktop');
+  if (cestinoDesk) cestinoDesk.style.setProperty('display', 'inline-flex', 'important');
+
   if (role !== 'admin') {
-    const cestinoFl = document.getElementById('win-desktop-floating-trash');
-    if (cestinoFl) cestinoFl.style.setProperty('display', 'none', 'important');
-    const cestinoMob = document.getElementById('mobile-header-cestino-btn');
-    if (cestinoMob) cestinoMob.style.setProperty('display', 'none', 'important');
-    const cestinoDesk = document.getElementById('header-btn-cestino-desktop');
-    if (cestinoDesk) cestinoDesk.style.setProperty('display', 'none', 'important');
     const toolsWrap = document.getElementById('dropdown-tools-container');
     if (toolsWrap) toolsWrap.style.setProperty('display', 'none', 'important');
     const btnPrestampato = document.getElementById('btn-top-prestampato');
@@ -5111,6 +5161,30 @@ function renderCatalogoAusiliForm(containerId, ausiliEsistenti = []) {
               </select>
             </div>
           </div>
+
+          <!-- STORICO CONSEGNE E CARICHI RICEVUTI -->
+          <div style="margin-top:8px; background:#ffffff; border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:11.5px; font-weight:800; color:#0369a1; display:flex; align-items:center; gap:4px;">
+                <span>🚚</span> Storico Consegne & Carichi Ricevuti:
+              </span>
+              <button type="button" class="btn btn-sm" onclick="event.stopPropagation(); registraConsegnaRapidaAusilio('${prefix}', ${index})"
+                      style="background:#0284c7; color:#fff; border:none; padding:3px 8px; font-size:11px; font-weight:700; border-radius:6px; cursor:pointer;">
+                ➕ Registra Consegna Oggi / Ieri
+              </button>
+            </div>
+            <div id="${prefix}-storico-consegne-${index}" style="font-size:11px; color:#475569; display:flex; flex-direction:column; gap:4px;">
+              ${Array.isArray(esistente && esistente.storicoConsegne) && esistente.storicoConsegne.length > 0 ?
+                esistente.storicoConsegne.slice().reverse().map(c => `
+                  <div style="display:flex; align-items:center; justify-content:space-between; background:#f8fafc; border-left:3px solid #0284c7; padding:4px 8px; border-radius:4px;">
+                    <span>📅 <b>${new Date(c.data).toLocaleDateString('it-IT')}</b> — ${c.note || 'Carico fornitura ricevuto'}</span>
+                    <span style="color:#059669; font-weight:800;">Ricevuto</span>
+                  </div>
+                `).join('')
+                : '<div style="color:#94a3b8; font-style:italic;">Nessun carico registrato in precedenza nello storico.</div>'
+              }
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -5204,6 +5278,86 @@ function aggiornaTempiAusilioCalcolo(prefix, index) {
   }
 }
 
+// Registra una consegna / carico fornitura nello storico ausili e calcola la data
+function registraConsegnaRapidaAusilio(prefix, index) {
+  const p = getActivePaziente();
+  if (!p) {
+    showToast('Nessun assistito selezionato.', 'warning');
+    return;
+  }
+  const chk = document.getElementById(`${prefix}-chk-${index}`);
+  const tipo = chk ? (chk.getAttribute('data-tipo') || 'Ausilio') : 'Ausilio';
+  
+  const ieriStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const dataScelta = prompt(`📦 Registra Carico Consegna per "${tipo}"\nInserisci la data della consegna (formato AAAA-MM-GG):`, ieriStr);
+  if (!dataScelta) return;
+
+  const noteScelta = prompt('Note della consegna (es. 10 confezioni / DDT n.):', 'Carico fornitura periodica ricevuto regolarmente');
+
+  // Aggiorna i campi visibili della maschera
+  const inputDataRif = document.getElementById(`${prefix}-data-rif-${index}`);
+  if (inputDataRif) inputDataRif.value = dataScelta;
+
+  // Calcola automaticamente prossima consegna (+90 giorni per Pants/assorbenti)
+  const dObj = new Date(dataScelta);
+  if (!isNaN(dObj.getTime())) {
+    dObj.setDate(dObj.getDate() + 90);
+    const proxStr = dObj.toISOString().slice(0, 10);
+    const inputDataScad = document.getElementById(`${prefix}-data-scad-${index}`);
+    if (inputDataScad) inputDataScad.value = proxStr;
+    aggiornaTempiAusilioCalcolo(prefix, index);
+  }
+
+  // Aggiorna l'oggetto dell'ausilio nel paziente
+  p.ausili = p.ausili || [];
+  let aus = p.ausili.find(a => (a.tipo || '').toLowerCase().includes(tipo.toLowerCase().slice(0, 15)));
+  if (!aus) {
+    aus = { tipo: tipo };
+    p.ausili.push(aus);
+  }
+  aus.dataRifornimento = dataScelta;
+  if (!isNaN(dObj.getTime())) {
+    aus.prossimaRichiesta = dObj.toISOString().slice(0, 10);
+    aus.prossimaConsegnaIndicativa = aus.prossimaRichiesta;
+    aus.dataScadenza = aus.prossimaRichiesta;
+  }
+  aus.storicoConsegne = Array.isArray(aus.storicoConsegne) ? aus.storicoConsegne : [];
+  aus.storicoConsegne.push({
+    data: dataScelta,
+    note: noteScelta || 'Carico fornitura ricevuto regolarmente',
+    registratoIl: new Date().toISOString()
+  });
+
+  // Aggiungi anche un evento nel diario clinico
+  p.registrazioni = p.registrazioni || [];
+  p.registrazioni.push({
+    id: 'reg_aus_' + Date.now(),
+    tipo: 'ausilio_consegna',
+    categoria: 'Ausili',
+    data: dataScelta,
+    ora: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
+    timestamp: new Date().toISOString(),
+    testo: `📦 Consegna ${tipo}: registrato carico fornitura del ${new Date(dataScelta).toLocaleDateString('it-IT')}. (${noteScelta || ''})`,
+    operatore: localStorage.getItem('milella_user') || 'Caregiver'
+  });
+
+  saveDb();
+
+  // Aggiorna visivamente il riquadro storico consegne nel form
+  const containerStorico = document.getElementById(`${prefix}-storico-consegne-${index}`);
+  if (containerStorico && aus.storicoConsegne) {
+    containerStorico.innerHTML = aus.storicoConsegne.slice().reverse().map(c => `
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#f8fafc; border-left:3px solid #0284c7; padding:4px 8px; border-radius:4px;">
+        <span>📅 <b>${new Date(c.data).toLocaleDateString('it-IT')}</b> — ${c.note || 'Carico fornitura ricevuto'}</span>
+        <span style="color:#059669; font-weight:800;">Ricevuto</span>
+      </div>
+    `).join('');
+  }
+
+  showToast(`✅ Consegna del ${new Date(dataScelta).toLocaleDateString('it-IT')} registrata con successo nello storico!`, 'success');
+}
+window.registraConsegnaRapidaAusilio = registraConsegnaRapidaAusilio;
+
 function estraiAusiliSelezionatiDaForm(prefix) {
   const result = [];
 
@@ -5220,7 +5374,7 @@ function estraiAusiliSelezionatiDaForm(prefix) {
       const dataScadenza = document.getElementById(`${prefix}-data-scad-${index}`)?.value || '';
       const giorniAlert = parseInt(document.getElementById(`${prefix}-alert-${index}`)?.value || '15', 10);
 
-      // Cerca se esisteva già questo ausilio nel paziente per non perdere ddtNumero, codiceArticolo, ecc.
+      // Cerca se esisteva già questo ausilio nel paziente per non perdere ddtNumero, codiceArticolo, storicoConsegne, ecc.
       const prev = ausiliEsistentiPaz.find(a => (a.tipo || '').toLowerCase().includes(tipo.toLowerCase().slice(0, 15))) || {};
 
       result.push(Object.assign({}, prev, {
@@ -5231,7 +5385,8 @@ function estraiAusiliSelezionatiDaForm(prefix) {
         prossimaRichiesta: dataScadenza,
         dataScadenza: dataScadenza,
         giorniAlert: giorniAlert,
-        stato: prev.stato || 'In uso attivo regolare'
+        stato: prev.stato || 'In uso attivo regolare',
+        storicoConsegne: Array.isArray(prev.storicoConsegne) ? prev.storicoConsegne : []
       }));
     }
   });
