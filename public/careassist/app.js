@@ -16838,15 +16838,18 @@ function isTerapiaPrevistaOggi(t) {
 function rilevaDosiPassateNonRegistrate() {
   if (!AppData || !Array.isArray(AppData.pazienti)) return [];
   var oggi = new Date();
-  var oggiStr = oggi.toISOString().split('T')[0];
+  var oggiY = oggi.getFullYear();
+  var oggiM = String(oggi.getMonth() + 1).padStart(2, '0');
+  var oggiD = String(oggi.getDate()).padStart(2, '0');
+  var oggiStr = oggiY + '-' + oggiM + '-' + oggiD;
 
-  var dataInizio = new Date();
-  dataInizio.setDate(dataInizio.getDate() - 1); // almeno ieri
+  var dataInizio = new Date(oggiY, oggi.getMonth(), oggi.getDate() - 1); // ieri
 
   if (AppData.ultimoGiornoOperativo && AppData.ultimoGiornoOperativo < oggiStr) {
     try {
-      var dUltimo = new Date(AppData.ultimoGiornoOperativo);
-      var diffD = Math.round((oggi - dUltimo) / 86400000);
+      var parts = AppData.ultimoGiornoOperativo.split('-').map(Number);
+      var dUltimo = new Date(parts[0], parts[1] - 1, parts[2]);
+      var diffD = Math.round((new Date(oggiY, oggi.getMonth(), oggi.getDate()) - dUltimo) / 86400000);
       if (diffD >= 1 && diffD <= 14) {
         dataInizio = dUltimo;
       }
@@ -16855,12 +16858,16 @@ function rilevaDosiPassateNonRegistrate() {
 
   var giorniDaControllare = [];
   var curr = new Date(dataInizio.getFullYear(), dataInizio.getMonth(), dataInizio.getDate());
-  var fine = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate()); // oggi escluso
+  var fine = new Date(oggiY, oggi.getMonth(), oggi.getDate()); // oggi escluso
 
-  var ieriDateStr = new Date(oggi.getTime() - 86400000).toISOString().split('T')[0];
+  var ieriObj = new Date(oggiY, oggi.getMonth(), oggi.getDate() - 1);
+  var ieriDateStr = ieriObj.getFullYear() + '-' + String(ieriObj.getMonth() + 1).padStart(2, '0') + '-' + String(ieriObj.getDate()).padStart(2, '0');
 
   while (curr < fine) {
-    var cStr = curr.toISOString().split('T')[0];
+    var cy = curr.getFullYear();
+    var cm = String(curr.getMonth() + 1).padStart(2, '0');
+    var cd = String(curr.getDate()).padStart(2, '0');
+    var cStr = cy + '-' + cm + '-' + cd;
     var isIeri = (cStr === ieriDateStr);
     giorniDaControllare.push({
       dateObj: new Date(curr),
