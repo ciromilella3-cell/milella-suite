@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=362">
+  <link rel="stylesheet" href="style.css?v=363">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -9578,7 +9578,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=362"></script>
+  <script src="app.js?v=363"></script>
   <script src="turnario_admin.js?v=350"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -11145,6 +11145,39 @@
    BARRA DI NAVIGAZIONE MULTI-DISPOSITIVO GLOBALE SUITE MILELLA (PC & SMARTPHONE)
    ========================================================================== -->
   <nav class="mobile-bottom-bar" id="careassist-mobile-bar" aria-label="Navigazione Suite">
+    <a href="/launcher.html" class="bar-item" title="Home Suite Milella">
+      <span class="icon">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      </span>
+      <span>Home</span>
+    </a>
+
+    <button type="button" class="bar-item" onclick="apriModalHandsFreeAI()" title="Assistente Vocale Hands-Free">
+      <span class="icon" style="font-size:20px; line-height:1;">🎙️</span>
+      <span>HandsFree</span>
+    </button>
+
+    <div class="bar-item center-action">
+      <button type="button" class="btn-circle-add" onclick="apriModalVisionScanner()" title="Vision Scanner Fotocamera">
+        <span style="font-size:22px; line-height:1;">📸</span>
+      </button>
+      <span style="font-size:9.5px; font-weight:800; color:#0284c7; margin-top:3px;">Scanner</span>
+    </div>
+
+    <button type="button" class="bar-item" onclick="apriModalFirmaConsegna()" title="Firma Consegna Turno">
+      <span class="icon" style="font-size:20px; line-height:1;">✍️</span>
+      <span>Firma</span>
+    </button>
+
+    <button type="button" class="bar-item" onclick="document.querySelector('.nav-tab[data-target=\'tab-family-portal\']').click();" title="Portale Famiglia & MMG">
+      <span class="icon" style="font-size:20px; line-height:1;">👨‍👩‍👧‍👦</span>
+      <span>Famiglia</span>
+    </button>
+  </nav>
+  <nav class="mobile-bottom-bar-old" style="display:none;" id="careassist-mobile-bar-legacy">
     <button type="button" class="bar-item"
       onclick="window.history.length > 1 ? window.history.back() : window.location.href='/launcher.html'"
       title="Torna Indietro">
