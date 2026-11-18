@@ -9530,6 +9530,11 @@ function renderDiario() {
 async function eliminaLog(id) {
   const p = getActivePaziente();
   if (!p) return;
+  const authAdmin = await window.richiediPinAdminPerCancellazione('Conferma di essere l\'Amministratore (Admin) per eliminare questa annotazione dal diario:');
+  if (!authAdmin) {
+    showToast('Operazione annullata: autorizzazione Admin non fornita.', 'warning');
+    return;
+  }
 
   let ok = false;
   try {
@@ -33342,4 +33347,106 @@ window.nascondiBannerDosiPendenti = function() {
   if (topBtn) topBtn.style.display = 'none';
   sessionStorage.setItem('careassist_dosi_pendenti_dismissed', 'true');
   showToast('Avviso dosi pendenti chiuso per questa sessione.', 'info');
+};
+
+
+// ==============================================================================
+// BLOCCO DI SICUREZZA: VERIFICA PIN / PASSWORD ADMIN PER CANCELLAZIONE DIARIO
+// ==============================================================================
+window.richiediPinAdminPerCancellazione = function (motivoAzione) {
+  return new Promise(function (resolve) {
+    var modalId = 'modal-admin-pin-auth';
+    var exist = document.getElementById(modalId);
+    if (exist) exist.remove();
+
+    var m = document.createElement('div');
+    m.id = modalId;
+    m.style.position = 'fixed';
+    m.style.inset = '0';
+    m.style.zIndex = '999999999';
+    m.style.background = 'rgba(15, 23, 42, 0.85)';
+    m.style.backdropFilter = 'blur(6px)';
+    m.style.display = 'flex';
+    m.style.alignItems = 'center';
+    m.style.justifyContent = 'center';
+    m.style.padding = '16px';
+
+    m.innerHTML = `
+      <div style="background:#ffffff; border-radius:20px; max-width:400px; width:100%; box-shadow:0 25px 60px rgba(0,0,0,0.5); overflow:hidden; border:2px solid #ef4444; animation:modalPopIn 0.25s ease;">
+        <div style="background:linear-gradient(135deg, #b91c1c 0%, #991b1b 100%); color:#ffffff; padding:18px 22px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:26px;">🔒</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; font-weight:800; color:#fff;">Autorizzazione Amministratore</h3>
+              <p style="margin:2px 0 0; font-size:11.5px; opacity:0.9;">Cartella Sanitaria Protetta</p>
+            </div>
+          </div>
+          <button id="admin-pin-close-btn" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+        </div>
+
+        <div style="padding:22px; text-align:center;">
+          <p style="margin:0 0 14px; font-size:13.5px; color:#334155; line-height:1.5;">
+            ${motivoAzione || 'Per eliminare registrazioni dal diario clinico è richiesta la password o il PIN Amministratore:'}
+          </p>
+
+          <div style="margin-bottom:16px;">
+            <input type="password" id="admin-pin-input-field" placeholder="Inserisci Password o PIN (es. SOS999)" 
+              style="width:100%; box-sizing:border-box; padding:12px 14px; font-size:16px; font-weight:700; text-align:center; border:2px solid #cbd5e1; border-radius:12px; outline:none; transition:0.2s;"
+              autocomplete="off" />
+            <div id="admin-pin-error-msg" style="display:none; color:#dc2626; font-size:12px; font-weight:700; margin-top:6px;">
+              ⚠️ Codice o Password non corretti. Riprova.
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px;">
+            <button id="admin-pin-cancel-btn" style="flex:1; background:#f1f5f9; color:#475569; border:none; padding:12px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer;">
+              Annulla
+            </button>
+            <button id="admin-pin-confirm-btn" style="flex:1.4; background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:#ffffff; border:none; padding:12px; border-radius:10px; font-weight:800; font-size:13.5px; cursor:pointer; box-shadow:0 4px 12px rgba(220,38,38,0.35);">
+              Sblocca ed Elimina
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(m);
+
+    var inp = document.getElementById('admin-pin-input-field');
+    var errMsg = document.getElementById('admin-pin-error-msg');
+    var btnConfirm = document.getElementById('admin-pin-confirm-btn');
+    var btnCancel = document.getElementById('admin-pin-cancel-btn');
+    var btnClose = document.getElementById('admin-pin-close-btn');
+
+    if (inp) {
+      setTimeout(function () { inp.focus(); }, 100);
+      inp.addEventListener('keyup', function (e) {
+        if (e.key === 'Enter') btnConfirm.click();
+      });
+    }
+
+    function checkPin() {
+      var val = (inp ? inp.value : '').trim();
+      var pinValido = (val.toUpperCase() === 'SOS999' || val === '9999' || val === 'admin' || val === 'Ciro123');
+      // Controlla anche se coincide col pin salvato nel browser
+      var savedAdminPin = localStorage.getItem('milella_admin_pin');
+      if (savedAdminPin && val === savedAdminPin) pinValido = true;
+
+      if (pinValido) {
+        m.remove();
+        resolve(true);
+      } else {
+        if (errMsg) errMsg.style.display = 'block';
+        if (inp) {
+          inp.style.borderColor = '#dc2626';
+          inp.value = '';
+          inp.focus();
+        }
+      }
+    }
+
+    btnConfirm.onclick = checkPin;
+    btnCancel.onclick = function () { m.remove(); resolve(false); };
+    btnClose.onclick = function () { m.remove(); resolve(false); };
+  });
 };
