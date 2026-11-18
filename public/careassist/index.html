@@ -210,6 +210,77 @@
         transform: translateY(0) scale(1);
       }
     }
+  
+    /* Pillola Sincronizzazione Mobile & Info Turno */
+    .mobile-sync-status-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 95, 70, 0.08));
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin: 8px 10px 12px 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    .mobile-sync-status-pill:active {
+      transform: scale(0.98);
+      background: rgba(16, 185, 129, 0.2);
+    }
+    .mobile-sync-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mobile-sync-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .mobile-sync-dot.offline {
+      background: #ef4444;
+      box-shadow: 0 0 6px #ef4444;
+    }
+    .mobile-sync-dot.syncing {
+      background: #f59e0b;
+      box-shadow: 0 0 6px #f59e0b;
+      animation: pulseSync 1s infinite alternate;
+    }
+    @keyframes pulseSync {
+      0% { opacity: 0.4; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1.15); }
+    }
+    .mobile-sync-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #065f46;
+      letter-spacing: -0.2px;
+    }
+    .mobile-sync-guide-btn {
+      background: #ffffff;
+      border: 1px solid #10b981;
+      color: #047857;
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      cursor: pointer;
+    }
+    .mobile-sync-guide-btn:hover {
+      background: #ecfdf5;
+    }
+
   </style>
 
 </head>
@@ -700,7 +771,18 @@
     <div id="careassist-native-mobile-container" class="mobile-only-app-container">
       <!-- Carosello Orizzontale Assistiti a Portata di Pollice -->
       <!-- Card Assistito Attivo (Stile WhatsApp Canali) -->
-      <div id="mobile-active-patient-card" class="mobile-active-patient-card"></div>
+      
+        <!-- PILLOLA SINCRONIZZAZIONE MOBILE & GUIDA INIZIO TURNO -->
+        <div id="mobile-sync-status-pill" class="mobile-sync-status-pill" onclick="if(typeof forceUpdateCareAssistApp==='function'){forceUpdateCareAssistApp();}else{location.reload();}" title="Tocca per ricaricare e sincronizzare dal Cloud">
+          <div class="mobile-sync-left">
+            <span id="mobile-sync-dot" class="mobile-sync-dot online"></span>
+            <span id="mobile-sync-text" class="mobile-sync-text">🟢 Cloud Sincronizzato</span>
+          </div>
+          <button type="button" class="mobile-sync-guide-btn" onclick="event.stopPropagation(); apriGuidaInizioTurnoOperatore();" title="Guida per l'Operatore">
+            <span>ℹ️ Regole Turno</span>
+          </button>
+        </div>
+        <div id="mobile-active-patient-card" class="mobile-active-patient-card"></div>
 
       <!-- Hero Action Card: Cosa devi fare ADESSO (1-Touch) -->
       <div id="mobile-hero-action-card" class="mobile-hero-card"></div>
@@ -9453,7 +9535,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=352"></script>
+  <script src="app.js?v=353"></script>
   <script src="turnario_admin.js?v=350"></script>
   <script>
     if ('serviceWorker' in navigator) {

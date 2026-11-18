@@ -2566,6 +2566,19 @@ function sincronizzaDbDalServer(callback) {
 }
 
 function aggiornaBadgeStatoSync(isOnline) {
+    var mobTxt = document.getElementById('mobile-sync-text');
+    var mobDot = document.getElementById('mobile-sync-dot');
+    var oraMobStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    if (mobTxt && mobDot) {
+      if (isOnline) {
+        mobDot.className = 'mobile-sync-dot online';
+        mobTxt.innerHTML = '🟢 Cloud Sincronizzato <span style="font-weight: normal; opacity: 0.8; font-size: 11px;">(' + oraMobStr + ')</span>';
+      } else {
+        mobDot.className = 'mobile-sync-dot offline';
+        mobTxt.innerHTML = '⚠️ Offline / Tocca per Ricaricare';
+      }
+    }
+
   var badge = document.getElementById('header-cloud-sync-badge');
   var dot = document.getElementById('sync-dot');
   var txt = document.getElementById('sync-status-text');
@@ -33233,4 +33246,83 @@ window.forceUpdateCareAssistApp = function () {
       location.reload();
     }
   }, 400);
+};
+
+
+// ==========================================
+// GUIDA OPERATORE INIZIO TURNO & SINCRONIZZAZIONE
+// ==========================================
+window.apriGuidaInizioTurnoOperatore = function() {
+  var modalId = 'modal-guida-turno-operatore';
+  var exist = document.getElementById(modalId);
+  if (exist) exist.remove();
+
+  var oraStr = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+  var m = document.createElement('div');
+  m.id = modalId;
+  m.style.position = 'fixed';
+  m.style.inset = '0';
+  m.style.zIndex = '999999';
+  m.style.background = 'rgba(15, 23, 42, 0.75)';
+  m.style.backdropFilter = 'blur(4px)';
+  m.style.display = 'flex';
+  m.style.alignItems = 'center';
+  m.style.justifyContent = 'center';
+  m.style.padding = '16px';
+
+  m.innerHTML = `
+    <div style="background:#fff; border-radius:18px; max-width:440px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.25); overflow:hidden; animation:modalPopIn 0.25s ease;">
+      <div style="background:linear-gradient(135deg, #0f766e, #0e7490); color:#fff; padding:18px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:24px;">📋</span>
+          <div>
+            <h3 style="margin:0; font-size:16px; font-weight:800; color:#fff;">Istruzioni Inizio Turno Operatore</h3>
+            <p style="margin:2px 0 0; font-size:12px; opacity:0.9;">Come usare l'App da Smartphone senza errori</p>
+          </div>
+        </div>
+        <button onclick="document.getElementById('${modalId}').remove()" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+
+      <div style="padding:20px; font-size:14px; color:#334155; line-height:1.5;">
+        <div style="background:#ecfdf5; border:1px solid #10b981; border-radius:12px; padding:12px; margin-bottom:16px;">
+          <div style="font-weight:800; color:#065f46; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+            <span>🔄</span> REGOLA N. 1: INIZIA SEMPRE CON "RICARICA"
+          </div>
+          <div style="font-size:12.5px; color:#047857;">
+            Appena apri l'app all'inizio del tuo turno di lavoro, tocca sempre l'icona <b>🔄 Ricarica</b> (in basso a destra o in alto). In questo modo scarichi le somministrazioni e le annotazioni inserite prima del tuo arrivo.
+          </div>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:12px; margin-bottom:16px;">
+          <div style="font-weight:800; color:#1e293b; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+            <span>⏱️</span> REGOLA N. 2: SEGNA LE TERAPIE SUBITO
+          </div>
+          <div style="font-size:12.5px; color:#475569;">
+            Registra farmaci e pasti appena somministrati. Se lo fai subito, la famiglia e il prossimo turno vedranno lo stato aggiornato in tempo reale.
+          </div>
+        </div>
+
+        <div style="background:#eff6ff; border:1px solid #3b82f6; border-radius:12px; padding:12px; margin-bottom:18px;">
+          <div style="font-weight:800; color:#1e40af; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+            <span>🟢</span> STATO CLOUD ATTUALE
+          </div>
+          <div style="font-size:12.5px; color:#1e3a8a;">
+            La spia verde in alto indica che l'archivio è collegato al Cloud (allineato ore ${oraStr}). Se vedi colore arancione o rosso, tocca la barra verde per ricaricare.
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button onclick="document.getElementById('${modalId}').remove(); if(typeof forceUpdateCareAssistApp==='function') forceUpdateCareAssistApp();" style="flex:1; background:#0f766e; color:#fff; border:none; padding:12px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+            <span>🔄</span> Ricarica e Allinea Ora
+          </button>
+          <button onclick="document.getElementById('${modalId}').remove()" style="background:#e2e8f0; color:#334155; border:none; padding:12px 16px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer;">
+            Ho Capito
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(m);
 };
