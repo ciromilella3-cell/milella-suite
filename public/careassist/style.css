@@ -8274,6 +8274,10 @@ main,
     display: none;
     z-index: 9999999 !important;
   }
+  #modal-menu-oss-bottomsheet.active,
+  #modal-menu-oss-bottomsheet.aperto {
+    display: flex !important;
+  }
 
   /* 6. OTTIMIZZAZIONE RESPONSIVE CONTROLLI TESTATA & PULSANTIERA OSS SU SMARTPHONE */
   .header-main-bar {

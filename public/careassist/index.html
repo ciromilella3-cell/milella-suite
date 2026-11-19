@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=369">
+  <link rel="stylesheet" href="style.css?v=376">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -283,6 +283,34 @@
 
   </style>
 
+<script>
+function apriMenuOSSTopMobileSheet(e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  var bs = document.getElementById('modal-menu-oss-bottomsheet');
+  if (bs) {
+    bs.classList.add('active');
+    bs.classList.add('aperto');
+    bs.style.setProperty('display', 'flex', 'important');
+    bs.style.zIndex = '9999999';
+    document.body.style.overflow = 'hidden';
+  }
+}
+window.apriMenuOSSTopMobileSheet = apriMenuOSSTopMobileSheet;
+
+function chiudiMenuOSSTop(e) {
+  if (e) { e.stopPropagation(); }
+  var bs = document.getElementById('modal-menu-oss-bottomsheet');
+  if (bs) {
+    bs.classList.remove('active');
+    bs.classList.remove('aperto');
+    bs.style.setProperty('display', 'none', 'important');
+    document.body.style.overflow = '';
+  }
+  var d = document.getElementById('dropdown-menu-oss-top');
+  if (d) d.style.display = 'none';
+}
+window.chiudiMenuOSSTop = chiudiMenuOSSTop;
+</script>
 </head>
 
 <body>
@@ -9465,7 +9493,7 @@
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=369"></script>
+  <script src="app.js?v=376"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -11059,7 +11087,7 @@
     </button>
 
     <!-- 5. CASSETTO STRUMENTI COMPLETO (TUTTE LE FUNZIONI DEL PC) -->
-    <button type="button" class="bar-item" onclick="apriMenuOSSTopMobileSheet()" title="Apri tutti gli strumenti e registri del PC">
+    <button type="button" class="bar-item" onclick="apriMenuOSSTopMobileSheet(event)" title="Apri tutti gli strumenti e registri del PC">
       <span class="icon" style="font-size:20px; line-height:1;">⚡</span>
       <span style="font-size:10px; font-weight:800; margin-top:2px;">Menu</span>
     </button></nav>
