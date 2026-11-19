@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=392">
+  <link rel="stylesheet" href="style.css?v=393">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -423,10 +423,12 @@ window.eseguiStrumentoMobile = function(azione, e) {
         display: none;
         background: rgba(15,23,42,0.85) !important;
       }
-      #modal-dossier-clinico-stampa.active,
-      #modal-dossier-clinico-stampa[style*="display: flex"] {
+      #modal-dossier-clinico-stampa.active {
         display: flex !important;
         flex-direction: column !important;
+      }
+      #modal-dossier-clinico-stampa:not(.active) {
+        display: none !important;
       }
       #modal-dossier-clinico-stampa .modal-card {
         width: 100vw !important;
@@ -9686,7 +9688,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=392"></script>
+  <script src="app.js?v=393"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9756,7 +9758,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   </style>
 
   <!-- MODAL ROADMAP CLINICA & SCADENZARIO FAMILIARE UNIFICATO (EXECUTIVE LUXURY) -->
-  <div class="modal-overlay" id="modal-roadmap-scadenze" style="z-index: 10040;">
+  <div class="modal-overlay" id="modal-roadmap-scadenze" style="display:none; z-index: 10040;">
     <div class="modal-card roadmap-modal-card"
       style="max-width: 1020px; width: 96%; max-height: 94vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; box-shadow: 0 24px 60px rgba(2, 6, 23, 0.45); border: 1.5px solid rgba(56, 189, 248, 0.3);">
 
@@ -9786,7 +9788,6 @@ window.eseguiStrumentoMobile = function(azione, e) {
             <span>💡</span> <span>A cosa serve</span>
           </button>
         </div>
-      </div>
       </div>
 
       <!-- BODY ROADMAP -->
@@ -9951,7 +9952,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   </div>
 
   <!-- MODAL DOSSIER CLINICO OSPEDALIERO TUTTO-IN-UNO (STAMPA CARTELLA A4) -->
-  <div class="modal-overlay" id="modal-dossier-clinico-stampa" style="z-index: 10045;">
+  <div class="modal-overlay" id="modal-dossier-clinico-stampa" style="display:none; z-index: 10045;">
     <div class="modal-card"
       style="max-width: 1020px; width: 96%; max-height: 94vh; display: flex; flex-direction: column; background: #e2e8f0;">
 
