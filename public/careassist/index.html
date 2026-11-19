@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=388">
+  <link rel="stylesheet" href="style.css?v=390">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -9663,7 +9663,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=388"></script>
+  <script src="app.js?v=390"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9739,34 +9739,31 @@ window.eseguiStrumentoMobile = function(azione, e) {
 
       <!-- HEADER ROADMAP EXECUTIVE (RESISTENTE AD OVERRIDE MOBILE) -->
       <div class="roadmap-header-executive"
-        style="background: linear-gradient(135deg, #091e3a 0%, #0f2744 50%, #0369a1 100%) !important; color: #ffffff !important; padding: 16px 22px; border-bottom: 2px solid #38bdf8; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-shrink: 0;">
-        <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-          <div
-            style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 22px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 4px 12px rgba(0,0,0,0.25); flex-shrink: 0; backdrop-filter: blur(8px);">
-            🗓️
-          </div>
-          <div style="min-width: 0;">
-            <div
-              style="font-size: 11px; font-weight: 800; color: #7dd3fc !important; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px;">
-              COORDINAMENTO CLINICO DOMICILIARE &bull; 4 ASSISTITI
+        style="background: linear-gradient(135deg, #091e3a 0%, #0f2744 50%, #0369a1 100%) !important; color: #ffffff !important; padding: 12px 16px; border-bottom: 2px solid #38bdf8; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1.5px solid rgba(56,189,248,0.5); flex-shrink: 0;">
+              🗓️
             </div>
-            <h2
-              style="font-size: 19px; font-weight: 900; margin: 0; color: #ffffff !important; letter-spacing: -0.3px; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-              Roadmap Clinica & Scadenzario Familiare
-            </h2>
+            <div style="min-width: 0;">
+              <div style="font-size: 10px; font-weight: 800; color: #7dd3fc; letter-spacing: 0.6px; text-transform: uppercase;">
+                COORDINAMENTO CLINICO &bull; 4 ASSISTITI
+              </div>
+              <h2 style="font-size: 15px; font-weight: 900; margin: 2px 0 0; color: #ffffff; letter-spacing: -0.3px; line-height: 1.2;">
+                Roadmap Clinica &amp; Scadenze
+              </h2>
+            </div>
           </div>
+          <button type="button" class="roadmap-btn-close-clean" onclick="closeModal('modal-roadmap-scadenze')" ontouchstart="closeModal('modal-roadmap-scadenze')"
+            style="background:rgba(255,255,255,0.2); border:1.5px solid rgba(255,255,255,0.4); color:#ffffff; width:34px; height:34px; border-radius:50%; font-size:16px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center;"
+            title="Chiudi">✕</button>
         </div>
-
-        <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
-          <button type="button" class="btn btn-roadmap-export" onclick="sincronizzaCalendarioTuttiPazienti()"
-            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; border: 1px solid #6ee7b7 !important; padding: 7px 14px !important; border-radius: 9px !important; font-weight: 800 !important; font-size: 12px !important; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(16,185,129,0.35); transition: all 0.2s;"
-            title="Scarica il file .ics per integrare tutte le date nel calendario del tuo smartphone">
-            <span>📅</span> <span>Esporta Calendario (.ics)</span>
+        <div style="display: flex; justify-content: flex-start; align-items: center; width: 100%;">
+          <button type="button" onclick="mostraGuidaContestuale('roadmap-scadenze')" style="background:#f0f9ff; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:3px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 1px 3px rgba(0,0,0,0.15);" title="A cosa serve la Roadmap Scadenze">
+            <span>💡</span> <span>A cosa serve</span>
           </button>
-          <button type="button" class="btn btn-roadmap-close" onclick="closeModal('modal-roadmap-scadenze')"
-            style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.15) !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.3) !important; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
-            title="Chiudi finestra">✕</button>
         </div>
+      </div>
       </div>
 
       <!-- BODY ROADMAP -->
@@ -11438,15 +11435,22 @@ window.eseguiStrumentoMobile = function(azione, e) {
     <div class="modal-card" style="max-width:540px; width:92%; border-radius:20px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.45); border:2px solid #059669; animation:modalPopIn 0.25s cubic-bezier(0.16,1,0.3,1);">
       
       <!-- HEADER -->
-      <div style="background:linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%); color:#ffffff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:24px;">✍️</span>
-          <div>
-            <div style="font-weight:900; font-size:15px; letter-spacing:0.3px;">FIRMA DIGITALE & CHECK-IN TURNO</div>
-            <div style="font-size:11.5px; color:#a7f3d0; font-weight:700;">Validazione Giuridica & Timbratura GPS Operatori</div>
+      <div style="background:linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%); color:#ffffff; padding:12px 16px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:24px;">✍️</span>
+            <div>
+              <div style="font-weight:900; font-size:14px; letter-spacing:0.3px; line-height:1.2;">FIRMA DIGITALE & CHECK-IN TURNO</div>
+              <div style="font-size:11px; color:#a7f3d0; font-weight:600;">Validazione Giuridica & Timbratura GPS</div>
+            </div>
           </div>
+          <button type="button" onclick="chiudiModalFirmaConsegna()" ontouchstart="chiudiModalFirmaConsegna()" style="background:rgba(255,255,255,0.2); border:1.5px solid rgba(255,255,255,0.4); color:#ffffff; width:32px; height:32px; border-radius:50%; font-size:15px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center;">✖</button>
         </div>
-        <button type="button" onclick="chiudiModalFirmaConsegna()" style="background:rgba(255,255,255,0.15); border:none; color:#ffffff; width:32px; height:32px; border-radius:50%; font-size:16px; font-weight:900; cursor:pointer;">✖</button>
+        <div style="display:flex; justify-content:flex-start; align-items:center; width:100%;">
+          <button type="button" onclick="mostraGuidaContestuale('firma-consegna')" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; border-radius:8px; padding:3px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 1px 3px rgba(0,0,0,0.15);" title="A cosa serve la Firma Turno">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
+        </div>
       </div>
 
       <!-- BODY -->

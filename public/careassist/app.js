@@ -27398,6 +27398,29 @@ window.fermaVoceBriefing = fermaVoceBriefing;
 // 💡 SISTEMA DI GUIDA CONTESTUALE DINAMICA & UTILITÀ CLINICO-GESTIONALE
 // ==========================================================================
 var GUIDE_CONTESTUALI = {
+  'firma-consegna': {
+    icona: '✍️',
+    titolo: 'Firma Digitale & Check-In Turno (Validazione Giuridica & Timbratura GPS)',
+    sottotitolo: 'Attestazione di inizio o fine turno con geolocalizzazione certificata e firma touch a schermo',
+    scopo: 'Questa maschera consente all\'operatore (OSS o infermiere) di timbrare la propria presenza al domicilio dell\'assistito tramite coordinate GPS geocodificate e di apporre la propria firma grafica a schermo. Registra legalmente la presa in carico o il completamento del turno e permette di allegare note cliniche di consegna per il collega successivo.',
+    comeSiUsa: [
+      '<b>Rilevamento GPS Automatico</b>: la finestra rileva in tempo reale le coordinate di latitudine e longitudine della posizione dell\'operatore.',
+      '<b>Firma a Schermo</b>: traccia la tua firma con il dito o un pennino touch all\'interno del riquadro tratteggiato. Usa "Pulisci" se desideri ridisegnarla.',
+      '<b>Note di Consegna</b>: scrivi eventuali annotazioni urgenti o riepiloghi per il collega del turno montante.',
+      '<b>Convalida e Firma Turno</b>: tocca il tasto verde per generare l\'impronta digitale di sicurezza (hash) e salvare il check-in nel turnario certificato.'
+    ]
+  },
+  'roadmap-scadenze': {
+    icona: '🗓️',
+    titolo: 'Roadmap Clinica & Scadenzario Familiare (4 Assistiti)',
+    sottotitolo: 'Visione d\'insieme integrata di visite specialistiche, esami ematochimici e rinnovi piani terapeutici',
+    scopo: 'Questa maschera raccoglie in un unico cruscotto temporale cronologico tutte le scadenze sanitarie, visite specialistiche, prelievi, piani terapeutici e rinnovi fornitura per i 4 assistiti seguiti dalla famiglia (Aldo, Angela, Rosa e Ciro). Permette di visualizzare gli eventi imminenti e sincronizzarli direttamente sul cellulare.',
+    comeSiUsa: [
+      '<b>Filtro per Assistito</b>: tocca uno dei pulsanti colorati (Tutti, Aldo, Angela, Rosa, Ciro) per isolare solo le scadenze di un assistito.',
+      '<b>Filtro per Categoria</b>: filtra rapidamente per Visite Specialistiche, Esami del Sangue, Diagnostica o Rinnovo Piani/Forniture.',
+      '<b>Salva nel Telefono</b>: tocca il calendario su qualsiasi singolo evento o premi "Scarica Calendario Completo (.ics)" per salvare tutti i promemoria su Google Calendar, iPhone o Android.'
+    ]
+  },
   'handsfree-ai': {
     icona: '🎙️',
     titolo: 'Assistente Vocale Hands-Free AI (Comandi & Dettatura Senza Mani)',
