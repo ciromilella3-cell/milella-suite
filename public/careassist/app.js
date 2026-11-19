@@ -23870,13 +23870,31 @@ function renderEpatologiaInfettiviCiro(container, p) {
 
   // 4. COSTRUZIONE TEMPLATE AMBULATORIALE COMPLETO
   var fullHtml = `
-    <div style="margin-bottom:16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-      <span style="font-size:12px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.4px;">Ambulatori Cronici Attivi per ${p.nome}:</span>
-      ${pillsSpecialita}
+    <!-- BARRA STRUMENTI & CHIUSURA RESPONSIVA PER SMARTPHONE E PC -->
+    <div style="background:#ffffff; border:1.5px solid #bfdbfe; border-radius:16px; padding:10px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button type="button" onclick="chiudiAmbulatorioSpecialisticoMobile()" ontouchstart="chiudiAmbulatorioSpecialisticoMobile()"
+          style="background:#0284c7; color:#ffffff; border:none; border-radius:10px; padding:7px 14px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
+          <span>←</span> <span>Torna al Diario</span>
+        </button>
+        <button type="button" onclick="mostraGuidaContestuale('ambulatorio-epatologia')"
+          style="background:#eff6ff; color:#0284c7; border:1.5px solid #7dd3fc; border-radius:10px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+          <span>💡</span> <span>A cosa serve</span>
+        </button>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase;">Ambulatorio:</span>
+        ${pillsSpecialita}
+        <button type="button" onclick="chiudiAmbulatorioSpecialisticoMobile()" ontouchstart="chiudiAmbulatorioSpecialisticoMobile()"
+          style="background:#f1f5f9; border:none; width:34px; height:34px; border-radius:50%; font-size:16px; font-weight:900; color:#475569; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Chiudi maschera">
+          ✕
+        </button>
+      </div>
     </div>
 
     <!-- BANNER CLINICO SPECIALISTICO DINAMICO -->
-    <div style="background:linear-gradient(135deg, #092c4c 0%, #034b75 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(9,44,76,0.3); border:2px solid rgba(56,189,248,0.4); position:relative; overflow:hidden;">
+    <div style="background:linear-gradient(135deg, #092c4c 0%, #034b75 100%); border-radius:18px; padding:16px 14px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(9,44,76,0.3); border:2px solid rgba(56,189,248,0.4); position:relative; overflow:hidden;">
       <div style="position:absolute; right:-20px; top:-20px; font-size:120px; opacity:0.07; pointer-events:none;">${proto.icona}</div>
       
       <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; position:relative; z-index:2;">
@@ -23888,9 +23906,7 @@ function renderEpatologiaInfettiviCiro(container, p) {
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="background:#38bdf8; color:#082f49; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px;">PIANO DI MONITORAGGIO CRONICO AUTOMATICO</span>
               <span style="background:rgba(255,255,255,0.15); color:#ffffff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">RILEVATO DAI FARMACI</span>
-              <button type="button" onclick="mostraGuidaContestuale('ambulatorio-epatologia')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:2px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(0,0,0,0.1);" title="A cosa serve l'Ambulatorio Malattie Infettive & Epatologia">
-                <span>💡</span> <span>A cosa serve</span>
-              </button>
+
             </div>
             <h2 style="font-size:22px; font-weight:900; margin:4px 0 2px; color:#ffffff; letter-spacing:-0.4px;">
               ${proto.titolo}
@@ -31019,6 +31035,29 @@ function navigaMobileTab(mode, btn) {
 window.navigaMobileTab = navigaMobileTab;
 
 // APRE AMBULATORIO SPECIALISTICO / MALATTIE INFETTIVE SU SMARTPHONE
+
+function chiudiAmbulatorioSpecialisticoMobile() {
+  document.body.classList.remove('viewing-specialistica');
+  const mobileContainer = document.getElementById('careassist-native-mobile-container');
+  if (mobileContainer) mobileContainer.style.setProperty('display', 'block', 'important');
+  const cruscottoSmart = document.getElementById('cruscotto-smart-oggi');
+  if (cruscottoSmart) cruscottoSmart.style.setProperty('display', 'block', 'important');
+  const anagraficaHero = document.querySelector('.anagrafica-hero');
+  if (anagraficaHero) anagraficaHero.style.setProperty('display', '', '');
+  
+  // Nascondi tab specialistica
+  const tabEpatologia = document.getElementById('tab-epatologia');
+  if (tabEpatologia) tabEpatologia.style.setProperty('display', 'none', 'important');
+  
+  // Ripristina tab principale
+  if (typeof initTabs === 'function') {
+    var tabOggi = document.querySelector('[data-target="tab-dashboard"]');
+    if (tabOggi) tabOggi.click();
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.chiudiAmbulatorioSpecialisticoMobile = chiudiAmbulatorioSpecialisticoMobile;
+
 function apriAmbulatorioSpecialisticoMobile() {
   document.querySelectorAll('.mobile-bottom-bar .bar-item').forEach(function (b) { b.classList.remove('active'); });
   document.body.classList.remove('viewing-oggi', 'viewing-clinica', 'viewing-farmaci');
