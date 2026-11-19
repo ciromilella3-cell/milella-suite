@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=378">
+  <link rel="stylesheet" href="style.css?v=380">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -9489,7 +9489,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=378"></script>
+  <script src="app.js?v=380"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -11461,7 +11461,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
 
 
 <!-- MODAL COMPLETO STRUMENTI PC PER SMARTPHONE -->
-  <div id="modal-menu-oss-bottomsheet"
+  <div id="modal-menu-oss-bottomsheet" onclick="if(event.target===this) chiudiMenuOSSTop(event);"
     style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:2147483647; background:rgba(15,23,42,0.8); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); align-items:flex-end; justify-content:center; box-sizing:border-box;">
     
     <div style="background:#ffffff; width:100%; max-width:520px; border-radius:26px 26px 0 0; padding:18px 20px 34px 20px; box-shadow:0 -10px 45px rgba(0,0,0,0.4); display:flex; flex-direction:column; max-height:85vh; box-sizing:border-box; animation:slideUpMobile 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
@@ -11478,7 +11478,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
             <div style="font-size:11px; color:#64748b; font-weight:600;">Funzioni complete abilitate su Smartphone</div>
           </div>
         </div>
-        <button type="button" onclick="document.getElementById('modal-menu-oss-bottomsheet').style.display='none';"
+        <button type="button" onclick="chiudiMenuOSSTop(event);" aria-label="Chiudi"
           style="background:#f1f5f9; border:none; width:34px; height:34px; border-radius:50%; font-size:16px; font-weight:900; color:#475569; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
       </div>
 
