@@ -42,7 +42,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 101,
@@ -58,7 +58,7 @@
           "ultimaDoseSomministrata": 1,
           "ultimoRitiro": "2026-11-07T21:20:21.450Z",
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 106,
@@ -100,7 +100,7 @@
           "ultimaDoseSomministrata": 1,
           "ultimoRitiro": "2026-11-07T19:46:40.008Z",
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 1032,
@@ -1155,7 +1155,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 204,
@@ -1200,7 +1200,7 @@
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 203,
@@ -1216,7 +1216,7 @@
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 206,
@@ -2150,7 +2150,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 1794118995873,
@@ -2208,7 +2208,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 303,
@@ -2224,7 +2224,7 @@
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 312,
@@ -2240,7 +2240,7 @@
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 1794119202709,
@@ -2298,7 +2298,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 1794119856922,
@@ -2328,7 +2328,7 @@
           },
           "ultimaDoseSomministrata": 2,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 1794119857233,
@@ -2414,7 +2414,7 @@
           },
           "ultimaDoseSomministrata": 0.5,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 1793524442695,
@@ -4387,7 +4387,7 @@
           "quantitaQuota": 1,
           "modo": "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell'infezione cronica da virus dell'epatite B (HBV).",
           "cprPerScatola": 30,
-          "scorta": 111,
+          "scorta": 110,
           "giorniAlert": 10,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
@@ -4409,10 +4409,94 @@
             "scatoleTotali": 12,
             "scatoleRitirate": 12,
             "scatoleResidue": 0,
-            "ultimoRitiro": "2026-11-16"
+            "ultimoRitiro": "2026-11-16",
+            "attivo": true,
+            "dataScadenza": "2027-02-22",
+            "protocollo": "011BQ1X145RHL",
+            "centroPrescrittore": "U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)",
+            "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
+            "prossimoRitiroIso": "2027-02-22",
+            "prossimoRitiroConsigliato": "22/02/2027",
+            "storicoRitiri": [
+              {
+                "id": "rit_1",
+                "data": "2026-02-23",
+                "timestamp": "2026-02-23T10:00:00.000Z",
+                "scatole": 3,
+                "cprAggiunte": 90,
+                "scatoleResidueDopo": 9,
+                "scatoleTotali": 12,
+                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
+                "note": "1° Tranche trimestrale"
+              },
+              {
+                "id": "rit_2",
+                "data": "2026-05-20",
+                "timestamp": "2026-05-20T10:00:00.000Z",
+                "scatole": 3,
+                "cprAggiunte": 90,
+                "scatoleResidueDopo": 6,
+                "scatoleTotali": 12,
+                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
+                "note": "2° Tranche trimestrale"
+              },
+              {
+                "id": "rit_3",
+                "data": "2026-08-18",
+                "timestamp": "2026-08-18T10:00:00.000Z",
+                "scatole": 3,
+                "cprAggiunte": 90,
+                "scatoleResidueDopo": 3,
+                "scatoleTotali": 12,
+                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
+                "note": "3° Tranche trimestrale"
+              },
+              {
+                "id": "rit_4",
+                "data": "2026-11-16",
+                "timestamp": "2026-11-16T10:00:00.000Z",
+                "scatole": 3,
+                "cprAggiunte": 90,
+                "scatoleResidueDopo": 0,
+                "scatoleTotali": 12,
+                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
+                "note": "4° Tranche (Ritiro ufficiale 16/11/2026 - Completamento fornitura 12/12)"
+              }
+            ]
           },
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225,
+          "canaleDistribuzione": "territoriale_asl",
+          "storicoCarichi": [
+            {
+              "data": "2026-02-23",
+              "timestamp": "2026-02-23T10:00:00.000Z",
+              "scatole": 3,
+              "cprAggiunte": 90,
+              "note": "1° Ritiro ASL"
+            },
+            {
+              "data": "2026-05-20",
+              "timestamp": "2026-05-20T10:00:00.000Z",
+              "scatole": 3,
+              "cprAggiunte": 90,
+              "note": "2° Ritiro ASL"
+            },
+            {
+              "data": "2026-08-18",
+              "timestamp": "2026-08-18T10:00:00.000Z",
+              "scatole": 3,
+              "cprAggiunte": 90,
+              "note": "3° Ritiro ASL"
+            },
+            {
+              "data": "2026-11-16",
+              "timestamp": "2026-11-16T10:00:00.000Z",
+              "scatole": 3,
+              "cprAggiunte": 90,
+              "note": "4° Ritiro ASL ufficiale (16/11/2026)"
+            }
+          ]
         }
       ],
       "registrazioni": [
@@ -4549,6 +4633,31 @@
           "azione": "somministrazione_regolare",
           "dettaglio": "Somministrazione regolare registrata a sistema.",
           "operatore": "Coordinamento Sanitario"
+        },
+        {
+          "id": "log_entecavir_20261116",
+          "tipo": "scorta",
+          "farmacoId": 1793544102871,
+          "farmaco": "Entecavir Sandoz 0,5 mg",
+          "azione": "ritiro_territoriale_asl",
+          "numScatole": 3,
+          "cprAggiunte": 90,
+          "timestamp": "2026-11-16T11:00:00.000Z",
+          "desc": "Ritiro Farmacia Territoriale ASL (4° Tranche): 3 scatole di Entecavir Sandoz 0,5 mg ritirate il 16/11/2026. Scorta totale a casa allineata a 111 compresse. Fornitura annuale completata (12/12 scatole). Presidio: Farmacia Territoriale ASL Bari - Ex CTO.",
+          "operatore": "Operatore OSS / Famiglia"
+        },
+        {
+          "id": "log_1794996829225",
+          "tipo": "farmaco",
+          "timestamp": "2026-11-18T10:13:49.225Z",
+          "farmacoId": 1793544102871,
+          "farmaco": "Entecavir Sandoz 0,5 mg",
+          "dosaggio": "0,5 mg (1 cpr)",
+          "orarioPrevisto": "07:00",
+          "orarioReale": "11:13",
+          "azione": "somministrazione_regolare",
+          "dettaglio": "Somministrazione confermata regolarmente. Scorta residua: 111 cpr.",
+          "operatore": "Operatore OSS / Famiglia"
         }
       ],
       "visite": [
@@ -5374,6 +5483,12 @@
             "scatole": 3,
             "puntoRitiro": "Farmacia Territoriale ASL Bari Ex CTO",
             "note": "3° Tranche"
+          },
+          {
+            "data": "2026-11-16",
+            "scatole": 3,
+            "puntoRitiro": "Farmacia Territoriale ASL Bari Ex CTO",
+            "note": "4° Tranche (Ritiro ufficiale 16/11/2026 - Fornitura annuale completata 12/12)"
           }
         ]
       },
@@ -5715,7 +5830,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         },
         {
           "id": 1794159380065,
@@ -5745,7 +5860,7 @@
           },
           "ultimaDoseSomministrata": 1,
           "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829185
+          "fattoOggiTimestamp": 1794996829225
         }
       ],
       "registrazioni": [
@@ -6072,13 +6187,14 @@
       "lastModified": 1794389658760
     }
   ],
-  "lastModified": 1795004973640,
-  "lastModifiedDevice": "smartphone",
+  "lastModified": 1795073691948,
+  "lastModifiedDevice": "pc",
   "lastModifiedBy": {
-    "nome": "Dott. Ciro Milella",
+    "nome": "Ciro Milella (Admin)",
     "ruolo": "admin",
-    "ora": "11:55",
-    "azione": "Allineamento storico giorni pregressi"
+    "paziente": "Tutti",
+    "ora": "14:38",
+    "timestamp": 1795009155207
   },
   "ultimoGiornoOperativo": "2026-11-18",
   "aldoVimpatInizializzato2026": true,
@@ -7159,5 +7275,6 @@
       "evento": "Tentativo operatore di disattivare Audio Postura bloccato dal Protocollo Sicurezza Paziente",
       "esito": "Ripristinato forzatamente al 75%-100%"
     }
-  ]
+  ],
+  "ciroEntecavirRitiro20261116": true
 }

@@ -1209,7 +1209,7 @@ function getPazienteCiroInit() {
       quantitaQuota: 1,
       modo: "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell'infezione cronica da virus dell'epatite B (HBV).",
       cprPerScatola: 30,
-      scorta: 41,
+      scorta: 111,
       giorniAlert: 10,
       cadenzaTipo: 'giornaliera',
       canaleDistribuzione: 'territoriale_asl',
@@ -1218,12 +1218,18 @@ function getPazienteCiroInit() {
         dataScadenza: '2027-02-22',
         protocollo: '011BQ1X145RHL',
         scatoleTotali: 12,
-        scatoleRitirate: 9,
-        scatoleResidue: 3,
+        scatoleRitirate: 12,
+        scatoleResidue: 0,
         centroPrescrittore: 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)',
         sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO',
         note: '1 cpr/die a digiuno (almeno 2h prima o dopo i pasti) - PHT Distribuzione Diretta HBV',
-        ultimoRitiro: '2026-08-18'
+        ultimoRitiro: '2026-11-16',
+        storicoRitiri: [
+          { id: 'rit_1', data: '2026-02-23', timestamp: '2026-02-23T10:00:00.000Z', scatole: 3, cprAggiunte: 90, scatoleResidueDopo: 9, scatoleTotali: 12, sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO', note: '1° Tranche trimestrale' },
+          { id: 'rit_2', data: '2026-05-20', timestamp: '2026-05-20T10:00:00.000Z', scatole: 3, cprAggiunte: 90, scatoleResidueDopo: 6, scatoleTotali: 12, sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO', note: '2° Tranche trimestrale' },
+          { id: 'rit_3', data: '2026-08-18', timestamp: '2026-08-18T10:00:00.000Z', scatole: 3, cprAggiunte: 90, scatoleResidueDopo: 3, scatoleTotali: 12, sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO', note: '3° Tranche trimestrale' },
+          { id: 'rit_4', data: '2026-11-16', timestamp: '2026-11-16T10:00:00.000Z', scatole: 3, cprAggiunte: 90, scatoleResidueDopo: 0, scatoleTotali: 12, sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO', note: '4° Tranche trimestrale completata (3 scatole ritirate, scorta allineata a 111 cpr)' }
+        ]
       },
       fattoOggi: false,
       ultimaModificaClinica: {
@@ -1277,17 +1283,19 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
       if (entecavir && (!entecavir.pianoTerapeutico || !entecavir.canaleDistribuzione)) {
         entecavir.canaleDistribuzione = 'territoriale_asl';
         entecavir.cprPerScatola = 30;
+        if (!entecavir.scorta || entecavir.scorta < 110) entecavir.scorta = 111;
+        entecavir.ultimoRitiro = '2026-11-16';
         entecavir.pianoTerapeutico = {
           attivo: true,
           dataScadenza: '2027-02-22',
           protocollo: '011BQ1X145RHL',
           scatoleTotali: 12,
-          scatoleRitirate: 9,
-          scatoleResidue: 3,
+          scatoleRitirate: 12,
+          scatoleResidue: 0,
           centroPrescrittore: 'U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)',
           sedeRitiro: 'Farmacia Territoriale ASL Bari - Ex CTO',
           note: '1 cpr/die a digiuno (almeno 2h prima o dopo i pasti) - PHT Distribuzione Diretta HBV',
-          ultimoRitiro: '2026-08-18'
+          ultimoRitiro: '2026-11-16'
         };
         try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
       }
@@ -7269,40 +7277,65 @@ function mostraAuditFarmaco(farmacoId) {
     ? new Date(t.ultimoRitiro).toLocaleDateString('it-IT') + ' ore ' + new Date(t.ultimoRitiro).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
     : 'Iniziale (Prescrizione)';
 
+    const isASL = t.canaleDistribuzione === 'territoriale_asl' || (t.pianoTerapeutico && t.pianoTerapeutico.attivo) || (t.nomeCommerciale || t.farmaco || '').toUpperCase().includes('ENTECAVIR');
+
   infoBox.innerHTML = `
-    <div>
-      <div style="font-size:12px; color:#475569;">Stato Somministrazione:</div>
-      <div style="font-size:14px; font-weight:800; color:${t.fattoOggi ? '#10b981' : '#f59e0b'};">
-        ${t.fattoOggi ? '✅ Somministrato oggi' : '⚪ In attesa di somministrazione'}
+    <div style="width:100%; display:flex; flex-direction:column; gap:10px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+        <div>
+          <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Stato Somministrazione:</div>
+          <div style="font-size:13.5px; font-weight:900; color:${t.fattoOggi ? '#10b981' : '#f59e0b'}; margin-top:2px;">
+            ${t.fattoOggi ? '✅ Somministrato oggi' : '⚪ In attesa di somministrazione'}
+          </div>
+          <div style="font-size:11px; color:#64748b; margin-top:3px;">
+            📦 Confezione: <b>${t.cprPerScatola || 30} compresse/scatola</b>
+          </div>
+        </div>
+
+        <div style="text-align:right;">
+          <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Scorta Rimanente:</div>
+          <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px; margin-top:2px;">
+            <span class="badge ${badgeScorta}" style="font-size:13px; font-weight:900; padding:4px 10px; border-radius:12px; border:1px solid #cbd5e1;">
+              📦 ${t.scorta} cpr (~${t.scorta} gg)
+            </span>
+            <button type="button" onclick="impostaScortaManuale(${t.id})" title="Rettifica conteggio esatto a casa" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:8px; padding:3px 8px; font-size:11px; font-weight:700; cursor:pointer;">✏️ Correggi</button>
+          </div>
+        </div>
       </div>
-      <div style="font-size:11px; color:#64748b; margin-top:4px;">
-        📦 Confezione: <b>${t.cprPerScatola || 28} compresse/scatola</b>
+
+      <div style="background:#ffffff; border-radius:10px; padding:10px 12px; border:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div>
+          <div style="font-size:11px; color:#0369a1; font-weight:800;">
+            🏛️ Ultimo Ritiro: <b>${t.ultimoRitiro ? new Date(t.ultimoRitiro).toLocaleDateString('it-IT') : 'N/D'}</b>
+          </div>
+          <div style="font-size:10.5px; color:#64748b; margin-top:1px;">
+            Presidio: <b>${t.farmacia || (t.pianoTerapeutico && t.pianoTerapeutico.sedeRitiro) || 'Farmacia Territoriale ASL'}</b>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px; color:#b45309; font-weight:800;">
+            ⏳ Fine Scorta: <b>${(() => {
+              if (!t.scorta || t.scorta <= 0) return 'Esaurito';
+              const dt = new Date();
+              dt.setDate(dt.getDate() + t.scorta);
+              return dt.toLocaleDateString('it-IT');
+            })()}</b>
+          </div>
+        </div>
       </div>
-    </div>
-    <div style="text-align:right;">
-      <div style="font-size:12px; color:#475569;">Scorta Rimanente (Disponibile):</div>
-      <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px; margin-top:2px;">
-        <span class="badge ${badgeScorta}" style="font-size:13px; font-weight:800; padding:4px 12px; border-radius:20px;">
-          📦 ${t.scorta} compresse (~${t.scorta} gg)
-        </span>
-        <button type="button" onclick="impostaScortaManuale(${t.id})" title="Rettifica numero compresse scorta esatta" style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; padding:3px 7px; font-size:11px; cursor:pointer;">✏️ Correggi</button>
-      </div>
-      <div style="font-size:11px; color:#0369a1; margin-top:4px;">
-        🏥 Ultimo Ritiro: <b>${dataRitiroStr}</b> (${t.farmacia || p.farmaciaDiRiferimento || 'Farmacia MACARIO'})
-      </div>
-      <div style="font-size:11px; color:#b45309; font-weight:700; margin-top:3px;">
-        ⏳ Data Presunta Esaurimento: <b>${(() => {
-      if (!t.scorta || t.scorta <= 0) return 'Esaurito';
-      const dt = new Date();
-      dt.setDate(dt.getDate() + t.scorta);
-      return dt.toLocaleDateString('it-IT');
-    })()}</b>
-      </div>
-      <div style="margin-top:6px;">
-        <button type="button" class="btn btn-sm" onclick="registraCaricoManualeConData(${t.id})"
-                style="background:#0284c7; color:#ffffff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
-          <span>📦</span> <span>+ Registra Carico con Data</span>
-        </button>
+
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:2px;">
+        ${isASL ? `
+          <button type="button" onclick="closeModal('modal-audit-farmaco'); apriModalRegistraRitiroASL();"
+                  style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; padding:8px 14px; border-radius:10px; font-size:12px; font-weight:900; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 8px rgba(2,132,199,0.25);">
+            <span>🏛️</span> <span>Registra Ritiro ASL (3 Scatole)</span>
+          </button>
+        ` : `
+          <button type="button" onclick="apriModalCaricoElegante(${t.id})"
+                  style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; padding:8px 14px; border-radius:10px; font-size:12px; font-weight:900; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 8px rgba(2,132,199,0.25);">
+            <span>📦</span> <span>+ Registra Carico con Data</span>
+          </button>
+        `}
       </div>
     </div>
   `;
@@ -7390,48 +7423,111 @@ function mostraAuditFarmaco(farmacoId) {
   openModal('modal-audit-farmaco');
 }
 
-// REGISTRAZIONE CARICO FARMACO CON DATA E QUANTITÀ PERSONALIZZABILE
-async function registraCaricoManualeConData(farmacoId) {
+
+// FUNZIONI DI GESTIONE MODAL CARICO ELEGANTE (ZERO PROMPT BROWSER)
+function apriModalCaricoElegante(farmacoId) {
   try {
     const p = getActivePaziente();
     if (!p) return;
     const t = (p.terapie || []).find(item => String(item.id) === String(farmacoId) || item.id == farmacoId);
     if (!t) return;
 
-    const isPen = typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t);
-    const cprPerScatola = isPen ? (parseInt(t.pennePerScatola, 10) || 3) : (parseInt(t.cprPerScatola, 10) || 28);
-    const unita = isPen ? 'penne' : 'cpr';
+    const modal = document.getElementById('modal-registra-carico-elegante');
+    if (!modal) return;
+
+    document.getElementById('carico-elegante-farmaco-id').value = t.id;
+    document.getElementById('carico-elegante-farmaco-nome').textContent = t.farmaco || t.nomeCommerciale || 'Farmaco';
 
     const oggiStr = new Date().toISOString().split('T')[0];
-    const dataScelta = prompt(`📦 Registra Carico Farmacia per "${t.farmaco}"\nInserisci la data del carico/ritiro (AAAA-MM-GG):`, oggiStr);
-    if (!dataScelta) return;
+    document.getElementById('carico-elegante-data').value = t.ultimoRitiro || oggiStr;
 
-    const numScatStr = prompt(`Quante scatole/confezioni sono state ritirate? (Ogni confezione contiene ${cprPerScatola} ${unita}):`, '1');
-    if (!numScatStr) return;
-    const nScat = parseInt(numScatStr, 10);
-    if (isNaN(nScat) || nScat <= 0) {
-      alert('Numero di scatole non valido.');
-      return;
-    }
+    document.getElementById('carico-elegante-farmacia').value = t.farmacia || (t.pianoTerapeutico && t.pianoTerapeutico.sedeRitiro) || (p.farmaciaDiRiferimento || 'Farmacia Territoriale ASL Bari - Ex CTO');
 
+    selezionaScatoleCaricoElegante(3);
+
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  } catch(e) {
+    console.error('Errore apriModalCaricoElegante:', e);
+  }
+}
+window.apriModalCaricoElegante = apriModalCaricoElegante;
+
+function chiudiModalCaricoElegante() {
+  const modal = document.getElementById('modal-registra-carico-elegante');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+window.chiudiModalCaricoElegante = chiudiModalCaricoElegante;
+
+function selezionaScatoleCaricoElegante(n) {
+  const inputNum = document.getElementById('carico-elegante-num-scatole');
+  if (inputNum) inputNum.value = n;
+
+  document.querySelectorAll('.btn-carico-preset').forEach(b => {
+    b.style.borderColor = '#cbd5e1';
+    b.style.background = '#ffffff';
+    b.style.color = '#334155';
+    b.style.fontWeight = '800';
+  });
+
+  const activeBtn = document.getElementById('btn-carico-preset-' + n);
+  if (activeBtn) {
+    activeBtn.style.borderColor = '#0284c7';
+    activeBtn.style.background = '#e0f2fe';
+    activeBtn.style.color = '#0369a1';
+    activeBtn.style.fontWeight = '900';
+  }
+
+  ricalcolaScortaCaricoElegante();
+}
+window.selezionaScatoleCaricoElegante = selezionaScatoleCaricoElegante;
+
+function ricalcolaScortaCaricoElegante() {
+  const p = getActivePaziente();
+  const tId = document.getElementById('carico-elegante-farmaco-id')?.value;
+  const t = p && p.terapie ? p.terapie.find(item => String(item.id) === String(tId)) : null;
+
+  const nScat = parseInt(document.getElementById('carico-elegante-num-scatole')?.value, 10) || 1;
+  const isPen = t && typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t);
+  const cprPerScatola = t ? (isPen ? (parseInt(t.pennePerScatola, 10) || 3) : (parseInt(t.cprPerScatola, 10) || 30)) : 30;
+
+  const currentScorta = t ? (parseFloat(t.scorta) || 0) : 0;
+  const finale = Math.round((currentScorta + (nScat * cprPerScatola)) * 10) / 10;
+
+  const inputFinale = document.getElementById('carico-elegante-scorta-finale');
+  if (inputFinale) {
+    inputFinale.value = finale;
+  }
+}
+window.ricalcolaScortaCaricoElegante = ricalcolaScortaCaricoElegante;
+
+async function confermaCaricoElegante() {
+  try {
+    const p = getActivePaziente();
+    if (!p) return;
+    const tId = document.getElementById('carico-elegante-farmaco-id')?.value;
+    const t = (p.terapie || []).find(item => String(item.id) === String(tId) || item.id == tId);
+    if (!t) return;
+
+    const dataScelta = document.getElementById('carico-elegante-data')?.value || new Date().toISOString().split('T')[0];
+    const nScat = parseInt(document.getElementById('carico-elegante-num-scatole')?.value, 10) || 1;
+    const farmaciaNome = document.getElementById('carico-elegante-farmacia')?.value || 'Farmacia';
+    const scortaFinale = parseFloat(document.getElementById('carico-elegante-scorta-finale')?.value);
+
+    const isPen = typeof isFarmacoPennaIniettabile === 'function' && isFarmacoPennaIniettabile(t);
+    const cprPerScatola = isPen ? (parseInt(t.pennePerScatola, 10) || 3) : (parseInt(t.cprPerScatola, 10) || 30);
+    const unita = isPen ? 'penne' : 'cpr';
     const daAggiungere = nScat * cprPerScatola;
-    const farmaciaNome = prompt('Farmacia o punto di ritiro:', t.farmacia || p.farmaciaDiRiferimento || 'Farmacia MACARIO');
 
     const operatore = localStorage.getItem('milella_user') || 'Caregiver';
 
-    if (isPen) {
-      t.penneScorta = Math.round(((parseFloat(t.penneScorta) || parseFloat(t.scorta) || 0) + daAggiungere) * 100) / 100;
-      t.scorta = t.penneScorta;
+    if (!isNaN(scortaFinale) && scortaFinale >= 0) {
+      t.scorta = scortaFinale;
+      if (isPen) t.penneScorta = scortaFinale;
     } else {
-      const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, p.terapie) : null;
-      if (mt && mt.gemelle && mt.gemelle.length > 1) {
-        mt.gemelle.forEach(function (item) {
-          item.scorta = Math.round(((parseFloat(item.scorta) || 0) + daAggiungere) * 10) / 10;
-          item.ultimoRitiro = dataScelta;
-        });
-      } else {
-        t.scorta = Math.round(((parseFloat(t.scorta) || 0) + daAggiungere) * 10) / 10;
-      }
+      t.scorta = Math.round(((parseFloat(t.scorta) || 0) + daAggiungere) * 10) / 10;
+      if (isPen) t.penneScorta = t.scorta;
     }
     t.ultimoRitiro = dataScelta;
 
@@ -7444,7 +7540,7 @@ async function registraCaricoManualeConData(farmacoId) {
       scatole: nScat,
       scortaRisultante: t.scorta,
       operatore: operatore,
-      farmacia: farmaciaNome || 'Farmacia'
+      farmacia: farmaciaNome
     });
 
     p.registrazioni = p.registrazioni || [];
@@ -7457,21 +7553,28 @@ async function registraCaricoManualeConData(farmacoId) {
       numScatole: nScat,
       cprAggiunte: daAggiungere,
       timestamp: new Date(dataScelta + 'T12:00:00').toISOString(),
-      desc: `Carico Farmacia: Ritiro del ${new Date(dataScelta).toLocaleDateString('it-IT')} di ${nScat} scatole di ${t.farmaco} (+${daAggiungere} ${unita}). Presso: ${farmaciaNome || 'Farmacia'}. Nuova scorta: ${t.scorta} ${unita}.`,
+      desc: 'Carico Farmacia: Ritiro del ' + new Date(dataScelta).toLocaleDateString('it-IT') + ' di ' + nScat + ' scatole (+ ' + daAggiungere + ' ' + unita + '). Nuova scorta: ' + t.scorta + ' ' + unita + '.',
       operatore: operatore
     });
 
+    chiudiModalCaricoElegante();
     saveDb();
+
     if (typeof renderMobileNativeView === 'function') renderMobileNativeView(p.terapie, p);
     if (typeof renderTerapieOggiSmart === 'function') renderTerapieOggiSmart();
     if (typeof renderTerapie === 'function') renderTerapie();
     if (typeof salvaStatoCareAssistStorage === 'function') salvaStatoCareAssistStorage();
 
-    showToast(`✅ Carico del ${new Date(dataScelta).toLocaleDateString('it-IT')} salvato! Scorta attuale: ${t.scorta} ${unita}`, 'success');
+    showToast('✅ Rifornimento del ' + new Date(dataScelta).toLocaleDateString('it-IT') + ' registrato con successo!', 'success');
     mostraAuditFarmaco(t.id);
-  } catch (err) {
-    console.error('Errore registraCaricoManualeConData:', err);
+  } catch(err) {
+    console.error('Errore confermaCaricoElegante:', err);
   }
+}
+window.confermaCaricoElegante = confermaCaricoElegante;
+
+async function registraCaricoManualeConData(farmacoId) {
+  apriModalCaricoElegante(farmacoId);
 }
 window.registraCaricoManualeConData = registraCaricoManualeConData;
 
@@ -13363,7 +13466,34 @@ function ricalcolaDosiMultipleModifica() {
   }
 }
 
+
+function switchFarmacoTab(tabName) {
+  var panes = document.querySelectorAll('.farmaco-tab-content');
+  panes.forEach(function (p) { p.style.display = 'none'; });
+
+  var btns = document.querySelectorAll('.farmaco-tab-btn');
+  btns.forEach(function (b) {
+    b.style.background = '#ffffff';
+    b.style.color = '#334155';
+    b.style.borderColor = '#cbd5e1';
+    b.classList.remove('active');
+  });
+
+  var targetPane = document.getElementById('farmaco-tab-pane-' + tabName);
+  var targetBtn = document.getElementById('btn-ftab-' + tabName);
+
+  if (targetPane) targetPane.style.display = 'block';
+  if (targetBtn) {
+    targetBtn.style.background = '#0284c7';
+    targetBtn.style.color = '#ffffff';
+    targetBtn.style.borderColor = '#0284c7';
+    targetBtn.classList.add('active');
+  }
+}
+window.switchFarmacoTab = switchFarmacoTab;
+
 function apriModificaFarmaco(farmacoId) {
+  if (typeof switchFarmacoTab === "function") switchFarmacoTab("posologia");
   try {
     var p = typeof getActivePaziente === 'function' ? getActivePaziente() : null;
     var t = null;
@@ -24258,17 +24388,21 @@ function getPianoTerapeuticoAttivo(paziente) {
         dataPrescrizioneInizio: "2026-02-23",
         dataScadenzaAnno: "2027-02-22",
         prossimaVisitaAmbulatoriale: "2027-02-23",
-        scatoleRitirateTotali: 9,
-        scatoleResidueDaRitirare: 3,
+        scatoleRitirateTotali: 12,
+        scatoleResidueDaRitirare: 0,
         puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO",
         storicoRitiri: [
           { data: "2026-02-23", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "1° Tranche" },
           { data: "2026-05-20", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "2° Tranche" },
-          { data: "2026-08-18", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "3° Tranche" }
+          { data: "2026-08-18", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "3° Tranche" },
+          { data: "2026-11-16", scatole: 3, puntoRitiro: "Farmacia Territoriale ASL Bari Ex CTO", note: "4° Tranche (Completamento fornitura annuale 12/12, scorta allineata a 111 cpr)" }
         ]
       };
       var tCiro = (p.terapie || []).find(function (item) { return (item.farmaco || '').toUpperCase().includes('ENTECAVIR'); });
-      if (tCiro) tCiro.scorta = 40;
+      if (tCiro && (typeof tCiro.scorta === 'undefined' || tCiro.scorta < 110)) {
+        tCiro.scorta = 111;
+        tCiro.ultimoRitiro = '2026-11-16';
+      }
       try { localStorage.setItem(DB_KEY, JSON.stringify(AppData)); } catch (e) { }
     }
     return p.pianoTerapeuticoDpc;
