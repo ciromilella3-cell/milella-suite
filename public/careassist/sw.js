@@ -1,5 +1,5 @@
 // Service Worker per CareAssist Pro: 100% Funzionamento Offline Domiciliare + Notifiche a Schermo Spento
-const CACHE_NAME = 'careassist-pro-v387-epatologia-topbar';
+const CACHE_NAME = 'careassist-pro-v388-dossier-scroll';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
