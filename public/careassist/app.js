@@ -1,3 +1,14 @@
+
+function apriMenuOSSTopMobileSheet() {
+  const bs = document.getElementById('modal-menu-oss-bottomsheet');
+  if (bs) {
+    bs.style.display = 'flex';
+  } else if (typeof toggleMenuOSSTop === 'function') {
+    toggleMenuOSSTop();
+  }
+}
+window.apriMenuOSSTopMobileSheet = apriMenuOSSTopMobileSheet;
+
 // ==============================================================================
 // SELETTORE ASSISTITI STILE WHATSAPP CANALI (RICERCA & FILTRI ISTANTANEI)
 // ==============================================================================

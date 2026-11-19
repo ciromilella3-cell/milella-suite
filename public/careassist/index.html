@@ -11031,42 +11031,38 @@
   <!-- ==========================================================================
    BARRA DI NAVIGAZIONE MULTI-DISPOSITIVO GLOBALE SUITE MILELLA (PC & SMARTPHONE)
    ========================================================================== -->
-  <nav class="mobile-bottom-bar" id="careassist-mobile-bar" aria-label="Navigazione Suite">
-    <a href="/launcher.html" class="bar-item" title="Home Suite Milella">
-      <span class="icon">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-          <polyline points="9 22 9 12 15 12 15 22" />
-        </svg>
-      </span>
-      <span>Home</span>
-    </a>
-
-    <button type="button" class="bar-item" onclick="apriModalHandsFreeAI()" title="Assistente Vocale Hands-Free">
-      <span class="icon" style="font-size:20px; line-height:1;">🎙️</span>
-      <span>HandsFree</span>
+  <nav class="mobile-bottom-bar" id="careassist-mobile-bar" aria-label="Navigazione Rapida Smartphone">
+    <!-- 1. SCORTE FARMACO & AUTONOMIA -->
+    <button type="button" class="bar-item" onclick="apriModalBollarioScorte()" title="Bollario Farmaci, Scorte & Autonomia">
+      <span class="icon" style="font-size:20px; line-height:1;">📦</span>
+      <span style="font-size:10px; font-weight:800; margin-top:2px;">Scorte</span>
     </button>
 
+    <!-- 2. RICHIESTA RICETTE MMG WHATSAPP -->
+    <button type="button" class="bar-item" onclick="apriModalFabbisognoRicette()" title="Chiedi Ricette WhatsApp al Medico MMG">
+      <span class="icon" style="font-size:20px; line-height:1;">📲</span>
+      <span style="font-size:10px; font-weight:800; margin-top:2px;">Ricette</span>
+    </button>
+
+    <!-- 3. TASTO CENTRALE IN RILIEVO: VISION SCANNER FOTOCAMERA -->
     <div class="bar-item center-action">
-      <button type="button" class="btn-circle-add" onclick="apriModalVisionScanner()" title="Vision Scanner Fotocamera">
-        <span style="font-size:22px; line-height:1;">📸</span>
+      <button type="button" class="btn-circle-add" onclick="apriModalVisionScanner()" title="Inquadra Scatola Farmaco o Foto Piaga">
+        <span style="font-size:24px; line-height:1;">📸</span>
       </button>
-      <span style="font-size:9.5px; font-weight:800; color:#0284c7; margin-top:3px;">Scanner</span>
+      <span style="font-size:9.5px; font-weight:900; color:#0284c7; margin-top:3px;">Scanner</span>
     </div>
 
-    <button type="button" class="bar-item" onclick="apriModalFirmaConsegna()" title="Firma Consegna Turno">
-      <span class="icon" style="font-size:20px; line-height:1;">✍️</span>
-      <span>Firma</span>
+    <!-- 4. SOS 112 & PASSAPORTO CLINICO EMERGENZA -->
+    <button type="button" class="bar-item" onclick="apriModalPassaporto118()" title="Passaporto Emergenza 112 da Frigo & Pronto Soccorso" style="color:#dc2626;">
+      <span class="icon" style="font-size:20px; line-height:1;">🚨</span>
+      <span style="font-size:10px; font-weight:900; color:#dc2626; margin-top:2px;">SOS 112</span>
     </button>
 
-    <button type="button" class="bar-item" onclick="document.querySelector('.nav-tab[data-target=\'tab-family-portal\']').click();" title="Portale Famiglia & MMG">
-      <span class="icon" style="font-size:20px; line-height:1;">👨‍👩‍👧‍👦</span>
-      <span>Famiglia</span>
-    
-    <button class="tab-btn btn-nav-reload" onclick="window.location.reload()" title="Ricarica applicazione e sincronizza dati" style="margin-left: auto; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff !important; font-weight: 700; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 2px 6px rgba(2,132,199,0.35); display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; cursor: pointer; white-space: nowrap;">
-      🔄 Ricarica
-    </button>
-  </nav>
+    <!-- 5. CASSETTO STRUMENTI COMPLETO (TUTTE LE FUNZIONI DEL PC) -->
+    <button type="button" class="bar-item" onclick="apriMenuOSSTopMobileSheet()" title="Apri tutti gli strumenti e registri del PC">
+      <span class="icon" style="font-size:20px; line-height:1;">⚡</span>
+      <span style="font-size:10px; font-weight:800; margin-top:2px;">Menu</span>
+    </button></nav>
   <nav class="mobile-bottom-bar-old" style="display:none;" id="careassist-mobile-bar-legacy">
     <button type="button" class="bar-item"
       onclick="window.history.length > 1 ? window.history.back() : window.location.href='/launcher.html'"
