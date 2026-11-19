@@ -123,6 +123,16 @@ async function cloudSet(key, data, localFilePath) {
             if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
             const str = typeof data === 'string' ? data : JSON.stringify(data, null, Array.isArray(data) ? 4 : 2);
             safeWriteAtomic(localFilePath, str);
+            
+            // Garantisci allineamento simultaneo di entrambi i percorsi per 'progetti'
+            if (key === 'progetti') {
+                const altPath = localFilePath.includes('data') 
+                    ? path.join(__dirname, 'progetti_config.json') 
+                    : path.join(__dirname, 'data', 'progetti_config.json');
+                const altDir = path.dirname(altPath);
+                if (!fs.existsSync(altDir)) fs.mkdirSync(altDir, { recursive: true });
+                safeWriteAtomic(altPath, str);
+            }
         } catch (e) {
             console.error(`[DATABASE] Errore salvataggio disco per ${key}:`, e.message);
         }
