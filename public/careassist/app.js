@@ -27409,6 +27409,8 @@ var GUIDE_CONTESTUALI = {
       '<b>Note di Consegna</b>: scrivi eventuali annotazioni urgenti o riepiloghi per il collega del turno montante.',
       '<b>Convalida e Firma Turno</b>: tocca il tasto verde per generare l\'impronta digitale di sicurezza (hash) e salvare il check-in nel turnario certificato.'
     ]
+  ,
+    utilita: '<b>Valore legale e tutela per la struttura e la famiglia</b>: certifica con data, ora certa e coordinate geografiche la presenza al domicilio, azzerando contestazioni sulle fasce orarie di assistenza.'
   },
   'roadmap-scadenze': {
     icona: '🗓️',
@@ -27420,6 +27422,8 @@ var GUIDE_CONTESTUALI = {
       '<b>Filtro per Categoria</b>: filtra rapidamente per Visite Specialistiche, Esami del Sangue, Diagnostica o Rinnovo Piani/Forniture.',
       '<b>Salva nel Telefono</b>: tocca il calendario su qualsiasi singolo evento o premi "Scarica Calendario Completo (.ics)" per salvare tutti i promemoria su Google Calendar, iPhone o Android.'
     ]
+  ,
+    utilita: '<b>Sincronizzazione familiare e zero visite saltate</b>: evita che esami del sangue, ecografie o rinnovi di piani terapeutici vitali vengano dimenticati, coordinando la famiglia su un unico scadenzario condiviso.'
   },
   'handsfree-ai': {
     icona: '🎙️',
@@ -27432,6 +27436,8 @@ var GUIDE_CONTESTUALI = {
       '<b>Verifica la Trascrizione</b>: le parole compariranno in tempo reale nel riquadro sottostante.',
       '<b>Conferma e Salva</b>: premi il pulsante di conferma per archiviare automaticamente la nota nel diario clinico dell\'assistito selezionato.'
     ]
+  ,
+    utilita: '<b>Igiene totale bedside e rapidità operativa</b>: permette di registrare i parametri anche quando si indossano i guanti sanitari o le mani sono impegnate nella cura dell\'assistito.'
   },
   'ambulatorio-epatologia': {
     icona: '🔬',
@@ -27444,6 +27450,8 @@ var GUIDE_CONTESTUALI = {
       '<b>Nuovo Controllo da Foto / Archivia Referto</b>: permette di fotografare o caricare direttamente l\'esito dell\'esame eseguito per aggiornare lo storico clinico.',
       '<b>Stampa e Moduli A4</b>: genera istantaneamente il prestampato ufficiale per il reparto di Malattie Infettive del Policlinico.'
     ]
+  ,
+    utilita: '<b>Compliance clinica impeccabile per esenzioni e controlli epatologici</b>: mantiene aggiornato il timing perfetto tra esami preparatori (Scotti), ecografia addome e visita specialistica del Policlinico.'
   },
 
   'ritiro-asl': {
@@ -28076,7 +28084,7 @@ function mostraGuidaContestuale(chiave) {
     }).join('');
   }
 
-  corpoEl.innerHTML =
+  var scopoHtml = g.scopo ? (
     '<div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid #0284c7; border-radius:10px; padding:12px 14px; margin-bottom:16px;">' +
     '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#0369a1; letter-spacing:0.5px; margin-bottom:3px;">' +
     '🎯 A cosa serve (Scopo Clinico &amp; Gestionale)' +
@@ -28084,15 +28092,19 @@ function mostraGuidaContestuale(chiave) {
     '<div style="font-size:13.5px; color:#1e293b; line-height:1.5;">' +
     g.scopo +
     '</div>' +
-    '</div>' +
+    '</div>'
+  ) : '';
 
+  var comeSiUsaBox = passiHtml ? (
     '<div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:14px 16px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">' +
     '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#475569; letter-spacing:0.5px; margin-bottom:12px; display:flex; align-items:center; gap:6px;">' +
     '<span>🛠️</span> <span>Come si usa (Passi Operativi)</span>' +
     '</div>' +
     passiHtml +
-    '</div>' +
+    '</div>'
+  ) : '';
 
+  var utilitaBox = g.utilita ? (
     '<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid #16a34a; border-radius:10px; padding:12px 14px;">' +
     '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#15803d; letter-spacing:0.5px; margin-bottom:3px; display:flex; align-items:center; gap:6px;">' +
     '<span>💡</span> <span>Perché fa la differenza (Valore per la Struttura)</span>' +
@@ -28100,8 +28112,13 @@ function mostraGuidaContestuale(chiave) {
     '<div style="font-size:13px; color:#166534; line-height:1.45;">' +
     g.utilita +
     '</div>' +
-    '</div>';
+    '</div>'
+  ) : '';
 
+  corpoEl.innerHTML = scopoHtml + comeSiUsaBox + utilitaBox;
+
+  // Make sure modal-guida-contestuale is visible above other modals!
+  modal.style.setProperty('z-index', '2147483647', 'important');
   openModal('modal-guida-contestuale');
 }
 window.mostraGuidaContestuale = mostraGuidaContestuale;

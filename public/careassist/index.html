@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=393">
+  <link rel="stylesheet" href="style.css?v=394">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -7506,7 +7506,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   </div>
 
   <!-- MODAL GUIDA CONTESTUALE: SPIEGAZIONE E UTILITÀ CLINICA PER OGNI MASCHERA -->
-  <div class="modal-overlay" id="modal-guida-contestuale" style="z-index: 20000060; display:none;">
+  <div class="modal-overlay" id="modal-guida-contestuale" style="z-index: 2147483647; display:none;">
     <div class="modal-card"
       style="max-width:680px; width:95%; max-height:90vh; display:flex; flex-direction:column; border-radius:20px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.45); border:1.5px solid #38bdf8; background:#ffffff;">
       <div class="modal-header modal-header-guida"
@@ -9688,7 +9688,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=393"></script>
+  <script src="app.js?v=394"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9784,7 +9784,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
             title="Chiudi">✕</button>
         </div>
         <div style="display: flex; justify-content: flex-start; align-items: center; width: 100%;">
-          <button type="button" onclick="mostraGuidaContestuale('roadmap-scadenze')" style="background:#f0f9ff; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:3px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 1px 3px rgba(0,0,0,0.15);" title="A cosa serve la Roadmap Scadenze">
+          <button type="button" onclick="mostraGuidaContestuale('roadmap-scadenze')" ontouchstart="mostraGuidaContestuale('roadmap-scadenze')" style="background:#f0f9ff; color:#0369a1; border:1px solid #7dd3fc; border-radius:8px; padding:3px 10px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 1px 3px rgba(0,0,0,0.15);" title="A cosa serve la Roadmap Scadenze">
             <span>💡</span> <span>A cosa serve</span>
           </button>
         </div>
