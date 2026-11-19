@@ -4357,15 +4357,20 @@
                 </div>
 
                 <div class="riga-doppia-pro" style="margin-bottom: 8px;">
-                  <div class="form-group-compact" style="flex: 1.2;">
-                    <label class="form-label-compact">Data Scadenza Piano</label>
+                  <div class="form-group-compact" style="flex: 1.1;">
+                    <label class="form-label-compact" style="font-weight: 800; color: #0369a1;">📅 Data Ultimo Ritiro Effettuato</label>
+                    <input type="date" class="form-control-compact" id="edit-pt-ultimo-ritiro" onchange="aggiornaDataUltimoRitiroModale(this.value)" style="font-weight: 800; background: #f0f9ff; border: 1.5px solid #0284c7; color: #0369a1;">
+                    <div style="font-size: 10px; color: #64748b; margin-top: 2px;">Puoi correggere la data (es. 16/11/2026)</div>
+                  </div>
+                  <div class="form-group-compact" style="flex: 1;">
+                    <label class="form-label-compact">Data Scadenza Piano PT</label>
                     <input type="date" class="form-control-compact" id="edit-pt-data-scadenza" onchange="aggiornaCalcoloPianoTerapeuticoModale()" style="font-weight: 700;">
                     <div id="edit-pt-avviso-scadenza" style="font-size: 10px; font-weight: 700; color: #0284c7; margin-top: 2px;">Scadenza regolare</div>
                   </div>
-                  <div class="form-group-compact" style="flex: 1;">
-                    <label class="form-label-compact">Protocollo / N. Registro</label>
-                    <input type="text" class="form-control-compact" id="edit-pt-protocollo" placeholder="Es. 011BQ1X145RHL">
-                  </div>
+                </div>
+                <div class="form-group-compact" style="margin-bottom: 8px;">
+                  <label class="form-label-compact">Protocollo / N. Registro ASL</label>
+                  <input type="text" class="form-control-compact" id="edit-pt-protocollo" placeholder="Es. 011BQ1X145RHL">
                 </div>
 
                 <!-- CONTABILITÀ SCATOLE -->

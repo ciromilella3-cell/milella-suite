@@ -8248,6 +8248,19 @@ function apriModalRegistraRitiroASL(terapiaId) {
 }
 window.apriModalRegistraRitiroASL = apriModalRegistraRitiroASL;
 
+function aggiornaDataUltimoRitiroModale(val) {
+  try {
+    if (!val) return;
+    var elUlt = document.getElementById('top-asl-ultimo-ritiro-testo');
+    if (elUlt) {
+      elUlt.textContent = new Date(val).toLocaleDateString('it-IT');
+    }
+  } catch(e) {
+    console.error(e);
+  }
+}
+window.aggiornaDataUltimoRitiroModale = aggiornaDataUltimoRitiroModale;
+
 function chiudiModalRegistraRitiroASL() {
   var modal = document.getElementById('modal-registra-ritiro-asl');
   if (modal) modal.style.display = 'none';
@@ -13694,6 +13707,11 @@ function apriModificaFarmaco(farmacoId) {
 
       if (document.getElementById('edit-pt-data-scadenza')) document.getElementById('edit-pt-data-scadenza').value = dtScad;
       if (document.getElementById('edit-pt-protocollo')) document.getElementById('edit-pt-protocollo').value = prot;
+      if (document.getElementById('edit-pt-ultimo-ritiro')) {
+        var isoUlt = ptSource.ultimoRitiro || t.ultimoRitiro || '2026-11-16';
+        if (isoUlt && isoUlt.length > 10) isoUlt = isoUlt.slice(0, 10);
+        document.getElementById('edit-pt-ultimo-ritiro').value = isoUlt;
+      }
       if (document.getElementById('edit-pt-scatole-totali')) document.getElementById('edit-pt-scatole-totali').value = totScat;
       if (document.getElementById('edit-pt-scatole-ritirate')) document.getElementById('edit-pt-scatole-ritirate').value = ritScat;
       if (document.getElementById('edit-pt-scatole-residue-display')) document.getElementById('edit-pt-scatole-residue-display').textContent = resScat;
@@ -14256,7 +14274,7 @@ function salvaModificaFarmaco(e) {
       centroPrescrittore: document.getElementById('edit-pt-centro-prescrittore')?.value.trim() || '',
       sedeRitiro: document.getElementById('edit-pt-sede-ritiro')?.value.trim() || '',
       note: document.getElementById('edit-pt-note')?.value.trim() || '',
-      ultimoRitiro: new Date().toISOString()
+      ultimoRitiro: (document.getElementById('edit-pt-ultimo-ritiro') && document.getElementById('edit-pt-ultimo-ritiro').value) ? document.getElementById('edit-pt-ultimo-ritiro').value : '2026-11-16'
     };
 
     if (p.pianoTerapeuticoDpc) {
