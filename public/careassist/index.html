@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=381">
+  <link rel="stylesheet" href="style.css?v=382">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -283,36 +283,47 @@
 
   </style>
 
+
+
+
+
+
 <script>
-function apriMenuOSSTopMobileSheet(e) {
-  if (e && e.preventDefault) e.preventDefault();
-  if (e && e.stopPropagation) e.stopPropagation();
+window.apriMenuOSSTopMobileSheet = function(e) {
+  if (e) {
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
+  }
   var bs = document.getElementById('modal-menu-oss-bottomsheet');
   if (bs) {
     bs.style.setProperty('display', 'flex', 'important');
+    bs.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
-}
-window.apriMenuOSSTopMobileSheet = apriMenuOSSTopMobileSheet;
+};
 
-function chiudiMenuOSSTop(e) {
-  if (e && e.stopPropagation) e.stopPropagation();
+window.chiudiMenuOSSTop = function(e) {
+  if (e) {
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
+  }
   var bs = document.getElementById('modal-menu-oss-bottomsheet');
   if (bs) {
     bs.style.setProperty('display', 'none', 'important');
-    document.body.style.overflow = '';
+    bs.style.display = 'none';
+    bs.classList.remove('active');
   }
+  document.body.style.overflow = '';
   var d = document.getElementById('dropdown-menu-oss-top');
   if (d) d.style.display = 'none';
-}
-window.chiudiMenuOSSTop = chiudiMenuOSSTop;
-</script>
+};
 
-<script>
-function eseguiStrumentoMobile(azione, param) {
-  try {
-    chiudiMenuOSSTop();
-  } catch(e) {}
+window.eseguiStrumentoMobile = function(azione, e) {
+  if (e) {
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
+  }
+  window.chiudiMenuOSSTop();
   
   setTimeout(function() {
     try {
@@ -391,11 +402,9 @@ function eseguiStrumentoMobile(azione, param) {
       }
     } catch(err) {
       console.error('Errore esecuzione strumento mobile:', err);
-      alert('Apertura: ' + azione + ' - ' + (err.message || err));
     }
-  }, 120);
-}
-window.eseguiStrumentoMobile = eseguiStrumentoMobile;
+  }, 100);
+};
 </script>
 
 </head>
@@ -9580,7 +9589,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=381"></script>
+  <script src="app.js?v=382"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -11118,7 +11127,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
     </button>
 
     <!-- 5. CASSETTO STRUMENTI COMPLETO (TUTTE LE FUNZIONI DEL PC) -->
-    <button type="button" class="bar-item" id="btn-bottombar-menu-oss" onclick="var m=document.getElementById('modal-menu-oss-bottomsheet'); if(m){ m.style.setProperty('display','flex','important'); m.classList.add('active'); }" title="Apri tutti gli strumenti e registri del PC">
+    <button type="button" class="bar-item" id="btn-bottombar-menu-oss" onclick="apriMenuOSSTopMobileSheet(event);" title="Apri tutti gli strumenti e registri del PC">
       <span class="icon" style="font-size:20px; line-height:1;">⚡</span>
       <span style="font-size:10px; font-weight:800; margin-top:2px;">Menu</span>
     </button></nav>
@@ -11552,7 +11561,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
 
 
 <!-- MODAL COMPLETO STRUMENTI PC PER SMARTPHONE -->
-  <div id="modal-menu-oss-bottomsheet" onclick="if(event.target===this) chiudiMenuOSSTop(event);"
+  <div id="modal-menu-oss-bottomsheet" onclick="if(event.target===this) chiudiMenuOSSTop(event);" ontouchstart="if(event.target===this) chiudiMenuOSSTop(event);"
     style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:2147483647; background:rgba(15,23,42,0.8); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); align-items:flex-end; justify-content:center; box-sizing:border-box;">
     
     <div style="background:#ffffff; width:100%; max-width:520px; border-radius:26px 26px 0 0; padding:18px 20px 34px 20px; box-shadow:0 -10px 45px rgba(0,0,0,0.4); display:flex; flex-direction:column; max-height:85vh; box-sizing:border-box; animation:slideUpMobile 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
@@ -11569,7 +11578,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
             <div style="font-size:11px; color:#64748b; font-weight:600;">Funzioni complete abilitate su Smartphone</div>
           </div>
         </div>
-        <button type="button" onclick="chiudiMenuOSSTop(event);" aria-label="Chiudi"
+        <button type="button" onclick="chiudiMenuOSSTop(event);" ontouchstart="chiudiMenuOSSTop(event);" aria-label="Chiudi"
           style="background:#f1f5f9; border:none; width:34px; height:34px; border-radius:50%; font-size:16px; font-weight:900; color:#475569; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
       </div>
 
@@ -11577,7 +11586,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
       <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:4px 2px 14px 2px;">
         
         <!-- 1. PRESTAMPATO INFETTIVI -->
-        <button type="button" onclick="eseguiStrumentoMobile('prestampato');"
+        <button type="button" onclick="eseguiStrumentoMobile('prestampato', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#eff6ff; border:1.5px solid #bfdbfe; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">📑</span>
           <span style="font-size:13px; font-weight:900; color:#0369a1;">Prestampato Infettivi</span>
@@ -11585,7 +11594,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 2. REGISTRO ASL PHT -->
-        <button type="button" onclick="eseguiStrumentoMobile('registro_asl');"
+        <button type="button" onclick="eseguiStrumentoMobile('registro_asl', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🏛️</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Registro Ritiro ASL</span>
@@ -11593,7 +11602,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 3. DOSSIER CLINICO OSPEDALIERO A4 -->
-        <button type="button" onclick="eseguiStrumentoMobile('dossier');"
+        <button type="button" onclick="eseguiStrumentoMobile('dossier', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">📋</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Dossier Clinico A4</span>
@@ -11601,7 +11610,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 4. FIRMA CONSEGNA TURNO OSS -->
-        <button type="button" onclick="eseguiStrumentoMobile('firma');"
+        <button type="button" onclick="eseguiStrumentoMobile('firma', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f0fdf4; border:1.5px solid #bbf7d0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">✍️</span>
           <span style="font-size:13px; font-weight:900; color:#15803d;">Firma Consegna Turno</span>
@@ -11609,7 +11618,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 5. ASSISTENTE VOCALE HANDS-FREE AI -->
-        <button type="button" onclick="eseguiStrumentoMobile('handsfree');"
+        <button type="button" onclick="eseguiStrumentoMobile('handsfree', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#eef2ff; border:1.5px solid #c7d2fe; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🎙️</span>
           <span style="font-size:13px; font-weight:900; color:#4338ca;">Hands-Free AI</span>
@@ -11617,7 +11626,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 6. CONSEGNA VOCALE OSS CON TRASCRIZIONE -->
-        <button type="button" onclick="eseguiStrumentoMobile('consegna_vocale');"
+        <button type="button" onclick="eseguiStrumentoMobile('consegna_vocale', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🗣️</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Consegna Vocale OSS</span>
@@ -11625,7 +11634,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 7. BRIEFING MATTUTINO AD ALTA VOCE -->
-        <button type="button" onclick="eseguiStrumentoMobile('briefing');"
+        <button type="button" onclick="eseguiStrumentoMobile('briefing', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🔊</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Briefing Vocale</span>
@@ -11633,7 +11642,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 8. SCALE CLINICHE BRADEN & BARTHEL -->
-        <button type="button" onclick="eseguiStrumentoMobile('scale');"
+        <button type="button" onclick="eseguiStrumentoMobile('scale', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f5f3ff; border:1.5px solid #ddd6fe; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🧠</span>
           <span style="font-size:13px; font-weight:900; color:#6d28d9;">Scale Cliniche</span>
@@ -11641,7 +11650,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 9. ROADMAP SCADENZE FAMIGLIA -->
-        <button type="button" onclick="eseguiStrumentoMobile('roadmap');"
+        <button type="button" onclick="eseguiStrumentoMobile('roadmap', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🗓️</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Roadmap Scadenze</span>
@@ -11649,7 +11658,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 10. TURNARIO OPERATORI -->
-        <button type="button" onclick="eseguiStrumentoMobile('turnario');"
+        <button type="button" onclick="eseguiStrumentoMobile('turnario', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">👥</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Turnario Operatori</span>
@@ -11657,7 +11666,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 11. CARTELLA AMBULATORIO MEDICO -->
-        <button type="button" onclick="eseguiStrumentoMobile('ambulatorio');"
+        <button type="button" onclick="eseguiStrumentoMobile('ambulatorio', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f0f9ff; border:1.5px solid #bae6fd; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🩺</span>
           <span style="font-size:13px; font-weight:900; color:#0369a1;">Ambulatorio Medico</span>
@@ -11665,7 +11674,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 12. PROGETTO SALUTE & DIETA -->
-        <button type="button" onclick="eseguiStrumentoMobile('salute');"
+        <button type="button" onclick="eseguiStrumentoMobile('salute', event);" ontouchstart=""
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f0fdf4; border:1.5px solid #bbf7d0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🥗</span>
           <span style="font-size:13px; font-weight:900; color:#15803d;">Progetto Salute</span>
@@ -11673,7 +11682,7 @@ window.eseguiStrumentoMobile = eseguiStrumentoMobile;
         </button>
 
         <!-- 13. TORNA ALLA HOME SUITE (A TUTTA LARGHEZZA) -->
-        <button type="button" onclick="eseguiStrumentoMobile('home');"
+        <button type="button" onclick="eseguiStrumentoMobile('home', event);" ontouchstart=""
           style="grid-column: 1 / -1; display:flex; align-items:center; justify-content:center; gap:8px; padding:14px; border-radius:16px; background:#0f172a; border:none; font-size:14px; font-weight:900; color:#ffffff; cursor:pointer; margin-top:6px; box-shadow:0 4px 12px rgba(15,23,42,0.3);">
           <span>🏠</span> <span>Torna al Launcher Home Suite</span>
         </button>
