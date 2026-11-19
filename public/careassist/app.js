@@ -23888,6 +23888,9 @@ function renderEpatologiaInfettiviCiro(container, p) {
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="background:#38bdf8; color:#082f49; font-size:11px; font-weight:900; padding:2px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.5px;">PIANO DI MONITORAGGIO CRONICO AUTOMATICO</span>
               <span style="background:rgba(255,255,255,0.15); color:#ffffff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">RILEVATO DAI FARMACI</span>
+              <button type="button" onclick="mostraGuidaContestuale('ambulatorio-epatologia')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:2px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(0,0,0,0.1);" title="A cosa serve l'Ambulatorio Malattie Infettive & Epatologia">
+                <span>💡</span> <span>A cosa serve</span>
+              </button>
             </div>
             <h2 style="font-size:22px; font-weight:900; margin:4px 0 2px; color:#ffffff; letter-spacing:-0.4px;">
               ${proto.titolo}
@@ -27379,6 +27382,19 @@ window.fermaVoceBriefing = fermaVoceBriefing;
 // 💡 SISTEMA DI GUIDA CONTESTUALE DINAMICA & UTILITÀ CLINICO-GESTIONALE
 // ==========================================================================
 var GUIDE_CONTESTUALI = {
+  'ambulatorio-epatologia': {
+    icona: '🔬',
+    titolo: 'Ambulatorio Malattie Infettive & Epatologia (Policlinico di Bari)',
+    sottotitolo: 'Monitoraggio cronico epatite HBV, sorveglianza epatocarcinoma e scadenze esami specialistici',
+    scopo: 'Questa maschera gestisce il piano di follow-up clinico per i pazienti in trattamento con antivirali specifici (es. Entecavir per Epatite Cronica B). Rileva automaticamente i farmaci attivi e organizza il percorso di sorveglianza dell\'Epatocarcinoma, la Carica Virale (HBV-DNA), gli esami ematochimici e la scadenza della prossima visita di controllo specialistica presso il Policlinico di Bari.',
+    comeSiUsa: [
+      '<b>Prossima Visita di Controllo</b>: visualizza la data programmata per la visita con lo specialista e avvisa quando la data del controllo è stata raggiunta.',
+      '<b>Avanzamento Esami &amp; Controlli</b>: monitora la percentuale di esami pronti rispetto al modulo prestampato (ecografia epatica, alfa-fetoproteina, transaminasi, HBV-DNA).',
+      '<b>Nuovo Controllo da Foto / Archivia Referto</b>: permette di fotografare o caricare direttamente l\'esito dell\'esame eseguito per aggiornare lo storico clinico.',
+      '<b>Stampa e Moduli A4</b>: genera istantaneamente il prestampato ufficiale per il reparto di Malattie Infettive del Policlinico.'
+    ]
+  },
+
   'ritiro-asl': {
     icona: '🏛️',
     titolo: 'Registra Ritiro Farmaco ASL (Farmacia Territoriale)',
