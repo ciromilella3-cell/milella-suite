@@ -27382,6 +27382,18 @@ window.fermaVoceBriefing = fermaVoceBriefing;
 // 💡 SISTEMA DI GUIDA CONTESTUALE DINAMICA & UTILITÀ CLINICO-GESTIONALE
 // ==========================================================================
 var GUIDE_CONTESTUALI = {
+  'handsfree-ai': {
+    icona: '🎙️',
+    titolo: 'Assistente Vocale Hands-Free AI (Comandi & Dettatura Senza Mani)',
+    sottotitolo: 'Registrazione vocale rapida per operatori con riconoscimento intelligente di farmaci, parametri e note',
+    scopo: 'Questa funzione consente all\'operatore socio-sanitario (OSS) o al caregiver di registrare consegne, somministrazione farmaci, parametri vitali e note cliniche parlando a voce alta direttamente allo smartphone o al PC, senza dover digitare sulla tastiera. Il motore AI trascrive il parlato e lo converte in dati clinici strutturati.',
+    comeSiUsa: [
+      '<b>Tocca il Microfono Centrale</b>: il microfono inizierà a pulsare indicando che il sistema è in ascolto.',
+      '<b>Parla con chiarezza</b>: puoi pronunciare ad esempio: <i>"Ho somministrato la terapia del mattino, pressione 120 su 80, assistito tranquillo"</i> oppure <i>"Ha bevuto 300 ml di acqua e l\'alvo è regolare"</i>.',
+      '<b>Verifica la Trascrizione</b>: le parole compariranno in tempo reale nel riquadro sottostante.',
+      '<b>Conferma e Salva</b>: premi il pulsante di conferma per archiviare automaticamente la nota nel diario clinico dell\'assistito selezionato.'
+    ]
+  },
   'ambulatorio-epatologia': {
     icona: '🔬',
     titolo: 'Ambulatorio Malattie Infettive & Epatologia (Policlinico di Bari)',
