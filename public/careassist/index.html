@@ -504,184 +504,152 @@
       </div>
     </div>
 
-    <!-- LIVELLO 2: BARRA OPERATIVA OSS COMPATTA & MODERNA -->
-    <div class="header-toolbar-row"
-      style="background:#0f172a; padding:6px 16px; border-top:1px solid rgba(255,255,255,0.08);">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+    <!-- LIVELLO 2: BARRA OPERATIVA EXECUTIVE - ORGANIZZATA IN CLUSTER PULITI & PROFESSIONALI -->
+    <div class="header-toolbar-row" style="background: #0b1329; padding: 7px 18px; border-top: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; width: 100%;">
 
-        <!-- I PULSANTI OPERATIVI (GRANDI, TATTILI E IMMEDIATI) -->
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <!-- CLUSTER 1: STRUMENTI CLINICI & INTELLIGENZA ARTIFICIALE (AI & SCANNER) -->
+        <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); padding: 3px 6px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: #94a3b8; padding: 0 4px; display: inline-flex; align-items: center; gap: 3px;">
+            <span>✨</span> <span>Assistente AI</span>
+          </span>
 
-          <button class="btn" onclick="window.location.href='/launcher.html'"
-            style="background:#ffffff; color:#0f172a; font-weight:900; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1.5px solid #cbd5e1; box-shadow:0 2px 6px rgba(0,0,0,0.15); display:inline-flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.15s ease;"
-            onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#ffffff';"
-            title="Torna alla Home Suite Milella">
-            <span style="font-size:16px;">🏠</span> <span>Home Suite</span>
-          </button>
-
-          <button class="btn" onclick="apriModalHandsFreeAI()"
-            style="background:linear-gradient(135deg, #6366f1 0%, #4338ca 100%); color:#ffffff; font-weight:900; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #a5b4fc; box-shadow:0 2px 6px rgba(99,102,241,0.35); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
+          <button type="button" class="btn" onclick="apriModalHandsFreeAI()"
+            style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #ffffff; font-weight: 800; font-size: 11.5px; padding: 5px 11px; border-radius: 8px; border: 1px solid #818cf8; box-shadow: 0 2px 5px rgba(79,70,229,0.3); display: inline-flex; align-items: center; gap: 5px; cursor: pointer;"
             title="Assistente Vocale Hands-Free AI per Operatore">
-            <span style="font-size:16px;">🎙️</span> <span>Hands-Free AI</span>
+            <span>🎙️</span> <span>Hands-Free</span>
           </button>
 
-          <button class="btn" onclick="apriModalVisionScanner()"
-            style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #38bdf8; box-shadow:0 2px 6px rgba(2,132,199,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
+          <button type="button" class="btn" onclick="apriModalVisionScanner()"
+            style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; font-weight: 800; font-size: 11.5px; padding: 5px 11px; border-radius: 8px; border: 1px solid #38bdf8; box-shadow: 0 2px 5px rgba(2,132,199,0.3); display: inline-flex; align-items: center; gap: 5px; cursor: pointer;"
             title="Vision Scanner Fotocamera: Scatole Farmaci e Foto Piaghe">
-            <span style="font-size:16px;">📸</span> <span>Vision Scanner</span>
+            <span>📸</span> <span>Vision Scanner</span>
           </button>
 
-          <button class="btn" onclick="apriModalConsegnaVocale()"
-            style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #818cf8; box-shadow:0 2px 6px rgba(79,70,229,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
+          <button type="button" class="btn" onclick="apriModalConsegnaVocale()"
+            style="background: rgba(255,255,255,0.08); color: #e2e8f0; font-weight: 700; font-size: 11.5px; padding: 5px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); display: inline-flex; align-items: center; gap: 5px; cursor: pointer;"
             title="Registra Consegna Vocale con Trascrizione AI & Parametri">
-            <span style="font-size:16px;">🗣️</span> <span>Consegna Vocale OSS</span>
+            <span>🗣️</span> <span>Consegna Vocale</span>
           </button>
 
-          <button class="btn" onclick="avviaBriefingVocaleAssistitoDemo()"
-            style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #38bdf8; box-shadow:0 2px 6px rgba(2,132,199,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
+          <button type="button" class="btn" onclick="avviaBriefingVocaleAssistitoDemo()"
+            style="background: rgba(255,255,255,0.08); color: #e2e8f0; font-weight: 700; font-size: 11.5px; padding: 5px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); display: inline-flex; align-items: center; gap: 5px; cursor: pointer;"
             title="Ascolta il Briefing Clinico Vocale con Voce Naturale">
-            <span style="font-size:16px;">🎙️</span> <span>Briefing Vocale AI</span>
+            <span>🔊</span> <span>Briefing</span>
           </button>
-
-          
-          <button class="btn" onclick="apriModalBollarioScorte()"
-            style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:900; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #38bdf8; box-shadow:0 2px 6px rgba(2,132,199,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
-            title="Bollario Farmaci, Semaforo Autonomia & Riordino Automatico WhatsApp/Email">
-            <span style="font-size:16px;">💊</span> <span>Bollario Scorte</span>
-          </button>
-
-<button class="btn" onclick="apriModalFirmaConsegna()"
-            style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:900; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #34d399; box-shadow:0 2px 6px rgba(5,150,105,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
-            title="Firma Elettronica Consegna Turno e Timbratura GPS">
-            <span style="font-size:16px;">✍️</span> <span>Firma Turno</span>
-          </button>
-
-          <button class="btn" onclick="window.location.href='/careassist/turni.html'"
-            style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #34d399; box-shadow:0 2px 6px rgba(5,150,105,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
-            title="Apri il Turnario Operatori">
-            <span style="font-size:16px;">👥</span> <span>Turnario</span>
-          </button>
-
-          <button class="btn" onclick="apriModalSOSProntoSoccorso()"
-            style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:#ffffff; font-weight:900; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #f87171; box-shadow:0 2px 6px rgba(220,38,38,0.35); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
-            title="Pronto Soccorso Domiciliare & Chiamata Rapida NUE 112">
-            <span style="font-size:16px;">🚨</span> <span>SOS 112</span>
-          </button>
-
-          <!-- TASTO DIRETTO IN PRIMO PIANO: PRESTAMPATO INFETTIVI (VISIBILE SOLO SE CIRO MILELLA E SELEZIONATO) -->
-          <button class="btn" id="btn-top-prestampato" onclick="apriPrestampatoInfettiviDiretto()"
-            style="display:none; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; font-weight:900; font-size:12.5px; padding:7px 15px; border-radius:10px; border:1.5px solid #38bdf8; box-shadow:0 2px 8px rgba(2,132,199,0.35); align-items:center; gap:6px; cursor:pointer;"
-            title="Apri Modulo Prestampato Ufficiale Malattie Infettive Policlinico di Bari (Ciro Milella)">
-            <span style="font-size:16px;">📑</span> <span>Prestampato Infettivi</span>
-          </button>
-
-          <!-- TASTO DIRETTO: RECUPERO DOSI PENDENTI (IERI / GIORNI SCORSI) -->
-          <button class="btn" id="btn-top-recupero-dosi" onclick="apriModalRiconciliazione()"
-            style="display:none; background:linear-gradient(135deg, #d97706 0%, #b45309 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #fcd34d; box-shadow:0 2px 6px rgba(217,119,6,0.4); align-items:center; gap:6px; cursor:pointer;"
-            title="Riconciliazione e Recupero Dosi Saltate o Non Registrate">
-            <span style="font-size:16px;">🔄</span> <span>Dosi Pendenti</span>
-            <span id="badge-top-recupero-count"
-              style="background:#ef4444; color:#fff; font-size:11px; font-weight:900; padding:2px 7px; border-radius:12px;">0</span>
-          </button>
-
-          <!-- TASTO DIRETTO: RICHIESTA RICETTE WHATSAPP MMG -->
-          <button class="btn" onclick="apriModalFabbisognoRicette()"
-            style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #34d399; box-shadow:0 2px 6px rgba(5,150,105,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
-            title="Richiesta Rapida Ricette Farmaci al Medico Curante (WhatsApp MMG)">
-            <span style="font-size:16px;">📲</span> <span>Ricette MMG</span>
-          </button>
-
-          <!-- TASTO DIRETTO: STAMPA DOSSIER MENSILE A4 -->
-          <button class="btn" onclick="apriModalDossierClinico()"
-            style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:10px; border:1px solid #818cf8; box-shadow:0 2px 6px rgba(79,70,229,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
-            title="Genera e Stampa Dossier Clinico Mensile A4 per ASL e Specialista">
-            <span style="font-size:16px;">🖨️</span> <span>Dossier A4</span>
-          </button>
-
         </div>
 
-        <!-- MENU TENDINA STILE WHATSAPP (3 PUNTINI ⋮) PER GLI STRUMENTI SECONDARI -->
-        <div style="position:relative; display:inline-block;" id="menu-oss-top-container">
-          <button type="button" onclick="toggleMenuOSSTop(event)" id="btn-menu-oss-top"
-            style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.28); color:#ffffff; height:34px; padding:0 12px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; font-size:12px; font-weight:800; transition:all 0.15s ease;"
-            title="Altri registri, cruscotti e stampe">
-            <span style="font-size:18px; font-weight:900; line-height:1;">⋮</span>
-            <span>Registri &amp; Stampe</span>
+        <!-- CLUSTER 2: GESTIONE TERAPIE & SCORTE -->
+        <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); padding: 3px 6px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: #94a3b8; padding: 0 4px; display: inline-flex; align-items: center; gap: 3px;">
+            <span>💊</span> <span>Farmaci</span>
+          </span>
+
+          <button type="button" class="btn" onclick="apriModalBollarioScorte()"
+            style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; font-weight: 800; font-size: 11.5px; padding: 5px 11px; border-radius: 8px; border: 1px solid #38bdf8; box-shadow: 0 2px 5px rgba(2,132,199,0.3); display: inline-flex; align-items: center; gap: 5px; cursor: pointer;"
+            title="Bollario Farmaci, Semaforo Autonomia & Riordino Automatico WhatsApp/Email">
+            <span>📦</span> <span>Bollario Scorte</span>
           </button>
 
-          <div id="dropdown-menu-oss-top" class="dropdown-menu-oss-top-box"
-            style="display:none; position:absolute; right:0; top:42px; z-index:999999; background:#ffffff; min-width:270px; border-radius:16px; box-shadow:0 15px 35px rgba(0,0,0,0.3); border:1.5px solid #cbd5e1; padding:8px 0; animation:menuDropAnim 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
-            <div
-              style="padding:6px 16px; font-size:10.5px; font-weight:900; color:#94a3b8; text-transform:uppercase; border-bottom:1px solid #f1f5f9;">
-              Registri &amp; Collegamenti Suite
+          <button type="button" class="btn" onclick="apriModalFabbisognoRicette()"
+            style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #ffffff; font-weight: 800; font-size: 11.5px; padding: 5px 11px; border-radius: 8px; border: 1px solid #34d399; box-shadow: 0 2px 5px rgba(5,150,105,0.3); display: inline-flex; align-items: center; gap: 5px; cursor: pointer;"
+            title="Richiesta Rapida Ricette Farmaci al Medico Curante (WhatsApp MMG)">
+            <span>📲</span> <span>Ricette MMG</span>
+          </button>
+
+          <!-- TASTO RECUPERO DOSI PENDENTI (DINAMICO SE CI SONO DOSI SOSPESE) -->
+          <button type="button" class="btn" id="btn-top-recupero-dosi" onclick="apriModalRiconciliazione()"
+            style="display: none; background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: #ffffff; font-weight: 800; font-size: 11.5px; padding: 5px 10px; border-radius: 8px; border: 1px solid #fcd34d; align-items: center; gap: 5px; cursor: pointer;"
+            title="Riconciliazione e Recupero Dosi Saltate o Non Registrate">
+            <span>🔄</span> <span>Dosi Pendenti</span>
+            <span id="badge-top-recupero-count" style="background:#ef4444; color:#fff; font-size:10px; font-weight:900; padding:1px 6px; border-radius:10px;">0</span>
+          </button>
+        </div>
+
+        <!-- CLUSTER 3: OPERATIVITÀ OSS & SICUREZZA -->
+        <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); padding: 3px 6px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: #94a3b8; padding: 0 4px; display: inline-flex; align-items: center; gap: 3px;">
+            <span>📋</span> <span>Turno &amp; SOS</span>
+          </span>
+
+          <button type="button" class="btn" onclick="apriModalFirmaConsegna()"
+            style="background: rgba(255,255,255,0.08); color: #e2e8f0; font-weight: 700; font-size: 11.5px; padding: 5px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); display: inline-flex; align-items: center; gap: 5px; cursor: pointer;"
+            title="Firma Elettronica Consegna Turno e Timbratura GPS">
+            <span>✍️</span> <span>Firma Turno</span>
+          </button>
+
+          <button type="button" class="btn" onclick="window.location.href='/careassist/turni.html'"
+            style="background: rgba(255,255,255,0.08); color: #e2e8f0; font-weight: 700; font-size: 11.5px; padding: 5px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); display: inline-flex; align-items: center; gap: 5px; cursor: pointer;"
+            title="Apri il Turnario Operatori">
+            <span>👥</span> <span>Turnario</span>
+          </button>
+
+          <button type="button" class="btn" onclick="apriModalSOSProntoSoccorso()"
+            style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: #ffffff; font-weight: 900; font-size: 11.5px; padding: 5px 11px; border-radius: 8px; border: 1px solid #f87171; box-shadow: 0 2px 5px rgba(220,38,38,0.35); display: inline-flex; align-items: center; gap: 5px; cursor: pointer;"
+            title="Pronto Soccorso Domiciliare & Chiamata Rapida NUE 112">
+            <span>🚨</span> <span>SOS 112</span>
+          </button>
+        </div>
+
+        <!-- CLUSTER 4: STAMPE UFFICIALI & REGISTRI (MENU ELEGANTE ACCORPATO) -->
+        <div style="display: flex; align-items: center; gap: 6px; margin-left: auto;">
+          <!-- TASTO DIRETTO: STAMPA DOSSIER MENSILE A4 -->
+          <button type="button" class="btn" onclick="apriModalDossierClinico()"
+            style="background: rgba(255,255,255,0.08); color: #e2e8f0; font-weight: 700; font-size: 11.5px; padding: 5px 11px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); display: inline-flex; align-items: center; gap: 5px; cursor: pointer;"
+            title="Genera e Stampa Dossier Clinico Mensile A4 per ASL e Specialista">
+            <span>🖨️</span> <span>Dossier A4</span>
+          </button>
+
+          <!-- TASTO MENU A TENDINA COMPATTO PER TUTTI GLI ALTRI MODULI -->
+          <div style="position: relative; display: inline-block;" id="menu-oss-top-container">
+            <button type="button" onclick="toggleMenuOSSTop(event)" id="btn-menu-oss-top"
+              style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #ffffff; height: 31px; padding: 0 11px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; font-size: 11.5px; font-weight: 800; transition: all 0.15s ease;"
+              title="Visualizza tutti gli altri registri, cruscotti e stampe">
+              <span style="font-size: 14px; font-weight: 900; line-height: 1;">⋮</span>
+              <span>Registri &amp; Moduli</span>
+            </button>
+
+            <div id="dropdown-menu-oss-top" class="dropdown-menu-oss-top-box"
+              style="display: none; position: absolute; right: 0; top: 38px; z-index: 999999; background: #ffffff; min-width: 270px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.25); border: 1px solid #cbd5e1; padding: 8px 0; overflow: hidden;">
+              <div style="padding: 6px 16px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; background: #f8fafc; border-bottom: 1px solid #f1f5f9;">
+                Archivio Moduli &amp; Registri
+              </div>
+              <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriPrestampatoInfettiviDiretto();"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #0284c7; text-decoration: none; font-size: 13px; font-weight: 800; border-bottom: 1px solid #f1f5f9;"
+                onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='transparent'">
+                <span>📑</span> <span>Prestampato Infettivi (Policlinico)</span>
+              </a>
+              <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriRegistroSanitarioAsl();"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #0f172a; text-decoration: none; font-size: 13px; font-weight: 700; border-bottom: 1px solid #f1f5f9;"
+                onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <span>🏛️</span> <span>Registro ASL &amp; Triage (F2)</span>
+              </a>
+              <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalRoadmapScadenze();"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #0f172a; text-decoration: none; font-size: 13px; font-weight: 700; border-bottom: 1px solid #f1f5f9;"
+                onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <span>🗓️</span> <span>Roadmap Scadenze Famiglia</span>
+              </a>
+              <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalScaleValutazione();"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #6d28d9; text-decoration: none; font-size: 13px; font-weight: 800; border-bottom: 1px solid #f1f5f9;"
+                onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='transparent'">
+                <span>🧠</span> <span>Scale Cliniche (Braden &amp; Barthel)</span>
+              </a>
+              <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); stampaPassaportoEmergenza112();"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #b91c1c; text-decoration: none; font-size: 13px; font-weight: 800; border-bottom: 1px solid #f1f5f9;"
+                onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
+                <span>🪪</span> <span>Passaporto Emergenza 112 da Frigo</span>
+              </a>
+              <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); stampaReport();"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #0f172a; text-decoration: none; font-size: 13px; font-weight: 700; border-bottom: 1px solid #f1f5f9;"
+                onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <span>📄</span> <span>Stampa Diario Giornaliero</span>
+              </a>
+              <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalSmartphone();"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #0f172a; text-decoration: none; font-size: 13px; font-weight: 700;"
+                onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <span>📱</span> <span>Connetti Smartphone (QR Code)</span>
+              </a>
             </div>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalCestino();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0369a1; background:#f0f9ff; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #e0f2fe;"
-              onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f0f9ff'">
-              <span>♻️</span> <span>Cestino &amp; Ripristino Dati</span>
-              <span class="cestino-count-badge"
-                style="display:none; background:#0284c7; color:#fff; border-radius:10px; padding:1px 6px; font-size:10.5px; margin-left:auto;">0</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriRegistroSanitarioAsl();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;"
-              onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-              <span>🏛️</span> <span>Registro ASL &amp; Triage (F2)</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); navigaAdAmbulatorio();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;"
-              onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-              <span>🩺</span> <span>Cartella Ambulatorio</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); navigaAProgettoSalute();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;"
-              onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-              <span>🥗</span> <span>Progetto Salute &amp; Dieta</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalDossierClinico();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;"
-              onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-              <span>📋</span> <span>Dossier Ospedaliero A4</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalRoadmapScadenze();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;"
-              onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-              <span>🗓️</span> <span>Roadmap Scadenze Famiglia</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); stampaReport();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;"
-              onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-              <span>📄</span> <span>Stampa Diario Giornaliero</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalScaleValutazione();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#6d28d9; background:#f5f3ff; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #ede9fe;"
-              onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
-              <span>🧠</span> <span>Scale Cliniche (Braden & Barthel)</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); stampaPassaportoEmergenza112();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#b91c1c; background:#fef2f2; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #fee2e2;"
-              onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
-              <span>🪪</span> <span>Passaporto Emergenza 112 Tascabile</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalFirmaConsegna();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#047857; background:#ecfdf5; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #d1fae5;"
-              onmouseover="this.style.background='#d1fae5'" onmouseout="this.style.background='#ecfdf5'">
-              <span>✍️</span> <span>Firma Elettronica & Timbratura GPS</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalHandsFreeAI();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#4338ca; background:#eef2ff; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #e0e7ff;"
-              onmouseover="this.style.background='#e0e7ff'" onmouseout="this.style.background='#eef2ff'">
-              <span>🎙️</span> <span>Assistente Vocale Hands-Free</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalVisionScanner();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0369a1; background:#f0f9ff; text-decoration:none; font-size:13px; font-weight:800; border-bottom:1px solid #e0f2fe;"
-              onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f0f9ff'">
-              <span>📸</span> <span>Vision Scanner (Scatole & Piaghe)</span>
-            </a>
-            <a href="javascript:void(0)" onclick="chiudiMenuOSSTop(); apriModalSmartphone();"
-              style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#0f172a; text-decoration:none; font-size:13px; font-weight:700;"
-              onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-              <span>📱</span> <span>Connetti Smartphone (QR)</span>
-            </a>
           </div>
         </div>
 
