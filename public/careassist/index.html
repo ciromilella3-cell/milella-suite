@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=380">
+  <link rel="stylesheet" href="style.css?v=381">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -307,6 +307,97 @@ function chiudiMenuOSSTop(e) {
 }
 window.chiudiMenuOSSTop = chiudiMenuOSSTop;
 </script>
+
+<script>
+function eseguiStrumentoMobile(azione, param) {
+  try {
+    chiudiMenuOSSTop();
+  } catch(e) {}
+  
+  setTimeout(function() {
+    try {
+      if (azione === 'prestampato') {
+        if (typeof apriPrestampatoInfettiviDiretto === 'function') {
+          apriPrestampatoInfettiviDiretto();
+        } else {
+          window.location.hash = '#tab-epatologia';
+        }
+      } else if (azione === 'registro_asl') {
+        if (typeof apriRegistroSanitarioAsl === 'function') {
+          apriRegistroSanitarioAsl();
+        } else {
+          var m = document.getElementById('modal-registro-asl-enterprise');
+          if (m) m.style.display = 'flex';
+        }
+      } else if (azione === 'dossier') {
+        if (typeof apriModalDossierClinico === 'function') {
+          apriModalDossierClinico();
+        } else if (typeof openModal === 'function') {
+          openModal('modal-dossier-clinico-stampa');
+        }
+      } else if (azione === 'firma') {
+        if (typeof apriModalFirmaConsegna === 'function') {
+          apriModalFirmaConsegna();
+        } else {
+          var m = document.getElementById('modal-firma-consegna');
+          if (m) m.style.display = 'flex';
+        }
+      } else if (azione === 'handsfree') {
+        if (typeof apriModalHandsFreeAI === 'function') {
+          apriModalHandsFreeAI();
+        } else {
+          var m = document.getElementById('modal-handsfree-ai');
+          if (m) m.style.display = 'flex';
+        }
+      } else if (azione === 'consegna_vocale') {
+        if (typeof apriModalConsegnaVocale === 'function') {
+          apriModalConsegnaVocale();
+        } else if (typeof openModal === 'function') {
+          openModal('modal-consegna-vocale');
+        }
+      } else if (azione === 'briefing') {
+        if (typeof avviaBriefingVocaleAssistitoDemo === 'function') {
+          avviaBriefingVocaleAssistitoDemo();
+        }
+      } else if (azione === 'scale') {
+        if (typeof apriModalScaleValutazione === 'function') {
+          apriModalScaleValutazione('braden');
+        } else {
+          var m = document.getElementById('modal-scale-valutazione');
+          if (m) m.style.display = 'flex';
+        }
+      } else if (azione === 'roadmap') {
+        if (typeof apriModalRoadmapScadenze === 'function') {
+          apriModalRoadmapScadenze();
+        } else if (typeof openModal === 'function') {
+          openModal('modal-roadmap-scadenze');
+        }
+      } else if (azione === 'turnario') {
+        window.location.href = '/careassist/turni.html';
+      } else if (azione === 'ambulatorio') {
+        if (typeof navigaAdAmbulatorioApp === 'function') {
+          navigaAdAmbulatorioApp();
+        } else {
+          window.location.href = '/ambulatorio/index.html';
+        }
+      } else if (azione === 'salute') {
+        if (typeof navigaAProgettoSalute === 'function') {
+          navigaAProgettoSalute();
+        } else {
+          window.location.href = '/progetto-salute/index.html';
+        }
+      } else if (azione === 'home') {
+        window.location.href = '/launcher.html';
+      }
+    } catch(err) {
+      console.error('Errore esecuzione strumento mobile:', err);
+      alert('Apertura: ' + azione + ' - ' + (err.message || err));
+    }
+  }, 120);
+}
+window.eseguiStrumentoMobile = eseguiStrumentoMobile;
+</script>
+
 </head>
 
 <body>
@@ -9489,7 +9580,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=380"></script>
+  <script src="app.js?v=381"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -11486,7 +11577,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
       <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:4px 2px 14px 2px;">
         
         <!-- 1. PRESTAMPATO INFETTIVI -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); apriPrestampatoInfettiviDiretto();"
+        <button type="button" onclick="eseguiStrumentoMobile('prestampato');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#eff6ff; border:1.5px solid #bfdbfe; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">📑</span>
           <span style="font-size:13px; font-weight:900; color:#0369a1;">Prestampato Infettivi</span>
@@ -11494,7 +11585,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 2. REGISTRO ASL PHT -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); apriRegistroSanitarioAsl();"
+        <button type="button" onclick="eseguiStrumentoMobile('registro_asl');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🏛️</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Registro Ritiro ASL</span>
@@ -11502,7 +11593,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 3. DOSSIER CLINICO OSPEDALIERO A4 -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); apriModalDossierClinico();"
+        <button type="button" onclick="eseguiStrumentoMobile('dossier');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">📋</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Dossier Clinico A4</span>
@@ -11510,7 +11601,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 4. FIRMA CONSEGNA TURNO OSS -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); apriModalFirmaConsegna();"
+        <button type="button" onclick="eseguiStrumentoMobile('firma');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f0fdf4; border:1.5px solid #bbf7d0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">✍️</span>
           <span style="font-size:13px; font-weight:900; color:#15803d;">Firma Consegna Turno</span>
@@ -11518,7 +11609,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 5. ASSISTENTE VOCALE HANDS-FREE AI -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); apriModalHandsFreeAI();"
+        <button type="button" onclick="eseguiStrumentoMobile('handsfree');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#eef2ff; border:1.5px solid #c7d2fe; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🎙️</span>
           <span style="font-size:13px; font-weight:900; color:#4338ca;">Hands-Free AI</span>
@@ -11526,7 +11617,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 6. CONSEGNA VOCALE OSS CON TRASCRIZIONE -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); apriModalConsegnaVocale();"
+        <button type="button" onclick="eseguiStrumentoMobile('consegna_vocale');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🗣️</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Consegna Vocale OSS</span>
@@ -11534,7 +11625,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 7. BRIEFING MATTUTINO AD ALTA VOCE -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); avviaBriefingVocaleAssistitoDemo();"
+        <button type="button" onclick="eseguiStrumentoMobile('briefing');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🔊</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Briefing Vocale</span>
@@ -11542,7 +11633,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 8. SCALE CLINICHE BRADEN & BARTHEL -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); apriModalScaleValutazione();"
+        <button type="button" onclick="eseguiStrumentoMobile('scale');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f5f3ff; border:1.5px solid #ddd6fe; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🧠</span>
           <span style="font-size:13px; font-weight:900; color:#6d28d9;">Scale Cliniche</span>
@@ -11550,7 +11641,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 9. ROADMAP SCADENZE FAMIGLIA -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); apriModalRoadmapScadenze();"
+        <button type="button" onclick="eseguiStrumentoMobile('roadmap');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🗓️</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Roadmap Scadenze</span>
@@ -11558,7 +11649,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 10. TURNARIO OPERATORI -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); window.location.href='/careassist/turni.html';"
+        <button type="button" onclick="eseguiStrumentoMobile('turnario');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f8fafc; border:1.5px solid #e2e8f0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">👥</span>
           <span style="font-size:13px; font-weight:900; color:#0f172a;">Turnario Operatori</span>
@@ -11566,7 +11657,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 11. CARTELLA AMBULATORIO MEDICO -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); navigaAdAmbulatorioApp();"
+        <button type="button" onclick="eseguiStrumentoMobile('ambulatorio');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f0f9ff; border:1.5px solid #bae6fd; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🩺</span>
           <span style="font-size:13px; font-weight:900; color:#0369a1;">Ambulatorio Medico</span>
@@ -11574,7 +11665,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 12. PROGETTO SALUTE & DIETA -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); navigaAProgettoSalute();"
+        <button type="button" onclick="eseguiStrumentoMobile('salute');"
           style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:12px 14px; border-radius:16px; background:#f0fdf4; border:1.5px solid #bbf7d0; font-size:12px; cursor:pointer; text-align:left;">
           <span style="font-size:24px;">🥗</span>
           <span style="font-size:13px; font-weight:900; color:#15803d;">Progetto Salute</span>
@@ -11582,7 +11673,7 @@ window.chiudiMenuOSSTop = chiudiMenuOSSTop;
         </button>
 
         <!-- 13. TORNA ALLA HOME SUITE (A TUTTA LARGHEZZA) -->
-        <button type="button" onclick="chiudiMenuOSSTop(event); window.location.href='/launcher.html';"
+        <button type="button" onclick="eseguiStrumentoMobile('home');"
           style="grid-column: 1 / -1; display:flex; align-items:center; justify-content:center; gap:8px; padding:14px; border-radius:16px; background:#0f172a; border:none; font-size:14px; font-weight:900; color:#ffffff; cursor:pointer; margin-top:6px; box-shadow:0 4px 12px rgba(15,23,42,0.3);">
           <span>🏠</span> <span>Torna al Launcher Home Suite</span>
         </button>
