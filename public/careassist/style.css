@@ -2011,7 +2011,7 @@ body:has(.modal-overlay[style*="display: flex"]) #suite-unified-bottom-nav {
   overflow: hidden;
 }
 
-.modal-header:not(.header-laboratorio-scotti):not(.header-archivio-storico):not(.header-scorta-rapida):not(.header-farmaco-pro):not(.header-118-pro):not(.header-wa-pro):not(.header-consegna-pro):not(.header-sos-pro):not(.header-interazioni-pro):not(.modal-anagrafica-pro) {
+.modal-header:not(.header-laboratorio-scotti):not(.header-archivio-storico):not(.header-scorta-rapida):not(.header-farmaco-pro):not(.header-118-pro):not(.header-wa-pro):not(.header-consegna-pro):not(.header-sos-pro):not(.header-interazioni-pro):not(.modal-anagrafica-pro):not(.header-vocale-pro) {
   background: #f8fafc;
   padding: 16px 24px;
   border-bottom: 1px solid var(--border);
@@ -11483,5 +11483,20 @@ button[onclick*="mostraGuidaContestuale"],
   padding: 0 !important;
 }
 #modal-guida-contestuale .modal-patient-badge {
+  display: none !important;
+}
+
+/* HEADER PERSONALIZZATO ASSISTENTE VOCALE MATTUTINO AI */
+#modal-briefing-vocale .header-vocale-pro {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0369a1 100%) !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid #38bdf8 !important;
+  padding: 14px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  flex-shrink: 0 !important;
+}
+#modal-briefing-vocale .modal-patient-badge {
   display: none !important;
 }
