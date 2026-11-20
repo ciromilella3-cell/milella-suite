@@ -4276,25 +4276,34 @@ function showToast(messaggio, tipo = 'success') {
   toast.className = 'toast-notification';
   toast.style.borderLeftColor = tipo === 'success' ? '#10b981' : (tipo === 'warning' ? '#f59e0b' : '#ef4444');
 
-  // Calcolo intelligente della posizione verticale per evitare qualsiasi sovrapposizione con il banner Cloud Sync
+  // Posizionato sotto l'header (56px) su mobile per non coprire mai la barra superiore
+  var topPos = (window.innerWidth <= 768 ? '58px' : '20px');
   var adminToast = document.getElementById('careassist-admin-sync-toast');
-  var topPos = (window.innerWidth <= 768 ? '16px' : '20px');
   if (adminToast && adminToast.isConnected && adminToast.offsetHeight > 0) {
     var rect = adminToast.getBoundingClientRect();
-    topPos = Math.max(76, rect.bottom + 12) + 'px';
+    topPos = Math.max(76, rect.bottom + 8) + 'px';
   }
   toast.style.top = topPos;
 
   var iconEmoji = tipo === 'success' ? '✅' : (tipo === 'warning' ? '⚠️' : '🚨');
   toast.innerHTML = `
     <span style="font-size:18px; flex-shrink:0;">${iconEmoji}</span>
-    <span style="line-height:1.35;">${messaggio}</span>
+    <div style="flex:1; min-width:0; line-height:1.35; font-size:12.5px;">${messaggio}</div>
+    <button type="button" aria-label="Chiudi" style="background:rgba(255,255,255,0.2); border:none; color:#ffffff; font-weight:900; font-size:14px; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; margin-left:6px;" onclick="event.stopPropagation(); this.parentElement.remove();">&times;</button>
   `;
+
+  // Toccando o cliccando il toast si chiude subito per non disturbare la navigazione
+  toast.onclick = function() {
+    toast.remove();
+  };
+
   document.body.appendChild(toast);
   setTimeout(() => {
-    toast.style.animation = 'fadeIn 0.2s reverse forwards';
-    setTimeout(() => toast.remove(), 250);
-  }, 3400);
+    if (toast && toast.parentElement) {
+      toast.style.animation = 'fadeIn 0.2s reverse forwards';
+      setTimeout(() => { if (toast && toast.parentElement) toast.remove(); }, 250);
+    }
+  }, 4200);
 }
 
 function cambiaPaziente(pazId) {
