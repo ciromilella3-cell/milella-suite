@@ -27290,71 +27290,36 @@ function stampaLetteraSpecialistica() {
 }
 
 var _careHumanAudio = null;
-function parlaConVoceUmanaCareAssist(testo, onEndCallback) {
+function parlaConVoceUmanaCareAssist(testo) {
   fermaVoceBriefing();
   if (!testo) return;
   try {
-    // Prova il backend TTS Neurale HD con voce naturale calda (Isabella / Elsa)
-    var url = '/api/tts-umano?voice=isabella&text=' + encodeURIComponent(testo);
-    _careHumanAudio = new Audio(url);
-    if (typeof onEndCallback === 'function') {
-      _careHumanAudio.onended = function() {
-        onEndCallback();
-      };
-    }
-    var promise = _careHumanAudio.play();
-    if (promise !== undefined) {
-      promise.catch(function (err) {
-        console.warn('Riproduzione audio neurale non consentita o fallita, passo alla sintesi vocale naturale browser:', err);
-        parlaFallbackBrowserCareAssist(testo, onEndCallback);
-      });
-    }
-    _careHumanAudio.onerror = function (e) {
-      console.warn('Endpoint TTS neurale ha risposto con errore, passo al sintetizzatore naturale:', e);
-      parlaFallbackBrowserCareAssist(testo, onEndCallback);
+    _careHumanAudio = new Audio('/api/tts-umano?text=' + encodeURIComponent(testo));
+    _careHumanAudio.play().catch(function () {
+      parlaFallbackBrowserCareAssist(testo);
+    });
+    _careHumanAudio.onerror = function () {
+      parlaFallbackBrowserCareAssist(testo);
     };
   } catch (e) {
-    parlaFallbackBrowserCareAssist(testo, onEndCallback);
+    parlaFallbackBrowserCareAssist(testo);
   }
 }
 
-function parlaFallbackBrowserCareAssist(testo, onEndCallback) {
-  if (!('speechSynthesis' in window)) {
-    if (typeof onEndCallback === 'function') onEndCallback();
-    return;
-  }
+function parlaFallbackBrowserCareAssist(testo) {
+  if (!('speechSynthesis' in window)) return;
   try {
     window.speechSynthesis.cancel();
     var utter = new SpeechSynthesisUtterance(testo);
     utter.lang = 'it-IT';
-    
-    // Ricerca la migliore voce italiana ad alta fedeltà/naturalezza (Google, Microsoft, Alice, Natural)
     var voices = window.speechSynthesis.getVoices() || [];
-    var itVoices = voices.filter(function (v) {
-      return v.lang && (v.lang.toLowerCase().indexOf('it') === 0 || v.lang.toLowerCase() === 'it_it');
-    });
-
-    var bestVoice = itVoices.find(function (v) {
-      return /google\s*italiano|natural|online|isabella|elsa|alice|cosimo/i.test(v.name);
-    }) || itVoices[0];
-
-    if (bestVoice) {
-      utter.voice = bestVoice;
-    }
-
-    // Tono e velocità studiati per eliminare ogni effetto metallico e robotico
-    utter.rate = 0.92;   // Cadenza rilassata, calda e chiara tipica di una guida umana
-    utter.pitch = 1.0;   // Timbro vocale neutro naturale senza distorsioni metalliche
-    
-    if (typeof onEndCallback === 'function') {
-      utter.onend = function() { onEndCallback(); };
-      utter.onerror = function() { onEndCallback(); };
-    }
-
+    var itV = voices.filter(function (v) { return v.lang && v.lang.toLowerCase().indexOf('it') === 0; });
+    var best = itV.find(function (v) { return /natural|neural|isabella|diego|giuseppe|google|alice|online/i.test(v.name); }) || itV[0];
+    if (best) utter.voice = best;
+    utter.rate = 0.96;
+    utter.pitch = 1.02;
     window.speechSynthesis.speak(utter);
-  } catch (e) {
-    if (typeof onEndCallback === 'function') onEndCallback();
-  }
+  } catch (e) { }
 }
 
 function fermaVoceBriefing() {
@@ -27362,7 +27327,6 @@ function fermaVoceBriefing() {
     if (_careHumanAudio) {
       _careHumanAudio.pause();
       _careHumanAudio.currentTime = 0;
-      _careHumanAudio = null;
     }
   } catch (e) { }
   if ('speechSynthesis' in window) {
@@ -28172,30 +28136,24 @@ function avviaAscoltoVocaleGuida() {
   }
   const g = GUIDE_CONTESTUALI[_chiaveGuidaContestualeAttiva];
 
-  function pulisciTestoNaturale(str) {
+  // Estrae testo pulito senza HTML per il sintetizzatore
+  function pulisciHtml(str) {
     if (!str) return '';
-    return str
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/&bull;/g, ', ')
-      .replace(/&amp;/g, ' e ')
-      .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ', ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    return str.replace(/<[^>]*>/g, ' ').replace(/&bull;/g, '•').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
   }
 
-  // Costruzione di un discorso chiaro, fluido e naturale per l'operatore
-  let discorso = 'Ecco la guida per ' + pulisciTestoNaturale(g.titolo) + '. ';
+  let testoDaLeggere = 'Guida e utilità per ' + pulisciHtml(g.titolo) + '. ';
   if (g.scopo) {
-    discorso += 'A cosa serve. ' + pulisciTestoNaturale(g.scopo) + '. ';
+    testoDaLeggere += 'A cosa serve: ' + pulisciHtml(g.scopo) + '. ';
   }
   if (Array.isArray(g.comeSiUsa) && g.comeSiUsa.length > 0) {
-    discorso += 'Come si usa. ';
+    testoDaLeggere += 'Come si usa: ';
     g.comeSiUsa.forEach(function(passo, idx) {
-      discorso += 'Punto ' + (idx + 1) + ', ' + pulisciTestoNaturale(passo) + '. ';
+      testoDaLeggere += 'Punto ' + (idx + 1) + ': ' + pulisciHtml(passo) + '. ';
     });
   }
   if (g.utilita) {
-    discorso += 'Perché fa la differenza. ' + pulisciTestoNaturale(g.utilita) + '. ';
+    testoDaLeggere += 'Perché fa la differenza: ' + pulisciHtml(g.utilita) + '. ';
   }
 
   _isGuidaInLetturaVocale = true;
@@ -28203,9 +28161,25 @@ function avviaAscoltoVocaleGuida() {
 
   if (typeof fermaVoceBriefing === 'function') fermaVoceBriefing();
 
-  parlaConVoceUmanaCareAssist(discorso, function() {
-    interrompiLetturaVocaleGuida();
-  });
+  if (typeof parlaConVoceUmanaCareAssist === 'function') {
+    parlaConVoceUmanaCareAssist(testoDaLeggere);
+  } else if ('speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(testoDaLeggere);
+      utter.lang = 'it-IT';
+      utter.rate = 1.0;
+      utter.onend = function() {
+        interrompiLetturaVocaleGuida();
+      };
+      utter.onerror = function() {
+        interrompiLetturaVocaleGuida();
+      };
+      window.speechSynthesis.speak(utter);
+    } catch (e) {
+      interrompiLetturaVocaleGuida();
+    }
+  }
 
   if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40]);
 }
@@ -28222,17 +28196,15 @@ function aggiornaStatoTastoAscoltaGuida(inLettura) {
   const btn = document.getElementById('mgc-btn-ascolta');
   if (!btn) return;
   if (inLettura) {
-    btn.innerHTML = '<span style="font-size:18px;">⏹️</span> <span>Ferma Lettura Vocale</span>';
-    btn.style.background = 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)';
+    btn.innerHTML = '<span>⏹️</span> <span>Ferma Voce</span>';
+    btn.style.background = '#dc2626';
     btn.style.borderColor = '#f87171';
     btn.style.color = '#ffffff';
-    btn.style.boxShadow = '0 3px 12px rgba(220,38,38,0.4)';
   } else {
-    btn.innerHTML = '<span style="font-size:18px;">🔊</span> <span>Ascolta Spiegazione con Voce Naturale</span>';
-    btn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
-    btn.style.borderColor = '#38bdf8';
+    btn.innerHTML = '<span>🔊</span> <span>Ascolta Spiegazione</span>';
+    btn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)';
+    btn.style.borderColor = '#818cf8';
     btn.style.color = '#ffffff';
-    btn.style.boxShadow = '0 3px 10px rgba(2,132,199,0.35)';
   }
 }
 window.aggiornaStatoTastoAscoltaGuida = aggiornaStatoTastoAscoltaGuida;

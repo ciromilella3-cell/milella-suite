@@ -3289,7 +3289,7 @@ app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
 
         // RICONOSCITORE MULTI-BATTUTA INTELLIGENTE (Isabella & Ciro a quante battute vuoi!)
         let battute = [];
-        let cleaned = (rawText || '').replace(/[«»]/g, '').trim();
+        let cleaned = testo.replace(/[«»]/g, '').trim();
 
         // Se usa i trattini "—", possiamo normalizzare per separare
         // Ma soprattutto cerchiamo la presenza dei tag "Isabella:" e "Ciro:"
