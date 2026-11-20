@@ -35492,3 +35492,92 @@ function ascoltaGuidaCestinoVocale() {
   }
 }
 window.ascoltaGuidaCestinoVocale = ascoltaGuidaCestinoVocale;
+
+
+// ==============================================================================
+// GUIDA VOCALE SCHEDA EMERGENZA 112 (NUE) CON VOCE NATURALE HD
+// ==============================================================================
+var _is118VoicePlaying = false;
+function ascoltaScheda118Vocale() {
+  const btn = document.getElementById('btn-audio-scheda-118');
+  const ico = document.getElementById('ico-audio-118');
+  const txt = document.getElementById('txt-audio-118');
+
+  if (_is118VoicePlaying) {
+    if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+    _is118VoicePlaying = false;
+    if (ico) ico.textContent = '🔊';
+    if (txt) txt.textContent = 'Ascolta';
+    if (btn) { btn.style.background = '#ffffff'; btn.style.color = '#dc2626'; }
+    return;
+  }
+
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  const nomeP = p ? (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim() : 'Assistito';
+  const etaP = p ? ((typeof calcolaAnniDaData === 'function' ? calcolaAnniDaData(p.dataNascita) : p.eta) || '') : '';
+  const indirizzoP = (p && (p.indirizzo || p.residenza)) ? (p.indirizzo || p.residenza) : 'Indirizzo registrato in scheda';
+
+  // Costruisci il testo vocale clinico chiaro e scandito per emergenza e soccorritori
+  let testoVoce = "Scheda Clinica Emergenza 112. ... ";
+  testoVoce += "A cosa serve questa scheda: È il passaporto clinico prioritario dell'assistito, " +
+    "progettato per essere mostrato o consegnato ai medici del 118 e del Pronto Soccorso. " +
+    "Permette ai soccorritori di conoscere all'istante l'identità del paziente, le patologie attive, " +
+    "le allergie farmacologiche e i farmaci salvavita assunti, evitando la somministrazione di medicinali controindicati. ... ";
+
+  testoVoce += "Dati attuali in schermata: ";
+  testoVoce += "Paziente: " + nomeP + (etaP ? (", età: " + etaP + " anni. ") : ". ");
+  testoVoce += "Domicilio: " + indirizzoP + ". ... ";
+
+  // Diagnosi
+  const patologieEl = document.getElementById('s118-diagnosi');
+  const diagnosiTxt = patologieEl ? patologieEl.innerText.trim() : '';
+  if (diagnosiTxt && diagnosiTxt !== '--') {
+    testoVoce += "Patologie e diagnosi attive: " + diagnosiTxt + ". ... ";
+  }
+
+  // Allergie
+  const allergieEl = document.getElementById('s118-allergie');
+  const allergieTxt = allergieEl ? allergieEl.innerText.trim() : '';
+  if (allergieTxt && allergieTxt !== '--') {
+    testoVoce += "Allergie: " + allergieTxt + ". ... ";
+  }
+
+  // Terapie salvavita
+  const terapieEl = document.getElementById('s118-terapie');
+  const terapieTxt = terapieEl ? terapieEl.innerText.replace(/\s+/g, ' ').trim() : '';
+  if (terapieTxt && terapieTxt !== '--') {
+    testoVoce += "Terapie e farmaci del giorno: " + terapieTxt + ". ... ";
+  }
+
+  // Medico e Caregiver
+  const medEl = document.getElementById('s118-medico-nome');
+  if (medEl && medEl.innerText.trim() !== '--') {
+    testoVoce += "Medico curante: " + medEl.innerText.trim() + ". ";
+  }
+  const famEl = document.getElementById('s118-caregiver-nome');
+  if (famEl && famEl.innerText.trim() !== '--') {
+    testoVoce += "Familiare di riferimento: " + famEl.innerText.trim() + ". ";
+  }
+
+  _is118VoicePlaying = true;
+  if (ico) ico.textContent = '⏹️';
+  if (txt) txt.textContent = 'Ferma';
+  if (btn) { btn.style.background = '#0f172a'; btn.style.color = '#ffffff'; }
+
+  const resetStato = function() {
+    _is118VoicePlaying = false;
+    if (ico) ico.textContent = '🔊';
+    if (txt) txt.textContent = 'Ascolta';
+    if (btn) { btn.style.background = '#ffffff'; btn.style.color = '#dc2626'; }
+  };
+
+  if (typeof riproduciVoceNaturaleHD === 'function') {
+    riproduciVoceNaturaleHD(testoVoce, resetStato);
+  } else if (typeof parlaFallbackBrowserCareAssist === 'function') {
+    parlaFallbackBrowserCareAssist(testoVoce);
+    setTimeout(resetStato, 30000);
+  } else {
+    resetStato();
+  }
+}
+window.ascoltaScheda118Vocale = ascoltaScheda118Vocale;

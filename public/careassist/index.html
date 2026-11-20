@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=397">
+  <link rel="stylesheet" href="style.css?v=398">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -9063,6 +9063,10 @@ window.eseguiStrumentoMobile = function(azione, e) {
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" id="btn-audio-scheda-118" onclick="ascoltaScheda118Vocale()"
+            style="background:#ffffff; color:#dc2626; border:none; padding:5px 12px; border-radius:20px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(0,0,0,0.25);">
+            <span id="ico-audio-118">🔊</span> <span id="txt-audio-118">Ascolta</span>
+          </button>
           <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('scheda-112')"
             style="background:rgba(255,255,255,0.25); color:#ffffff; border:1px solid rgba(255,255,255,0.45); padding:5px 10px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer;"
             title="A cosa serve la Scheda 112">
@@ -9714,7 +9718,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=397"></script>
+  <script src="app.js?v=398"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
