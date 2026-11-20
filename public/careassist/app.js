@@ -28285,22 +28285,35 @@ function ascoltaGuidaContestualeVocale() {
   const g = GUIDE_CONTESTUALI[_chiaveGuidaContestualeAttiva];
   if (!g) return;
 
-  // Componi un testo discorsivo naturale per l'audio
-  let testoVoce = g.titolo.replace(/&amp;/g, 'e') + '. ... ' +
-    'A cosa serve. ' + (g.scopo || '').replace(/&amp;/g, 'e') + '. ... ';
-
+  // Componi un testo discorsivo naturale per l'audio, sanificando simboli grafici (&, •, /, ecc.)
+  let partiTesto = [];
+  if (g.titolo) {
+    partiTesto.push(g.titolo);
+  }
+  if (g.scopo) {
+    partiTesto.push('A cosa serve. ' + g.scopo);
+  }
   if (Array.isArray(g.comeSiUsa) && g.comeSiUsa.length > 0) {
-    testoVoce += 'Come si usa. ';
+    let passi = 'Come si usa. ';
     g.comeSiUsa.forEach((p, idx) => {
-      const cleanP = p.replace(/<[^>]*>/g, '').replace(/&amp;/g, 'e');
-      testoVoce += 'Punto ' + (idx + 1) + ': ' + cleanP + '. ';
+      passi += 'Punto ' + (idx + 1) + ': ' + p + '. ';
     });
+    partiTesto.push(passi);
+  }
+  if (g.utilita) {
+    partiTesto.push('Valore e utilità per la struttura: ' + g.utilita);
   }
 
-  if (g.utilita) {
-    const cleanU = g.utilita.replace(/<[^>]*>/g, '').replace(/&amp;/g, 'e');
-    testoVoce += '... Valore e utilità per la struttura: ' + cleanU;
-  }
+  let testoVoce = partiTesto.join('. ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&amp;/g, ' e ')
+    .replace(/&/g, ' e ')
+    .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ', ')
+    .replace(/s*/s*/g, ' oppure ')
+    .replace(/.{2,}/g, '. ')
+    .replace(/:s*/g, ': ')
+    .replace(/s+/g, ' ')
+    .trim();
 
   _isGuidaContestualeInRiproduzione = true;
   if (ico) ico.textContent = '⏹️';
@@ -28318,7 +28331,7 @@ function ascoltaGuidaContestualeVocale() {
     riproduciVoceNaturaleHD(testoVoce, resetStato);
   } else if (typeof parlaFallbackBrowserCareAssist === 'function') {
     parlaFallbackBrowserCareAssist(testoVoce);
-    setTimeout(resetStato, 25000);
+    setTimeout(resetStato, 30000);
   } else {
     resetStato();
   }

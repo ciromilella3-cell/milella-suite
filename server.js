@@ -3191,6 +3191,8 @@ function preparaTestoPerVoceUmana(rawText) {
         // Rimuovi emoji e simboli grafici
         .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}]/gu, ' ')
         .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ' ')
+        .replace(/&amp;/g, ' e ')
+        .replace(/&/g, ' e ')
         // Espandi simboli e abbreviazioni cliniche/aziendali per una lettura fluida
         .replace(/↔/g, ' e ')
         .replace(/→|↗/g, ' verso ')
