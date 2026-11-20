@@ -20919,9 +20919,15 @@ function mostraSchedaSOS(tipo) {
   `).join('');
 
   container.innerHTML = `
-    <div style="border-left:4px solid ${guida.colore}; padding-left:12px; margin-bottom:12px;">
-      <div style="font-size:16px; font-weight:900; color:#0f172a;">${guida.titolo}</div>
-      <div style="font-size:12px; color:#64748b;">Protocollo Domiciliare Ragionato • Segui le istruzioni in ordine numerico:</div>
+    <div style="border-left:4px solid ${guida.colore}; padding-left:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div>
+        <div style="font-size:16px; font-weight:900; color:#0f172a;">${guida.titolo}</div>
+        <div style="font-size:12px; color:#64748b;">Protocollo Domiciliare Ragionato • Segui le istruzioni in ordine numerico:</div>
+      </div>
+      <button type="button" id="btn-ascolta-scheda-sos-singola" onclick="leggiIstruzioniSOSVocale()"
+        style="background:linear-gradient(135deg, ${guida.colore} 0%, #0f172a 100%); color:#ffffff; border:none; padding:6px 14px; border-radius:20px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(0,0,0,0.25);">
+        <span id="ico-audio-sos-singola">🔊</span> <span id="txt-audio-sos-singola">Ascolta Questo Protocollo</span>
+      </button>
     </div>
 
     <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
@@ -20946,6 +20952,11 @@ function leggiIstruzioniSOSVocale() {
       btn.style.background = 'transparent';
       btn.style.color = '#b91c1c';
     }
+    const btnCard = document.getElementById('btn-ascolta-scheda-sos-singola');
+    if (btnCard) {
+      btnCard.innerHTML = '<span>🔊</span> <span>Ascolta Questo Protocollo</span>';
+      btnCard.style.background = 'linear-gradient(135deg, ' + (guida ? guida.colore : '#dc2626') + ' 0%, #0f172a 100%)';
+    }
     return;
   }
 
@@ -20968,6 +20979,11 @@ function leggiIstruzioniSOSVocale() {
     btn.innerHTML = '⏹️ Interrompi Voce';
     btn.style.background = '#b91c1c';
     btn.style.color = '#ffffff';
+  }
+  const btnCard = document.getElementById('btn-ascolta-scheda-sos-singola');
+  if (btnCard) {
+    btnCard.innerHTML = '<span>⏹️</span> <span>Ferma Voce</span>';
+    btnCard.style.background = '#b91c1c';
   }
 
   const resetBtn = function() {
