@@ -23877,7 +23877,11 @@ function renderEpatologiaInfettiviCiro(container, p) {
           style="background:#0284c7; color:#ffffff; border:none; border-radius:10px; padding:7px 14px; font-size:12.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
           <span>←</span> <span>Torna al Diario</span>
         </button>
-        <button type="button" onclick="mostraGuidaContestuale('ambulatorio-epatologia')"
+        <button type="button" onclick="avviaAscoltoOperatoreSpecialistica()" ontouchstart="avviaAscoltoOperatoreSpecialistica()"
+          style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; border:1px solid #818cf8; border-radius:10px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(79,70,229,0.35);" title="Ascolta sintesi vocale operatore">
+          <span>🔊</span> <span>Ascolta Operatore</span>
+        </button>
+        <button type="button" onclick="mostraGuidaContestuale('ambulatorio-epatologia')" ontouchstart="mostraGuidaContestuale('ambulatorio-epatologia')"
           style="background:#eff6ff; color:#0284c7; border:1.5px solid #7dd3fc; border-radius:10px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
           <span>💡</span> <span>A cosa serve</span>
         </button>
@@ -25263,6 +25267,15 @@ function renderSchedaSpecialisticaAldo(container, p) {
 
       <!-- AZIONI RAPIDE PER ALDO -->
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; position:relative; z-index:2;">
+        <button type="button" class="btn" onclick="chiudiAmbulatorioSpecialisticoMobile(); navigaMobileTab('oggi');" ontouchstart="chiudiAmbulatorioSpecialisticoMobile(); navigaMobileTab('oggi');" style="background:#0284c7; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
+          <span>⬅️</span> <span>Indietro / Diario</span>
+        </button>
+        <button type="button" class="btn" onclick="avviaAscoltoOperatoreSpecialistica()" ontouchstart="avviaAscoltoOperatoreSpecialistica()" style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:white; border:1px solid #a5b4fc; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(79,70,229,0.35);" title="Ascolta sintesi vocale operatore">
+          <span>🔊</span> <span>Ascolta Operatore</span>
+        </button>
+        <button type="button" class="btn" onclick="mostraGuidaContestuale('protocollo-geriatrico')" ontouchstart="mostraGuidaContestuale('protocollo-geriatrico')" style="background:#eff6ff; color:#0284c7; border:1.5px solid #7dd3fc; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+          <span>💡</span> <span>A cosa serve</span>
+        </button>
         <button type="button" class="btn" onclick="richiediTutteRicetteAlMedicoMMG()" style="background:#10b981; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
           ✉️ Invia Richiesta al Dott. Scarcia
         </button>
@@ -25399,6 +25412,15 @@ function renderSchedaSpecialisticaAngela(container, p) {
 
       <!-- AZIONI RAPIDE PER ANGELA -->
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; position:relative; z-index:2;">
+        <button type="button" class="btn" onclick="chiudiAmbulatorioSpecialisticoMobile(); navigaMobileTab('oggi');" ontouchstart="chiudiAmbulatorioSpecialisticoMobile(); navigaMobileTab('oggi');" style="background:#0284c7; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
+          <span>⬅️</span> <span>Indietro / Diario</span>
+        </button>
+        <button type="button" class="btn" onclick="avviaAscoltoOperatoreSpecialistica()" ontouchstart="avviaAscoltoOperatoreSpecialistica()" style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:white; border:1px solid #a5b4fc; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(79,70,229,0.35);" title="Ascolta sintesi vocale operatore">
+          <span>🔊</span> <span>Ascolta Operatore</span>
+        </button>
+        <button type="button" class="btn" onclick="mostraGuidaContestuale('protocollo-cardiologia')" ontouchstart="mostraGuidaContestuale('protocollo-cardiologia')" style="background:#eff6ff; color:#0284c7; border:1.5px solid #7dd3fc; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+          <span>💡</span> <span>A cosa serve</span>
+        </button>
         <button type="button" class="btn" onclick="richiediTutteRicetteAlMedicoMMG()" style="background:#10b981; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
           ✉️ Invia Richiesta al Dott. Scarcia
         </button>
@@ -25568,8 +25590,14 @@ function renderSchedaSpecialisticaRosa(container, p) {
 
       <!-- AZIONI RAPIDE PER ROSA -->
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; position:relative; z-index:2;">
-        <button type="button" class="btn" onclick="mostraGuidaContestuale('glicemia')" style="background:#eff6ff; color:#0284c7; border:1.5px solid #7dd3fc; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
-          💡 A cosa serve
+        <button type="button" class="btn" onclick="chiudiAmbulatorioSpecialisticoMobile(); navigaMobileTab('oggi');" ontouchstart="chiudiAmbulatorioSpecialisticoMobile(); navigaMobileTab('oggi');" style="background:#0284c7; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">
+          <span>⬅️</span> <span>Indietro / Diario</span>
+        </button>
+        <button type="button" class="btn" onclick="avviaAscoltoOperatoreSpecialistica()" ontouchstart="avviaAscoltoOperatoreSpecialistica()" style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:white; border:1px solid #a5b4fc; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(79,70,229,0.35);" title="Ascolta sintesi vocale operatore">
+          <span>🔊</span> <span>Ascolta Operatore</span>
+        </button>
+        <button type="button" class="btn" onclick="mostraGuidaContestuale('protocollo-diabetologia')" ontouchstart="mostraGuidaContestuale('protocollo-diabetologia')" style="background:#eff6ff; color:#0284c7; border:1.5px solid #7dd3fc; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+          <span>💡</span> <span>A cosa serve</span>
         </button>
         <button type="button" class="btn" onclick="richiediTutteRicetteAlMedicoMMG()" style="background:#10b981; color:white; border:none; padding:9px 16px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer;">
           ✉️ Invia Richiesta alla Dr.ssa Potenza
@@ -28022,6 +28050,30 @@ var GUIDE_CONTESTUALI = {
       'Per gli assistiti deambulanti, le schede non pertinenti (es. foglio posture allettato) vengono disattivate automaticamente.'
     ],
     utilita: '<b>Continuità assistenziale carta-digitale</b>: garantisce che medici di continuità assistenziale o sanitari del 118 trovino al domicilio informazioni scritte, chiare e certificate.'
+  },
+  'protocollo-geriatrico': {
+    icona: '🧠',
+    titolo: 'Protocollo Geriatrico, Decubito & ADI (Aldo Zamparino)',
+    sottotitolo: 'Sorveglianza rischio piaghe da decubito, postura e cure domiciliari integrate',
+    scopo: 'Questa maschera gestisce il monitoraggio specialistico geriatrico per pazienti ad alta dipendenza o allettati. Monitora la rotazione posturale obbligatoria q2h, la prevenzione con Scala di Braden (12/23), le richieste al MMG Curante e le prestazioni sanitarie territoriali ADI.',
+    comeSiUsa: [
+      '<b>Orologio Posturale & Decubito</b>: registra i cambi di posizione programmati ogni due ore per prevenire lesioni cutanee.',
+      '<b>Scala Braden</b>: rivaluta periodicamente l\'indice di rischio di compromissione cutanea.',
+      '<b>Scadenzario ADI & Presidi</b>: verifica la fornitura ausili per allettati e i controlli cardiologici periodici.'
+    ],
+    utilita: '<b>Prevenzione attiva e certificazione cure</b>: protegge la cute dell\'anziano fragile e documenta le posture per i sanitari ADI.'
+  },
+  'protocollo-cardiologia': {
+    icona: '❤️',
+    titolo: 'Protocollo Cardiologia, Ipertensione & Metabolica (Angela Mazzicone)',
+    sottotitolo: 'Sorveglianza cardiovascolare, pressione arteriosa e profilo lipidico',
+    scopo: 'Questa maschera coordina il monitoraggio specialistico per la cardiopatia ipertensiva, dislipidemia e rischio metabolico. Offre la registrazione rapida dei parametri vitali (pressione e FC), il controllo delle scorte farmaci (Sivastin, ACE-inibitori) e lo scadenzario dei controlli cardiologici periodici.',
+    comeSiUsa: [
+      '<b>Registra Parametri</b>: inserisci valori pressori (sistolica, diastolica) e frequenza cardiaca.',
+      '<b>Controllo Farmaci Cardiaci</b>: verifica il piano terapeutico e le richieste ricette al Medico Curante.',
+      '<b>Sincronizzazione Calendario</b>: salva le date delle visite cardiologiche sul tuo smartphone.'
+    ],
+    utilita: '<b>Stabilità emodinamica e sicurezza clinica</b>: previene scompensi o crisi ipertensive attraverso un monitoraggio costante e tempestivo.'
   },
   'protocollo-diabetologia': {
     icona: '🩸',
@@ -31098,6 +31150,111 @@ function chiudiAmbulatorioSpecialisticoMobile() {
 }
 window.chiudiAmbulatorioSpecialisticoMobile = chiudiAmbulatorioSpecialisticoMobile;
 
+
+// ==========================================================================
+// 🔊 ASCOLTO VOCALE OPERATORE / BRIEFING SPECIALISTICO DINAMICO
+// ==========================================================================
+function avviaAscoltoOperatoreSpecialistica() {
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) {
+    if (typeof showToast === 'function') showToast('Seleziona un assistito per ascoltare il riepilogo.');
+    return;
+  }
+
+  var pNome = (p.nome || '').toLowerCase();
+  var pId = p.id || '';
+  var isRosa = (pId === 'paz_rosa' || pNome.includes('rosa') || pNome.includes('cavalcante'));
+  var isAldo = (pId === 'paz_aldo' || pNome.includes('aldo'));
+  var isAngela = (pId === 'paz_angela' || pNome.includes('angela'));
+  var isCiro = (typeof pazHaDiagnosiMalattieInfettive === 'function' && pazHaDiagnosiMalattieInfettive(p)) || pNome.includes('ciro');
+
+  var ora = new Date().getHours();
+  var saluto = ora < 13 ? 'Buongiorno' : (ora < 18 ? 'Buon pomeriggio' : 'Buonasera');
+  var nomeBreve = (p.nome || 'Assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+
+  var testoVoce = '';
+  var htmlPunti = '';
+
+  if (isRosa) {
+    testoVoce = saluto + ' operatore. Riepilogo clinico specialistico per ' + nomeBreve + '. ' +
+      'Protocollo Diabetologia e Cardiovascolare CAD ASP Basilicata attivo. ' +
+      'Terapia con Xultophy e Forxiga in monitoraggio costante. ' +
+      'Prossimo controllo CAD programmato per il 20 novembre 2026 per controllo glicemico e rinnovo dei piani terapeutici. ' +
+      'Tutte le scorte di sensori e fornitura presidi sono verificate.';
+    
+    htmlPunti = 
+      '<div style="background:#f0fdf4; border:1px solid #86efac; border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:13.5px; color:#166534; line-height:1.5;">' +
+      '<b>🩸 Protocollo Rosa Annunziata Cavalcante (CAD Diabetologia):</b><br>' +
+      '• <b>Prossimo Controllo CAD:</b> 20/11/2026 (Controllo Glicemico & Rinnovo Piani)<br>' +
+      '• <b>MMG Curante:</b> Dr.ssa Carolina Potenza (ASP Basilicata)<br>' +
+      '• <b>Sorveglianza Attiva:</b> Emoglobina Glicata, Terapia Xultophy, Forxiga e Pressione Triatec' +
+      '</div>';
+  } else if (isAldo) {
+    testoVoce = saluto + ' operatore. Riepilogo clinico geriatrico per ' + nomeBreve + '. ' +
+      'Assistito allettato ad alto rischio decubito, Scala Braden dodici su ventitrè. ' +
+      'Mantenere la rotazione posturale programmata ogni due ore e la sorveglianza neurologica e cardiologica. ' +
+      'Terapie e fornitura ADI regolarmente verificate.';
+    
+    htmlPunti = 
+      '<div style="background:#eef2ff; border:1px solid #a5b4fc; border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:13.5px; color:#3730a3; line-height:1.5;">' +
+      '<b>🧠 Protocollo Aldo Zamparino (Geriatria & ADI):</b><br>' +
+      '• <b>Sorveglianza Decubito:</b> Giro posturale ogni 2h (Q2H) & Scala Braden 12/23<br>' +
+      '• <b>MMG Curante:</b> Dott. Roberto Scarcia<br>' +
+      '• <b>Sorveglianza Attiva:</b> Stato cutaneo, deambulazione assistita e terapia cardiologica' +
+      '</div>';
+  } else if (isAngela) {
+    testoVoce = saluto + ' operatore. Riepilogo clinico per ' + nomeBreve + '. ' +
+      'Protocollo specialistico cardiologia, ipertensione e metabolica attivo. ' +
+      'Sorveglianza dei valori pressori, compenso idroelettrolitico e profilo lipidico con Sivastin. ' +
+      'Terapie mattutine e pomeridiane regolarmente pianificate.';
+    
+    htmlPunti = 
+      '<div style="background:#fdf2f8; border:1px solid #fbcfe8; border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:13.5px; color:#9d174d; line-height:1.5;">' +
+      '<b>❤️ Protocollo Angela Mazzicone (Cardiologia & Metabolica):</b><br>' +
+      '• <b>Sorveglianza Pressoria:</b> Registrazione periodica PA e frequenza cardiaca<br>' +
+      '• <b>MMG Curante:</b> Dott. Roberto Scarcia<br>' +
+      '• <b>Sorveglianza Attiva:</b> Profilo lipidico, compenso cardiocircolatorio e scorte farmaci' +
+      '</div>';
+  } else if (isCiro) {
+    testoVoce = saluto + ' operatore. Riepilogo clinico specialistico per ' + nomeBreve + '. ' +
+      'Ambulatorio Malattie Infettive ed Epatologia del Policlinico di Bari, follow up Epatite Cronica B in terapia con Entecavir. ' +
+      'Prossima visita di controllo specialistica fissata al 23 febbraio 2026. ' +
+      'Sorveglianza carica virale HBV-DNA ed ecografia epatica semestrale attive.';
+    
+    htmlPunti = 
+      '<div style="background:#eff6ff; border:1px solid #93c5fd; border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:13.5px; color:#1e40af; line-height:1.5;">' +
+      '<b>🔬 Ambulatorio Policlinico Bari (Malattie Infettive & Epatologia):</b><br>' +
+      '• <b>Prossima Visita di Controllo:</b> 23/02/2026 (Policlinico di Bari - Prof.ssa Saracino)<br>' +
+      '• <b>Follow-up Attivo:</b> Epatite Cronica B, Piano Terapeutico Entecavir Ospedaliero<br>' +
+      '• <b>Sorveglianza:</b> Ecografia epatica, Alfa-Fetoproteina e Carica Virale HBV-DNA' +
+      '</div>';
+  } else {
+    testoVoce = saluto + ' operatore. Riepilogo clinico specialistico per ' + nomeBreve + '. ' +
+      'Cartella clinica domiciliare attiva con sorveglianza parametri vitali, scadenze visite e terapie farmacologiche.';
+    
+    htmlPunti = 
+      '<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:13.5px; color:#334155; line-height:1.5;">' +
+      '<b>📋 Scheda Specialistica ' + nomeBreve + ':</b><br>' +
+      '• Monitoraggio clinico periodico domiciliare attivo.<br>' +
+      '• Controlli ematochimici e visite specialistiche registrate nel cruscotto.' +
+      '</div>';
+  }
+
+  var bodyEl = document.getElementById('briefing-vocale-body');
+  if (bodyEl) {
+    bodyEl.innerHTML =
+      '<div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; padding:8px 12px; background:#eff6ff; border-radius:999px; width:fit-content;">' +
+      '<span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#0284c7; box-shadow:0 0 8px #0284c7;"></span>' +
+      '<span style="font-size:12px; font-weight:800; color:#1e40af;">Ascolto Operatore Specialistico • Voce Neurale Attiva</span>' +
+      '</div>' + htmlPunti;
+  }
+
+  if (typeof openModal === 'function') openModal('modal-briefing-vocale');
+  if (typeof parlaConVoceUmanaCareAssist === 'function') parlaConVoceUmanaCareAssist(testoVoce);
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40]);
+}
+window.avviaAscoltoOperatoreSpecialistica = avviaAscoltoOperatoreSpecialistica;
+
 function apriAmbulatorioSpecialisticoMobile() {
   document.querySelectorAll('.mobile-bottom-bar .bar-item').forEach(function (b) { b.classList.remove('active'); });
   document.body.classList.remove('viewing-oggi', 'viewing-clinica', 'viewing-farmaci');
@@ -31121,15 +31278,31 @@ function apriAmbulatorioSpecialisticoMobile() {
     if (!document.getElementById('mobile-specialistica-back-bar')) {
       const bar = document.createElement('div');
       bar.id = 'mobile-specialistica-back-bar';
-      bar.style.cssText = 'position:sticky; top:54px; z-index:99; margin:0 0 14px 0; display:flex; justify-content:space-between; align-items:center; gap:8px; background:rgba(15,23,42,0.92); backdrop-filter:blur(8px); padding:8px 12px; border-radius:14px; border:1px solid #38bdf8; box-shadow:0 4px 16px rgba(0,0,0,0.3);';
-      bar.innerHTML = '<button type="button" onclick="navigaMobileTab(\'oggi\')" style="background:#0284c7; color:#fff; border:none; border-radius:10px; padding:7px 12px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">' +
-        '<span>⬅️</span> <span>Torna a Oggi</span>' +
+      bar.style.cssText = 'position:sticky; top:54px; z-index:99; margin:0 0 14px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:rgba(15,23,42,0.94); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:8px 12px; border-radius:14px; border:1.5px solid #38bdf8; box-shadow:0 4px 18px rgba(0,0,0,0.4);';
+      
+      const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+      let guidaKey = 'ambulatorio-epatologia';
+      if (p) {
+        const pId = p.id || '';
+        const pNome = (p.nome || '').toLowerCase();
+        if (pId === 'paz_rosa' || pNome.includes('rosa') || pNome.includes('cavalcante')) guidaKey = 'protocollo-diabetologia';
+        else if (pId === 'paz_aldo' || pNome.includes('aldo')) guidaKey = 'protocollo-geriatrico';
+        else if (pId === 'paz_angela' || pNome.includes('angela')) guidaKey = 'protocollo-cardiologia';
+      }
+
+      bar.innerHTML = '<div style="display:flex; align-items:center; gap:6px;">' +
+        '<button type="button" onclick="chiudiAmbulatorioSpecialisticoMobile(); navigaMobileTab(\'oggi\');" ontouchstart="chiudiAmbulatorioSpecialisticoMobile(); navigaMobileTab(\'oggi\');" style="background:#0284c7; color:#fff; border:none; border-radius:10px; padding:7px 12px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">' +
+        '<span>⬅️</span> <span>Indietro</span>' +
         '</button>' +
+        '<button type="button" onclick="avviaAscoltoOperatoreSpecialistica()" ontouchstart="avviaAscoltoOperatoreSpecialistica()" style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; border:1px solid #818cf8; border-radius:10px; padding:7px 11px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(79,70,229,0.35);" title="Ascolta sintesi vocale operatore">' +
+        '<span>🔊</span> <span>Ascolta Operatore</span>' +
+        '</button>' +
+        '</div>' +
         '<div style="display:flex; gap:6px; align-items:center;">' +
-        '<button type="button" onclick="mostraGuidaContestuale(\'glicemia\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:10px; padding:7px 11px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+        '<button type="button" onclick="mostraGuidaContestuale(\'' + guidaKey + '\')" ontouchstart="mostraGuidaContestuale(\'' + guidaKey + '\')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:10px; padding:7px 11px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
         '<span>💡</span> <span>A cosa serve</span>' +
         '</button>' +
-        '<button type="button" onclick="openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:10px; padding:7px 12px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
+        '<button type="button" onclick="openModal(\'modal-visita\')" ontouchstart="openModal(\'modal-visita\')" style="background:#059669; color:#fff; border:none; border-radius:10px; padding:7px 12px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">' +
         '<span>📅</span> <span>+ Visita</span>' +
         '</button>' +
         '</div>';
