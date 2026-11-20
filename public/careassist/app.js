@@ -2240,7 +2240,7 @@ function saveDb(forceBeforeInitialSync, isBackgroundAutoLog) {
   inviaModificheAlServer();
 }
 
-const CAREASSIST_CLOUD_MASTER_URL = 'https://milella-suite-iv93.onrender.com';
+const CAREASSIST_CLOUD_MASTER_URL = 'https://milella-suite-41ff.onrender.com';
 
 function isLocalOrFileOrigin() {
   try {
@@ -2474,7 +2474,12 @@ function sincronizzaDbDalServer(callback) {
               }
             });
           }
+          // Fusione sicura cestino tra locale e server
+          if (Array.isArray(serverData._cestino)) {
+            AppData._cestino = serverData._cestino;
+          }
           AppData = serverData;
+          if (typeof cestinoAggiornaBadge === 'function') cestinoAggiornaBadge();
           if (prevActiveId && AppData.pazienti.some(function (p) { return p.id === prevActiveId; })) {
             AppData.activePazienteId = prevActiveId;
           }
@@ -16796,7 +16801,7 @@ function apriModalSmartphone() {
   // Determina l'URL corretto: se online o su Render usa HTTPS Cloud, altrimenti usa l'origine corrente
   var targetUrl = window.location.origin + '/careassist/';
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    targetUrl = 'https://milella-suite-iv93.onrender.com/careassist/';
+    targetUrl = 'https://milella-suite-41ff.onrender.com/careassist/';
   }
 
   // Genera dinamicamente il QR Code con l'indirizzo esatto
