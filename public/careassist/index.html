@@ -7510,20 +7510,26 @@ window.eseguiStrumentoMobile = function(azione, e) {
     <div class="modal-card"
       style="max-width:680px; width:95%; max-height:90vh; display:flex; flex-direction:column; border-radius:20px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.45); border:1.5px solid #38bdf8; background:#ffffff;">
       <div class="modal-header modal-header-guida"
-        style="background:linear-gradient(135deg, #0f172a 0%, #0284c7 100%) !important; color:#ffffff !important; border-bottom:none !important; flex-shrink:0 !important; padding:14px 16px !important; display:flex !important; flex-direction:row !important; align-items:center !important; justify-content:space-between !important; gap:12px !important;">
-        <div style="display:flex; align-items:center; gap:12px; min-width:0;">
-          <span style="font-size:32px; flex-shrink:0;" id="mgc-icona">💡</span>
+        style="background:linear-gradient(135deg, #0f172a 0%, #0284c7 100%) !important; color:#ffffff !important; border-bottom:none !important; flex-shrink:0 !important; padding:12px 16px !important; display:flex !important; flex-direction:row !important; align-items:center !important; justify-content:space-between !important; gap:10px !important;">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
+          <span style="font-size:28px; flex-shrink:0;" id="mgc-icona">💡</span>
           <div style="min-width:0;">
             <div
-              style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.8px; color:#bae6fd; font-weight:800;">
+              style="font-size:10px; text-transform:uppercase; letter-spacing:0.8px; color:#bae6fd; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
               Guida Rapida &amp; Utilità Clinico-Gestionale</div>
-            <h3 style="margin:2px 0 0; font-size:17.5px; font-weight:900; color:#ffffff; line-height:1.25;"
+            <h3 style="margin:2px 0 0; font-size:16px; font-weight:900; color:#ffffff; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
               id="mgc-titolo">Titolo Maschera</h3>
           </div>
         </div>
-        <button class="modal-close"
-          style="color:white; font-size:24px; cursor:pointer; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:50%; width:34px; height:34px; display:flex; align-items:center; justify-content:center; padding:0;"
-          onclick="closeModal('modal-guida-contestuale')">&times;</button>
+        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+          <button type="button" id="mgc-btn-ascolta" onclick="toggleAscoltoVocaleGuida()" ontouchstart="toggleAscoltoVocaleGuida()"
+            style="background:linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:#ffffff; border:1.5px solid #818cf8; border-radius:10px; padding:6px 12px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 8px rgba(79,70,229,0.35);" title="Ascolta spiegazione con voce naturale">
+            <span>🔊</span> <span>Ascolta Spiegazione</span>
+          </button>
+          <button class="modal-close"
+            style="color:white; font-size:20px; font-weight:900; cursor:pointer; background:rgba(255,255,255,0.18); border:1.5px solid rgba(255,255,255,0.35); border-radius:50%; width:34px; height:34px; display:flex; align-items:center; justify-content:center; padding:0; flex-shrink:0;"
+            onclick="interrompiLetturaVocaleGuida(); closeModal('modal-guida-contestuale')" ontouchstart="interrompiLetturaVocaleGuida(); closeModal('modal-guida-contestuale')">&times;</button>
+        </div>
       </div>
 
       <div class="modal-body"
@@ -7536,7 +7542,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
         style="background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; padding:12px 20px;">
         <span style="font-size:11.5px; color:#64748b; font-weight:600;">CareAssist Pro • Supporto alle Decisioni
           Cliniche</span>
-        <button type="button" class="btn btn-primary" onclick="closeModal('modal-guida-contestuale')"
+        <button type="button" class="btn btn-primary" onclick="interrompiLetturaVocaleGuida(); closeModal('modal-guida-contestuale')" ontouchstart="interrompiLetturaVocaleGuida(); closeModal('modal-guida-contestuale')"
           style="padding:7px 18px; font-weight:800; border-radius:8px; background:#0284c7; border:none; color:#ffffff; cursor:pointer;">Ho
           Capito, Torna all'App</button>
       </div>
@@ -9688,7 +9694,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=395"></script>
+  <script src="app.js?v=396"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
