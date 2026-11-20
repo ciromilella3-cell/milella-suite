@@ -1950,41 +1950,64 @@
         } catch(e) {}
     }
 
-    // Esegui Sincronizzazione Master
+    // Esegui Sincronizzazione Master (FUSIONE REALE BIDIREZIONALE USB <-> CLOUD SENZA PERDITA DATI)
     async function avviaSincronizzazioneMaster() {
         playAudio('chime');
-        apriProgressoModal('SINCRONIZZAZIONE INTELLIGENTE IN CORSO', 'Allineamento file differenziale ad altissima velocità...', '⚡');
+        apriProgressoModal('SINCRONIZZAZIONE INTELLIGENTE REALE', 'Fusione bidirezionale dati USB <-> Cloud Web in corso...', '⚡');
         
         aggiornaStepProgresso(15, 1);
-        appendLog('[START] Avvio algoritmo Robocopy differenziale multi-thread (16 flussi)...');
+        appendLog('[1/4] Connessione a Cloud Web Render in corso...');
 
-        setTimeout(() => {
-            aggiornaStepProgresso(40, 2);
-            appendLog('[PROGRESS] Controllo 125.794 elementi: 109.941 file già verificati e protetti.');
-            appendLog('[TURBO] BrowserMetrics-spare.pma e file cache IGNORATI con successo (Zero Blocchi!).');
-        }, 1100);
+        try {
+            // Esegui chiamata all'endpoint reale di fusione bidirezionale
+            const res = await fetch('/api/sync/smart-bidirectional', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
 
-        setTimeout(() => {
-            aggiornaStepProgresso(75, 3);
-            appendLog('[SPEED] Velocità rilevata: 85.5 MB/s. Scrittura tabelle metadati completata.');
-        }, 2400);
+            aggiornaStepProgresso(50, 2);
+            appendLog('[2/4] Scaricate le novità dal Cloud e lette le modifiche locali USB...');
+            
+            const data = await res.json();
+            
+            if (data && data.success) {
+                aggiornaStepProgresso(85, 3);
+                if (data.logs && Array.isArray(data.logs)) {
+                    data.logs.forEach(l => appendLog(l));
+                }
+                appendLog('[3/4] Fusione registrazioni, terapie e inventario completata senza sovrascritture!');
 
-        setTimeout(() => {
-            aggiornaStepProgresso(100, 5);
-            playAudio('chime');
-            lanciaCoriandoli();
-            appendLog('[SUCCESS] Sincronizzazione completata con successo!');
+                aggiornaStepProgresso(100, 4);
+                playAudio('chime');
+                lanciaCoriandoli();
+                appendLog('[SUCCESS] USB e Web Cloud ora condividono il 100% dei dati unificati!');
 
-            document.getElementById('modalIcon').innerText = '🎉';
-            document.getElementById('modalTitle').innerText = 'SINCRONIZZAZIONE RIUSCITA!';
-            document.getElementById('modalSub').innerHTML = `Tutti i file sono perfettamente allineati tra <strong>USB</strong> e <strong>Desktop</strong> a 85.5 MB/s senza alcun freeze.`;
+                document.getElementById('modalIcon').innerText = '🎉';
+                document.getElementById('modalTitle').innerText = 'FUSIONE BIDIREZIONALE COMPLETATA!';
+                document.getElementById('modalSub').innerHTML = '<strong>Tutti i dati sono unificati:</strong> le novità registrate dal Cellulare sono state salvate sulla USB, e le modifiche fatte dal PC offline sono state sincronizzate sul Cloud senza alcuna perdita.';
+                document.getElementById('modalActionButtons').innerHTML = `
+                    <button class="btn-modal-primary" onclick="chiudiModalExtra()">
+                        <span>✔ Completa &amp; Chiudi</span>
+                    </button>
+                `;
+                showToast('Fusione Riuscita', 'Dati USB e Cellulare unificati!', '⚡');
+            } else {
+                throw new Error(data.error || 'Errore nella sincronizzazione');
+            }
+        } catch(err) {
+            console.warn('[FALLBACK LOCALE SYNC]', err.message);
+            appendLog('[AVVISO] Server locale occupato o offline: ' + err.message);
+            appendLog('[INFO] Puoi eseguire direttamente il file E:\\SINCRONIZZA_USB_E_CELLULARE.bat');
+            aggiornaStepProgresso(100, 4);
+            document.getElementById('modalIcon').innerText = 'ℹ️';
+            document.getElementById('modalTitle').innerText = 'SINCRONIZZATORE AVVIABILE';
+            document.getElementById('modalSub').innerHTML = 'Se sei completamente offline da browser, puoi fare doppio clic su <strong>E:\\SINCRONIZZA_USB_E_CELLULARE.bat</strong> appena ti riconnetti!';
             document.getElementById('modalActionButtons').innerHTML = `
                 <button class="btn-modal-primary" onclick="chiudiModalExtra()">
-                    <span>✔ Completa &amp; Chiudi</span>
+                    <span>✔ Ho Capito</span>
                 </button>
             `;
-            showToast('Sincronizzazione Riuscita', '109.941 file allineati in 36 secondi!', '⚡');
-        }, 3800);
+        }
     }
 
     // Genera Pacchetto Copia Utente (CON CONTROLLI ELEGANTI, MAI PIÙ ALERT!)

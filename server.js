@@ -2854,6 +2854,45 @@ app.post('/api/open-exported-folder', (req, res) => {
 // ==============================================================================
 // 4-BIS. API DI SINCRONIZZAZIONE MULTI-DIREZIONALE REALE (USB, Desktop, Cloud)
 // ==============================================================================
+
+// ==============================================================================
+// ENDPOINT SINCRONIZZAZIONE INTELLIGENTE BIDIREZIONALE (FUSIONE SENZA PERDITA)
+// ==============================================================================
+app.post('/api/sync/smart-bidirectional', async (req, res) => {
+    const logs = [];
+    const log = (msg) => {
+        const line = '[' + new Date().toLocaleTimeString('it-IT') + '] ' + msg;
+        logs.push(line);
+        console.log('[SMART-SYNC]', msg);
+    };
+
+    try {
+        log('Avvio Sincronizzazione Intelligente Bidirezionale (Merge Dati)...');
+        let scriptPath = path.join(__dirname, 'sincronizzazione_intelligente.js');
+        if (!fs.existsSync(scriptPath)) {
+            scriptPath = path.join(__dirname, 'AGGIORNAMENTO_RENDER', 'sincronizzazione_intelligente.js');
+        }
+        if (!fs.existsSync(scriptPath)) {
+            throw new Error('Script sincronizzazione_intelligente.js non trovato');
+        }
+
+        const { exec } = require('child_process');
+        exec('node "' + scriptPath + '"', { cwd: __dirname }, (err, stdout, stderr) => {
+            if (err) {
+                log('Errore esecuzione: ' + (stderr || err.message));
+                return res.status(500).json({ success: false, logs, error: err.message });
+            }
+            const outLines = (stdout || '').split('\n').filter(Boolean);
+            outLines.forEach(l => log(l));
+            log('Fusione bidirezionale completata con successo!');
+            return res.json({ success: true, message: 'Dati unificati senza sovrascritture!', logs });
+        });
+    } catch(err) {
+        log('Eccezione: ' + err.message);
+        return res.status(500).json({ success: false, logs, error: err.message });
+    }
+});
+
 app.post('/api/sync/execute', async (req, res) => {
     const { direction, driveLetter, desktopFolder, antiFreeze, incremental, multiThread } = req.body || {};
     const { exec } = require('child_process');
@@ -3289,7 +3328,7 @@ app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
 
         // RICONOSCITORE MULTI-BATTUTA INTELLIGENTE (Isabella & Ciro a quante battute vuoi!)
         let battute = [];
-        let cleaned = testo.replace(/[«»]/g, '').trim();
+        let cleaned = (rawText || '').replace(/[«»]/g, '').trim();
 
         // Se usa i trattini "—", possiamo normalizzare per separare
         // Ma soprattutto cerchiamo la presenza dei tag "Isabella:" e "Ciro:"
