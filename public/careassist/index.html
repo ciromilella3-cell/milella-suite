@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=395">
+  <link rel="stylesheet" href="style.css?v=396">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -6685,7 +6685,27 @@ window.eseguiStrumentoMobile = function(azione, e) {
       </div>
       <div class="modal-body"
         style="padding:14px 16px; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#f8fafc; flex:1;">
-        <div id="cestino-lista"></div>
+                <!-- BOX GUIDA: A COSA SERVE E COSA SI RISCHIA -->
+        <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:14px; padding:13px 15px; margin-bottom:14px; box-shadow:0 2px 8px rgba(15,23,42,0.04);">
+          <div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:10px;">
+            <div style="background:#e0f2fe; color:#0284c7; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🛡️</div>
+            <div>
+              <div style="font-size:12.5px; font-weight:800; color:#0f172a;">A cosa serve questa funzione?</div>
+              <div style="font-size:11px; color:#475569; line-height:1.45; margin-top:2px;">
+                È la <strong>Camera di Sicurezza Clinica</strong>: quando un operatore o familiare cancella per errore o sostituisce un farmaco, una visita o una nota, l'elemento <em>non viene perso</em>, ma trattenuto qui per <strong>60 giorni</strong>. Da qui puoi <strong>Ripristinarlo</strong> con un clic al suo posto originario.
+              </div>
+            </div>
+          </div>
+          
+          <div style="background:#fff1f2; border:1px solid #fecdd3; border-radius:10px; padding:9px 11px; display:flex; align-items:flex-start; gap:8px;">
+            <span style="font-size:15px; line-height:1;">⚠️</span>
+            <div style="font-size:11px; color:#9f1239; line-height:1.4;">
+              <strong>Cosa si rischia cliccando su "Svuota Cestino"?</strong><br>
+              Si rischia la <strong>cancellazione definitiva e irreversibile</strong> della cronologia terapeutica e dei dati clinici rimossi. Se hai dubbi su una terapia passata o una prescrizione, <strong>lascia gli elementi qui</strong>: verranno ripuliti in automatico dopo 60 giorni senza alcun rischio.
+            </div>
+          </div>
+        </div>
+<div id="cestino-lista"></div>
       </div>
       <div class="modal-footer"
         style="padding:12px 16px; background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -9688,7 +9708,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=395"></script>
+  <script src="app.js?v=396"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {

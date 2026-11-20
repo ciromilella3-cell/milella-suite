@@ -1,6 +1,6 @@
 {
   "versione": "2.3.0",
-  "ultimoAggiornamento": "2026-11-20T16:34:27.990Z",
+  "ultimoAggiornamento": "2026-11-20T16:39:19.614Z",
   "pazienti": [
     {
       "id": "paz_aldo",
@@ -6353,7 +6353,7 @@
           "quantitaQuota": 1,
           "modo": "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell'infezione cronica da virus dell'epatite B (HBV).",
           "cprPerScatola": 30,
-          "scorta": 110,
+          "scorta": 109,
           "giorniAlert": 10,
           "cadenzaTipo": "giornaliera",
           "cadenzaGiorniSpecifici": null,
@@ -6362,112 +6362,34 @@
           "cadenzaDataInizio": null,
           "cadenzaMeseAnnuale": null,
           "cadenzaGiornoAnnuale": null,
-          "fattoOggi": false,
-          "ultimaModificaTimestamp": 1795186999523,
+          "fattoOggi": true,
+          "saltatoOggi": false,
+          "ultimaModificaTimestamp": 1795192759558,
           "tipoFormulazione": "compressa",
           "canaleDistribuzione": "territoriale_asl",
           "pianoTerapeutico": {
-            "scatoleTotali": 12,
-            "scatoleRitirate": 12,
-            "scatoleResidue": 0,
-            "ultimoRitiro": "2026-11-16",
             "attivo": true,
             "dataScadenza": "2027-02-22",
             "protocollo": "011BQ1X145RHL",
+            "scatoleTotali": 12,
+            "scatoleRitirate": 10,
+            "scatoleResidue": 2,
             "centroPrescrittore": "U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)",
             "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
-            "prossimoRitiroIso": "2027-02-22",
-            "prossimoRitiroConsigliato": "22/02/2027",
-            "storicoRitiri": [
-              {
-                "id": "rit_1",
-                "data": "2026-02-23",
-                "timestamp": "2026-02-23T10:00:00.000Z",
-                "scatole": 3,
-                "cprAggiunte": 90,
-                "scatoleResidueDopo": 9,
-                "scatoleTotali": 12,
-                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
-                "note": "1° Tranche trimestrale"
-              },
-              {
-                "id": "rit_2",
-                "data": "2026-05-20",
-                "timestamp": "2026-05-20T10:00:00.000Z",
-                "scatole": 3,
-                "cprAggiunte": 90,
-                "scatoleResidueDopo": 6,
-                "scatoleTotali": 12,
-                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
-                "note": "2° Tranche trimestrale"
-              },
-              {
-                "id": "rit_3",
-                "data": "2026-08-18",
-                "timestamp": "2026-08-18T10:00:00.000Z",
-                "scatole": 3,
-                "cprAggiunte": 90,
-                "scatoleResidueDopo": 3,
-                "scatoleTotali": 12,
-                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
-                "note": "3° Tranche trimestrale"
-              },
-              {
-                "id": "rit_4",
-                "data": "2026-11-16",
-                "timestamp": "2026-11-16T10:00:00.000Z",
-                "scatole": 3,
-                "cprAggiunte": 90,
-                "scatoleResidueDopo": 0,
-                "scatoleTotali": 12,
-                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
-                "note": "4° Tranche (Ritiro ufficiale 16/11/2026 - Completamento fornitura 12/12)"
-              }
-            ]
+            "note": "1 cpr/die a digiuno (almeno 2h prima o dopo i pasti) - PHT Distribuzione Diretta HBV",
+            "ultimoRitiro": "2026-11-16"
           },
-          "penneScorta": 38,
+          "penneScorta": 109,
           "unitaDoseDie": 1,
           "unitaPerPenna": 300,
           "pennePerScatola": 30,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "01/11/2026",
+            "data": "20/11/2026",
             "fonte": "Visita Specialistica",
             "medico": "",
             "motivo": ""
-          },
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-16",
-          "storicoCarichi": [
-            {
-              "data": "2026-02-23",
-              "timestamp": "2026-02-23T10:00:00.000Z",
-              "scatole": 3,
-              "cprAggiunte": 90,
-              "note": "1° Ritiro ASL"
-            },
-            {
-              "data": "2026-05-20",
-              "timestamp": "2026-05-20T10:00:00.000Z",
-              "scatole": 3,
-              "cprAggiunte": 90,
-              "note": "2° Ritiro ASL"
-            },
-            {
-              "data": "2026-08-18",
-              "timestamp": "2026-08-18T10:00:00.000Z",
-              "scatole": 3,
-              "cprAggiunte": 90,
-              "note": "3° Ritiro ASL"
-            },
-            {
-              "data": "2026-11-16",
-              "timestamp": "2026-11-16T10:00:00.000Z",
-              "scatole": 3,
-              "cprAggiunte": 90,
-              "note": "4° Ritiro ASL ufficiale (16/11/2026)"
-            }
-          ]
+          }
         }
       ],
       "registrazioni": [
@@ -6690,6 +6612,20 @@
           "minutiRitardo": 5,
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 5 minuti! Orario previsto: 07:00 - Orario effettivo assunzione: 07:05. Rimanenza scorta: 31 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1795192534981",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T16:35:34.981Z",
+          "farmacoId": 1793544102871,
+          "farmaco": "Entecavir Sandoz 0,5 mg",
+          "dosaggio": "0,5 mg (1 cpr)",
+          "orarioPrevisto": "07:00",
+          "orarioReale": "17:35",
+          "minutiRitardo": 635,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 10 ore e 35 min! Orario previsto: 07:00 - Orario effettivo assunzione: 17:35. Rimanenza scorta: 109 cpr.",
           "operatore": "Ciro Milella (Admin)"
         }
       ],
@@ -7495,9 +7431,9 @@
         "dataPrescrizioneInizio": "2026-02-23",
         "dataScadenzaAnno": "2027-02-22",
         "prossimaVisitaAmbulatoriale": "2027-02-23",
-        "scatoleRitirateTotali": 12,
-        "scatoleResidueDaRitirare": 0,
-        "puntoRitiro": "Farmacia Territoriale ASL Bari Ex CTO",
+        "scatoleRitirateTotali": 10,
+        "scatoleResidueDaRitirare": 2,
+        "puntoRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
         "storicoRitiri": [
           {
             "data": "2026-02-23",
@@ -7791,7 +7727,7 @@
           ]
         }
       ],
-      "lastModified": 1795186999523
+      "lastModified": 1795192759558
     },
     {
       "id": "paz_mariacarmela",
