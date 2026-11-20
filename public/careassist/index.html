@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=399">
+  <link rel="stylesheet" href="style.css?v=398">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -496,14 +496,14 @@ window.eseguiStrumentoMobile = function(azione, e) {
       <div class="header-left">
         <!-- BOTTONE ALLERTA RITARDI MOBILE (1-TOUCH) -->
         <button type="button" id="mobile-header-ritardi-btn" class="mobile-header-ritardi-btn"
-          onclick="apriAllarmiTerapieManuale()" ontouchstart="apriAllarmiTerapieManuale()" title="Allerta Terapie in Ritardo Multi-Paziente">
+          onclick="apriAllarmiTerapieManuale()" title="Allerta Terapie in Ritardo Multi-Paziente">
           <span class="mhdr-icon">🚨</span>
           <span class="mhdr-label">Ritardi</span>
           <span id="mobile-header-ritardi-badge" class="mhdr-badge" style="display:none;">0</span>
         </button>
         <!-- PILLOLA NOME ASSISTITO SEMPRE ATTIVA NELL'HEADER MOBILE DURANTE LO SCROLL -->
         <div id="mobile-header-active-patient-pill" class="mobile-header-patient-pill"
-          onclick="apriSwitchPazienteRapido()" ontouchstart="apriSwitchPazienteRapido()" title="Tocca per cambiare assistito">
+          onclick="apriSwitchPazienteRapido()" title="Tocca per cambiare assistito">
           <span id="mhdr-patient-avatar">👵</span>
           <span id="mhdr-patient-name" class="mhdr-patient-name">Assistito</span>
           <span class="mhdr-patient-arrow">▾</span>
@@ -8513,7 +8513,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
 
   <!-- MODAL POPUP EMERGENZA: TERAPIE IN RITARDO MULTI-PAZIENTE CON SUONO INSISTENTE -->
   <div class="modal-overlay" id="modal-allarme-terapie"
-    style="z-index:20000000; display:none; background:rgba(15, 23, 42, 0.88); backdrop-filter:blur(10px);">
+    style="z-index:999999; background:rgba(15, 23, 42, 0.88); backdrop-filter:blur(10px);">
     <div class="modal-card"
       style="max-width:1100px; width:95%; border:2.5px solid #ef4444 !important; box-shadow:0 25px 70px rgba(225, 29, 72, 0.45) !important; border-radius:20px; overflow:hidden;">
       <div class="modal-header"
@@ -9218,7 +9218,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
     </div>
   </div>
 
-  <div id="modal-switch-paziente-rapido" class="modal-overlay" style="z-index:20000000; display:none;">
+  <div id="modal-switch-paziente-rapido" class="modal-overlay">
     <div class="modal-content whatsapp-canali-modal"
       style="max-width:480px; width:100%; border-radius:24px; padding:0; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.35); border:none; animation:fadeInScale 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
 
@@ -9684,7 +9684,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=399"></script>
+  <script src="app.js?v=398"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
