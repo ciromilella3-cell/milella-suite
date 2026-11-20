@@ -19774,7 +19774,46 @@ function apriAllarmiTerapieManuale() {
   const listaContainer = document.getElementById('lista-pazienti-terapie-ritardo');
 
   if (pazientiConRitardi.length > 0) {
-    controllaTerapieGlobaliTuttiPazienti();
+    if (listaContainer) {
+      listaContainer.innerHTML = pazientiConRitardi.map(item => {
+        const p = item.paziente;
+        const righeFarmaci = item.farmaci.map(f => {
+          const check = verificaStatoOrarioFarmaco(f.ora);
+          const rOre = Math.floor(check.minutiRitardo / 60);
+          const rMin = check.minutiRitardo % 60;
+          const ritardoStr = (check.minutiRitardo === 0) ? 'ADESSO (ORA ESATTA!)' : (rOre > 0 ? `+${rOre}h ${rMin}m` : `+${rMin} min`);
+          return `
+            <div class="card-allarme-farmaco-item" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#fff; border:1px solid #fee2e2; border-radius:12px; margin-bottom:8px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+              <div>
+                <div style="font-weight:900; font-size:14.5px; color:#991b1b;">💊 ${f.farmaco}</div>
+                <div style="font-size:12px; color:#b91c1c; font-weight:700;">⏰ Orario: ${f.ora} &bull; Ritardo: <b>${ritardoStr}</b></div>
+                ${f.dose ? `<div style="font-size:11.5px; color:#475569;">Dose: ${f.dose}</div>` : ''}
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" onclick="saltaFarmacoDaAllarme('${p.id}', '${f.id}')" ontouchstart="saltaFarmacoDaAllarme('${p.id}', '${f.id}')" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:10px; padding:6px 12px; font-weight:700; font-size:12px; cursor:pointer;">Salta</button>
+                <button type="button" onclick="somministraFarmacoDaAllarme('${p.id}', '${f.id}')" ontouchstart="somministraFarmacoDaAllarme('${p.id}', '${f.id}')" style="background:#16a34a; color:#fff; border:none; border-radius:10px; padding:6px 14px; font-weight:800; font-size:12px; cursor:pointer; box-shadow:0 2px 6px rgba(22,163,74,0.3);">✓ Somministra</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div style="background:#ffffff; border:1.5px solid #ef4444; border-radius:16px; padding:14px; margin-bottom:14px; box-shadow:0 4px 15px rgba(239,68,68,0.12);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding-bottom:8px; border-bottom:1px dashed #fca5a5;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:24px;">👤</span>
+                <div>
+                  <div style="font-size:16px; font-weight:900; color:#0f172a;">${p.nome}</div>
+                  <div style="font-size:11px; font-weight:700; color:#dc2626;">🚨 ${item.farmaci.length} Terapie in attesa di somministrazione</div>
+                </div>
+              </div>
+              <button type="button" onclick="apriMascheraTerapiePaziente('${p.id}')" ontouchstart="apriMascheraTerapiePaziente('${p.id}')" style="background:#eff6ff; color:#0284c7; border:1px solid #93c5fd; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:800; cursor:pointer;">Apri Cartella ➔</button>
+            </div>
+            ${righeFarmaci}
+          </div>
+        `;
+      }).join('');
+    }
   } else {
     if (listaContainer) {
       listaContainer.innerHTML = `
@@ -19785,7 +19824,7 @@ function apriAllarmiTerapieManuale() {
             Tutti i farmaci previsti fino ad ora sono stati regolarmente somministrati oppure non sono ancora scaduti per tutti gli assistiti.
           </div>
           <div style="margin-top:16px;">
-            <button type="button" class="btn btn-primary" onclick="chiudiAllarmeTerapieGlobali()" style="background:#16a34a; border:none; padding:9px 22px; border-radius:12px; font-weight:800; font-size:13px; color:#ffffff; cursor:pointer; box-shadow:0 3px 10px rgba(22,163,74,0.3);">
+            <button type="button" class="btn btn-primary" onclick="chiudiAllarmeTerapieGlobali()" ontouchstart="chiudiAllarmeTerapieGlobali()" style="background:#16a34a; border:none; padding:9px 22px; border-radius:12px; font-weight:800; font-size:13px; color:#ffffff; cursor:pointer; box-shadow:0 3px 10px rgba(22,163,74,0.3);">
               ✓ Chiudi Schermata
             </button>
           </div>
@@ -19794,7 +19833,13 @@ function apriAllarmiTerapieManuale() {
     }
   }
 
-  if (modalAllarme) modalAllarme.classList.add('active');
+  if (modalAllarme) {
+    modalAllarme.classList.add('active');
+    modalAllarme.style.display = 'flex';
+    modalAllarme.style.zIndex = '20000000';
+    document.body.classList.add('modal-open');
+  }
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40]);
 }
 window.apriAllarmiTerapieManuale = apriAllarmiTerapieManuale;
 
@@ -19881,7 +19926,6 @@ function apriSwitchPazienteRapido() {
     const pulitoNome = (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
     const ritardi = (p.terapie || []).filter(t => isTerapiaPrevistaOggi(t) && !t.fattoOggi && !t.saltatoOggi && verificaStatoOrarioFarmaco(t.ora).inRitardo).length;
 
-    // Avatar and clinical focus by patient
     const avInfo = typeof getDettagliAvatarPaziente === 'function' ? getDettagliAvatarPaziente(p) : null;
     const isFem = (p.sesso === 'F') || (avInfo && avInfo.isFemmina);
     let avatarEmoji = isFem ? (eta >= 65 ? '👵' : '👩') : (eta >= 65 ? '👴' : '👨');
@@ -19917,7 +19961,7 @@ function apriSwitchPazienteRapido() {
     }
 
     return `
-      <div onclick="selezionaPazienteRapido('${p.id}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:14px; cursor:pointer; transition:all 0.2s cubic-bezier(0.16,1,0.3,1); border:2px solid ${isAttivo ? '#0284c7' : '#e2e8f0'}; background:${isAttivo ? 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' : '#ffffff'}; box-shadow:${isAttivo ? '0 4px 14px rgba(2,132,199,0.25)' : '0 1px 3px rgba(0,0,0,0.04)'};" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
+      <div onclick="selezionaPazienteRapido('${p.id}')" ontouchstart="selezionaPazienteRapido('${p.id}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:14px; cursor:pointer; transition:all 0.2s cubic-bezier(0.16,1,0.3,1); border:2px solid ${isAttivo ? '#0284c7' : '#e2e8f0'}; background:${isAttivo ? 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' : '#ffffff'}; box-shadow:${isAttivo ? '0 4px 14px rgba(2,132,199,0.25)' : '0 1px 3px rgba(0,0,0,0.04)'};" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="width:46px; height:46px; border-radius:12px; background:${avatarBg}; border:1.5px solid ${avatarBorder}; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 2px 6px rgba(0,0,0,0.08); flex-shrink:0;">
             ${avatarEmoji}
@@ -19943,7 +19987,9 @@ function apriSwitchPazienteRapido() {
 
   modal.classList.add('active');
   modal.style.display = 'flex';
+  modal.style.zIndex = '20000000';
   document.body.classList.add('modal-open');
+  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([30]);
 }
 window.apriSwitchPazienteRapido = apriSwitchPazienteRapido;
 window.selezionaPazienteRapido = selezionaPazienteRapido;
@@ -30822,7 +30868,7 @@ function renderMobileNativeView(terapie, p) {
       '</div>' +
       '<!-- TASTI IN ALTO A DESTRA -->' +
       '<div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end; flex-shrink:0;">' +
-      '<button type="button" onclick="apriSwitchPazienteRapido()" style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:7px 11px; font-size:12px; font-weight:800; color:#0284c7; display:inline-flex; align-items:center; gap:4px; cursor:pointer; min-height:36px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">' +
+      '<button type="button" onclick="apriSwitchPazienteRapido()" ontouchstart="apriSwitchPazienteRapido()" style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:7px 11px; font-size:12px; font-weight:800; color:#0284c7; display:inline-flex; align-items:center; gap:4px; cursor:pointer; min-height:36px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">' +
       '<span>👥 Cambia</span> <span>▾</span>' +
       '</button>' +
       '<button type="button" onclick="event.stopPropagation(); mostraGuidaContestuale(\'mobile-paziente\')" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; border-radius:10px; padding:4px 8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">' +
