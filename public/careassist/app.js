@@ -28309,7 +28309,7 @@ function ascoltaGuidaContestualeVocale() {
     .replace(/&amp;/g, ' e ')
     .replace(/&/g, ' e ')
     .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ', ')
-    .replace(/s*/s*/g, ' oppure ')
+    .replace(/\s*\/\s*/g, ' oppure ')
     .replace(/.{2,}/g, '. ')
     .replace(/:s*/g, ': ')
     .replace(/s+/g, ' ')
