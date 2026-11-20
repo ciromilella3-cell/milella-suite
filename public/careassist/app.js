@@ -33646,6 +33646,7 @@ window.rigeneraTestoFabbisogno = function () {
     }
   });
 
+  window._farmaciRichiestaSelezionati = selezionati;
   var testo = generaTestoRichiestaMMG(p, selezionati);
   var textarea = document.getElementById('mfr-testo-whatsapp-anteprima');
   if (textarea) textarea.value = testo;
@@ -33757,7 +33758,30 @@ window.stampaFabbisognoA4 = function () {
   var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
   if (!p) return;
 
-  var farmaci = window._farmaciRichiestaSelezionati || [];
+  var farmaci = [];
+  var cards = document.querySelectorAll('#mfr-lista-farmaci-fabbisogno > div');
+  if (cards && cards.length > 0) {
+    cards.forEach(function (c, idx) {
+      var cb = document.getElementById('mfr-check-' + idx);
+      var inpScatole = document.getElementById('mfr-scatole-' + idx);
+      if (cb && cb.checked) {
+        farmaci.push({
+          farmaco: c.dataset.farmacoNome,
+          dosaggio: c.dataset.dosaggio,
+          principio: c.dataset.principio,
+          modo: c.dataset.modo,
+          scorta: c.dataset.scorta,
+          unita: c.dataset.unita,
+          ggAutonomia: c.dataset.ggAutonomia,
+          dataFineStr: c.dataset.dataFineStr,
+          numScatole: (inpScatole ? parseInt(inpScatole.value, 10) : 1) || 1
+        });
+      }
+    });
+    window._farmaciRichiestaSelezionati = farmaci;
+  } else {
+    farmaci = window._farmaciRichiestaSelezionati || [];
+  }
   var operatoreNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Dott. Ciro Milella';
   var operatoreRuolo = localStorage.getItem('milella_role') || 'Coordinatore Sanitario';
   var medicoNome = p.medicoCurante || p.medico || p.medicoNome || 'Dott. Roberto Scarcia';
