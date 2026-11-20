@@ -118,7 +118,7 @@ function riproduciVoceNaturaleHD(testo, onEndCallback) {
   try {
     if (typeof getCareAssistSyncBase === 'function') ttsBase = getCareAssistSyncBase();
   } catch(e) {}
-  const apiUrl = (ttsBase ? ttsBase : '') + '/api/tts-umano?voice=isabella&text=' + encodeURIComponent(t);
+  const apiUrl = (ttsBase ? ttsBase : '') + '/api/tts-umano?voice=elsa&text=' + encodeURIComponent(t);
   const audio = new Audio(apiUrl);
   _audioElementCareAssistAttivo = audio;
 

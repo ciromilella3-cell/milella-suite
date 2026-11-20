@@ -3267,9 +3267,9 @@ function generaPausaNaturaleAudio() {
 app.get(['/api/tts-umano', '/careassist/api/tts-umano'], async (req, res) => {
     try {
         const rawText = String(req.query.text || '').slice(0, 1800);
-        const voiceParam = String(req.query.voice || 'isabella').toLowerCase();
+        const voiceParam = String(req.query.voice || 'elsa').toLowerCase();
         const voiceName = voiceParam === 'diego' ? 'it-IT-DiegoNeural'
-            : (voiceParam === 'giuseppe' ? 'it-IT-GiuseppeNeural' : 'it-IT-IsabellaNeural');
+            : (voiceParam === 'giuseppe' ? 'it-IT-GiuseppeNeural' : (voiceParam === 'isabella' ? 'it-IT-IsabellaNeural' : 'it-IT-ElsaNeural'));
         if (!rawText.trim()) {
             return res.status(400).json({ error: 'Testo mancante' });
         }
