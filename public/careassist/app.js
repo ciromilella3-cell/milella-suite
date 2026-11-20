@@ -110,11 +110,15 @@ function riproduciVoceNaturaleHD(testo, onEndCallback) {
     .replace(/\s+/g, ' ')
     .trim();
 
-  // Inserisci pause espressive dopo due punti o punti fermi per ritmo cadenzato e naturale
-  t = t.replace(/:\s*/g, ': ... ').replace(/\.\s*/g, '. ... ');
+  // Pulisci testo da punti di sospensione e simboli che creano artefatti o rumori audio
+  t = t.replace(/\.{3,}/g, '. ').replace(/:\s*\.{2,}/g, ': ').replace(/\s+/g, ' ').trim();
 
-  // Usa l'endpoint Azure Neural HD con voce Isabella (italiano naturale alta definizione)
-  const apiUrl = '/api/tts-umano?voice=isabella&text=' + encodeURIComponent(t);
+  // Determina base URL assoluta corretta (se siamo in locale o cloud)
+  var ttsBase = '';
+  try {
+    if (typeof getCareAssistSyncBase === 'function') ttsBase = getCareAssistSyncBase();
+  } catch(e) {}
+  const apiUrl = (ttsBase ? ttsBase : '') + '/api/tts-umano?voice=isabella&text=' + encodeURIComponent(t);
   const audio = new Audio(apiUrl);
   _audioElementCareAssistAttivo = audio;
 
@@ -27328,7 +27332,8 @@ function parlaFallbackBrowserCareAssist(testo) {
   if (!('speechSynthesis' in window)) return;
   try {
     window.speechSynthesis.cancel();
-    var utter = new SpeechSynthesisUtterance(testo);
+    var cleanText = String(testo || '').replace(/\.{2,}/g, '. ').replace(/[:•-]/g, ', ').replace(/\s+/g, ' ').trim();
+    var utter = new SpeechSynthesisUtterance(cleanText);
     utter.lang = 'it-IT';
     var voices = window.speechSynthesis.getVoices() || [];
     var itV = voices.filter(function (v) { return v.lang && v.lang.toLowerCase().indexOf('it') === 0; });
