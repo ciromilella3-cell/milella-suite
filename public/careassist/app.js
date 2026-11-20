@@ -11592,7 +11592,7 @@ function avviaBriefingVocaleAssistitoDemo() {
       const utter = new SpeechSynthesisUtterance(testoVoce);
       utter.lang = 'it-IT';
       utter.rate = 0.98;
-      utter.pitch = 1.0;
+      utter.pitch = 1.05;
       window.speechSynthesis.speak(utter);
     } catch (e) { }
   }
@@ -15259,7 +15259,7 @@ function leggiPromemoriaVocaleVisita() {
   var utter = new SpeechSynthesisUtterance(testo);
   utter.lang = 'it-IT';
   utter.rate = 0.95;
-  utter.pitch = 1.0;
+  utter.pitch = 1.05;
 
   window.speechSynthesis.speak(utter);
   if (typeof showToast === 'function') showToast('🗣️ Riproduzione promemoria vocale...');
@@ -16120,7 +16120,7 @@ function toggleAudioGuidaLettoManovella() {
   const utter = new SpeechSynthesisUtterance(testoVoce);
   utter.lang = 'it-IT';
   utter.rate = 0.95;
-  utter.pitch = 1.0;
+  utter.pitch = 1.05;
   utter.onend = function () {
     _isGuidaAudioPlaying = false;
     if (txtBtn) txtBtn.textContent = 'Ascolta a Voce';
@@ -27372,7 +27372,10 @@ function parlaFallbackBrowserCareAssist(testo) {
     utter.lang = 'it-IT';
     var voices = window.speechSynthesis.getVoices() || [];
     var itV = voices.filter(function (v) { return v.lang && v.lang.toLowerCase().indexOf('it') === 0; });
-    var best = itV.find(function (v) { return /natural|neural|isabella|diego|giuseppe|google|alice|online/i.test(v.name); }) || itV[0];
+    // Priorita assoluta e vincolante a voci femminili calde e precise (Isabella, Elsa, Alice, Google Italiano)
+    var best = itV.find(function (v) { return /isabella|elsa|alice|chiara|federica|elena|natural.*female|google.*italiano/i.test(v.name); })
+      || itV.find(function (v) { return !/diego|giuseppe|cosimo|male|uomo/i.test(v.name); })
+      || itV[0];
     if (best) utter.voice = best;
     utter.rate = 0.96;
     utter.pitch = 1.02;
