@@ -94,8 +94,12 @@ function riproduciVoceNaturaleHD(testo, onEndCallback) {
   fermaVoceHDGlobale();
   if (!testo || typeof testo !== 'string') return;
 
-  // Formatta testo con pause naturali, espansioni fonetiche e punteggiatura morbida
-  let t = testo
+  // Sanificazione accurata del testo: espansioni fonetiche e pause naturali
+  let t = (testo || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&amp;/g, ' e ')
+    .replace(/&/g, ' e ')
+    .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ', ')
     .replace(/\bmg\b/gi, 'milligrammi')
     .replace(/\bmcg\b/gi, 'microgrammi')
     .replace(/\bcpr\b/gi, 'compresse')
@@ -104,14 +108,12 @@ function riproduciVoceNaturaleHD(testo, onEndCallback) {
     .replace(/\bSGLT2\b/gi, 'S G L T 2')
     .replace(/\bHbA1c\b/gi, 'emoglobina glicata')
     .replace(/\bUI\b/gi, 'unità internazionali')
-    .replace(/•/g, ', ')
     .replace(/\s*\/\s*/g, ' oppure ')
     .replace(/\s*-\s*/g, ' - ')
+    .replace(/\.{2,}/g, '. ')
+    .replace(/:\s*/g, ': ')
     .replace(/\s+/g, ' ')
     .trim();
-
-  // Pulisci testo da punti di sospensione e simboli che creano artefatti o rumori audio
-  t = t.replace(/\.{3,}/g, '. ').replace(/:\s*\.{2,}/g, ': ').replace(/\s+/g, ' ').trim();
 
   // Determina base URL assoluta corretta (se siamo in locale o cloud)
   var ttsBase = '';
@@ -119,26 +121,46 @@ function riproduciVoceNaturaleHD(testo, onEndCallback) {
     if (typeof getCareAssistSyncBase === 'function') ttsBase = getCareAssistSyncBase();
   } catch(e) {}
   const apiUrl = (ttsBase ? ttsBase : '') + '/api/tts-umano?voice=elsa&text=' + encodeURIComponent(t);
+
+  // Stop rigido a qualsiasi sintesi vocale prima di iniziare
+  if ('speechSynthesis' in window) {
+    try { window.speechSynthesis.cancel(); } catch(e) {}
+  }
+
   const audio = new Audio(apiUrl);
   _audioElementCareAssistAttivo = audio;
+
+  let isAudioStarted = false;
+
+  audio.onplay = function () {
+    isAudioStarted = true;
+    // Assicurati che WebSpeech sia spento
+    if ('speechSynthesis' in window) {
+      try { window.speechSynthesis.cancel(); } catch(e) {}
+    }
+  };
 
   audio.onended = function () {
     _audioElementCareAssistAttivo = null;
     if (typeof onEndCallback === 'function') onEndCallback();
   };
 
-  audio.onerror = function () {
-    console.warn('Fallback a sintesi locale browser per voce');
+  audio.onerror = function (e) {
+    console.warn('Errore caricamento audio MP3 Elsa:', e);
     _audioElementCareAssistAttivo = null;
-    if (typeof parlaFallbackBrowserCareAssist === 'function') {
+    // Attiva il fallback locale SOLO ED ESCLUSIVAMENTE se l\'audio naturale non è partito
+    if (!isAudioStarted && typeof parlaFallbackBrowserCareAssist === 'function') {
       parlaFallbackBrowserCareAssist(t);
     }
     if (typeof onEndCallback === 'function') onEndCallback();
   };
 
-  audio.play().catch(function (err) {
-    console.warn('Riproduzione audio bloccata o fallita, uso WebSpeech:', err);
-    if (typeof parlaFallbackBrowserCareAssist === 'function') {
+  audio.play().then(function() {
+    isAudioStarted = true;
+  }).catch(function (err) {
+    console.warn('Riproduzione audio MP3 bloccata da browser o fallita:', err);
+    // SOLO se non è partito l\'audio naturale e c\'è stato un blocco effettivo
+    if (!isAudioStarted && typeof parlaFallbackBrowserCareAssist === 'function') {
       parlaFallbackBrowserCareAssist(t);
     }
   });
