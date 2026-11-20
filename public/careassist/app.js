@@ -35375,3 +35375,56 @@ window.stampaBollarioScortePDF = function() {
   window.print();
 };
 
+
+
+// ==============================================================================
+// GUIDA VOCALE CESTINO CLINICO CON VOCE NATURALE HD
+// ==============================================================================
+var _isGuidaCestinoInRiproduzione = false;
+function ascoltaGuidaCestinoVocale() {
+  const btn = document.getElementById('btn-ascolta-guida-cestino');
+  const ico = document.getElementById('ico-audio-cestino');
+  const txt = document.getElementById('txt-audio-cestino');
+
+  if (_isGuidaCestinoInRiproduzione) {
+    if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+    _isGuidaCestinoInRiproduzione = false;
+    if (ico) ico.textContent = '🔊';
+    if (txt) txt.textContent = 'Ascolta Guida';
+    if (btn) btn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+    return;
+  }
+
+  const testo = "A cosa serve questa funzione. " +
+    "Il Cestino è la Camera di Sicurezza Clinica di CareAssist Pro. " +
+    "Quando un operatore o un familiare cancella per errore o sostituisce un farmaco, una visita specialistica oppure una nota di diario, " +
+    "l'elemento non viene perso, ma viene trattenuto qui per sessanta giorni. " +
+    "Da questa schermata puoi ripristinarlo con un solo tocco esattamente al suo posto originario. ... " +
+    "Cosa si rischia cliccando su Svuota Cestino? " +
+    "Si rischia la cancellazione definitiva e irreversibile della cronologia terapeutica e dei dati clinici archiviati. " +
+    "Questa azione non può essere annullata. " +
+    "Se hai dubbi su una terapia passata o su una prescrizione, lascia gli elementi nel cestino: " +
+    "verranno ripuliti in automatico dopo sessanta giorni senza alcun rischio per le terapie attive.";
+
+  _isGuidaCestinoInRiproduzione = true;
+  if (ico) ico.textContent = '⏹️';
+  if (txt) txt.textContent = 'Interrompi Voce';
+  if (btn) btn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+
+  const resetStato = function() {
+    _isGuidaCestinoInRiproduzione = false;
+    if (ico) ico.textContent = '🔊';
+    if (txt) txt.textContent = 'Ascolta Guida';
+    if (btn) btn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+  };
+
+  if (typeof riproduciVoceNaturaleHD === 'function') {
+    riproduciVoceNaturaleHD(testo, resetStato);
+  } else if (typeof parlaFallbackBrowserCareAssist === 'function') {
+    parlaFallbackBrowserCareAssist(testo);
+    setTimeout(resetStato, 22000);
+  } else {
+    resetStato();
+  }
+}
+window.ascoltaGuidaCestinoVocale = ascoltaGuidaCestinoVocale;
