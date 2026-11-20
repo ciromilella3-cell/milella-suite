@@ -28295,19 +28295,9 @@ function mostraGuidaContestuale(chiave) {
 
   corpoEl.innerHTML = scopoHtml + comeSiUsaBox + utilitaBox;
 
-  // Assicura massima priorità visiva sopra ogni altra modale aperta
+  // Make sure modal-guida-contestuale is visible above other modals!
   modal.style.setProperty('z-index', '2147483647', 'important');
-  modal.style.setProperty('display', 'flex', 'important');
-  modal.classList.add('active');
-  document.body.classList.add('modal-open');
-  try {
-    // Se non è l'ultimo figlio del body, spostalo in fondo così da vincere ogni stacking context
-    if (modal.parentElement !== document.body) {
-      document.body.appendChild(modal);
-    } else if (document.body.lastElementChild !== modal) {
-      document.body.appendChild(modal);
-    }
-  } catch (err) {}
+  openModal('modal-guida-contestuale');
 }
 window.mostraGuidaContestuale = mostraGuidaContestuale;
 

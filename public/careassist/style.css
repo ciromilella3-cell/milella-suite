@@ -11435,40 +11435,44 @@ button[onclick*="mostraGuidaContestuale"],
 }
 
 /* REGOLE SPECIFICHE PER MODAL GUIDA CONTESTUALE (A COSA SERVE) SU MOBILE */
-/* MODAL GUIDA CONTESTUALE DINAMICA (Z-INDEX MASSIMO PER SOVRAIMPRESSIONE SU QUALSIASI MODALE) */
-#modal-guida-contestuale {
-  z-index: 2147483647 !important;
-}
-#modal-guida-contestuale.active,
-#modal-guida-contestuale[style*="display: flex"] {
-  display: flex !important;
-  z-index: 2147483647 !important;
-}
 #modal-guida-contestuale .modal-header,
 #modal-guida-contestuale .modal-header-guida {
   display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  justify-content: flex-start !important;
-  padding: 12px 14px !important;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0369a1 100%) !important;
-  gap: 10px !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 14px 16px !important;
+  background: linear-gradient(135deg, #0f172a 0%, #0284c7 100%) !important;
+  gap: 12px !important;
+}
+#modal-guida-contestuale .modal-header > div:first-child {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+#modal-guida-contestuale #mgc-icona {
+  font-size: 30px !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
 }
 #modal-guida-contestuale #mgc-titolo {
   font-size: 16px !important;
   font-weight: 900 !important;
   color: #ffffff !important;
-  line-height: 1.35 !important;
-  margin: 0 !important;
+  line-height: 1.25 !important;
+  margin: 2px 0 0 !important;
   word-break: break-word !important;
 }
 #modal-guida-contestuale .modal-close {
   flex-shrink: 0 !important;
-  width: 34px !important;
-  height: 34px !important;
+  width: 36px !important;
+  height: 36px !important;
   border-radius: 50% !important;
-  background: rgba(255,255,255,0.18) !important;
-  border: 1.5px solid rgba(255,255,255,0.35) !important;
+  background: rgba(255,255,255,0.2) !important;
+  border: 1.5px solid rgba(255,255,255,0.4) !important;
   color: #ffffff !important;
   font-size: 20px !important;
   font-weight: 900 !important;
