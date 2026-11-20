@@ -5442,7 +5442,19 @@ window.eseguiStrumentoMobile = function(azione, e) {
             </div>
           </div>
         </div>
-        <button type="button" class="modal-close"
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" id="btn-voce-allineamento-header" onclick="leggiSpiegazioneAllineamentoVocale()"
+            style="background:linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color:#ffffff !important; border:1px solid #34d399 !important; font-weight:800 !important; font-size:12px !important; padding:6px 14px !important; border-radius:10px !important; cursor:pointer !important; display:inline-flex !important; align-items:center !important; gap:6px !important; box-shadow:0 3px 8px rgba(16,185,129,0.35) !important;"
+            title="Ascolta con Voce Naturale Elsa Neural">
+            <span id="ico-voce-allineamento-header">🔊</span> <span id="txt-voce-allineamento-header">Ascolta con Elsa Neural</span>
+          </button>
+          <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('allineamento-terapie')"
+            style="background:rgba(255,255,255,0.15) !important; color:#ffffff !important; border:1px solid rgba(255,255,255,0.3) !important; font-weight:800 !important; font-size:12px !important; padding:6px 12px !important; border-radius:10px !important; cursor:pointer !important; display:inline-flex !important; align-items:center !important; gap:5px !important;"
+            title="Guida rapida: A cosa serve questa funzione">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
+        </div>
+        <button type="button" class="modal-close" type="button" class="modal-close"
           style="color:#ffffff !important; font-size:22px; width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;"
           onclick="closeModal('modal-riconciliazione')">✕</button>
       </div>
@@ -9742,7 +9754,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=407"></script>
+  <script src="app.js?v=408"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {

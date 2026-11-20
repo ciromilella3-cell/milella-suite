@@ -17193,6 +17193,80 @@ function aggiornaStatoDosiPendentiBanner() {
   }
 }
 
+var _isAllineamentoVoceInCorso = false;
+
+function leggiSpiegazioneAllineamentoVocale() {
+  var btn = document.getElementById('btn-voce-allineamento-header');
+  var ico = document.getElementById('ico-voce-allineamento-header');
+  var txt = document.getElementById('txt-voce-allineamento-header');
+
+  function impostaStato(inRiproduzione) {
+    if (inRiproduzione) {
+      if (ico) ico.textContent = '⏹️';
+      if (txt) txt.textContent = 'Interrompi';
+      if (btn) btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
+    } else {
+      if (ico) ico.textContent = '🔊';
+      if (txt) txt.textContent = 'Ascolta con Elsa Neural';
+      if (btn) btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    }
+  }
+
+  if (_isAllineamentoVoceInCorso) {
+    if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+    _isAllineamentoVoceInCorso = false;
+    impostaStato(false);
+    if (typeof showToast === 'function') showToast('⏹️ Voce interrotta');
+    return;
+  }
+
+  var dosi = window._dosiPendentiRilevate || [];
+  var numDosi = dosi.length;
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var nomePaz = p ? ((p.nome || '') + ' ' + (p.cognome || '')).trim() : 'l\'assistito';
+
+  var parti = [];
+  parti.push('Allineamento terapie e controllo scorte farmacia per ' + nomePaz + '.');
+  if (numDosi > 0) {
+    parti.push('Sono state rilevate ' + numDosi + ' somministrazioni passate non ancora registrate, ad esempio durante il periodo a computer spento.');
+  } else {
+    parti.push('Tutte le terapie risultano attualmente allineate e sincronizzate.');
+  }
+  parti.push('A cosa serve e come procedere:');
+  parti.push('Se il paziente ha regolarmente preso i medicinali, tocca il pulsante verde Conferma Assunte. Il sistema scalerà le compresse dai blister virtuali e certificherà la somministrazione nello storico clinico.');
+  parti.push('Se invece le dosi sono state saltate, tocca il pulsante rosso Segna Come Saltate. Le scorte non verranno toccate e l omissione terapeutica verrà annotata nel diario clinico.');
+
+  var testoCompleto = parti.join(' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&amp;/g, ' e ')
+    .replace(/&/g, ' e ')
+    .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ', ')
+    .replace(/\s*\/\s*/g, ' oppure ')
+    .replace(/\.{2,}/g, '. ')
+    .replace(/:\s*/g, ': ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  _isAllineamentoVoceInCorso = true;
+  impostaStato(true);
+  if (typeof showToast === 'function') showToast('🗣️ Riproduzione vocale Elsa Neural in corso...');
+
+  var resetFn = function() {
+    _isAllineamentoVoceInCorso = false;
+    impostaStato(false);
+  };
+
+  if (typeof riproduciVoceNaturaleHD === 'function') {
+    riproduciVoceNaturaleHD(testoCompleto, resetFn);
+  } else if (typeof parlaFallbackBrowserCareAssist === 'function') {
+    parlaFallbackBrowserCareAssist(testoCompleto);
+    setTimeout(resetFn, 25000);
+  } else {
+    resetFn();
+  }
+}
+window.leggiSpiegazioneAllineamentoVocale = leggiSpiegazioneAllineamentoVocale;
+
 function apriModalRiconciliazione(giorni, ultimaData) {
   var modal = document.getElementById('modal-riconciliazione');
   if (!modal) return;
