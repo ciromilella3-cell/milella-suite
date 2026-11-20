@@ -483,6 +483,48 @@ window.eseguiStrumentoMobile = function(azione, e) {
     }
   </style>
 
+  <style>
+  @media print {
+    #sticky-patient-bar, .sticky-patient-bar,
+    #win-desktop-floating-trash, .win-desktop-floating-trash,
+    #careassist-mobile-bar, .mobile-bottom-bar,
+    .no-print, .no-print-dossier {
+      display: none !important;
+      visibility: hidden !important;
+    }
+    body.printing-dossier * {
+      visibility: hidden !important;
+    }
+    body.printing-dossier #modal-dossier-clinico-stampa,
+    body.printing-dossier #modal-dossier-clinico-stampa .modal-card,
+    body.printing-dossier #dossier-clinico-preview-content,
+    body.printing-dossier #dossier-clinico-preview-content * {
+      visibility: visible !important;
+    }
+    body.printing-dossier #modal-dossier-clinico-stampa {
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+      border: none !important;
+      box-shadow: none !important;
+      z-index: 99999999 !important;
+      display: block !important;
+    }
+    body.printing-dossier #modal-dossier-clinico-stampa .modal-card {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+  }
+  </style>
 </head>
 
 <body>
@@ -9754,7 +9796,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=409"></script>
+  <script src="app.js?v=410"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {

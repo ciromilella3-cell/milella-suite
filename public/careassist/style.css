@@ -11500,3 +11500,85 @@ button[onclick*="mostraGuidaContestuale"],
 #modal-briefing-vocale .modal-patient-badge {
   display: none !important;
 }
+
+
+/* ==========================================================================
+   REGOLE UNIVERSALI PER LA STAMPA PULITA (ZERO ELEMENTI FLOTTANTI O BARRE)
+   ========================================================================== */
+@media print {
+  /* 1. Nascondi tassativamente tutte le barre e icone fisse/flottanti */
+  #sticky-patient-bar,
+  .sticky-patient-bar,
+  #win-desktop-floating-trash,
+  .win-desktop-floating-trash,
+  #careassist-mobile-bar,
+  .mobile-bottom-bar,
+  .quick-tiles,
+  .app-header,
+  .nav-bar,
+  .btn,
+  .modal-close,
+  .no-print,
+  .no-print-dossier,
+  .dossier-header-top-row,
+  .dossier-controls-row {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  /* 2. Regola specifica per la stampa del Dossier Clinico A4 */
+  body.printing-dossier * {
+    visibility: hidden !important;
+  }
+
+  body.printing-dossier #modal-dossier-clinico-stampa,
+  body.printing-dossier #modal-dossier-clinico-stampa .modal-card,
+  body.printing-dossier #dossier-clinico-preview-content,
+  body.printing-dossier #dossier-clinico-preview-content * {
+    visibility: visible !important;
+  }
+
+  body.printing-dossier #modal-dossier-clinico-stampa {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    z-index: 99999999 !important;
+    display: block !important;
+  }
+
+  body.printing-dossier #modal-dossier-clinico-stampa .modal-card {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  body.printing-dossier #dossier-clinico-preview-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+  }
+
+  /* 3. Regola globale: qualsiasi elemento con fixed o sticky scompare in stampa */
+  [style*="position: fixed"],
+  [style*="position:fixed"],
+  [style*="position: sticky"],
+  [style*="position:sticky"] {
+    display: none !important;
+  }
+}
