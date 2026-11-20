@@ -6308,7 +6308,7 @@ function renderTerapie() {
           if (isBisogno && !t.fattoOggi) {
             return `
                 <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                  <button class="btn btn-azione-luxury pending" style="background:#fef3c7; border-color:#f59e0b; color:#b45309;" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per registrare che questo farmaco è stato assunto al bisogno oggi">
+                  <button class="btn btn-azione-luxury pending" style="background:#fef3c7; border-color:#f59e0b; color:#b45309;" onclick="toggleFarmacoConScarico('${t.id}')" title="Clicca per registrare che questo farmaco è stato assunto al bisogno oggi">
                     ⚡ Somministra al Bisogno
                   </button>
                   <span style="font-size:10px; color:#b45309; font-weight:600;">Sintomatico / SOS</span>
@@ -6331,7 +6331,7 @@ function renderTerapie() {
               `;
 
             return `
-                <button class="btn btn-azione-luxury done" onclick="toggleFarmacoConScarico(${t.id})" title="Clicca per gestire o annullare la spunta">
+                <button class="btn btn-azione-luxury done" onclick="toggleFarmacoConScarico('${t.id}')" title="Clicca per gestire o annullare la spunta">
                   ✓ ${isPen ? 'Iniettato Oggi' : 'Assunto Oggi'}
                 </button>
                 ${isBisogno ? `<div style="font-size:10px; color:#15803d; font-weight:700; margin-top:3px;">⚡ Assunto al bisogno</div>` : ''}
@@ -6339,7 +6339,7 @@ function renderTerapie() {
           }
           if (t.saltatoOggi) {
             return `
-                <button class="btn btn-danger" style="min-width: 120px; background:#b91c1c; border-color:#991b1b;" onclick="toggleFarmacoConScarico(${t.id})" title="Terapia saltata/omessa: ${t.motivoSalto || ''}. Clicca se vuoi comunque somministrare ora.">
+                <button class="btn btn-danger" style="min-width: 120px; background:#b91c1c; border-color:#991b1b;" onclick="toggleFarmacoConScarico('${t.id}')" title="Terapia saltata/omessa: ${t.motivoSalto || ''}. Clicca se vuoi comunque somministrare ora.">
                   ❌ Saltato
                 </button>
                 <div style="font-size:10px; color:#b91c1c; margin-top:3px; font-weight:800;" title="${t.motivoSalto || ''}">${(t.motivoSalto || 'Dose omessa').slice(0, 20)}...</div>
@@ -6349,11 +6349,11 @@ function renderTerapie() {
           if (!check.consentito) {
             return `
                 <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                  <button class="btn btn-azione-luxury pending" style="background:#fffbeb; border-color:#f59e0b; color:#b45309;" onclick="toggleFarmacoConScarico(${t.id})" title="Previsto alle ${t.ora}. Clicca per somministrare ora (spunta)">
+                  <button class="btn btn-azione-luxury pending" style="background:#fffbeb; border-color:#f59e0b; color:#b45309;" onclick="toggleFarmacoConScarico('${t.id}')" title="Previsto alle ${t.ora}. Clicca per somministrare ora (spunta)">
                     🕒 Alle ${t.ora} (Spunta)
                   </button>
                   <span style="font-size:10px; color:#d97706; font-weight:700;">Previsto alle ${t.ora}</span>
-                  <button type="button" class="btn btn-outline" style="padding:1px 6px; font-size:10px; border-color:#e2e8f0; color:#64748b;" onclick="apriModalSaltaFarmaco(${t.id})" title="Registra mancata assunzione o rifiuto">Salta dose</button>
+                  <button type="button" class="btn btn-outline" style="padding:1px 6px; font-size:10px; border-color:#e2e8f0; color:#64748b;" onclick="apriModalSaltaFarmaco('${t.id}')" title="Registra mancata assunzione o rifiuto">Salta dose</button>
                 </div>
               `;
           }
@@ -6364,11 +6364,11 @@ function renderTerapie() {
             const badgeTesto = (check.minutiRitardo === 0) ? '⏰ È L\'ORA ESATTA!' : `Scaduto da ${ritardoTesto}`;
             return `
                 <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                  <button class="btn farmaco-in-ritardo-btn" style="min-width: 120px;" onclick="toggleFarmacoConScarico(${t.id})" title="ATTENZIONE: È ora di somministrare la terapia! Clicca per somministrare ora.">
+                  <button class="btn farmaco-in-ritardo-btn" style="min-width: 120px;" onclick="toggleFarmacoConScarico('${t.id}')" title="ATTENZIONE: È ora di somministrare la terapia! Clicca per somministrare ora.">
                     🔔 ${check.minutiRitardo === 0 ? 'PRENDI ORA!' : 'RITARDO!'}
                   </button>
-                  <span style="display:inline-block; background:#dc2626; color:#ffffff !important; font-weight:800; font-size:11px; padding:3px 10px; border-radius:12px; margin-top:3px; box-shadow:0 1px 3px rgba(220,38,38,0.3);">${badgeTesto}</span>
-                  <button type="button" class="btn btn-outline" style="padding:2px 8px; font-size:10.5px; border-color:#fca5a5; color:#b91c1c; background:#fef2f2; border-radius:6px;" onclick="apriModalSaltaFarmaco(${t.id})" title="Se non può essere preso (rifiuto, addormentato, vomito), registralo come dose saltata">
+                  <span style="display:inline-block; background:#dc2626; color:#ffffff !important; font-weight:800; font-size:11px; padding:4px 12px; border-radius:12px; margin-top:3px; box-shadow:0 1px 3px rgba(220,38,38,0.3); cursor:pointer;" onclick="toggleFarmacoConScarico('${t.id}')" ontouchstart="toggleFarmacoConScarico('${t.id}')" title="Tocca per registrare o convalidare somministrazione">${badgeTesto} 👆</span>
+                  <button type="button" class="btn btn-outline" style="padding:2px 8px; font-size:10.5px; border-color:#fca5a5; color:#b91c1c; background:#fef2f2; border-radius:6px;" onclick="apriModalSaltaFarmaco('${t.id}')" title="Se non può essere preso (rifiuto, addormentato, vomito), registralo come dose saltata">
                     ❌ Non somministrato?
                   </button>
                 </div>
@@ -6376,10 +6376,10 @@ function renderTerapie() {
           }
           return `
               <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
-                <button class="btn btn-azione-luxury pending" onclick="toggleFarmacoConScarico(${t.id})">
+                <button class="btn btn-azione-luxury pending" onclick="toggleFarmacoConScarico('${t.id}')">
                   ${isPen ? '💉 Inietta Ora' : '⚪ Somministra'}
                 </button>
-                <button type="button" class="btn btn-outline" style="padding:1px 6px; font-size:10px; border-color:#e2e8f0; color:#64748b;" onclick="apriModalSaltaFarmaco(${t.id})" title="Registra mancata assunzione o rifiuto">Salta dose</button>
+                <button type="button" class="btn btn-outline" style="padding:1px 6px; font-size:10px; border-color:#e2e8f0; color:#64748b;" onclick="apriModalSaltaFarmaco('${t.id}')" title="Registra mancata assunzione o rifiuto">Salta dose</button>
               </div>
             `;
         })()}
@@ -6442,15 +6442,15 @@ function renderTerapie() {
         }
         btnPreview = `<span class="badge" style="background:#f1f5f9; color:#64748b; font-size:10.5px; font-weight:700; border:1px solid #cbd5e1; padding:4px 8px; border-radius:8px;" title="Terapia periodica non programmata per la giornata odierna">📅 Non oggi${proxData}</span>`;
       } else if (t.fattoOggi) {
-        btnPreview = `<button class="btn btn-success" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:8px;" onclick="toggleFarmacoConScarico(${t.id})">✅ Fatto</button>`;
+        btnPreview = `<button class="btn btn-success" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:8px;" onclick="toggleFarmacoConScarico('${t.id}')">✅ Fatto</button>`;
       } else {
         const check = verificaStatoOrarioFarmaco(t.ora);
         if (!check.consentito) {
-          btnPreview = `<button class="btn btn-outline" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:8px; background:#fffbeb; color:#b45309; border-color:#fde68a;" onclick="toggleFarmacoConScarico(${t.id})" title="Orario non raggiunto">🕒 ${t.ora}</button>`;
+          btnPreview = `<button class="btn btn-outline" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:8px; background:#fffbeb; color:#b45309; border-color:#fde68a;" onclick="toggleFarmacoConScarico('${t.id}')" title="Orario non raggiunto">🕒 ${t.ora}</button>`;
         } else if (check.inRitardo) {
-          btnPreview = `<button class="btn farmaco-in-ritardo-btn" style="padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px;" onclick="toggleFarmacoConScarico(${t.id})" title="Terapia in ritardo!">🔔 Ritardo!</button>`;
+          btnPreview = `<button class="btn farmaco-in-ritardo-btn" style="padding:4px 10px; font-size:11px; font-weight:800; border-radius:8px;" onclick="toggleFarmacoConScarico('${t.id}')" title="Terapia in ritardo!">🔔 Ritardo!</button>`;
         } else {
-          btnPreview = `<button class="btn btn-outline" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:8px;" onclick="toggleFarmacoConScarico(${t.id})">⚪ Da dare</button>`;
+          btnPreview = `<button class="btn btn-outline" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:8px;" onclick="toggleFarmacoConScarico('${t.id}')">⚪ Da dare</button>`;
         }
       }
 
@@ -7041,19 +7041,33 @@ function simulaAllarmeTerapieTest() {
 }
 
 // SCARICO AUTOMATICO DELLA COMPRESSA ALLA SOMMINISTRAZIONE CON TRACCIABILITÀ & SAFETY CHECK OBBLIGATORIO
-async function toggleFarmacoConScarico(id) {
-  const p = getActivePaziente();
-  if (!p) return;
-  const t = p.terapie.find(item => String(item.id) === String(id));
-  if (!t) return;
+async function toggleFarmacoConScarico(id, customPazId) {
+  let p = customPazId ? (AppData.pazienti || []).find(x => x.id === customPazId) : getActivePaziente();
+  let t = p ? (p.terapie || []).find(item => String(item.id) === String(id)) : null;
 
-  // Se il farmaco è già stato assunto, permette di annullare la somministrazione
+  // Se non trovato nel paziente attivo, cerca in tutti i pazienti disponibili
+  if (!t && AppData && Array.isArray(AppData.pazienti)) {
+    for (const px of AppData.pazienti) {
+      const found = (px.terapie || []).find(item => String(item.id) === String(id));
+      if (found) {
+        p = px;
+        t = found;
+        break;
+      }
+    }
+  }
+
+  if (!p || !t) {
+    if (typeof showToast === 'function') showToast('⚠️ Farmaco non trovato.', 'warning');
+    return;
+  }
+
+  // Se il farmaco è già stato assunto, permette di annullare o gestire la somministrazione
   if (t.fattoOggi) {
     return applicaSomministrazioneClinicaEffettiva(t.id);
   }
 
   // APRI SEMPRE LA SCHEDA CLINICA DI SICUREZZA (5 REGOLE SAFETY CHECK BEDSIDE)
-  // Obbliga l'operatore a verificare e spuntare la casella dosaggio prima di procedere!
   const checkOrario = (typeof verificaStatoOrarioFarmaco === 'function') ? verificaStatoOrarioFarmaco(t.ora) : { consentito: true };
   apriModalSafetyCheckOspedaliero(t, p, checkOrario);
 }
@@ -7220,20 +7234,31 @@ async function applicaSomministrazioneClinicaEffettiva(id, sitoIniezione) {
 }
 
 // APRE IL MODAL PER REGISTRARE UNA MANCANZA / TERAPIA SALTATA (DOSE NON ASSUNTA)
-function apriModalSaltaFarmaco(farmacoId) {
-  const p = getActivePaziente();
-  if (!p) return;
-  const t = p.terapie.find(item => item.id === farmacoId);
-  if (!t) return;
+function apriModalSaltaFarmaco(farmacoId, customPazId) {
+  let p = customPazId ? (AppData.pazienti || []).find(x => x.id === customPazId) : getActivePaziente();
+  let t = p ? (p.terapie || []).find(item => String(item.id) === String(farmacoId)) : null;
+
+  if (!t && AppData && Array.isArray(AppData.pazienti)) {
+    for (const px of AppData.pazienti) {
+      const found = (px.terapie || []).find(item => String(item.id) === String(farmacoId));
+      if (found) {
+        p = px;
+        t = found;
+        break;
+      }
+    }
+  }
+
+  if (!p || !t) return;
 
   document.getElementById('salta-farmaco-id').value = farmacoId;
-  document.getElementById('salta-farmaco-titolo').textContent = `Mancata Assunzione: ${t.farmaco}`;
-  document.getElementById('salta-farmaco-sottotitolo').textContent = `Dose prevista alle ore ${t.ora} (${t.dosaggio})`;
+  document.getElementById('salta-farmaco-titolo').textContent = 'Mancata Assunzione: ' + t.farmaco;
+  document.getElementById('salta-farmaco-sottotitolo').textContent = 'Dose prevista alle ore ' + t.ora + ' (' + (t.dosaggio || '1 dose') + ')';
   document.getElementById('salta-farmaco-note').value = '';
   openModal('modal-salta-farmaco');
 }
 
-// CONFERMA E ARCHIVIAZIONE NELLO STORICO DELLA MANCANZA TERAPIA
+  // CONFERMA E ARCHIVIAZIONE NELLO STORICO DELLA MANCANZA TERAPIA
 function confermaRegistrazioneFarmacoSaltato(e) {
   e.preventDefault();
   const p = getActivePaziente();
