@@ -33757,10 +33757,47 @@ window.stampaFabbisognoA4 = function () {
   var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
   if (!p) return;
 
-  var textarea = document.getElementById('mfr-testo-whatsapp-anteprima');
-  var testo = textarea ? textarea.value : '';
+  var farmaci = window._farmaciRichiestaSelezionati || [];
+  var operatoreNome = localStorage.getItem('milella_user_nome') || localStorage.getItem('milella_last_authenticated_user') || 'Dott. Ciro Milella';
+  var operatoreRuolo = localStorage.getItem('milella_role') || 'Coordinatore Sanitario';
+  var medicoNome = p.medicoCurante || p.medico || p.medicoNome || 'Dott. Roberto Scarcia';
+  var studioMedico = p.studioMedico || p.medicoStudio || 'Ambulatorio Territoriale MMG';
+  var telMedico = p.medicoCellulare || p.medicoTelefono || p.telMedico || '347 126 59 71';
+  var farmaciaNome = p.farmaciaDiRiferimento || p.farmacia || 'Farmacia Territoriale';
+  var dataStampa = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var oraStampa = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
-  if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback([40]);
+  var dataNascitaFmt = p.dataNascita || '--';
+  if (dataNascitaFmt.includes('-')) {
+    var prt = dataNascitaFmt.split('-');
+    if (prt.length === 3 && prt[0].length === 4) dataNascitaFmt = prt[2] + '/' + prt[1] + '/' + prt[0];
+  }
+
+  var righeFarmaciHtml = '';
+  if (farmaci.length === 0) {
+    righeFarmaciHtml = '<tr><td colspan="6" style="padding:16px; text-align:center; color:#15803d; font-weight:800; background:#f0fdf4;">' +
+      '✅ Tutte le scorte attuali risultano al momento regolari. Nessun rinnovo urgente pervenuto.' +
+      '</td></tr>';
+  } else {
+    righeFarmaciHtml = farmaci.map(function(f, idx) {
+      return '<tr style="border-bottom:1px solid #cbd5e1; background:' + (idx % 2 === 0 ? '#ffffff' : '#f8fafc') + ';">' +
+        '<td style="padding:10px 12px; font-weight:900; color:#0f172a; font-size:10.5pt;">' +
+        (idx + 1) + '. ' + f.farmaco +
+        (f.principio ? '<div style="font-size:8.5pt; color:#64748b; font-weight:600;">' + f.principio + '</div>' : '') +
+        '</td>' +
+        '<td style="padding:10px 12px; font-size:9.5pt; color:#334155;">' + (f.dosaggio || '--') + '</td>' +
+        '<td style="padding:10px 12px; font-size:9pt; color:#334155;">' + (f.modo || 'Secondo prescrizione') + '</td>' +
+        '<td style="padding:10px 12px; font-size:9.5pt; text-align:center; font-weight:800; color:#b91c1c;">' +
+        f.scorta + ' ' + (f.unita || 'cpr') +
+        '<div style="font-size:8pt; color:#64748b; font-weight:normal;">~' + f.ggAutonomia + ' gg residui</div>' +
+        '</td>' +
+        '<td style="padding:10px 12px; font-size:9.5pt; text-align:center; font-weight:800; color:#0f172a;">' + (f.dataFineStr || '--') + '</td>' +
+        '<td style="padding:10px 12px; font-size:10pt; text-align:center; font-weight:900; color:#0369a1; background:#f0f9ff;">' +
+        f.numScatole + ' ' + (f.numScatole === 1 ? 'confez.' : 'confez.') +
+        '</td>' +
+        '</tr>';
+    }).join('');
+  }
 
   var win = window.open('', '_blank');
   if (!win) {
@@ -33768,21 +33805,128 @@ window.stampaFabbisognoA4 = function () {
     return;
   }
 
-  win.document.write('<!DOCTYPE html><html><head><title>Fabbisogno Farmaci MMG - ' + (p.nome || 'Paziente') + '</title>');
-  win.document.write('<style>');
-  win.document.write('body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 28px; color: #0f172a; line-height: 1.5; }');
-  win.document.write('h2 { color: #065f46; margin-bottom: 4px; }');
-  win.document.write('.header-box { border-bottom: 2px solid #065f46; padding-bottom: 12px; margin-bottom: 18px; }');
-  win.document.write('pre { background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; font-family: inherit; font-size: 13.5px; white-space: pre-wrap; word-wrap: break-word; }');
-  win.document.write('@media print { button { display: none !important; } }');
-  win.document.write('</style></head><body>');
-  win.document.write('<div class="header-box">');
-  win.document.write('<h2>📋 PROMEMORIA FABBISOGNO RICETTE FARMACI MMG</h2>');
-  win.document.write('<div>CareAssist Pro · Sistema Territoriale Assistenza Pazienti Fragili</div>');
-  win.document.write('</div>');
-  win.document.write('<button onclick="window.print()" style="background:#059669; color:#fff; border:none; padding:10px 18px; border-radius:8px; font-weight:800; cursor:pointer; margin-bottom:16px;">🖨️ Stampa Adesso (A4)</button>');
-  win.document.write('<pre>' + testo.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>');
-  win.document.write('</body></html>');
+  var docHtml = '<!DOCTYPE html>' +
+    '<html lang="it">' +
+    '<head>' +
+    '<meta charset="utf-8">' +
+    '<title>Richiesta Ricette MMG - ' + p.nome + '</title>' +
+    '<style>' +
+    '@page { size: A4 portrait; margin: 12mm 15mm; }' +
+    'body { font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 0; font-size: 10pt; line-height: 1.45; background:#fff; }' +
+    '.header-table { width: 100%; border-bottom: 2.5px solid #059669; padding-bottom: 12px; margin-bottom: 14px; }' +
+    '.brand-title { font-size: 16pt; font-weight: 900; color: #065f46; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }' +
+    '.brand-sub { font-size: 9pt; color: #64748b; font-weight: 600; margin-top: 2px; }' +
+    '.badge-doc { background: #ecfdf5; color: #047857; font-weight: 800; font-size: 8.5pt; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #a7f3d0; text-transform:uppercase; }' +
+    
+    '.box-grid { display: table; width: 100%; border-collapse: separate; border-spacing: 10px; margin-left: -10px; margin-right: -10px; margin-bottom: 14px; }' +
+    '.box-card { display: table-cell; width: 50%; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px 14px; vertical-align: top; }' +
+    '.box-title { font-size: 9pt; font-weight: 900; color: #0369a1; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }' +
+    
+    '.table-farmaci { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 16px; font-size: 9.5pt; }' +
+    '.table-farmaci th { background: #064e3b; color: #ffffff; text-align: left; padding: 8px 10px; font-weight: 800; border: 1px solid #064e3b; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.3px; }' +
+    '.table-farmaci td { border: 1px solid #cbd5e1; }' +
+    
+    '.note-box { background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #0284c7; border-radius: 8px; padding: 10px 14px; font-size: 9pt; margin-bottom: 20px; }' +
+    '.firma-table { width: 100%; margin-top: 25px; border-collapse: collapse; }' +
+    '.linea-firma { width: 85%; border-top: 1px solid #475569; margin-top: 40px; text-align: center; font-size: 8.5pt; color: #64748b; padding-top: 5px; }' +
+    
+    '@media print {' +
+    '  .no-print { display: none !important; }' +
+    '}' +
+    '</style>' +
+    '</head>' +
+    '<body>' +
+    
+    '<!-- BARRA AZIONI ANTEPRIMA (NON STAMPABILE) -->' +
+    '<div class="no-print" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#ffffff; padding:12px 20px; margin-bottom:20px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 14px rgba(0,0,0,0.2);">' +
+    '  <div style="font-weight:800; font-size:13px; display:flex; align-items:center; gap:8px;">' +
+    '    <span>📄</span> <span>Anteprima Cartella A4 • Promemoria Fabbisogno Ricette MMG</span>' +
+    '  </div>' +
+    '  <div style="display:flex; gap:10px;">' +
+    '    <button type="button" onclick="window.print()" style="background:#059669; color:#ffffff; border:none; padding:8px 18px; border-radius:8px; font-weight:800; font-size:12.5px; cursor:pointer; box-shadow:0 2px 8px rgba(5,150,105,0.4);">🖨️ Stampa Documento Ufficiale A4</button>' +
+    '    <button type="button" onclick="window.close()" style="background:#475569; color:#ffffff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">Chiudi</button>' +
+    '  </div>' +
+    '</div>' +
+
+    '<table class="header-table">' +
+    '  <tr>' +
+    '    <td style="vertical-align:top;">' +
+    '      <h1 class="brand-title">📋 PROMEMORIA FABBISOGNO RICETTE FARMACI MMG</h1>' +
+    '      <div class="brand-sub">CareAssist Pro &bull; Sistema Integrato per la Continuità Terapeutica Domiciliare</div>' +
+    '    </td>' +
+    '    <td style="text-align:right; vertical-align:top;">' +
+    '      <span class="badge-doc">DOC. MMG-RICETTE-A4</span>' +
+    '      <div style="font-size:8pt; color:#64748b; margin-top:5px; font-weight:600;">' +
+    '        Data Emissione: <b>' + dataStampa + ' (' + oraStampa + ')</b>' +
+    '      </div>' +
+    '    </td>' +
+    '  </tr>' +
+    '</table>' +
+
+    '<div class="box-grid">' +
+    '  <div class="box-card">' +
+    '    <div class="box-title">👤 Dati Anagrafici Assistito</div>' +
+    '    <div style="font-size:13pt; font-weight:900; color:#065f46; margin-bottom:4px;">' + p.nome + '</div>' +
+    '    <div>Data di Nascita: <b>' + dataNascitaFmt + ' (' + (p.eta || '--') + ' anni)</b></div>' +
+    '    <div>Codice Fiscale: <b>' + (p.codiceFiscale || p.cf || 'Non registrato') + '</b></div>' +
+    '    <div>Residenza / Domicilio: <b>' + (p.indirizzo || 'Domicilio registrato in cartella') + '</b></div>' +
+    '    <div>Esenzione Ticket: <b>' + (p.esenzione || 'Codice 013 - Diabete Mellito / Ipertensione') + '</b></div>' +
+    '  </div>' +
+    '  <div class="box-card">' +
+    '    <div class="box-title">👨‍⚕️ Destinatario Medico & Raccordo Farmacia</div>' +
+    '    <div style="font-size:12pt; font-weight:900; color:#0f172a; margin-bottom:4px;">Gent.mo ' + medicoNome + '</div>' +
+    '    <div>Ambulatorio / Sede: <b>' + studioMedico + '</b></div>' +
+    '    <div>Recapito Medico: <b>' + telMedico + '</b></div>' +
+    '    <div>Farmacia di Fiducia: <b>' + farmaciaNome + '</b></div>' +
+    '    <div>Caregiver Referente: <b>' + (p.caregiverNome || p.caregiver || 'Maria Carmela Stoppelli') + '</b></div>' +
+    '  </div>' +
+    '</div>' +
+
+    '<div style="font-size:11pt; font-weight:900; color:#0f172a; margin-top:14px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">' +
+    '  <span>💊</span> <span>PROSPETTO DEI FARMACI IN ESCE E FABBISOGNO STIMATO</span>' +
+    '</div>' +
+    '<table class="table-farmaci">' +
+    '  <thead>' +
+    '    <tr>' +
+    '      <th style="width:28%;">Farmaco & Principio Attivo</th>' +
+    '      <th style="width:16%;">Dosaggio</th>' +
+    '      <th style="width:20%;">Posologia Giornaliera</th>' +
+    '      <th style="width:12%; text-align:center;">Giacenza</th>' +
+    '      <th style="width:12%; text-align:center;">Fine Scorta</th>' +
+    '      <th style="width:12%; text-align:center;">Fabbisogno</th>' +
+    '    </tr>' +
+    '  </thead>' +
+    '  <tbody>' +
+    righeFarmaciHtml +
+    '  </tbody>' +
+    '</table>' +
+
+    '<div class="note-box">' +
+    '  <b>Note per la prescrizione:</b> Si richiede cortesemente l\'emissione delle ricette elettroniche (NRE) sopra indicate al fine di garantire la regolarità delle somministrazioni ed evitare interruzioni terapeutiche al domicilio del paziente.' +
+    '</div>' +
+
+    '<table class="firma-table">' +
+    '  <tr>' +
+    '    <td style="width:50%; vertical-align:top;">' +
+    '      <div style="font-size:8.5pt; color:#64748b; font-weight:700;">OPERATORE DI MONITORAGGIO:</div>' +
+    '      <div style="font-weight:900; font-size:10pt; color:#0f172a; margin-top:2px;">' + operatoreNome + '</div>' +
+    '      <div style="font-size:8.5pt; color:#64748b;">' + operatoreRuolo + '</div>' +
+    '      <div class="linea-firma">Firma Operatore Sanitario</div>' +
+    '    </td>' +
+    '    <td style="width:50%; vertical-align:top; text-align:right;">' +
+    '      <div style="font-size:8.5pt; color:#64748b; font-weight:700;">PER PRESA VISIONE E CONFERMA MMG:</div>' +
+    '      <div style="font-weight:900; font-size:10pt; color:#0f172a; margin-top:2px;">' + medicoNome + '</div>' +
+    '      <div style="font-size:8.5pt; color:#64748b;">Medico di Medicina Generale</div>' +
+    '      <div class="linea-firma" style="margin-left:auto;">Timbro e Firma del Medico</div>' +
+    '    </td>' +
+    '  </tr>' +
+    '</table>' +
+
+    '</body>' +
+    '</html>';
+
+  win.document.open();
+  win.document.write(docHtml);
   win.document.close();
 };
 
