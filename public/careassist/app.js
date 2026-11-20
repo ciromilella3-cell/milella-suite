@@ -28094,9 +28094,12 @@ function mostraGuidaContestuale(chiave) {
   }
 
   var scopoHtml = g.scopo ? (
-    '<div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid #0284c7; border-radius:10px; padding:12px 14px; margin-bottom:16px;">' +
-    '<div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#0369a1; letter-spacing:0.5px; margin-bottom:3px;">' +
-    '🎯 A cosa serve (Scopo Clinico &amp; Gestionale)' +
+    '<div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-left:5px solid #0284c7; border-radius:12px; padding:12px 14px; margin-bottom:16px; box-shadow:0 2px 6px rgba(2,132,199,0.06);">' +
+    '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">' +
+    '  <div style="font-size:11px; text-transform:uppercase; font-weight:900; color:#0369a1; letter-spacing:0.5px;">🎯 A cosa serve (Scopo Clinico &amp; Gestionale)</div>' +
+    '  <button type="button" id="btn-ascolta-guida-contestuale" onclick="ascoltaGuidaContestualeVocale()" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(2,132,199,0.3);">' +
+    '    <span id="ico-audio-guida-contestuale">🔊</span> <span id="txt-audio-guida-contestuale">Ascolta con Voce Naturale</span>' +
+    '  </button>' +
     '</div>' +
     '<div style="font-size:13.5px; color:#1e293b; line-height:1.5;">' +
     g.scopo +
