@@ -2907,7 +2907,11 @@ app.post('/api/sync/execute', async (req, res) => {
         log(`Avvio sincronizzazione: direzione="${direction || 'usb_desktop'}"`);
 
         // Riconoscimento dinamico dell'unita USB reale
-        const detectedRoot = path.parse(__dirname).root.replace(/\\$/, '');
+        let detectedRoot = path.parse(__dirname).root.replace(/\\$/, '');
+        if (!fs.existsSync(detectedRoot + '\\questa')) {
+            if (fs.existsSync('E:\\questa')) detectedRoot = 'E:';
+            else if (fs.existsSync('D:\\questa')) detectedRoot = 'D:';
+        }
         const targetDrive = (driveLetter && driveLetter.trim()) ? driveLetter.trim().replace(/\\$/, '') : detectedRoot;
         const usbQuestaDir = path.resolve(targetDrive + '\\questa');
         const deskQuestaDir = (desktopFolder && desktopFolder.trim()) ? desktopFolder.trim() : path.join(process.env.USERPROFILE || 'C:\\Users\\Utente', 'Desktop', 'questa');

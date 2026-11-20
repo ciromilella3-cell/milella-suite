@@ -1290,7 +1290,7 @@
             <div class="status-chip usb-active" id="chipUsbStatus" style="display:flex; align-items:center; gap:8px;">
                 <span>🔌 USB:</span>
                 <select id="selectGlobalDrive" onchange="cambiaUnitaGlobale(this.value)" style="background:rgba(15,23,42,0.85); color:#38bdf8; font-weight:800; border:1px solid rgba(56,189,248,0.4); border-radius:8px; padding:3px 8px; font-size:12px; cursor:pointer; outline:none;">
-                    <option value="D:">D:\ (BACKUP) ✦</option>
+                    <option value="D:">E:\ (BACKUP) ✦</option>
                 </select>
             </div>
             <div class="status-chip audio-chip" id="btnToggleAudio" onclick="toggleAudioFx()" title="Abilita/Disabilita effetti sonori">
@@ -1406,7 +1406,7 @@
                                 <select id="selectPathUsbDrive" onchange="cambiaUnitaGlobale(this.value)" class="glass-input" style="padding:6px 10px; font-weight:800; font-size:13px; max-width:260px; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
                                     <option value="D:">D:\ (Unità Principale) ✦</option>
                                 </select>
-                                <span class="path-val" id="textPathUsb" style="font-size:13px; color:#cbd5e1;">D:\questa</span>
+                                <span class="path-val" id="textPathUsb" style="font-size:13px; color:#cbd5e1;">E:\questa</span>
                             </div>
                         </div>
                     </div>
@@ -1736,7 +1736,7 @@
         </div>
         <div class="terminal-body" id="terminalLog">
             <div class="log-entry"><span class="log-time">[08:40:01]</span> <span class="log-ok">● SISTEMA PRONTO</span> Stanza di Regia Master V3.5 inizializzata.</div>
-            <div class="log-entry"><span class="log-time">[08:40:02]</span> <span class="log-info">[INFO]</span> Rilevata cartella sorgente USB: <strong style="color:#fff;">D:\questa</strong></div>
+            <div class="log-entry"><span class="log-time">[08:40:02]</span> <span class="log-info">[INFO]</span> Rilevata cartella sorgente USB: <strong style="color:#fff;">E:\questa</strong></div>
             <div class="log-entry"><span class="log-time">[08:40:03]</span> <span class="log-skip">[TURBO]</span> Protezione attiva: 0 blocchi, 16 flussi paralleli, Robocopy differenziale.</div>
         </div>
     </div>
@@ -1782,7 +1782,7 @@
 <script>
     // STATO APPLICATIVO
     let currentSyncDirection = 'usb_desktop';
-    let pathUsb = 'D:\\questa';
+    let pathUsb = 'E:\\questa';
     let pathDesktop = 'C:\\Users\\Utente\\Desktop\\questa';
     let audioEnabled = true;
     let audioCtx = null;
@@ -2287,7 +2287,7 @@
         // Generiamo il comando batch per apertura istantanea
         const batCmd = `@echo off\r\n` +
             `title COMPILAZIONE SUITE - ${destName}\r\n` +
-            `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\\questa\\_Lanciatori_e_Utility_USB\\Generatore_Versioni.ps1" ` +
+            `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "E:\\questa\\_Lanciatori_e_Utility_USB\\Generatore_Versioni.ps1" ` +
             `-ParamDestName "${destName}" -ParamDestCompany "${destCompany}" -ParamTipo "${tipoParam}" -ParamModuli "${modulesParam}" -ParamDest "1" -ParamTargetDrive "${_activeDriveLetter || "D:"}" -ParamScadenza "${scadParam}"\r\n` +
             `explorer.exe "D:\\VERSIONI_RILASCIATE"\r\n`;
 
@@ -2478,8 +2478,8 @@
             `echo      ✦ SINCRONIZZAZIONE INTELLIGENTE SUITE AZIENDALE C. MILELLA ✦\r\n` +
             `echo ========================================================================\r\n` +
             `echo.\r\n` +
-            `echo [*] Allineamento USB (D:\\questa) -> Desktop (questa)...\r\n` +
-            `robocopy "D:\\questa" "%USERPROFILE%\\Desktop\\questa" /E /MT:16 /XO /R:1 /W:1 /NP /XD "Cache" "Code Cache" "GPUCache" "node_modules" /XF "*.pma" "*.tmp" "*lock*"\r\n` +
+            `echo [*] Allineamento USB (E:\\questa) -> Desktop (questa)...\r\n` +
+            `robocopy "E:\\questa" "%USERPROFILE%\\Desktop\\questa" /E /MT:16 /XO /R:1 /W:1 /NP /XD "Cache" "Code Cache" "GPUCache" "node_modules" /XF "*.pma" "*.tmp" "*lock*"\r\n` +
             `echo.\r\n` +
             `echo [OK] Sincronizzazione completata con successo!\r\n` +
             `pause\r\n`;
