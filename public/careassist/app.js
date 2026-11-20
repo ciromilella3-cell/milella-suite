@@ -28273,12 +28273,47 @@ function ascoltaGuidaContestualeVocale() {
   const ico = document.getElementById('ico-audio-guida-contestuale');
   const txt = document.getElementById('txt-audio-guida-contestuale');
 
+  const btnH = document.getElementById('btn-ascolta-guida-header');
+  const icoH = document.getElementById('ico-audio-guida-header');
+  const txtH = document.getElementById('txt-audio-guida-header');
+
+  const btnF = document.getElementById('btn-ascolta-guida-footer');
+  const icoF = document.getElementById('ico-audio-guida-footer');
+  const txtF = document.getElementById('txt-audio-guida-footer');
+
+  function impostaStatoPulsanti(inRiproduzione) {
+    if (inRiproduzione) {
+      if (ico) ico.textContent = '⏹️';
+      if (txt) txt.textContent = 'Interrompi Voce';
+      if (btn) btn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+
+      if (icoH) icoH.textContent = '⏹️';
+      if (txtH) txtH.textContent = 'Interrompi';
+      if (btnH) btnH.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+
+      if (icoF) icoF.textContent = '⏹️';
+      if (txtF) txtF.textContent = 'Interrompi Voce';
+      if (btnF) btnF.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+    } else {
+      if (ico) ico.textContent = '🔊';
+      if (txt) txt.textContent = 'Ascolta con Voce Naturale';
+      if (btn) btn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+
+      if (icoH) icoH.textContent = '🔊';
+      if (txtH) txtH.textContent = 'Ascolta Guida';
+      if (btnH) btnH.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+
+      if (icoF) icoF.textContent = '🔊';
+      if (txtF) txtF.textContent = 'Ascolta con Voce Naturale';
+      if (btnF) btnF.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    }
+  }
+
   if (_isGuidaContestualeInRiproduzione) {
     if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
     _isGuidaContestualeInRiproduzione = false;
-    if (ico) ico.textContent = '🔊';
-    if (txt) txt.textContent = 'Ascolta con Voce Naturale';
-    if (btn) btn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+    impostaStatoPulsanti(false);
+    if (typeof showToast === 'function') showToast('⏹️ Voce interrotta');
     return;
   }
 
@@ -28310,21 +28345,18 @@ function ascoltaGuidaContestualeVocale() {
     .replace(/&/g, ' e ')
     .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ', ')
     .replace(/\s*\/\s*/g, ' oppure ')
-    .replace(/.{2,}/g, '. ')
-    .replace(/:s*/g, ': ')
-    .replace(/s+/g, ' ')
+    .replace(/\.{2,}/g, '. ')
+    .replace(/:\s*/g, ': ')
+    .replace(/\s+/g, ' ')
     .trim();
 
   _isGuidaContestualeInRiproduzione = true;
-  if (ico) ico.textContent = '⏹️';
-  if (txt) txt.textContent = 'Interrompi Voce';
-  if (btn) btn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+  impostaStatoPulsanti(true);
+  if (typeof showToast === 'function') showToast('🗣️ Riproduzione vocale in corso...');
 
   const resetStato = function() {
     _isGuidaContestualeInRiproduzione = false;
-    if (ico) ico.textContent = '🔊';
-    if (txt) txt.textContent = 'Ascolta con Voce Naturale';
-    if (btn) btn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+    impostaStatoPulsanti(false);
   };
 
   if (typeof riproduciVoceNaturaleHD === 'function') {

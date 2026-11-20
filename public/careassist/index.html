@@ -7552,7 +7552,12 @@ window.eseguiStrumentoMobile = function(azione, e) {
               id="mgc-titolo">Titolo Maschera</h3>
           </div>
         </div>
-        <button class="modal-close"
+        <button type="button" id="btn-ascolta-guida-header" onclick="ascoltaGuidaContestualeVocale()"
+            style="background:linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color:#ffffff !important; border:1px solid #34d399 !important; font-weight:800 !important; font-size:12px !important; padding:6px 14px !important; border-radius:10px !important; cursor:pointer !important; display:inline-flex !important; align-items:center !important; gap:6px !important; box-shadow:0 3px 8px rgba(16,185,129,0.35) !important;"
+            title="Ascolta la guida con la Voce Naturale Umana">
+            <span id="ico-audio-guida-header">🔊</span> <span id="txt-audio-guida-header">Ascolta Guida</span>
+          </button>
+          <button class="modal-close"
           style="color:white; font-size:24px; cursor:pointer; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:50%; width:34px; height:34px; display:flex; align-items:center; justify-content:center; padding:0;"
           onclick="closeModal('modal-guida-contestuale')">&times;</button>
       </div>
@@ -7567,6 +7572,13 @@ window.eseguiStrumentoMobile = function(azione, e) {
         style="background:#ffffff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; padding:12px 20px;">
         <span style="font-size:11.5px; color:#64748b; font-weight:600;">CareAssist Pro • Supporto alle Decisioni
           Cliniche</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" id="btn-ascolta-guida-footer" onclick="ascoltaGuidaContestualeVocale()"
+            style="background:linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color:#ffffff !important; border:1px solid #34d399 !important; font-weight:800 !important; font-size:12.5px !important; padding:7px 16px !important; border-radius:8px !important; cursor:pointer !important; display:inline-flex !important; align-items:center !important; gap:6px !important; box-shadow:0 2px 6px rgba(16,185,129,0.3) !important;"
+            title="Ascolta con la Voce Naturale Umana">
+            <span id="ico-audio-guida-footer">🔊</span> <span id="txt-audio-guida-footer">Ascolta con Voce Naturale</span>
+          </button>
+        </div>
         <button type="button" class="btn btn-primary" onclick="closeModal('modal-guida-contestuale')"
           style="padding:7px 18px; font-weight:800; border-radius:8px; background:#0284c7; border:none; color:#ffffff; cursor:pointer;">Ho
           Capito, Torna all'App</button>
@@ -9723,7 +9735,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=403"></script>
+  <script src="app.js?v=404"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
