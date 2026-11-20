@@ -1,5 +1,5 @@
 {
-  "activePazienteId": "paz_rosa",
+  "activePazienteId": "paz_1793216119572",
   "pazienti": [
     {
       "id": "paz_aldo",
@@ -2600,7 +2600,7 @@
           "quantitaQuota": 2,
           "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 50,
-          "scorta": 50,
+          "scorta": 48,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
           "fattoOggi": true,
@@ -2720,10 +2720,10 @@
           "quantitaQuota": 1,
           "modo": "A GIORNI ALTERNI con Sivastin - dopo pranzo con acqua (Acido urico / gotta) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 56,
+          "scorta": 55,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
           "penneScorta": 60,
           "unitaDoseDie": 1,
@@ -2736,7 +2736,9 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "fattoOggiTimestamp": 1795186835445,
+          "fattoOggiGiorno": "2026-11-20"
         },
         {
           "id": 1794119857233,
@@ -2748,10 +2750,10 @@
           "quantitaQuota": 2,
           "modo": "30 min prima dei pasti a stomaco vuoto con acqua (Parkinson) - ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 50,
-          "scorta": 50,
+          "scorta": 48,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
           "penneScorta": 70,
           "unitaDoseDie": 1,
@@ -2764,7 +2766,9 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 2
+          "ultimaDoseSomministrata": 2,
+          "fattoOggiTimestamp": 1795186838161,
+          "fattoOggiGiorno": "2026-11-20"
         },
         {
           "id": 1793458294388,
@@ -2776,10 +2780,10 @@
           "quantitaQuota": 1,
           "modo": "A GIORNI ALTERNI con Adenuric - la sera prima di dormire (Statina: colesterolo) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 30,
+          "scorta": 29,
           "giorniAlert": 7,
           "cadenzaTipo": "",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
           "penneScorta": 28,
           "unitaDoseDie": 1,
@@ -2792,7 +2796,9 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "fattoOggiTimestamp": 1795186841730,
+          "fattoOggiGiorno": "2026-11-20"
         },
         {
           "id": 1793524442695,
@@ -4840,6 +4846,48 @@
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 13 min! Orario previsto: 13:30 - Orario effettivo assunzione: 15:43. Rimanenza scorta: 55 cpr.",
           "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1795186835445",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T15:00:35.444Z",
+          "farmacoId": 1794120309246,
+          "farmaco": "ADENURIC 80 mg",
+          "dosaggio": "80 mg (1 cpr)",
+          "orarioPrevisto": "16:00",
+          "orarioReale": "16:00",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 16:00 - Orario effettivo assunzione: 16:00. Rimanenza scorta: 55 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1795186838161",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T15:00:38.161Z",
+          "farmacoId": 1794119857233,
+          "farmaco": "SINEMET 100+25 mg (2ª dose: 2 cpr - ore 16:00)",
+          "dosaggio": "100/25 mg (2 cpr)",
+          "orarioPrevisto": "16:00",
+          "orarioReale": "16:00",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 16:00 - Orario effettivo assunzione: 16:00. Rimanenza scorta: 48 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1795186841731",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T15:00:41.730Z",
+          "farmacoId": 1793458294388,
+          "farmaco": "SIVASTIN 20 mg",
+          "dosaggio": "20 mg (1 cpr)",
+          "orarioPrevisto": "16:00",
+          "orarioReale": "16:00",
+          "minutiRitardo": 0,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 0 minuti! Orario previsto: 16:00 - Orario effettivo assunzione: 16:00. Rimanenza scorta: 29 cpr.",
+          "operatore": "Ciro Milella (Admin)"
         }
       ],
       "visite": [
@@ -5102,7 +5150,7 @@
       "lifestyle": "1.2",
       "goal": "mantenimento",
       "diagnosi": "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga) • Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga) • Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel) • Morbo di Parkinson / parkinsonismo (Sinemet) • Iperuricemia / gotta (Adenuric) • Osteoartrosi con dolore cronico (Arcoxia) • Ipovitaminosi D (Fedivelle) • Dislipidemia / Ipercolesterolemia (Sivastin)",
-      "lastModified": 1795185833908
+      "lastModified": 1795186910417
     },
     {
       "id": "paz_1793216119572",
@@ -5127,116 +5175,43 @@
           "quantitaQuota": 1,
           "modo": "Una volta al giorno a digiuno (almeno 2 ore prima o 2 ore dopo un pasto) – Antivirale specifico inibitore nucleosidico della trascrittasi inversa per il trattamento dell'infezione cronica da virus dell'epatite B (HBV).",
           "cprPerScatola": 30,
-          "scorta": 108,
+          "scorta": 109,
           "giorniAlert": 10,
           "cadenzaTipo": "giornaliera",
+          "cadenzaGiorniSpecifici": null,
+          "cadenzaGiornoSettimana": null,
+          "cadenzaGiornoMese": null,
+          "cadenzaDataInizio": null,
+          "cadenzaMeseAnnuale": null,
+          "cadenzaGiornoAnnuale": null,
           "fattoOggi": true,
+          "saltatoOggi": false,
+          "ultimaModificaTimestamp": 1795186999523,
           "tipoFormulazione": "compressa",
-          "penneScorta": 38,
+          "canaleDistribuzione": "territoriale_asl",
+          "pianoTerapeutico": {
+            "attivo": true,
+            "dataScadenza": "2027-02-22",
+            "protocollo": "011BQ1X145RHL",
+            "scatoleTotali": 12,
+            "scatoleRitirate": 10,
+            "scatoleResidue": 2,
+            "centroPrescrittore": "U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)",
+            "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
+            "note": "1 cpr/die a digiuno (almeno 2h prima o dopo i pasti) - PHT Distribuzione Diretta HBV",
+            "ultimoRitiro": "2026-11-16"
+          },
+          "penneScorta": 109,
           "unitaDoseDie": 1,
           "unitaPerPenna": 300,
           "pennePerScatola": 30,
           "kitGlicemiaAssociato": null,
           "ultimaModificaClinica": {
-            "data": "01/11/2026",
+            "data": "20/11/2026",
             "fonte": "Visita Specialistica",
             "medico": "",
             "motivo": ""
-          },
-          "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-16",
-          "pianoTerapeutico": {
-            "scatoleTotali": 12,
-            "scatoleRitirate": 12,
-            "scatoleResidue": 0,
-            "ultimoRitiro": "2026-11-16",
-            "attivo": true,
-            "dataScadenza": "2027-02-22",
-            "protocollo": "011BQ1X145RHL",
-            "centroPrescrittore": "U.O. Malattie Infettive ed Epatologia - Policlinico di Bari (Dr. M. Milella / Prof.ssa A. Saracino)",
-            "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
-            "prossimoRitiroIso": "2027-02-22",
-            "prossimoRitiroConsigliato": "22/02/2027",
-            "storicoRitiri": [
-              {
-                "id": "rit_1",
-                "data": "2026-02-23",
-                "timestamp": "2026-02-23T10:00:00.000Z",
-                "scatole": 3,
-                "cprAggiunte": 90,
-                "scatoleResidueDopo": 9,
-                "scatoleTotali": 12,
-                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
-                "note": "1° Tranche trimestrale"
-              },
-              {
-                "id": "rit_2",
-                "data": "2026-05-20",
-                "timestamp": "2026-05-20T10:00:00.000Z",
-                "scatole": 3,
-                "cprAggiunte": 90,
-                "scatoleResidueDopo": 6,
-                "scatoleTotali": 12,
-                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
-                "note": "2° Tranche trimestrale"
-              },
-              {
-                "id": "rit_3",
-                "data": "2026-08-18",
-                "timestamp": "2026-08-18T10:00:00.000Z",
-                "scatole": 3,
-                "cprAggiunte": 90,
-                "scatoleResidueDopo": 3,
-                "scatoleTotali": 12,
-                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
-                "note": "3° Tranche trimestrale"
-              },
-              {
-                "id": "rit_4",
-                "data": "2026-11-16",
-                "timestamp": "2026-11-16T10:00:00.000Z",
-                "scatole": 3,
-                "cprAggiunte": 90,
-                "scatoleResidueDopo": 0,
-                "scatoleTotali": 12,
-                "sedeRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
-                "note": "4° Tranche (Ritiro ufficiale 16/11/2026 - Completamento fornitura 12/12)"
-              }
-            ]
-          },
-          "canaleDistribuzione": "territoriale_asl",
-          "storicoCarichi": [
-            {
-              "data": "2026-02-23",
-              "timestamp": "2026-02-23T10:00:00.000Z",
-              "scatole": 3,
-              "cprAggiunte": 90,
-              "note": "1° Ritiro ASL"
-            },
-            {
-              "data": "2026-05-20",
-              "timestamp": "2026-05-20T10:00:00.000Z",
-              "scatole": 3,
-              "cprAggiunte": 90,
-              "note": "2° Ritiro ASL"
-            },
-            {
-              "data": "2026-08-18",
-              "timestamp": "2026-08-18T10:00:00.000Z",
-              "scatole": 3,
-              "cprAggiunte": 90,
-              "note": "3° Ritiro ASL"
-            },
-            {
-              "data": "2026-11-16",
-              "timestamp": "2026-11-16T10:00:00.000Z",
-              "scatole": 3,
-              "cprAggiunte": 90,
-              "note": "4° Ritiro ASL ufficiale (16/11/2026)"
-            }
-          ],
-          "fattoOggiTimestamp": 1795172303909,
-          "fattoOggiGiorno": "2026-11-20"
+          }
         }
       ],
       "registrazioni": [
@@ -6229,9 +6204,9 @@
         "dataPrescrizioneInizio": "2026-02-23",
         "dataScadenzaAnno": "2027-02-22",
         "prossimaVisitaAmbulatoriale": "2027-02-23",
-        "scatoleRitirateTotali": 12,
-        "scatoleResidueDaRitirare": 0,
-        "puntoRitiro": "Farmacia Territoriale ASL Bari Ex CTO",
+        "scatoleRitirateTotali": 10,
+        "scatoleResidueDaRitirare": 2,
+        "puntoRitiro": "Farmacia Territoriale ASL Bari - Ex CTO",
         "storicoRitiri": [
           {
             "data": "2026-02-23",
@@ -6525,7 +6500,7 @@
           ]
         }
       ],
-      "lastModified": 1795172303909
+      "lastModified": 1795186999523
     },
     {
       "id": "paz_mariacarmela",
@@ -7009,14 +6984,14 @@
       "lastModified": 1795172507340
     }
   ],
-  "lastModified": 1795185833908,
+  "lastModified": 1795186999523,
   "lastModifiedDevice": "pc",
   "lastModifiedBy": {
     "nome": "Ciro Milella (Admin)",
     "ruolo": "admin",
-    "paziente": "Rosa Annunziata Cavalcante",
-    "ora": "15:43",
-    "timestamp": 1795185833908
+    "paziente": "Ciro Milella",
+    "ora": "16:03",
+    "timestamp": 1795186999523
   },
   "ultimoGiornoOperativo": "2026-11-20",
   "aldoVimpatInizializzato2026": true,
@@ -8087,7 +8062,7 @@
     "attivo": true,
     "livelloMinimo": "75%",
     "dispositivo": "PC Postazione",
-    "ora": "15:43:22",
+    "ora": "16:00:32",
     "motivo": "Allarme Terapia in Corso / Scaduta"
   },
   "_auditAntiFurbiVolume": [
