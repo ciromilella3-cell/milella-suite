@@ -69,7 +69,7 @@
           "dosaggio": "100 mg (1 capsula)",
           "modo": "A colazione con acqua (Controllo neurologico)",
           "cprPerScatola": 56,
-          "scorta": 531,
+          "scorta": 530,
           "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
           "ultimoRitiro": "2026-11-07T19:46:40.008Z",
@@ -85,10 +85,12 @@
           "dosaggio": "100 mg (1 capsula)",
           "modo": "A pranzo con acqua (Controllo neurologico)",
           "cprPerScatola": 56,
-          "scorta": 531,
-          "fattoOggi": false,
+          "scorta": 530,
+          "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T19:46:40.008Z"
+          "ultimoRitiro": "2026-11-07T19:46:40.008Z",
+          "fattoOggiTimestamp": 1795185744627,
+          "fattoOggiGiorno": "2026-11-20"
         },
         {
           "id": 104,
@@ -112,7 +114,7 @@
           "dosaggio": "200 mg (2 capsule insieme)",
           "modo": "Dopo cena (Dose serale cumulativa di 2 capsule = 200 mg)",
           "cprPerScatola": 56,
-          "scorta": 531,
+          "scorta": 530,
           "fattoOggi": false,
           "ultimaDoseSomministrata": 1,
           "ultimoRitiro": "2026-11-07T19:46:40.008Z"
@@ -132,6 +134,13 @@
         }
       ],
       "registrazioni": [
+        {
+          "id": "esc_1795185736183",
+          "timestamp": "2026-11-20T14:42:16.182Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:42 il farmaco \"VIMPAT 100 mg (2ª dose)\" delle ore 13:30 risulta non ancora spuntato (+132 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
         {
           "id": "esc_1794385017110",
           "timestamp": "2026-11-11T08:16:56.996Z",
@@ -977,6 +986,20 @@
           "azione": "somministrazione_retroattiva",
           "dettaglio": "✅ Somministrazione di Ieri (19/11/2026) ore 21:30 confermata e allineata alle scorte (-1 cpr). Rimanenza: 22 cpr.",
           "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1795185744627",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T14:42:24.627Z",
+          "farmacoId": 1032,
+          "farmaco": "VIMPAT 100 mg (2ª dose)",
+          "dosaggio": "100 mg (1 capsula)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "15:42",
+          "minutiRitardo": 132,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 12 min! Orario previsto: 13:30 - Orario effettivo assunzione: 15:42. Rimanenza scorta: 530 cpr.",
+          "operatore": "Ciro Milella (Admin)"
         }
       ],
       "visite": [
@@ -1216,7 +1239,7 @@
           ]
         }
       },
-      "lastModified": 1795172273086
+      "lastModified": 1795185751699
     },
     {
       "id": "paz_angela",
@@ -1319,10 +1342,12 @@
           "dosaggio": "100 mg (1 cpr gastroresistente)",
           "modo": "A metà o fine pranzo con abbondante acqua (Antiaggregante piastrinico salvacuore)",
           "cprPerScatola": 30,
-          "scorta": 19,
+          "scorta": 18,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false,
-          "ultimaDoseSomministrata": 1
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1,
+          "fattoOggiTimestamp": 1795185787747,
+          "fattoOggiGiorno": "2026-11-20"
         },
         {
           "id": 205,
@@ -1333,11 +1358,13 @@
           "dosaggio": "300 mg (1 compressa)",
           "modo": "Dopo pranzo (Uricosurico: riduzione e controllo dell'acido urico e prevenzione gotta)",
           "cprPerScatola": 30,
-          "scorta": 229,
+          "scorta": 228,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "ultimaDoseSomministrata": 1,
-          "ultimoRitiro": "2026-11-07T20:18:10.813Z"
+          "ultimoRitiro": "2026-11-07T20:18:10.813Z",
+          "fattoOggiTimestamp": 1795185791485,
+          "fattoOggiGiorno": "2026-11-20"
         },
         {
           "id": 206,
@@ -1348,10 +1375,12 @@
           "dosaggio": "80 mg/ml (Gel orale / Bustina)",
           "modo": "1 ora dopo i pasti o al bisogno (Antiacido gastroprotettore contro bruciore e reflusso)",
           "cprPerScatola": 20,
-          "scorta": 9,
+          "scorta": 8,
           "farmacia": "Farmacia MACARIO",
-          "fattoOggi": false,
-          "ultimaDoseSomministrata": 1
+          "fattoOggi": true,
+          "ultimaDoseSomministrata": 1,
+          "fattoOggiTimestamp": 1795185817443,
+          "fattoOggiGiorno": "2026-11-20"
         },
         {
           "id": 207,
@@ -1369,6 +1398,20 @@
         }
       ],
       "registrazioni": [
+        {
+          "id": "esc_1795185736258",
+          "timestamp": "2026-11-20T14:42:16.182Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:42 il farmaco \"Allopurinolo Teva Italia 300 mg\" delle ore 13:30 risulta non ancora spuntato (+132 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1795185736217",
+          "timestamp": "2026-11-20T14:42:16.182Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:42 il farmaco \"Cardioaspirin 100 mg (Acido Acetilsalicilico)\" delle ore 13:00 risulta non ancora spuntato (+162 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
         {
           "id": "esc_1794389520199",
           "timestamp": "2026-11-11T09:32:00.185Z",
@@ -2216,6 +2259,48 @@
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 0 min! Orario previsto: 10:00 - Orario effettivo assunzione: 12:00. Rimanenza scorta: 0.37 cpr.",
           "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1795185787747",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T14:43:07.746Z",
+          "farmacoId": 204,
+          "farmaco": "Cardioaspirin 100 mg (Acido Acetilsalicilico)",
+          "dosaggio": "100 mg (1 cpr gastroresistente)",
+          "orarioPrevisto": "13:00",
+          "orarioReale": "15:43",
+          "minutiRitardo": 163,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 43 min! Orario previsto: 13:00 - Orario effettivo assunzione: 15:43. Rimanenza scorta: 18 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1795185791485",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T14:43:11.484Z",
+          "farmacoId": 205,
+          "farmaco": "Allopurinolo Teva Italia 300 mg",
+          "dosaggio": "300 mg (1 compressa)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "15:43",
+          "minutiRitardo": 133,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 13 min! Orario previsto: 13:30 - Orario effettivo assunzione: 15:43. Rimanenza scorta: 228 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1795185817443",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T14:43:37.443Z",
+          "farmacoId": 206,
+          "farmaco": "Riopan 80 mg/ml (Magaldrato)",
+          "dosaggio": "80 mg/ml (Gel orale / Bustina)",
+          "orarioPrevisto": "15:30",
+          "orarioReale": "15:43",
+          "minutiRitardo": 13,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 13 minuti! Orario previsto: 15:30 - Orario effettivo assunzione: 15:43. Rimanenza scorta: 8 cpr.",
+          "operatore": "Ciro Milella (Admin)"
         }
       ],
       "visite": [
@@ -2368,7 +2453,7 @@
       "lifestyle": "1.2",
       "goal": "mantenimento",
       "diagnosi": "Ipertensione arteriosa sistemica in polichemioterapia • Sindrome delle Apnee Ostruttive nel Sonno (OSAS) con indicazione ausilio CPAP notturna • Dislipidemia / Ipercolesterolemia • Iperuricemia con rischio gotta • Ipovitaminosi D3 (in integrazione ciclica con DIBASE) • Reflusso gastroesofageo / gastrite",
-      "lastModified": 1795172402903
+      "lastModified": 1795185817443
     },
     {
       "id": "paz_rosa",
@@ -2575,10 +2660,10 @@
           "quantitaQuota": 1,
           "modo": "A pranzo con acqua (Antiaggregante piastrinico / prevenzione cardiovascolare) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 73,
+          "scorta": 72,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
           "penneScorta": 77,
           "unitaDoseDie": 1,
@@ -2591,7 +2676,9 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "fattoOggiTimestamp": 1795185830933,
+          "fattoOggiGiorno": "2026-11-20"
         },
         {
           "id": 1794119202709,
@@ -2603,10 +2690,10 @@
           "quantitaQuota": 1,
           "modo": "Al mattino con acqua (Diabete / cuore / reni) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 28,
-          "scorta": 56,
+          "scorta": 55,
           "giorniAlert": 7,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "compressa",
           "penneScorta": 60,
           "unitaDoseDie": 1,
@@ -2619,7 +2706,9 @@
             "medico": "",
             "motivo": ""
           },
-          "ultimaDoseSomministrata": 1
+          "ultimaDoseSomministrata": 1,
+          "fattoOggiTimestamp": 1795185833908,
+          "fattoOggiGiorno": "2026-11-20"
         },
         {
           "id": 1794120309246,
@@ -2743,6 +2832,20 @@
         }
       ],
       "registrazioni": [
+        {
+          "id": "esc_1795185736333",
+          "timestamp": "2026-11-20T14:42:16.182Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:42 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+132 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
+        {
+          "id": "esc_1795185736295",
+          "timestamp": "2026-11-20T14:42:16.182Z",
+          "tipo": "nota_turno",
+          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
+          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:42 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+133 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
+        },
         {
           "id": "esc_1794389552865",
           "timestamp": "2026-11-11T09:32:32.517Z",
@@ -4699,6 +4802,44 @@
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 1 ore e 32 min! Orario previsto: 10:30 - Orario effettivo assunzione: 12:02. Rimanenza scorta: 18 cpr.",
           "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "reg_pants_1795185733475",
+          "tipo": "ausilio_consegna",
+          "categoria": "Ausili",
+          "data": "2026-11-17",
+          "ora": "11:00",
+          "timestamp": "2026-11-17T10:00:00.000Z",
+          "testo": "📦 Ricevuto carico domiciliare mutandine assorbenti PANTS Serenity (Fornitura trimestrale ASP). Registrato nello storico consegne.",
+          "operatore": "CareAssist Pro"
+        },
+        {
+          "id": "log_1795185830933",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T14:43:50.932Z",
+          "farmacoId": 1794118995873,
+          "farmaco": "AVERELIX 75 mg",
+          "dosaggio": "75 mg (1 cpr)",
+          "orarioPrevisto": "13:29",
+          "orarioReale": "15:43",
+          "minutiRitardo": 134,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 14 min! Orario previsto: 13:29 - Orario effettivo assunzione: 15:43. Rimanenza scorta: 72 cpr.",
+          "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1795185833908",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T14:43:53.908Z",
+          "farmacoId": 1794119202709,
+          "farmaco": "FORXIGA 10 mg",
+          "dosaggio": "10 mg (1 cpr)",
+          "orarioPrevisto": "13:30",
+          "orarioReale": "15:43",
+          "minutiRitardo": 133,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 2 ore e 13 min! Orario previsto: 13:30 - Orario effettivo assunzione: 15:43. Rimanenza scorta: 55 cpr.",
+          "operatore": "Ciro Milella (Admin)"
         }
       ],
       "visite": [
@@ -4716,7 +4857,8 @@
           "ora": "10:00",
           "medico": "Serenity S.p.A. / ASP Villa D'Agri",
           "motivo": "Prossima consegna indicativa fornitura PANTS Serenity (previo appuntamento telefonico al 3383797671)",
-          "fatto": false
+          "fatto": true,
+          "note": "Consegna ricevuta regolarmente a domicilio il 17/11/2026."
         },
         {
           "id": 1794288476947,
@@ -4742,7 +4884,8 @@
           "ora": "10:00",
           "medico": "Dr.ssa Carolina Potenza",
           "motivo": "Rinnovo ricetta / Rifornimento ASL per Mutandina Assorbente PANTS (Pull-Up monouso)",
-          "fatto": false
+          "fatto": true,
+          "note": "Consegna ricevuta regolarmente a domicilio il 17/11/2026."
         },
         {
           "id": 1793471509797,
@@ -4812,7 +4955,7 @@
           "scortaPacchi": 10,
           "pezziTotali": 140,
           "pezziPerPacco": 14,
-          "utilizzo": "PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021) - 10 conf. x 14 pz = 140 pz. DDT Serenity N. 2286626418 del 21/08/2026. Ord. ASP 0060448686 - Distretto Villa D'Agri 02 02. Codice Utente: 002713. Prossima consegna indicativa: 24/11/2026 con preavviso telefonico (3383797671). Scadenza Piano: 18/02/2027.",
+          "utilizzo": "PANTS SD SENSITIVE BE FREE EXTRA L 8 (Cod. 00037212200021). Ultimo carico ricevuto: 17/11/2026. Fornitura programmata ogni 90 giorni (ASP Potenza / Villa D'Agri). Prossima consegna indicativa: ~17/02/2027. Scadenza Piano: 18/02/2027.",
           "fabbisogno": "Fornitura programmata ogni 90 giorni (ASP Potenza)",
           "fornitore": "Serenity S.p.A. / ASP Potenza (Distretto Villa D'Agri)",
           "ddtNumero": "2286626418",
@@ -4821,16 +4964,26 @@
           "codiceArticolo": "00037212200021",
           "numConfezioni": 10,
           "pezziConsegnati": 140,
-          "prossimaConsegnaIndicativa": "2026-11-24",
+          "prossimaConsegnaIndicativa": "2027-02-17",
           "scadenzaPiano": "2027-02-18",
           "stato": "In uso attivo regolare",
-          "dataRifornimento": "2026-08-21",
-          "dataScadenza": "2026-11-24",
-          "prossimaRichiesta": "2026-11-24",
+          "dataRifornimento": "2026-11-17",
+          "dataScadenza": "2027-02-17",
+          "prossimaRichiesta": "2027-02-17",
           "giorniAlert": 15,
           "marca": "Serenity S.p.A. - PANTS SD SENSITIVE BE FREE EXTRA L 8",
           "ordineAsp": "0060448686 del 03.08.2026",
-          "codiceDistretto": "02 02 - DISTRETTO VILLA D'AGRI"
+          "codiceDistretto": "02 02 - DISTRETTO VILLA D'AGRI",
+          "storicoConsegne": [
+            {
+              "data": "2026-08-21",
+              "note": "10 confezioni (140 pz) - DDT Serenity n. 2286626418 (Fornitura ASP)"
+            },
+            {
+              "data": "2026-11-17",
+              "note": "Carico fornitura domiciliare PANTS Serenity ricevuto regolarmente."
+            }
+          ]
         },
         {
           "tipo": "Sensori Glicemia - GlucoMen areo Sensor",
@@ -4949,7 +5102,7 @@
       "lifestyle": "1.2",
       "goal": "mantenimento",
       "diagnosi": "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga) • Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga) • Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel) • Morbo di Parkinson / parkinsonismo (Sinemet) • Iperuricemia / gotta (Adenuric) • Osteoartrosi con dolore cronico (Arcoxia) • Ipovitaminosi D (Fedivelle) • Dislipidemia / Ipercolesterolemia (Sivastin)",
-      "lastModified": 1795172555935
+      "lastModified": 1795185833908
     },
     {
       "id": "paz_1793216119572",
@@ -6856,14 +7009,14 @@
       "lastModified": 1795172507340
     }
   ],
-  "lastModified": 1795172555935,
+  "lastModified": 1795185833908,
   "lastModifiedDevice": "pc",
   "lastModifiedBy": {
     "nome": "Ciro Milella (Admin)",
     "ruolo": "admin",
     "paziente": "Rosa Annunziata Cavalcante",
-    "ora": "12:02",
-    "timestamp": 1795172555935
+    "ora": "15:43",
+    "timestamp": 1795185833908
   },
   "ultimoGiornoOperativo": "2026-11-20",
   "aldoVimpatInizializzato2026": true,
@@ -7934,7 +8087,7 @@
     "attivo": true,
     "livelloMinimo": "75%",
     "dispositivo": "PC Postazione",
-    "ora": "12:02:10",
+    "ora": "15:43:22",
     "motivo": "Allarme Terapia in Corso / Scaduta"
   },
   "_auditAntiFurbiVolume": [
@@ -7945,5 +8098,6 @@
       "esito": "Ripristinato forzatamente al 75%-100%"
     }
   ],
-  "ciroEntecavirRitiro20261116": true
+  "ciroEntecavirRitiro20261116": true,
+  "rosaSerenityConsegna20261117": true
 }
