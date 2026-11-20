@@ -20969,10 +20969,29 @@ function leggiIstruzioniSOSVocale() {
   const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
   const nomeP = p ? (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim() : 'Assistito';
 
-  let testoVoce = 'Protocollo di Emergenza Domiciliare: ' + guida.titolo + '. ... ';
-  testoVoce += 'Paziente: ' + nomeP + '. ... ';
-  testoVoce += guida.testoVoce + '. ... ';
-  testoVoce += 'Cosa non fare assolutamente: ' + (guida.divieti || '').replace(/<[^>]*>/g, '');
+  // Costruzione integrale di TUTTO cio che e scritto a schermo riga per riga
+  let testoVoce = 'Protocollo Domiciliare: ' + guida.titolo.replace(/<[^>]*>/g, '') + '. ';
+  testoVoce += 'Assistito: ' + nomeP + '. ';
+
+  // Dati in alto per l'operatore NUE 112
+  const top112 = document.getElementById('sos-paziente-dettaglio');
+  if (top112) {
+    testoVoce += 'Dati per operatore 112: ' + top112.innerText.replace(/<[^>]*>/g, '') + '. ';
+  }
+
+  // Lettura completa di TUTTI i passi operativi con titolo e spiegazione dettagliata
+  if (Array.isArray(guida.passi)) {
+    guida.passi.forEach((passo) => {
+      const cleanTitolo = (passo.titolo || '').replace(/<[^>]*>/g, '');
+      const cleanTesto = (passo.testo || '').replace(/<[^>]*>/g, '');
+      testoVoce += 'Punto ' + passo.num + ': ' + cleanTitolo + '. ' + cleanTesto + '. ';
+    });
+  }
+
+  // Lettura integrale dei divieti e cosa non fare
+  if (guida.divieti) {
+    testoVoce += 'Attenzione! ' + guida.divieti.replace(/<[^>]*>/g, '') + '. ';
+  }
 
   _isSOSVoicePlaying = true;
   if (btn) {
