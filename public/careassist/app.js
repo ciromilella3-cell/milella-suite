@@ -15221,25 +15221,39 @@ function inviaPromemoriaWhatsAppVisita() {
 window.inviaPromemoriaWhatsAppVisita = inviaPromemoriaWhatsAppVisita;
 
 function leggiPromemoriaVocaleVisita() {
-  if (!('speechSynthesis' in window)) {
-    if (typeof showToast === 'function') showToast('⚠️ Sintesi vocale non supportata in questo browser');
-    return;
-  }
+  var btnHeader = document.getElementById('btn-voce-modal-visita');
+  var icoHeader = document.getElementById('icona-voce-modal-visita');
+  var btnBox = document.getElementById('btn-promemoria-visita-box');
 
-  if (window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
+  // Se la voce naturale è già attiva, interrompi
+  if (window._careassistVoceAttiva || (window.speechSynthesis && window.speechSynthesis.speaking)) {
+    fermaVoceHDGlobale();
+    if (btnHeader) {
+      btnHeader.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+      btnHeader.innerHTML = '<span id="icona-voce-modal-visita">🔊</span> <span>Ascolta</span>';
+    }
+    if (btnBox) {
+      btnBox.innerHTML = '🗣️ Promemoria Vocale';
+    }
     if (typeof showToast === 'function') showToast('⏹️ Voce interrotta');
     return;
   }
 
-  var p = getActivePaziente();
-  var nomePaz = p ? (p.nome + ' ' + (p.cognome || '')).trim() : 'l\'assistito';
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  var nomePaz = p ? ((p.nome || '') + ' ' + (p.cognome || '')).trim() : 'l\'assistito';
 
   var dataVal = document.getElementById('vis-data')?.value || '';
   var oraVal = document.getElementById('vis-ora')?.value || '';
+  var statoEl = document.getElementById('vis-stato');
+  var statoVal = statoEl ? (statoEl.options[statoEl.selectedIndex]?.text || statoEl.value) : '';
   var medicoVal = document.getElementById('vis-medico')?.value || 'visita specialistica';
+  var strutturaEl = document.getElementById('vis-struttura-tipo');
+  var strutturaTipo = strutturaEl ? (strutturaEl.options[strutturaEl.selectedIndex]?.text || '') : '';
   var luogoVal = document.getElementById('vis-luogo')?.value || '';
+  var telVal = document.getElementById('vis-telefono')?.value || '';
+  var nreVal = document.getElementById('vis-nre')?.value || '';
   var prepVal = document.getElementById('vis-preparazione')?.value || '';
+  var noteVal = document.getElementById('vis-note')?.value || '';
 
   var dataFmt = '';
   if (dataVal) {
@@ -15249,20 +15263,53 @@ function leggiPromemoriaVocaleVisita() {
     }
   }
 
-  var testo = 'Promemoria visita specialistica per ' + nomePaz + '. ' +
-    'Visita con ' + medicoVal + ', ' +
-    (dataFmt ? ('programmata per il giorno ' + dataFmt + ' alle ore ' + (oraVal || '10:00') + '. ') : '') +
-    (luogoVal ? ('Presso ' + luogoVal + '. ') : '') +
-    (prepVal ? ('Attenzione per la preparazione: ' + prepVal + '. ') : '') +
-    'Ricordati di portare la tessera sanitaria e la documentazione clinica precedente.';
+  var partiTesto = [];
+  partiTesto.push('Scheda di pianificazione visita specialistica per ' + nomePaz + '.');
+  partiTesto.push('Visita con ' + medicoVal + '.');
+  if (dataFmt) {
+    partiTesto.push('Appuntamento programmato per il ' + dataFmt + (oraVal ? (' alle ore ' + oraVal) : '') + '.');
+  }
+  if (statoVal) {
+    partiTesto.push('Stato attuale della prenotazione: ' + statoVal + '.');
+  }
+  if (strutturaTipo || luogoVal) {
+    partiTesto.push('Presso ' + (strutturaTipo ? strutturaTipo + ', ' : '') + (luogoVal ? luogoVal : '') + '.');
+  }
+  if (telVal) {
+    partiTesto.push('Recapito telefonico per contatti: ' + telVal + '.');
+  }
+  if (nreVal) {
+    partiTesto.push('Codice ricetta elettronica N R E: ' + nreVal + '.');
+  }
+  if (prepVal) {
+    partiTesto.push('Istruzioni di preparazione clinica ed esami da eseguire: ' + prepVal + '.');
+  }
+  if (noteVal) {
+    partiTesto.push('Note integrative: ' + noteVal + '.');
+  }
+  partiTesto.push('Ricordati di portare la tessera sanitaria, le impegnative e l\'intera documentazione clinica precedente.');
 
-  var utter = new SpeechSynthesisUtterance(testo);
-  utter.lang = 'it-IT';
-  utter.rate = 0.95;
-  utter.pitch = 1.05;
+  var testoCompleto = partiTesto.join(' ');
 
-  window.speechSynthesis.speak(utter);
-  if (typeof showToast === 'function') showToast('🗣️ Riproduzione promemoria vocale...');
+  if (btnHeader) {
+    btnHeader.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
+    btnHeader.innerHTML = '<span id="icona-voce-modal-visita">⏹️</span> <span>Interrompi</span>';
+  }
+  if (btnBox) {
+    btnBox.innerHTML = '⏹️ Interrompi Voce';
+  }
+
+  if (typeof showToast === 'function') showToast('🗣️ Riproduzione vocale in corso...');
+
+  riproduciVoceNaturaleHD(testoCompleto, function() {
+    if (btnHeader) {
+      btnHeader.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+      btnHeader.innerHTML = '<span id="icona-voce-modal-visita">🔊</span> <span>Ascolta</span>';
+    }
+    if (btnBox) {
+      btnBox.innerHTML = '🗣️ Promemoria Vocale';
+    }
+  });
 }
 window.leggiPromemoriaVocaleVisita = leggiPromemoriaVocaleVisita;
 
