@@ -20931,18 +20931,58 @@ function mostraSchedaSOS(tipo) {
 }
 window.mostraSchedaSOS = mostraSchedaSOS;
 
+var _isSOSVoicePlaying = false;
 function leggiIstruzioniSOSVocale() {
-  const guida = _GUIDE_SOS_DATI[_schedaSOSAttiva];
-  if (!guida || !('speechSynthesis' in window)) {
-    showToast('Sintesi vocale non disponibile.');
+  const btn = document.getElementById('btn-sos-voce-guida');
+  if (_isSOSVoicePlaying) {
+    if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+    _isSOSVoicePlaying = false;
+    if (btn) {
+      btn.innerHTML = '🔊 Ascolta Guida Vocale';
+      btn.style.background = 'transparent';
+      btn.style.color = '#b91c1c';
+    }
     return;
   }
-  window.speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(guida.testoVoce);
-  utt.lang = 'it-IT';
-  utt.rate = 0.9;
-  window.speechSynthesis.speak(utt);
-  showToast(`🔊 Guida vocale in riproduzione: ${guida.titolo}`);
+
+  const guida = _GUIDE_SOS_DATI[_schedaSOSAttiva];
+  if (!guida) {
+    if (typeof showToast === 'function') showToast('Seleziona una tipologia di emergenza.', 'warning');
+    return;
+  }
+
+  const p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  const nomeP = p ? (p.nome || '').replace(/\s*\(\d+\s*anni\)/gi, '').trim() : 'Assistito';
+
+  let testoVoce = 'Protocollo di Emergenza Domiciliare: ' + guida.titolo + '. ... ';
+  testoVoce += 'Paziente: ' + nomeP + '. ... ';
+  testoVoce += guida.testoVoce + '. ... ';
+  testoVoce += 'Cosa non fare assolutamente: ' + (guida.divieti || '').replace(/<[^>]*>/g, '');
+
+  _isSOSVoicePlaying = true;
+  if (btn) {
+    btn.innerHTML = '⏹️ Interrompi Voce';
+    btn.style.background = '#b91c1c';
+    btn.style.color = '#ffffff';
+  }
+
+  const resetBtn = function() {
+    _isSOSVoicePlaying = false;
+    if (btn) {
+      btn.innerHTML = '🔊 Ascolta Guida Vocale';
+      btn.style.background = 'transparent';
+      btn.style.color = '#b91c1c';
+    }
+  };
+
+  if (typeof riproduciVoceNaturaleHD === 'function') {
+    riproduciVoceNaturaleHD(testoVoce, resetBtn);
+  } else if (typeof parlaFallbackBrowserCareAssist === 'function') {
+    parlaFallbackBrowserCareAssist(testoVoce);
+    setTimeout(resetBtn, 25000);
+  } else {
+    resetBtn();
+  }
 }
 window.leggiIstruzioniSOSVocale = leggiIstruzioniSOSVocale;
 
