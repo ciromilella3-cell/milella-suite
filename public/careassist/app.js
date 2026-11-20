@@ -34370,6 +34370,104 @@ window.chiediTipoEliminazioneDiario = function(conteggio, pazienteNome) {
 // 👨‍👩‍👧‍👦 FASE 1: PORTALE TRASPARENZA FAMIGLIA & MMG LINK PRO (v360)
 // ==============================================================================
 
+var _isPortaleFamigliaVoceInCorso = false;
+
+function leggiSintesiVocalePortaleFamiglia() {
+  var btn = document.getElementById('btn-voce-portale-famiglia');
+  var ico = document.getElementById('ico-voce-portale-famiglia');
+  var txt = document.getElementById('txt-voce-portale-famiglia');
+
+  function impostaStato(inRiproduzione) {
+    if (inRiproduzione) {
+      if (ico) ico.textContent = '⏹️';
+      if (txt) txt.textContent = 'Interrompi';
+      if (btn) btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
+    } else {
+      if (ico) ico.textContent = '🔊';
+      if (txt) txt.textContent = 'Ascolta con Elsa Neural';
+      if (btn) btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    }
+  }
+
+  if (_isPortaleFamigliaVoceInCorso) {
+    if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+    _isPortaleFamigliaVoceInCorso = false;
+    impostaStato(false);
+    if (typeof showToast === 'function') showToast('⏹️ Voce interrotta');
+    return;
+  }
+
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) {
+    if (typeof showToast === 'function') showToast('⚠️ Nessun assistito attivo');
+    return;
+  }
+
+  var nome = (p.nome || 'L\'assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+  var terapie = (p.terapie || []).filter(function (t) {
+    var b = t.fascia === 'Al Bisogno' || t.fascia === 'Al Bisogno (SOS)' || t.frequenzaTipo === 'bisogno';
+    return !b;
+  });
+  var totTerapie = terapie.length;
+  var preseOggi = terapie.filter(function (t) { return !!t.fattoOggi; }).length;
+
+  var idratazioneMl = Number(p.idratazioneOggi) || 0;
+  var scorteCritiche = (p.terapie || []).filter(function (t) {
+    if (typeof t.scorta === 'undefined') return false;
+    var soglia = t.giorniAlert || 7;
+    return t.scorta <= soglia;
+  });
+
+  var parti = [];
+  parti.push('Portale trasparenza famiglia e raccordo medico per ' + nome + '.');
+  parti.push('Riepilogo odierno dell\'assistenza:');
+  if (totTerapie > 0) {
+    parti.push('Terapie odierne: ' + preseOggi + ' somministrazioni assunte su ' + totTerapie + '.');
+  } else {
+    parti.push('Nessun farmaco programmato per oggi.');
+  }
+
+  parti.push('Idratazione registrata: ' + idratazioneMl + ' millilitri rispetto all\'obiettivo di millecinquecento millilitri.');
+
+  if (scorteCritiche.length > 0) {
+    parti.push('Attenzione farmacia: ci sono ' + scorteCritiche.length + ' farmaci in esaurimento con richiesta di ricetta consigliata.');
+  } else {
+    parti.push('Le scorte dei farmaci risultano regolari.');
+  }
+
+  parti.push('Puoi toccare il pulsante verde per inviare l\'aggiornamento completo alla famiglia tramite WhatsApp oppure stampare il foglio riassuntivo in formato A quattro.');
+
+  var testoCompleto = parti.join(' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&amp;/g, ' e ')
+    .replace(/&/g, ' e ')
+    .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ', ')
+    .replace(/\s*\/\s*/g, ' oppure ')
+    .replace(/\.{2,}/g, '. ')
+    .replace(/:\s*/g, ': ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  _isPortaleFamigliaVoceInCorso = true;
+  impostaStato(true);
+  if (typeof showToast === 'function') showToast('🗣️ Riproduzione Portale Famiglia con Elsa Neural...');
+
+  var resetFn = function() {
+    _isPortaleFamigliaVoceInCorso = false;
+    impostaStato(false);
+  };
+
+  if (typeof riproduciVoceNaturaleHD === 'function') {
+    riproduciVoceNaturaleHD(testoCompleto, resetFn);
+  } else if (typeof parlaFallbackBrowserCareAssist === 'function') {
+    parlaFallbackBrowserCareAssist(testoCompleto);
+    setTimeout(resetFn, 25000);
+  } else {
+    resetFn();
+  }
+}
+window.leggiSintesiVocalePortaleFamiglia = leggiSintesiVocalePortaleFamiglia;
+
 window.renderFamilyPortal = function () {
   var container = document.getElementById('family-portal-container');
   if (!container) return;
@@ -34462,6 +34560,16 @@ window.renderFamilyPortal = function () {
         </div>
 
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <button type="button" id="btn-voce-portale-famiglia" onclick="leggiSintesiVocalePortaleFamiglia()"
+            style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-weight:900; font-size:13px; padding:10px 16px; border-radius:12px; border:1px solid #34d399; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 14px rgba(16,185,129,0.35);"
+            title="Ascolta con Voce Naturale Elsa Neural">
+            <span id="ico-voce-portale-famiglia">🔊</span> <span id="txt-voce-portale-famiglia">Ascolta con Elsa Neural</span>
+          </button>
+          <button type="button" class="btn" onclick="mostraGuidaContestuale('portale-famiglia')"
+            style="background:rgba(255,255,255,0.2); color:#ffffff; font-weight:900; font-size:13px; padding:10px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.4); cursor:pointer; display:inline-flex; align-items:center; gap:6px;"
+            title="Guida: A cosa serve questa sezione">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
           <a href="${waFamigliaUrl}" target="_blank" class="btn" style="background:#25d366; color:#ffffff; font-weight:900; font-size:13px; padding:10px 18px; border-radius:12px; border:none; box-shadow:0 4px 14px rgba(37,211,102,0.4); display:inline-flex; align-items:center; gap:6px; text-decoration:none;">
             <span>💬</span> <span>Invia Report Famiglia WhatsApp</span>
           </a>
