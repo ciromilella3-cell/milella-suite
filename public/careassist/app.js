@@ -28398,6 +28398,87 @@ window.ascoltaGuidaContestualeVocale = ascoltaGuidaContestualeVocale;
 // ==========================================================================
 var _ultimoAlertTestVistoTs = 0;
 
+var _tabSaperneDiPiuAttiva = 'alert';
+var _isSaperneDiPiuVoceInCorso = false;
+
+function leggiGuidaSaperneDiPiuVocale() {
+  var btnH = document.getElementById('btn-voce-saperne-header');
+  var icoH = document.getElementById('ico-voce-saperne-header');
+  var txtH = document.getElementById('txt-voce-saperne-header');
+
+  var btnF = document.getElementById('btn-voce-saperne-footer');
+  var icoF = document.getElementById('ico-voce-saperne-footer');
+  var txtF = document.getElementById('txt-voce-saperne-footer');
+
+  function impostaStato(inRiproduzione) {
+    if (inRiproduzione) {
+      if (icoH) icoH.textContent = '⏹️';
+      if (txtH) txtH.textContent = 'Interrompi';
+      if (btnH) btnH.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
+
+      if (icoF) icoF.textContent = '⏹️';
+      if (txtF) txtF.textContent = 'Interrompi Voce';
+      if (btnF) btnF.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
+    } else {
+      if (icoH) icoH.textContent = '🔊';
+      if (txtH) txtH.textContent = 'Ascolta con Elsa Neural';
+      if (btnH) btnH.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+
+      if (icoF) icoF.textContent = '🔊';
+      if (txtF) txtF.textContent = 'Ascolta con Voce Elsa Neural';
+      if (btnF) btnF.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    }
+  }
+
+  if (_isSaperneDiPiuVoceInCorso) {
+    if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+    _isSaperneDiPiuVoceInCorso = false;
+    impostaStato(false);
+    if (typeof showToast === 'function') showToast('⏹️ Voce interrotta');
+    return;
+  }
+
+  var testo = '';
+  if (_tabSaperneDiPiuAttiva === 'alert') {
+    testo = 'Guida e verifica del sistema di allerta tra computer e cellulare. ' +
+      'Questa sezione permette di testare in tempo reale suoni, notifiche e sincronizzazione immediata tra computer e smartphone. ' +
+      'Puoi inviare un allarme di prova dal computer verso il cellulare per verificare che il telefono squilli a volume forzato anche se impostato in modalità silenziosa. ' +
+      'Il sistema di protezione anti-furbi blocca l abbassamento accidentale o volontario della suoneria e simula un escalation automatica a tre stadi: ' +
+      'al settantacinque percento nei primi dieci minuti, al novanta percento fino a venti minuti, e audit al capoturno se la terapia non viene somministrata. ' +
+      'Per provare l allarme a display spento, tocca il pulsante dedicato, blocca lo schermo del telefono con il tasto laterale: dopo dieci secondi il telefono squillerà con la voce umana naturale e vibrerà.';
+  } else if (_tabSaperneDiPiuAttiva === 'uso') {
+    testo = 'Come si utilizza l applicazione CareAssist Pro. ' +
+      'La suite organizza l assistenza domiciliare e di reparto in modo intuitivo. ' +
+      'In alto trovi la barra di stato dell assistito con i comandi rapidi: Chiamata al centodiciotto in un secondo, invio report WhatsApp al familiare, e passaggio di consegne vocale. ' +
+      'La scheda Terapie permette di visualizzare i farmaci per fascia oraria e di spuntare la somministrazione con un solo tocco, aggiornando le scorte e registrando l orario effettivo. ' +
+      'Le schede Orologio Posturale, Idratazione e Nutrizione garantiscono la completa prevenzione di piaghe da decubito, disidratazione e malnutrizione.';
+  } else {
+    testo = 'Suggerimenti di base e piccole rifiniture cliniche. ' +
+      'Puoi installare CareAssist Pro come applicazione nativa sul cellulare toccando il pulsante Installa App. ' +
+      'Tutti i dati sono protetti e salvati in tempo reale sulla chiavetta e sincronizzati in cloud. ' +
+      'In caso di eliminazione accidentale, qualsiasi elemento cancellato viene trattenuto nel Cestino clinico e rimane recuperabile per sessanta giorni.';
+  }
+
+  _isSaperneDiPiuVoceInCorso = true;
+  impostaStato(true);
+  if (typeof showToast === 'function') showToast('🗣️ Riproduzione con voce naturale Elsa Neural...');
+
+  var resetFn = function() {
+    _isSaperneDiPiuVoceInCorso = false;
+    impostaStato(false);
+  };
+
+  if (typeof riproduciVoceNaturaleHD === 'function') {
+    riproduciVoceNaturaleHD(testo, resetFn);
+  } else if (typeof parlaFallbackBrowserCareAssist === 'function') {
+    parlaFallbackBrowserCareAssist(testo);
+    setTimeout(resetFn, 25000);
+  } else {
+    resetFn();
+  }
+}
+window.leggiGuidaSaperneDiPiuVocale = leggiGuidaSaperneDiPiuVocale;
+
 function apriModalPerSaperneDiPiu(tabIniziale) {
   cambiaTabSaperneDiPiu(tabIniziale || 'alert');
   aggiornaDiagnosticaAlert();
@@ -28405,6 +28486,23 @@ function apriModalPerSaperneDiPiu(tabIniziale) {
 }
 
 function cambiaTabSaperneDiPiu(tab) {
+  _tabSaperneDiPiuAttiva = tab;
+  if (_isSaperneDiPiuVoceInCorso) {
+    if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+    _isSaperneDiPiuVoceInCorso = false;
+    var btnH = document.getElementById('btn-voce-saperne-header');
+    var icoH = document.getElementById('ico-voce-saperne-header');
+    var txtH = document.getElementById('txt-voce-saperne-header');
+    var btnF = document.getElementById('btn-voce-saperne-footer');
+    var icoF = document.getElementById('ico-voce-saperne-footer');
+    var txtF = document.getElementById('txt-voce-saperne-footer');
+    if (icoH) icoH.textContent = '🔊';
+    if (txtH) txtH.textContent = 'Ascolta con Elsa Neural';
+    if (btnH) btnH.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    if (icoF) icoF.textContent = '🔊';
+    if (txtF) txtF.textContent = 'Ascolta con Voce Elsa Neural';
+    if (btnF) btnF.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+  }
   var tabs = ['alert', 'uso', 'tips'];
   tabs.forEach(function (t) {
     var panel = document.getElementById('saperne-panel-' + t);
