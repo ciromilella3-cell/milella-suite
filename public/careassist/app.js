@@ -32123,6 +32123,94 @@ function renderQuadroClinicoDashboard(p) {
 }
 window.renderQuadroClinicoDashboard = renderQuadroClinicoDashboard;
 
+function leggiSintesiVocalePatologie() {
+  var btn = document.getElementById('btn-voce-patologie-tab');
+  var ico = document.getElementById('ico-voce-patologie-tab');
+  var txt = document.getElementById('txt-voce-patologie-tab');
+
+  if (window._careassistVoceAttiva || (window.speechSynthesis && window.speechSynthesis.speaking)) {
+    if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+    if (ico) ico.textContent = '🔊';
+    if (txt) txt.textContent = 'Ascolta Quadro Clinico';
+    if (btn) btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    if (typeof showToast === 'function') showToast('⏹️ Voce interrotta');
+    return;
+  }
+
+  var p = (typeof getActivePaziente === 'function') ? getActivePaziente() : null;
+  if (!p) {
+    if (typeof showToast === 'function') showToast('⚠️ Nessun assistito attivo');
+    return;
+  }
+
+  var nome = (p.nome || 'L\'assistito').replace(/\s*\(\d+\s*anni\)/gi, '').trim();
+  var patList = Array.isArray(p.patologie) ? p.patologie : (typeof p.patologie === 'string' ? [p.patologie] : (p.diagnosi ? p.diagnosi.split(' • ') : []));
+  var isAllettato = !!p.allettato;
+  var allergie = (p.allergie || '').trim();
+  var haAllergie = allergie && !allergie.toLowerCase().includes('nessun') && allergie !== '-' && allergie !== '';
+
+  var parti = [];
+  parti.push('Quadro clinico e cartella patologie per ' + nome + '.');
+  parti.push('Stato motorio: ' + (isAllettato ? 'Paziente allettato con protocollo posturale ogni due ore.' : 'Paziente deambulante.'));
+
+  if (haAllergie) {
+    parti.push('Attenzione critica per la sicurezza: segnalata allergia farmacologica accertata per ' + allergie + '.');
+  } else {
+    parti.push('Nessuna allergia farmacologica nota riferita.');
+  }
+
+  if (patList.length > 0) {
+    parti.push('Patologie e diagnosi attive in cura: ' + patList.join(', ') + '.');
+    patList.forEach(function(pt) {
+      if (typeof getFarmaciPerPatologia === 'function') {
+        var correlati = getFarmaciPerPatologia(p, pt);
+        if (correlati && correlati.length > 0) {
+          var nomiF = correlati.map(function(f) { return f.farmaco; }).join(', ');
+          parti.push('Per la patologia ' + pt + ' assume: ' + nomiF + '.');
+        }
+      }
+    });
+  } else {
+    parti.push('Nessuna patologia formalizzata registrata per questo assistito.');
+  }
+
+  if (Array.isArray(p.ausili) && p.ausili.length > 0) {
+    var ausiliNomi = p.ausili.map(function(a) { return a.nome || a.tipo; }).filter(Boolean).join(', ');
+    if (ausiliNomi) parti.push('Presidi sanitari e ausili in dotazione: ' + ausiliNomi + '.');
+  }
+
+  var testoCompleto = parti.join(' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&amp;/g, ' e ')
+    .replace(/&/g, ' e ')
+    .replace(/[•▪▸►✓✔✕✖★☆✦]/g, ', ')
+    .replace(/\s*\/\s*/g, ' oppure ')
+    .replace(/\.{2,}/g, '. ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (ico) ico.textContent = '⏹️';
+  if (txt) txt.textContent = 'Interrompi Voce';
+  if (btn) btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
+  if (typeof showToast === 'function') showToast('🗣️ Riproduzione quadro clinico con Voce Naturale...');
+
+  var resetBtn = function() {
+    if (ico) ico.textContent = '🔊';
+    if (txt) txt.textContent = 'Ascolta Quadro Clinico';
+    if (btn) btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+  };
+
+  if (typeof riproduciVoceNaturaleHD === 'function') {
+    riproduciVoceNaturaleHD(testoCompleto, resetBtn);
+  } else if (typeof parlaFallbackBrowserCareAssist === 'function') {
+    parlaFallbackBrowserCareAssist(testoCompleto);
+    setTimeout(resetBtn, 20000);
+  } else {
+    resetBtn();
+  }
+}
+window.leggiSintesiVocalePatologie = leggiSintesiVocalePatologie;
+
 function renderPatologieTab(p) {
   var container = document.getElementById('tab-patologie-container');
   if (!container) return;
@@ -32251,6 +32339,7 @@ function renderPatologieTab(p) {
     '</div>' +
     '</div>' +
     '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+    '<button type="button" id="btn-voce-patologie-tab" class="btn" onclick="leggiSintesiVocalePatologie()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; font-weight:800; font-size:13px; padding:9px 15px; border-radius:10px; border:1px solid #34d399; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(16,185,129,0.35);" title="Ascolta con Voce Naturale Umana il quadro clinico, le patologie e i farmaci associati"><span id="ico-voce-patologie-tab">🔊</span> <span id="txt-voce-patologie-tab">Ascolta Quadro Clinico</span></button>' +
     '<button type="button" class="btn" onclick="mostraGuidaContestuale(\'patologie\')" style="background:rgba(255,255,255,0.22); color:#ffffff; font-weight:800; font-size:13px; padding:9px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.45); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Guida all\'uso e utilità clinica">' +
     '<span>💡</span> <span>A cosa serve</span>' +
     '</button>' +
