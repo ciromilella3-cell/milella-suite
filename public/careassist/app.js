@@ -28068,6 +28068,9 @@ var GUIDE_CONTESTUALI = {
 };
 
 function mostraGuidaContestuale(chiave) {
+  _chiaveGuidaContestualeAttiva = chiave;
+  if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+  _isGuidaContestualeInRiproduzione = false;
   var g = GUIDE_CONTESTUALI[chiave];
   if (!g) return;
 
@@ -28128,6 +28131,67 @@ function mostraGuidaContestuale(chiave) {
   openModal('modal-guida-contestuale');
 }
 window.mostraGuidaContestuale = mostraGuidaContestuale;
+
+var _chiaveGuidaContestualeAttiva = '';
+var _isGuidaContestualeInRiproduzione = false;
+
+function ascoltaGuidaContestualeVocale() {
+  const btn = document.getElementById('btn-ascolta-guida-contestuale');
+  const ico = document.getElementById('ico-audio-guida-contestuale');
+  const txt = document.getElementById('txt-audio-guida-contestuale');
+
+  if (_isGuidaContestualeInRiproduzione) {
+    if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+    _isGuidaContestualeInRiproduzione = false;
+    if (ico) ico.textContent = '🔊';
+    if (txt) txt.textContent = 'Ascolta con Voce Naturale';
+    if (btn) btn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+    return;
+  }
+
+  const g = GUIDE_CONTESTUALI[_chiaveGuidaContestualeAttiva];
+  if (!g) return;
+
+  // Componi un testo discorsivo naturale per l'audio
+  let testoVoce = g.titolo.replace(/&amp;/g, 'e') + '. ... ' +
+    'A cosa serve. ' + (g.scopo || '').replace(/&amp;/g, 'e') + '. ... ';
+
+  if (Array.isArray(g.comeSiUsa) && g.comeSiUsa.length > 0) {
+    testoVoce += 'Come si usa. ';
+    g.comeSiUsa.forEach((p, idx) => {
+      const cleanP = p.replace(/<[^>]*>/g, '').replace(/&amp;/g, 'e');
+      testoVoce += 'Punto ' + (idx + 1) + ': ' + cleanP + '. ';
+    });
+  }
+
+  if (g.utilita) {
+    const cleanU = g.utilita.replace(/<[^>]*>/g, '').replace(/&amp;/g, 'e');
+    testoVoce += '... Valore e utilità per la struttura: ' + cleanU;
+  }
+
+  _isGuidaContestualeInRiproduzione = true;
+  if (ico) ico.textContent = '⏹️';
+  if (txt) txt.textContent = 'Interrompi Voce';
+  if (btn) btn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+
+  const resetStato = function() {
+    _isGuidaContestualeInRiproduzione = false;
+    if (ico) ico.textContent = '🔊';
+    if (txt) txt.textContent = 'Ascolta con Voce Naturale';
+    if (btn) btn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+  };
+
+  if (typeof riproduciVoceNaturaleHD === 'function') {
+    riproduciVoceNaturaleHD(testoVoce, resetStato);
+  } else if (typeof parlaFallbackBrowserCareAssist === 'function') {
+    parlaFallbackBrowserCareAssist(testoVoce);
+    setTimeout(resetStato, 25000);
+  } else {
+    resetStato();
+  }
+}
+window.ascoltaGuidaContestualeVocale = ascoltaGuidaContestualeVocale;
+
 
 // ==========================================================================
 // 💡 CENTRO "PER SAPERNE DI PIÙ" & TEST LIVE ALERT PC ↔ CELLULARE
