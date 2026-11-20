@@ -1057,8 +1057,8 @@ function getPazienteAngelaInit() {
 // Struttura Globale
 
 function getPazienteRosaInit() {
-  const rosa = createPazienteTemplate('paz_rosa', 'Rosa C.', '1938-06-16', 'Paziente di 88 anni. Cardiopatia ipertensiva in buon compenso, osteoartrosi diffusa e insufficienza venosa periferica.');
-  rosa.nome = 'Rosa C.';
+  const rosa = createPazienteTemplate('paz_rosa', 'Rosa Annunziata Cavalcante', '1938-06-16', 'Paziente di 88 anni. Cardiopatia ipertensiva in buon compenso, osteoartrosi diffusa e insufficienza venosa periferica.');
+  rosa.nome = 'Rosa Annunziata Cavalcante';
   rosa.indirizzo = 'Via Domenico Cirillo, 9 - 85012 Corleto Perticara (PZ)';
   rosa.telefonoFisso = '097 169 32 21';
   rosa.cellulare = '338 000 00 03';
@@ -1464,15 +1464,15 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     }
   }
 
-  // Inizializzazione una-tantum o inserimento di Rosa C.
+  // Inizializzazione una-tantum o inserimento di Rosa Annunziata Cavalcante
   const rosaEx = AppData.pazienti.find(p => p.id === 'paz_rosa');
   if (!rosaEx) {
     AppData.pazienti.push(getPazienteRosaInit());
-    console.log('Paziente Rosa C. integrata in AppData!');
+    console.log('Paziente Rosa Annunziata Cavalcante integrata in AppData!');
   } else if (!AppData.rosaInitializedOnce) {
     // Solo al primo avvio pulisce i dati ereditati, poi rispetta tassativamente tutti i salvataggi dell'utente!
     AppData.rosaInitializedOnce = true;
-    rosaEx.nome = 'Rosa C.';
+    rosaEx.nome = 'Rosa Annunziata Cavalcante';
     rosaEx.dataNascita = '1938-06-16';
     rosaEx.eta = calcolaAnniDaData('1938-06-16');
     rosaEx.indirizzo = 'Corleto Perticara (PZ)';
@@ -1679,7 +1679,7 @@ if (!AppData || !AppData.pazienti || AppData.pazienti.length === 0) {
     try {
       localStorage.setItem(DB_KEY, JSON.stringify(AppData));
     } catch (err) { }
-    console.log('Scheda di Rosa C. aggiornata con successo su Sinemet e Xultophy!');
+    console.log('Scheda di Rosa Annunziata Cavalcante aggiornata con successo su Sinemet e Xultophy!');
   }
 
   // Sincronizzazione una-tantum Ausilio PANTS per Rosa (17/10/2026)
@@ -2378,9 +2378,9 @@ function sincronizzaDbDalServer(callback) {
 
       if (serverData && serverData.pazienti) {
         serverData.pazienti.forEach(function (sp) {
-          if (sp.id === 'paz_aldo' || (sp.nome && (sp.nome === 'Aldo Z.' || sp.nome.startsWith('Aldo Z')))) { sp.nome = 'Aldo Zamparino'; sp.dataNascita = '1935-01-06'; }
-          if (sp.id === 'paz_angela' || (sp.nome && (sp.nome === 'Angela M.' || sp.nome.startsWith('Angela M')))) sp.nome = 'Angela Mazzicone';
-          if (sp.id === 'paz_rosa' || (sp.nome && (sp.nome === 'Rosa C.' || sp.nome.startsWith('Rosa C')))) sp.nome = 'Rosa Annunziata Cavalcante';
+          if (sp.id === 'paz_aldo' || (sp.nome && (sp.nome === 'Aldo Zamparino' || sp.nome.startsWith('Aldo Zamparino')))) { sp.nome = 'Aldo Zamparino'; sp.dataNascita = '1935-01-06'; }
+          if (sp.id === 'paz_angela' || (sp.nome && (sp.nome === 'Angela Mazzicone' || sp.nome.startsWith('Angela Mazzicone')))) sp.nome = 'Angela Mazzicone';
+          if (sp.id === 'paz_rosa' || (sp.nome && (sp.nome === 'Rosa Annunziata Cavalcante' || sp.nome.startsWith('Rosa C')))) sp.nome = 'Rosa Annunziata Cavalcante';
           // Deduplica eventuali log di escalation Stadio 3 ripetuti nello stesso giorno per lo stesso farmaco
           if (Array.isArray(sp.registrazioni)) {
             var seenEsc = new Set();
@@ -17872,9 +17872,9 @@ function filtraFasciaTerapia(fascia) {
 function renderAll() {
   if (AppData && Array.isArray(AppData.pazienti)) {
     AppData.pazienti.forEach(function (p) {
-      if (p.id === 'paz_aldo' || (p.nome && (p.nome === 'Aldo Z.' || p.nome.startsWith('Aldo Z')))) p.nome = 'Aldo Zamparino';
-      if (p.id === 'paz_angela' || (p.nome && (p.nome === 'Angela M.' || p.nome.startsWith('Angela M')))) p.nome = 'Angela Mazzicone';
-      if (p.id === 'paz_rosa' || (p.nome && (p.nome === 'Rosa C.' || p.nome.startsWith('Rosa C')))) {
+      if (p.id === 'paz_aldo' || (p.nome && (p.nome === 'Aldo Zamparino' || p.nome.startsWith('Aldo Zamparino')))) p.nome = 'Aldo Zamparino';
+      if (p.id === 'paz_angela' || (p.nome && (p.nome === 'Angela Mazzicone' || p.nome.startsWith('Angela Mazzicone')))) p.nome = 'Angela Mazzicone';
+      if (p.id === 'paz_rosa' || (p.nome && (p.nome === 'Rosa Annunziata Cavalcante' || p.nome.startsWith('Rosa C')))) {
         p.nome = 'Rosa Annunziata Cavalcante';
       }
     });
@@ -23535,7 +23535,7 @@ function aggiornaVisibilitaTabEpatologia() {
       tabBtn.title = 'Cartella Monitoraggio Cardiometabolico & Ipertensione (Angela Mazzicone)';
     } else if (pId === 'paz_rosa' || pNome.includes('rosa') || pNome.includes('C.')) {
       tabBtn.innerHTML = '🩸 Diabete & Terapie';
-      tabBtn.title = 'Cartella Diabetologia, Piani Terapeutici & Cardiovascolare (Rosa C.)';
+      tabBtn.title = 'Cartella Diabetologia, Piani Terapeutici & Cardiovascolare (Rosa Annunziata Cavalcante)';
     } else {
       tabBtn.innerHTML = '🩺 Ambulatorio & Esami';
       tabBtn.title = 'Cartella Clinica Specialistica & Follow-up (' + (p.nome || 'Assistito') + ')';
@@ -24684,7 +24684,7 @@ function getPianoTerapeuticoAttivo(paziente) {
     return p.pianoTerapeuticoDpc;
   }
 
-  // 2. PROFILO ROSA C. (Diabete Mellito Tipo 2 / Insulina Xultophy & Forxiga)
+  // 2. PROFILO Rosa Annunziata Cavalcante (Diabete Mellito Tipo 2 / Insulina Xultophy & Forxiga)
   if (pNome.includes('rosa')) {
     if (!p.pianoTerapeuticoDpc) {
       p.pianoTerapeuticoDpc = {
@@ -25713,7 +25713,7 @@ function renderSchedaSpecialisticaAngela(container, p) {
 
 
 // ==============================================================================
-// SCHEDA CLINICA SPECIALISTICA DEDICATA: Rosa C. (88 ANNI)
+// SCHEDA CLINICA SPECIALISTICA DEDICATA: Rosa Annunziata Cavalcante (88 ANNI)
 // Diabetologia, Piani Terapeutici (Xultophy, Forxiga) & Cardiovascolare
 // ==============================================================================
 
@@ -25751,7 +25751,7 @@ function renderSchedaSpecialisticaRosa(container, p) {
   var perc = esami.length > 0 ? Math.round((completati / esami.length) * 100) : 0;
 
   var html = `
-    <!-- BANNER CLINICO DEDICATO A Rosa C. -->
+    <!-- BANNER CLINICO DEDICATO A Rosa Annunziata Cavalcante -->
     <div style="background:linear-gradient(135deg, #065f46 0%, #047857 100%); border-radius:18px; padding:22px 26px; color:white; margin-bottom:22px; box-shadow:0 8px 30px rgba(6,95,70,0.35); border:2px solid #34d399; position:relative; overflow:hidden;">
       <div style="position:absolute; right:-20px; top:-20px; font-size:120px; opacity:0.07; pointer-events:none;">🩸</div>
       
@@ -25769,7 +25769,7 @@ function renderSchedaSpecialisticaRosa(container, p) {
               Protocollo Diabetologia, Piani Terapeutici & Cardiovascolare
             </h2>
             <div style="font-size:13px; color:#d1fae5; font-weight:500;">
-              Assistita: <b>Rosa C.</b> &bull; MMG Curante: <b>Dr.ssa Carolina Potenza</b> &bull; CAD Territoriale ASP Basilicata
+              Assistita: <b>Rosa Annunziata Cavalcante</b> &bull; MMG Curante: <b>Dr.ssa Carolina Potenza</b> &bull; CAD Territoriale ASP Basilicata
             </div>
           </div>
         </div>
@@ -25855,7 +25855,7 @@ function renderSchedaSpecialisticaRosa(container, p) {
     <div class="card" style="box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1.5px solid #cbd5e1; border-radius:16px; background:#ffffff; overflow:hidden;">
       <div class="card-header" style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
         <div>
-          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Monitoraggio Diabetologico & Cardiovascolare - Rosa C.</div>
+          <div style="font-size:16px; font-weight:900; color:#0f172a;">📋 Tabella Monitoraggio Diabetologico & Cardiovascolare - Rosa Annunziata Cavalcante</div>
           <div style="font-size:12px; color:#64748b;">Sorveglianza: Emoglobina Glicata &bull; Xultophy &bull; Forxiga &bull; Pressione Triatec &bull; Ausili</div>
         </div>
         <button type="button" class="btn btn-outline" onclick="mostraGuidaContestuale('protocollo-diabetologia')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve la Tabella Monitoraggio">
