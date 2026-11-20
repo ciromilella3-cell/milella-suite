@@ -1,5 +1,5 @@
 {
-  "activePazienteId": "paz_1794120705837",
+  "activePazienteId": "paz_rosa",
   "pazienti": [
     {
       "id": "paz_aldo",
@@ -154,13 +154,6 @@
           "tipo": "nota_turno",
           "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
           "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:42 il farmaco \"VIMPAT 100 mg (2ª dose)\" delle ore 13:30 risulta non ancora spuntato (+132 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
-          "id": "esc_1795185563923",
-          "timestamp": "2026-11-20T14:39:23.920Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:39 il farmaco \"VIMPAT 100 mg (2ª dose)\" delle ore 13:30 risulta non ancora spuntato (+129 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
         },
         {
           "id": "log_1795172273086",
@@ -1744,20 +1737,6 @@
           "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:42 il farmaco \"Cardioaspirin 100 mg (Acido Acetilsalicilico)\" delle ore 13:00 risulta non ancora spuntato (+162 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
         },
         {
-          "id": "esc_1795185564066",
-          "timestamp": "2026-11-20T14:39:23.920Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:39 il farmaco \"Allopurinolo Teva Italia 300 mg\" delle ore 13:30 risulta non ancora spuntato (+129 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
-          "id": "esc_1795185564000",
-          "timestamp": "2026-11-20T14:39:23.920Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:39 il farmaco \"Cardioaspirin 100 mg (Acido Acetilsalicilico)\" delle ore 13:00 risulta non ancora spuntato (+159 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
           "id": "log_1795172402902",
           "tipo": "farmaco_ritardo",
           "timestamp": "2026-11-20T11:00:02.902Z",
@@ -1819,13 +1798,6 @@
           "tipo": "nota_turno",
           "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
           "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:57 il farmaco \"Lasix 25 mg (Furosemide)\" delle ore 09:00 risulta non ancora spuntato (+177 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
-          "id": "esc_1795172159305",
-          "timestamp": "2026-11-20T10:55:59.302Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:55 il farmaco \"Lasix 25 mg (Furosemide)\" delle ore 09:00 risulta non ancora spuntato (+175 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
         },
         {
           "id": "esc_1795159588259",
@@ -3428,12 +3400,12 @@
           "quantitaQuota": 1,
           "modo": "Iniezione sottocute 1 volta al giorno, sempre alla stessa ora (Diabete) ⚠️ Orario/dose da confermare col medico",
           "cprPerScatola": 3,
-          "scorta": 3.76,
+          "scorta": 3.64,
           "giorniAlert": 15,
           "cadenzaTipo": "giornaliera",
-          "fattoOggi": false,
+          "fattoOggi": true,
           "tipoFormulazione": "penna",
-          "penneScorta": 3.76,
+          "penneScorta": 3.64,
           "unitaDoseDie": 36,
           "unitaPerPenna": 300,
           "pennePerScatola": 3,
@@ -3452,7 +3424,9 @@
           },
           "ultimaDoseSomministrata": 1,
           "ultimoSitoIniezione": "Coscia Sinistra",
-          "ultimoRitiro": "2026-11-08T06:19:10.720Z"
+          "ultimoRitiro": "2026-11-08T06:19:10.720Z",
+          "fattoOggiTimestamp": 1795192467882,
+          "fattoOggiGiorno": "2026-11-20"
         }
       ],
       "registrazioni": [
@@ -3539,20 +3513,6 @@
           "tipo": "nota_turno",
           "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
           "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:42 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+133 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
-          "id": "esc_1795185564182",
-          "timestamp": "2026-11-20T14:39:23.920Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:39 il farmaco \"FORXIGA 10 mg\" delle ore 13:30 risulta non ancora spuntato (+129 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
-          "id": "esc_1795185564125",
-          "timestamp": "2026-11-20T14:39:23.920Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 15:39 il farmaco \"AVERELIX 75 mg\" delle ore 13:29 risulta non ancora spuntato (+130 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
         },
         {
           "id": "esc_1795172817219",
@@ -3672,48 +3632,6 @@
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 ore e 1 min! Orario previsto: 08:00 - Orario effettivo assunzione: 12:01. Rimanenza scorta: 15 cpr.",
           "operatore": "Ciro Milella (Admin)"
-        },
-        {
-          "id": "esc_1795172250311",
-          "timestamp": "2026-11-20T10:57:30.098Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:57 il farmaco \"ARCOXIA 90 mg\" delle ore 10:30 risulta non ancora spuntato (+87 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
-          "id": "esc_1795172250247",
-          "timestamp": "2026-11-20T10:57:30.098Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:57 il farmaco \"SINEMET 100+25 mg (1ª dose: 2 cpr - ore 10:00)\" delle ore 10:00 risulta non ancora spuntato (+117 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
-          "id": "esc_1795172250185",
-          "timestamp": "2026-11-20T10:57:30.098Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:57 il farmaco \"CONGESCOR 2,5 mg\" delle ore 10:00 risulta non ancora spuntato (+117 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
-          "id": "esc_1795172159514",
-          "timestamp": "2026-11-20T10:55:59.302Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:55 il farmaco \"ARCOXIA 90 mg\" delle ore 10:30 risulta non ancora spuntato (+85 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
-          "id": "esc_1795172159452",
-          "timestamp": "2026-11-20T10:55:59.302Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:55 il farmaco \"SINEMET 100+25 mg (1ª dose: 2 cpr - ore 10:00)\" delle ore 10:00 risulta non ancora spuntato (+115 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
-        },
-        {
-          "id": "esc_1795172159378",
-          "timestamp": "2026-11-20T10:55:59.302Z",
-          "tipo": "nota_turno",
-          "operatore": "🛡️ Sistema Anti-Sabotaggio (Audit Automatico)",
-          "testo": "[ESCALATION STADIO 3 - OLTRE 20 MIN] Alle 11:55 il farmaco \"CONGESCOR 2,5 mg\" delle ore 10:00 risulta non ancora spuntato (+115 min). Allarme emesso con Volume Hardware Forzato ≥ 90% (Ciro Milella (Admin))."
         },
         {
           "id": "esc_1795159588360",
@@ -6145,6 +6063,20 @@
           "azione": "somministrazione",
           "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 11 ore e 38 min! Orario previsto: 08:00 - Orario effettivo assunzione: 19:38. Rimanenza scorta: 2 cpr.",
           "operatore": "Ciro Milella (Admin)"
+        },
+        {
+          "id": "log_1795192467882",
+          "tipo": "farmaco_ritardo",
+          "timestamp": "2026-11-20T16:34:27.882Z",
+          "farmacoId": 1793524442695,
+          "farmaco": "XULTOPHY penna",
+          "dosaggio": "36 Unità (sottocute)",
+          "orarioPrevisto": "17:30",
+          "orarioReale": "17:34",
+          "minutiRitardo": 4,
+          "azione": "somministrazione",
+          "dettaglio": "⚠️ SOMMINISTRATO CON RITARDO DI 4 minuti! Orario previsto: 17:30 - Orario effettivo assunzione: 17:34. Rimanenza scorta: 3.64 cpr.",
+          "operatore": "Ciro Milella (Admin)"
         }
       ],
       "visite": [
@@ -6395,7 +6327,7 @@
       "lifestyle": "1.2",
       "goal": "mantenimento",
       "diagnosi": "Diabete mellito tipo 2 in terapia insulinica e orale (Xultophy, Diamicron, Forxiga) • Cardiopatia ipertensiva / scompenso cardiaco (Congescor, Triatec, Lasix, Forxiga) • Prevenzione eventi aterotrombotici / antiaggregazione piastrinica (Averelix Clopidogrel) • Morbo di Parkinson / parkinsonismo (Sinemet) • Iperuricemia / gotta (Adenuric) • Osteoartrosi con dolore cronico (Arcoxia) • Ipovitaminosi D (Fedivelle) • Dislipidemia / Ipercolesterolemia (Sivastin)",
-      "lastModified": 1794389623826
+      "lastModified": 1795192467882
     },
     {
       "id": "paz_1793216119572",
@@ -6429,8 +6361,7 @@
           "cadenzaDataInizio": null,
           "cadenzaMeseAnnuale": null,
           "cadenzaGiornoAnnuale": null,
-          "fattoOggi": true,
-          "saltatoOggi": false,
+          "fattoOggi": false,
           "ultimaModificaTimestamp": 1795186999523,
           "tipoFormulazione": "compressa",
           "canaleDistribuzione": "territoriale_asl",
@@ -6506,8 +6437,6 @@
           },
           "ultimaDoseSomministrata": 1,
           "ultimoRitiro": "2026-11-16",
-          "fattoOggiGiorno": "2026-11-18",
-          "fattoOggiTimestamp": 1794996829225,
           "storicoCarichi": [
             {
               "data": "2026-02-23",
@@ -8399,10 +8328,16 @@
       "lastModified": 1794389658760
     }
   ],
-  "lastModified": "2026-11-20T16:07:46.891Z",
+  "lastModified": 1795192467882,
   "lastModifiedDevice": "pc",
-  "lastModifiedBy": "Merge Intelligente USB <-> Web",
-  "ultimoGiornoOperativo": "2026-11-18",
+  "lastModifiedBy": {
+    "nome": "Ciro Milella (Admin)",
+    "ruolo": "admin",
+    "paziente": "Rosa Annunziata Cavalcante",
+    "ora": "17:34",
+    "timestamp": 1795192467882
+  },
+  "ultimoGiornoOperativo": "2026-11-20",
   "aldoVimpatInizializzato2026": true,
   "rosaInitializedOnce": true,
   "rosaTerapiaFoto20261017": true,
@@ -9470,8 +9405,8 @@
   "_statoAntiFurbiVolume": {
     "attivo": true,
     "livelloMinimo": "75%",
-    "dispositivo": "Smartphone/Tablet",
-    "ora": "10:34:14",
+    "dispositivo": "PC Postazione",
+    "ora": "17:34:15",
     "motivo": "Allarme Terapia in Corso / Scaduta"
   },
   "_auditAntiFurbiVolume": [
