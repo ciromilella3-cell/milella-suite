@@ -3939,6 +3939,11 @@ window.eseguiStrumentoMobile = function(azione, e) {
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" onclick="mostraGuidaContestuale('scheda-farmaco-operativa')"
+            style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); color: #ffffff; padding: 7px 11px; border-radius: 9px; font-size: 11.5px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"
+            title="A cosa serve questa scheda e come usarla">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
           <button type="button" onclick="apriModalCestino()"
             style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); color: #ffffff; padding: 7px 11px; border-radius: 9px; font-size: 11.5px; font-weight: 800; cursor: pointer;"
             title="Visualizza Cestino">
@@ -9883,7 +9888,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=425"></script>
+  <script src="app.js?v=426"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9894,7 +9899,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=416', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=417', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
