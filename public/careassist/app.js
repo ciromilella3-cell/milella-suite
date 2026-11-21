@@ -27979,6 +27979,19 @@ window.fermaVoceBriefing = fermaVoceBriefing;
 // 💡 SISTEMA DI GUIDA CONTESTUALE DINAMICA & UTILITÀ CLINICO-GESTIONALE
 // ==========================================================================
 var GUIDE_CONTESTUALI = {
+  'cambia-orario-rapido': {
+    icona: '🕒',
+    titolo: 'Cambia Orario Somministrazione Rapido',
+    sottotitolo: 'Regolazione istantanea dell\'orario di assunzione per adeguarlo alle esigenze dell\'assistito',
+    scopo: 'Questa maschera rapida consente a operatori socio-sanitari e caregiver di modificare in un attimo l\'orario previsto di somministrazione di un farmaco per la giornata odierna, senza dover aprire la scheda clinica completa. È ideale per gestire risvegli posticipati, pasti anticipati o ritardati, o accordi specifici con il medico curante.',
+    comeSiUsa: [
+      '<b>Nuovo Orario di Assunzione</b>: tocca il campo orario per impostare manualmente l\'orario desiderato.',
+      '<b>Regolazioni Rapide 1-Tap (+15 min, +30 min, +1 ora, -30 min)</b>: premi uno dei quattro pulsanti colorati per posticipare o anticipare al volo l\'assunzione con un solo tocco.',
+      '<b>Salva Nuovo Orario</b>: tocca il pulsante verde per confermare. Il sistema ricalcola automaticamente la fascia oraria (Mattina, Pranzo, Pomeriggio, Sera o Notte), aggiorna la timeline e azzera eventuali allerte di ritardo non dovute.'
+    ],
+    utilita: '<b>Flessibilità assistenziale e precisione temporale</b>: mantiene il registro posologico fedele alla vita reale dell\'assistito, evitando falsi allarmi di ritardo quando l\'orario viene posticipato di comune accordo.'
+  },
+
   'scheda-capsula': {
     icona: '💊',
     titolo: 'Scheda Clinica Farmaco &amp; Gestione Capsula',
