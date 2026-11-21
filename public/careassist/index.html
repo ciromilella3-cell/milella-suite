@@ -4376,41 +4376,58 @@ window.eseguiStrumentoMobile = function(azione, e) {
                 </div>
                 <input type="hidden" id="edit-farm-tipo-specialita" value="originale">
               </div>
-<!-- BOX FOTO CONFEZIONE SCATOLO (IN POSOLOGIA) -->
+<!-- BOX FOTO CONFEZIONE SCATOLO & PILLOLA REALE (DOPPIA FOTO CLINICA) -->
               <div class="card-sezione-pro" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 12px; margin-bottom: 10px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                   <div style="font-size: 12px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
-                    <span style="font-size: 15px;">📦</span>
-                    <span>Foto Scatolo Farmaco</span>
+                    <span style="font-size: 15px;">📸</span>
+                    <span>Riscontro Visivo Clinico (Scatola & Compressa)</span>
                   </div>
                   <span id="badge-stato-foto-scatola" class="badge" style="background: #f1f5f9; color: #64748b; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px;">Nessuna foto</span>
                 </div>
-                <div style="font-size: 11px; color: #64748b; margin-bottom: 8px;">
-                  Scatta o carica la foto dello scatolo per verifica visiva immediata:
-                </div>
-                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                  <label style="padding: 7px 12px; border-radius: 8px; background: #0284c7; color: #ffffff; font-weight: 800; font-size: 11.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(2,132,199,0.3);">
-                    <span>📷</span> Scatta Foto
-                    <input type="file" id="input-foto-scatolo-camera" accept="image/*" capture="environment" style="display: none;" onchange="gestisciCaricaFotoScatolo(event)">
-                  </label>
-                  <label style="padding: 7px 12px; border-radius: 8px; background: #f8fafc; border: 1.5px solid #cbd5e1; color: #334155; font-weight: 800; font-size: 11.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
-                    <span>🖼️</span> Da Galleria / File
-                    <input type="file" id="input-foto-scatolo-file" accept="image/*" style="display: none;" onchange="gestisciCaricaFotoScatolo(event)">
-                  </label>
-                  <button type="button" id="btn-elimina-foto-scatolo" onclick="rimuoviFotoScatolo()"
-                    style="display: none; padding: 7px 10px; border-radius: 8px; background: #fff1f2; border: 1px solid #fecaca; color: #e11d48; font-weight: 700; font-size: 11.5px; cursor: pointer;">
-                    🗑️ Rimuovi
-                  </button>
-                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                  
+                  <!-- BOX 1: FOTO SCATOLA -->
+                  <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 8px; text-align: center;">
+                    <div style="font-size: 11px; font-weight: 800; color: #334155; margin-bottom: 6px;">📦 1. Confezione Scatolo</div>
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-bottom: 6px;">
+                      <label style="padding: 5px 8px; border-radius: 6px; background: #0284c7; color: #ffffff; font-weight: 800; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
+                        <span>📷</span> Foto
+                        <input type="file" id="input-foto-scatolo-camera" accept="image/*" capture="environment" style="display: none;" onchange="gestisciCaricaFotoScatolo(event, 'scatola')">
+                      </label>
+                      <label style="padding: 5px 8px; border-radius: 6px; background: #ffffff; border: 1px solid #cbd5e1; color: #334155; font-weight: 700; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
+                        <span>🖼️</span> File
+                        <input type="file" id="input-foto-scatolo-file" accept="image/*" style="display: none;" onchange="gestisciCaricaFotoScatolo(event, 'scatola')">
+                      </label>
+                      <button type="button" id="btn-elimina-foto-scatolo" onclick="rimuoviFotoScatolo('scatola')" style="display: none; padding: 5px 6px; border-radius: 6px; background: #fff1f2; border: 1px solid #fecaca; color: #e11d48; font-size: 11px; cursor: pointer;">✕</button>
+                    </div>
+                    <div id="wrap-preview-foto-scatolo" style="display: none; justify-content: center;">
+                      <img id="img-preview-foto-scatolo" src="" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #94a3b8; cursor: pointer;" onclick="apriFotoScatoloModal(this.src, 'Confezione Scatolo')" title="Clicca per ingrandire">
+                    </div>
+                  </div>
 
-                <!-- PREVIEW MINIATURA -->
-                <div id="wrap-preview-foto-scatolo" style="display: none; margin-top: 10px; padding: 8px; background: #f8fafc; border-radius: 10px; border: 1px dashed #cbd5e1; align-items: center; gap: 12px;">
-                  <img id="img-preview-foto-scatolo" src="" alt="Foto Scatolo"
-                    style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1.5px solid #94a3b8; cursor: pointer;"
-                    onclick="apriFotoScatoloModal(this.src)" title="Clicca per ingrandire">
-                  <div style="flex: 1; min-width: 0;">
-                    <div style="font-size: 11.5px; font-weight: 800; color: #0f172a;">Foto confezione pronta</div>
-                    <div style="font-size: 10.5px; color: #64748b; margin-top: 2px;">Clicca sull'immagine per ingrandire. Premi Salva per confermare.</div>
+                  <!-- BOX 2: FOTO PILLOLA / FORMA REALE -->
+                  <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 8px; text-align: center;">
+                    <div style="font-size: 11px; font-weight: 800; color: #334155; margin-bottom: 6px;">💊 2. Compressa / Blister</div>
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-bottom: 6px;">
+                      <label style="padding: 5px 8px; border-radius: 6px; background: #059669; color: #ffffff; font-weight: 800; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
+                        <span>📷</span> Foto
+                        <input type="file" id="input-foto-pillola-camera" accept="image/*" capture="environment" style="display: none;" onchange="gestisciCaricaFotoScatolo(event, 'pillola')">
+                      </label>
+                      <label style="padding: 5px 8px; border-radius: 6px; background: #ffffff; border: 1px solid #cbd5e1; color: #334155; font-weight: 700; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
+                        <span>🖼️</span> File
+                        <input type="file" id="input-foto-pillola-file" accept="image/*" style="display: none;" onchange="gestisciCaricaFotoScatolo(event, 'pillola')">
+                      </label>
+                      <button type="button" id="btn-elimina-foto-pillola" onclick="rimuoviFotoScatolo('pillola')" style="display: none; padding: 5px 6px; border-radius: 6px; background: #fff1f2; border: 1px solid #fecaca; color: #e11d48; font-size: 11px; cursor: pointer;">✕</button>
+                    </div>
+                    <div id="wrap-preview-foto-pillola" style="display: none; justify-content: center;">
+                      <img id="img-preview-foto-pillola" src="" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #94a3b8; cursor: pointer;" onclick="apriFotoScatoloModal(this.src, 'Compressa / Blister')" title="Clicca per ingrandire">
+                    </div>
+                  </div>
+
+                </div>
+              </div>
                   </div>
                 </div>
               </div>
@@ -5140,14 +5157,14 @@ window.eseguiStrumentoMobile = function(azione, e) {
 
   <!-- VIEWER INGRANDIMENTO RICEVUTA ASL -->
   <!-- MODALE VIEWER FOTO SCATOLO FARMACO -->
-  <!-- MODALE VIEWER FOTO SCATOLO PROFESSIONALE FULLSCREEN CINEMATICO -->
-  <div class="modal-overlay" id="modal-foto-scatolo-viewer" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:20000099; align-items:center; justify-content:center; background:rgba(3,7,18,0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); padding:0; margin:0;" onclick="if(event.target===this) chiudiFotoScatoloModal();">
+  <!-- MODALE VIEWER FOTO SCATOLO PROFESSIONALE FULLSCREEN CINEMATICO CON ZOOM & DOPPIA FOTO -->
+  <div class="modal-overlay" id="modal-foto-scatolo-viewer" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:20000099; align-items:center; justify-content:center; background:rgba(3,7,18,0.97); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:0; margin:0;" onclick="if(event.target===this) chiudiFotoScatoloModal();">
     <div style="width:100vw; height:100vh; max-width:100vw; max-height:100vh; position:relative; background:transparent; display:flex; flex-direction:column; overflow:hidden;">
       
       <!-- TOP BAR ELEGANTE CON AZIONI -->
-      <div style="background:linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 100%); color:#ffffff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); z-index:10; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+      <div style="background:linear-gradient(180deg, rgba(15,23,42,0.98) 0%, rgba(15,23,42,0.85) 100%); color:#ffffff; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); z-index:10; box-shadow:0 4px 20px rgba(0,0,0,0.4);">
         <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-          <div style="width:36px; height:36px; border-radius:10px; background:rgba(2,132,199,0.25); border:1.5px solid #0284c7; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">
+          <div style="width:38px; height:38px; border-radius:10px; background:rgba(2,132,199,0.25); border:1.5px solid #0284c7; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">
             📦
           </div>
           <div style="min-width:0;">
@@ -5159,21 +5176,35 @@ window.eseguiStrumentoMobile = function(azione, e) {
             </div>
           </div>
         </div>
-        <button type="button" onclick="chiudiFotoScatoloModal()" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#ffffff; width:38px; height:38px; border-radius:50%; font-size:18px; cursor:pointer; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s;" title="Chiudi finestra">✕</button>
-      </div>
-
-      <!-- AREA IMMAGINE A TUTTO SCHERMO -->
-      <div style="flex:1; width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:14px; position:relative; overflow:hidden;">
-        <img id="scatolo-foto-viewer-img" src="" style="max-width:96vw; max-height:80vh; width:auto; height:auto; object-fit:contain; border-radius:14px; box-shadow:0 25px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1); transition:transform 0.2s ease;">
-      </div>
-
-      <!-- FOOTER FLUTTUANTE ELEGANTE -->
-      <div style="background:linear-gradient(0deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 100%); padding:12px 18px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.08); z-index:10;">
+        
         <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:12px; color:#38bdf8; font-weight:800; background:rgba(56,189,248,0.12); padding:4px 10px; border-radius:8px; border:1px solid rgba(56,189,248,0.3);">🔍 Alta Definizione</span>
+          <!-- CONTROLLI ZOOM RAPIDI -->
+          <button type="button" onclick="modificaZoomViewer(0.25)" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#ffffff; width:34px; height:34px; border-radius:8px; font-size:16px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:center;">➕</button>
+          <button type="button" onclick="modificaZoomViewer(-0.25)" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#ffffff; width:34px; height:34px; border-radius:8px; font-size:16px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:center;">➖</button>
+          <button type="button" onclick="resetZoomViewer()" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#ffffff; width:34px; height:34px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:center;">1:1</button>
+          <button type="button" onclick="chiudiFotoScatoloModal()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); color:#ffffff; width:36px; height:36px; border-radius:50%; font-size:18px; cursor:pointer; font-weight:900; display:flex; align-items:center; justify-content:center; margin-left:4px;" title="Chiudi finestra">✕</button>
         </div>
-        <button type="button" onclick="chiudiFotoScatoloModal()" style="padding:9px 24px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
-          Chiudi Visualizzatore
+      </div>
+
+      <!-- SELETTORE SWITCH VISTA [ 📦 SCATOLO | 💊 COMPRESSA ] (SE PRESENTI ENTRAMBE) -->
+      <div id="viewer-switch-tabs" style="display:flex; justify-content:center; gap:8px; padding:8px; background:rgba(15,23,42,0.8); border-bottom:1px solid rgba(255,255,255,0.06); z-index:9;">
+        <button type="button" id="btn-vtab-scatola" onclick="switchViewerPhoto('scatola')" style="padding:6px 14px; border-radius:8px; border:1px solid #0284c7; background:#0284c7; color:#fff; font-size:12px; font-weight:800; cursor:pointer;">📦 Scatola</button>
+        <button type="button" id="btn-vtab-pillola" onclick="switchViewerPhoto('pillola')" style="padding:6px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:transparent; color:#cbd5e1; font-size:12px; font-weight:800; cursor:pointer;">💊 Compressa</button>
+      </div>
+
+      <!-- AREA IMMAGINE A TUTTO SCHERMO CON TOUCH ZOOM & PAN -->
+      <div id="viewer-img-container" style="flex:1; width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:10px; position:relative; overflow:hidden; touch-action:none; cursor:grab;">
+        <img id="scatolo-foto-viewer-img" src="" style="max-width:96vw; max-height:76vh; width:auto; height:auto; object-fit:contain; border-radius:14px; box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.15); transition:transform 0.1s ease-out; transform-origin:center center;">
+      </div>
+
+      <!-- FOOTER FLUTTUANTE ELEGANTE CON INFO OCR / VERIFICA -->
+      <div style="background:linear-gradient(0deg, rgba(15,23,42,0.98) 0%, rgba(15,23,42,0.85) 100%); padding:10px 16px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.08); z-index:10;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:11.5px; color:#38bdf8; font-weight:800; background:rgba(56,189,248,0.12); padding:3px 9px; border-radius:7px; border:1px solid rgba(56,189,248,0.3);">🔍 Pinch-To-Zoom Attivo</span>
+          <span id="badge-viewer-ocr" style="display:none; font-size:11px; color:#34d399; font-weight:800; background:rgba(52,211,153,0.12); padding:3px 8px; border-radius:7px; border:1px solid rgba(52,211,153,0.3);">✓ AIFA Conforme</span>
+        </div>
+        <button type="button" onclick="chiudiFotoScatoloModal()" style="padding:8px 20px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; border-radius:10px; font-size:12.5px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(2,132,199,0.35);">
+          Chiudi
         </button>
       </div>
 

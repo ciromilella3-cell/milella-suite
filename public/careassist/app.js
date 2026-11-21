@@ -1,8 +1,14 @@
 
 // ==============================================================================
-// GESTIONE ORIGINALE / GENERICO E FOTO SCATOLO FARMACO
+// GESTIONE AVANZATA FOTO: DOPPIA FOTO (SCATOLA & PILLOLA) + ZOOM & PAN TOUCH
 // ==============================================================================
 window._tempFotoScatoloData = null;
+window._tempFotoPillolaData = null;
+window._viewerCurrentScatolaSrc = '';
+window._viewerCurrentPillolaSrc = '';
+window._viewerZoomLevel = 1.0;
+window._viewerPanX = 0;
+window._viewerPanY = 0;
 
 function selezionaTipoSpecialitaModal(tipo) {
   var hiddenInp = document.getElementById('edit-farm-tipo-specialita');
@@ -39,7 +45,7 @@ function deduciTipoSpecialitaDaNome(nome) {
 }
 window.deduciTipoSpecialitaDaNome = deduciTipoSpecialitaDaNome;
 
-function gestisciCaricaFotoScatolo(event) {
+function gestisciCaricaFotoScatolo(event, target) {
   var file = event && event.target && event.target.files && event.target.files[0];
   if (!file) return;
   var reader = new FileReader();
@@ -47,7 +53,7 @@ function gestisciCaricaFotoScatolo(event) {
     var rawUrl = e.target.result;
     var img = new Image();
     img.onload = function() {
-      var maxDim = 1000;
+      var maxDim = 1100;
       var w = img.width;
       var h = img.height;
       if (w > maxDim || h > maxDim) {
@@ -59,10 +65,17 @@ function gestisciCaricaFotoScatolo(event) {
       canvas.height = h;
       var ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
-      var compressed = canvas.toDataURL('image/jpeg', 0.80);
-      window._tempFotoScatoloData = compressed;
-      aggiornaUIFotoScatoloModal(compressed);
-      if (typeof showToast === 'function') showToast('📷 Foto scatola acquisita con successo!', 'success');
+      var compressed = canvas.toDataURL('image/jpeg', 0.82);
+      
+      if (target === 'pillola') {
+        window._tempFotoPillolaData = compressed;
+        aggiornaUIFotoPillolaModal(compressed);
+        if (typeof showToast === 'function') showToast('💊 Foto compressa acquisita!', 'success');
+      } else {
+        window._tempFotoScatoloData = compressed;
+        aggiornaUIFotoScatoloModal(compressed);
+        if (typeof showToast === 'function') showToast('📦 Foto scatola acquisita!', 'success');
+      }
     };
     img.src = rawUrl;
   };
@@ -88,7 +101,7 @@ function aggiornaUIFotoScatoloModal(dataUrl) {
     if (wrap) wrap.style.display = 'none';
     if (img) img.src = '';
     if (btnDel) btnDel.style.display = 'none';
-    if (badge) {
+    if (badge && !window._tempFotoPillolaData) {
       badge.textContent = 'Nessuna foto';
       badge.style.background = '#f1f5f9';
       badge.style.color = '#64748b';
@@ -97,34 +110,193 @@ function aggiornaUIFotoScatoloModal(dataUrl) {
 }
 window.aggiornaUIFotoScatoloModal = aggiornaUIFotoScatoloModal;
 
-function rimuoviFotoScatolo() {
-  window._tempFotoScatoloData = '';
-  aggiornaUIFotoScatoloModal(null);
-  var cam = document.getElementById('input-foto-scatolo-camera');
-  var fil = document.getElementById('input-foto-scatolo-file');
-  if (cam) cam.value = '';
-  if (fil) fil.value = '';
+function aggiornaUIFotoPillolaModal(dataUrl) {
+  var wrap = document.getElementById('wrap-preview-foto-pillola');
+  var img = document.getElementById('img-preview-foto-pillola');
+  var btnDel = document.getElementById('btn-elimina-foto-pillola');
+  var badge = document.getElementById('badge-stato-foto-scatola');
+  if (dataUrl) {
+    if (wrap) wrap.style.display = 'flex';
+    if (img) img.src = dataUrl;
+    if (btnDel) btnDel.style.display = 'inline-block';
+    if (badge) {
+      badge.textContent = 'Foto presente ✓';
+      badge.style.background = '#dcfce7';
+      badge.style.color = '#15803d';
+    }
+  } else {
+    if (wrap) wrap.style.display = 'none';
+    if (img) img.src = '';
+    if (btnDel) btnDel.style.display = 'none';
+    if (badge && !window._tempFotoScatoloData) {
+      badge.textContent = 'Nessuna foto';
+      badge.style.background = '#f1f5f9';
+      badge.style.color = '#64748b';
+    }
+  }
+}
+window.aggiornaUIFotoPillolaModal = aggiornaUIFotoPillolaModal;
+
+function rimuoviFotoScatolo(target) {
+  if (target === 'pillola') {
+    window._tempFotoPillolaData = '';
+    aggiornaUIFotoPillolaModal(null);
+    var camP = document.getElementById('input-foto-pillola-camera');
+    var filP = document.getElementById('input-foto-pillola-file');
+    if (camP) camP.value = '';
+    if (filP) filP.value = '';
+  } else {
+    window._tempFotoScatoloData = '';
+    aggiornaUIFotoScatoloModal(null);
+    var cam = document.getElementById('input-foto-scatolo-camera');
+    var fil = document.getElementById('input-foto-scatolo-file');
+    if (cam) cam.value = '';
+    if (fil) fil.value = '';
+  }
 }
 window.rimuoviFotoScatolo = rimuoviFotoScatolo;
 
-function apriFotoScatoloModal(src, titolo, dettaglio) {
-  if (!src) return;
+// APRI MODALE FULLSCREEN CON CONTROLLI ZOOM & MULTI-FOTO
+function apriFotoScatoloModal(scatolaSrc, titolo, dettaglio, pillolaSrc) {
+  if (!scatolaSrc && !pillolaSrc) return;
+  window._viewerCurrentScatolaSrc = scatolaSrc || '';
+  window._viewerCurrentPillolaSrc = pillolaSrc || '';
+  
   var vModal = document.getElementById('modal-foto-scatolo-viewer');
   var vImg = document.getElementById('scatolo-foto-viewer-img');
   var vTit = document.getElementById('scatolo-foto-viewer-titolo');
   var vDet = document.getElementById('scatolo-foto-viewer-dettaglio');
-  if (vImg) vImg.src = src;
+  var tabsBox = document.getElementById('viewer-switch-tabs');
+
   if (vTit && titolo) vTit.textContent = titolo;
   if (vDet && dettaglio) vDet.innerHTML = dettaglio;
+
+  // Mostra o nascondi lo switch delle foto se ce n'è solo una o entrambe
+  if (tabsBox) {
+    tabsBox.style.display = (window._viewerCurrentScatolaSrc && window._viewerCurrentPillolaSrc) ? 'flex' : 'none';
+  }
+
+  // Imposta foto iniziale (preferisci scatola, o pillola)
+  var initialSrc = window._viewerCurrentScatolaSrc || window._viewerCurrentPillolaSrc;
+  if (vImg) vImg.src = initialSrc;
+
+  resetZoomViewer();
+  inizializzaTouchPanZoom();
+
   if (vModal) vModal.style.display = 'flex';
 }
 window.apriFotoScatoloModal = apriFotoScatoloModal;
 
+function switchViewerPhoto(tipo) {
+  var vImg = document.getElementById('scatolo-foto-viewer-img');
+  var btnS = document.getElementById('btn-vtab-scatola');
+  var btnP = document.getElementById('btn-vtab-pillola');
+  if (tipo === 'pillola' && window._viewerCurrentPillolaSrc) {
+    if (vImg) vImg.src = window._viewerCurrentPillolaSrc;
+    if (btnP) { btnP.style.background = '#059669'; btnP.style.borderColor = '#059669'; btnP.style.color = '#fff'; }
+    if (btnS) { btnS.style.background = 'transparent'; btnS.style.borderColor = 'rgba(255,255,255,0.2)'; btnS.style.color = '#cbd5e1'; }
+  } else if (window._viewerCurrentScatolaSrc) {
+    if (vImg) vImg.src = window._viewerCurrentScatolaSrc;
+    if (btnS) { btnS.style.background = '#0284c7'; btnS.style.borderColor = '#0284c7'; btnS.style.color = '#fff'; }
+    if (btnP) { btnP.style.background = 'transparent'; btnP.style.borderColor = 'rgba(255,255,255,0.2)'; btnP.style.color = '#cbd5e1'; }
+  }
+  resetZoomViewer();
+}
+window.switchViewerPhoto = switchViewerPhoto;
+
 function chiudiFotoScatoloModal() {
   var vModal = document.getElementById('modal-foto-scatolo-viewer');
   if (vModal) vModal.style.display = 'none';
+  resetZoomViewer();
 }
 window.chiudiFotoScatoloModal = chiudiFotoScatoloModal;
+
+function modificaZoomViewer(delta) {
+  window._viewerZoomLevel = Math.max(0.75, Math.min(3.5, window._viewerZoomLevel + delta));
+  applicaTrasformazioneViewer();
+}
+window.modificaZoomViewer = modificaZoomViewer;
+
+function resetZoomViewer() {
+  window._viewerZoomLevel = 1.0;
+  window._viewerPanX = 0;
+  window._viewerPanY = 0;
+  applicaTrasformazioneViewer();
+}
+window.resetZoomViewer = resetZoomViewer;
+
+function applicaTrasformazioneViewer() {
+  var vImg = document.getElementById('scatolo-foto-viewer-img');
+  if (vImg) {
+    vImg.style.transform = 'translate(' + window._viewerPanX + 'px, ' + window._viewerPanY + 'px) scale(' + window._viewerZoomLevel + ')';
+  }
+}
+
+// GESTIONE PINCH-TO-ZOOM TOUCH & TRASCINAMENTO
+var _touchStartDist = 0;
+var _touchStartZoom = 1;
+var _touchStartX = 0;
+var _touchStartY = 0;
+var _isDraggingImg = false;
+
+function inizializzaTouchPanZoom() {
+  var container = document.getElementById('viewer-img-container');
+  if (!container || container._touchInited) return;
+  container._touchInited = true;
+
+  // Doppio tocco per zoom rapido
+  var lastTap = 0;
+  container.addEventListener('touchend', function(e) {
+    var currentTime = new Date().getTime();
+    var tapLength = currentTime - lastTap;
+    if (tapLength < 300 && tapLength > 0) {
+      if (window._viewerZoomLevel > 1.2) {
+        resetZoomViewer();
+      } else {
+        window._viewerZoomLevel = 2.0;
+        applicaTrasformazioneViewer();
+      }
+      e.preventDefault();
+    }
+    lastTap = currentTime;
+  });
+
+  // Gestione Touch (Pinch & Pan)
+  container.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 2) {
+      _touchStartDist = Math.hypot(
+        e.touches[0].pageX - e.touches[1].pageX,
+        e.touches[0].pageY - e.touches[1].pageY
+      );
+      _touchStartZoom = window._viewerZoomLevel;
+    } else if (e.touches.length === 1 && window._viewerZoomLevel > 1) {
+      _touchStartX = e.touches[0].pageX - window._viewerPanX;
+      _touchStartY = e.touches[0].pageY - window._viewerPanY;
+      _isDraggingImg = true;
+    }
+  }, { passive: true });
+
+  container.addEventListener('touchmove', function(e) {
+    if (e.touches.length === 2 && _touchStartDist > 0) {
+      var dist = Math.hypot(
+        e.touches[0].pageX - e.touches[1].pageX,
+        e.touches[0].pageY - e.touches[1].pageY
+      );
+      var factor = dist / _touchStartDist;
+      window._viewerZoomLevel = Math.max(0.75, Math.min(3.5, _touchStartZoom * factor));
+      applicaTrasformazioneViewer();
+    } else if (e.touches.length === 1 && _isDraggingImg) {
+      window._viewerPanX = e.touches[0].pageX - _touchStartX;
+      window._viewerPanY = e.touches[0].pageY - _touchStartY;
+      applicaTrasformazioneViewer();
+    }
+  }, { passive: true });
+
+  container.addEventListener('touchend', function(e) {
+    _touchStartDist = 0;
+    _isDraggingImg = false;
+  }, { passive: true });
+}
 
 
 function apriMenuOSSTopMobileSheet() {
@@ -13761,6 +13933,8 @@ function apriModificaFarmaco(farmacoId) {
 
     // Inizializza Foto Scatolo
     window._tempFotoScatoloData = t.fotoScatola || null;
+    window._tempFotoPillolaData = t.fotoPillola || null;
+    if (typeof aggiornaUIFotoPillolaModal === "function") aggiornaUIFotoPillolaModal(window._tempFotoPillolaData);
     if (typeof aggiornaUIFotoScatoloModal === 'function') aggiornaUIFotoScatoloModal(window._tempFotoScatoloData);
 
     // Ripulisci il dosaggio base (senza "(½ cpr)" o simili)
@@ -14453,6 +14627,7 @@ var cadGiorniSpecifici = (cadenza === 'giorni_specifici')
 
   var tipoSpecialita = (document.getElementById('edit-farm-tipo-specialita') ? document.getElementById('edit-farm-tipo-specialita').value : '') || (typeof deduciTipoSpecialitaDaNome === 'function' ? deduciTipoSpecialitaDaNome(cleanNome) : 'originale');
   var fotoScatolaSalvataggio = (typeof window._tempFotoScatoloData !== 'undefined' && window._tempFotoScatoloData !== null) ? window._tempFotoScatoloData : ((Array.isArray(vecchieDosiFarmaco) && vecchieDosiFarmaco[0]) ? (vecchieDosiFarmaco[0].fotoScatola || null) : null);
+  var fotoPillolaSalvataggio = (typeof window._tempFotoPillolaData !== 'undefined' && window._tempFotoPillolaData !== null) ? window._tempFotoPillolaData : ((Array.isArray(vecchieDosiFarmaco) && vecchieDosiFarmaco[0]) ? (vecchieDosiFarmaco[0].fotoPillola || null) : null);
 
   // Rimuovi le vecchie dosi per rigenerarle con la nuova scorta
   p.terapie = p.terapie.filter(function (item) {
@@ -14537,7 +14712,8 @@ var cadGiorniSpecifici = (cadenza === 'giorni_specifici')
         pianoTerapeutico: ptData,
         ultimaModificaClinica: ultimaMod,
         tipoSpecialita: tipoSpecialita,
-        fotoScatola: fotoScatolaSalvataggio
+        fotoScatola: fotoScatolaSalvataggio,
+        fotoPillola: fotoPillolaSalvataggio
       });
     });
   } else {
@@ -31561,7 +31737,7 @@ function renderMobileNativeView(terapie, p) {
         return '<div class="mobile-card-item ' + paletteClass + (isDone ? ' is-done' : '') + alertClass + '" id="mobile-card-farmaco-' + t.id + '" onclick="apriSchedaFarmacoFullscreen(\'' + t.id + '\')" title="Tocca la scheda per aprire a tutta pagina e intervenire" style="cursor:pointer;">' +
           '<div class="mobile-card-header">' +
           '<div class="mobile-card-time" onclick="event.stopPropagation(); apriCambiaOrarioRapido(\'' + t.id + '\')" title="Tocca per cambiare orario di somministrazione" style="cursor:pointer; display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,0.9); padding:3px 9px; border-radius:8px; border:1px solid rgba(0,0,0,0.1);">' +
-          '<span>' + iconaFormato + '</span>' +
+          (t.fotoScatola ? ('<img src="' + t.fotoScatola + '" style="width:26px; height:26px; border-radius:50%; object-fit:cover; border:1.5px solid #0284c7; box-shadow:0 1px 3px rgba(0,0,0,0.2);">') : ('<span>' + iconaFormato + '</span>')) +
           '<span style="font-weight:900; color:#0369a1; font-size:13.5px;">' + (t.ora || '--:--') + '</span>' +
           '<span style="font-size:11px; color:#475569; font-weight:700;">• ' + (t.fascia || '') + '</span>' +
           '<span style="font-size:11px; color:#0284c7;" title="Modifica orario">✏️</span>' +
@@ -31579,7 +31755,7 @@ function renderMobileNativeView(terapie, p) {
             ((t.tipoSpecialita === 'generico' || (typeof deduciTipoSpecialitaDaNome === 'function' && deduciTipoSpecialitaDaNome(t.farmaco) === 'generico'))
               ? '<span class="badge" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:800; font-size:9.5px; padding:1px 6px; border-radius:6px;">🧬 Generico</span>'
               : '<span class="badge" style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd; font-weight:800; font-size:9.5px; padding:1px 6px; border-radius:6px;">⭐ Originale</span>') +
-            (t.fotoScatola ? ('<button type="button" onclick="event.stopPropagation(); apriFotoScatoloModal(\'' + (t.fotoScatola || '').replace(/'/g, "\\'") + '\', \'' + (t.farmaco || '').replace(/'/g, "\\'") + '\', \'Principio: ' + (t.principio || '--') + '\')" style="background:#0284c7; color:#fff; border:none; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px; box-shadow:0 1px 3px rgba(2,132,199,0.3);">📷 Scatola</button>') : '') +
+            (t.fotoScatola ? ('<button type="button" onclick="event.stopPropagation(); apriFotoScatoloModal(\'' + (t.fotoScatola || '').replace(/'/g, "\\'") + '\', \'' + (t.farmaco || '').replace(/'/g, "\\'") + '\', \'Principio: ' + (t.principio || '--') + '\', \'' + (t.fotoPillola || '').replace(/'/g, "\\'") + '\')" style="background:#0284c7; color:#fff; border:none; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px; box-shadow:0 1px 3px rgba(2,132,199,0.3);">📷 Scatola</button>') : '') +
             '</div>' +
           '<span style="font-size:11px; color:#0284c7; font-weight:800;" title="Apri scheda intera">📱 Apri ↗</span>' +
           '</div>' +
