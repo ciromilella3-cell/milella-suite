@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=415">
+  <link rel="stylesheet" href="style.css?v=417">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -4358,8 +4358,8 @@ window.eseguiStrumentoMobile = function(azione, e) {
 
             <!-- SEZIONE IDENTIFICATIVO FARMACO -->
             <div class="card-sezione-pro" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 10px;">
-              <div class="form-group-compact" style="margin-bottom: 8px;">
-                <!-- SELETTORE ORIGINALE / GENERICO -->
+              
+              <!-- SELETTORE ORIGINALE / GENERICO -->
               <div class="form-group-compact" style="margin-bottom: 10px;">
                 <label class="form-label-compact" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                   <span>Tipologia Specialità Medicinale</span>
@@ -4376,8 +4376,9 @@ window.eseguiStrumentoMobile = function(azione, e) {
                 </div>
                 <input type="hidden" id="edit-farm-tipo-specialita" value="originale">
               </div>
-<!-- BOX FOTO CONFEZIONE SCATOLO & PILLOLA REALE (DOPPIA FOTO CLINICA) -->
-              <div class="card-sezione-pro" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 12px; margin-bottom: 10px;">
+
+              <!-- BOX FOTO CONFEZIONE SCATOLO & PILLOLA REALE (DOPPIA FOTO CLINICA) -->
+              <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                   <div style="font-size: 12px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
                     <span style="font-size: 15px;">📸</span>
@@ -4428,11 +4429,9 @@ window.eseguiStrumentoMobile = function(azione, e) {
 
                 </div>
               </div>
-                  </div>
-                </div>
-              </div>
 
-              <label class="form-label-compact" style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="form-group-compact" style="margin-bottom: 8px;">
+<label class="form-label-compact" style="display: flex; justify-content: space-between; align-items: center;">
                   <span>Nome Commerciale Farmaco *</span>
                 </label>
                 <div style="display: flex; gap: 6px; align-items: stretch;">
@@ -9924,7 +9923,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=415"></script>
+  <script src="app.js?v=417"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9935,7 +9934,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=406', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=407', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
