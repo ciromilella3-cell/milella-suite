@@ -7559,7 +7559,7 @@ async function applicaSomministrazioneClinicaEffettiva(id, sitoIniezione) {
 function apriModalSaltaFarmaco(farmacoId) {
   const p = getActivePaziente();
   if (!p) return;
-  const t = (p.terapie || []).find(item => String(item.id) === String(farmacoId));
+  const t = p.terapie.find(item => item.id === farmacoId);
   if (!t) return;
 
   document.getElementById('salta-farmaco-id').value = farmacoId;
@@ -7568,7 +7568,6 @@ function apriModalSaltaFarmaco(farmacoId) {
   document.getElementById('salta-farmaco-note').value = '';
   openModal('modal-salta-farmaco');
 }
-window.apriModalSaltaFarmaco = apriModalSaltaFarmaco;
 
 // CONFERMA E ARCHIVIAZIONE NELLO STORICO DELLA MANCANZA TERAPIA
 function confermaRegistrazioneFarmacoSaltato(e) {
@@ -7576,8 +7575,8 @@ function confermaRegistrazioneFarmacoSaltato(e) {
   const p = getActivePaziente();
   if (!p) return;
 
-  const rawFarmacoId = document.getElementById('salta-farmaco-id').value;
-  const t = (p.terapie || []).find(item => String(item.id) === String(rawFarmacoId));
+  const farmacoId = parseInt(document.getElementById('salta-farmaco-id').value);
+  const t = p.terapie.find(item => item.id === farmacoId);
   if (!t) return;
 
   const motivo = document.getElementById('salta-farmaco-motivo').value;
@@ -7620,7 +7619,7 @@ function confermaRegistrazioneFarmacoSaltato(e) {
 function mostraAuditFarmaco(farmacoId) {
   const p = getActivePaziente();
   if (!p) return;
-  const t = (p.terapie || []).find(item => String(item.id) === String(farmacoId));
+  const t = p.terapie.find(item => item.id === farmacoId);
   if (!t) return;
 
   // Popola Header Modal
@@ -14780,7 +14779,8 @@ var cadGiorniSpecifici = (cadenza === 'giorni_specifici')
         } : null,
         ultimaModificaClinica: ultimaMod,
         tipoSpecialita: tipoSpecialita,
-        fotoScatola: fotoScatolaSalvataggio
+        fotoScatola: fotoScatolaSalvataggio,
+        fotoPillola: fotoPillolaSalvataggio
       });
     });
 
@@ -21908,7 +21908,7 @@ window.inviaOrdineAusiliWhatsAppDiretto = inviaOrdineAusiliWhatsAppDiretto;
 function apriModalAvvisoFarmacoEsterno(farmacoId) {
   var p = getActivePaziente();
   if (!p || !p.terapie) return;
-  var t = p.terapie.find(function (item) { return String(item.id) === String(farmacoId); });
+  var t = p.terapie.find(function (item) { return item.id === farmacoId; });
   if (!t) return;
 
   var cleanNome = (t.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
@@ -31053,12 +31053,6 @@ function apriModalSafetyCheckOspedaliero(terapia, paziente, checkOrario) {
     }
   }
 
-  // Se è un farmaco ordinario (es. compressa o sciroppo non ad alto rischio e non penna),
-  // pre-spunta automaticamente il controllo per non bloccare la somministrazione immediata
-  if (!isPen && !isHighAlert && chkDose) {
-    chkDose.checked = true;
-  }
-
   // Sezione Rotazione Siti (attiva solo per iniezioni / penne)
   const sezSiti = document.getElementById('safety-check-sezione-siti');
   const avvisoSito = document.getElementById('safety-check-sito-raccomandato-avviso');
@@ -31218,16 +31212,6 @@ async function gestisciAnnullaSomministrazione(id) {
   }
 }
 window.gestisciAnnullaSomministrazione = gestisciAnnullaSomministrazione;
-window.toggleFarmacoConScarico = toggleFarmacoConScarico;
-window.applicaSomministrazioneClinicaEffettiva = applicaSomministrazioneClinicaEffettiva;
-window.apriModalSafetyCheckOspedaliero = apriModalSafetyCheckOspedaliero;
-window.chiudiModalSafetyCheckOspedaliero = chiudiModalSafetyCheckOspedaliero;
-window.eseguiConfermaSafetyCheckOspedaliero = eseguiConfermaSafetyCheckOspedaliero;
-window.selezionaSitoIniezione = selezionaSitoIniezione;
-window.avviaScannerFotoVerificaPillola = avviaScannerFotoVerificaPillola;
-window.mostraAuditFarmaco = mostraAuditFarmaco;
-window.openModal = openModal;
-window.closeModal = closeModal;
 
 
 // ==============================================================================
