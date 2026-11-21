@@ -10400,6 +10400,10 @@ function openModal(id) {
 }
 
 function closeModal(id) {
+  if (id === 'modal-guida-contestuale') {
+    if (typeof fermaVoceHDGlobale === 'function') fermaVoceHDGlobale();
+    _isGuidaContestualeInRiproduzione = false;
+  }
   const el = document.getElementById(id);
   if (el) {
     el.classList.remove('active');
@@ -28717,6 +28721,12 @@ function mostraGuidaContestuale(chiave) {
   // Make sure modal-guida-contestuale is visible above other modals!
   modal.style.setProperty('z-index', '2147483647', 'important');
   openModal('modal-guida-contestuale');
+  // AVVIO IMMEDIATO CON VOCE NATURALE ELSA NEURAL
+  try {
+    ascoltaGuidaContestualeVocale();
+  } catch (eAudio) {
+    console.warn('Avvio automatico audio guida contestuale:', eAudio);
+  }
 }
 window.mostraGuidaContestuale = mostraGuidaContestuale;
 
