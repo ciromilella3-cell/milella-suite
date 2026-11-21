@@ -27975,6 +27975,20 @@ window.fermaVoceBriefing = fermaVoceBriefing;
 // 💡 SISTEMA DI GUIDA CONTESTUALE DINAMICA & UTILITÀ CLINICO-GESTIONALE
 // ==========================================================================
 var GUIDE_CONTESTUALI = {
+  'mobile-terapie-oggi': {
+    icona: '📋',
+    titolo: 'Terapie di Oggi &amp; Registro Somministrazioni Mobile',
+    sottotitolo: 'Cruscotto giornaliero delle assunzioni farmacologiche con filtri orari e verifica riscontro visivo',
+    scopo: 'Questa sezione racchiude tutte le somministrazioni farmacologiche previste per la giornata odierna per l\'assistito selezionato. Consente a operatori, infermieri e familiari di verificare lo stato di ogni singola dose (da fare o già assunta), visualizzare orario, dosaggio, modalità di assunzione e foto cliniche di scatolo e blister, nonché modificare o registrare al volo le somministrazioni.',
+    comeSiUsa: [
+      '<b>Filtri Rapidi (Tutte, Da Fare, Prese)</b>: tocca i tasti in alto a destra per filtrare la visualizzazione e vedere all\'istante solo i farmaci ancora da prendere o quelli già registrati.',
+      '<b>Spunta Somministrazione (Tasto Preso)</b>: tocca il tasto verde \'PRESO\' per confermare l\'assunzione del farmaco; il sistema aggiorna l\'orario reale e scala la scorta.',
+      '<b>Riscontro Visivo Clinico (Foto Scatolo &amp; Blister)</b>: tocca il pulsante \'📷 Scatola\' per aprire l\'ingranditore visivo con le foto reali della confezione e della compressa/blister per evitare errori di scambio.',
+      '<b>Modifica Rapida Orario o Scheda</b>: tocca \'✏️ Modifica\' per aprire la scheda tecnica dettagliata o tocca l\'orario per spostare rapidamente la somministrazione.'
+    ],
+    utilita: '<b>Sicurezza farmacologica e tracciabilità certificata</b>: azzera il rischio di omissioni, scambi di persona o doppie somministrazioni durante i cambi turno al domicilio dell\'assistito.'
+  },
+
   'firma-consegna': {
     icona: '✍️',
     titolo: 'Firma Digitale & Check-In Turno (Validazione Giuridica & Timbratura GPS)',

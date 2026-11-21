@@ -1176,7 +1176,12 @@ window.eseguiStrumentoMobile = function(azione, e) {
 
       <!-- Filtri Rapidi Mobile -->
       <div class="mobile-terapie-header-bar">
-        <div class="mobile-terapie-title">📋 Tutte le Terapie di Oggi</div>
+        <div class="mobile-terapie-title-wrap" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <div class="mobile-terapie-title">📋 Tutte le Terapie di Oggi</div>
+          <button type="button" onclick="mostraGuidaContestuale('mobile-terapie-oggi')" style="background:#eff6ff; color:#0284c7; border:1px solid #7dd3fc; border-radius:8px; padding:2px 8px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 3px rgba(2,132,199,0.15);" title="A cosa serve questa sezione e come utilizzarla">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
+        </div>
         <div class="mobile-filter-pills">
           <button type="button" class="mobile-pill-filter active"
             onclick="filtraMobileTerapie('tutte', this)">Tutte</button>
@@ -9865,7 +9870,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=419"></script>
+  <script src="app.js?v=420"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9876,7 +9881,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=409', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=411', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
