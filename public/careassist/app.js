@@ -409,7 +409,7 @@ function riproduciVoceNaturaleHD(testo, onEndCallback) {
     .replace(/\bHbA1c\b/gi, 'emoglobina glicata')
     .replace(/\bUI\b/gi, 'unità internazionali')
     .replace(/\b112\b/g, 'uno uno due')
-    .replace(/\bNUE\b/gi, 'N U E')
+    .replace(/\bNUE\b/gi, 'Numero Unico Europeo')
     .replace(/\s*\/\s*/g, ' oppure ')
     .replace(/\s*-\s*/g, ' - ')
     .replace(/\.{2,}/g, '. ')
@@ -27861,7 +27861,7 @@ function parlaFallbackBrowserCareAssist(testo) {
   if (!('speechSynthesis' in window)) return;
   try {
     window.speechSynthesis.cancel();
-    var cleanText = String(testo || '').replace(/\b112\b/g, 'uno uno due').replace(/\bNUE\b/gi, 'N U E').replace(/\.{2,}/g, '. ').replace(/[:•-]/g, ', ').replace(/\s+/g, ' ').trim();
+    var cleanText = String(testo || '').replace(/\b112\b/g, 'uno uno due').replace(/\bNUE\b/gi, 'Numero Unico Europeo').replace(/\.{2,}/g, '. ').replace(/[:•-]/g, ', ').replace(/\s+/g, ' ').trim();
     var utter = new SpeechSynthesisUtterance(cleanText);
     utter.lang = 'it-IT';
     var voices = window.speechSynthesis.getVoices() || [];

@@ -3202,6 +3202,7 @@ function preparaTestoPerVoceUmana(rawText) {
         .replace(/\bASL\b/g, 'A S L')
         .replace(/\b118\b/g, 'uno uno otto')
         .replace(/\b112\b/g, 'uno uno due')
+        .replace(/\bNUE\b/gi, 'Numero Unico Europeo')
         .replace(/\bP\.?\s*IVA\b/gi, 'Partita IVA')
         .replace(/\bcpr\b/gi, 'compresse')
         .replace(/\bgg\b/gi, 'giorni')
