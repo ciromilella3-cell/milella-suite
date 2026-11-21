@@ -4297,6 +4297,9 @@ window.eseguiStrumentoMobile = function(azione, e) {
 
         <!-- AZIONI RAPIDE HEADER: SALVA & CHIUDI -->
         <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+          <button type="button" onclick="mostraGuidaContestuale('scheda-capsula')" style="background: rgba(255,255,255,0.18); color: #ffffff; border: 1px solid rgba(255,255,255,0.35); padding: 7px 11px; border-radius: 9px; font-size: 11.5px; font-weight: 800; cursor: pointer; height: 34px; display: inline-flex; align-items: center; gap: 4px;" title="A cosa serve questa scheda e come configurare il farmaco">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
           <button type="submit" form="form-maschera-capsula"
             style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; border: none !important; padding: 7px 14px !important; border-radius: 9px !important; font-size: 12.5px !important; font-weight: 800 !important; cursor: pointer; height: 34px !important; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(16,185,129,0.35);">
             <span>💾</span> <span>Salva</span>
@@ -9875,7 +9878,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=422"></script>
+  <script src="app.js?v=423"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9886,7 +9889,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=413', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=414', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {

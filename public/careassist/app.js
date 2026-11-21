@@ -27979,6 +27979,22 @@ window.fermaVoceBriefing = fermaVoceBriefing;
 // 💡 SISTEMA DI GUIDA CONTESTUALE DINAMICA & UTILITÀ CLINICO-GESTIONALE
 // ==========================================================================
 var GUIDE_CONTESTUALI = {
+  'scheda-capsula': {
+    icona: '💊',
+    titolo: 'Scheda Clinica Farmaco &amp; Gestione Capsula',
+    sottotitolo: 'Configurazione completa posologia, riscontro visivo, piano terapeutico ASL e scorte',
+    scopo: 'Questa maschera avanzata è la cabina di regia completa del singolo farmaco per l\'assistito. Permette di definire formulazione (compressa, gocce, penna per insulina), tipologia (originale o generico), acquisire il riscontro visivo fotografico ufficiale (scatolo e blister reale), impostare frequenza, dosaggi e orari con suddivisione delle somministrazioni giornaliere, monitorare il piano terapeutico ASL con conteggio scatole e sincronizzare le scorte residue a domicilio.',
+    comeSiUsa: [
+      '<b>Formulazione &amp; Tipologia</b>: seleziona se si tratta di Compressa, Penna o Gocce, e specifica se è Originale o Equivalente generico.',
+      '<b>Riscontro Visivo Clinico (Scatola &amp; Compressa)</b>: tocca i tasti Fotocamera o File per scattare o caricare la foto ufficiale della confezione e della pillola reale; toccando l\'anteprima potrai ingrandirle con zoom interattivo.',
+      '<b>Nome, Dosaggio e Principio Attivo</b>: compila o modifica i dettagli del farmaco. Puoi usare la lente di ricerca per auto-compilare la scheda medica ufficiale.',
+      '<b>Orari e Suddivisione Dosi (1/die, 2/die, 3/die...)</b>: scegli la cadenza e tocca i pulsanti delle dosi per impostare ore precise e quota di compressa.',
+      '<b>Schede Piano ASL, Scorte e Note</b>: naviga tra le schede in alto per aggiornare le scatole spettanti dal distretto ASL o aggiungere note cliniche speciali.',
+      '<b>Salva Modifiche</b>: tocca il tasto verde 💾 Salva per memorizzare stabilmente tutte le modifiche e aggiornare all\'istante il registro dell\'assistito su PC e Smartphone.'
+    ],
+    utilita: '<b>Massima sicurezza e conformità clinico-farmacologica</b>: assicura che ogni operatore, infermiere o sostituto riconosca a colpo d\'occhio il farmaco corretto tramite foto reale e conosca esattamente tempi e modalità di somministrazione.'
+  },
+
   'mobile-terapie-oggi': {
     icona: '📋',
     titolo: 'Terapie di Oggi &amp; Registro Somministrazioni Mobile',
