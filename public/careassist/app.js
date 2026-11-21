@@ -27979,6 +27979,22 @@ window.fermaVoceBriefing = fermaVoceBriefing;
 // 💡 SISTEMA DI GUIDA CONTESTUALE DINAMICA & UTILITÀ CLINICO-GESTIONALE
 // ==========================================================================
 var GUIDE_CONTESTUALI = {
+  'scheda-farmaco-operativa': {
+    icona: '💊',
+    titolo: 'Scheda Operativa Farmaco &amp; Gestione Scorte Rapida',
+    sottotitolo: 'Cruscotto rapido touch per somministrazione, scorte a casa, piano ASL e regolazione orari',
+    scopo: 'Questa schermata operativa a tutto schermo è pensata per l\'uso rapido dello smartphone al letto del paziente. Riassume lo stato dell\'assunzione odierna, il calcolo automatico dei giorni di autonomia della scorta con data limite per richiedere la ricetta, il monitoraggio delle scatole rimanenti del Piano Terapeutico ASL PHT, e consente di caricare nuove scatole o regolare l\'orario con un solo tocco.',
+    comeSiUsa: [
+      '<b>Stato Assunzione di Oggi</b>: visualizza se il farmaco è già stato preso o è da fare. Il tasto \'Annulla Assunzione\' permette di revocare una spunta data per errore ripristinando la compressa nella scorta.',
+      '<b>Scorte &amp; Ritiro Farmacia</b>: mostra le compresse totali disponibili a casa, la data di termine scorta e la data raccomandata per richiedere la nuova ricetta al medico curante.',
+      '<b>Piano Terapeutico ASL PHT</b>: visualizza le scatole erogabili rimanenti, il protocollo, la data di scadenza e offre i tasti \'Registra Ritiro ASL\' e \'Stampa A4\'.',
+      '<b>Carico Rapido Scatola (+1 Scatola) o +/- 1 Unità</b>: tocca il pulsante verde per registrare all\'istante una nuova confezione arrivata in casa, oppure usa i tasti +1 / -1 unità per correggere manualmente il conteggio.',
+      '<b>Regola Orario Somministrazione</b>: usa i tasti rapidi (+15m, +30m, +1 ora, -30m) o \'Seleziona Altro Orario\' per spostare al volo la somministrazione odierna.',
+      '<b>Modifica Scheda Completa</b>: tocca il tasto in basso per passare all\'editor avanzato dei dosaggi e delle foto.'
+    ],
+    utilita: '<b>Controllo totale della terapia in mobilità</b>: garantisce che le scorte non si esauriscano mai e rende immediato il riscontro di qualsiasi somministrazione direttamente dallo smartphone.'
+  },
+
   'cambia-orario-rapido': {
     icona: '🕒',
     titolo: 'Cambia Orario Somministrazione Rapido',
