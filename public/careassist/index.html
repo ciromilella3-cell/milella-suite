@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 
 <head>
@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=417">
+  <link rel="stylesheet" href="style.css?v=419">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -4287,7 +4287,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
 
         <!-- AZIONI RAPIDE HEADER: SALVA & CHIUDI -->
         <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-          <button type="button" onclick="salvaModificaFarmaco(event)"
+          <button type="submit" form="form-maschera-capsula"
             style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; border: none !important; padding: 7px 14px !important; border-radius: 9px !important; font-size: 12.5px !important; font-weight: 800 !important; cursor: pointer; height: 34px !important; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(16,185,129,0.35);">
             <span>💾</span> <span>Salva</span>
           </button>
@@ -4358,8 +4358,8 @@ window.eseguiStrumentoMobile = function(azione, e) {
 
             <!-- SEZIONE IDENTIFICATIVO FARMACO -->
             <div class="card-sezione-pro" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 10px;">
-              
-              <!-- SELETTORE ORIGINALE / GENERICO -->
+              <div class="form-group-compact" style="margin-bottom: 8px;">
+                <!-- SELETTORE ORIGINALE / GENERICO -->
               <div class="form-group-compact" style="margin-bottom: 10px;">
                 <label class="form-label-compact" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                   <span>Tipologia Specialità Medicinale</span>
@@ -4377,8 +4377,8 @@ window.eseguiStrumentoMobile = function(azione, e) {
                 <input type="hidden" id="edit-farm-tipo-specialita" value="originale">
               </div>
 
-              <!-- BOX FOTO CONFEZIONE SCATOLO & PILLOLA REALE (DOPPIA FOTO CLINICA) -->
-              <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+              <!-- RISCONTRO VISIVO CLINICO: DOPPIA FOTO (SCATOLA & COMPRESSA) -->
+              <div class="card-sezione-pro" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                   <div style="font-size: 12px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
                     <span style="font-size: 15px;">📸</span>
@@ -4388,7 +4388,6 @@ window.eseguiStrumentoMobile = function(azione, e) {
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                  
                   <!-- BOX 1: FOTO SCATOLA -->
                   <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 8px; text-align: center;">
                     <div style="font-size: 11px; font-weight: 800; color: #334155; margin-bottom: 6px;">📦 1. Confezione Scatolo</div>
@@ -4426,16 +4425,14 @@ window.eseguiStrumentoMobile = function(azione, e) {
                       <img id="img-preview-foto-pillola" src="" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #94a3b8; cursor: pointer;" onclick="apriFotoScatoloModal(this.src, 'Compressa / Blister')" title="Clicca per ingrandire">
                     </div>
                   </div>
-
                 </div>
               </div>
 
-              <div class="form-group-compact" style="margin-bottom: 8px;">
-<label class="form-label-compact" style="display: flex; justify-content: space-between; align-items: center;">
+                <label class="form-label-compact" style="display: flex; justify-content: space-between; align-items: center;">
                   <span>Nome Commerciale Farmaco *</span>
                 </label>
                 <div style="display: flex; gap: 6px; align-items: stretch;">
-                  <input type="text" class="form-control-compact" id="edit-farm-nome" style="flex: 1; font-weight: 700; font-size: 13.5px;"
+                  <input type="text" class="form-control-compact" id="edit-farm-nome" style="flex: 1; font-weight: 700; font-size: 13.5px;" required
                     oninput="if(typeof autoRilevaFormatoFarmaco==='function') autoRilevaFormatoFarmaco(this.value); if(typeof autoCompilaDatiFarmaco==='function') autoCompilaDatiFarmaco(this.value, 'capsula');"
                     placeholder="Es. Entecavir Sandoz, Cardioaspirina..."
                     onkeydown="if(event.key==='Enter'){event.preventDefault(); if(typeof eseguiRicercaManualeInAppERecita==='function') eseguiRicercaManualeInAppERecita('capsula');}"
@@ -4453,7 +4450,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
               <div class="riga-doppia-pro" style="margin-bottom: 8px;">
                 <div class="form-group-compact" style="flex: 1.2;">
                   <label class="form-label-compact">Dosaggio Unitario *</label>
-                  <input type="text" class="form-control-compact" id="edit-farm-dosaggio"
+                  <input type="text" class="form-control-compact" id="edit-farm-dosaggio" required
                     placeholder="Es. 0,5 mg, 1 cpr">
                 </div>
                 <div class="form-group-compact" style="flex: 1.5;">
@@ -4866,7 +4863,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
                 <button type="button" class="pill-btn-mini pill-sky" onclick="applicaModoRapido('La sera prima di dormire')" style="font-size: 10.5px; padding: 3px 6px;">🌙 Prima di dormire</button>
               </div>
 
-              <textarea class="form-control-compact" id="edit-farm-modo" rows="2"
+              <textarea class="form-control-compact" id="edit-farm-modo" required rows="2"
                 placeholder="Es. Una volta al giorno a digiuno con acqua..." style="resize: vertical; line-height: 1.35; font-size: 12px;"></textarea>
             </div>
 
@@ -4916,7 +4913,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
             <button type="button"
               style="flex: 1; min-width: 120px; padding: 10px 12px; border-radius: 10px; font-weight: 800; font-size: 12.5px; border: 1.5px solid #fca5a5; background: #fff1f2; color: #be123c; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px;"
               onclick="eliminaFarmacoCorrenteDaModale()" title="Elimina definitivamente questa terapia">🗑️ Elimina</button>
-            <button type="button" onclick="salvaModificaFarmaco(event)" class="btn-salva"
+            <button type="submit" class="btn-salva"
               style="flex: 2; min-width: 150px; padding: 10px 14px; border-radius: 10px; font-weight: 900; font-size: 13.5px; border: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.35);">
               💾 Salva Modifiche
             </button>
@@ -5155,61 +5152,6 @@ window.eseguiStrumentoMobile = function(azione, e) {
   </div>
 
   <!-- VIEWER INGRANDIMENTO RICEVUTA ASL -->
-  <!-- MODALE VIEWER FOTO SCATOLO FARMACO -->
-  <!-- MODALE VIEWER FOTO SCATOLO PROFESSIONALE FULLSCREEN CINEMATICO CON ZOOM & DOPPIA FOTO -->
-  <div class="modal-overlay" id="modal-foto-scatolo-viewer" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:20000099; align-items:center; justify-content:center; background:rgba(3,7,18,0.97); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:0; margin:0;" onclick="if(event.target===this) chiudiFotoScatoloModal();">
-    <div style="width:100vw; height:100vh; max-width:100vw; max-height:100vh; position:relative; background:transparent; display:flex; flex-direction:column; overflow:hidden;">
-      
-      <!-- TOP BAR ELEGANTE CON AZIONI -->
-      <div style="background:linear-gradient(180deg, rgba(15,23,42,0.98) 0%, rgba(15,23,42,0.85) 100%); color:#ffffff; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); z-index:10; box-shadow:0 4px 20px rgba(0,0,0,0.4);">
-        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-          <div style="width:38px; height:38px; border-radius:10px; background:rgba(2,132,199,0.25); border:1.5px solid #0284c7; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">
-            📦
-          </div>
-          <div style="min-width:0;">
-            <div id="scatolo-foto-viewer-titolo" style="font-weight:900; font-size:16px; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:0.3px;">
-              Confezione Farmaco
-            </div>
-            <div id="scatolo-foto-viewer-dettaglio" style="font-size:12px; font-weight:600; color:#94a3b8; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-              Verifica visiva presidio medico
-            </div>
-          </div>
-        </div>
-        
-        <div style="display:flex; align-items:center; gap:8px;">
-          <!-- CONTROLLI ZOOM RAPIDI -->
-          <button type="button" onclick="modificaZoomViewer(0.25)" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#ffffff; width:34px; height:34px; border-radius:8px; font-size:16px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:center;">➕</button>
-          <button type="button" onclick="modificaZoomViewer(-0.25)" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#ffffff; width:34px; height:34px; border-radius:8px; font-size:16px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:center;">➖</button>
-          <button type="button" onclick="resetZoomViewer()" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#ffffff; width:34px; height:34px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:center;">1:1</button>
-          <button type="button" onclick="chiudiFotoScatoloModal()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); color:#ffffff; width:36px; height:36px; border-radius:50%; font-size:18px; cursor:pointer; font-weight:900; display:flex; align-items:center; justify-content:center; margin-left:4px;" title="Chiudi finestra">✕</button>
-        </div>
-      </div>
-
-      <!-- SELETTORE SWITCH VISTA [ 📦 SCATOLO | 💊 COMPRESSA ] (SE PRESENTI ENTRAMBE) -->
-      <div id="viewer-switch-tabs" style="display:flex; justify-content:center; gap:8px; padding:8px; background:rgba(15,23,42,0.8); border-bottom:1px solid rgba(255,255,255,0.06); z-index:9;">
-        <button type="button" id="btn-vtab-scatola" onclick="switchViewerPhoto('scatola')" style="padding:6px 14px; border-radius:8px; border:1px solid #0284c7; background:#0284c7; color:#fff; font-size:12px; font-weight:800; cursor:pointer;">📦 Scatola</button>
-        <button type="button" id="btn-vtab-pillola" onclick="switchViewerPhoto('pillola')" style="padding:6px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:transparent; color:#cbd5e1; font-size:12px; font-weight:800; cursor:pointer;">💊 Compressa</button>
-      </div>
-
-      <!-- AREA IMMAGINE A TUTTO SCHERMO CON TOUCH ZOOM & PAN -->
-      <div id="viewer-img-container" style="flex:1; width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:10px; position:relative; overflow:hidden; touch-action:none; cursor:grab;">
-        <img id="scatolo-foto-viewer-img" src="" style="max-width:96vw; max-height:76vh; width:auto; height:auto; object-fit:contain; border-radius:14px; box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.15); transition:transform 0.1s ease-out; transform-origin:center center;">
-      </div>
-
-      <!-- FOOTER FLUTTUANTE ELEGANTE CON INFO OCR / VERIFICA -->
-      <div style="background:linear-gradient(0deg, rgba(15,23,42,0.98) 0%, rgba(15,23,42,0.85) 100%); padding:10px 16px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.08); z-index:10;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:11.5px; color:#38bdf8; font-weight:800; background:rgba(56,189,248,0.12); padding:3px 9px; border-radius:7px; border:1px solid rgba(56,189,248,0.3);">🔍 Pinch-To-Zoom Attivo</span>
-          <span id="badge-viewer-ocr" style="display:none; font-size:11px; color:#34d399; font-weight:800; background:rgba(52,211,153,0.12); padding:3px 8px; border-radius:7px; border:1px solid rgba(52,211,153,0.3);">✓ AIFA Conforme</span>
-        </div>
-        <button type="button" onclick="chiudiFotoScatoloModal()" style="padding:8px 20px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; border-radius:10px; font-size:12.5px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(2,132,199,0.35);">
-          Chiudi
-        </button>
-      </div>
-
-    </div>
-  </div>
-
   <div class="modal-overlay" id="modal-foto-ricevuta-asl-viewer" style="display:none; z-index:20000070; align-items:center; justify-content:center; padding:16px; background:rgba(15,23,42,0.85);" onclick="if(event.target===this) chiudiFotoRicevutaASL();">
     <div style="max-width:90vw; max-height:90vh; position:relative; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.5); display:flex; flex-direction:column;">
       <div style="background:#0f172a; color:#ffffff; padding:10px 16px; display:flex; justify-content:space-between; align-items:center;">
@@ -9923,7 +9865,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=417"></script>
+  <script src="app.js?v=419"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9934,7 +9876,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=407', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=409', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
@@ -12090,6 +12032,58 @@ window.eseguiStrumentoMobile = function(azione, e) {
 })();
 </script>
 
+
+  <!-- ==========================================================================
+       MODAL: VISUALIZZATORE FOTO SCATOLO / PILLOLA A TUTTO SCHERMO CINEMATICO HD
+       ========================================================================== -->
+  <div id="modal-foto-scatolo-viewer" class="modal-overlay" style="display: none; z-index: 100000; background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 0;">
+    <div style="position: relative; width: 100vw; height: 100dvh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
+      
+      <!-- HEADER FLUTTUANTE ELEGANTE -->
+      <div style="background: linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 100%); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 10;">
+        <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+          <span style="font-size: 22px;">📦</span>
+          <div style="min-width: 0;">
+            <div id="scatolo-viewer-title" style="font-size: 15px; font-weight: 800; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              Foto Farmaco HD
+            </div>
+            <div id="scatolo-viewer-subtitle" style="font-size: 11px; color: #94a3b8; font-weight: 600;">
+              Dettaglio confezione e pillola originale
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button type="button" onclick="zoomInViewer()" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; width: 34px; height: 34px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 800; display: flex; align-items: center; justify-content: center;">➕</button>
+          <button type="button" onclick="zoomOutViewer()" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; width: 34px; height: 34px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 800; display: flex; align-items: center; justify-content: center;">➖</button>
+          <button type="button" onclick="resetZoomViewer()" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; width: 34px; height: 34px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: 800; display: flex; align-items: center; justify-content: center;">1:1</button>
+          <button type="button" onclick="chiudiFotoScatoloModal()" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #ffffff; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; font-weight: 900; display: flex; align-items: center; justify-content: center; margin-left: 4px;" title="Chiudi finestra">✕</button>
+        </div>
+      </div>
+
+      <!-- SELETTORE SWITCH VISTA [ 📦 SCATOLO | 💊 COMPRESSA ] -->
+      <div id="viewer-switch-tabs" style="display: flex; justify-content: center; gap: 8px; padding: 8px; background: rgba(15,23,42,0.8); border-bottom: 1px solid rgba(255,255,255,0.06); z-index: 9;">
+        <button type="button" id="btn-vtab-scatola" onclick="switchViewerPhoto('scatola')" style="padding: 6px 14px; border-radius: 8px; border: 1px solid #0284c7; background: #0284c7; color: #fff; font-size: 12px; font-weight: 800; cursor: pointer;">📦 Scatola</button>
+        <button type="button" id="btn-vtab-pillola" onclick="switchViewerPhoto('pillola')" style="padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #cbd5e1; font-size: 12px; font-weight: 800; cursor: pointer;">💊 Compressa</button>
+      </div>
+
+      <!-- AREA IMMAGINE A TUTTO SCHERMO CON TOUCH ZOOM & PAN -->
+      <div id="viewer-img-container" style="flex: 1; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 10px; position: relative; overflow: hidden; touch-action: none; cursor: grab;">
+        <img id="scatolo-foto-viewer-img" src="" style="max-width: 96vw; max-height: 76vh; width: auto; height: auto; object-fit: contain; border-radius: 14px; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.15); transition: transform 0.1s ease-out; transform-origin: center center;">
+      </div>
+
+      <!-- FOOTER FLUTTUANTE ELEGANTE CON INFO OCR / VERIFICA -->
+      <div style="background: linear-gradient(0deg, rgba(15,23,42,0.98) 0%, rgba(15,23,42,0.85) 100%); padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); z-index: 10;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 11.5px; color: #38bdf8; font-weight: 800; background: rgba(56,189,248,0.12); padding: 3px 9px; border-radius: 7px; border: 1px solid rgba(56,189,248,0.3);">🔍 Pinch-To-Zoom Attivo</span>
+          <span id="badge-viewer-ocr" style="display: none; font-size: 11px; color: #34d399; font-weight: 800; background: rgba(52,211,153,0.12); padding: 3px 8px; border-radius: 7px; border: 1px solid rgba(52,211,153,0.3);">✓ AIFA Conforme</span>
+        </div>
+        <button type="button" onclick="chiudiFotoScatoloModal()" style="padding: 8px 20px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border: none; border-radius: 10px; font-size: 12.5px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(2,132,199,0.35);">
+          Chiudi
+        </button>
+      </div>
+
+    </div>
+  </div>
 </body>
 
 </html>
