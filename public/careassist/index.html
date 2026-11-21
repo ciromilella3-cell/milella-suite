@@ -4128,8 +4128,13 @@ window.eseguiStrumentoMobile = function(azione, e) {
             <div id="cambia-orario-farm-nome" style="font-size:12px; color:#e0f2fe; font-weight:700;">Farmaco</div>
           </div>
         </div>
-        <button type="button" class="btn btn-outline" onclick="chiudiCambiaOrarioRapido()"
-          style="color:#ffffff; border-color:rgba(255,255,255,0.4); padding:4px 8px; border-radius:8px;">✕</button>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button type="button" onclick="mostraGuidaContestuale('cambia-orario-rapido')" style="background:rgba(255,255,255,0.2); color:#ffffff; border:1px solid rgba(255,255,255,0.45); border-radius:8px; padding:4px 9px; font-size:11px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="A cosa serve questa funzione e come usarla">
+            <span>💡</span> <span>A cosa serve</span>
+          </button>
+          <button type="button" class="btn btn-outline" onclick="chiudiCambiaOrarioRapido()"
+            style="color:#ffffff; border-color:rgba(255,255,255,0.4); padding:4px 8px; border-radius:8px;">✕</button>
+        </div>
       </div>
       <div class="modal-body" style="padding:16px;">
         <div
@@ -9870,7 +9875,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=420"></script>
+  <script src="app.js?v=421"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9881,7 +9886,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=411', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=412', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
