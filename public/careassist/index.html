@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="CareAssist Pro">
   <link rel="apple-touch-icon" href="careassist_icon.jpg">
   <meta name="theme-color" content="#0284c7">
-  <link rel="stylesheet" href="style.css?v=423">
+  <link rel="stylesheet" href="style.css?v=424">
 
   <!-- Modulo Emergenza & Report WA: Apertura Immediata Garantita al 100% -->
   <script>
@@ -2875,11 +2875,6 @@ window.eseguiStrumentoMobile = function(azione, e) {
             Assistito</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <button type="button" onclick="mostraGuidaContestuale('piano-terapeutico-orari')"
-            style="background:linear-gradient(135deg, #fef08a 0%, #facc15 100%); border:1.5px solid #eab308; color:#713f12; padding:8px 13px; border-radius:10px; font-weight:900; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(0,0,0,0.15);"
-            title="A cosa serve questa maschera (Spiegazione vocale con Elsa Neural)">
-            <span>💡</span> A cosa serve
-          </button>
           <button type="button" onclick="apriModalCestino()"
             style="background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.35); color:#ffffff; font-weight:800; font-size:11.5px; padding:5px 9px; border-radius:8px; cursor:pointer;"
             title="Visualizza Cestino">
@@ -9893,7 +9888,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=433"></script>
+  <script src="app.js?v=434"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9904,7 +9899,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=423', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=424', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
@@ -10850,6 +10845,12 @@ window.eseguiStrumentoMobile = function(azione, e) {
         </div>
 
         <div style="display:flex; align-items:center; gap:8px;">
+          <!-- Tasto A cosa serve con Voce Elsa Neural -->
+          <button type="button" onclick="mostraGuidaContestuale('piano-terapeutico-orari')"
+            style="background:linear-gradient(135deg, #fef08a 0%, #facc15 100%); border:1.5px solid #eab308; color:#713f12; padding:8px 14px; border-radius:10px; font-weight:900; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(0,0,0,0.15);"
+            title="A cosa serve questa maschera (Spiegazione vocale con Elsa Neural)">
+            <span>💡</span> A cosa serve
+          </button>
           <button type="button" onclick="apriModalCestino()"
             style="background:rgba(255,255,255,0.2); border:1.5px solid rgba(255,255,255,0.35); color:#ffffff; padding:8px 12px; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"
             title="Visualizza Cestino">
