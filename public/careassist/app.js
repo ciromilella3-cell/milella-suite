@@ -408,6 +408,8 @@ function riproduciVoceNaturaleHD(testo, onEndCallback) {
     .replace(/\bSGLT2\b/gi, 'S G L T 2')
     .replace(/\bHbA1c\b/gi, 'emoglobina glicata')
     .replace(/\bUI\b/gi, 'unità internazionali')
+    .replace(/\b112\b/g, 'uno uno due')
+    .replace(/\bNUE\b/gi, 'N U E')
     .replace(/\s*\/\s*/g, ' oppure ')
     .replace(/\s*-\s*/g, ' - ')
     .replace(/\.{2,}/g, '. ')
@@ -27859,7 +27861,7 @@ function parlaFallbackBrowserCareAssist(testo) {
   if (!('speechSynthesis' in window)) return;
   try {
     window.speechSynthesis.cancel();
-    var cleanText = String(testo || '').replace(/\.{2,}/g, '. ').replace(/[:•-]/g, ', ').replace(/\s+/g, ' ').trim();
+    var cleanText = String(testo || '').replace(/\b112\b/g, 'uno uno due').replace(/\bNUE\b/gi, 'N U E').replace(/\.{2,}/g, '. ').replace(/[:•-]/g, ', ').replace(/\s+/g, ' ').trim();
     var utter = new SpeechSynthesisUtterance(cleanText);
     utter.lang = 'it-IT';
     var voices = window.speechSynthesis.getVoices() || [];
@@ -36659,7 +36661,7 @@ function ascoltaScheda118Vocale() {
   const indirizzoP = (p && (p.indirizzo || p.residenza)) ? (p.indirizzo || p.residenza) : 'Indirizzo registrato in scheda';
 
   // Costruisci il testo vocale clinico chiaro e scandito per emergenza e soccorritori
-  let testoVoce = "Scheda Clinica Emergenza 112. ... ";
+  let testoVoce = "Scheda Clinica Emergenza 1 1 2. ... ";
   testoVoce += "A cosa serve questa scheda: È il passaporto clinico prioritario dell'assistito, " +
     "progettato per essere mostrato o consegnato ai medici del 112 e del Pronto Soccorso. " +
     "Permette ai soccorritori di conoscere all'istante l'identità del paziente, le patologie attive, " +
