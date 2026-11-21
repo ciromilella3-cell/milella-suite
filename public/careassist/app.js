@@ -27981,6 +27981,21 @@ window.fermaVoceBriefing = fermaVoceBriefing;
 // 💡 SISTEMA DI GUIDA CONTESTUALE DINAMICA & UTILITÀ CLINICO-GESTIONALE
 // ==========================================================================
 var GUIDE_CONTESTUALI = {
+  'piano-terapeutico-orari': {
+    icona: '✏️',
+    titolo: 'Modifica Piano Terapeutico, Orari e Scorte',
+    sottotitolo: 'Quadro operativo centralizzato per dosaggi, orari di assunzione e giacenza farmaci',
+    scopo: 'Questa schermata consente di revisionare e aggiornare l\'intero schema terapeutico dell\'assistito da un unico cruscotto ordinato. Permette di correggere dosaggi, orari di assunzione, note cliniche per la somministrazione e tenere costantemente allineate le giacenze delle scorte con il semaforo visivo di autonomia residua.',
+    comeSiUsa: [
+      '<b>Filtri Fascia Oraria</b>: tocca i selettori in alto (Tutti, Mattina, Pranzo, Pomeriggio, Sera e Notte) per concentrarti solo sui farmaci del momento.',
+      '<b>Regolazione Orario Diretta</b>: seleziona l\'orario desiderato direttamente dal campo orologio di ogni singolo farmaco.',
+      '<b>Aggiornamento Scorte</b>: usa i tasti più e meno per rettificare le unità disponibili o premi il tasto pacco per caricare una nuova confezione appena acquistata.',
+      '<b>Modifica Scheda o Elimina</b>: usa l\'icona matita per aprire i dettagli completi del farmaco o l\'icona cestino per rimuoverlo dal piano.',
+      '<b>Invia Ricette su WhatsApp</b>: tocca il tasto verde in basso per inoltrare al medico di famiglia la lista dei medicinali in esaurimento.',
+      '<b>Salva Modifiche</b>: premi il tasto verde finale per memorizzare tutte le variazioni apportate.'
+    ],
+    utilita: '<b>Sicurezza clinica e tempestività nelle forniture</b>: evita dimenticanze e doppie somministrazioni, assicurando la continuità terapeutica senza rischiare di rimanere sprovvisti di farmaci salvavita.'
+  },
   'scheda-farmaco-operativa': {
     icona: '💊',
     titolo: 'Scheda Operativa Farmaco &amp; Gestione Scorte Rapida',
