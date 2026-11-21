@@ -11582,3 +11582,43 @@ button[onclick*="mostraGuidaContestuale"],
     display: none !important;
   }
 }
+
+
+/* ==========================================================================
+   📱 OTTIMIZZAZIONE RESPONSIVE MOBILE: MODIFICA PIANO TERAPEUTICO & ORARI
+   ========================================================================== */
+@media (max-width: 768px) {
+  .inv-rapido-header-cols {
+    display: none !important;
+  }
+  #modal-inventario-rapido .modal-content {
+    border-radius: 18px !important;
+    max-height: 98vh !important;
+  }
+  .inv-rapido-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 14px !important;
+    gap: 12px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 16px !important;
+    background: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(15,23,42,0.06) !important;
+  }
+  .inv-rapido-row > div {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+  .inv-rapido-row-actions {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-top: 1px dashed #e2e8f0 !important;
+    padding-top: 10px !important;
+    margin-top: 4px !important;
+  }
+  #modal-inventario-rapido .inv-filtro-btn {
+    padding: 6px 10px !important;
+    font-size: 11.5px !important;
+  }
+}
