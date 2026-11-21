@@ -28477,7 +28477,7 @@ var GUIDE_CONTESTUALI = {
     sottotitolo: 'Passaporto clinico prioritario per soccorsi d\'urgenza e Pronto Soccorso',
     scopo: 'Raccoglie su un unico foglio ad altissimo contrasto i dati vitali indispensabili per i medici dell\'ambulanza del 118: patologie attive, allergie farmacologiche, terapie in corso, codice fiscale e recapito caregiver.',
     comeSiUsa: [
-      '<b>Mostra a Schermo ai Sanitari</b>: fai leggere la schermata direttamente al personale del 118 appena giunto al domicilio.',
+      '<b>Mostra a Schermo ai Sanitari</b>: fai leggere la schermata direttamente al personale del 112 (NUE) appena giunto al domicilio.',
       '<b>Stampa Rapida Cartacea</b>: usa il tasto stampa per consegnare una copia cartacea da allegare alla barella durante il trasporto in ospedale.',
       '<b>Chiamata Rapida NUE 112</b>: tasto rosso gigante per comporre subito il Numero Unico Europeo delle Emergenze.'
     ],
@@ -36661,7 +36661,7 @@ function ascoltaScheda118Vocale() {
   // Costruisci il testo vocale clinico chiaro e scandito per emergenza e soccorritori
   let testoVoce = "Scheda Clinica Emergenza 112. ... ";
   testoVoce += "A cosa serve questa scheda: È il passaporto clinico prioritario dell'assistito, " +
-    "progettato per essere mostrato o consegnato ai medici del 118 e del Pronto Soccorso. " +
+    "progettato per essere mostrato o consegnato ai medici del 112 e del Pronto Soccorso. " +
     "Permette ai soccorritori di conoscere all'istante l'identità del paziente, le patologie attive, " +
     "le allergie farmacologiche e i farmaci salvavita assunti, evitando la somministrazione di medicinali controindicati. ... ";
 
