@@ -9888,7 +9888,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
   <script src="qrcode_data_uri.js"></script>
   <script src="/auth_token.js"></script>
   <script src="./auth_token.js"></script>
-  <script src="app.js?v=429"></script>
+  <script src="app.js?v=430"></script>
   <script src="turnario_admin.js?v=369"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -9899,7 +9899,7 @@ window.eseguiStrumentoMobile = function(azione, e) {
         window.location.reload();
       });
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js?v=419', { updateViaCache: 'none' }).then(function (reg) {
+        navigator.serviceWorker.register('./sw.js?v=420', { updateViaCache: 'none' }).then(function (reg) {
           console.log('CareAssist Pro Offline Service Worker registrato:', reg.scope);
           try { reg.update(); } catch (e) { }
         }).catch(function (err) {
