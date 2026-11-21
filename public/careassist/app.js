@@ -30809,7 +30809,7 @@ function apriModalInventarioRapido() {
             </div>
 
             <!-- COLONNA 4: PULSANTE +1 SCATOLA & MODIFICA & ELIMINA -->
-            <div style="display:flex; align-items:center; gap:6px;">
+            <div class="inv-rapido-row-actions" style="display:flex; align-items:center; gap:6px;">
               <button type="button" onclick="aggiungiScatolaInteraInvRapido(this, ${cprPerPacco})" style="background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:1.5px solid #3b82f6; color:#1d4ed8; font-weight:900; font-size:12px; padding:8px 10px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:3px;" title="Aggiungi una confezione nuova intera">
                 <span>📦</span> +${cprPerPacco}
               </button>
