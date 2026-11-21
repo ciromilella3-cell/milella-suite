@@ -1,4 +1,132 @@
 
+// ==============================================================================
+// GESTIONE ORIGINALE / GENERICO E FOTO SCATOLO FARMACO
+// ==============================================================================
+window._tempFotoScatoloData = null;
+
+function selezionaTipoSpecialitaModal(tipo) {
+  var hiddenInp = document.getElementById('edit-farm-tipo-specialita');
+  if (hiddenInp) hiddenInp.value = tipo;
+  var btnOrig = document.getElementById('btn-tipo-originale');
+  var btnGen = document.getElementById('btn-tipo-generico');
+  if (btnOrig && btnGen) {
+    if (tipo === 'generico') {
+      btnGen.style.background = '#059669';
+      btnGen.style.borderColor = '#059669';
+      btnGen.style.color = '#ffffff';
+      btnOrig.style.background = '#ffffff';
+      btnOrig.style.borderColor = '#cbd5e1';
+      btnOrig.style.color = '#334155';
+    } else {
+      btnOrig.style.background = '#0284c7';
+      btnOrig.style.borderColor = '#0284c7';
+      btnOrig.style.color = '#ffffff';
+      btnGen.style.background = '#ffffff';
+      btnGen.style.borderColor = '#cbd5e1';
+      btnGen.style.color = '#334155';
+    }
+  }
+}
+window.selezionaTipoSpecialitaModal = selezionaTipoSpecialitaModal;
+
+function deduciTipoSpecialitaDaNome(nome) {
+  if (!nome) return 'originale';
+  var upper = nome.toUpperCase();
+  var matchGenerico = ['SANDOZ', 'TEVA', 'DOC', 'EG', 'EUROGENERICI', 'ZENTIVA', 'MYLAN', 'ACCORD', 'AUROBINDO', 'KRKA', 'PENSA', 'RATIOPHARM', 'ARISTO', 'SUN', 'ALMUS', 'GERMED'].some(function(brand) {
+    return upper.indexOf(brand) >= 0;
+  });
+  return matchGenerico ? 'generico' : 'originale';
+}
+window.deduciTipoSpecialitaDaNome = deduciTipoSpecialitaDaNome;
+
+function gestisciCaricaFotoScatolo(event) {
+  var file = event && event.target && event.target.files && event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var rawUrl = e.target.result;
+    var img = new Image();
+    img.onload = function() {
+      var maxDim = 1000;
+      var w = img.width;
+      var h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+        else { w = Math.round((w * maxDim) / h); h = maxDim; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      var compressed = canvas.toDataURL('image/jpeg', 0.80);
+      window._tempFotoScatoloData = compressed;
+      aggiornaUIFotoScatoloModal(compressed);
+      if (typeof showToast === 'function') showToast('📷 Foto scatola acquisita con successo!', 'success');
+    };
+    img.src = rawUrl;
+  };
+  reader.readAsDataURL(file);
+}
+window.gestisciCaricaFotoScatolo = gestisciCaricaFotoScatolo;
+
+function aggiornaUIFotoScatoloModal(dataUrl) {
+  var wrap = document.getElementById('wrap-preview-foto-scatolo');
+  var img = document.getElementById('img-preview-foto-scatolo');
+  var btnDel = document.getElementById('btn-elimina-foto-scatolo');
+  var badge = document.getElementById('badge-stato-foto-scatola');
+  if (dataUrl) {
+    if (wrap) wrap.style.display = 'flex';
+    if (img) img.src = dataUrl;
+    if (btnDel) btnDel.style.display = 'inline-block';
+    if (badge) {
+      badge.textContent = 'Foto presente ✓';
+      badge.style.background = '#dcfce7';
+      badge.style.color = '#15803d';
+    }
+  } else {
+    if (wrap) wrap.style.display = 'none';
+    if (img) img.src = '';
+    if (btnDel) btnDel.style.display = 'none';
+    if (badge) {
+      badge.textContent = 'Nessuna foto';
+      badge.style.background = '#f1f5f9';
+      badge.style.color = '#64748b';
+    }
+  }
+}
+window.aggiornaUIFotoScatoloModal = aggiornaUIFotoScatoloModal;
+
+function rimuoviFotoScatolo() {
+  window._tempFotoScatoloData = '';
+  aggiornaUIFotoScatoloModal(null);
+  var cam = document.getElementById('input-foto-scatolo-camera');
+  var fil = document.getElementById('input-foto-scatolo-file');
+  if (cam) cam.value = '';
+  if (fil) fil.value = '';
+}
+window.rimuoviFotoScatolo = rimuoviFotoScatolo;
+
+function apriFotoScatoloModal(src, titolo, dettaglio) {
+  if (!src) return;
+  var vModal = document.getElementById('modal-foto-scatolo-viewer');
+  var vImg = document.getElementById('scatolo-foto-viewer-img');
+  var vTit = document.getElementById('scatolo-foto-viewer-titolo');
+  var vDet = document.getElementById('scatolo-foto-viewer-dettaglio');
+  if (vImg) vImg.src = src;
+  if (vTit && titolo) vTit.textContent = titolo;
+  if (vDet && dettaglio) vDet.innerHTML = dettaglio;
+  if (vModal) vModal.style.display = 'flex';
+}
+window.apriFotoScatoloModal = apriFotoScatoloModal;
+
+function chiudiFotoScatoloModal() {
+  var vModal = document.getElementById('modal-foto-scatolo-viewer');
+  if (vModal) vModal.style.display = 'none';
+}
+window.chiudiFotoScatoloModal = chiudiFotoScatoloModal;
+
+
 function apriMenuOSSTopMobileSheet() {
   const bs = document.getElementById('modal-menu-oss-bottomsheet');
   if (bs) {
@@ -6101,6 +6229,17 @@ function renderTerapie() {
             <b style="color:var(--primary); font-size:14.5px; text-decoration: underline; text-decoration-color: rgba(37,99,235,0.4);">${t.farmaco}</b>
             <span style="font-size:11px; margin-left:4px;" title="Storico">🔍</span>
             ${(() => {
+              const isGen = (t.tipoSpecialita === 'generico') || (typeof deduciTipoSpecialitaDaNome === 'function' && deduciTipoSpecialitaDaNome(t.farmaco) === 'generico');
+              return isGen
+                ? '<span class="badge" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:800; font-size:9.5px; padding:1px 6px; border-radius:6px; margin-left:4px;" title="Farmaco Equivalente / Generico">🧬 Generico</span>'
+                : '<span class="badge" style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd; font-weight:800; font-size:9.5px; padding:1px 6px; border-radius:6px; margin-left:4px;" title="Specialità Medicinale Originale di Marca">⭐ Originale</span>';
+            })()}
+            ${t.fotoScatola ? `
+              <span class="badge" onclick="event.stopPropagation(); apriFotoScatoloModal('${t.fotoScatola}', '${(t.farmaco || '').replace(/'/g, "\\'")}', 'Principio: ${t.principio || '--'} &bull; Confezione Scatolo Ufficiale')" style="background:#f8fafc; color:#0284c7; border:1px solid #0284c7; font-weight:800; font-size:10px; padding:1px 6px; border-radius:6px; margin-left:4px; cursor:pointer;" title="Clicca per visualizzare la foto dello scatolo">
+                📷 Scatolo
+              </span>
+            ` : ''}
+            ${(() => {
           const mt = (typeof getDatiFarmacoMultiTempo === 'function') ? getDatiFarmacoMultiTempo(t, terapieFiltrate) : null;
           if (mt) {
             return '<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; border:1px solid #7dd3fc; font-size:10px; padding:2px 7px; border-radius:6px; margin-left:4px; display:inline-block;" title="Terapia a ' + mt.numTempi + ' somministrazioni orarie al giorno (Scorta Condivisa)">⏱️ Tempo ' + mt.indiceTempo + ' di ' + mt.numTempi + ' (' + t.ora + ')</span>';
@@ -6118,7 +6257,10 @@ function renderTerapie() {
             const totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
             const ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
             const resScat = Math.max(0, totScat - ritScat);
-            const dtScad = ptObj ? (ptObj.dataScadenza || ptObj.dataScadenzaAnno || '') : '';
+            const dtScadRaw = ptObj ? (ptObj.dataScadenza || ptObj.dataScadenzaAnno || '') : '';
+            const dtScad = dtScadRaw && dtScadRaw.includes('-')
+              ? dtScadRaw.split('T')[0].split('-').reverse().join('-')
+              : dtScadRaw;
             return `
               <div style="margin-top:4px; display:inline-flex; align-items:center; gap:5px; flex-wrap:wrap;">
                 <span class="badge" style="background:#0284c7; color:#ffffff; font-weight:800; font-size:10.5px; padding:2px 8px; border-radius:6px; box-shadow:0 1px 3px rgba(2,132,199,0.3);" title="Erogazione diretta Presidio Farmacia Territoriale ASL su Piano Terapeutico Specialistico">
@@ -13612,6 +13754,14 @@ function apriModificaFarmaco(farmacoId) {
     if (document.getElementById('edit-farm-id')) document.getElementById('edit-farm-id').value = t.id;
     if (document.getElementById('edit-farm-nome')) document.getElementById('edit-farm-nome').value = cleanNome;
     if (document.getElementById('edit-farm-principio')) document.getElementById('edit-farm-principio').value = t.principio || '';
+    
+    // Inizializza Tipo Specialità (Originale vs Generico)
+    var tipoSpec = t.tipoSpecialita || (typeof deduciTipoSpecialitaDaNome === 'function' ? deduciTipoSpecialitaDaNome(cleanNome) : 'originale');
+    if (typeof selezionaTipoSpecialitaModal === 'function') selezionaTipoSpecialitaModal(tipoSpec);
+
+    // Inizializza Foto Scatolo
+    window._tempFotoScatoloData = t.fotoScatola || null;
+    if (typeof aggiornaUIFotoScatoloModal === 'function') aggiornaUIFotoScatoloModal(window._tempFotoScatoloData);
 
     // Ripulisci il dosaggio base (senza "(½ cpr)" o simili)
     var cleanDosaggio = (t.dosaggio || '').replace(/\s*\([^)]*\)/gi, '').trim();
@@ -14086,7 +14236,10 @@ function apriSchedaFarmacoFullscreen(farmacoId) {
         var totScat = ptObj ? (parseInt(ptObj.scatoleTotali || ptObj.scatoleSpettantiAnno, 10) || 12) : 12;
         var ritScat = ptObj ? (parseInt(ptObj.scatoleRitirate || ptObj.scatoleRitirateTotali, 10) || 0) : 0;
         var resScat = Math.max(0, totScat - ritScat);
-        var dtScad = ptObj ? (ptObj.dataScadenza || ptObj.dataScadenzaAnno || '22/02/2027') : '22/02/2027';
+        var dtScadRaw = ptObj ? (ptObj.dataScadenza || ptObj.dataScadenzaAnno || '2027-02-22') : '2027-02-22';
+              var dtScad = dtScadRaw && dtScadRaw.includes('-')
+                ? dtScadRaw.split('T')[0].split('-').reverse().join('-')
+                : dtScadRaw;
         var proto = ptObj ? (ptObj.protocollo || ptObj.numeroRegistro || '011BQ1X145RHL') : '011BQ1X145RHL';
         var badgeRimaste = document.getElementById('sff-asl-rimaste-badge');
         var protEl = document.getElementById('sff-asl-protocollo');
@@ -14244,8 +14397,13 @@ window.sffApriModificaCapsula = sffApriModificaCapsula;
 
 function salvaModificaFarmaco(e) {
   if (e && e.preventDefault) e.preventDefault();
-  var p = getActivePaziente();
-  if (!p || !p.terapie) return;
+  try {
+    var p = getActivePaziente();
+    if (!p) {
+      if (typeof showToast === "function") showToast("⚠️ Nessun paziente attivo selezionato", "danger");
+      return;
+    }
+    if (!p.terapie) p.terapie = [];
 
   var rawNome = document.getElementById('edit-farm-nome').value.trim();
   var cleanNome = rawNome.replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim();
@@ -14266,7 +14424,7 @@ function salvaModificaFarmaco(e) {
   var cadDataInizio = (['bimestrale', 'trimestrale', 'semestrale', 'alterni'].indexOf(cadenza) >= 0) ? (document.getElementById('edit-farm-data-inizio')?.value || new Date().toISOString().slice(0, 10)) : null;
   var cadMeseAnnuale = (cadenza === 'annuale') ? (parseInt(document.getElementById('edit-farm-mese-annuale')?.value) || (new Date().getMonth() + 1)) : null;
   var cadGiornoAnnuale = (cadenza === 'annuale') ? (parseInt(document.getElementById('edit-farm-giorno-annuale')?.value) || new Date().getDate()) : null;
-  var cadGiorniSpecifici = (cadenza === 'giorni_specifici')
+var cadGiorniSpecifici = (cadenza === 'giorni_specifici')
     ? ((Array.isArray(window._capsulaGiorniSpecifici) && window._capsulaGiorniSpecifici.length > 0) ? window._capsulaGiorniSpecifici.slice() : [1, 2, 3, 4, 5, 6, 7])
     : null;
 
@@ -14292,6 +14450,9 @@ function salvaModificaFarmaco(e) {
     var n = (item.farmaco || '').replace(/\s*\(\d+ª?\s*dose[^)]*\)/gi, '').trim().toLowerCase();
     return n.length > 2 && (n === nomeBase || nomeBase.indexOf(n) >= 0 || n.indexOf(nomeBase) >= 0);
   });
+
+  var tipoSpecialita = (document.getElementById('edit-farm-tipo-specialita') ? document.getElementById('edit-farm-tipo-specialita').value : '') || (typeof deduciTipoSpecialitaDaNome === 'function' ? deduciTipoSpecialitaDaNome(cleanNome) : 'originale');
+  var fotoScatolaSalvataggio = (typeof window._tempFotoScatoloData !== 'undefined' && window._tempFotoScatoloData !== null) ? window._tempFotoScatoloData : ((Array.isArray(vecchieDosiFarmaco) && vecchieDosiFarmaco[0]) ? (vecchieDosiFarmaco[0].fotoScatola || null) : null);
 
   // Rimuovi le vecchie dosi per rigenerarle con la nuova scorta
   p.terapie = p.terapie.filter(function (item) {
@@ -14374,7 +14535,9 @@ function salvaModificaFarmaco(e) {
         tipoFormulazione: (window._currentFormatoModal === 'penna') ? 'penna' : 'compressa',
         canaleDistribuzione: canaleDist,
         pianoTerapeutico: ptData,
-        ultimaModificaClinica: ultimaMod
+        ultimaModificaClinica: ultimaMod,
+        tipoSpecialita: tipoSpecialita,
+        fotoScatola: fotoScatolaSalvataggio
       });
     });
   } else {
@@ -14439,7 +14602,9 @@ function salvaModificaFarmaco(e) {
           lancetteNome: document.getElementById('edit-penna-lancette-nome') ? document.getElementById('edit-penna-lancette-nome').value.trim() : 'Glucoject Lancets Extra 33G (25 lancette)',
           lancetteScorta: parseInt(document.getElementById('edit-penna-lancette-scorta') ? document.getElementById('edit-penna-lancette-scorta').value : 25) || 25
         } : null,
-        ultimaModificaClinica: ultimaMod
+        ultimaModificaClinica: ultimaMod,
+        tipoSpecialita: tipoSpecialita,
+        fotoScatola: fotoScatolaSalvataggio
       });
     });
 
@@ -14461,7 +14626,11 @@ function salvaModificaFarmaco(e) {
   setTimeout(function () {
     try { controllaTerapieGlobaliTuttiPazienti(); } catch (e) { }
   }, 300);
-  showToast('Terapia per "' + cleanNome + '" salvata con successo con ' + totalDosi + ' somministrazioni! 💊');
+  showToast('Terapia per "' + cleanNome + '" salvata con successo con ' + totalDosi + ' somministrazioni! 💊', "success");
+  } catch (err) {
+    console.error("ERRORE salvaModificaFarmaco:", err);
+    alert("Avviso salvataggio terapia: " + (err.message || err));
+  }
 }
 window.salvaModificaFarmaco = salvaModificaFarmaco;
 
@@ -31405,7 +31574,13 @@ function renderMobileNativeView(terapie, p) {
           '</div>' +
           '</div>' +
           '<div class="mobile-card-name" style="margin-top:6px; font-size:14.5px; font-weight:800; color:#0f172a; display:flex; align-items:center; justify-content:space-between;">' +
-          '<span>' + t.farmaco + badgeSalvavita + '</span>' +
+          '<div style="display:inline-flex; align-items:center; gap:5px; flex-wrap:wrap;">' +
+            '<span>' + t.farmaco + badgeSalvavita + '</span>' +
+            ((t.tipoSpecialita === 'generico' || (typeof deduciTipoSpecialitaDaNome === 'function' && deduciTipoSpecialitaDaNome(t.farmaco) === 'generico'))
+              ? '<span class="badge" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:800; font-size:9.5px; padding:1px 6px; border-radius:6px;">🧬 Generico</span>'
+              : '<span class="badge" style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd; font-weight:800; font-size:9.5px; padding:1px 6px; border-radius:6px;">⭐ Originale</span>') +
+            (t.fotoScatola ? ('<button type="button" onclick="event.stopPropagation(); apriFotoScatoloModal(\'' + (t.fotoScatola || '').replace(/'/g, "\\'") + '\', \'' + (t.farmaco || '').replace(/'/g, "\\'") + '\', \'Principio: ' + (t.principio || '--') + '\')" style="background:#0284c7; color:#fff; border:none; padding:2px 7px; border-radius:6px; font-size:10px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:3px; box-shadow:0 1px 3px rgba(2,132,199,0.3);">📷 Scatola</button>') : '') +
+            '</div>' +
           '<span style="font-size:11px; color:#0284c7; font-weight:800;" title="Apri scheda intera">📱 Apri ↗</span>' +
           '</div>' +
           principioHtml +

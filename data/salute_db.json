@@ -269,5 +269,40 @@
     "height": ""
   },
   "waterCount_1": 8,
-  "pathology_moglie": "steatosi"
+  "pathology_moglie": "steatosi",
+  "profileStats_luigiscappa": {
+    "dob": "1989-04-10",
+    "start": "110",
+    "goal": "70",
+    "kcal": "---",
+    "gender": "M",
+    "height": "160"
+  },
+  "profileName_a": "Aldo",
+  "anamnesi_a": {
+    "nome": "Aldo",
+    "altezza": "",
+    "cf": "",
+    "tel": "",
+    "email": "",
+    "patologie": "",
+    "farmaci": "",
+    "allergie": "",
+    "lavoro": "",
+    "sport": "",
+    "fumo": "",
+    "intestino": ""
+  },
+  "weightLog_luigiscappa": "[{\"date\":\"2026-10-08\",\"weight\":110}]",
+  "profileName_luigiscappa": "Luigi Scappa",
+  "profileStats_gabrielefrancescostoppelli": {
+    "dob": "1977-04-02",
+    "gender": "M",
+    "start": "80",
+    "height": "160",
+    "goal": "---",
+    "kcal": "1600"
+  },
+  "profileName_gabrielefrancescostoppelli": "Gabriele Francesco Stoppelli",
+  "syncTarget_gabrielefrancescostoppelli": "none"
 }
