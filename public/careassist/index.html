@@ -5140,22 +5140,43 @@ window.eseguiStrumentoMobile = function(azione, e) {
 
   <!-- VIEWER INGRANDIMENTO RICEVUTA ASL -->
   <!-- MODALE VIEWER FOTO SCATOLO FARMACO -->
-  <div class="modal-overlay" id="modal-foto-scatolo-viewer" style="display:none; z-index:20000080; align-items:center; justify-content:center; padding:16px; background:rgba(15,23,42,0.85);" onclick="if(event.target===this) chiudiFotoScatoloModal();">
-    <div style="max-width:92vw; max-height:92vh; position:relative; background:#ffffff; border-radius:18px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.5); display:flex; flex-direction:column; border: 1px solid rgba(255,255,255,0.2);">
-      <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#ffffff; padding:12px 18px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1);">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:18px;">📦</span>
-          <span id="scatolo-foto-viewer-titolo" style="font-weight:800; font-size:14px; color:#ffffff;">Confezione Farmaco</span>
+  <!-- MODALE VIEWER FOTO SCATOLO PROFESSIONALE FULLSCREEN CINEMATICO -->
+  <div class="modal-overlay" id="modal-foto-scatolo-viewer" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:20000099; align-items:center; justify-content:center; background:rgba(3,7,18,0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); padding:0; margin:0;" onclick="if(event.target===this) chiudiFotoScatoloModal();">
+    <div style="width:100vw; height:100vh; max-width:100vw; max-height:100vh; position:relative; background:transparent; display:flex; flex-direction:column; overflow:hidden;">
+      
+      <!-- TOP BAR ELEGANTE CON AZIONI -->
+      <div style="background:linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 100%); color:#ffffff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); z-index:10; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+          <div style="width:36px; height:36px; border-radius:10px; background:rgba(2,132,199,0.25); border:1.5px solid #0284c7; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">
+            📦
+          </div>
+          <div style="min-width:0;">
+            <div id="scatolo-foto-viewer-titolo" style="font-weight:900; font-size:16px; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:0.3px;">
+              Confezione Farmaco
+            </div>
+            <div id="scatolo-foto-viewer-dettaglio" style="font-size:12px; font-weight:600; color:#94a3b8; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              Verifica visiva presidio medico
+            </div>
+          </div>
         </div>
-        <button type="button" onclick="chiudiFotoScatoloModal()" style="background:rgba(255,255,255,0.1); border:none; color:#ffffff; width:30px; height:30px; border-radius:50%; font-size:16px; cursor:pointer; font-weight:900; display:flex; align-items:center; justify-content:center;">✕</button>
+        <button type="button" onclick="chiudiFotoScatoloModal()" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#ffffff; width:38px; height:38px; border-radius:50%; font-size:18px; cursor:pointer; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s;" title="Chiudi finestra">✕</button>
       </div>
-      <div style="padding:14px; overflow:auto; text-align:center; background:#0f172a; display:flex; align-items:center; justify-content:center;">
-        <img id="scatolo-foto-viewer-img" src="" style="max-width:100%; max-height:76vh; object-fit:contain; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.4);">
+
+      <!-- AREA IMMAGINE A TUTTO SCHERMO -->
+      <div style="flex:1; width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:14px; position:relative; overflow:hidden;">
+        <img id="scatolo-foto-viewer-img" src="" style="max-width:96vw; max-height:80vh; width:auto; height:auto; object-fit:contain; border-radius:14px; box-shadow:0 25px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1); transition:transform 0.2s ease;">
       </div>
-      <div style="background:#f8fafc; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0;">
-        <div id="scatolo-foto-viewer-dettaglio" style="font-size:11.5px; font-weight:700; color:#475569;">Verifica visiva presidio medico</div>
-        <button type="button" onclick="chiudiFotoScatoloModal()" style="padding:6px 14px; background:#0284c7; color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">Chiudi</button>
+
+      <!-- FOOTER FLUTTUANTE ELEGANTE -->
+      <div style="background:linear-gradient(0deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 100%); padding:12px 18px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.08); z-index:10;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:12px; color:#38bdf8; font-weight:800; background:rgba(56,189,248,0.12); padding:4px 10px; border-radius:8px; border:1px solid rgba(56,189,248,0.3);">🔍 Alta Definizione</span>
+        </div>
+        <button type="button" onclick="chiudiFotoScatoloModal()" style="padding:9px 24px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:none; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
+          Chiudi Visualizzatore
+        </button>
       </div>
+
     </div>
   </div>
 
